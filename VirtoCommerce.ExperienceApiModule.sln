@@ -1,0 +1,46 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29123.88
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{FAE6CCF7-298C-4AF3-8044-60DAA0C099F0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{E3929EC9-690B-492A-BF16-6F8FDBBD0D97}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtoCommerce.ExperienceApiModule.Core", "src\VirtoCommerce.ExperienceApiModule.Core\VirtoCommerce.ExperienceApiModule.Core.csproj", "{DDDAF0F7-4000-4BB6-80FB-EEC3B253BEDD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtoCommerce.ExperienceApiModule.Data", "src\VirtoCommerce.ExperienceApiModule.Data\VirtoCommerce.ExperienceApiModule.Data.csproj", "{B8D57EA3-A837-4501-9200-074E86D22843}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtoCommerce.ExperienceApiModule.Web", "src\VirtoCommerce.ExperienceApiModule.Web\VirtoCommerce.ExperienceApiModule.Web.csproj", "{447380B0-EC42-4910-92EB-93B86F490270}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DDDAF0F7-4000-4BB6-80FB-EEC3B253BEDD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DDDAF0F7-4000-4BB6-80FB-EEC3B253BEDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DDDAF0F7-4000-4BB6-80FB-EEC3B253BEDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DDDAF0F7-4000-4BB6-80FB-EEC3B253BEDD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B8D57EA3-A837-4501-9200-074E86D22843}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8D57EA3-A837-4501-9200-074E86D22843}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8D57EA3-A837-4501-9200-074E86D22843}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B8D57EA3-A837-4501-9200-074E86D22843}.Release|Any CPU.Build.0 = Release|Any CPU
+		{447380B0-EC42-4910-92EB-93B86F490270}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{447380B0-EC42-4910-92EB-93B86F490270}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{447380B0-EC42-4910-92EB-93B86F490270}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{447380B0-EC42-4910-92EB-93B86F490270}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{DDDAF0F7-4000-4BB6-80FB-EEC3B253BEDD} = {FAE6CCF7-298C-4AF3-8044-60DAA0C099F0}
+		{B8D57EA3-A837-4501-9200-074E86D22843} = {FAE6CCF7-298C-4AF3-8044-60DAA0C099F0}
+		{447380B0-EC42-4910-92EB-93B86F490270} = {FAE6CCF7-298C-4AF3-8044-60DAA0C099F0}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E56E5C53-D55A-451B-96FA-654D86F96658}
+	EndGlobalSection
+EndGlobal
