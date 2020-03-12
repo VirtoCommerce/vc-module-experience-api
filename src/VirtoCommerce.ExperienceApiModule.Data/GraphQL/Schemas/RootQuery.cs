@@ -12,14 +12,15 @@ using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
+using GraphQL.Authorization;
 
 namespace VirtoCommerce.ExperienceApiModule.Data.GraphQL.Schemas
 {
-    public class ProductsQuery : ObjectGraphType<object>
+    public class RootQuery : ObjectGraphType<object>
     {
-        public ProductsQuery(IItemService productService, IProductSearchService productSearchService, IDataLoaderContextAccessor dataLoader)
+        public RootQuery(IItemService productService, IProductSearchService productSearchService, IDataLoaderContextAccessor dataLoader)
         {
-            Name = "Query";
+            Name = "RootQuery";
 
             FieldAsync<ProductType>(
                  "product",
@@ -36,8 +37,8 @@ namespace VirtoCommerce.ExperienceApiModule.Data.GraphQL.Schemas
 
             Connection<ProductType>()
                 .Name("products")
-                .Argument<ListGraphType<StringGraphType>>("query", "the search phrase")
-                .Argument<ListGraphType<StringGraphType>>("catalog", "the catalog id")
+                .Argument<StringGraphType>("query", "the search phrase")
+                .Argument<StringGraphType>("catalog", "the catalog id")
                 .Unidirectional()
                 .PageSize(20)
                 .ResolveAsync(async context =>
@@ -84,7 +85,7 @@ namespace VirtoCommerce.ExperienceApiModule.Data.GraphQL.Schemas
                     HasNextPage = searchResult.TotalCount > (skip + first),
                     HasPreviousPage = skip > 0,
                     StartCursor = skip.ToString(),
-                    EndCursor = (skip + first).ToString(),
+                    EndCursor = Math.Min(searchResult.TotalCount, (int)(skip + first)).ToString()
                 },
                 TotalCount = searchResult.TotalCount,
             };

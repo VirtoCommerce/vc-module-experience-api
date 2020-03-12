@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using VirtoCommerce.ExperienceApiModule.Data.GraphQL.Schemas;
 using VirtoCommerce.Platform.Core.Modularity;
 
-namespace VirtoCommerce.CoreModule.Web
+namespace VirtoCommerce.ExperienceApiModule.Web
 {
     public class Module : IModule
     {
@@ -12,10 +12,12 @@ namespace VirtoCommerce.CoreModule.Web
 
         public void Initialize(IServiceCollection serviceCollection)
         {
+            serviceCollection.AddSingleton<ProductAssociationType>();
             serviceCollection.AddSingleton<PropertyType>();
             serviceCollection.AddSingleton<ProductType>();
-            serviceCollection.AddSingleton<ProductsQuery>();
-            serviceCollection.AddSingleton<ISchema, ProductsSchema>();
+            serviceCollection.AddSingleton<PropertyTypeEnum>();
+            serviceCollection.AddSingleton<RootQuery>();
+            serviceCollection.AddSingleton<ISchema, RootSchema>();
         }
 
         public void PostInitialize(IApplicationBuilder appBuilder)

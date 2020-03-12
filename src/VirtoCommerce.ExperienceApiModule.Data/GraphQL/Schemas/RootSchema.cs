@@ -4,12 +4,12 @@ using System;
 
 namespace VirtoCommerce.ExperienceApiModule.Data.GraphQL.Schemas
 {
-    public class ProductsSchema : Schema
+    public class RootSchema : Schema
     {
-        public ProductsSchema(IServiceProvider provider)
+        public RootSchema(IServiceProvider provider)
             : base(provider)
         {
-            Query = provider.GetRequiredService<ProductsQuery>();
+            Query = provider.GetRequiredService<RootQuery>();
         }
     }
 }

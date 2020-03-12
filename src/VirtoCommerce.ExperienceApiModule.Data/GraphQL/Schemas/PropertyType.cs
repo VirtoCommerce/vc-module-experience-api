@@ -10,16 +10,15 @@ namespace VirtoCommerce.ExperienceApiModule.Data.GraphQL.Schemas
         public PropertyType()
         {
             Name = "Property";
-            Description = "Products are the sellable goods.";
+            Description = "Products attributes.";
 
             Field(d => d.Id).Description("The unique ID of the product.");
             Field(d => d.Name, nullable: false).Description("The name of the property.");
+            Field<PropertyTypeEnum>("type", "Property type");
             Field<ListGraphType<StringGraphType>>(
                 "values",
                 resolve: context => context.Source.Values.Select(x=> x.ToString())
             );
-        }
-
-       
+        }       
     }
 }
