@@ -1,18 +1,17 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using GraphQL.DataLoader;
 using GraphQL.Types;
+using MediatR;
 using VirtoCommerce.CatalogModule.Core.Model;
-using VirtoCommerce.CatalogModule.Core.Services;
+using VirtoCommerce.ExperienceApiModule.Core.Contracts;
 
 namespace VirtoCommerce.ExperienceApiModule.Data.GraphQL.Schemas
 {
     public class ProductAssociationType : ObjectGraphType<ProductAssociation>
     {
-        public ProductAssociationType(IDataLoaderContextAccessor dataLoader, IItemService productService)
+        public ProductAssociationType(IDataLoaderContextAccessor dataLoader, IMediator mediator)
         {
             Name = "ProductAssociation";
             Description = "product association.";
@@ -27,7 +26,7 @@ namespace VirtoCommerce.ExperienceApiModule.Data.GraphQL.Schemas
                "product",          
                resolve: async context =>
                {
-                   var loader = dataLoader.Context.GetOrAddBatchLoader<string, CatalogProduct>("associatedProductLoader", (ids) => LoadProductsAsync(productService, ids));
+                   var loader = dataLoader.Context.GetOrAddBatchLoader<string, CatalogProduct>("associatedProductLoader", (ids) => LoadProductsAsync(mediator, ids));
 
                     // IMPORTANT: In order to avoid deadlocking on the loader we use the following construct (next 2 lines):
                     var loadHandle = loader.LoadAsync(context.Source.AssociatedObjectId);
@@ -36,10 +35,10 @@ namespace VirtoCommerce.ExperienceApiModule.Data.GraphQL.Schemas
            );
         }
 
-        public static async Task<IDictionary<string, CatalogProduct>> LoadProductsAsync(IItemService productService, IEnumerable<string> ids)
+        public static async Task<IDictionary<string, CatalogProduct>> LoadProductsAsync(IMediator mediator, IEnumerable<string> ids)
         {
-            var products = await productService.GetByIdsAsync(ids.ToArray(), ItemResponseGroup.ItemInfo.ToString());
-            return products.ToDictionary(x => x.Id);
+            var response = await mediator.Send(new LoadProductRequest { Ids = ids.ToArray(), ResponseGroup = ItemResponseGroup.ItemInfo.ToString() });
+            return response.Products.ToDictionary(x => x.Id);
         }
     }
 }

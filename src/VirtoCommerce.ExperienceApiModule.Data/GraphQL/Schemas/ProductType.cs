@@ -15,19 +15,18 @@ using GraphQL.Builders;
 using System;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using GraphQL.Types.Relay.DataObjects;
+using VirtoCommerce.ExperienceApiModule.Core;
+using MediatR;
+using VirtoCommerce.ExperienceApiModule.Core.Contracts;
 
 namespace VirtoCommerce.ExperienceApiModule.Data.GraphQL.Schemas
 {
-    public class ProductType : ObjectGraphType<CatalogProduct>
+    public class ProductType : ObjectGraphType<CatalogProduct2>
     {
-        private readonly IProductAssociationSearchService _associationSearchService;
         public ProductType(
-            IItemService productService,
-            IProductAssociationSearchService associationSearchService,
+            IMediator mediator,
             IDataLoaderContextAccessor dataLoader)
         {
-            _associationSearchService = associationSearchService;
-
             Name = "Product";
             Description = "Products are the sellable goods in an e-commerce project.";
 
@@ -37,6 +36,8 @@ namespace VirtoCommerce.ExperienceApiModule.Data.GraphQL.Schemas
             Field(d => d.Name, nullable: false).Description("The name of the product.");
             Field(d => d.Code, nullable: false).Description("The product SKU.");
             Field(d => d.ImgSrc).Description("The product main image URL.");
+            Field(d => d.Price, nullable: true).Description("The product price");
+            Field(d => d.Currency).Description("The product price currency");
 
 
             FieldAsync<ListGraphType<PropertyType>>(
@@ -47,7 +48,7 @@ namespace VirtoCommerce.ExperienceApiModule.Data.GraphQL.Schemas
                 resolve: async context =>
                 {
                     var propType = context.GetArgument<string>("type");
-                    var loader = dataLoader.Context.GetOrAddCollectionBatchLoader<string, Property>($"propertyLoader{propType}", (ids) => LoadProductsPropertiesAsync(productService, ids, propType));
+                    var loader = dataLoader.Context.GetOrAddCollectionBatchLoader<string, Property>($"propertyLoader{propType}", (ids) => LoadProductsPropertiesAsync(mediator, ids, propType));
 
                     // IMPORTANT: In order to avoid deadlocking on the loader we use the following construct (next 2 lines):
                     var loadHandle = loader.LoadAsync(context.Source.Id);
@@ -63,11 +64,11 @@ namespace VirtoCommerce.ExperienceApiModule.Data.GraphQL.Schemas
               .PageSize(20)
               .ResolveAsync(async context =>
               {
-                  return await ResolveConnectionAsync(_associationSearchService, context);
+                  return await ResolveConnectionAsync(mediator, context);
               });
         }
 
-        private static async Task<object> ResolveConnectionAsync(IProductAssociationSearchService associationSearchService, IResolveConnectionContext<CatalogProduct> context)
+        private static async Task<object> ResolveConnectionAsync(IMediator madiator, IResolveConnectionContext<CatalogProduct> context)
         {
             var first = context.First;
             var skip = Convert.ToInt32(context.After ?? 0.ToString());
@@ -80,10 +81,10 @@ namespace VirtoCommerce.ExperienceApiModule.Data.GraphQL.Schemas
                 Group = context.GetArgument<string>("group"),
                 ObjectIds = new[] { context.Source.Id }
             };
-            var searchResult = await associationSearchService.SearchProductAssociationsAsync(criteria);
+            var response = await madiator.Send(new SearchProductAssociationsRequest { Criteria = criteria });
             return new Connection<ProductAssociation>()
             {
-                Edges = searchResult.Results
+                Edges = response.Result.Results
                     .Select((x, index) =>
                         new Edge<ProductAssociation>()
                         {
@@ -93,19 +94,19 @@ namespace VirtoCommerce.ExperienceApiModule.Data.GraphQL.Schemas
                     .ToList(),
                 PageInfo = new PageInfo()
                 {
-                    HasNextPage = searchResult.TotalCount > (skip + first),
+                    HasNextPage = response.Result.TotalCount > (skip + first),
                     HasPreviousPage = skip > 0,
                     StartCursor = skip.ToString(),
-                    EndCursor = Math.Min(searchResult.TotalCount, (int)(skip + first)).ToString()
+                    EndCursor = Math.Min(response.Result.TotalCount, (int)(skip + first)).ToString()
                 },
-                TotalCount = searchResult.TotalCount,
+                TotalCount = response.Result.TotalCount,
             };
         }
 
-        public static async Task<ILookup<string, Property>> LoadProductsPropertiesAsync(IItemService productService, IEnumerable<string> ids, string type = null)
+        public static async Task<ILookup<string, Property>> LoadProductsPropertiesAsync(IMediator mediator, IEnumerable<string> ids, string type = null)
         {
-            var products = await productService.GetByIdsAsync(ids.ToArray(), ItemResponseGroup.ItemProperties.ToString());
-            return products.SelectMany(x => x.Properties.Where(x=> type == null || x.Type.ToString().EqualsInvariant(type))
+            var response = await mediator.Send(new LoadProductRequest { Ids = ids.ToArray(), ResponseGroup = ItemResponseGroup.ItemProperties.ToString() });
+            return response.Products.SelectMany(x => x.Properties.Where(x=> type == null || x.Type.ToString().EqualsInvariant(type))
                            .Select(p => new { ProductId = x.Id, Property = p }))
                            .ToLookup(x => x.ProductId, x => x.Property);
         }      

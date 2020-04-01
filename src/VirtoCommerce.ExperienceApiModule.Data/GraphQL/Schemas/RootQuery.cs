@@ -1,24 +1,25 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Builders;
 using GraphQL.DataLoader;
 using GraphQL.Types;
 using GraphQL.Types.Relay.DataObjects;
+using MediatR;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
-using VirtoCommerce.CatalogModule.Core.Search;
-using VirtoCommerce.CatalogModule.Core.Services;
-using GraphQL.Authorization;
+using VirtoCommerce.ExperienceApiModule.Core.Contracts;
 
 namespace VirtoCommerce.ExperienceApiModule.Data.GraphQL.Schemas
 {
     public class RootQuery : ObjectGraphType<object>
     {
-        public RootQuery(IItemService productService, IProductSearchService productSearchService, IDataLoaderContextAccessor dataLoader)
+
+        public RootQuery(
+              IMediator mediator
+            , IDataLoaderContextAccessor dataLoader)
         {
             Name = "RootQuery";
 
@@ -29,7 +30,7 @@ namespace VirtoCommerce.ExperienceApiModule.Data.GraphQL.Schemas
                  ),
                 resolve: async context =>
                 {
-                    var loader = dataLoader.Context.GetOrAddBatchLoader<string, CatalogProduct>("productsLoader", (ids) => LoadProductsAsync(productService, ids));
+                    var loader = dataLoader.Context.GetOrAddBatchLoader<string, CatalogProduct>("productsLoader", (ids) => LoadProductsAsync(mediator, ids));
 
                     return await loader.LoadAsync(context.GetArgument<string>("id"));
                 }
@@ -43,19 +44,19 @@ namespace VirtoCommerce.ExperienceApiModule.Data.GraphQL.Schemas
                 .PageSize(20)
                 .ResolveAsync(async context =>
                 {
-                    return await ResolveConnectionAsync(productSearchService, context);
+                    return await ResolveConnectionAsync(mediator, context);
                 });
 
         }
 
-        public static async Task<IDictionary<string, CatalogProduct>> LoadProductsAsync(IItemService productService, IEnumerable<string> ids)
+        public static async Task<IDictionary<string, CatalogProduct>> LoadProductsAsync(IMediator mediator, IEnumerable<string> ids)
         {
-            var products = await productService.GetByIdsAsync(ids.ToArray(), ItemResponseGroup.ItemInfo.ToString());
-            return products.ToDictionary(x => x.Id);
+            var response = await mediator.Send(new LoadProductRequest { Ids = ids.ToArray(), ResponseGroup = ItemResponseGroup.ItemInfo.ToString() });
+            return response.Products.ToDictionary(x => x.Id);
         }
 
 
-        private static async Task<object> ResolveConnectionAsync(IProductSearchService productSearchService, IResolveConnectionContext<object> context)
+        private static async Task<object> ResolveConnectionAsync(IMediator mediator, IResolveConnectionContext<object> context)
         {
             var first = context.First;
             var skip = Convert.ToInt32(context.After ?? 0.ToString());
@@ -67,12 +68,12 @@ namespace VirtoCommerce.ExperienceApiModule.Data.GraphQL.Schemas
                 Keyword = context.GetArgument<string>("query"),
                 CatalogId = context.GetArgument<string>("catalog"),
             };
-            var searchResult = await productSearchService.SearchProductsAsync(criteria);
+            var response = await mediator.Send(new SearchProductRequest { Criteria = criteria });
 
 
             return new Connection<CatalogProduct>()
             {
-                Edges = searchResult.Results
+                Edges = response.Result.Results
                     .Select((x, index) =>
                         new Edge<CatalogProduct>()
                         {
@@ -82,12 +83,12 @@ namespace VirtoCommerce.ExperienceApiModule.Data.GraphQL.Schemas
                     .ToList(),
                 PageInfo = new PageInfo()
                 {
-                    HasNextPage = searchResult.TotalCount > (skip + first),
+                    HasNextPage = response.Result.TotalCount > (skip + first),
                     HasPreviousPage = skip > 0,
                     StartCursor = skip.ToString(),
-                    EndCursor = Math.Min(searchResult.TotalCount, (int)(skip + first)).ToString()
+                    EndCursor = Math.Min(response.Result.TotalCount, (int)(skip + first)).ToString()
                 },
-                TotalCount = searchResult.TotalCount,
+                TotalCount = response.Result.TotalCount,
             };
         }
 

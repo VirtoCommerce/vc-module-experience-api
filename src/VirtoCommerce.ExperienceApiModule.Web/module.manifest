@@ -7,7 +7,8 @@
     <title>Commerce experience API module</title>
     <description></description>
     <dependencies>
-        <dependency id="VirtoCommerce.Catalog" version="3.0.0" />      
+        <dependency id="VirtoCommerce.Catalog" version="3.0.0" />
+        <dependency id="VirtoCommerce.Pricing" version="3.0.0" />
     </dependencies>
     <groups>
         <group>commerce</group>
