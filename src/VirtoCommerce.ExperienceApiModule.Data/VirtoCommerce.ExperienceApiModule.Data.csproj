@@ -8,6 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="AutoMapper" Version="9.0.0" />
         <PackageReference Include="EntityFrameworkCore.Triggers" Version="1.2.2" />
         <PackageReference Include="GraphQL" Version="3.0.0-preview-1490" />
         <PackageReference Include="GraphQL.Relay" Version="0.5.0" />
@@ -28,6 +29,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\PetsStoreClient\PetsStoreClient.csproj" />
       <ProjectReference Include="..\VirtoCommerce.ExperienceApiModule.Core\VirtoCommerce.ExperienceApiModule.Core.csproj" />
     </ItemGroup>
 

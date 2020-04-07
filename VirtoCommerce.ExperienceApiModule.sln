@@ -15,6 +15,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtoCommerce.ExperienceApi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtoCommerce.ExperienceApiModule..Tests", "tests\VirtoCommerce.ExperienceApiModule.Tests\VirtoCommerce.ExperienceApiModule..Tests.csproj", "{A5AF2990-8992-441E-9682-3C333168F162}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PetsStoreClient", "src\PetsStoreClient\PetsStoreClient.csproj", "{4EB8B3AC-C812-4A63-AD81-BE846F2F9C5E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -37,6 +39,10 @@ Global
 		{A5AF2990-8992-441E-9682-3C333168F162}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A5AF2990-8992-441E-9682-3C333168F162}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A5AF2990-8992-441E-9682-3C333168F162}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4EB8B3AC-C812-4A63-AD81-BE846F2F9C5E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4EB8B3AC-C812-4A63-AD81-BE846F2F9C5E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4EB8B3AC-C812-4A63-AD81-BE846F2F9C5E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4EB8B3AC-C812-4A63-AD81-BE846F2F9C5E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -46,6 +52,7 @@ Global
 		{B8D57EA3-A837-4501-9200-074E86D22843} = {FAE6CCF7-298C-4AF3-8044-60DAA0C099F0}
 		{447380B0-EC42-4910-92EB-93B86F490270} = {FAE6CCF7-298C-4AF3-8044-60DAA0C099F0}
 		{A5AF2990-8992-441E-9682-3C333168F162} = {E3929EC9-690B-492A-BF16-6F8FDBBD0D97}
+		{4EB8B3AC-C812-4A63-AD81-BE846F2F9C5E} = {FAE6CCF7-298C-4AF3-8044-60DAA0C099F0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E56E5C53-D55A-451B-96FA-654D86F96658}

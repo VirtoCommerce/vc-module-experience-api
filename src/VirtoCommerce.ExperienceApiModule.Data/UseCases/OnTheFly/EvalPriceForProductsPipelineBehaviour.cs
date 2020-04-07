@@ -6,7 +6,7 @@ using VirtoCommerce.ExperienceApiModule.Core;
 using VirtoCommerce.ExperienceApiModule.Core.Contracts;
 using VirtoCommerce.PricingModule.Core.Services;
 
-namespace VirtoCommerce.ExperienceApiModule.Data.Pipeline
+namespace VirtoCommerce.ExperienceApiModule.Data.UseCases.OnTheFly
 {
     public class EvalPriceForProductsPipelineBehaviour<TRequest, TResponse> : IRequestPostProcessor<TRequest, TResponse>
     {

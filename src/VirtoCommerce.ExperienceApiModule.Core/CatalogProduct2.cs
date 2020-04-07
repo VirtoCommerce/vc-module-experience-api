@@ -6,5 +6,6 @@ namespace VirtoCommerce.ExperienceApiModule.Core
     {
         public decimal? Price { get; set; }
         public string Currency { get; set; }
+        public string DataSource { get; set; }
     }
 }

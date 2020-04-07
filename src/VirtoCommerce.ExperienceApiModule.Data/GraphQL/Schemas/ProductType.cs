@@ -34,10 +34,12 @@ namespace VirtoCommerce.ExperienceApiModule.Data.GraphQL.Schemas
 
             Field(d => d.Id).Description("The unique ID of the product.");
             Field(d => d.Name, nullable: false).Description("The name of the product.");
+            Field(d => d.ProductType, nullable: true).Description("The type of product");
             Field(d => d.Code, nullable: false).Description("The product SKU.");
             Field(d => d.ImgSrc).Description("The product main image URL.");
             Field(d => d.Price, nullable: true).Description("The product price");
             Field(d => d.Currency).Description("The product price currency");
+            Field(d => d.DataSource, nullable: true).Description("The product data source.");
 
 
             FieldAsync<ListGraphType<PropertyType>>(
