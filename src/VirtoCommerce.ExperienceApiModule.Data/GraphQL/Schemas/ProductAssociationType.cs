@@ -2,10 +2,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GraphQL.DataLoader;
+using GraphQL.Resolvers;
 using GraphQL.Types;
 using MediatR;
 using VirtoCommerce.CatalogModule.Core.Model;
-using VirtoCommerce.ExperienceApiModule.Core.Contracts;
+using VirtoCommerce.ExperienceApiModule.Core.Requests;
+using VirtoCommerce.ExperienceApiModule.GraphQLEx;
 
 namespace VirtoCommerce.ExperienceApiModule.Data.GraphQL.Schemas
 {
@@ -22,17 +24,20 @@ namespace VirtoCommerce.ExperienceApiModule.Data.GraphQL.Schemas
             Field(d => d.AssociatedObjectId);
             Field(d => d.AssociatedObjectType);
 
-            FieldAsync<ProductType>(
-               "product",          
-               resolve: async context =>
-               {
-                   var loader = dataLoader.Context.GetOrAddBatchLoader<string, CatalogProduct>("associatedProductLoader", (ids) => LoadProductsAsync(mediator, ids));
+            var productField = new FieldType
+            {
+                Name = "product",
+                Type = GraphTypeExtenstionHelper.GetActualType<ProductType>(),
+                Resolver = new AsyncFieldResolver<ProductAssociation, object>(async context =>
+                {
+                    var loader = dataLoader.Context.GetOrAddBatchLoader<string, CatalogProduct>("associatedProductLoader", (ids) => LoadProductsAsync(mediator, ids));
 
                     // IMPORTANT: In order to avoid deadlocking on the loader we use the following construct (next 2 lines):
                     var loadHandle = loader.LoadAsync(context.Source.AssociatedObjectId);
-                   return await loadHandle;
-               }
-           );
+                    return await loadHandle;
+                })
+            };
+            AddField(productField);           
         }
 
         public static async Task<IDictionary<string, CatalogProduct>> LoadProductsAsync(IMediator mediator, IEnumerable<string> ids)

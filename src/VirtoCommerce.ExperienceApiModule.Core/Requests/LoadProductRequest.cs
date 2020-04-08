@@ -1,6 +1,6 @@
 using MediatR;
 
-namespace VirtoCommerce.ExperienceApiModule.Core.Contracts
+namespace VirtoCommerce.ExperienceApiModule.Core.Requests
 {
     public class LoadProductRequest : IRequest<LoadProductResponse>
     {

@@ -4,10 +4,9 @@ using PetsStoreClient;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
-using VirtoCommerce.ExperienceApiModule.Core;
 using VirtoCommerce.Platform.Core.Common;
 
-namespace VirtoCommerce.ExperienceApiModule.Data.Handlers
+namespace VirtoCommerce.ExperienceApiModule.Extension.ReplaceDataSource
 {
     public class PetsProductSearchService : IProductSearchService
     {
@@ -40,7 +39,7 @@ namespace VirtoCommerce.ExperienceApiModule.Data.Handlers
             petProduct.Id = pet.Id.ToString();
             petProduct.Name = pet.Name;
             petProduct.ProductType = "Pet";
-            petProduct.DataSource = "PetStore";
+            petProduct.OuterId = "PetStore";
             return petProduct;
         }
     }

@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using MediatR;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.Core;
-using VirtoCommerce.ExperienceApiModule.Core.Contracts;
+using VirtoCommerce.ExperienceApiModule.Core.Requests;
 
 namespace VirtoCommerce.ExperienceApiModule.Data.Handlers
 {
@@ -19,9 +19,9 @@ namespace VirtoCommerce.ExperienceApiModule.Data.Handlers
         public virtual async Task<LoadProductResponse> Handle(LoadProductRequest request, CancellationToken cancellationToken)
         {
             var products = await _itemService.GetByIdsAsync(request.Ids, request.ResponseGroup);
-            foreach(var product in products.OfType<CatalogProduct2>())
+            foreach(var product in products)
             {
-                product.DataSource = "Virto";
+                product.OuterId = "Virto";
             }
             return new LoadProductResponse { Products  = products };
         }

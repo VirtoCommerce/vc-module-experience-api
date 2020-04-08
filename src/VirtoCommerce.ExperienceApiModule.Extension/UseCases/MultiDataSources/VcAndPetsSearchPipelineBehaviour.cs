@@ -6,11 +6,10 @@ using System.Threading.Tasks;
 using MediatR.Pipeline;
 using PetsStoreClient;
 using VirtoCommerce.CatalogModule.Core.Model;
-using VirtoCommerce.ExperienceApiModule.Core;
-using VirtoCommerce.ExperienceApiModule.Core.Contracts;
+using VirtoCommerce.ExperienceApiModule.Core.Requests;
 using VirtoCommerce.Platform.Core.Common;
 
-namespace VirtoCommerce.ExperienceApiModule.Data.UseCases.OnTheFly
+namespace VirtoCommerce.ExperienceApiModule.Extension.UseCases.OnTheFly
 {
     public class VcAndPetsSearchPipelineBehaviour<TRequest, TResponse> : IRequestPostProcessor<TRequest, TResponse>
     {
@@ -72,7 +71,7 @@ namespace VirtoCommerce.ExperienceApiModule.Data.UseCases.OnTheFly
             petProduct.Id = pet.Id.ToString();
             petProduct.Name = pet.Name;
             petProduct.ProductType = "Pet";
-            petProduct.DataSource = "PetStore";
+            petProduct.OuterId = "PetStore";
             return petProduct;
         }
     }

@@ -2,11 +2,10 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR.Pipeline;
-using VirtoCommerce.ExperienceApiModule.Core;
-using VirtoCommerce.ExperienceApiModule.Core.Contracts;
+using VirtoCommerce.ExperienceApiModule.Core.Requests;
 using VirtoCommerce.PricingModule.Core.Services;
 
-namespace VirtoCommerce.ExperienceApiModule.Data.UseCases.OnTheFly
+namespace VirtoCommerce.ExperienceApiModule.Extension.UseCases.OnTheFly
 {
     public class EvalPriceForProductsPipelineBehaviour<TRequest, TResponse> : IRequestPostProcessor<TRequest, TResponse>
     {

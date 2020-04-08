@@ -17,11 +17,11 @@ using VirtoCommerce.CatalogModule.Core.Model.Search;
 using GraphQL.Types.Relay.DataObjects;
 using VirtoCommerce.ExperienceApiModule.Core;
 using MediatR;
-using VirtoCommerce.ExperienceApiModule.Core.Contracts;
+using VirtoCommerce.ExperienceApiModule.Core.Requests;
 
 namespace VirtoCommerce.ExperienceApiModule.Data.GraphQL.Schemas
 {
-    public class ProductType : ObjectGraphType<CatalogProduct2>
+    public class ProductType : ObjectGraphType<CatalogProduct>
     {
         public ProductType(
             IMediator mediator,
@@ -37,10 +37,7 @@ namespace VirtoCommerce.ExperienceApiModule.Data.GraphQL.Schemas
             Field(d => d.ProductType, nullable: true).Description("The type of product");
             Field(d => d.Code, nullable: false).Description("The product SKU.");
             Field(d => d.ImgSrc).Description("The product main image URL.");
-            Field(d => d.Price, nullable: true).Description("The product price");
-            Field(d => d.Currency).Description("The product price currency");
-            Field(d => d.DataSource, nullable: true).Description("The product data source.");
-
+            Field(d => d.OuterId).Description("The outer identifier");
 
             FieldAsync<ListGraphType<PropertyType>>(
                 "properties",

@@ -1,6 +1,6 @@
 using VirtoCommerce.CatalogModule.Core.Model;
 
-namespace VirtoCommerce.ExperienceApiModule.Core
+namespace VirtoCommerce.ExperienceApiModule.Extension
 {
     public class CatalogProduct2 : CatalogProduct
     {

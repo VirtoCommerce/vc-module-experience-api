@@ -5,47 +5,57 @@ using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Builders;
 using GraphQL.DataLoader;
+using GraphQL.Resolvers;
 using GraphQL.Types;
 using GraphQL.Types.Relay.DataObjects;
 using MediatR;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
-using VirtoCommerce.ExperienceApiModule.Core.Contracts;
+using VirtoCommerce.ExperienceApiModule.Core.Requests;
+using VirtoCommerce.ExperienceApiModule.GraphQLEx;
 
 namespace VirtoCommerce.ExperienceApiModule.Data.GraphQL.Schemas
 {
-    public class RootQuery : ObjectGraphType<object>
+    public class ProductQuery : ISchemaBuilder
     {
-
-        public RootQuery(
-              IMediator mediator
-            , IDataLoaderContextAccessor dataLoader)
+        private readonly IMediator _mediator;
+        private readonly IDataLoaderContextAccessor _dataLoader;
+        public ProductQuery(IMediator mediator, IDataLoaderContextAccessor dataLoader)
         {
-            Name = "RootQuery";
-
-            FieldAsync<ProductType>(
-                 "product",
-                 arguments: new QueryArguments(
-                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id", Description = "id of the product" }
-                 ),
-                resolve: async context =>
+            _mediator = mediator;
+            _dataLoader = dataLoader;
+        }
+        public void Build(ISchema schema)
+        {
+            var productField = new FieldType
+            {
+                Name = "product",
+                Arguments = new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id", Description = "id of the product" }),
+                Type = GraphTypeExtenstionHelper.GetActualType<ProductType>(),
+                Resolver = new AsyncFieldResolver<object>(async context =>
                 {
-                    var loader = dataLoader.Context.GetOrAddBatchLoader<string, CatalogProduct>("productsLoader", (ids) => LoadProductsAsync(mediator, ids));
-
+                    var loader = _dataLoader.Context.GetOrAddBatchLoader<string, CatalogProduct>("productsLoader", (ids) => LoadProductsAsync(_mediator, ids));
                     return await loader.LoadAsync(context.GetArgument<string>("id"));
-                }
-             );
+                })
+            };
+            schema.Query.AddField(productField);
 
-            Connection<ProductType>()
+
+
+            var productsConnectionBuilder = ConnectionBuilderExt.Create<ProductType, object>()
                 .Name("products")
                 .Argument<StringGraphType>("query", "the search phrase")
                 .Argument<StringGraphType>("catalog", "the catalog id")
                 .Unidirectional()
-                .PageSize(20)
-                .ResolveAsync(async context =>
+                .PageSize(20);
+
+            productsConnectionBuilder.ResolveAsync(async context =>
                 {
-                    return await ResolveConnectionAsync(mediator, context);
+                    return await ResolveConnectionAsync(_mediator, context);
                 });
+
+
+            schema.Query.AddField(productsConnectionBuilder.FieldType);
 
         }
 
@@ -91,6 +101,5 @@ namespace VirtoCommerce.ExperienceApiModule.Data.GraphQL.Schemas
                 TotalCount = response.Result.TotalCount,
             };
         }
-
     }
 }

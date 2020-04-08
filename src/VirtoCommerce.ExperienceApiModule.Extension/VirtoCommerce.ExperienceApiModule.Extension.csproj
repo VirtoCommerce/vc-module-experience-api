@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <noWarn>1591</noWarn>
+        <Description></Description>
+        <IsPackable>True</IsPackable>
+    </PropertyGroup>
+    
+    <ItemGroup>
+        <ProjectReference Include="..\VirtoCommerce.ExperienceApiModule.Core\VirtoCommerce.ExperienceApiModule.Core.csproj" />
+        <ProjectReference Include="..\VirtoCommerce.ExperienceApiModule.Data\VirtoCommerce.ExperienceApiModule.Data.csproj" />
+        <ProjectReference Include="..\VirtoCommerce.ExperienceApiModule.GraphQL\VirtoCommerce.ExperienceApiModule.GraphQL.csproj" />
+    </ItemGroup>
+
+</Project>

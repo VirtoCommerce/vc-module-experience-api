@@ -1,10 +1,8 @@
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using VirtoCommerce.CatalogModule.Core.Search;
-using VirtoCommerce.ExperienceApiModule.Core;
-using VirtoCommerce.ExperienceApiModule.Core.Contracts;
+using VirtoCommerce.ExperienceApiModule.Core.Requests;
 
 namespace VirtoCommerce.ExperienceApiModule.Data.Handlers
 {
@@ -19,9 +17,9 @@ namespace VirtoCommerce.ExperienceApiModule.Data.Handlers
         public virtual async Task<SearchProductResponse> Handle(SearchProductRequest request, CancellationToken cancellationToken)
         {
             var result = await _searchService.SearchProductsAsync(request.Criteria);
-            foreach (var product in result.Results.OfType<CatalogProduct2>())
+            foreach (var product in result.Results)
             {
-                product.DataSource = "Virto";
+                product.OuterId = "Virto";
             }
             return new SearchProductResponse {  Result = result };
         }
