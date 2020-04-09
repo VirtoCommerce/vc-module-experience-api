@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtoCommerce.ExperienceApi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtoCommerce.ExperienceApiModule.Web", "src\VirtoCommerce.ExperienceApiModule.Web\VirtoCommerce.ExperienceApiModule.Web.csproj", "{447380B0-EC42-4910-92EB-93B86F490270}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtoCommerce.ExperienceApiModule..Tests", "tests\VirtoCommerce.ExperienceApiModule.Tests\VirtoCommerce.ExperienceApiModule..Tests.csproj", "{A5AF2990-8992-441E-9682-3C333168F162}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtoCommerce.ExperienceApiModule.Tests", "tests\VirtoCommerce.ExperienceApiModule.Tests\VirtoCommerce.ExperienceApiModule.Tests.csproj", "{A5AF2990-8992-441E-9682-3C333168F162}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PetsStoreClient", "src\PetsStoreClient\PetsStoreClient.csproj", "{4EB8B3AC-C812-4A63-AD81-BE846F2F9C5E}"
 EndProject

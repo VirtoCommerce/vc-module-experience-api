@@ -8,7 +8,7 @@ using Xunit;
 
 namespace VirtoCommerce.ExportModule.Tests
 {
-    public class CsvExportProviderTests
+    public class GraphQLTypeOverrideTests
     {
         public class Foo
         {

@@ -1,5 +1,6 @@
 using System;
 using AutoMapper;
+using GraphQL.Server;
 using GraphQL.Types;
 using MediatR;
 using MediatR.Pipeline;
@@ -8,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using PetsStoreClient;
 using PetsStoreClient.Nswag;
 using VirtoCommerce.CatalogModule.Core.Model;
+using VirtoCommerce.ExperienceApiModule.Data.GraphQL;
 using VirtoCommerce.ExperienceApiModule.Data.Handlers;
 using VirtoCommerce.ExperienceApiModule.Data.Pipeline;
 using VirtoCommerce.ExperienceApiModule.Extension;
@@ -23,28 +25,36 @@ namespace VirtoCommerce.ExperienceApiModule.Web
     {
         public ManifestModuleInfo ModuleInfo { get; set; }
 
-        public void Initialize(IServiceCollection serviceCollection)
+        public void Initialize(IServiceCollection services)
         {
 
-            serviceCollection.AddMediatR(typeof(HandlersAnchor));
+            services.AddMediatR(typeof(HandlersAnchor));
 
-            serviceCollection.AddSingleton(typeof(IPipelineBehavior<,>), typeof(LogPipelineBehaviour<,>));
-            serviceCollection.AddSingleton(typeof(IPipelineBehavior<,>), typeof(RequestExceptionProcessorBehavior<,>));
+            services.AddSingleton(typeof(IPipelineBehavior<,>), typeof(LogPipelineBehaviour<,>));
+            services.AddSingleton(typeof(IPipelineBehavior<,>), typeof(RequestExceptionProcessorBehavior<,>));
             //serviceCollection.AddSingleton(typeof(IRequestPreProcessor<>), typeof(GenericRequestPreProcessor<>));
-
-           
-
-            serviceCollection.AddSingleton<schema.ProductAssociationType>();
-            serviceCollection.AddSingleton<schema.PropertyType>();
-            serviceCollection.AddSingleton<schema.ProductType>();
-            serviceCollection.AddSingleton<schema.PropertyTypeEnum>();
-            serviceCollection.AddSingleton<ISchemaBuilder, schema.ProductQuery>();
-
-            serviceCollection.AddTransient<IPetsSearchService, PetsSearchService>();
-            serviceCollection.AddHttpClient<PetstoreClient>(c => c.BaseAddress = new Uri("http://petstore.swagger.io/v2/"));
+                      
+            services.AddTransient<IPetsSearchService, PetsSearchService>();
+            services.AddHttpClient<PetstoreClient>(c => c.BaseAddress = new Uri("http://petstore.swagger.io/v2/"));
 
             //Discover the assembly and  register all mapping profiles through reflection
-            serviceCollection.AddAutoMapper(typeof(AnchorType));
+            services.AddAutoMapper(typeof(AnchorType));
+
+
+            //Register .NET GraphQL server
+            services.AddGraphQL(_ =>
+            {
+                _.EnableMetrics = true;
+                _.ExposeExceptions = true;
+                _.ExposeExceptions = true;
+            }).AddNewtonsoftJson(deserializerSettings => { }, serializerSettings => { })
+            .AddUserContextBuilder(context => new GraphQLUserContext { User = context.User })
+            .AddRelayGraphTypes()
+            .AddGraphTypes(typeof(SchemaAnchor))
+            .AddDataLoader()
+            .AddPermissionAuthorization()
+            .AddGraphShemaBuilders(typeof(SchemaAnchor));
+
 
             #region Extension scenarios
 
@@ -53,26 +63,25 @@ namespace VirtoCommerce.ExperienceApiModule.Web
             AbstractTypeFactory<CatalogProduct>.OverrideType<CatalogProduct, CatalogProduct2>();
 
             //Override GraphType  ProductType -> ProductType2
-            serviceCollection.AddSingleton<ProductType2>();
+            services.AddSingleton<ProductType2>();
             GraphTypeExtenstionHelper.OverrideGraphType<schema.ProductType, ProductType2>();
             #endregion
 
             #region UseCase OnTheFlyEvaluation: evaluate product prices on the fly 
-            serviceCollection.AddSingleton(typeof(IRequestPostProcessor<,>), typeof(EvalPriceForProductsPipelineBehaviour<,>));
+            services.AddSingleton(typeof(IRequestPostProcessor<,>), typeof(EvalPriceForProductsPipelineBehaviour<,>));
             #endregion
 
             #region  UseCase CombinedDataSource: paginating data from multiple sources (VC catalog and Pets store)
-            serviceCollection.AddSingleton(typeof(IRequestPostProcessor<,>), typeof(VcAndPetsSearchPipelineBehaviour<,>));
+            services.AddSingleton(typeof(IRequestPostProcessor<,>), typeof(VcAndPetsSearchPipelineBehaviour<,>));
             #endregion
 
             #region UseCase DataSourceSubstitution: replace data source to another
             //serviceCollection.AddSingleton<IProductSearchService, PetsProductSearchService>();
-            #endregion 
+            #endregion
             #endregion
 
 
-            //register GrapQL server with required dependencies
-            serviceCollection.AddGraphQLServer();
+
         }
 
         public void PostInitialize(IApplicationBuilder appBuilder)
