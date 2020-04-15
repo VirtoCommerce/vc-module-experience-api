@@ -38,22 +38,24 @@ namespace VirtoCommerce.ExperienceApiModule.Data.GraphQL.Schemas
             Field(d => d.Code, nullable: false).Description("The product SKU.");
             Field(d => d.ImgSrc).Description("The product main image URL.");
             Field(d => d.OuterId).Description("The outer identifier");
+            Field<ListGraphType<PropertyType>>("properties", resolve: context => context.Source.Properties);
+          
 
-            FieldAsync<ListGraphType<PropertyType>>(
-                "properties",
-                 arguments: new QueryArguments(
-                     new QueryArgument<StringGraphType> { Name = "type", Description = "the type of properties" }
-                ),
-                resolve: async context =>
-                {
-                    var propType = context.GetArgument<string>("type");
-                    var loader = dataLoader.Context.GetOrAddCollectionBatchLoader<string, Property>($"propertyLoader{propType}", (ids) => LoadProductsPropertiesAsync(mediator, ids, propType));
+            //FieldAsync<ListGraphType<PropertyType>>(
+            //    "properties",
+            //     arguments: new QueryArguments(
+            //         new QueryArgument<StringGraphType> { Name = "type", Description = "the type of properties" }
+            //    ),
+            //    resolve: async context =>
+            //    {
+            //        var propType = context.GetArgument<string>("type");
+            //        var loader = dataLoader.Context.GetOrAddCollectionBatchLoader<string, Property>($"propertyLoader{propType}", (ids) => LoadProductsPropertiesAsync(mediator, ids, propType));
 
-                    // IMPORTANT: In order to avoid deadlocking on the loader we use the following construct (next 2 lines):
-                    var loadHandle = loader.LoadAsync(context.Source.Id);
-                    return await loadHandle;
-                }
-            );
+            //        // IMPORTANT: In order to avoid deadlocking on the loader we use the following construct (next 2 lines):
+            //        var loadHandle = loader.LoadAsync(context.Source.Id);
+            //        return await loadHandle;
+            //    }
+            //);
 
             Connection<ProductAssociationType>()
               .Name("associations")

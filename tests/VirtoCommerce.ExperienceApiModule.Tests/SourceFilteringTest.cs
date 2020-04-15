@@ -30,11 +30,12 @@ namespace VirtoCommerce.ExperienceApiModule.SourceFilteringTest.Tests
             var client = new ElasticClient(settings);
             var searchResponse = client.Search<SearchDocument>(s => s.From(0)
                                                                     .Size(10)
-                                                                    .Source(src => src.Includes(i => i.Field("__object"))));
+                                                                    .Source(src => src.Includes(i => i.Field("product_src"))));
             var products = new List<CatalogProduct>();
-            foreach(var doc in searchResponse.Documents)
+            foreach (var doc in searchResponse.Documents)
             {
-                var jsonString = doc["__object"].ToString();
+
+                var jsonString = JsonConvert.SerializeObject(doc["product_src"]);
                 var product = JsonConvert.DeserializeObject<CatalogProduct>(jsonString);
                 products.Add(product);
 

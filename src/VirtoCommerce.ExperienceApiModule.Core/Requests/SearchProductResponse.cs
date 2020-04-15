@@ -4,6 +4,6 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Requests
 {
     public class SearchProductResponse 
     {
-        public ProductSearchResult Result;
+        public ProductSearchResult Result { get; set; } = new ProductSearchResult();
     }
 }

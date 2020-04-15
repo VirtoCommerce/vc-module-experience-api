@@ -11,6 +11,7 @@ using GraphQL.Types.Relay.DataObjects;
 using MediatR;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
+using VirtoCommerce.ExperienceApiModule.Core;
 using VirtoCommerce.ExperienceApiModule.Core.Requests;
 using VirtoCommerce.ExperienceApiModule.GraphQLEx;
 
@@ -34,7 +35,8 @@ namespace VirtoCommerce.ExperienceApiModule.Data.GraphQL.Schemas
                 Type = GraphTypeExtenstionHelper.GetActualType<ProductType>(),
                 Resolver = new AsyncFieldResolver<object>(async context =>
                 {
-                    var loader = _dataLoader.Context.GetOrAddBatchLoader<string, CatalogProduct>("productsLoader", (ids) => LoadProductsAsync(_mediator, ids));
+                    
+                    var loader = _dataLoader.Context.GetOrAddBatchLoader<string, CatalogProduct>("productsLoader", (ids) => LoadProductsAsync(_mediator, ids, context.SubFields.Values.GetAllNodesPaths()));
                     return await loader.LoadAsync(context.GetArgument<string>("id"));
                 })
             };
@@ -59,9 +61,9 @@ namespace VirtoCommerce.ExperienceApiModule.Data.GraphQL.Schemas
 
         }
 
-        public static async Task<IDictionary<string, CatalogProduct>> LoadProductsAsync(IMediator mediator, IEnumerable<string> ids)
+        public static async Task<IDictionary<string, CatalogProduct>> LoadProductsAsync(IMediator mediator, IEnumerable<string> ids, IEnumerable<string> includeFields)
         {
-            var response = await mediator.Send(new LoadProductRequest { Ids = ids.ToArray(), ResponseGroup = ItemResponseGroup.ItemInfo.ToString() });
+            var response = await mediator.Send(new LoadProductRequest { Ids = ids.ToArray(), ResponseGroup = ItemResponseGroup.ItemInfo.ToString(), IncludeFields = includeFields });
             return response.Products.ToDictionary(x => x.Id);
         }
 
@@ -78,7 +80,8 @@ namespace VirtoCommerce.ExperienceApiModule.Data.GraphQL.Schemas
                 Keyword = context.GetArgument<string>("query"),
                 CatalogId = context.GetArgument<string>("catalog"),
             };
-            var response = await mediator.Send(new SearchProductRequest { Criteria = criteria });
+            var includeFields = context.SubFields.Values.GetAllNodesPaths().Select(x => x.TrimStart("items.")).ToArray();
+            var response = await mediator.Send(new SearchProductRequest { Criteria = criteria, IncludeFields = includeFields });
 
 
             return new Connection<CatalogProduct>()

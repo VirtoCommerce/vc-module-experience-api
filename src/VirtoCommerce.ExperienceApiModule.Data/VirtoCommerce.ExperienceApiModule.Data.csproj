@@ -23,6 +23,7 @@
         <PackageReference Include="VirtoCommerce.PricingModule.Core" Version="3.0.0-rc.4" />
         <PackageReference Include="VirtoCommerce.CatalogModule.Core" Version="3.0.0-rc.4" />
         <PackageReference Include="VirtoCommerce.Platform.Core" Version="3.0.0-rc4" />
+        <PackageReference Include="VirtoCommerce.SearchModule.Core" Version="3.0.0-rc3" />
     </ItemGroup>
 
     <ItemGroup>

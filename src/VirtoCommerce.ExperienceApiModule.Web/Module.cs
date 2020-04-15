@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using AutoMapper;
 using GraphQL.Server;
 using GraphQL.Types;
@@ -11,6 +13,7 @@ using PetsStoreClient.Nswag;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.Data.GraphQL;
 using VirtoCommerce.ExperienceApiModule.Data.Handlers;
+using VirtoCommerce.ExperienceApiModule.Data.Index;
 using VirtoCommerce.ExperienceApiModule.Data.Pipeline;
 using VirtoCommerce.ExperienceApiModule.Extension;
 using VirtoCommerce.ExperienceApiModule.Extension.GraphQL.Schemas;
@@ -18,6 +21,7 @@ using VirtoCommerce.ExperienceApiModule.Extension.UseCases.OnTheFly;
 using VirtoCommerce.ExperienceApiModule.GraphQLEx;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Modularity;
+using VirtoCommerce.SearchModule.Core.Model;
 using schema = VirtoCommerce.ExperienceApiModule.Data.GraphQL.Schemas;
 namespace VirtoCommerce.ExperienceApiModule.Web
 {
@@ -80,7 +84,7 @@ namespace VirtoCommerce.ExperienceApiModule.Web
             #endregion
             #endregion
 
-
+            services.AddTransient<ProductIndexBuilder>();
 
         }
 
@@ -92,6 +96,30 @@ namespace VirtoCommerce.ExperienceApiModule.Web
 
             // use graphql-playground at default url /ui/playground
             appBuilder.UseGraphQLPlayground();
+
+            //Register product availability indexation 
+            #region Search
+
+            var productIndexingConfigurations = appBuilder.ApplicationServices.GetServices<IndexDocumentConfiguration>();
+            if (productIndexingConfigurations != null)
+            {
+                var nestedProductDocSource = new IndexDocumentSource
+                {
+                    DocumentBuilder = appBuilder.ApplicationServices.GetService<ProductIndexBuilder>(),
+                    ChangesProvider = new DocumentChangesProviderStub()
+                };
+
+                foreach (var configuration in productIndexingConfigurations.Where(c => c.DocumentType == KnownDocumentTypes.Product))
+                {
+                    if (configuration.RelatedSources == null)
+                    {
+                        configuration.RelatedSources = new List<IndexDocumentSource>();
+                    }
+                    configuration.RelatedSources.Add(nestedProductDocSource);                   
+                }
+            }
+
+            #endregion
 
         }
 
