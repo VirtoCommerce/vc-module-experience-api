@@ -37,7 +37,7 @@ namespace VirtoCommerce.ExperienceApiModule.Data.GraphQL.Schemas
             Field(d => d.ProductType, nullable: true).Description("The type of product");
             Field(d => d.Code, nullable: false).Description("The product SKU.");
             Field(d => d.ImgSrc).Description("The product main image URL.");
-            Field(d => d.OuterId).Description("The outer identifier");
+            Field(d => d.OuterId, nullable: true).Description("The outer identifier");
             Field<ListGraphType<PropertyType>>("properties", resolve: context => context.Source.Properties);
           
 
@@ -77,7 +77,9 @@ namespace VirtoCommerce.ExperienceApiModule.Data.GraphQL.Schemas
             {
                 Skip = skip,
                 Take = first ?? context.PageSize ?? 10,
-                ResponseGroup = ItemResponseGroup.ItemInfo.ToString(),
+                // We control the resulting product structure  by passing IncludeFields, and to prevent forced reduction of already loaded fields, you need to pass ItemResponseGroup.Full
+                // in any case, the object will be loaded from the index, and the response group will not affect overall performance
+                ResponseGroup = ItemResponseGroup.Full.ToString(),
                 Keyword = context.GetArgument<string>("query"),
                 Group = context.GetArgument<string>("group"),
                 ObjectIds = new[] { context.Source.Id }

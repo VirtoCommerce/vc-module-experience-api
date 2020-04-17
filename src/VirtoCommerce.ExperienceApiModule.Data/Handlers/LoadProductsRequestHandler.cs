@@ -1,40 +1,35 @@
-using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Nest;
-using Newtonsoft.Json;
-using VirtoCommerce.CatalogModule.Core.Model;
-using VirtoCommerce.CatalogModule.Core.Services;
-using VirtoCommerce.ExperienceApiModule.Core;
+using VirtoCommerce.CatalogModule.Core.Model.Search;
+using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.ExperienceApiModule.Core.Requests;
-using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.SearchModule.Core.Model;
 
 namespace VirtoCommerce.ExperienceApiModule.Data.Handlers
 {
     public class LoadProductsRequestHandler : IRequestHandler<LoadProductRequest, LoadProductResponse>
     {
-        private readonly ElasticClient _client;
-        public LoadProductsRequestHandler()
+        private readonly IProductIndexedSearchService _productIndexedSearchService;
+        public LoadProductsRequestHandler(IProductIndexedSearchService productIndexedSearchService)
         {
-            var settings = new ConnectionSettings(new Uri("http://localhost:9200")).DefaultIndex("default-product");
-            _client = new ElasticClient(settings);
+            _productIndexedSearchService = productIndexedSearchService;
         }
 
         public virtual async Task<LoadProductResponse> Handle(LoadProductRequest request, CancellationToken cancellationToken)
         {
             var result = new LoadProductResponse();
-            var searchResponse = _client.Search<SearchDocument>(s => s.Query(q => q.Ids(c => c.Values(request.Ids))).Source(src => src.Includes(i => i.Fields(request.IncludeFields.Select(x=> "product_src." + x).ToArray()))));
-            foreach (var doc in searchResponse.Documents)
-            {
-                var jsonString = JsonConvert.SerializeObject(doc["product_src"]);
-                var product = JsonConvert.DeserializeObject(jsonString, AbstractTypeFactory<CatalogProduct>.TryCreateInstance().GetType()) as CatalogProduct;
-                result.Products.Add(product);
-                product.OuterId = "Virto";
-            }
-            return result;
+            var criteria = new ProductIndexedSearchCriteria
+            {                
+                ObjectIds = request.Ids,
+                IncludeFields = request.IncludeFields.Select(x => "__object." + x).ToArray(),
+                Take = request.Ids.Count()
+            };
+            var searchResult = await _productIndexedSearchService.SearchAsync(criteria);
+            result.Products = searchResult.Items.ToList();
+
+           return result;
         }
     }
 }
