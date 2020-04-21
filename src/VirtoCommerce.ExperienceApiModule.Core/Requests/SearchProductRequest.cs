@@ -1,14 +1,22 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using MediatR;
-using VirtoCommerce.CatalogModule.Core.Model.Search;
 
 namespace VirtoCommerce.ExperienceApiModule.Core.Requests
 {
     public class SearchProductRequest : IRequest<SearchProductResponse>, IHasIncludeFields
     {
-        public ProductIndexedSearchCriteria Criteria { get; set; }
-        public IEnumerable<string> IncludeFields { get => Criteria?.IncludeFields; set => Criteria.IncludeFields = value?.ToArray(); }
+        //
+        // Summary:
+        //     Term format: name:value1,value2
+        public IList<string> Terms { get; set; }
+        public string CatalogId { get; set; }
+        public IList<string> ObjectIds { get; set; }
+        public string Keyword { get; set; }
+        public string LanguageCode { get; set; }
+        public string Sort { get; set; }
+        public int Skip { get; set; }
+        public int Take { get; set; }
+        public IEnumerable<string> IncludeFields { get; set; } = Array.Empty<string>();
     }
 }

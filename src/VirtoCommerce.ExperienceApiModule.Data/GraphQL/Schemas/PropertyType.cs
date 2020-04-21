@@ -1,5 +1,4 @@
 using System.Linq;
-using GraphQL.Relay.Types;
 using GraphQL.Types;
 using VirtoCommerce.CatalogModule.Core.Model;
 

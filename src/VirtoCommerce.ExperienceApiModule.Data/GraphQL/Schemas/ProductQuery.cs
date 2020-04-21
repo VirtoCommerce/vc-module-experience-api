@@ -10,7 +10,6 @@ using GraphQL.Types;
 using GraphQL.Types.Relay.DataObjects;
 using MediatR;
 using VirtoCommerce.CatalogModule.Core.Model;
-using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.ExperienceApiModule.Core;
 using VirtoCommerce.ExperienceApiModule.Core.Requests;
 using VirtoCommerce.ExperienceApiModule.GraphQLEx;
@@ -49,6 +48,7 @@ namespace VirtoCommerce.ExperienceApiModule.Data.GraphQL.Schemas
                 .Argument<StringGraphType>("query", "the search phrase")
                 .Argument<StringGraphType>("catalog", "the catalog id")
                 .Argument<ListGraphType<StringGraphType>>("terms", "search terms")
+                .Argument<StringGraphType>("sort", "sort expression")
                 .Unidirectional()
                 .PageSize(20);
 
@@ -74,20 +74,18 @@ namespace VirtoCommerce.ExperienceApiModule.Data.GraphQL.Schemas
             var first = context.First;
             var skip = Convert.ToInt32(context.After ?? 0.ToString());
             var includeFields = context.SubFields.Values.GetAllNodesPaths().Select(x => x.TrimStart("items.")).ToArray();
-            var criteria = new ProductIndexedSearchCriteria
+            var request = new SearchProductRequest
             {
                 Skip = skip,
                 Take = first ?? context.PageSize ?? 10,
-                // We control the resulting product structure  by passing IncludeFields, and to prevent forced reduction of already loaded fields, you need to pass ItemResponseGroup.Full
-                // in any case, the object will be loaded from the index, and the response group will not affect overall performance
-                ResponseGroup = ItemResponseGroup.Full.ToString(),
                 Keyword = context.GetArgument<string>("query"),
                 CatalogId = context.GetArgument<string>("catalog"),
                 Terms = context.GetArgument<List<string>>("terms"),
-                IncludeFields = includeFields.Select(x => "__object." + x).ToArray(),
+                Sort = context.GetArgument<string>("sort"),
+                IncludeFields = includeFields.ToArray(),
             };
           
-            var response = await mediator.Send(new SearchProductRequest { Criteria = criteria });
+            var response = await mediator.Send(request);
 
 
             return new Connection<CatalogProduct>()

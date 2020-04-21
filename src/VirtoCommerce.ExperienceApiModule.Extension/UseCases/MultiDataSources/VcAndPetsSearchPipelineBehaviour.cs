@@ -44,14 +44,14 @@ namespace VirtoCommerce.ExperienceApiModule.Extension.UseCases.OnTheFly
                 var searchProductResult = searchProductResponse.Result;
 
                 var totalCount = searchProductResult.TotalCount;
-                var skip = Math.Min(totalCount, searchProductRequest.Criteria.Skip);
-                var take = Math.Min(searchProductRequest.Criteria.Take, Math.Max(0, totalCount - searchProductRequest.Criteria.Skip));
+                var skip = Math.Min(totalCount, searchProductRequest.Skip);
+                var take = Math.Min(searchProductRequest.Take, Math.Max(0, totalCount - searchProductRequest.Skip));
 
                 var searchPetsQuery = new SearchPetsQuery
                 {
-                    Keyword = searchProductRequest.Criteria.Keyword,
-                    Skip = searchProductRequest.Criteria.Skip,
-                    Take = searchProductRequest.Criteria.Take
+                    Keyword = searchProductRequest.Keyword,
+                    Skip = searchProductRequest.Skip,
+                    Take = searchProductRequest.Take
                 };
 
                 searchPetsQuery.Skip -= skip;

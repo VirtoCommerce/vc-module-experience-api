@@ -1,22 +1,14 @@
-using System.Collections.Generic;
+using System;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using GraphQL;
-using GraphQL.DataLoader;
-using GraphQL.Relay.Types;
-using GraphQL.Types;
-using VirtoCommerce.CatalogModule.Core.Model;
-using VirtoCommerce.CatalogModule.Core.Services;
-using GraphQL.Authorization;
-using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.CatalogModule.Core.Search;
 using GraphQL.Builders;
-using System;
-using VirtoCommerce.CatalogModule.Core.Model.Search;
+using GraphQL.DataLoader;
+using GraphQL.Types;
 using GraphQL.Types.Relay.DataObjects;
-using VirtoCommerce.ExperienceApiModule.Core;
 using MediatR;
+using VirtoCommerce.CatalogModule.Core.Model;
+using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.ExperienceApiModule.Core.Requests;
 
 namespace VirtoCommerce.ExperienceApiModule.Data.GraphQL.Schemas
@@ -41,22 +33,7 @@ namespace VirtoCommerce.ExperienceApiModule.Data.GraphQL.Schemas
             Field<ListGraphType<PropertyType>>("properties", resolve: context => context.Source.Properties);
           
 
-            //FieldAsync<ListGraphType<PropertyType>>(
-            //    "properties",
-            //     arguments: new QueryArguments(
-            //         new QueryArgument<StringGraphType> { Name = "type", Description = "the type of properties" }
-            //    ),
-            //    resolve: async context =>
-            //    {
-            //        var propType = context.GetArgument<string>("type");
-            //        var loader = dataLoader.Context.GetOrAddCollectionBatchLoader<string, Property>($"propertyLoader{propType}", (ids) => LoadProductsPropertiesAsync(mediator, ids, propType));
-
-            //        // IMPORTANT: In order to avoid deadlocking on the loader we use the following construct (next 2 lines):
-            //        var loadHandle = loader.LoadAsync(context.Source.Id);
-            //        return await loadHandle;
-            //    }
-            //);
-
+           
             Connection<ProductAssociationType>()
               .Name("associations")
               .Argument<StringGraphType>("query", "the search phrase")
@@ -104,14 +81,6 @@ namespace VirtoCommerce.ExperienceApiModule.Data.GraphQL.Schemas
                 },
                 TotalCount = response.Result.TotalCount,
             };
-        }
-
-        public static async Task<ILookup<string, Property>> LoadProductsPropertiesAsync(IMediator mediator, IEnumerable<string> ids, string type = null)
-        {
-            var response = await mediator.Send(new LoadProductRequest { Ids = ids.ToArray(), ResponseGroup = ItemResponseGroup.ItemProperties.ToString() });
-            return response.Products.SelectMany(x => x.Properties.Where(x=> type == null || x.Type.ToString().EqualsInvariant(type))
-                           .Select(p => new { ProductId = x.Id, Property = p }))
-                           .ToLookup(x => x.ProductId, x => x.Property);
-        }      
+        }    
     }
 }
