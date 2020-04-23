@@ -1,6 +1,10 @@
+using System.Linq;
+using GraphQL;
 using GraphQL.DataLoader;
+using GraphQL.Types;
 using MediatR;
 using VirtoCommerce.ExperienceApiModule.Data.GraphQL.Schemas;
+using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.ExperienceApiModule.Extension.GraphQL.Schemas
 {
@@ -9,10 +13,19 @@ namespace VirtoCommerce.ExperienceApiModule.Extension.GraphQL.Schemas
         public ProductType2(
             IMediator mediator,
             IDataLoaderContextAccessor dataLoader)
-            :base(mediator, dataLoader)
+            : base(mediator, dataLoader)
         {
-            Field(d => ((CatalogProduct2)d).Price, nullable: true).Description("The product price");
-            Field(d => ((CatalogProduct2)d).Currency).Description("The product price currency");
+  
+            Field<ListGraphType<PriceType>>("prices", arguments: new QueryArguments(new QueryArgument<StringGraphType> { Name = "currency", Description = "currency" }), resolve: context =>
+            {
+                var result = ((CatalogProduct2)context.Source).Prices;
+                var currency = context.GetArgument<string>("currency");
+                if (currency != null)
+                {
+                    result = result.Where(x => x.Currency.EqualsInvariant(currency)).ToList();
+                }
+                return result;
+            });
         }
     }
 }

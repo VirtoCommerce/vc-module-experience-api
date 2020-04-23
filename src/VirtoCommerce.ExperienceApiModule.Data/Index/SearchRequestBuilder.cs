@@ -51,46 +51,52 @@ namespace VirtoCommerce.ExperienceApiModule.Data.Index
             return this;
         }
 
-        public SearchRequestBuilder WithIncludeFields(IEnumerable<string> includeFields)
+        public SearchRequestBuilder WithIncludeFields(params string[] includeFields)
         {
-            SearchRequest.IncludeFields = includeFields?.Select(x => "__object." + x).ToList();
+            if(SearchRequest.IncludeFields == null)
+            {
+                SearchRequest.IncludeFields = new List<string>();
+            }
+            SearchRequest.IncludeFields.AddRange(includeFields);
             return this;
         }
 
         public SearchRequestBuilder AddTerms(IEnumerable<string> terms)
         {
-            const string commaEscapeString = "%x2C";
+            if (terms != null)
+            {
+                const string commaEscapeString = "%x2C";
 
-            var nameValueDelimeter = new[] { ':' };
-            var valuesDelimeter = new[] { ',' };
+                var nameValueDelimeter = new[] { ':' };
+                var valuesDelimeter = new[] { ',' };
 
-            var termsFields = terms.Select(item => item.Split(nameValueDelimeter, 2))
-                    .Where(item => item.Length == 2)
-                    .Select(item => new TermFilter
-                    {
-                        FieldName = item[0],
-                        Values = item[1].Split(valuesDelimeter, StringSplitOptions.RemoveEmptyEntries)
-                            .Select(x => x?.Replace(commaEscapeString, ","))
-                            .ToArray()
-                    }).ToArray();
-            ((AndFilter)SearchRequest.Filter).ChildFilters.AddRange(termsFields);
-
+                var termsFields = terms.Select(item => item.Split(nameValueDelimeter, 2))
+                        .Where(item => item.Length == 2)
+                        .Select(item => new TermFilter
+                        {
+                            FieldName = item[0],
+                            Values = item[1].Split(valuesDelimeter, StringSplitOptions.RemoveEmptyEntries)
+                                .Select(x => x?.Replace(commaEscapeString, ","))
+                                .ToArray()
+                        }).ToArray();
+                ((AndFilter)SearchRequest.Filter).ChildFilters.AddRange(termsFields);
+            }
             return this;
         }
 
-        public SearchRequestBuilder AddSearchKeyword(string keyword)
+        public SearchRequestBuilder ParseFilters(string query)
         {
-            if (keyword == null)
+            if (query != null)
             {
-                throw new ArgumentNullException(nameof(keyword));
+
+                if (_phraseParser != null)
+                {
+                    var parseResult = _phraseParser.Parse(query);
+                    query = parseResult.Keyword;
+                    ((AndFilter)SearchRequest.Filter).ChildFilters.AddRange(parseResult.Filters);
+                }
+                SearchRequest.SearchKeywords = query;
             }
-            if (_phraseParser != null)
-            {
-                var parseResult = _phraseParser.Parse(keyword);
-                keyword = parseResult.Keyword;
-                ((AndFilter)SearchRequest.Filter).ChildFilters.AddRange(parseResult.Filters);
-            }
-            SearchRequest.SearchKeywords = keyword;
             return this;
         }
 

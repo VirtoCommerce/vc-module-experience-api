@@ -49,7 +49,6 @@ namespace VirtoCommerce.ExperienceApiModule.Extension.UseCases.OnTheFly
 
                 var searchPetsQuery = new SearchPetsQuery
                 {
-                    Keyword = searchProductRequest.Keyword,
                     Skip = searchProductRequest.Skip,
                     Take = searchProductRequest.Take
                 };

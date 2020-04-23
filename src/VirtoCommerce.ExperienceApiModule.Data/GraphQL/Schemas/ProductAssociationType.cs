@@ -42,7 +42,7 @@ namespace VirtoCommerce.ExperienceApiModule.Data.GraphQL.Schemas
 
         public static async Task<IDictionary<string, CatalogProduct>> LoadProductsAsync(IMediator mediator, IEnumerable<string> ids)
         {
-            var response = await mediator.Send(new LoadProductRequest { Ids = ids.ToArray(), ResponseGroup = ItemResponseGroup.ItemInfo.ToString() });
+            var response = await mediator.Send(new LoadProductRequest { Ids = ids.ToArray() });
             return response.Products.ToDictionary(x => x.Id);
         }
     }

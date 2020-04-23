@@ -22,7 +22,11 @@ namespace VirtoCommerce.ExperienceApiModule.Extension.UseCases.OnTheFly
                 var prices = await _pricingService.EvaluateProductPricesAsync(new PricingModule.Core.Model.PriceEvaluationContext { Currency = "USD", ProductIds = loadProductRequest.Ids });
                 foreach (var product2 in loadProductResponse.Products.OfType<CatalogProduct2>())
                 {
-                    product2.Price = prices.FirstOrDefault(x => x.ProductId == product2.Id)?.List;
+                    var price = prices.FirstOrDefault(x => x.ProductId == product2.Id);
+                    if (price != null)
+                    {
+                        product2.Prices = new[] { new Price { List = price.List, Currency = price.Currency, PriceList = price.PricelistId } };
+                    }
                 }
             }
             else if(request is SearchProductRequest searchProductRequest && response is SearchProductResponse searchProductResponse)
@@ -30,7 +34,11 @@ namespace VirtoCommerce.ExperienceApiModule.Extension.UseCases.OnTheFly
                 var prices = await _pricingService.EvaluateProductPricesAsync(new PricingModule.Core.Model.PriceEvaluationContext { Currency = "USD", ProductIds = searchProductResponse.Result.Results.Select(x => x.Id).ToArray() });
                 foreach (var product2 in searchProductResponse.Result.Results.OfType<CatalogProduct2>())
                 {
-                    product2.Price = prices.FirstOrDefault(x => x.ProductId == product2.Id)?.List;
+                    var price = prices.FirstOrDefault(x => x.ProductId == product2.Id);
+                    if (price != null)
+                    {
+                        product2.Prices = new[] { new Price { List = price.List, Currency = price.Currency, PriceList = price.PricelistId } };
+                    }
                 }
             }
         }

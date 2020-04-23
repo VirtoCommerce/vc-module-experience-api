@@ -68,15 +68,17 @@ namespace VirtoCommerce.ExperienceApiModule.Web
 
             //Override GraphType  ProductType -> ProductType2
             services.AddSingleton<ProductType2>();
+            services.AddSingleton<PriceType>();
+            services.AddSingleton<ProductQuery2>();
             GraphTypeExtenstionHelper.OverrideGraphType<schema.ProductType, ProductType2>();
             #endregion
 
             #region UseCase OnTheFlyEvaluation: evaluate product prices on the fly 
-            services.AddSingleton(typeof(IRequestPostProcessor<,>), typeof(EvalPriceForProductsPipelineBehaviour<,>));
+            //services.AddSingleton(typeof(IRequestPostProcessor<,>), typeof(EvalPriceForProductsPipelineBehaviour<,>));
             #endregion
 
             #region  UseCase CombinedDataSource: paginating data from multiple sources (VC catalog and Pets store)
-            services.AddSingleton(typeof(IRequestPostProcessor<,>), typeof(VcAndPetsSearchPipelineBehaviour<,>));
+            //services.AddSingleton(typeof(IRequestPostProcessor<,>), typeof(VcAndPetsSearchPipelineBehaviour<,>));
             #endregion
 
             #region UseCase DataSourceSubstitution: replace data source to another

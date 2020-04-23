@@ -45,9 +45,7 @@ namespace VirtoCommerce.ExperienceApiModule.Data.GraphQL.Schemas
 
             var productsConnectionBuilder = ConnectionBuilderExt.Create<ProductType, object>()
                 .Name("products")
-                .Argument<StringGraphType>("query", "the search phrase")
-                .Argument<StringGraphType>("catalog", "the catalog id")
-                .Argument<ListGraphType<StringGraphType>>("terms", "search terms")
+                .Argument<StringGraphType>("query", "the search phrase")             
                 .Argument<StringGraphType>("sort", "sort expression")
                 .Unidirectional()
                 .PageSize(20);
@@ -64,7 +62,7 @@ namespace VirtoCommerce.ExperienceApiModule.Data.GraphQL.Schemas
 
         public static async Task<IDictionary<string, CatalogProduct>> LoadProductsAsync(IMediator mediator, IEnumerable<string> ids, IEnumerable<string> includeFields)
         {
-            var response = await mediator.Send(new LoadProductRequest { Ids = ids.ToArray(), ResponseGroup = ItemResponseGroup.ItemInfo.ToString(), IncludeFields = includeFields });
+            var response = await mediator.Send(new LoadProductRequest { Ids = ids.ToArray(), IncludeFields = includeFields });
             return response.Products.ToDictionary(x => x.Id);
         }
 
@@ -78,13 +76,11 @@ namespace VirtoCommerce.ExperienceApiModule.Data.GraphQL.Schemas
             {
                 Skip = skip,
                 Take = first ?? context.PageSize ?? 10,
-                Keyword = context.GetArgument<string>("query"),
-                CatalogId = context.GetArgument<string>("catalog"),
-                Terms = context.GetArgument<List<string>>("terms"),
+                Query = context.GetArgument<string>("query"),
                 Sort = context.GetArgument<string>("sort"),
                 IncludeFields = includeFields.ToArray(),
             };
-          
+
             var response = await mediator.Send(request);
 
 
