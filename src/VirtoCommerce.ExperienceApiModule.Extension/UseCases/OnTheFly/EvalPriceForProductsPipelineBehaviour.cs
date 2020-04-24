@@ -25,7 +25,7 @@ namespace VirtoCommerce.ExperienceApiModule.Extension.UseCases.OnTheFly
                     var price = prices.FirstOrDefault(x => x.ProductId == product2.Id);
                     if (price != null)
                     {
-                        product2.Prices = new[] { new Price { List = price.List, Currency = price.Currency, PriceList = price.PricelistId } };
+                        product2.Prices = new[] { new Price { List = price.List, Currency = price.Currency, PriceListId = price.PricelistId } };
                     }
                 }
             }
@@ -37,7 +37,7 @@ namespace VirtoCommerce.ExperienceApiModule.Extension.UseCases.OnTheFly
                     var price = prices.FirstOrDefault(x => x.ProductId == product2.Id);
                     if (price != null)
                     {
-                        product2.Prices = new[] { new Price { List = price.List, Currency = price.Currency, PriceList = price.PricelistId } };
+                        product2.Prices = new[] { new Price { List = price.List, Currency = price.Currency, PriceListId = price.PricelistId } };
                     }
                 }
             }

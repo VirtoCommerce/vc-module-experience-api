@@ -38,10 +38,22 @@ namespace VirtoCommerce.ExperienceApiModule.Data.Index
             return SearchRequest;
         }
 
+        public SearchRequestBuilder WithFuzzy(bool fuzzy)
+        {
+            SearchRequest.IsFuzzySearch = fuzzy;
+            return this;
+        }
+
         public SearchRequestBuilder WithPaging(int skip, int take)
         {
             SearchRequest.Skip = skip;
             SearchRequest.Take = take;
+            return this;
+        }
+
+        public SearchRequestBuilder WithSearchPhrase(string searchPhrase)
+        {
+            SearchRequest.SearchKeywords = searchPhrase;
             return this;
         }
 
@@ -84,18 +96,20 @@ namespace VirtoCommerce.ExperienceApiModule.Data.Index
             return this;
         }
 
-        public SearchRequestBuilder ParseFilters(string query)
+        public SearchRequestBuilder ParseFilters(string filterPhrase)
         {
-            if (query != null)
+            if (filterPhrase != null)
             {
-
-                if (_phraseParser != null)
+                if (_phraseParser == null)
                 {
-                    var parseResult = _phraseParser.Parse(query);
-                    query = parseResult.Keyword;
-                    ((AndFilter)SearchRequest.Filter).ChildFilters.AddRange(parseResult.Filters);
+                    throw new OperationCanceledException("phrase parser must be initialized");
                 }
-                SearchRequest.SearchKeywords = query;
+                var parseResult = _phraseParser.Parse(filterPhrase);
+                foreach (var filter in parseResult.Filters)
+                {
+                    FilterSyntaxMapper.MapFilterSyntax(filter);
+                }
+                ((AndFilter)SearchRequest.Filter).ChildFilters.AddRange(parseResult.Filters);
             }
             return this;
         }

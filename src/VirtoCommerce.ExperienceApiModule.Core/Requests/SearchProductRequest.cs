@@ -7,7 +7,8 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Requests
     public class SearchProductRequest : IRequest<SearchProductResponse>, IHasIncludeFields
     {
         public string Query { get; set; }
-        public IList<string> ObjectIds { get; set; }
+        public bool Fuzzy { get; set; }
+        public string Filter { get; set; }
         public string Sort { get; set; }
         public int Skip { get; set; }
         public int Take { get; set; }

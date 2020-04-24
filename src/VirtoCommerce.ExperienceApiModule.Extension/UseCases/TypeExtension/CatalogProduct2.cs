@@ -9,7 +9,7 @@ namespace VirtoCommerce.ExperienceApiModule.Extension
     [BindIndexField(FieldName = "__object", BinderType = typeof(ProductModelBinder))]
     public class CatalogProduct2 : CatalogProduct
     {
-        [BindIndexField(BinderType = typeof(PriceBinder))]
+        [BindIndexField(FieldName = "__prices", BinderType = typeof(PriceBinder))]
         public IList<Price> Prices { get; set; }
 
         public string DataSource { get; set; }

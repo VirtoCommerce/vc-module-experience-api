@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json.Linq;
 using VirtoCommerce.ExperienceApiModule.Core;
 using VirtoCommerce.SearchModule.Core.Model;
 
@@ -12,22 +14,33 @@ namespace VirtoCommerce.ExperienceApiModule.Extension.Binders
         public object BindModel(SearchDocument doc, BindingInfo bindingInfo)
         {
             var result = new List<Price>();
-            foreach (var pair in doc)
+            if (doc.ContainsKey(bindingInfo.FieldName))
             {
-                var match = _priceFieldRegExp.Match(pair.Key);
-                if (match.Success)
+                var obj = doc[bindingInfo.FieldName];
+                if (obj is Array jobjArray)
                 {
-                    foreach(var listPrice in pair.Value is Array ? (object[])pair.Value : new[] { pair.Value })
+                    var prices = jobjArray.OfType<JObject>().Select(x => (Price)x.ToObject(typeof(Price)));
+                    result.AddRange(prices);
+                }
+            }
+            else
+            {
+                foreach (var pair in doc)
+                {
+                    var match = _priceFieldRegExp.Match(pair.Key);
+                    if (match.Success)
                     {
-                        var price = new Price
+                        foreach (var listPrice in pair.Value is Array ? (object[])pair.Value : new[] { pair.Value })
                         {
-                            Currency = match.Groups[1].Value,
-                            PriceList = match.Groups[2].Value,
-                            List = Convert.ToDecimal(listPrice)
-                        };
-                        result.Add(price);
+                            var price = new Price
+                            {
+                                Currency = match.Groups[1].Value,
+                                PriceListId = match.Groups[2].Value,
+                                List = Convert.ToDecimal(listPrice)
+                            };
+                            result.Add(price);
+                        }
                     }
-                   
                 }
             }
             return result;

@@ -45,7 +45,9 @@ namespace VirtoCommerce.ExperienceApiModule.Data.GraphQL.Schemas
 
             var productsConnectionBuilder = ConnectionBuilderExt.Create<ProductType, object>()
                 .Name("products")
-                .Argument<StringGraphType>("query", "the search phrase")             
+                .Argument<StringGraphType>("query", "The query parameter performs the full-text search")
+                .Argument<StringGraphType>("filter", "This parameter applies a filter to the query results")
+                .Argument<BooleanGraphType>("fuzzy", "When the fuzzy query parameter is set to true the search endpoint will also return products that contain slight differences to the search text.")
                 .Argument<StringGraphType>("sort", "sort expression")
                 .Unidirectional()
                 .PageSize(20);
@@ -77,6 +79,8 @@ namespace VirtoCommerce.ExperienceApiModule.Data.GraphQL.Schemas
                 Skip = skip,
                 Take = first ?? context.PageSize ?? 10,
                 Query = context.GetArgument<string>("query"),
+                Filter = context.GetArgument<string>("filter"),
+                Fuzzy = context.GetArgument<bool>("fuzzy"),
                 Sort = context.GetArgument<string>("sort"),
                 IncludeFields = includeFields.ToArray(),
             };

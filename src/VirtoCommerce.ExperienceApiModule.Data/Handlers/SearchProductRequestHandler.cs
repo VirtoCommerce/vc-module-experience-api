@@ -25,18 +25,18 @@ namespace VirtoCommerce.ExperienceApiModule.Data.Handlers
         public virtual async Task<SearchProductResponse> Handle(SearchProductRequest request, CancellationToken cancellationToken)
         {
             var result = new SearchProductResponse();
-            var requestBuilder = new SearchRequestBuilder(_searchPhraseParser)
-                                            .ParseFilters(request.Query)
+            var searchRequest = new SearchRequestBuilder(_searchPhraseParser)
+                                            .WithFuzzy(request.Fuzzy)
+                                            .ParseFilters(request.Filter)
+                                            .WithSearchPhrase(request.Query)
                                             .WithPaging(request.Skip, request.Take)
-                                            .AddObjectIds(request.ObjectIds)
                                             .AddSorting(request.Sort)
                                             //TODO: Remove hardcoded field name  __object from here
                                             .WithIncludeFields(request.IncludeFields.Select(x => "__object." + x).ToArray())
-                                            //TODO: How to include fields that have different names that object???
-                                            .WithIncludeFields("price_*");
-
+                                            .WithIncludeFields(request.IncludeFields.Where(x=>x.StartsWith("prices.")).Select(x => "__prices." + x.TrimStart("prices.")).ToArray())
+                                            .Build();
                                            
-            var searchResult = await _searchProvider.SearchAsync(KnownDocumentTypes.Product, requestBuilder.Build());
+            var searchResult = await _searchProvider.SearchAsync(KnownDocumentTypes.Product, searchRequest);
             var productType = AbstractTypeFactory<CatalogProduct>.TryCreateInstance().GetType();
             var binder = productType.GetIndexModelBinder();
             result.Result.Results = searchResult.Documents.Select(x => binder.BindModel(x, productType.GetBindingInfo())).OfType<CatalogProduct>().ToList(); 
