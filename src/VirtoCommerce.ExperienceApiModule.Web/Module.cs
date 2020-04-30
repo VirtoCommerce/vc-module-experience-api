@@ -69,7 +69,6 @@ namespace VirtoCommerce.ExperienceApiModule.Web
             //Override GraphType  ProductType -> ProductType2
             services.AddSingleton<ProductType2>();
             services.AddSingleton<PriceType>();
-            services.AddSingleton<ProductQuery2>();
             GraphTypeExtenstionHelper.OverrideGraphType<schema.ProductType, ProductType2>();
             #endregion
 
@@ -83,6 +82,11 @@ namespace VirtoCommerce.ExperienceApiModule.Web
 
             #region UseCase DataSourceSubstitution: replace data source to another
             //serviceCollection.AddSingleton<IProductSearchService, PetsProductSearchService>();
+            #endregion
+
+            #region UseCase ProductRecommendations:  aggregation some responses received from downstreams and contains only product  identifiers with actual product data
+            services.AddSingleton<ISchemaBuilder, ProductRecommendationQuery>();
+            services.AddSingleton<ProductRecommendationType>();
             #endregion
             #endregion
 

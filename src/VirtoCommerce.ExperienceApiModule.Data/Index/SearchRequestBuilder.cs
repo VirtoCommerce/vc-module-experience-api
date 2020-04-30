@@ -67,7 +67,7 @@ namespace VirtoCommerce.ExperienceApiModule.Data.Index
         {
             if(SearchRequest.IncludeFields == null)
             {
-                SearchRequest.IncludeFields = new List<string>();
+                SearchRequest.IncludeFields = new List<string>() { };
             }
             SearchRequest.IncludeFields.AddRange(includeFields);
             return this;
@@ -105,11 +105,29 @@ namespace VirtoCommerce.ExperienceApiModule.Data.Index
                     throw new OperationCanceledException("phrase parser must be initialized");
                 }
                 var parseResult = _phraseParser.Parse(filterPhrase);
+                var filters = new List<IFilter>();
                 foreach (var filter in parseResult.Filters)
                 {
                     FilterSyntaxMapper.MapFilterSyntax(filter);
+                    if (filter is TermFilter termFilter)
+                    {
+                        var wildcardValues = termFilter.Values.Where(x => new[] { "?", "*" }.Any(x.Contains));
+                        if (wildcardValues.Any())
+                        {
+                            filters.AddRange(wildcardValues.Select(x => new WildCardTermFilter { FieldName = termFilter.FieldName, Value = x }));
+                            termFilter.Values = termFilter.Values.Except(wildcardValues).ToList();
+                        }
+                        if (termFilter.Values.Any())
+                        {
+                            filters.Add(termFilter);
+                        }
+                    }
+                    else
+                    {
+                        filters.Add(filter);
+                    }
                 }
-                ((AndFilter)SearchRequest.Filter).ChildFilters.AddRange(parseResult.Filters);
+                ((AndFilter)SearchRequest.Filter).ChildFilters.AddRange(filters);
             }
             return this;
         }

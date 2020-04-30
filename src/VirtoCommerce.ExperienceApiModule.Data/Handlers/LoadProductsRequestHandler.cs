@@ -28,7 +28,8 @@ namespace VirtoCommerce.ExperienceApiModule.Data.Handlers
             var result = new LoadProductResponse();
             var searchRequest = new SearchRequestBuilder()
                                             .WithPaging(0, request.Ids.Count())
-                                            .WithIncludeFields(request.IncludeFields.Select(x => "__object." + x).ToArray())
+                                            .WithIncludeFields(request.IncludeFields.Concat(new[] { "id" }).Select(x => "__object." + x).ToArray())
+                                            .WithIncludeFields(request.IncludeFields.Where(x => x.StartsWith("prices.")).Concat(new[] { "id" }).Select(x => "__prices." + x.TrimStart("prices.")).ToArray())
                                             .AddObjectIds(request.Ids)
                                             .Build();
 

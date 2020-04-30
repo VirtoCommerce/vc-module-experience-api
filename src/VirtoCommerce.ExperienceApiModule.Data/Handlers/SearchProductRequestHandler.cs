@@ -32,8 +32,8 @@ namespace VirtoCommerce.ExperienceApiModule.Data.Handlers
                                             .WithPaging(request.Skip, request.Take)
                                             .AddSorting(request.Sort)
                                             //TODO: Remove hardcoded field name  __object from here
-                                            .WithIncludeFields(request.IncludeFields.Select(x => "__object." + x).ToArray())
-                                            .WithIncludeFields(request.IncludeFields.Where(x=>x.StartsWith("prices.")).Select(x => "__prices." + x.TrimStart("prices.")).ToArray())
+                                            .WithIncludeFields(request.IncludeFields.Concat(new[] { "id" }).Select(x => "__object." + x).ToArray())
+                                            .WithIncludeFields(request.IncludeFields.Where(x=>x.StartsWith("prices.")).Concat(new[] { "id" }).Select(x => "__prices." + x.TrimStart("prices.")).ToArray())
                                             .Build();
                                            
             var searchResult = await _searchProvider.SearchAsync(KnownDocumentTypes.Product, searchRequest);
