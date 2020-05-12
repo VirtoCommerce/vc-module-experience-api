@@ -23,7 +23,7 @@ namespace VirtoCommerce.ExperienceApiModule.Extension.UseCases.OnTheFly
         {
             if (request is LoadProductRequest loadProductRequest && response is LoadProductResponse loadProductResponse)
             {
-                var notLoadedProductIds = loadProductRequest.Ids.Except(loadProductResponse.Products.Select(x => x.Id));
+                var notLoadedProductIds = loadProductRequest.Ids.Except(loadProductResponse.Products.Select(x => x.Id)).Where(x => long.TryParse(x, out var _));
                 if (notLoadedProductIds.Any())
                 {
                     var petProducts = new List<CatalogProduct>();
@@ -39,7 +39,7 @@ namespace VirtoCommerce.ExperienceApiModule.Extension.UseCases.OnTheFly
                 }
 
             }
-            else if(request is SearchProductRequest searchProductRequest && response is SearchProductResponse searchProductResponse)
+            else if (request is SearchProductRequest searchProductRequest && response is SearchProductResponse searchProductResponse)
             {
                 var searchProductResult = searchProductResponse.Result;
 

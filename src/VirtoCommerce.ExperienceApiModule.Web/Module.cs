@@ -7,9 +7,11 @@ using GraphQL.Types;
 using MediatR;
 using MediatR.Pipeline;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PetsStoreClient;
 using PetsStoreClient.Nswag;
+using Polly;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.Data.GraphQL;
 using VirtoCommerce.ExperienceApiModule.Data.Handlers;
@@ -18,6 +20,10 @@ using VirtoCommerce.ExperienceApiModule.Data.Pipeline;
 using VirtoCommerce.ExperienceApiModule.Extension;
 using VirtoCommerce.ExperienceApiModule.Extension.GraphQL.Schemas;
 using VirtoCommerce.ExperienceApiModule.Extension.UseCases.OnTheFly;
+using VirtoCommerce.ExperienceApiModule.Extension.UseCases.Recommendations;
+using VirtoCommerce.ExperienceApiModule.Extension.UseCases.Recommendations.Configuration;
+using VirtoCommerce.ExperienceApiModule.Extension.UseCases.Recommendations.Handlers;
+using VirtoCommerce.ExperienceApiModule.Extension.UseCases.Recommendations.Requests;
 using VirtoCommerce.ExperienceApiModule.GraphQLEx;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Modularity;
@@ -38,9 +44,6 @@ namespace VirtoCommerce.ExperienceApiModule.Web
             services.AddSingleton(typeof(IPipelineBehavior<,>), typeof(RequestExceptionProcessorBehavior<,>));
             //serviceCollection.AddSingleton(typeof(IRequestPreProcessor<>), typeof(GenericRequestPreProcessor<>));
                       
-            services.AddTransient<IPetsSearchService, PetsSearchService>();
-            services.AddHttpClient<PetstoreClient>(c => c.BaseAddress = new Uri("http://petstore.swagger.io/v2/"));
-
             //Discover the assembly and  register all mapping profiles through reflection
             services.AddAutoMapper(typeof(AnchorType));
 
@@ -77,6 +80,8 @@ namespace VirtoCommerce.ExperienceApiModule.Web
             #endregion
 
             #region  UseCase CombinedDataSource: paginating data from multiple sources (VC catalog and Pets store)
+            services.AddTransient<IPetsSearchService, PetsSearchService>();
+            services.AddHttpClient<PetstoreClient>(c => c.BaseAddress = new Uri("http://petstore.swagger.io/v2/"));
             //services.AddSingleton(typeof(IRequestPostProcessor<,>), typeof(VcAndPetsSearchPipelineBehaviour<,>));
             #endregion
 
@@ -85,10 +90,34 @@ namespace VirtoCommerce.ExperienceApiModule.Web
             #endregion
 
             #region UseCase ProductRecommendations:  aggregation some responses received from downstreams and contains only product  identifiers with actual product data
+            services.AddMediatR(typeof(GetRecommendationsRequestHandler));
+            AbstractTypeFactory<DownstreamResponse>.RegisterType<GetRecommendationsResponse>();
             services.AddSingleton<ISchemaBuilder, ProductRecommendationQuery>();
             services.AddSingleton<ProductRecommendationType>();
+            services.AddSingleton<IContentRenderer, LiquidContentRenderer>();
+
+            // Build an intermediate service provider
+            var sp = services.BuildServiceProvider();
+
+            // Resolve the services from the service provider
+            var configuration = sp.GetService<IConfiguration>();
+
+            services.AddOptions<RecommendationOptions>().Bind(configuration.GetSection("Recommendations"))
+                .ValidateDataAnnotations().PostConfigure(opts =>
+                                                    {
+                                                        //match connection for scenario
+                                                        foreach(var scenario in opts.Scenarios)
+                                                        {
+                                                            scenario.Connection = opts.Connections.FirstOrDefault(x => x.Name.EqualsInvariant(scenario.ConnectionName));
+                                                        }
+                                                    });
+            services.AddHttpClient<IDownstreamRequestSender, DownstreamRequestSender>()
+                .AddTransientHttpErrorPolicy(p => p.WaitAndRetryAsync(3, _ => TimeSpan.FromMilliseconds(600)));
+
             #endregion
             #endregion
+
+
 
             services.AddTransient<ProductIndexBuilder>();
 

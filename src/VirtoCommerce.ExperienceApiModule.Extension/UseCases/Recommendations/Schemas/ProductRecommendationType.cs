@@ -27,9 +27,8 @@ namespace VirtoCommerce.ExperienceApiModule.Extension.GraphQL.Schemas
             Field(d => d.ProductId).Description("The unique ID of the product.");
             Field(d => d.Scenario).Description("The recommendation scenario name.");
             Field(d => d.Score).Description("The recommendation relevance score.");
-            Field(d => d.Type).Description("The recommendation type.");
 
-
+            
             var productField = new FieldType
             {
                 Name = "product",

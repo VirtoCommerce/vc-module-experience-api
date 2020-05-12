@@ -11,12 +11,15 @@ namespace VirtoCommerce.ExperienceApiModule.Extension.Binders
     public class PriceBinder : IIndexModelBinder
     {
         private static readonly Regex _priceFieldRegExp = new Regex(@"^price_([A-Za-z]{3})_?([a-z0-9]+)?$", RegexOptions.Compiled);
-        public object BindModel(SearchDocument doc, BindingInfo bindingInfo)
+
+        public BindingInfo BindingInfo { get; set; } = new BindingInfo { FieldName = "__prices" };
+
+        public object BindModel(SearchDocument doc)
         {
             var result = new List<Price>();
-            if (doc.ContainsKey(bindingInfo.FieldName))
+            if (doc.ContainsKey(BindingInfo.FieldName))
             {
-                var obj = doc[bindingInfo.FieldName];
+                var obj = doc[BindingInfo.FieldName];
                 if (obj is Array jobjArray)
                 {
                     var prices = jobjArray.OfType<JObject>().Select(x => (Price)x.ToObject(typeof(Price)));

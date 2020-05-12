@@ -8,16 +8,20 @@ using VirtoCommerce.SearchModule.Core.Model;
 
 namespace VirtoCommerce.ExperienceApiModule.Data.Index.Binders
 {
-    public class ProductModelBinder : IIndexModelBinder
+    public class ProductIndexModelBinder : IIndexModelBinder
     {
         private readonly Type _productType = AbstractTypeFactory<CatalogProduct>.TryCreateInstance().GetType();
-        public object BindModel(SearchDocument doc, BindingInfo bindingInfo)
+
+        public BindingInfo BindingInfo { get; set; } = new BindingInfo { FieldName = "__object" };
+
+        public object BindModel(SearchDocument doc)
         {
             var result = default(CatalogProduct);
 
-            if (doc.ContainsKey(bindingInfo.FieldName))
+            var fieldName = BindingInfo.FieldName;
+            if (doc.ContainsKey(fieldName))
             {
-                var obj = doc[bindingInfo.FieldName];
+                var obj = doc[fieldName];
 
                 if (obj is JObject jobj)
                 {
@@ -31,12 +35,13 @@ namespace VirtoCommerce.ExperienceApiModule.Data.Index.Binders
 
                         if (binder != null)
                         {                          
-                            property.SetValue(result, binder.BindModel(doc, property.GetBindingInfo()));
+                            property.SetValue(result, binder.BindModel(doc));
                         }
                     }
                 }
             }
             return result;
         }
+
     }
 }

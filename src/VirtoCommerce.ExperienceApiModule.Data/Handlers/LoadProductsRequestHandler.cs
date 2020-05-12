@@ -35,8 +35,8 @@ namespace VirtoCommerce.ExperienceApiModule.Data.Handlers
 
             var searchResult = await _searchProvider.SearchAsync(KnownDocumentTypes.Product, searchRequest);
             var productType = AbstractTypeFactory<CatalogProduct>.TryCreateInstance().GetType();
-            var binder = productType.GetIndexModelBinder();           
-            result.Products = searchResult.Documents.Select(x => binder.BindModel(x, productType.GetBindingInfo())).OfType<CatalogProduct>().ToList();
+            var binder = productType.GetIndexModelBinder(new ProductIndexModelBinder());           
+            result.Products = searchResult.Documents.Select(x => binder.BindModel(x)).OfType<CatalogProduct>().ToList();
 
             return result;
         }

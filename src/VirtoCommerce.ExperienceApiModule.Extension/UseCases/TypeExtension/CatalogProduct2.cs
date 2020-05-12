@@ -6,7 +6,7 @@ using VirtoCommerce.ExperienceApiModule.Extension.Binders;
 
 namespace VirtoCommerce.ExperienceApiModule.Extension
 {
-    [BindIndexField(FieldName = "__object", BinderType = typeof(ProductModelBinder))]
+    [BindIndexField(FieldName = "__object", BinderType = typeof(ProductIndexModelBinder))]
     public class CatalogProduct2 : CatalogProduct
     {
         [BindIndexField(FieldName = "__prices", BinderType = typeof(PriceBinder))]

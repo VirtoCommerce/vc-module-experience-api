@@ -1,0 +1,22 @@
+{
+  "Recommendations": {
+    "Connections": [
+      {
+        "Name": "vc-recommendations",
+        "Url": "http://localhost:10645/api/catalog/products/associations/search",
+        "Method": "Post",
+        "RequestContentTemplate": "{ 'skip': {{skip}}, take: {{take}}, objectIds: [ '{{ item_id }}' ] }",
+        "ResponseJsonPath": "$..associatedObjectId",
+        "Headers": {
+          "api_key": "0cc0cdf8-73c3-47c0-8f2e-55a5fffd82b5"
+        }
+      }
+    ],
+    "Scenarios": [
+      {
+        "Name": "vc-recommendations",
+        "ConnectionName": "vc-recommendations"
+      }
+    ]
+  }
+}

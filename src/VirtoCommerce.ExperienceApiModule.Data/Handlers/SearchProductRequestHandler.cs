@@ -6,6 +6,7 @@ using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.Core;
 using VirtoCommerce.ExperienceApiModule.Core.Requests;
 using VirtoCommerce.ExperienceApiModule.Data.Index;
+using VirtoCommerce.ExperienceApiModule.Data.Index.Binders;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.SearchModule.Core.Model;
 using VirtoCommerce.SearchModule.Core.Services;
@@ -38,8 +39,8 @@ namespace VirtoCommerce.ExperienceApiModule.Data.Handlers
                                            
             var searchResult = await _searchProvider.SearchAsync(KnownDocumentTypes.Product, searchRequest);
             var productType = AbstractTypeFactory<CatalogProduct>.TryCreateInstance().GetType();
-            var binder = productType.GetIndexModelBinder();
-            result.Result.Results = searchResult.Documents.Select(x => binder.BindModel(x, productType.GetBindingInfo())).OfType<CatalogProduct>().ToList(); 
+            var binder = productType.GetIndexModelBinder(new ProductIndexModelBinder());
+            result.Result.Results = searchResult.Documents.Select(x => binder.BindModel(x)).OfType<CatalogProduct>().ToList(); 
             result.Result.TotalCount = (int)searchResult.TotalCount;
             return result;
         }

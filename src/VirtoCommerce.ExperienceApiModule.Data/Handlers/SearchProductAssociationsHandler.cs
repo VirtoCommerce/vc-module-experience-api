@@ -14,7 +14,7 @@ namespace VirtoCommerce.ExperienceApiModule.Data.Handlers
         {
         }
 
-        public async Task<SearchProductAssociationsResponse> Handle(SearchProductAssociationsRequest request, CancellationToken cancellationToken)
+        public Task<SearchProductAssociationsResponse> Handle(SearchProductAssociationsRequest request, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
 

@@ -9,15 +9,19 @@ namespace VirtoCommerce.ExperienceApiModule.Core
     {
 
         private static ConcurrentDictionary<Type, IIndexModelBinder> _bindersCache = new ConcurrentDictionary<Type, IIndexModelBinder>();
-        //Move to factory
-        public static IIndexModelBinder GetIndexModelBinder(this Type type)
+
+        public static IIndexModelBinder GetIndexModelBinder(this Type type, IIndexModelBinder defaultBinder)
         {
-            IIndexModelBinder result = null;
+            var result = defaultBinder;
             var bindAttr = type.GetCustomAttributes<BindIndexFieldAttribute>().FirstOrDefault();
 
             if (bindAttr != null)
             {
                 result = GetBinder(bindAttr);
+            }
+            if (result != null)
+            {
+                result.BindingInfo = type.GetBindingInfo() ?? result.BindingInfo;
             }
             return result;
         }
@@ -31,10 +35,14 @@ namespace VirtoCommerce.ExperienceApiModule.Core
             {
                 result = GetBinder(bindAttr);
             }
+            if (result != null)
+            {
+                result.BindingInfo = propInfo.GetBindingInfo() ?? result.BindingInfo;
+            }
             return result;
         }
 
-        public static BindingInfo GetBindingInfo(this PropertyInfo propInfo)
+        private static BindingInfo GetBindingInfo(this PropertyInfo propInfo)
         {
             BindingInfo result = null;
             var bindAttr = propInfo.GetCustomAttributes<BindIndexFieldAttribute>().FirstOrDefault();
@@ -47,7 +55,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core
         }
 
 
-        public static BindingInfo GetBindingInfo(this Type type)
+        private static BindingInfo GetBindingInfo(this Type type)
         {
             BindingInfo result = null;
             var bindAttr = type.GetCustomAttributes<BindIndexFieldAttribute>().FirstOrDefault();
