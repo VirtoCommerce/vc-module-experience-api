@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using VirtoCommerce.Platform.Core.Common;
 
-namespace VirtoCommerce.ExperienceApiModule.Extension.UseCases.Recommendations
+namespace RecommendationsGatewayModule.Core
 {
     public class DownstreamResponse
     {

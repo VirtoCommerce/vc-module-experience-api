@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace VirtoCommerce.ExperienceApiModule.Extension.UseCases.Recommendations
+namespace RecommendationsGatewayModule.Core
 {
     /// <summary>
     /// Various reasons for a protocol endpoint error

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace VirtoCommerce.ExperienceApiModule.Extension.UseCases.Recommendations.Configuration
+namespace RecommendationsGatewayModule.Core.Configuration
 {
     public class RecommendationOptions
     {

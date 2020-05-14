@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using Newtonsoft.Json;
-using VirtoCommerce.ExperienceApiModule.Extension.UseCases.Recommendations.Configuration;
+using RecommendationsGatewayModule.Core;
+using RecommendationsGatewayModule.Core.Configuration;
 
-namespace VirtoCommerce.ExperienceApiModule.Extension.UseCases.Recommendations
+namespace RecommendationsGatewayModule.Data
 {
     public class DownstreamRequestBuilder
     {

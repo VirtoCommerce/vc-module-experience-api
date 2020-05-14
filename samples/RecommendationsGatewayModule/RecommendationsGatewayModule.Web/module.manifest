@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <module>
-    <id>VirtoCommerce.ExperienceApi</id>
+    <id>RecommendationsGateway</id>
     <version>3.0.0</version>
     <version-tag></version-tag>
     <platformVersion>3.0.0</platformVersion>
-    <title>Commerce experience API module</title>
+    <title>Recommendations gateway API</title>
     <description></description>
     <dependencies>
-        <dependency id="VirtoCommerce.Pricing" version="3.0.0" />
+        <dependency id="VirtoCommerce.ExperienceApi" version="3.0.0" />
     </dependencies>
     <groups>
         <group>commerce</group>
@@ -27,8 +27,8 @@
     <copyright>Copyright © 2011-2020 Virto Commerce. All rights reserved</copyright>
     <tags>security core</tags>
 
-    <assemblyFile>VirtoCommerce.ExperienceApiModule.Web.dll</assemblyFile>
-    <moduleType>VirtoCommerce.ExperienceApiModule.Web.Module, VirtoCommerce.ExperienceApiModule.Web</moduleType>
+    <assemblyFile>RecommendationsGatewayModule.Web.dll</assemblyFile>
+    <moduleType>RecommendationsGatewayModule.Web.Module, RecommendationsGatewayModule.Web.Web</moduleType>
     
     <incompatibilities>
     </incompatibilities>

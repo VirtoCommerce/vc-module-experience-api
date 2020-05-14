@@ -1,8 +1,9 @@
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using RecommendationsGatewayModule.Core;
 
-namespace VirtoCommerce.ExperienceApiModule.Extension.UseCases.Recommendations
+namespace RecommendationsGatewayModule.Data
 {
     public class DownstreamRequestSender : IDownstreamRequestSender
     {

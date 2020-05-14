@@ -1,16 +1,15 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.Options;
-using VirtoCommerce.ExperienceApiModule.Extension.UseCases.Recommendations.Configuration;
-using VirtoCommerce.ExperienceApiModule.Extension.UseCases.Recommendations.Requests;
+using RecommendationsGatewayModule.Core;
+using RecommendationsGatewayModule.Core.Configuration;
+using RecommendationsGatewayModule.Core.Requests;
 using VirtoCommerce.Platform.Core.Common;
 
-namespace VirtoCommerce.ExperienceApiModule.Extension.UseCases.Recommendations.Handlers
+namespace RecommendationsGatewayModule.Data
 {
     public class GetRecommendationsRequestHandler : IRequestHandler<GetRecommendationsRequest, GetRecommendationsResponse>
     {

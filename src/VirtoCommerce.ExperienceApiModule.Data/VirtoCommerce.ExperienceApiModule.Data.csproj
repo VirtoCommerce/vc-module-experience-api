@@ -10,6 +10,7 @@
     <ItemGroup>
         <PackageReference Include="AutoMapper" Version="9.0.0" />
         <PackageReference Include="EntityFrameworkCore.Triggers" Version="1.2.2" />
+        <PackageReference Include="Flo" Version="0.3.0" />
     
         <PackageReference Include="MediatR" Version="8.0.1" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.2" />

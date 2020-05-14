@@ -41,9 +41,7 @@ namespace VirtoCommerce.ExperienceApiModule.Data.GraphQL.Schemas
             };
             schema.Query.AddField(productField);
 
-
-
-            var productsConnectionBuilder = ConnectionBuilderExt.Create<ProductType, object>()
+            var productsConnectionBuilder = GraphTypeExtenstionHelper.CreateConnection<ProductType, object>()
                 .Name("products")
                 .Argument<StringGraphType>("query", "The query parameter performs the full-text search")
                 .Argument<StringGraphType>("filter", "This parameter applies a filter to the query results")

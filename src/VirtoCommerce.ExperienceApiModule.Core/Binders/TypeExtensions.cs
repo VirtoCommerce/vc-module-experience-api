@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace VirtoCommerce.ExperienceApiModule.Core
 {
-    public static class TypeExtension
+    public static class TypeExtensions
     {
 
         private static ConcurrentDictionary<Type, IIndexModelBinder> _bindersCache = new ConcurrentDictionary<Type, IIndexModelBinder>();

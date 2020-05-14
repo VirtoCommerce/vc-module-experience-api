@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using VirtoCommerce.ExperienceApiModule.Extension.UseCases.Recommendations.Requests;
+using RecommendationsGatewayModule.Core.Requests;
 
-namespace VirtoCommerce.ExperienceApiModule.Extension.UseCases.Recommendations.Configuration
+namespace RecommendationsGatewayModule.Core.Configuration
 {
     public class Connection
     {

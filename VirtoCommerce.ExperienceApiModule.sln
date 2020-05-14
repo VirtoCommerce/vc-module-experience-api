@@ -21,7 +21,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtoCommerce.ExperienceApi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtoCommerce.ExperienceApiModule.Extension", "src\VirtoCommerce.ExperienceApiModule.Extension\VirtoCommerce.ExperienceApiModule.Extension.csproj", "{3C9491DE-7A1B-4153-8FA4-414E0CE5E2E1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VCCatalogClient", "src\VCCatalogClient\VCCatalogClient.csproj", "{4AA07B0E-0FB6-45CF-AAC0-79AE18A812C8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VCCatalogClient", "src\VCCatalogClient\VCCatalogClient.csproj", "{4AA07B0E-0FB6-45CF-AAC0-79AE18A812C8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{96726105-C4DE-4ABB-A5B7-AD910202B1C9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RecommendationsGatewayModule", "RecommendationsGatewayModule", "{9E1F3533-47EB-444F-9FFF-758EB31B77B4}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RecommendationsGatewayModule.Core", "samples\RecommendationsGatewayModule\RecommendationsGatewayModule.Core\RecommendationsGatewayModule.Core.csproj", "{C51BD989-C249-45B6-A370-83C955BD2877}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RecommendationsGatewayModule.Data", "samples\RecommendationsGatewayModule\RecommendationsGatewayModule.Data\RecommendationsGatewayModule.Data.csproj", "{D21128F1-A4BC-41EB-BD39-9F2E3080BD41}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RecommendationsGatewayModule.Web", "samples\RecommendationsGatewayModule\RecommendationsGatewayModule.Web\RecommendationsGatewayModule.Web.csproj", "{427861D7-094D-4625-A5DB-DF80323CED59}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -61,6 +71,18 @@ Global
 		{4AA07B0E-0FB6-45CF-AAC0-79AE18A812C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4AA07B0E-0FB6-45CF-AAC0-79AE18A812C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4AA07B0E-0FB6-45CF-AAC0-79AE18A812C8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C51BD989-C249-45B6-A370-83C955BD2877}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C51BD989-C249-45B6-A370-83C955BD2877}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C51BD989-C249-45B6-A370-83C955BD2877}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C51BD989-C249-45B6-A370-83C955BD2877}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D21128F1-A4BC-41EB-BD39-9F2E3080BD41}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D21128F1-A4BC-41EB-BD39-9F2E3080BD41}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D21128F1-A4BC-41EB-BD39-9F2E3080BD41}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D21128F1-A4BC-41EB-BD39-9F2E3080BD41}.Release|Any CPU.Build.0 = Release|Any CPU
+		{427861D7-094D-4625-A5DB-DF80323CED59}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{427861D7-094D-4625-A5DB-DF80323CED59}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{427861D7-094D-4625-A5DB-DF80323CED59}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{427861D7-094D-4625-A5DB-DF80323CED59}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -74,6 +96,10 @@ Global
 		{7CC1854C-3F26-4A70-AF50-09413A7F0A44} = {FAE6CCF7-298C-4AF3-8044-60DAA0C099F0}
 		{3C9491DE-7A1B-4153-8FA4-414E0CE5E2E1} = {FAE6CCF7-298C-4AF3-8044-60DAA0C099F0}
 		{4AA07B0E-0FB6-45CF-AAC0-79AE18A812C8} = {FAE6CCF7-298C-4AF3-8044-60DAA0C099F0}
+		{9E1F3533-47EB-444F-9FFF-758EB31B77B4} = {96726105-C4DE-4ABB-A5B7-AD910202B1C9}
+		{C51BD989-C249-45B6-A370-83C955BD2877} = {9E1F3533-47EB-444F-9FFF-758EB31B77B4}
+		{D21128F1-A4BC-41EB-BD39-9F2E3080BD41} = {9E1F3533-47EB-444F-9FFF-758EB31B77B4}
+		{427861D7-094D-4625-A5DB-DF80323CED59} = {9E1F3533-47EB-444F-9FFF-758EB31B77B4}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E56E5C53-D55A-451B-96FA-654D86F96658}

@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using GraphQL.Builders;
 using GraphQL.Types;
 using VirtoCommerce.Platform.Core.Common;
 
@@ -6,10 +8,6 @@ namespace VirtoCommerce.ExperienceApiModule.GraphQLEx
 {
     public static class GraphTypeExtenstionHelper
     {
-        public static void OverrideGraphType<TBaseType, TDerivedType>() where TDerivedType : IGraphType
-        {
-            AbstractTypeFactory<IGraphType>.OverrideType<TBaseType, TDerivedType>();
-        }
         //Returns the actual (overridden) type for requested 
         public static Type GetActualType<TGraphType>() where TGraphType : IGraphType
         {
@@ -20,6 +18,15 @@ namespace VirtoCommerce.ExperienceApiModule.GraphQLEx
                 result = graphType;
             }
             return result;
+        }
+
+        public static ConnectionBuilder<TSourceType> CreateConnection<TNodeType, TSourceType>() where TNodeType : IGraphType
+        {
+            //Try first find the actual TNodeType  in the  AbstractTypeFactory
+            var actualNodeType = GetActualType<TNodeType>();
+            var createMethodInfo = typeof(ConnectionBuilder<>).MakeGenericType(typeof(TSourceType)).GetMethods().FirstOrDefault(x => x.Name.EqualsInvariant(nameof(ConnectionBuilder.Create)) && x.GetGenericArguments().Count() == 1);
+            var connectionBuilder = (ConnectionBuilder<TSourceType>)createMethodInfo.MakeGenericMethod(actualNodeType).Invoke(null, new[] { Type.Missing });
+            return connectionBuilder;
         }
     }
 }

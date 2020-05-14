@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace VirtoCommerce.ExperienceApiModule.Extension.UseCases.Recommendations
+namespace RecommendationsGatewayModule.Core
 {
     public interface IDownstreamRequestSender
     {

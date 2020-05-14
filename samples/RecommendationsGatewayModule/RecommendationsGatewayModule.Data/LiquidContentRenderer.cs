@@ -2,11 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using RecommendationsGatewayModule.Core;
 using Scriban;
 using Scriban.Parsing;
 using Scriban.Runtime;
 
-namespace VirtoCommerce.ExperienceApiModule.Extension.UseCases.Recommendations
+namespace RecommendationsGatewayModule.Data
 {
     public class LiquidContentRenderer : IContentRenderer
     {

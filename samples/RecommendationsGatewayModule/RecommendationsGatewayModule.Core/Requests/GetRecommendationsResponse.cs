@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace VirtoCommerce.ExperienceApiModule.Extension.UseCases.Recommendations.Requests
+namespace RecommendationsGatewayModule.Core.Requests
 {
     public class GetRecommendationsResponse : DownstreamResponse
     {

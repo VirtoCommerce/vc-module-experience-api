@@ -9,10 +9,9 @@ using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.Core;
 using VirtoCommerce.ExperienceApiModule.Core.Requests;
 using VirtoCommerce.ExperienceApiModule.Data.GraphQL.Schemas;
-using VirtoCommerce.ExperienceApiModule.Extension.UseCases.Recommendations;
 using VirtoCommerce.ExperienceApiModule.GraphQLEx;
 
-namespace VirtoCommerce.ExperienceApiModule.Extension.GraphQL.Schemas
+namespace RecommendationsGatewayModule.Core.Schemas
 {
     public class ProductRecommendationType : ObjectGraphType<ProductRecommendation>
     {

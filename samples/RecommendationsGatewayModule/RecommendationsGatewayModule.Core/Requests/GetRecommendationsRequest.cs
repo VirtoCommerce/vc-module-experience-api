@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using MediatR;
 
-namespace VirtoCommerce.ExperienceApiModule.Extension.UseCases.Recommendations.Requests
+namespace RecommendationsGatewayModule.Core.Requests
 {
     public class GetRecommendationsRequest : IRequest<GetRecommendationsResponse>
     {

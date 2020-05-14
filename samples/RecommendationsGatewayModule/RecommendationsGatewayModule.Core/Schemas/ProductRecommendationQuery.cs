@@ -6,11 +6,10 @@ using GraphQL.Builders;
 using GraphQL.Types;
 using GraphQL.Types.Relay.DataObjects;
 using MediatR;
-using VirtoCommerce.ExperienceApiModule.Extension.UseCases.Recommendations;
-using VirtoCommerce.ExperienceApiModule.Extension.UseCases.Recommendations.Requests;
+using RecommendationsGatewayModule.Core.Requests;
 using VirtoCommerce.ExperienceApiModule.GraphQLEx;
 
-namespace VirtoCommerce.ExperienceApiModule.Extension.GraphQL.Schemas
+namespace RecommendationsGatewayModule.Core.Schemas
 {
     public class ProductRecommendationQuery : ISchemaBuilder
     {
@@ -22,7 +21,7 @@ namespace VirtoCommerce.ExperienceApiModule.Extension.GraphQL.Schemas
         public void Build(ISchema schema)
         {
 
-            var connectionBuilder = ConnectionBuilderExt.Create<ProductRecommendationType, object>()
+            var connectionBuilder = GraphTypeExtenstionHelper.CreateConnection<ProductRecommendationType, object>()
                 .Name("recommendations")
                 .Argument<StringGraphType>("scenario", "The recommendation scenario")
                 .Argument<StringGraphType>("itemId", "The context product id")

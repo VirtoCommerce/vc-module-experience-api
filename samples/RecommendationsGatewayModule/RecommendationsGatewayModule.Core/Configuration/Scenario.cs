@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
-namespace VirtoCommerce.ExperienceApiModule.Extension.UseCases.Recommendations.Configuration
+namespace RecommendationsGatewayModule.Core.Configuration
 {
     public class Scenario
     {
@@ -12,6 +12,7 @@ namespace VirtoCommerce.ExperienceApiModule.Extension.UseCases.Recommendations.C
         public string Filter { get; set; }
         [Required]
         public string ConnectionName { get; set; }
+        [Required]
         public Connection Connection { get; set; }
     }
 }
