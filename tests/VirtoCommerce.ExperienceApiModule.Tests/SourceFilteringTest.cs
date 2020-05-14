@@ -22,7 +22,8 @@ namespace VirtoCommerce.ExperienceApiModule.SourceFilteringTest.Tests
             public string Id { get; set; }
         }
 
-        [Fact]
+
+        [Fact(Skip = "Intended not to pass")]
         public Task DoSomeSearch()
         {
              var settings = new ConnectionSettings(new Uri("http://localhost:9200")).DefaultIndex("default-product");

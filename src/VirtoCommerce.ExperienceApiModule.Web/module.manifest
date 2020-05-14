@@ -2,12 +2,11 @@
 <module>
     <id>VirtoCommerce.ExperienceApi</id>
     <version>3.0.0</version>
-    <version-tag></version-tag>
+    <version-tag>beta001</version-tag>
     <platformVersion>3.0.0</platformVersion>
     <title>Commerce experience API module</title>
     <description></description>
     <dependencies>
-        <dependency id="VirtoCommerce.Pricing" version="3.0.0" />
     </dependencies>
     <groups>
         <group>commerce</group>
