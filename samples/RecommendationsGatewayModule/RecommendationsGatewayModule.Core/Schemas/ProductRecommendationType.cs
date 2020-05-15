@@ -8,8 +8,8 @@ using MediatR;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.Core;
 using VirtoCommerce.ExperienceApiModule.Core.Requests;
+using VirtoCommerce.ExperienceApiModule.Core.Schema;
 using VirtoCommerce.ExperienceApiModule.Data.GraphQL.Schemas;
-using VirtoCommerce.ExperienceApiModule.GraphQLEx;
 
 namespace RecommendationsGatewayModule.Core.Schemas
 {

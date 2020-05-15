@@ -34,7 +34,6 @@
       <ProjectReference Include="..\..\..\src\VirtoCommerce.ExperienceApiModule.Core\VirtoCommerce.ExperienceApiModule.Core.csproj" />
       <ProjectReference Include="..\..\..\src\VirtoCommerce.ExperienceApiModule.Data\VirtoCommerce.ExperienceApiModule.Data.csproj" />
       <ProjectReference Include="..\..\..\src\VirtoCommerce.ExperienceApiModule.Extension\VirtoCommerce.ExperienceApiModule.Extension.csproj" />
-      <ProjectReference Include="..\..\..\src\VirtoCommerce.ExperienceApiModule.GraphQL\VirtoCommerce.ExperienceApiModule.GraphQL.csproj" />
       <ProjectReference Include="..\RecommendationsGatewayModule.Core\RecommendationsGatewayModule.Core.csproj" />
       <ProjectReference Include="..\RecommendationsGatewayModule.Data\RecommendationsGatewayModule.Data.csproj" />
     </ItemGroup>

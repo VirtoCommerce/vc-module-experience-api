@@ -30,7 +30,6 @@
     <ItemGroup>
       <ProjectReference Include="..\PetsStoreClient\PetsStoreClient.csproj" />
       <ProjectReference Include="..\VirtoCommerce.ExperienceApiModule.Core\VirtoCommerce.ExperienceApiModule.Core.csproj" />
-      <ProjectReference Include="..\VirtoCommerce.ExperienceApiModule.GraphQL\VirtoCommerce.ExperienceApiModule.GraphQL.csproj" />
     </ItemGroup>
 
 </Project>

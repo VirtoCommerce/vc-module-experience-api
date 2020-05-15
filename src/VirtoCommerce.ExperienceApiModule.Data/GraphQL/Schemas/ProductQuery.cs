@@ -12,7 +12,7 @@ using MediatR;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.Core;
 using VirtoCommerce.ExperienceApiModule.Core.Requests;
-using VirtoCommerce.ExperienceApiModule.GraphQLEx;
+using VirtoCommerce.ExperienceApiModule.Core.Schema;
 
 namespace VirtoCommerce.ExperienceApiModule.Data.GraphQL.Schemas
 {

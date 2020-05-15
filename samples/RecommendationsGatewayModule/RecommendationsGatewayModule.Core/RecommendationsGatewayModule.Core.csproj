@@ -18,7 +18,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\..\src\VirtoCommerce.ExperienceApiModule.Data\VirtoCommerce.ExperienceApiModule.Data.csproj" />
-      <ProjectReference Include="..\..\..\src\VirtoCommerce.ExperienceApiModule.GraphQL\VirtoCommerce.ExperienceApiModule.GraphQL.csproj" />
     </ItemGroup>
 
 </Project>
