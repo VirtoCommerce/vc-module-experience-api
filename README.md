@@ -36,10 +36,8 @@ appsettings.json
         }
     },
 ```
-- The settings “Store full object in index modules” are enabled for::
-products 
+- The settings “Store full object in index modules” are enabled for catalog and pricing modules:
 ![image](https://user-images.githubusercontent.com/7566324/82232622-29adf380-992f-11ea-8df6-9d08fb0b421a.png)
-and prices
 ![image](https://user-images.githubusercontent.com/7566324/82232762-5530de00-992f-11ea-8c8c-22766f8fa121.png)
 
 - Rebuild index
