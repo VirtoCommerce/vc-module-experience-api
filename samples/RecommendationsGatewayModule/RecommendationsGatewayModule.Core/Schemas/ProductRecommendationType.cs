@@ -5,11 +5,11 @@ using GraphQL.DataLoader;
 using GraphQL.Resolvers;
 using GraphQL.Types;
 using MediatR;
-using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.Core;
-using VirtoCommerce.ExperienceApiModule.Core.Requests;
 using VirtoCommerce.ExperienceApiModule.Core.Schema;
-using VirtoCommerce.ExperienceApiModule.Data.GraphQL.Schemas;
+using VirtoCommerce.ExperienceApiModule.DigitalCatalog;
+using VirtoCommerce.ExperienceApiModule.DigitalCatalog.Requests;
+using VirtoCommerce.ExperienceApiModule.DigitalCatalog.Schemas;
 
 namespace RecommendationsGatewayModule.Core.Schemas
 {
@@ -35,7 +35,7 @@ namespace RecommendationsGatewayModule.Core.Schemas
                 Resolver = new AsyncFieldResolver<ProductRecommendation, object>(async context =>
                 {
                     var includeFields = context.SubFields.Values.GetAllNodesPaths().Select(x => x.TrimStart("items.")).ToArray();
-                    var loader = dataLoader.Context.GetOrAddBatchLoader<string, CatalogProduct>($"recommendedProducts", (ids) => LoadProductsAsync(mediator, new LoadProductRequest { Ids = ids.ToArray(), IncludeFields = includeFields.ToArray() }));
+                    var loader = dataLoader.Context.GetOrAddBatchLoader<string, ExpProduct>($"recommendedProducts", (ids) => LoadProductsAsync(mediator, new LoadProductRequest { Ids = ids.ToArray(), IncludeFields = includeFields.ToArray() }));
 
                     // IMPORTANT: In order to avoid deadlocking on the loader we use the following construct (next 2 lines):
                     var loadHandle = loader.LoadAsync(context.Source.ProductId);
@@ -46,10 +46,10 @@ namespace RecommendationsGatewayModule.Core.Schemas
 
         }
 
-        public static async Task<IDictionary<string, CatalogProduct>> LoadProductsAsync(IMediator mediator, LoadProductRequest request)
+        public static async Task<IDictionary<string, ExpProduct>> LoadProductsAsync(IMediator mediator, LoadProductRequest request)
         {
             var response = await mediator.Send(request);
-            return response.Products.ToDictionary(x => x.Id, x => x);
+            return response.Products.ToDictionary(x => x.Id);
         }
     }
 }

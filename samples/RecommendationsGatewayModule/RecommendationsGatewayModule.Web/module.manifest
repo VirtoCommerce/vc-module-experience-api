@@ -28,7 +28,7 @@
     <tags>security core</tags>
 
     <assemblyFile>RecommendationsGatewayModule.Web.dll</assemblyFile>
-    <moduleType>RecommendationsGatewayModule.Web.Module, RecommendationsGatewayModule.Web.Web</moduleType>
+    <moduleType>RecommendationsGatewayModule.Web.Module, RecommendationsGatewayModule.Web</moduleType>
     
     <incompatibilities>
     </incompatibilities>

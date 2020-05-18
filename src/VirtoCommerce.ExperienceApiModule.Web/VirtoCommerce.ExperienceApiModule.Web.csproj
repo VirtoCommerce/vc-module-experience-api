@@ -39,7 +39,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\VirtoCommerce.ExperienceApiModule.Core\VirtoCommerce.ExperienceApiModule.Core.csproj" />
-      <ProjectReference Include="..\VirtoCommerce.ExperienceApiModule.Data\VirtoCommerce.ExperienceApiModule.Data.csproj" />
-      <ProjectReference Include="..\VirtoCommerce.ExperienceApiModule.Extension\VirtoCommerce.ExperienceApiModule.Extension.csproj" />
+      <ProjectReference Include="..\VirtoCommerce.ExperienceApiModule.DigitalCatalog\VirtoCommerce.ExperienceApiModule.DigitalCatalog.csproj" />
     </ItemGroup>
 </Project>

@@ -1,1 +1,1 @@
-# vc-experience-api-module
+Experience API  - It is primarily a intermediated layer between clients and enterprise  services powered by GraphQL protocol and is tightly coupled to a specific user/touchpoint  experience with fast and reliable access 

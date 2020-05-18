@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="MediatR" Version="8.0.1" />
+        <PackageReference Include="NEST" Version="7.6.1" />
+        <PackageReference Include="Serialize.Linq" Version="1.8.1" />
+        <PackageReference Include="VirtoCommerce.CatalogModule.Core" Version="3.0.2" />
+        <PackageReference Include="VirtoCommerce.PricingModule.Core" Version="3.0.2" />
+        <PackageReference Include="VirtoCommerce.Platform.Core" Version="3.0.0-rc5-0248" />
+        <PackageReference Include="VirtoCommerce.SearchModule.Core" Version="3.0.3" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\VirtoCommerce.ExperienceApiModule.Core\VirtoCommerce.ExperienceApiModule.Core.csproj" />
+    </ItemGroup>
+    
+</Project>
