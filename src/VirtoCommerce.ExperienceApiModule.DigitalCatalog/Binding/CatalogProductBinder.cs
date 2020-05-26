@@ -2,19 +2,19 @@ using System;
 using System.Reflection;
 using Newtonsoft.Json.Linq;
 using VirtoCommerce.CatalogModule.Core.Model;
-using VirtoCommerce.ExperienceApiModule.Core;
+using VirtoCommerce.ExperienceApiModule.Core.Binding;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.SearchModule.Core.Model;
 
-namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Binders
+namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Binding
 {
     public class CatalogProductBinder : IIndexModelBinder
     {
-        private readonly Type _productType = AbstractTypeFactory<CatalogProduct>.TryCreateInstance().GetType();
+        private static readonly Type _productType = AbstractTypeFactory<CatalogProduct>.TryCreateInstance().GetType();
 
         public BindingInfo BindingInfo { get; set; } = new BindingInfo { FieldName = "__object" };
 
-        public object BindModel(SearchDocument doc)
+        public virtual object BindModel(SearchDocument doc)
         {
             var result = default(CatalogProduct);
 
@@ -39,6 +39,10 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Binders
                         }
                     }
                 }
+            }
+            else
+            {
+                throw new  InvalidOperationException($"{BindingInfo.FieldName} is missed in index data. Unable to load CatalogProduct object from index.");
             }
             return result;
         }

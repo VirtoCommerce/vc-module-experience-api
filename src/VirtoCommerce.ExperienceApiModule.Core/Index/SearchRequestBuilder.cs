@@ -98,39 +98,98 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Index
 
         public SearchRequestBuilder ParseFilters(string filterPhrase)
         {
-            if (filterPhrase != null)
+            if (filterPhrase == null)
             {
-                if (_phraseParser == null)
-                {
-                    throw new OperationCanceledException("phrase parser must be initialized");
-                }
-                var parseResult = _phraseParser.Parse(filterPhrase);
-                var filters = new List<IFilter>();
-                foreach (var filter in parseResult.Filters)
-                {
-                    FilterSyntaxMapper.MapFilterSyntax(filter);
-                    if (filter is TermFilter termFilter)
-                    {
-                        var wildcardValues = termFilter.Values.Where(x => new[] { "?", "*" }.Any(x.Contains));
-                        if (wildcardValues.Any())
-                        {
-                            filters.AddRange(wildcardValues.Select(x => new WildCardTermFilter { FieldName = termFilter.FieldName, Value = x }));
-                            termFilter.Values = termFilter.Values.Except(wildcardValues).ToList();
-                        }
-                        if (termFilter.Values.Any())
-                        {
-                            filters.Add(termFilter);
-                        }
-                    }
-                    else
-                    {
-                        filters.Add(filter);
-                    }
-                }
-                ((AndFilter)SearchRequest.Filter).ChildFilters.AddRange(filters);
+                return this;
             }
+
+
+            if (_phraseParser == null)
+            {
+                throw new OperationCanceledException("phrase parser must be initialized");
+            }
+            var parseResult = _phraseParser.Parse(filterPhrase);
+            var filters = new List<IFilter>();
+            foreach (var filter in parseResult.Filters)
+            {
+                FilterSyntaxMapper.MapFilterSyntax(filter);
+                if (filter is TermFilter termFilter)
+                {
+                    var wildcardValues = termFilter.Values.Where(x => new[] { "?", "*" }.Any(x.Contains));
+                    if (wildcardValues.Any())
+                    {
+                        filters.AddRange(wildcardValues.Select(x => new WildCardTermFilter { FieldName = termFilter.FieldName, Value = x }));
+                        termFilter.Values = termFilter.Values.Except(wildcardValues).ToList();
+                    }
+                    if (termFilter.Values.Any())
+                    {
+                        filters.Add(termFilter);
+                    }
+                }
+                else
+                {
+                    filters.Add(filter);
+                }
+            }
+            ((AndFilter)SearchRequest.Filter).ChildFilters.AddRange(filters);
+
             return this;
         }
+
+        public SearchRequestBuilder ParseFacets(string facetPhrase)
+        {
+            if (facetPhrase == null)
+            {
+                return this;
+            }
+
+            if (_phraseParser == null)
+            {
+                throw new OperationCanceledException("phrase parser must be initialized");
+            }
+            //TODO: Support aliases for Facet expressions e.g price.usd[TO 200) as price_below_200
+            //TODO: Need to create a new  Antlr file with g4-lexer rules and generate parser especially for facets expression that will return proper AggregationRequests objects
+            var parseResult = _phraseParser.Parse(facetPhrase);
+            var aggrs = new List<AggregationRequest>();
+            //Term facets
+            if(!string.IsNullOrEmpty(parseResult.Keyword))
+            {
+                var termFacetExpressions = parseResult.Keyword.Split(" ");
+                aggrs.AddRange(termFacetExpressions.Select(x => new TermAggregationRequest { FieldName = x, Id = x }));
+            }
+
+            foreach (var filter in parseResult.Filters)
+            {
+                FilterSyntaxMapper.MapFilterSyntax(filter);
+                //Range facets
+                if (filter is RangeFilter rangeFilter)
+                {
+                    aggrs.Add(new RangeAggregationRequest
+                    {
+                        Id = rangeFilter.FieldName + "range",
+                        FieldName = rangeFilter.FieldName,
+                        Values = rangeFilter.Values.Select(x => new RangeAggregationRequestValue
+                        {
+                            Id = (x.Lower ?? "*") + "-" + (x.Upper ?? "*"),
+                            Lower = x.Lower,
+                            Upper = x.Upper,
+                            IncludeLower = x.IncludeLower,
+                            IncludeUpper = x.IncludeUpper
+                        }).ToList()
+                    });
+                }
+                //Filter facets
+                if (filter is TermFilter termFilter)
+                {
+                    aggrs.Add(new TermAggregationRequest { FieldName = termFilter.FieldName, Id = termFilter.ToString(), Filter = termFilter });
+                }
+            }
+
+            SearchRequest.Aggregations = aggrs;
+
+            return this;
+        }
+
 
         public SearchRequestBuilder AddObjectIds(IEnumerable<string> ids)
         {

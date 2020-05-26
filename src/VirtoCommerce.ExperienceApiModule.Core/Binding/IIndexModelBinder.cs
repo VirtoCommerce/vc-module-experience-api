@@ -1,6 +1,6 @@
 using VirtoCommerce.SearchModule.Core.Model;
 
-namespace VirtoCommerce.ExperienceApiModule.Core
+namespace VirtoCommerce.ExperienceApiModule.Core.Binding
 {
     public interface IIndexModelBinder
     {

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace VirtoCommerce.ExperienceApiModule.Core
+namespace VirtoCommerce.ExperienceApiModule.Core.Binding
 {
     public class BindingInfo
     {

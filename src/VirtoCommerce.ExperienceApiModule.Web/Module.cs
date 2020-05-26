@@ -43,7 +43,8 @@ namespace VirtoCommerce.ExperienceApiModule.Web
             services.AddPermissionAuthorization();
             services.AddGraphShemaBuilders(typeof(Anchor));
 
-
+            //Discover the assembly and  register all mapping profiles through reflection
+            services.AddAutoMapper(typeof(Module));
 
         }
 

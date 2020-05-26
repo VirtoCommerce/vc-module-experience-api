@@ -1,6 +1,6 @@
 using System;
 
-namespace VirtoCommerce.ExperienceApiModule.Core
+namespace VirtoCommerce.ExperienceApiModule.Core.Binding
 {
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Property)]
     public class BindIndexFieldAttribute : Attribute

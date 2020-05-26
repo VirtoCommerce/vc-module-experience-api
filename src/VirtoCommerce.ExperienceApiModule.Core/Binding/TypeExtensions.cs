@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using System.Linq;
 using System.Reflection;
 
-namespace VirtoCommerce.ExperienceApiModule.Core
+namespace VirtoCommerce.ExperienceApiModule.Core.Binding
 {
     public static class TypeExtensions
     {

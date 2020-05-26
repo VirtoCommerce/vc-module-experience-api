@@ -2,9 +2,9 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using AutoMapper;
 using MediatR;
 using VirtoCommerce.ExperienceApiModule.Core;
-using VirtoCommerce.ExperienceApiModule.DigitalCatalog.Binders;
 using VirtoCommerce.ExperienceApiModule.DigitalCatalog.Index;
 using VirtoCommerce.ExperienceApiModule.DigitalCatalog.Requests;
 using VirtoCommerce.SearchModule.Core.Model;
@@ -14,11 +14,13 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Handlers
 {
     public class LoadProductsRequestHandler : IRequestHandler<LoadProductRequest, LoadProductResponse>
     {
+        private readonly IMapper _mapper;
         private readonly ISearchProvider _searchProvider;
  
-        public LoadProductsRequestHandler(ISearchProvider searchProvider)
+        public LoadProductsRequestHandler(ISearchProvider searchProvider, IMapper mapper)
         {
             _searchProvider = searchProvider;
+            _mapper = mapper;
         }
 
         public virtual async Task<LoadProductResponse> Handle(LoadProductRequest request, CancellationToken cancellationToken)
@@ -31,9 +33,8 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Handlers
                                             .AddObjectIds(request.Ids)
                                             .Build();
 
-            var searchResult = await _searchProvider.SearchAsync(KnownDocumentTypes.Product, searchRequest);
-            var binder = new ProductBinder();           
-            result.Products = searchResult.Documents.Select(x => binder.BindModel(x)).OfType<ExpProduct>().ToList();
+            var searchResult = await _searchProvider.SearchAsync(KnownDocumentTypes.Product, searchRequest);     
+            result.Products = searchResult.Documents.Select(x => _mapper.Map<ExpProduct>(x)).ToList();
 
             return result;
         }

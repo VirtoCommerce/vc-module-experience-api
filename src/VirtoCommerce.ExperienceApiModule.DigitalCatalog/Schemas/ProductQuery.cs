@@ -7,6 +7,7 @@ using GraphQL.Builders;
 using GraphQL.DataLoader;
 using GraphQL.Resolvers;
 using GraphQL.Types;
+using GraphQL.Types.Relay;
 using GraphQL.Types.Relay.DataObjects;
 using MediatR;
 using VirtoCommerce.ExperienceApiModule.Core;
@@ -40,12 +41,14 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Schemas
             };
             schema.Query.AddField(productField);
 
-            var productsConnectionBuilder = GraphTypeExtenstionHelper.CreateConnection<ProductType, object>()
+            //var productsConnectionBuilder = ConnectionBuilder.Create<ProductType, EdgeType<ProductType>, ProductsConnectonType<ProductType>, object>()
+            var productsConnectionBuilder = GraphTypeExtenstionHelper.CreateConnection<ProductType, EdgeType<ProductType>, ProductsConnectonType<ProductType>, object>()
                 .Name("products")
                 .Argument<StringGraphType>("query", "The query parameter performs the full-text search")
                 .Argument<StringGraphType>("filter", "This parameter applies a filter to the query results")
                 .Argument<BooleanGraphType>("fuzzy", "When the fuzzy query parameter is set to true the search endpoint will also return products that contain slight differences to the search text.")
-                .Argument<StringGraphType>("sort", "sort expression")
+                .Argument<StringGraphType>("facet", "Facets calculate statistical counts to aid in faceted navigation.")
+                .Argument<StringGraphType>("sort", "The sort expression")
                 .Unidirectional()
                 .PageSize(20);
 
@@ -77,6 +80,7 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Schemas
                 Take = first ?? context.PageSize ?? 10,
                 Query = context.GetArgument<string>("query"),
                 Filter = context.GetArgument<string>("filter"),
+                Facet = context.GetArgument<string>("facet"),
                 Fuzzy = context.GetArgument<bool>("fuzzy"),
                 Sort = context.GetArgument<string>("sort"),
                 IncludeFields = includeFields.ToArray(),
@@ -85,7 +89,7 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Schemas
             var response = await mediator.Send(request);
 
 
-            return new Connection<ExpProduct>()
+            return new ProductsConnection<ExpProduct>()
             {
                 Edges = response.Results
                     .Select((x, index) =>
@@ -103,6 +107,7 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Schemas
                     EndCursor = Math.Min(response.TotalCount, (int)(skip + first)).ToString()
                 },
                 TotalCount = response.TotalCount,
+                Facets = response.Facets
             };
         }
     }

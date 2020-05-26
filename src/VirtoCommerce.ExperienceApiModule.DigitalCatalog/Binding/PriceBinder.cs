@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json.Linq;
-using VirtoCommerce.ExperienceApiModule.Core;
+using VirtoCommerce.ExperienceApiModule.Core.Binding;
 using VirtoCommerce.PricingModule.Core.Model;
 using VirtoCommerce.SearchModule.Core.Model;
 
-namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Binders
+namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Binding
 {
     public class PriceBinder : IIndexModelBinder
     {
@@ -15,7 +15,7 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Binders
 
         public BindingInfo BindingInfo { get; set; } = new BindingInfo { FieldName = "__prices" };
 
-        public object BindModel(SearchDocument doc)
+        public virtual object BindModel(SearchDocument doc)
         {
             var result = new List<Price>();
             if (doc.ContainsKey(BindingInfo.FieldName))

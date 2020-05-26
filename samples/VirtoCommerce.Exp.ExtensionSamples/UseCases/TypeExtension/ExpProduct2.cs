@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using VirtoCommerce.ExperienceApiModule.Core;
+using VirtoCommerce.ExperienceApiModule.Core.Binding;
 using VirtoCommerce.ExperienceApiModule.DigitalCatalog;
 
 namespace VirtoCommerce.Exp.ExtensionSamples
