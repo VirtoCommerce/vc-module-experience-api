@@ -1,7 +1,8 @@
-The project "Experience API" it is primarily a intermediated layer between clients and enterprise  services powered by GraphQL protocol and is tightly coupled to a specific user/touchpoint  experience with fast and reliable access.
+The project "Experience API" it is primarily a intermediated layer between clients and enterprise  services powered by GraphQL protocol and is tightly coupled to a specific user/touchpoint  experience with fast and reliable access, it represents an implementation of Backend for Frontend design pattern (BFF).
 
 # The context diagramm
-![image](https://user-images.githubusercontent.com/7566324/82049613-e6e1e680-96b6-11ea-80a1-4d8dbaba2576.png)
+![image](https://user-images.githubusercontent.com/7566324/84039908-38258300-a9a2-11ea-9421-2c51462d69af.png)
+
 
 # Key features
 - “Experience API” project at beginning consists from these three functional blocks :
