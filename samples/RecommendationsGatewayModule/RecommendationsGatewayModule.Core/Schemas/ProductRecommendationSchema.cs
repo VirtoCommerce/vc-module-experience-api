@@ -11,10 +11,10 @@ using VirtoCommerce.ExperienceApiModule.Core.Schema;
 
 namespace RecommendationsGatewayModule.Core.Schemas
 {
-    public class ProductRecommendationQuery : ISchemaBuilder
+    public class ProductRecommendationSchema : ISchemaBuilder
     {
         private readonly IMediator _mediator;
-        public ProductRecommendationQuery(IMediator mediator)
+        public ProductRecommendationSchema(IMediator mediator)
         {
             _mediator = mediator;
         }

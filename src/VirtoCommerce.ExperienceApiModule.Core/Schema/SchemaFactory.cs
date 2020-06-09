@@ -71,7 +71,8 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schema
         {
             var schema = new GraphQL.Types.Schema(_services)
             {
-                Query = new ObjectGraphType { Name = "Query" }
+                Query = new ObjectGraphType { Name = "Query" },
+                Mutation = new ObjectGraphType { Name = "Mutations"}
             };
 
             foreach (var builder in _schemaBuilders)
@@ -86,6 +87,11 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schema
             if (!schema.Query.Fields.Any())
             {
                 schema.Query = null;
+            }
+
+            if (!schema.Mutation.Fields.Any())
+            {
+                schema.Mutation = null;
             }
 
             return schema;

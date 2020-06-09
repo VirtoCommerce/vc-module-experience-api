@@ -25,7 +25,7 @@ namespace RecommendationsGatewayModule.Web
             services.AddSingleton<IContentRenderer, LiquidContentRenderer>();
             services.AddMediatR(typeof(GetRecommendationsRequestHandler));
             AbstractTypeFactory<DownstreamResponse>.RegisterType<GetRecommendationsResponse>();
-            services.AddSchemaBuilder<ProductRecommendationQuery>();
+            services.AddSchemaBuilder<ProductRecommendationSchema>();
             services.AddSchemaType<ProductRecommendationType>();
 
             // Build an intermediate service provider

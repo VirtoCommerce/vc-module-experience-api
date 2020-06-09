@@ -1,5 +1,4 @@
 using System;
-using AutoMapper;
 using MediatR.Pipeline;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
@@ -29,6 +28,9 @@ namespace VirtoCommerce.Exp.ExtensionSamples
             //Override domain type ExpProduct -> ExpProduct2
             AbstractTypeFactory<ExpProduct>.OverrideType<ExpProduct, ExpProduct2>();
             services.AddSchemaType<InventoryType>();
+            services.AddSchemaType<InputUpdateInventoryType>();
+            //Register custom schema
+            services.AddSchemaBuilder<CustomSchema>();
             #endregion
 
             #region UseCase OnTheFlyEvaluation: evaluate product inventories on the fly 
