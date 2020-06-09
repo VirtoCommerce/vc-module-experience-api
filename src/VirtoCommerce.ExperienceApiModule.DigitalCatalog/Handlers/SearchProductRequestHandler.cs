@@ -40,8 +40,8 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Handlers
                                             .Build();
                                            
             var searchResult = await _searchProvider.SearchAsync(KnownDocumentTypes.Product, searchRequest);
-            result.Results = searchResult.Documents.Select(x => _mapper.Map<ExpProduct>(x)).ToList();
-            result.Facets = searchRequest.Aggregations.Select(x => _mapper.Map<FacetResult>(x, opts => opts.Items["aggregations"] = searchResult.Aggregations)).ToList();
+            result.Results = searchResult.Documents?.Select(x => _mapper.Map<ExpProduct>(x)).ToList();
+            result.Facets = searchRequest.Aggregations?.Select(x => _mapper.Map<FacetResult>(x, opts => opts.Items["aggregations"] = searchResult.Aggregations)).ToList();
 
             result.TotalCount = (int)searchResult.TotalCount;
             return result;

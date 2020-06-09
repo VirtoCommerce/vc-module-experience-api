@@ -102,8 +102,6 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Index
             {
                 return this;
             }
-
-
             if (_phraseParser == null)
             {
                 throw new OperationCanceledException("phrase parser must be initialized");
@@ -147,6 +145,7 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Index
             {
                 throw new OperationCanceledException("phrase parser must be initialized");
             }
+           
             //TODO: Support aliases for Facet expressions e.g price.usd[TO 200) as price_below_200
             //TODO: Need to create a new  Antlr file with g4-lexer rules and generate parser especially for facets expression that will return proper AggregationRequests objects
             var parseResult = _phraseParser.Parse(facetPhrase);
