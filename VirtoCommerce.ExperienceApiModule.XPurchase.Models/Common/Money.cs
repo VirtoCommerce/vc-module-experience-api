@@ -21,16 +21,9 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Common
 
         public Money(decimal amount, Currency currency)
         {
-            if (currency == null)
-            {
-                throw new ArgumentNullException(nameof(currency));
-            }
-
-            Currency = currency;
+            Currency = currency ?? throw new ArgumentNullException(nameof(currency));
             InternalAmount = amount;
         }
-
-
 
         /// <summary>
         /// Accesses the internal representation of the value of the Money.
@@ -43,13 +36,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Common
         /// of the associated currency using MidpointRounding.AwayFromZero.
         /// </summary>
         /// <returns>A decimal with the amount rounded to the significant number of decimal digits.</returns>
-        public decimal Amount
-        {
-            get
-            {
-                return decimal.Round(InternalAmount, DecimalDigits, MidpointRounding.AwayFromZero);
-            }
-        }
+        public decimal Amount => decimal.Round(InternalAmount, DecimalDigits, MidpointRounding.AwayFromZero);
 
         /// <summary>
         /// Truncates the amount to the number of significant decimal digits
@@ -65,25 +52,13 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Common
             }
         }
 
-        public string FormattedAmount
-        {
-            get { return ToString(true, true); }
-        }
+        public string FormattedAmount => ToString(true, true);
 
-        public string FormattedAmountWithoutPoint
-        {
-            get { return ToString(false, true); }
-        }
+        public string FormattedAmountWithoutPoint => ToString(false, true);
 
-        public string FormattedAmountWithoutCurrency
-        {
-            get { return ToString(false, true); }
-        }
+        public string FormattedAmountWithoutCurrency => ToString(false, true);
 
-        public string FormattedAmountWithoutPointAndCurrency
-        {
-            get { return ToString(false, false); }
-        }
+        public string FormattedAmountWithoutPointAndCurrency => ToString(false, false);
 
         public Currency Currency { get; }
 
@@ -91,10 +66,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Common
         /// Gets the number of decimal digits for the associated currency.
         /// </summary>
         /// <returns>An int containing the number of decimal digits.</returns>
-        public int DecimalDigits
-        {
-            get { return Currency.NumberFormat.CurrencyDecimalDigits; }
-        }
+        public int DecimalDigits => Currency.NumberFormat.CurrencyDecimalDigits;
 
         public static bool operator ==(Money first, Money second)
         {
@@ -103,7 +75,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Common
                 return true;
             }
 
-            if (ReferenceEquals(first, null) || ReferenceEquals(second, null))
+            if (first is null || second is null)
             {
                 return false;
             }
@@ -111,109 +83,51 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Common
             return first.Equals(second);
         }
 
-        public static bool operator !=(Money first, Money second)
-        {
-            return !(first == second);
-        }
+        public static bool operator !=(Money first, Money second) => !(first == second);
 
         public static bool operator >(Money first, Money second)
-        {
-            return first.InternalAmount > second.ConvertTo(first.Currency).InternalAmount
-              && second.InternalAmount < first.ConvertTo(second.Currency).InternalAmount;
-        }
+            => first.InternalAmount > second.ConvertTo(first.Currency).InternalAmount &&
+            second.InternalAmount < first.ConvertTo(second.Currency).InternalAmount;
 
         public static bool operator >=(Money first, Money second)
-        {
-            return first.InternalAmount >= second.ConvertTo(first.Currency).InternalAmount
-              && second.InternalAmount <= first.ConvertTo(second.Currency).InternalAmount;
-        }
+            => first.InternalAmount >= second.ConvertTo(first.Currency).InternalAmount &&
+            second.InternalAmount <= first.ConvertTo(second.Currency).InternalAmount;
 
         public static bool operator <=(Money first, Money second)
-        {
-            return first.InternalAmount <= second.ConvertTo(first.Currency).InternalAmount
-              && second.InternalAmount >= first.ConvertTo(second.Currency).InternalAmount;
-        }
+            => first.InternalAmount <= second.ConvertTo(first.Currency).InternalAmount &&
+            second.InternalAmount >= first.ConvertTo(second.Currency).InternalAmount;
 
         public static bool operator <(Money first, Money second)
-        {
-            return first.InternalAmount < second.ConvertTo(first.Currency).InternalAmount
-              && second.InternalAmount > first.ConvertTo(second.Currency).InternalAmount;
-        }
+            => first.InternalAmount < second.ConvertTo(first.Currency).InternalAmount &&
+            second.InternalAmount > first.ConvertTo(second.Currency).InternalAmount;
 
         public static Money operator +(Money first, Money second)
-        {
-            return new Money(first.InternalAmount + second.ConvertTo(first.Currency).InternalAmount, first.Currency);
-        }
+            => new Money(first.InternalAmount + second.ConvertTo(first.Currency).InternalAmount, first.Currency);
 
         public static Money operator -(Money first, Money second)
-        {
-            return new Money(first.InternalAmount - second.ConvertTo(first.Currency).InternalAmount, first.Currency);
-        }
+            => new Money(first.InternalAmount - second.ConvertTo(first.Currency).InternalAmount, first.Currency);
 
         public static Money operator *(Money first, Money second)
-        {
-            return new Money(first.InternalAmount * second.ConvertTo(first.Currency).InternalAmount, first.Currency);
-        }
+            => new Money(first.InternalAmount * second.ConvertTo(first.Currency).InternalAmount, first.Currency);
 
         public static Money operator /(Money first, Money second)
-        {
-            return new Money(first.InternalAmount / second.ConvertTo(first.Currency).InternalAmount, first.Currency);
-        }
+            => new Money(first.InternalAmount / second.ConvertTo(first.Currency).InternalAmount, first.Currency);
 
-        public static bool operator ==(Money money, long value)
-        {
-            if (ReferenceEquals(money, null))
-            {
-                return false;
-            }
+        public static bool operator ==(Money money, long value) => !(money is null) && money.InternalAmount == value;
 
-            return money.InternalAmount == value;
-        }
+        public static bool operator !=(Money money, long value) => !(money == value);
 
-        public static bool operator !=(Money money, long value)
-        {
-            return !(money == value);
-        }
+        public static bool operator ==(Money money, decimal value) => !(money is null) && money.InternalAmount == value;
 
-        public static bool operator ==(Money money, decimal value)
-        {
-            if (ReferenceEquals(money, null))
-            {
-                return false;
-            }
+        public static bool operator !=(Money money, decimal value) => !(money == value);
 
-            return money.InternalAmount == value;
-        }
+        public static bool operator ==(Money money, double value) => !(money is null) && money.InternalAmount == (decimal)value;
 
-        public static bool operator !=(Money money, decimal value)
-        {
-            return !(money == value);
-        }
+        public static bool operator !=(Money money, double value) => !(money == value);
 
-        public static bool operator ==(Money money, double value)
-        {
-            if (ReferenceEquals(money, null))
-            {
-                return false;
-            }
+        public static Money operator +(Money money, long value) => money + (decimal)value;
 
-            return money.InternalAmount == (decimal)value;
-        }
-
-        public static bool operator !=(Money money, double value)
-        {
-            return !(money == value);
-        }
-
-        public static Money operator +(Money money, long value)
-        {
-            return money + (decimal)value;
-        }
-
-        public static Money operator +(Money money, double value)
-        {
-            return money + (decimal)value;
-        }
+        public static Money operator +(Money money, double value) => money + (decimal)value;
 
         public static Money operator +(Money money, decimal value)
         {
@@ -225,15 +139,9 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Common
             return new Money(money.InternalAmount + value, money.Currency);
         }
 
-        public static Money operator -(Money money, long value)
-        {
-            return money - (decimal)value;
-        }
+        public static Money operator -(Money money, long value) => money - (decimal)value;
 
-        public static Money operator -(Money money, double value)
-        {
-            return money - (decimal)value;
-        }
+        public static Money operator -(Money money, double value) => money - (decimal)value;
 
         public static Money operator -(Money money, decimal value)
         {
@@ -245,15 +153,9 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Common
             return new Money(money.InternalAmount - value, money.Currency);
         }
 
-        public static Money operator *(Money money, long value)
-        {
-            return money * (decimal)value;
-        }
+        public static Money operator *(Money money, long value) => money * (decimal)value;
 
-        public static Money operator *(Money money, double value)
-        {
-            return money * (decimal)value;
-        }
+        public static Money operator *(Money money, double value) => money * (decimal)value;
 
         public static Money operator *(Money money, decimal value)
         {
@@ -265,15 +167,9 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Common
             return new Money(money.InternalAmount * value, money.Currency);
         }
 
-        public static Money operator /(Money money, long value)
-        {
-            return money / (decimal)value;
-        }
+        public static Money operator /(Money money, long value) => money / (decimal)value;
 
-        public static Money operator /(Money money, double value)
-        {
-            return money / (decimal)value;
-        }
+        public static Money operator /(Money money, double value) => money / (decimal)value;
 
         public static Money operator /(Money money, decimal value)
         {
@@ -285,15 +181,9 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Common
             return new Money(money.InternalAmount / value, money.Currency);
         }
 
-        public override int GetHashCode()
-        {
-            return Amount.GetHashCode() ^ Currency.Code.GetHashCode();
-        }
+        public override int GetHashCode() => Amount.GetHashCode() ^ Currency.Code.GetHashCode();
 
-        public override bool Equals(object obj)
-        {
-            return obj is Money && Equals((Money)obj);
-        }
+        public override bool Equals(object obj) => obj is Money && Equals((Money)obj);
 
         public bool Equals(Money other)
         {
@@ -340,10 +230,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Common
             return 0;
         }
 
-        public override string ToString()
-        {
-            return ToString(true, true);
-        }
+        public override string ToString() => ToString(true, true);
 
         public string ToString(bool showDecimalDigits, bool showCurrencySymbol)
         {
@@ -403,20 +290,8 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Common
             return results;
         }
 
-        public Money ConvertTo(Currency currency)
-        {
-            if (Currency == currency)
-            {
-                return this;
-            }
+        public Money ConvertTo(Currency currency) => Currency == currency ? this : new Money(InternalAmount * Currency.ExchangeRate / currency.ExchangeRate, currency);
 
-            return new Money(InternalAmount * Currency.ExchangeRate / currency.ExchangeRate, currency);
-        }
-
-        public object Clone()
-        {
-            var result = MemberwiseClone() as Money;
-            return result;
-        }
+        public object Clone() => MemberwiseClone() as Money;
     }
 }

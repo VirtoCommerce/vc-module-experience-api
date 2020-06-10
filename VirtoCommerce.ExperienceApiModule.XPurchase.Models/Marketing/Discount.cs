@@ -1,4 +1,5 @@
-﻿using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Common;
+using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Common;
+using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Extensions;
 
 namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Marketing
 {
@@ -8,10 +9,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Marketing
         {
         }
 
-        public Discount(Currency currency)
-        {
-            Amount = new Money(currency);
-        }
+        public Discount(Currency currency) => Amount = new Money(currency);
 
         public string Code => PromotionId;
 
@@ -34,17 +32,13 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Marketing
         /// </summary>
         public string Description { get; set; }
 
-        public Discount ConvertTo(Currency currency)
+        public Discount ConvertTo(Currency currency) => new Discount(currency)
         {
-            var result = new Discount(currency)
-            {
-                PromotionId = PromotionId,
-                Description = Description,
-                Coupon = Coupon,
-                Amount = Amount.ConvertTo(currency),
-            };
-            return result;
-        }
+            PromotionId = PromotionId,
+            Description = Description,
+            Coupon = Coupon,
+            Amount = Amount.ConvertTo(currency),
+        };
 
         public override object Clone()
         {

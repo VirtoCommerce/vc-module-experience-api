@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Common;
+using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Extensions;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Marketing;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Tax;
 using VirtoCommerce.Platform.Core.Common;
@@ -64,60 +65,29 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart
         /// <summary>
         ///  price with tax but without discount.
         /// </summary>
-        public Money PriceWithTax
-        {
-            get
-            {
-                return Price + (Price * TaxPercentRate);
-            }
-        }
+        public Money PriceWithTax => Price + (Price * TaxPercentRate);
 
         /// <summary>
         /// Resulting price with discount but without tax.
         /// </summary>
-        public Money Total
-        {
-            get
-            {
-                return Price - DiscountAmount;
-            }
-        }
+        public Money Total => Price - DiscountAmount;
 
         /// <summary>
         /// Resulting price with discount and tax.
         /// </summary>
-        public Money TotalWithTax
-        {
-            get
-            {
-                return PriceWithTax - DiscountAmountWithTax;
-            }
-        }
+        public Money TotalWithTax => PriceWithTax - DiscountAmountWithTax;
 
         /// <summary>
         /// Total discount amount without tax.
         /// </summary>
         public Money DiscountAmount { get; set; }
 
-        public Money DiscountAmountWithTax
-        {
-            get
-            {
-                return DiscountAmount + (DiscountAmount * TaxPercentRate);
-            }
-        }
-
+        public Money DiscountAmountWithTax => DiscountAmount + (DiscountAmount * TaxPercentRate);
 
         /// <summary>
         /// Gets the value of total shipping method tax.
         /// </summary>
-        public Money TaxTotal
-        {
-            get
-            {
-                return TotalWithTax - Total;
-            }
-        }
+        public Money TaxTotal => TotalWithTax - Total;
 
         /// <summary>
         /// Gets or sets the value of shipping tax type.
@@ -163,10 +133,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart
             }
         }
 
-        public virtual string BuildTaxLineId()
-        {
-            return string.Join("&", ShipmentMethodCode, OptionName);
-        }
+        public virtual string BuildTaxLineId() => string.Join("&", ShipmentMethodCode, OptionName);
 
         public void ApplyRewards(IEnumerable<PromotionReward> rewards)
         {
@@ -195,13 +162,13 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart
             return result;
         }
 
-
         protected override IEnumerable<object> GetEqualityComponents()
         {
             return new List<object>
-                   {
-                       ShipmentMethodCode, OptionName
-                   };
+            {
+                ShipmentMethodCode,
+                OptionName
+            };
         }
     }
 }

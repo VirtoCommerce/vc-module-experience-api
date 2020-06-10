@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Common
@@ -7,14 +7,8 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Common
     {
         public virtual string Id { get; set; }
 
-        public bool IsTransient()
-        {
-            return Id == null;
-        }
+        public bool IsTransient() => Id == null;
 
-        protected override IEnumerable<object> GetEqualityComponents()
-        {
-            return new List<object> { Id };
-        }
+        protected override IEnumerable<object> GetEqualityComponents() => new List<object> { Id };
     }
 }

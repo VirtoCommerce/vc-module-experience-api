@@ -3,7 +3,6 @@ using System.Globalization;
 
 namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Common
 {
-
     /// <summary>
     /// Represent language for specified culture.
     /// </summary>
@@ -11,11 +10,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Common
     {
         public Language(string cultureName)
         {
-            CultureInfo culture = CultureInfo.InvariantCulture;
-            if (!string.IsNullOrEmpty(cultureName))
-            {
-                culture = CultureInfo.GetCultureInfo(cultureName);
-            }
+            var culture = string.IsNullOrEmpty(cultureName) ? CultureInfo.InvariantCulture : CultureInfo.GetCultureInfo(cultureName);
 
             CultureName = culture.Name;
             ThreeLeterLanguageName = culture.ThreeLetterISOLanguageName;
@@ -34,21 +29,9 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Common
         {
         }
 
-        public static Language InvariantLanguage
-        {
-            get
-            {
-                return new Language();
-            }
-        }
+        public static Language InvariantLanguage => new Language();
 
-        public bool IsInvariant
-        {
-            get
-            {
-                return CultureName == CultureInfo.InvariantCulture.Name;
-            }
-        }
+        public bool IsInvariant => CultureName == CultureInfo.InvariantCulture.Name;
 
         /// <summary>
         /// culture name format (e.g. en-US).

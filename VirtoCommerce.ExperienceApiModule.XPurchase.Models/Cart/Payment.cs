@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Common;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Extensions;
@@ -116,30 +116,30 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart
         public void ApplyTaxRates(IEnumerable<TaxRate> taxRates)
         {
             TaxPercentRate = 0m;
+
             var taxRatesList = taxRates.ToList();
-            var paymentTaxRate = taxRatesList.FirstOrDefault(x => x.Line.Id != null && x.Line.Id.EqualsInvariant(Id ?? string.Empty));
-            if (paymentTaxRate == null)
+
+            var paymentTaxRate = taxRatesList.FirstOrDefault(x => x.Line.Id != null && x.Line.Id.EqualsInvariant(Id ?? string.Empty)) ?? taxRatesList.FirstOrDefault(x => x.Line.Code.EqualsInvariant(PaymentGatewayCode));
+            if (paymentTaxRate is null)
             {
-                paymentTaxRate = taxRatesList.FirstOrDefault(x => x.Line.Code.EqualsInvariant(PaymentGatewayCode));
+                return;
+            }
+            
+            if (paymentTaxRate.PercentRate > 0)
+            {
+                TaxPercentRate = paymentTaxRate.PercentRate;
+            }
+            else
+            {
+                var amount = Total.Amount > 0 ? Total.Amount : Price.Amount;
+                if (amount > 0)
+                {
+                    TaxPercentRate = TaxRate.TaxPercentRound(paymentTaxRate.Rate.Amount / amount);
+                }
             }
 
-            if (paymentTaxRate != null)
-            {
-                if (paymentTaxRate.PercentRate > 0)
-                {
-                    TaxPercentRate = paymentTaxRate.PercentRate;
-                }
-                else
-                {
-                    var amount = Total.Amount > 0 ? Total.Amount : Price.Amount;
-                    if (amount > 0)
-                    {
-                        TaxPercentRate = TaxRate.TaxPercentRound(paymentTaxRate.Rate.Amount / amount);
-                    }
-                }
-
-                TaxDetails = paymentTaxRate.Line.TaxDetails;
-            }
+            TaxDetails = paymentTaxRate.Line.TaxDetails;
+            
         }
 
         public void ApplyRewards(IEnumerable<PromotionReward> rewards)

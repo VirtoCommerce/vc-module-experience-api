@@ -20,9 +20,9 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Extensions
         public static Type[] GetTypeInheritanceChainTo(this Type type, Type toBaseType)
         {
             var result = new List<Type>
-                         {
-                             type,
-                         };
+            {
+                type,
+            };
 
             var baseType = type.BaseType;
 
@@ -35,32 +35,21 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Extensions
             return result.ToArray();
         }
 
-        public static string PrettyPrint(this Type type)
+        public static string PrettyPrint(this Type type) => PrettyPrintCache.GetOrAdd(type, t =>
         {
-            return PrettyPrintCache.GetOrAdd(
-                type,
-                t =>
-                {
-                    try
-                    {
-                        return PrettyPrintRecursive(t, 0);
-                    }
-                    catch (Exception)
-                    {
-                        return t.Name;
-                    }
-                });
-        }
+            try
+            {
+                return PrettyPrintRecursive(t, 0);
+            }
+            catch (Exception)
+            {
+                return t.Name;
+            }
+        });
 
-        public static Money CloneAsMoney(this ICloneable value)
-        {
-            return value?.Clone() as Money;
-        }
+        public static Money CloneAsMoney(this ICloneable value) => value?.Clone() as Money;
 
-        public static Currency CloneAsCurrency(this ICloneable value)
-        {
-            return value?.Clone() as Currency;
-        }
+        public static Currency CloneAsCurrency(this ICloneable value) => value?.Clone() as Currency;
 
         private static string PrettyPrintRecursive(Type type, int depth)
         {

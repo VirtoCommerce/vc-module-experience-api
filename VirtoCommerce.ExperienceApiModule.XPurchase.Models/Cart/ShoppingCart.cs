@@ -212,23 +212,9 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart
         /// <summary>
         /// Gets the value of shopping cart items total extended price (product price includes all kinds of discounts)
         /// </summary>
-        public Money ExtendedPriceTotal
-        {
-            get
-            {
-                var extendedPriceTotal = Items.Sum(i => i.ExtendedPrice.Amount);
-                return new Money(extendedPriceTotal, Currency);
-            }
-        }
+        public Money ExtendedPriceTotal => new Money(Items.Sum(i => i.ExtendedPrice.Amount), Currency);
 
-        public Money ExtendedPriceTotalWithTax
-        {
-            get
-            {
-                var extendedPriceWithTaxTotal = Items.Sum(i => i.ExtendedPriceWithTax.Amount);
-                return new Money(extendedPriceWithTaxTotal, Currency);
-            }
-        }
+        public Money ExtendedPriceTotalWithTax => new Money(Items.Sum(i => i.ExtendedPriceWithTax.Amount), Currency);
 
 
         /// <summary>
@@ -277,13 +263,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart
         /// <summary>
         /// Left for backward compatibility with old themes
         /// </summary>
-        public Coupon Coupon
-        {
-            get
-            {
-                return Coupons.FirstOrDefault();
-            }
-        }
+        public Coupon Coupon => Coupons.FirstOrDefault();
 
         /// <summary>
         /// Gets or sets the collection of shopping cart coupons
@@ -322,7 +302,6 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart
         /// </summary>
         /// <value>Dynamic properties collections</value>
         public IList<DynamicProperty> DynamicProperties { get; set; }
-
 
         public IList<PaymentMethod> AvailablePaymentMethods { get; set; }
 
@@ -452,10 +431,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart
 
         #region ICacheKey
 
-        public override string GetCacheKey()
-        {
-            return string.Join(":", "Cart", Id, Name, CustomerId, StoreId, Currency?.Code, Type);
-        }
+        public override string GetCacheKey() => string.Join(":", "Cart", Id, Name, CustomerId, StoreId, Currency?.Code, Type);
 
         #endregion ICacheKey
 
@@ -495,38 +471,47 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart
             {
                 result.Discounts = new List<Discount>(Discounts.Select(x => x.Clone() as Discount));
             }
+
             if (TaxDetails != null)
             {
                 result.TaxDetails = new List<TaxDetail>(TaxDetails.Select(x => x.Clone() as TaxDetail));
             }
+
             if (DynamicProperties != null)
             {
                 result.DynamicProperties = new List<DynamicProperty>(DynamicProperties.Select(x => x.Clone() as DynamicProperty));
             }
+
             if (ValidationErrors != null)
             {
                 result.ValidationErrors = new List<ValidationError>(ValidationErrors.Select(x => x.Clone() as ValidationError));
             }
+
             if (Addresses != null)
             {
                 result.Addresses = new List<Address>(Addresses.Select(x => x.Clone() as Address));
             }
+
             if (Items != null)
             {
                 result.Items = new List<LineItem>(Items.Select(x => x.Clone() as LineItem));
             }
+
             if (Payments != null)
             {
                 result.Payments = new List<Payment>(Payments.Select(x => x.Clone() as Payment));
             }
+
             if (Shipments != null)
             {
                 result.Shipments = new List<Shipment>(Shipments.Select(x => x.Clone() as Shipment));
             }
+
             if (Coupons != null)
             {
                 result.Coupons = new List<Coupon>(Coupons.Select(x => x.Clone() as Coupon));
             }
+
             if (AvailablePaymentMethods != null)
             {
                 result.AvailablePaymentMethods = new List<PaymentMethod>(AvailablePaymentMethods.Select(x => x.Clone() as PaymentMethod));

@@ -56,13 +56,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Common
         public string Address2 => Line2;
 
         [JsonIgnore]
-        public string Street
-        {
-            get
-            {
-                return string.Join(", ", Address1, Address2).Trim(',', ' ');
-            }
-        }
+        public string Street => string.Join(", ", Address1, Address2).Trim(',', ' ');
 
         [JsonIgnore]
         public string ProvinceCode => RegionId;
@@ -70,33 +64,29 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Common
         [JsonIgnore]
         public string Province => RegionName;
 
-        public override string ToString()
-        {
-            var result = string.Join(" ", FirstName, LastName, Organization, Line1, City, RegionName, PostalCode, CountryName);
-            return result;
-        }
+        public override string ToString() => string.Join(" ", FirstName, LastName, Organization, Line1, City, RegionName, PostalCode, CountryName);
 
         protected override IEnumerable<object> GetEqualityComponents()
         {
             // Key and Name properties don't participate in equality
             return new List<object>
-                   {
-                       Type,
-                       Organization,
-                       CountryCode,
-                       CountryName,
-                       PostalCode,
-                       Zip,
-                       Line1,
-                       Line2,
-                       RegionId,
-                       RegionName,
-                       FirstName,
-                       MiddleName,
-                       LastName,
-                       Phone,
-                       Email
-                   };
+            {
+                Type,
+                Organization,
+                CountryCode,
+                CountryName,
+                PostalCode,
+                Zip,
+                Line1,
+                Line2,
+                RegionId,
+                RegionName,
+                FirstName,
+                MiddleName,
+                LastName,
+                Phone,
+                Email
+            };
         }
     }
 }
