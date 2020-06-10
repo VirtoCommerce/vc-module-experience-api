@@ -290,7 +290,9 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Common
             return results;
         }
 
-        public Money ConvertTo(Currency currency) => Currency == currency ? this : new Money(InternalAmount * Currency.ExchangeRate / currency.ExchangeRate, currency);
+        public Money ConvertTo(Currency currency) => Currency == currency
+            ? this
+            : new Money(InternalAmount * Currency.ExchangeRate / currency.ExchangeRate, currency);
 
         public object Clone() => MemberwiseClone() as Money;
     }

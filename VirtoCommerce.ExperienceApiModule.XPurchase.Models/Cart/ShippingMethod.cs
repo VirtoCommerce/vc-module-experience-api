@@ -137,7 +137,9 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart
 
         public void ApplyRewards(IEnumerable<PromotionReward> rewards)
         {
-            var shipmentRewards = rewards.Where(r => r.RewardType == PromotionRewardType.ShipmentReward && (r.ShippingMethodCode.IsNullOrEmpty() || r.ShippingMethodCode.EqualsInvariant(ShipmentMethodCode)));
+            var shipmentRewards = rewards
+                .Where(r => r.RewardType == PromotionRewardType.ShipmentReward
+                    && (r.ShippingMethodCode.IsNullOrEmpty() || r.ShippingMethodCode.EqualsInvariant(ShipmentMethodCode)));
 
             Discounts.Clear();
             DiscountAmount = new Money(0m, Currency);

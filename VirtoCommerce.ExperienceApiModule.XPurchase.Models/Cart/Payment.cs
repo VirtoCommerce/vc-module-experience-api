@@ -119,12 +119,14 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart
 
             var taxRatesList = taxRates.ToList();
 
-            var paymentTaxRate = taxRatesList.FirstOrDefault(x => x.Line.Id != null && x.Line.Id.EqualsInvariant(Id ?? string.Empty)) ?? taxRatesList.FirstOrDefault(x => x.Line.Code.EqualsInvariant(PaymentGatewayCode));
+            var paymentTaxRate = taxRatesList.FirstOrDefault(x => x.Line.Id != null && x.Line.Id.EqualsInvariant(Id ?? string.Empty))
+                              ?? taxRatesList.FirstOrDefault(x => x.Line.Code.EqualsInvariant(PaymentGatewayCode));
+
             if (paymentTaxRate is null)
             {
                 return;
             }
-            
+
             if (paymentTaxRate.PercentRate > 0)
             {
                 TaxPercentRate = paymentTaxRate.PercentRate;
@@ -139,12 +141,13 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart
             }
 
             TaxDetails = paymentTaxRate.Line.TaxDetails;
-            
         }
 
         public void ApplyRewards(IEnumerable<PromotionReward> rewards)
         {
-            var paymentRewards = rewards.Where(r => r.RewardType == PromotionRewardType.PaymentReward && (r.PaymentMethodCode.IsNullOrEmpty() || r.PaymentMethodCode.EqualsInvariant(PaymentGatewayCode)));
+            var paymentRewards = rewards
+                .Where(r => r.RewardType == PromotionRewardType.PaymentReward
+                    && (r.PaymentMethodCode.IsNullOrEmpty() || r.PaymentMethodCode.EqualsInvariant(PaymentGatewayCode)));
 
             Discounts.Clear();
 

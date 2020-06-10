@@ -169,7 +169,8 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart
             var shipmentTaxRate = taxRatesList.FirstOrDefault(x => x.Line.Id != null && x.Line.Id.EqualsInvariant(Id ?? string.Empty));
             if (shipmentTaxRate == null)
             {
-                shipmentTaxRate = taxRatesList.FirstOrDefault(x => x.Line.Code.EqualsInvariant(ShipmentMethodCode) && x.Line.Name.EqualsInvariant(ShipmentMethodOption));
+                shipmentTaxRate = taxRatesList.FirstOrDefault(x => x.Line.Code.EqualsInvariant(ShipmentMethodCode)
+                                && x.Line.Name.EqualsInvariant(ShipmentMethodOption));
             }
 
             if (shipmentTaxRate != null && shipmentTaxRate.Rate.Amount > 0)
@@ -193,7 +194,9 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart
 
         public void ApplyRewards(IEnumerable<PromotionReward> rewards)
         {
-            var shipmentRewards = rewards.Where(r => r.RewardType == PromotionRewardType.ShipmentReward && (string.IsNullOrEmpty(r.ShippingMethodCode) || r.ShippingMethodCode.EqualsInvariant(ShipmentMethodCode)));
+            var shipmentRewards = rewards
+                .Where(r => r.RewardType == PromotionRewardType.ShipmentReward
+                    && (string.IsNullOrEmpty(r.ShippingMethodCode) || r.ShippingMethodCode.EqualsInvariant(ShipmentMethodCode)));
 
             Discounts.Clear();
 
@@ -211,11 +214,11 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart
             }
         }
 
+        /// <summary>
+        /// Return true if the fields match
+        /// </summary>
         public bool HasSameMethod(ShippingMethod method)
-        {
-            // Return true if the fields match:
-            return ShipmentMethodCode.EqualsInvariant(method.ShipmentMethodCode) && ShipmentMethodOption.EqualsInvariant(method.OptionName);
-        }
+            => ShipmentMethodCode.EqualsInvariant(method.ShipmentMethodCode) && ShipmentMethodOption.EqualsInvariant(method.OptionName);
 
         public override object Clone()
         {

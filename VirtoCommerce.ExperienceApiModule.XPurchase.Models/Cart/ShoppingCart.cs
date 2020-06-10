@@ -227,12 +227,18 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart
 
         /// <summary>
         /// Gets the value of total discount amount
-        /// Items.Sum(x => x.DiscountTotal) + Shipments.Sum(x => x.DiscountAmount) + Payments.Sum(x => x.DiscountAmount) + DiscountAmount
+        /// Items.Sum(x => x.DiscountTotal)
+        /// + Shipments.Sum(x => x.DiscountAmount)
+        /// + Payments.Sum(x => x.DiscountAmount)
+        /// + DiscountAmount
         /// </summary>
         public Money DiscountTotal { get; set; }
 
         /// <summary>
-        /// Items.Sum(x => x.DiscountTotalWithTax) + Shipments.Sum(x => x.DiscountAmountWithTax) + Payments.Sum(x => x.DiscountAmountWithTax) + DiscountAmountWithTax
+        /// Items.Sum(x => x.DiscountTotalWithTax)
+        /// + Shipments.Sum(x => x.DiscountAmountWithTax)
+        /// + Payments.Sum(x => x.DiscountAmountWithTax)
+        /// + DiscountAmountWithTax
         /// </summary>
         public Money DiscountTotalWithTax { get; set; }
 
@@ -333,9 +339,11 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart
             var cartRewards = rewards.Where(x => x.RewardType == PromotionRewardType.CartSubtotalReward);
             foreach (var reward in cartRewards)
             {
-                //When a discount is applied to the cart subtotal, the tax calculation has already been applied, and is reflected in the tax subtotal.
-                //Therefore, a discount applying to the cart subtotal will occur after tax.
-                //For instance, if the cart subtotal is $100, and $15 is the tax subtotal, a cart - wide discount of 10 % will yield a total of $105($100 subtotal – $10 discount + $15 tax on the original $100).
+                /* When a discount is applied to the cart subtotal, the tax calculation has already been applied, and is reflected in the tax subtotal.
+                * Therefore, a discount applying to the cart subtotal will occur after tax.
+                * For instance, if the cart subtotal is $100, and $15 is the tax subtotal,
+                * a cart - wide discount of 10 % will yield a total of $105($100 subtotal – $10 discount + $15 tax on the original $100).
+                */
                 if (reward.IsValid)
                 {
                     var discount = reward.ToDiscountModel(ExtendedPriceTotal);
