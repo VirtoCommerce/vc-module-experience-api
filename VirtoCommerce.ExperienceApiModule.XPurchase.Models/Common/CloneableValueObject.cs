@@ -1,5 +1,4 @@
 using System;
-using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Common
 {

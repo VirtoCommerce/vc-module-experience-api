@@ -6,7 +6,6 @@ using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Common;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Extensions;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Marketing;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Tax;
-using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart
 {
@@ -39,6 +38,11 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart
         /// Gets or sets line item created date.
         /// </summary>
         public DateTime CreatedDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the product corresponding to line item
+        /// </summary>
+        public Product Product { get; set; }
 
         /// <summary>
         /// Gets or sets the value of product id.
@@ -277,11 +281,8 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart
         {
             TaxPercentRate = 0m;
             var taxRatesList = taxRates.ToList();
-            var taxRate = taxRatesList.FirstOrDefault(x => x.Line.Id != null && x.Line.Id.EqualsInvariant(Id ?? string.Empty));
-            if (taxRate == null)
-            {
-                taxRate = taxRatesList.FirstOrDefault(x => x.Line.Code != null && x.Line.Code.EqualsInvariant(Sku ?? string.Empty));
-            }
+            var taxRate = taxRatesList.FirstOrDefault(x => x.Line.Id != null && x.Line.Id.EqualsInvariant(Id ?? string.Empty))
+                       ?? taxRatesList.FirstOrDefault(x => x.Line.Code != null && x.Line.Code.EqualsInvariant(Sku ?? string.Empty));
 
             if (taxRate == null)
             {
@@ -306,7 +307,9 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart
 
         public void ApplyRewards(IEnumerable<PromotionReward> rewards)
         {
-            var lineItemRewards = rewards.Where(x => x.RewardType == PromotionRewardType.CatalogItemAmountReward && (x.ProductId.IsNullOrEmpty() || x.ProductId.EqualsInvariant(ProductId)));
+            var lineItemRewards = rewards
+                .Where(x => x.RewardType == PromotionRewardType.CatalogItemAmountReward
+                    && (x.ProductId.IsNullOrEmpty() || x.ProductId.EqualsInvariant(ProductId)));
 
             Discounts.Clear();
 
@@ -331,10 +334,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart
             }
         }
 
-        public override string ToString()
-        {
-            return $"cart lineItem #{Id ?? "undef"} {Name ?? "undef"} qty: {Quantity}";
-        }
+        public override string ToString() => $"cart lineItem #{Id ?? "undef"} {Name ?? "undef"} qty: {Quantity}";
 
         public override object Clone()
         {

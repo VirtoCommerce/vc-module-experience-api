@@ -1,7 +1,7 @@
 ﻿namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Common
 {
-    public interface ICacheKey
+    public interface IEntity
     {
-        string GetCacheKey();
+        string Id { get; set; }
     }
 }

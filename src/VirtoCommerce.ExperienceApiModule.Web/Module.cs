@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using VirtoCommerce.ExperienceApiModule.Core.Schema;
 using VirtoCommerce.ExperienceApiModule.DigitalCatalog;
+using VirtoCommerce.ExperienceApiModule.XPurchase;
 using VirtoCommerce.Platform.Core.Modularity;
 namespace VirtoCommerce.ExperienceApiModule.Web
 {
@@ -17,13 +18,15 @@ namespace VirtoCommerce.ExperienceApiModule.Web
         {
 
             services.AddMediatR(typeof(Anchor));
+            services.AddMediatR(typeof(XPurchaseAnchor));
 
-          
+
             //services.AddSingleton(typeof(IPipelineBehavior<,>), typeof(RequestExceptionProcessorBehavior<,>));
             //serviceCollection.AddSingleton(typeof(IRequestPreProcessor<>), typeof(GenericRequestPreProcessor<>));
-                      
+
             //Discover the assembly and  register all mapping profiles through reflection
             services.AddAutoMapper(typeof(Anchor));
+            services.AddAutoMapper(typeof(XPurchaseAnchor));
 
 
             //Register .NET GraphQL server
@@ -36,12 +39,14 @@ namespace VirtoCommerce.ExperienceApiModule.Web
             .AddUserContextBuilder(context => new GraphQLUserContext { User = context.User })
             .AddRelayGraphTypes()
             .AddGraphTypes(typeof(Anchor))
+            .AddGraphTypes(typeof(XPurchaseAnchor))
             .AddDataLoader();
 
 
             //Register custom GraphQL dependencies
             services.AddPermissionAuthorization();
             services.AddGraphShemaBuilders(typeof(Anchor));
+            services.AddGraphShemaBuilders(typeof(XPurchaseAnchor));
 
             //Discover the assembly and  register all mapping profiles through reflection
             services.AddAutoMapper(typeof(Module));
