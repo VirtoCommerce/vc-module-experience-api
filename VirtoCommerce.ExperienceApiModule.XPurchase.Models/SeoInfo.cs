@@ -1,5 +1,6 @@
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Common;
 using VirtoCommerce.Platform.Core.Common;
+using ValueObject = VirtoCommerce.ExperienceApiModule.XPurchase.Models.Common.ValueObject;
 
 namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models
 {
