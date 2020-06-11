@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="VirtoCommerce.MarketingModule.Data" Version="3.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\VirtoCommerce.ExperienceApiModule.XPurchase.Models\VirtoCommerce.ExperienceApiModule.XPurchase.Models.csproj" />
   </ItemGroup>
 

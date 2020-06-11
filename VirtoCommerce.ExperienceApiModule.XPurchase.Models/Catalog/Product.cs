@@ -5,11 +5,106 @@ using System.Linq;
 using Newtonsoft.Json;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Common;
+using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Customer;
+using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Extensions;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Marketing;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Tax;
 
 namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Catalog
 {
+    public partial class Category : Entity, IAccessibleByIndexKey, IHasBreadcrumbs
+    {
+        public Category()
+        {
+            Images = new List<Image>();
+            Properties = MutablePagedList<CatalogProperty>.Empty;
+        }
+
+        public string CatalogId { get; set; }
+
+        //All parents categories
+        [JsonIgnore]
+        public IMutablePagedList<Category> Parents { get; set; }
+        public string ParentId { get; set; }
+
+        public string Code { get; set; }
+
+        public string TaxType { get; set; }
+        public string DefaultSortBy { get; set; } = "manual";
+        public string Title => Name;
+        public string Name { get; set; }
+
+        /// <summary>
+        /// All parent categories ids concatenated with "/". E.g. (1/21/344)
+        /// </summary>
+        public string Outline { get; set; }
+
+        //Level in hierarchy
+        public int Level => Outline?.Split("/").Count() ?? 0;
+
+        /// <summary>
+        /// Slug  path e.g /camcorders
+        /// </summary>
+        public string SeoPath { get; set; }
+        /// <summary>
+        /// Application relative url e.g ~/camcorders
+        /// </summary>
+        public string Url { get; set; }
+
+        public SeoInfo SeoInfo { get; set; }
+
+        [JsonIgnore]
+        public int AllProductsCount => Products.GetTotalCount();
+
+        /// <summary>
+        /// Category main image
+        /// </summary>
+        public Image PrimaryImage { get; set; }
+        public Image Image => PrimaryImage;
+
+        public IList<Image> Images { get; set; }
+        [JsonIgnore]
+        public IMutablePagedList<Product> Products { get; set; }
+
+        /// <summary>
+        /// Child categories
+        /// </summary>
+        public IMutablePagedList<Category> Categories { get; set; }
+        [JsonIgnore]
+        public IMutablePagedList<Category> Collections => Categories;
+
+        public override string ToString() => SeoPath ?? base.ToString();
+
+        public IEnumerable<Breadcrumb> GetBreadcrumbs()
+        {
+            foreach (var parentCategory in Parents.Distinct())
+            {
+                if (!parentCategory.SeoPath.IsNullOrEmpty())
+                {
+                    yield return new CategoryBreadcrumb(parentCategory)
+                    {
+                        SeoPath = parentCategory.SeoPath,
+                        Url = parentCategory.SeoPath,
+                        Title = parentCategory.Name,
+                    };
+                }
+            }
+            if (!SeoPath.IsNullOrEmpty())
+            {
+                yield return new CategoryBreadcrumb(this)
+                {
+                    Title = Title,
+                    SeoPath = SeoPath,
+                    Url = Url
+                };
+            }
+        }
+
+        public IMutablePagedList<CatalogProperty> Properties { get; set; }
+        public string Handle => SeoInfo?.Slug ?? Id;
+        public string IndexKey => Handle;
+    }
+
     public partial class Product : Entity, IDiscountable, ITaxable, IAccessibleByIndexKey, IHasBreadcrumbs
     {
         public Product()
@@ -273,21 +368,10 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Catalog
         public IList<Inventory.Inventory> InventoryAll { get; set; }
 
         public virtual long AvailableQuantity
-        {
-            get
-            {
-                long result = 0;
-
-                if (TrackInventory && InventoryAll != null)
-                {
-                    foreach (var inventory in InventoryAll)
-                    {
-                        result += Math.Max(0, (inventory.InStockQuantity ?? 0L) - (inventory.ReservedQuantity ?? 0L));
-                    }
-                }
-                return result;
-            }
-        }
+            => TrackInventory && !InventoryAll.IsNullOrEmpty()
+                ? InventoryAll.Aggregate<Inventory.Inventory, long>(0, (quantity, inventory)
+                    => quantity += Math.Max(0, (inventory.InStockQuantity ?? 0L) - (inventory.ReservedQuantity ?? 0L)))
+                : 0;
 
         /// <summary>
         /// product seo info
@@ -306,13 +390,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Catalog
         /// </summary>
         public IList<Image> Images { get; set; }
 
-        public bool IsQuotable
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public bool IsQuotable => true; // :))))
 
         public bool IsAvailable { get; set; }
         public bool Available => IsAvailable;
@@ -412,7 +490,10 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Catalog
 
         public void ApplyRewards(IEnumerable<PromotionReward> rewards)
         {
-            var productRewards = rewards.Where(r => r.RewardType == PromotionRewardType.CatalogItemAmountReward && (r.ProductId.IsNullOrEmpty() || r.ProductId.EqualsInvariant(Id)));
+            var productRewards = rewards
+                .Where(r => r.RewardType == PromotionRewardType.CatalogItemAmountReward
+                    && (r.ProductId.IsNullOrEmpty() || r.ProductId.EqualsInvariant(Id)));
+
             if (productRewards == null)
             {
                 return;
@@ -430,32 +511,37 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Catalog
                     tierPrice.DiscountAmount = new Money(Math.Max(0, (Price.ListPrice - tierPrice.Price).Amount), Currency);
                 }
 
-                if (reward.IsValid)
+                if (!reward.IsValid)
                 {
-                    Discounts.Add(discount);
-                    if (discount.Amount.InternalAmount > 0)
-                    {
-                        Price.DiscountAmount += discount.Amount;
+                    continue;
+                }
+                
+                Discounts.Add(discount);
 
-                        //apply discount to tier prices
-                        foreach (var tierPrice in Price.TierPrices)
-                        {
-                            discount = reward.ToDiscountModel(tierPrice.Price);
-                            tierPrice.DiscountAmount += discount.Amount;
-                        }
-                    }
+                if (discount.Amount.InternalAmount <= 0)
+                {
+                    continue;
+                }
+                
+                Price.DiscountAmount += discount.Amount;
+
+                //apply discount to tier prices
+                foreach (var tierPrice in Price.TierPrices)
+                {
+                    discount = reward.ToDiscountModel(tierPrice.Price);
+                    tierPrice.DiscountAmount += discount.Amount;
                 }
             }
         }
 
         #endregion
 
-
-
         public override string ToString()
-        {
-            return string.Format(CultureInfo.InvariantCulture, "product #{0} sku: {1} name: {2}", Id ?? "undef", Sku ?? "undef", Name ?? "undef");
-        }
+            => string.Format(CultureInfo.InvariantCulture,
+                "product #{0} sku: {1} name: {2}",
+                Id ?? "undef",
+                Sku ?? "undef",
+                Name ?? "undef");
 
         public IEnumerable<Breadcrumb> GetBreadcrumbs()
         {
@@ -466,11 +552,12 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Catalog
                     yield return breadCrumb;
                 }
             }
+
             yield return new ProductBreadcrumb(this)
             {
                 Title = Title,
                 SeoPath = SeoPath,
-                Url = Url
+                Url = Url,
             };
         }
     }

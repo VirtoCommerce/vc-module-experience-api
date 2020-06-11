@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Marketing;
 
-namespace VirtoCommerce.Storefront.Model.Marketing.Services
+namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Marketing.Services
 {
     public interface IPromotionEvaluator
     {
