@@ -5,16 +5,21 @@ using System.Threading.Tasks;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart.Services;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Common;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Tax;
+using VirtoCommerce.TaxModule.Core.Model.Search;
+using VirtoCommerce.TaxModule.Core.Services;
 
-namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain
+namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Tax
 {
     public class TaxEvaluator : ITaxEvaluator
     {
-        private readonly ITaxModule _taxApi;
-        public TaxEvaluator(ITaxModule taxApi)
+        private readonly ITaxProviderSearchService _taxProviderSearchService;
+
+        public TaxEvaluator(ITaxProviderSearchService taxProviderSearchService)
         {
-            _taxApi = taxApi;
+            _taxProviderSearchService = taxProviderSearchService;
         }
+
+        // TODO: TaxEvaluationContext is created from shopping cart and store (in storefront)
         public virtual async Task EvaluateTaxesAsync(TaxEvaluationContext context, IEnumerable<ITaxable> owners)
         {
             if (context == null)
@@ -30,7 +35,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain
 
             if (context.StoreTaxCalculationEnabled && context.FixedTaxRate != 0)
             {
-                //Do not execute platform API for tax evaluation if fixed tax rate is used
+                // Do not execute platform API for tax evaluation if fixed tax rate is used
                 if (context.FixedTaxRate != 0)
                 {
                     foreach (var line in context.Lines ?? Enumerable.Empty<TaxLine>())
@@ -46,11 +51,28 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain
                 }
                 else
                 {
-                    taxRates = await _taxApi.EvaluateTaxesAsync(context.StoreId, context);
+                    taxRates = await EvaluateTaxesAsync(context.StoreId, context);
                 }
             }
             ApplyTaxRates(taxRates, owners);
         }
+
+
+        protected virtual async Task<IList<TaxRate>> EvaluateTaxesAsync(string storeId, TaxEvaluationContext context)
+        {
+            var result = new List<TaxRate>();
+            var storeTaxProviders = await _taxProviderSearchService.SearchTaxProvidersAsync(new TaxProviderSearchCriteria { StoreIds = new[] { storeId } });
+
+            var activeTaxProvider = storeTaxProviders.Results.FirstOrDefault(x => x.IsActive);
+            if (activeTaxProvider != null)
+            {
+                context.StoreId = storeId;
+                result.AddRange(activeTaxProvider.CalculateRates(context.ToTaxEvaluationContextDto()).Select(x => x.ToTaxRate(context.Currency)));
+            }
+
+            return result;
+        }
+
 
         private static void ApplyTaxRates(IList<TaxRate> taxRates, IEnumerable<ITaxable> owners)
         {
