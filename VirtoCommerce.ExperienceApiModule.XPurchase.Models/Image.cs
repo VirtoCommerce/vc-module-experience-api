@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using ValueObject = VirtoCommerce.ExperienceApiModule.XPurchase.Models.Common.ValueObject;
 
 namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models

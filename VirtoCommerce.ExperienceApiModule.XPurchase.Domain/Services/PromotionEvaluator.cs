@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Converters;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Catalog;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Common;
@@ -8,6 +9,7 @@ using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Extensions;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Marketing;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Marketing.Services;
 using VirtoCommerce.MarketingModule.Core.Services;
+
 
 namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Services
 {
@@ -72,7 +74,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Services
 
             if (promotionEvaluationContext.Cart != null)
             {
-                result.CartPromoEntries = promotionEvaluationContext.Cart.Items.Select(x => ToProductPromoEntryDto(x)).ToList();
+                result.CartPromoEntries = promotionEvaluationContext.Cart.Items.Select(x => x.ToProductPromoEntryDto()).ToList();
 
                 result.CartTotal = /*(double)*/promotionEvaluationContext.Cart.SubTotal.Amount; // Maybe it was rounding?
                 result.Coupons = promotionEvaluationContext.Cart.Coupons?.Select(c => c.Code).ToList();
@@ -124,23 +126,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Services
                 Discount = product.Price != null ? /*(double)*/product.Price.DiscountAmount.Amount : 0, // Maybe it was rounding?
                 Price = product.Price != null ? /*(double)*/product.Price.SalePrice.Amount : 0, // Maybe it was rounding?
             };
-
-        // Todo: move to cart extensions 
-        public static MarketingModule.Core.Model.Promotions.ProductPromoEntry ToProductPromoEntryDto(LineItem lineItem)
-            => new MarketingModule.Core.Model.Promotions.ProductPromoEntry
-            {
-                CatalogId = lineItem.CatalogId,
-                CategoryId = lineItem.CategoryId,
-                Code = lineItem.Sku,
-                ProductId = lineItem.ProductId,
-                Discount = /*(double)*/lineItem.DiscountTotal.Amount,// Maybe it was rounding?
-                                                                     //Use only base price for discount evaluation
-                Price = /*(double)*/lineItem.SalePrice.Amount,// Maybe it was rounding?
-                Quantity = lineItem.Quantity,
-                InStockQuantity = lineItem.InStockQuantity,
-                Outline = lineItem.Product.Outline,
-                Variations = null // TODO
-            };
+      
 
         // todo: move to marketing extensions
         public static PromotionReward ToPromotionReward(MarketingModule.Core.Model.Promotions.PromotionReward rewardDto, Currency currency)

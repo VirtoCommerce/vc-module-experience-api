@@ -9,6 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\VirtoCommerce.ExperienceApiModule.XPurchase.Domain\VirtoCommerce.ExperienceApiModule.XPurchase.Domain.csproj" />
     <ProjectReference Include="..\VirtoCommerce.ExperienceApiModule.XPurchase.Models\VirtoCommerce.ExperienceApiModule.XPurchase.Models.csproj" />
   </ItemGroup>
 

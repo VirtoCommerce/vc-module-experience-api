@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Common;
 
 namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Catalog

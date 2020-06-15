@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart.ValidationErrors;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Common;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Extensions;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Marketing;

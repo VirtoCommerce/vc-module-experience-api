@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -90,7 +90,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Extensions
 
         public static bool FilePathHasMaskChars(this string path)
         {
-            return (!string.IsNullOrEmpty(path) && path.IndexOfAny(_maskChars) >= 0);
+            return !string.IsNullOrEmpty(path) && path.IndexOfAny(_maskChars) >= 0;
         }
 
         public static bool FitsMask(this string fileName, string fileMask)

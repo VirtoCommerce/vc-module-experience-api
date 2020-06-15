@@ -3,71 +3,68 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Converters;
+using VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Models;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart.Services;
+using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart.ValidationErrors;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Catalog;
-using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Common;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Enums;
+using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Exceptions;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Marketing;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Marketing.Services;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Quote;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Security;
-using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Stores;
 using VirtoCommerce.Platform.Core.Common;
 using IEntity = VirtoCommerce.ExperienceApiModule.XPurchase.Models.Common.IEntity;
 
-namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Services
+namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Aggregates
 {
-    public class CartBuilder : ICartBuilder
+    public class ShoppingCartAggregate : IShoppingCartAggregate
     {
         private readonly ICartService _cartService;
         private readonly ICatalogService _catalogService;
         private readonly IPromotionEvaluator _promotionEvaluator;
         private readonly ITaxEvaluator _taxEvaluator;
 
-        public CartBuilder(ICartService cartService,
+        public ShoppingCartAggregate(ICartService cartService,
             ICatalogService catalogSearchService,
             IPromotionEvaluator promotionEvaluator,
-            ITaxEvaluator taxEvaluator)
+            ITaxEvaluator taxEvaluator,
+            ShoppingCartContext context)
         {
             _cartService = cartService;
             _catalogService = catalogSearchService;
             _promotionEvaluator = promotionEvaluator;
             _taxEvaluator = taxEvaluator;
+            Context = context;
         }
 
         #region ICartBuilder Members
 
         public virtual ShoppingCart Cart { get; protected set; }
 
+        protected virtual ShoppingCartContext Context { get; set; }
+
         public virtual async Task TakeCartAsync(ShoppingCart cart)
         {
-            await PrepareCartAsync(cart);
-            Cart = cart;
-        }
+            if (cart == null)
+            {
+                throw new ArgumentNullException(nameof(cart));
+            }
 
-        public void LoadOrCreateNewTransientCart(string cartName, Store store, User user, Language language, Currency currency, string type = null)
-        {
-            LoadOrCreateNewTransientCartAsync(cartName, store, user, language, currency, type).GetAwaiter().GetResult();
-        }
-
-        public virtual async Task LoadOrCreateNewTransientCartAsync(string cartName, Store store, User user, Language language, Currency currency, string type = null)
-        {
-            var cartSearchCriteria = CreateCartSearchCriteria(cartName, store, user, language, currency, type);
-
-            var cartSearchResult = await _cartService
-                .SearchCartsAsync(cartSearchCriteria)
-                .ConfigureAwait(false);
-
-            var cart = cartSearchResult.FirstOrDefault() ?? CreateCart(cartName, store, user, language, currency, type);
-
-            //Load cart dependencies
-            await PrepareCartAsync(cart);
+            //Load products for cart line items
+            if (cart.Items.Any())
+            {
+                var productIds = cart.Items.Select(i => i.ProductId).ToArray();
+                var products = await _catalogService.GetProductsAsync(productIds, ItemResponseGroup.ItemWithPrices | ItemResponseGroup.ItemWithDiscounts | ItemResponseGroup.Inventory | ItemResponseGroup.Outlines);
+                foreach (var item in cart.Items)
+                {
+                    item.Product = products.FirstOrDefault(x => x.Id.EqualsInvariant(item.ProductId));
+                }
+            }
 
             Cart = cart;
-
-            await EvaluatePromotionsAsync();
-            await EvaluateTaxesAsync();
         }
 
         public virtual Task UpdateCartComment(string comment)
@@ -93,18 +90,18 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Services
             return isProductAvailable;
         }
 
-        public virtual async Task ChangeItemQuantityAsync(string id, int quantity)
+        public virtual async Task ChangeItemQuantityByIdAsync(string lineItemId, int quantity)
         {
             EnsureCartExists();
 
-            var lineItem = Cart.Items.FirstOrDefault(i => i.Id == id);
+            var lineItem = Cart.Items.FirstOrDefault(i => i.Id == lineItemId);
             if (lineItem != null)
             {
                 await ChangeItemQuantityAsync(lineItem, quantity);
             }
         }
 
-        public virtual async Task ChangeItemQuantityAsync(int lineItemIndex, int quantity)
+        public virtual async Task ChangeItemQuantityByIndexAsync(int lineItemIndex, int quantity)
         {
             EnsureCartExists();
 
@@ -129,11 +126,11 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Services
             }
         }
 
-        public virtual Task RemoveItemAsync(string id)
+        public virtual Task RemoveItemAsync(string lineItemId)
         {
             EnsureCartExists();
 
-            var lineItem = Cart.Items.FirstOrDefault(x => x.Id == id);
+            var lineItem = Cart.Items.FirstOrDefault(x => x.Id == lineItemId);
             if (lineItem != null)
             {
                 Cart.Items.Remove(lineItem);
@@ -185,7 +182,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Services
             if (shipment.DeliveryAddress != null)
             {
                 //Reset address key because it can equal a customer address from profile and if not do that it may cause
-                //address primary key duplication error for multiple carts with the same address 
+                //address primary key duplication error for multiple carts with the same address
                 shipment.DeliveryAddress.Key = null;
             }
             Cart.Shipments.Add(shipment);
@@ -231,7 +228,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Services
             if (payment.BillingAddress != null)
             {
                 //Reset address key because it can equal a customer address from profile and if not do that it may cause
-                //address primary key duplication error for multiple carts with the same address 
+                //address primary key duplication error for multiple carts with the same address
                 payment.BillingAddress.Key = null;
             }
             Cart.Payments.Add(payment);
@@ -354,9 +351,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Services
 
         public virtual async Task<IEnumerable<ShippingMethod>> GetAvailableShippingMethodsAsync()
         {
-            var workContext = _workContextAccessor.WorkContext;
-
-            //Request available shipping rates 
+            //Request available shipping rates
             var result = await _cartService.GetAvailableShippingMethodsAsync(Cart);
             if (!result.IsNullOrEmpty())
             {
@@ -365,7 +360,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Services
                 await _promotionEvaluator.EvaluateDiscountsAsync(promoEvalContext, result);
 
                 //Evaluate taxes for available shipping rates
-                var taxEvalContext = Cart.ToTaxEvalContext(workContext.CurrentStore);
+                var taxEvalContext = Cart.ToTaxEvalContext(Context.CurrentStore.TaxCalculationEnabled, Context.CurrentStore.FixedTaxRate);
                 taxEvalContext.Lines.Clear();
                 taxEvalContext.Lines.AddRange(result.SelectMany(x => x.ToTaxLines()));
                 await _taxEvaluator.EvaluateTaxesAsync(taxEvalContext, result);
@@ -376,16 +371,17 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Services
         public virtual async Task<IEnumerable<PaymentMethod>> GetAvailablePaymentMethodsAsync()
         {
             EnsureCartExists();
-            var result = await _cartService.GetAvailablePaymentMethodsAsync(Cart);
+
+            var result = await _cartService.GetAvailablePaymentMethodsAsync(Cart, Context.CurrentStore.Id);
+
             if (!result.IsNullOrEmpty())
             {
                 //Evaluate promotions cart and apply rewards for available shipping methods
                 var promoEvalContext = Cart.ToPromotionEvaluationContext();
                 await _promotionEvaluator.EvaluateDiscountsAsync(promoEvalContext, result);
 
-                //Evaluate taxes for available payments 
-                var workContext = _workContextAccessor.WorkContext;
-                var taxEvalContext = Cart.ToTaxEvalContext(workContext.CurrentStore);
+                //Evaluate taxes for available payments
+                var taxEvalContext = Cart.ToTaxEvalContext(Context.CurrentStore.TaxCalculationEnabled, Context.CurrentStore.FixedTaxRate);
                 taxEvalContext.Lines.Clear();
                 taxEvalContext.Lines.AddRange(result.SelectMany(x => x.ToTaxLines()));
                 await _taxEvaluator.EvaluateTaxesAsync(taxEvalContext, result);
@@ -422,8 +418,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Services
 
         public async Task EvaluateTaxesAsync()
         {
-            var workContext = _workContextAccessor.WorkContext;
-            await _taxEvaluator.EvaluateTaxesAsync(Cart.ToTaxEvalContext(workContext.CurrentStore), new[] { Cart });
+            await _taxEvaluator.EvaluateTaxesAsync(Cart.ToTaxEvalContext(Context.CurrentStore.TaxCalculationEnabled, Context.CurrentStore.FixedTaxRate), new[] { Cart });
         }
 
         public virtual async Task SaveAsync()
@@ -434,42 +429,11 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Services
             await EvaluateTaxesAsync();
 
             var cart = await _cartService.SaveChanges(Cart);
-            //Evict cart from cache
-            CartCacheRegion.ExpireCart(Cart);
 
             await TakeCartAsync(cart);
         }
 
-        #endregion
-
-        protected virtual CartSearchCriteria CreateCartSearchCriteria(string cartName, Store store, User user, Language language, Currency currency, string type)
-        {
-            return new CartSearchCriteria
-            {
-                StoreId = store.Id,
-                Customer = user,
-                Name = cartName,
-                Currency = currency,
-                Type = type
-            };
-        }
-
-        protected virtual ShoppingCart CreateCart(string cartName, Store store, User user, Language language, Currency currency, string type)
-        {
-            var cart = new ShoppingCart(currency, language)
-            {
-                CustomerId = user.Id,
-                Name = cartName,
-                StoreId = store.Id,
-                Language = language,
-                Customer = user,
-                Type = type,
-                IsAnonymous = !user.IsRegisteredUser,
-                CustomerName = user.IsRegisteredUser ? user.UserName : SecurityConstants.AnonymousUsername,
-            };
-
-            return cart;
-        }
+        #endregion ICartBuilder Members
 
         protected virtual Task ValidateCartItemsAsync()
         {
@@ -596,29 +560,8 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Services
         {
             if (Cart == null)
             {
-                throw new StorefrontException("Cart not loaded.");
+                throw new CartException("Cart not loaded.");
             }
-        }
-
-        protected virtual async Task PrepareCartAsync(ShoppingCart cart)
-        {
-            if (cart == null)
-            {
-                throw new ArgumentNullException(nameof(cart));
-            }
-
-            //Load products for cart line items
-            if (cart.Items.Any())
-            {
-                var productIds = cart.Items.Select(i => i.ProductId).ToArray();
-                var products = await _catalogService.GetProductsAsync(productIds, ItemResponseGroup.ItemWithPrices | ItemResponseGroup.ItemWithDiscounts | ItemResponseGroup.Inventory | ItemResponseGroup.Outlines);
-                foreach (var item in cart.Items)
-                {
-                    item.Product = products.FirstOrDefault(x => x.Id.EqualsInvariant(item.ProductId));
-                }
-            }
-
-
         }
     }
 }

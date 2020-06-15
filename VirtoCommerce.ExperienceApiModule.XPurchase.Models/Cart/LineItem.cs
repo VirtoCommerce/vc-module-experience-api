@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
+using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart.ValidationErrors;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Catalog;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Common;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Extensions;
@@ -32,6 +33,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart
             Discounts = new List<Discount>();
             TaxDetails = new List<TaxDetail>();
             ValidationErrors = new List<ValidationError>();
+            DynamicProperties = new MutablePagedList<DynamicProperty>(Enumerable.Empty<DynamicProperty>());
             IsValid = true;
         }
 
@@ -253,6 +255,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart
         public bool IsValid { get; set; }
 
         public IList<ValidationError> ValidationErrors { get; set; }
+        public MutablePagedList<DynamicProperty> DynamicProperties { get; set; }
 
         /// <summary>
         /// Gets or sets the value of total shipping tax amount.

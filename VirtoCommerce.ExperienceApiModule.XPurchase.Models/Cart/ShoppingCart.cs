@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
+using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart.ValidationErrors;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Common;
+using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Common.Caching;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Marketing;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Security;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Tax;

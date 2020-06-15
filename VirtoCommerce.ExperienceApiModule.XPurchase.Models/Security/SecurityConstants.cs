@@ -5,6 +5,8 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Security
 {
     public static class SecurityConstants
     {
+        public const string AnonymousUsername = "Anonymous";
+
         public static readonly PlatformSecurity.Role XPurchaseCartUser = new PlatformSecurity.Role
         {
             Id = "x-purchase-cart-user",

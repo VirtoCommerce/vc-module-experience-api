@@ -1,10 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Common;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Extensions;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Marketing;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Tax;
-using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart
 {
@@ -36,6 +36,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart
         /// <summary>
         /// Gets or sets the value of shipping method name.
         /// </summary>
+        [Obsolete("Left for backward compatibility. Should be removed in future. Use Code.")]
         public string Name { get; set; }
 
         public string Title => Name;
@@ -61,6 +62,11 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart
         /// price without discount and taxes.
         /// </summary>
         public Money Price { get; set; }
+
+        /// <summary>
+        /// Custom properties for payment method
+        /// </summary>
+        public List<SettingEntry> Settings { get; set; }
 
         /// <summary>
         ///  price with tax but without discount.

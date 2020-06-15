@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart.ValidationErrors;
 
 namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart
 {

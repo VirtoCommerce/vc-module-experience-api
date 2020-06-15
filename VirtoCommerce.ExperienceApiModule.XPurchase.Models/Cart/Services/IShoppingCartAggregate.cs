@@ -11,7 +11,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart.Services
     /// <summary>
     /// Represent abstraction for working with customer shopping cart
     /// </summary>
-    public interface ICartBuilder
+    public interface IShoppingCartAggregate
     {
         ShoppingCart Cart { get; }
 
@@ -30,19 +30,6 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart.Services
         Task UpdateCartComment(string comment);
 
         /// <summary>
-        /// Load or created new cart for specified parameters and capture it.  All next changes will be implemented on it
-        /// </summary>
-        /// <param name="cartName"></param>
-        /// <param name="store"></param>
-        /// <param name="user"></param>
-        /// <param name="language"></param>
-        /// <param name="currency"></param>
-        /// <returns></returns>
-        Task LoadOrCreateNewTransientCartAsync(string cartName, Store store, User user, Language language, Currency currency, string type = null);
-
-        void LoadOrCreateNewTransientCart(string cartName, Store store, User user, Language language, Currency currency, string type = null);
-
-        /// <summary>
         /// Add new product to cart
         /// </summary>
         /// <param name="product"></param>
@@ -56,7 +43,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart.Services
         /// <param name="lineItemId"></param>
         /// <param name="quantity"></param>
         /// <returns></returns>
-        Task ChangeItemQuantityAsync(string lineItemId, int quantity);
+        Task ChangeItemQuantityByIdAsync(string lineItemId, int quantity);
 
         /// <summary>
         /// Change cart item qty by item id
@@ -64,7 +51,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart.Services
         /// <param name="lineItemIndex"></param>
         /// <param name="quantity"></param>
         /// <returns></returns>
-        Task ChangeItemQuantityAsync(int lineItemIndex, int quantity);
+        Task ChangeItemQuantityByIndexAsync(int lineItemIndex, int quantity);
 
         Task ChangeItemsQuantitiesAsync(int[] quantities);
 

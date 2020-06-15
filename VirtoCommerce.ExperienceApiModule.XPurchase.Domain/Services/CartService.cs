@@ -4,70 +4,93 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using PagedList;
+using VirtoCommerce.CartModule.Core.Services;
+using VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Converters;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart.Services;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Common;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Security;
+using VirtoCommerce.PaymentModule.Core.Model.Search;
+using VirtoCommerce.PaymentModule.Core.Services;
+using VirtoCommerce.ShippingModule.Core.Services;
 
 namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Services
 {
     public class CartService : ICartService
     {
-        private readonly ICartModule _cartApi;
+        private readonly IPaymentMethodsSearchService _paymentMethodsSearchService;
+        private readonly IShoppingCartService _shoppingCartService;
+        private readonly IShippingMethodsSearchService _shippingMethodsSearchService;
         private readonly UserManager<User> _userManager;
 
-        public CartService(ICartModule cartModule,
+        public CartService(IPaymentMethodsSearchService paymentMethodsSearchService,
+            IShoppingCartService shoppingCartService,
+            IShippingMethodsSearchService shippingMethodsSearchService,
             UserManager<User> userManager)
         {
-            _cartApi = cartModule;
+            _paymentMethodsSearchService = paymentMethodsSearchService;
+            _shoppingCartService = shoppingCartService;
+            _shippingMethodsSearchService = shippingMethodsSearchService;
             _userManager = userManager;
         }
 
         public async Task DeleteCartByIdAsync(string cartId)
-            => await _cartApi.DeleteCartsAsync(new[] { cartId ?? throw new ArgumentNullException(nameof(cartId)) });
+            => await _shoppingCartService.DeleteAsync(new[] { cartId ?? throw new ArgumentNullException(nameof(cartId)) });
 
-        public async Task<IEnumerable<PaymentMethod>> GetAvailablePaymentMethodsAsync(ShoppingCart cart)
+        public async Task<IEnumerable<PaymentMethod>> GetAvailablePaymentMethodsAsync(ShoppingCart cart, string storeId)
         {
-            if (cart == null)
+            if (cart == null || string.IsNullOrEmpty(storeId) || cart.IsTransient())
             {
-                throw new ArgumentNullException(nameof(cart));
+                return Enumerable.Empty<PaymentMethod>();
             }
+            
+            var criteria = new PaymentMethodsSearchCriteria
+            {
+                IsActive = true,
+                Take = int.MaxValue,
+                StoreId = storeId,
+            };
 
-            var result = Enumerable.Empty<PaymentMethod>();
-            if (!cart.IsTransient())
-            {
-                var payments = await _cartApi.GetAvailablePaymentMethodsAsync(cart.Id);
-                result = payments.Select(x => x.ToCartPaymentMethod(cart)).OrderBy(x => x.Priority).ToList();
-            }
-            return result;
+            var payments = await _paymentMethodsSearchService.SearchPaymentMethodsAsync(criteria);
+
+            return payments.Results.Select(x => x.ToCartPaymentMethod(cart)).OrderBy(x => x.Priority).ToList();            
         }
 
-        public virtual async Task<IEnumerable<ShippingMethod>> GetAvailableShippingMethodsAsync(ShoppingCart cart)
+        public virtual async Task<IEnumerable<ShippingMethod>> GetAvailableShippingMethodsAsync(ShoppingCart cart, string storeId)
         {
-            if (cart == null)
+            if (cart == null || string.IsNullOrEmpty(storeId) || cart.IsTransient())
             {
-                throw new ArgumentNullException(nameof(cart));
+                return Enumerable.Empty<ShippingMethod>();
             }
-            var result = Enumerable.Empty<ShippingMethod>();
-            if (!cart.IsTransient())
+
+            var criteria = new ShippingModule.Core.Model.Search.ShippingMethodsSearchCriteria
             {
-                var shippingRates = await _cartApi.GetAvailableShippingRatesAsync(cart.Id);
-                result = shippingRates.Select(x => x.ToShippingMethod(cart.Currency, _workContextAccessor.WorkContext.AllCurrencies)).OrderBy(x => x.Priority).ToList();
-            }
-            return result;
+                IsActive = true,
+                Take = int.MaxValue,
+                StoreId = storeId
+            };
+
+            var shippingRates = await _shippingMethodsSearchService.SearchShippingMethodsAsync(criteria);
+
+            return shippingRates.Results
+                .Select(x => x.ToShippingMethod(cart.Currency))
+                .OrderBy(x => x.Priority)
+                .ToList();
         }
 
-        public async Task<ShoppingCart> GetByIdAsync(string cartId)
+        public async Task<ShoppingCart> GetByIdAsync(string cartId, Currency currency)
         {
-            ShoppingCart result = null;
-            var cartDto = await _cartApi.GetCartByIdAsync(cartId);
-            if (cartDto != null)
+            var cartDto = await _shoppingCartService.GetByIdAsync(cartId, CartModule.Core.Model.CartResponseGroup.Full.ToString());
+            if (cartDto == null)
             {
-                var currency = _workContextAccessor.WorkContext.AllCurrencies.FirstOrDefault(x => x.Equals(cartDto.Currency));
-                var language = string.IsNullOrEmpty(cartDto.LanguageCode) ? Language.InvariantLanguage : new Language(cartDto.LanguageCode);
-                result = cartDto.ToShoppingCart(currency, language, await _userManager.FindByIdAsync(cartDto.CustomerId));
+                return null;
             }
-            return result;
+
+            var language = string.IsNullOrEmpty(cartDto.LanguageCode)
+                ? Language.InvariantLanguage
+                : new Language(cartDto.LanguageCode);
+
+            return cartDto.ToShoppingCart(currency, language, await _userManager.FindByIdAsync(cartDto.CustomerId));
         }
 
         public virtual async Task<ShoppingCart> SaveChanges(ShoppingCart cart)

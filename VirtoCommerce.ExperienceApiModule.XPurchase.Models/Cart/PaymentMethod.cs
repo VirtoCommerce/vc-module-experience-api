@@ -1,10 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Common;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Extensions;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Marketing;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Tax;
-using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart
 {
@@ -28,6 +28,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart
         /// <summary>
         /// Gets or sets the value of payment method name.
         /// </summary>
+        [Obsolete("Left for backward compatibility. Should be removed in future. Use Code.")]
         public string Name { get; set; }
 
         /// <summary>
@@ -66,6 +67,11 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart
         /// </summary>
         public bool IsAvailableForPartial { get; set; }
 
+        /// <summary>
+        /// Custom properties for payment method
+        /// </summary>
+        public List<SettingEntry> Settings { get; set; }
+
         public Currency Currency { get; set; }
 
         /// <summary>
@@ -76,60 +82,30 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart
         /// <summary>
         /// Gets or sets the value of shipping price including tax.
         /// </summary>
-        public Money PriceWithTax
-        {
-            get
-            {
-                return Price + (Price * TaxPercentRate);
-            }
-        }
+        public Money PriceWithTax => Price + (Price * TaxPercentRate);
 
         /// <summary>
         /// Gets the value of total shipping price without taxes.
         /// </summary>
-        public Money Total
-        {
-            get
-            {
-                return Price - DiscountAmount;
-            }
-        }
+        public Money Total => Price - DiscountAmount;
 
         /// <summary>
         /// Gets the value of total shipping price including taxes.
         /// </summary>
-        public Money TotalWithTax
-        {
-            get
-            {
-                return PriceWithTax - DiscountAmountWithTax;
-            }
-        }
+        public Money TotalWithTax => PriceWithTax - DiscountAmountWithTax;
 
         /// <summary>
         /// Gets the value of total shipping discount amount.
         /// </summary>
         public Money DiscountAmount { get; set; }
 
-        public Money DiscountAmountWithTax
-        {
-            get
-            {
-                return DiscountAmount + (DiscountAmount * TaxPercentRate);
-            }
-        }
+        public Money DiscountAmountWithTax => DiscountAmount + (DiscountAmount * TaxPercentRate);
 
 
         /// <summary>
         /// Gets or sets the value of total shipping tax amount.
         /// </summary>
-        public Money TaxTotal
-        {
-            get
-            {
-                return TotalWithTax - Total;
-            }
-        }
+        public Money TaxTotal => TotalWithTax - Total;
 
         public decimal TaxPercentRate { get; set; }
 
@@ -173,7 +149,9 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart
 
         public void ApplyRewards(IEnumerable<PromotionReward> rewards)
         {
-            var paymentRewards = rewards.Where(r => r.RewardType == PromotionRewardType.PaymentReward && (r.PaymentMethodCode.IsNullOrEmpty() || r.PaymentMethodCode.EqualsInvariant(Code)));
+            var paymentRewards = rewards
+                .Where(r => r.RewardType == PromotionRewardType.PaymentReward
+                        && (r.PaymentMethodCode.IsNullOrEmpty() || r.PaymentMethodCode.EqualsInvariant(Code)));
 
             Discounts.Clear();
 

@@ -1,16 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
 using GraphQL.Types;
-using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart;
-using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart.Services;
+using VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Factories;
+using VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Models;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Schemas;
 
 namespace VirtoCommerce.ExperienceApiModule.XPurchase.Queries
 {
     public class GetCartQuery: ObjectGraphType
     {
-        public GetCartQuery(ICartBuilder cartBuilder)
+        public GetCartQuery(IShoppingCartAggregateFactory cartFactory)
         {
             FieldAsync<CartType>(
                 "cart",
@@ -18,9 +15,9 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Queries
                 arguments: new QueryArguments(),
                 resolve: async context =>
                 {
-                    await cartBuilder.LoadOrCreateNewTransientCartAsync(default, default, default, default, default);
-                    await cartBuilder.ValidateAsync();
-                    return cartBuilder.Cart;
+                    var cartAggregate = await cartFactory.CreateOrGetShoppingCartAggregateAsync(new ShoppingCartContext());
+                    await cartAggregate.ValidateAsync();
+                    return cartAggregate.Cart;
                 });
         }
     }
