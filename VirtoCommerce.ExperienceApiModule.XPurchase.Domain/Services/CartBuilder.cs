@@ -5,15 +5,18 @@ using System.Linq;
 using System.Threading.Tasks;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart.Services;
+using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Catalog;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Common;
+using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Enums;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Marketing;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Marketing.Services;
+using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Quote;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Security;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Stores;
 using VirtoCommerce.Platform.Core.Common;
 using IEntity = VirtoCommerce.ExperienceApiModule.XPurchase.Models.Common.IEntity;
 
-namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain
+namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Services
 {
     public class CartBuilder : ICartBuilder
     {
@@ -43,9 +46,9 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain
             Cart = cart;
         }
 
-        public void LoadOrCreateNewTransientCart(string cartName, Store store, User user, Language language, Currency currency)
+        public void LoadOrCreateNewTransientCart(string cartName, Store store, User user, Language language, Currency currency, string type = null)
         {
-            LoadOrCreateNewTransientCartAsync(cartName, store, user, language, currency).GetAwaiter().GetResult();
+            LoadOrCreateNewTransientCartAsync(cartName, store, user, language, currency, type).GetAwaiter().GetResult();
         }
 
         public virtual async Task LoadOrCreateNewTransientCartAsync(string cartName, Store store, User user, Language language, Currency currency, string type = null)
@@ -62,7 +65,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain
             await PrepareCartAsync(cart);
 
             Cart = cart;
-            
+
             await EvaluatePromotionsAsync();
             await EvaluateTaxesAsync();
         }

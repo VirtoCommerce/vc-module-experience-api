@@ -1,8 +1,10 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using PagedList;
+using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Catalog;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Common;
+using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Quote;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Security;
+using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Stores;
 
 namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart.Services
 {
@@ -162,16 +164,4 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart.Services
 
         Task SaveAsync();
     }
-    public interface ICartService
-    {
-        Task<IPagedList<ShoppingCart>> SearchCartsAsync(CartSearchCriteria criteria);
-        Task<ShoppingCart> SaveChanges(ShoppingCart cart);
-        Task<ShoppingCart> GetByIdAsync(string cartId);
-        Task DeleteCartByIdAsync(string cartId);
-
-        Task<IEnumerable<ShippingMethod>> GetAvailableShippingMethodsAsync(ShoppingCart cart);
-        Task<IEnumerable<PaymentMethod>> GetAvailablePaymentMethodsAsync(ShoppingCart cart);
-    }
 }
-
-

@@ -9,7 +9,7 @@ using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart.Services;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Common;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Security;
 
-namespace VirtoCommerce.Storefront.Domain.Cart
+namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Services
 {
     public class CartService : ICartService
     {
@@ -95,7 +95,7 @@ namespace VirtoCommerce.Storefront.Domain.Cart
             {
                 throw new ArgumentNullException(nameof(criteria));
             }
-            
+
             var resultDto = await _cartApi.SearchShoppingCartAsync(criteria.ToSearchCriteriaDto());
             var result = new List<ShoppingCart>();
             foreach (var cartDto in resultDto.Results)
@@ -108,7 +108,7 @@ namespace VirtoCommerce.Storefront.Domain.Cart
             }
 
             return new StaticPagedList<ShoppingCart>(result, criteria.PageNumber, criteria.PageSize, resultDto.TotalCount.Value);
-            
+
         }
 
 

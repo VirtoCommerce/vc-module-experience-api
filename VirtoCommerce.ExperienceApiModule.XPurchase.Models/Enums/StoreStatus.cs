@@ -1,4 +1,4 @@
-﻿namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Enums
+namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Enums
 {
     public enum StoreStatus
     {

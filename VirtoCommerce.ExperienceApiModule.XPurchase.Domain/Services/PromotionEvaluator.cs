@@ -1,10 +1,6 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Options;
-using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Catalog;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Common;
@@ -13,7 +9,7 @@ using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Marketing;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Marketing.Services;
 using VirtoCommerce.MarketingModule.Core.Services;
 
-namespace VirtoCommerce.Storefront.Domain
+namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Services
 {
     public class PromotionEvaluator : IPromotionEvaluator
     {

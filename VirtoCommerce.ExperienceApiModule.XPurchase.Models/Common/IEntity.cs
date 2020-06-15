@@ -1,4 +1,4 @@
-﻿namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Common
+namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Common
 {
     public interface IEntity
     {

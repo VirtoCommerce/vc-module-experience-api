@@ -6,7 +6,7 @@ using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart.Services;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Common;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Tax;
 
-namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain
+namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Services
 {
     public class TaxEvaluator : ITaxEvaluator
     {

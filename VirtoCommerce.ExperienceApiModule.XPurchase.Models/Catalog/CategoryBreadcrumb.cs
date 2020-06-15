@@ -1,4 +1,4 @@
-﻿using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Common;
+using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Common;
 
 namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Catalog
 {
