@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
-using PagedList;
 using VirtoCommerce.CartModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Converters;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart;
@@ -93,46 +92,46 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Services
             return cartDto.ToShoppingCart(currency, language, await _userManager.FindByIdAsync(cartDto.CustomerId));
         }
 
-        public virtual async Task<ShoppingCart> SaveChanges(ShoppingCart cart)
-        {
-            if (cart == null)
-            {
-                throw new ArgumentNullException(nameof(cart));
-            }
-            var cartDto = cart.ToShoppingCartDto();
-            if (string.IsNullOrEmpty(cartDto.Id))
-            {
-                cartDto = await _cartApi.CreateAsync(cartDto);
-            }
-            else
-            {
-                cartDto = await _cartApi.UpdateShoppingCartAsync(cartDto);
-            }
-            var result = cartDto.ToShoppingCart(cart.Currency, cart.Language, cart.Customer);
-            return result;
-        }
+        //public virtual async Task<ShoppingCart> SaveChanges(ShoppingCart cart)
+        //{
+        //    if (cart == null)
+        //    {
+        //        throw new ArgumentNullException(nameof(cart));
+        //    }
+        //    var cartDto = cart.ToShoppingCartDto();
+        //    if (string.IsNullOrEmpty(cartDto.Id))
+        //    {
+        //        cartDto = await _cartApi.CreateAsync(cartDto);
+        //    }
+        //    else
+        //    {
+        //        cartDto = await _cartApi.UpdateShoppingCartAsync(cartDto);
+        //    }
+        //    var result = cartDto.ToShoppingCart(cart.Currency, cart.Language, cart.Customer);
+        //    return result;
+        //}
 
-        public virtual async Task<IPagedList<ShoppingCart>> SearchCartsAsync(CartSearchCriteria criteria)
-        {
-            if (criteria == null)
-            {
-                throw new ArgumentNullException(nameof(criteria));
-            }
+        //public virtual async Task<IPagedList<ShoppingCart>> SearchCartsAsync(CartSearchCriteria criteria)
+        //{
+        //    if (criteria == null)
+        //    {
+        //        throw new ArgumentNullException(nameof(criteria));
+        //    }
 
-            var resultDto = await _cartApi.SearchShoppingCartAsync(criteria.ToSearchCriteriaDto());
-            var result = new List<ShoppingCart>();
-            foreach (var cartDto in resultDto.Results)
-            {
-                var currency = _workContextAccessor.WorkContext.AllCurrencies.FirstOrDefault(x => x.Equals(cartDto.Currency));
-                var language = string.IsNullOrEmpty(cartDto.LanguageCode) ? Language.InvariantLanguage : new Language(cartDto.LanguageCode);
-                var user = await _userManager.FindByIdAsync(cartDto.CustomerId) ?? criteria.Customer;
-                var cart = cartDto.ToShoppingCart(currency, language, user);
-                result.Add(cart);
-            }
+        //    var resultDto = await _cartApi.SearchShoppingCartAsync(criteria.ToSearchCriteriaDto());
+        //    var result = new List<ShoppingCart>();
+        //    foreach (var cartDto in resultDto.Results)
+        //    {
+        //        var currency = _workContextAccessor.WorkContext.AllCurrencies.FirstOrDefault(x => x.Equals(cartDto.Currency));
+        //        var language = string.IsNullOrEmpty(cartDto.LanguageCode) ? Language.InvariantLanguage : new Language(cartDto.LanguageCode);
+        //        var user = await _userManager.FindByIdAsync(cartDto.CustomerId) ?? criteria.Customer;
+        //        var cart = cartDto.ToShoppingCart(currency, language, user);
+        //        result.Add(cart);
+        //    }
 
-            return new StaticPagedList<ShoppingCart>(result, criteria.PageNumber, criteria.PageSize, resultDto.TotalCount.Value);
+        //    return new StaticPagedList<ShoppingCart>(result, criteria.PageNumber, criteria.PageSize, resultDto.TotalCount.Value);
 
-        }
+        //}
 
 
     }

@@ -19,7 +19,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Catalog
             Properties = MutablePagedList<CatalogProperty>.Empty;
             VariationProperties = MutablePagedList<CatalogProperty>.Empty;
             Prices = new List<ProductPrice>();
-            Assets = new List<Asset>();
+            //Assets = new List<Asset>();
             Variations = new List<Product>();
             Images = new List<Image>();
             Discounts = new List<Discount>();
@@ -210,7 +210,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Catalog
         /// <summary>
         /// List of product assets
         /// </summary>
-        public IList<Asset> Assets { get; set; }
+        //public IList<Asset> Assets { get; set; } //todo check this out
 
         /// <summary>
         /// List of product variations

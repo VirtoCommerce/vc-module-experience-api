@@ -1,6 +1,8 @@
 using System.Linq;
 using System.Threading.Tasks;
+using VirtoCommerce.CartModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Aggregates;
+using VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Converters;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Models;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart.Services;
@@ -13,33 +15,45 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Factories
 {
     public class ShoppingCartAggregateFactory : IShoppingCartAggregateFactory
     {
-        private readonly ICartService _cartService;
+        private readonly IShoppingCartService _shoppingCartService;
         private readonly ICatalogService _catalogService;
         private readonly IPromotionEvaluator _promotionEvaluator;
         private readonly ITaxEvaluator _taxEvaluator;
+        private readonly ICartService _cartService;
 
-        public ShoppingCartAggregateFactory(ICartService cartService,
+        private readonly IShoppingCartSearchService _shoppingCartSearchService;
+
+        public ShoppingCartAggregateFactory(IShoppingCartService shoppingCartService,
             ICatalogService catalogSearchService,
             IPromotionEvaluator promotionEvaluator,
-            ITaxEvaluator taxEvaluator)
+            ITaxEvaluator taxEvaluator,
+            ICartService cartService,
+
+            IShoppingCartSearchService shoppingCartSearchService)
         {
-            _cartService = cartService;
+            _shoppingCartService = shoppingCartService;
             _catalogService = catalogSearchService;
             _promotionEvaluator = promotionEvaluator;
             _taxEvaluator = taxEvaluator;
+            _cartService = cartService;
+            _shoppingCartSearchService = shoppingCartSearchService;
         }
 
         public async Task<ShoppingCartAggregate> CreateOrGetShoppingCartAggregateAsync(ShoppingCartContext context)
         {
-            var aggregate = new ShoppingCartAggregate(_cartService, _catalogService, _promotionEvaluator, _taxEvaluator, context);
+            var aggregate = new ShoppingCartAggregate(_shoppingCartService, _catalogService, _promotionEvaluator, _taxEvaluator, _cartService, context);
 
-            var cartSearchCriteria = CreateCartSearchCriteria(context.CartName, context.CurrentStore, context.User, context.Language, context.Currency, context.Type);
+            var criteria = new CartModule.Core.Model.Search.ShoppingCartSearchCriteria
+            {
+                StoreId = context.CurrentStore.Id,
+                CustomerId = context.User?.Id,
+                Name = context.CartName,
+                Type = context.Type
+            };
 
-            var cartSearchResult = await _cartService
-                .SearchCartsAsync(cartSearchCriteria)
-                .ConfigureAwait(false);
+            var cartSearchResult = await _shoppingCartSearchService.SearchCartAsync(criteria).ConfigureAwait(false);
 
-            var cart = cartSearchResult.FirstOrDefault()
+            var cart = cartSearchResult.Results.FirstOrDefault()?.ToShoppingCart(context.Currency,context.Language,context.User)
                 ?? CreateCart(context.CartName, context.CurrentStore, context.User, context.Language, context.Currency, context.Type);
 
             await aggregate.TakeCartAsync(cart);
@@ -47,18 +61,6 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Factories
             await aggregate.EvaluateTaxesAsync();
 
             return aggregate;
-        }
-
-        protected virtual CartSearchCriteria CreateCartSearchCriteria(string cartName, Store store, User user, Language language, Currency currency, string type)
-        {
-            return new CartSearchCriteria
-            {
-                StoreId = store.Id,
-                Customer = user,
-                Name = cartName,
-                Currency = currency,
-                Type = type
-            };
         }
 
         protected virtual ShoppingCart CreateCart(string cartName, Store store, User user, Language language, Currency currency, string type)

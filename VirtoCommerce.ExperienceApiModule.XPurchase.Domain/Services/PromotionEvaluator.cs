@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Converters;
-using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Catalog;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Common;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Extensions;
@@ -16,12 +15,14 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Services
     public class PromotionEvaluator : IPromotionEvaluator
     {
         private readonly IMarketingPromoEvaluator _marketingPromoEvaluator;
+
         public PromotionEvaluator(IMarketingPromoEvaluator marketingPromoEvaluator)
         {
             _marketingPromoEvaluator = marketingPromoEvaluator;
         }
 
         #region IPromotionEvaluator Members
+
         public virtual async Task EvaluateDiscountsAsync(PromotionEvaluationContext promotionEvaluationContext,
             IEnumerable<IDiscountable> owners)
         {
@@ -33,7 +34,8 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Services
 
             ApplyRewards(rewards.Rewards, owners);
         }
-        #endregion
+
+        #endregion IPromotionEvaluator Members
 
         protected virtual void ApplyRewards(IEnumerable<MarketingModule.Core.Model.Promotions.PromotionReward> rewards, IEnumerable<IDiscountable> owners)
         {
@@ -69,7 +71,6 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Services
                 IsEveryone = true,
                 CustomerId = promotionEvaluationContext.User.Id,
                 UserGroups = promotionEvaluationContext?.User?.Contact?.UserGroups?.ToArray()
-
             };
 
             if (promotionEvaluationContext.Cart != null)
@@ -109,7 +110,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Services
             return result;
         }
 
-        // Todo: move to catalog extensions
+        // todo: move to catalog extensions
         private static MarketingModule.Core.Model.Promotions.ProductPromoEntry ToProductPromoEntryDto(Product product)
             => new MarketingModule.Core.Model.Promotions.ProductPromoEntry
             {
@@ -126,33 +127,47 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Services
                 Discount = product.Price != null ? /*(double)*/product.Price.DiscountAmount.Amount : 0, // Maybe it was rounding?
                 Price = product.Price != null ? /*(double)*/product.Price.SalePrice.Amount : 0, // Maybe it was rounding?
             };
-      
+
 
         // todo: move to marketing extensions
         public static PromotionReward ToPromotionReward(MarketingModule.Core.Model.Promotions.PromotionReward rewardDto, Currency currency)
         {
+            //todo: check with storefront implementation and v3 of marketing module
             var result = new PromotionReward
             {
-                CategoryId = rewardDto.CategoryId,
+                //CategoryId = rewardDto.CategoryId,
                 Coupon = rewardDto.Coupon,
                 Description = rewardDto.Description,
-                IsValid = rewardDto.IsValid ?? false,
-                LineItemId = rewardDto.LineItemId,
-                MeasureUnit = rewardDto.MeasureUnit,
-                ProductId = rewardDto.ProductId,
+                //IsValid = rewardDto.IsValid ?? false,
+                //LineItemId = rewardDto.LineItemId,
+                //MeasureUnit = rewardDto.MeasureUnit,
+                //ProductId = rewardDto.ProductId,
                 PromotionId = rewardDto.PromotionId,
-                Quantity = rewardDto.Quantity ?? 0,
-                MaxLimit = (decimal)(rewardDto.MaxLimit ?? 0),
-                Amount = (decimal)(rewardDto.Amount ?? 0),
-                AmountType = EnumUtility.SafeParse(rewardDto.AmountType, AmountType.Absolute),
-                CouponAmount = new Money(rewardDto.CouponAmount ?? 0, currency),
+                //Quantity = rewardDto.Quantity ?? 0,
+                //MaxLimit = (decimal)(rewardDto.MaxLimit ?? 0),
+                //Amount = (decimal)(rewardDto.Amount ?? 0),
+                //AmountType = EnumUtility.SafeParse(rewardDto.AmountType, AmountType.Absolute),
+                CouponAmount = new Money(rewardDto.CouponAmount, currency),
                 CouponMinOrderAmount = new Money(rewardDto.CouponMinOrderAmount ?? 0, currency),
-                Promotion = rewardDto.Promotion.ToPromotion(),
+                Promotion = ToPromotion(rewardDto.Promotion),// todo: move to extensions
                 RewardType = EnumUtility.SafeParse(rewardDto.RewardType, PromotionRewardType.CatalogItemAmountReward),
-                ShippingMethodCode = rewardDto.ShippingMethod,
-                ConditionalProductId = rewardDto.ConditionalProductId,
-                ForNthQuantity = rewardDto.ForNthQuantity,
-                InEveryNthQuantity = rewardDto.InEveryNthQuantity,
+                //ShippingMethodCode = rewardDto.ShippingMethod,
+                //ConditionalProductId = rewardDto.ConditionalProductId,
+                //ForNthQuantity = rewardDto.ForNthQuantity,
+                //InEveryNthQuantity = rewardDto.InEveryNthQuantity,
+            };
+
+            return result;
+        }
+
+        // todo: move to extensions
+        public static Promotion ToPromotion(MarketingModule.Core.Model.Promotions.Promotion promotionDto)
+        {
+            var result = new Promotion
+            {
+                Id = promotionDto.Id,
+                Name = promotionDto.Name,
+                Description = promotionDto.Description,
             };
 
             return result;

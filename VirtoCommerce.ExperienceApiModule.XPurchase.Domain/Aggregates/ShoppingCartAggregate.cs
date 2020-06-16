@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using VirtoCommerce.CartModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Converters;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Models;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart;
@@ -16,27 +17,31 @@ using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Marketing.Services;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Quote;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Security;
 using VirtoCommerce.Platform.Core.Common;
+
 using IEntity = VirtoCommerce.ExperienceApiModule.XPurchase.Models.Common.IEntity;
 
 namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Aggregates
 {
     public class ShoppingCartAggregate : IShoppingCartAggregate
     {
-        private readonly ICartService _cartService;
+        private readonly IShoppingCartService _shoppingCartService;
         private readonly ICatalogService _catalogService;
         private readonly IPromotionEvaluator _promotionEvaluator;
         private readonly ITaxEvaluator _taxEvaluator;
+        private readonly ICartService _cartService;
 
-        public ShoppingCartAggregate(ICartService cartService,
+        public ShoppingCartAggregate(IShoppingCartService shoppingCartService,
             ICatalogService catalogSearchService,
             IPromotionEvaluator promotionEvaluator,
             ITaxEvaluator taxEvaluator,
+            ICartService cartService,
             ShoppingCartContext context)
         {
-            _cartService = cartService;
+            _shoppingCartService = shoppingCartService;
             _catalogService = catalogSearchService;
             _promotionEvaluator = promotionEvaluator;
             _taxEvaluator = taxEvaluator;
+            _cartService = cartService;
             Context = context;
         }
 
@@ -57,7 +62,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Aggregates
             if (cart.Items.Any())
             {
                 var productIds = cart.Items.Select(i => i.ProductId).ToArray();
-                var products = await _catalogService.GetProductsAsync(productIds, ItemResponseGroup.ItemWithPrices | ItemResponseGroup.ItemWithDiscounts | ItemResponseGroup.Inventory | ItemResponseGroup.Outlines);
+                var products = await _catalogService.GetProductsAsync(productIds, Context.Currency, Context.Language, ItemResponseGroup.ItemWithPrices | ItemResponseGroup.ItemWithDiscounts | ItemResponseGroup.Inventory | ItemResponseGroup.Outlines);
                 foreach (var item in cart.Items)
                 {
                     item.Product = products.FirstOrDefault(x => x.Id.EqualsInvariant(item.ProductId));
@@ -281,15 +286,15 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Aggregates
         public virtual async Task RemoveCartAsync()
         {
             EnsureCartExists();
-            await _cartService.DeleteCartByIdAsync(Cart.Id);
+            await _shoppingCartService.DeleteAsync(new[] { Cart.Id });
         }
 
         public virtual async Task FillFromQuoteRequestAsync(QuoteRequest quoteRequest)
         {
             EnsureCartExists();
 
-            var productIds = quoteRequest.Items.Select(i => i.ProductId);
-            var products = await _catalogService.GetProductsAsync(productIds.ToArray(), ItemResponseGroup.ItemLarge);
+            var productIds = quoteRequest.Items.Select(i => i.ProductId).ToArray();
+            var products = await _catalogService.GetProductsAsync(productIds, Context.Currency, Context.Language, ItemResponseGroup.ItemLarge);
 
             Cart.Items.Clear();
             foreach (var product in products)
@@ -352,7 +357,8 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Aggregates
         public virtual async Task<IEnumerable<ShippingMethod>> GetAvailableShippingMethodsAsync()
         {
             //Request available shipping rates
-            var result = await _cartService.GetAvailableShippingMethodsAsync(Cart);
+            
+            var result = await _cartService.GetAvailableShippingMethodsAsync(Cart, Context.CurrentStore.Id);
             if (!result.IsNullOrEmpty())
             {
                 //Evaluate promotions cart and apply rewards for available shipping methods
@@ -428,9 +434,9 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Aggregates
             await EvaluatePromotionsAsync();
             await EvaluateTaxesAsync();
 
-            var cart = await _cartService.SaveChanges(Cart);
-
-            await TakeCartAsync(cart);
+            // todo: implement!
+            //var cart = await _cartService.SaveChanges(Cart);
+            //await TakeCartAsync(cart);
         }
 
         #endregion ICartBuilder Members

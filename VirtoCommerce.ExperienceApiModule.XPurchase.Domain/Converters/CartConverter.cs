@@ -19,22 +19,6 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Converters
 {
     public static partial class CartConverter
     {
-        public static cartDtos.ShoppingCartSearchCriteria ToSearchCriteriaDto(this CartSearchCriteria criteria)
-        {
-            var result = new cartDtos.ShoppingCartSearchCriteria
-            {
-                Name = criteria.Name,
-                Type = criteria.Type,
-                StoreId = criteria.StoreId,
-                CustomerId = criteria.Customer?.Id,
-                Currency = criteria.Currency?.Code,
-                LanguageCode = criteria.Language?.CultureName,
-                Skip = criteria.Start,
-                Take = criteria.PageSize,
-                Sort = criteria.Sort
-            };
-            return result;
-        }
 
         public static Platform.Core.DynamicProperties.DynamicObjectProperty ToCartDynamicPropertyDto(this DynamicProperty property)
             => property.ToDynamicPropertyDto().JsonConvert<Platform.Core.DynamicProperties.DynamicObjectProperty>();
@@ -595,7 +579,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Converters
                 ProductId = product.Id,
                 Quantity = quantity
             };
-            result.IsReccuring = result.PaymentPlan != null;
+            //result.IsReccuring = result.PaymentPlan != null; //todo check
 
             return result;
         }
@@ -637,7 +621,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Converters
 
             if (lineItemDto.DynamicProperties != null)
             {
-                result.DynamicProperties = new MutablePagedList<DynamicProperty>(lineItemDto.DynamicProperties.Select(DynamicProperty).ToList());
+                result.DynamicProperties = new MutablePagedList<DynamicProperty>(lineItemDto.DynamicProperties.Select(x=>x.ToDynamicProperty()).ToList());
             }
 
             if (!lineItemDto.Discounts.IsNullOrEmpty())

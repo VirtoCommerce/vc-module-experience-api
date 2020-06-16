@@ -1,4 +1,6 @@
-﻿namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Customer
+using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Catalog;
+
+namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Customer
 {
     public partial class Vendor : Member
     {
