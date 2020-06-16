@@ -4,7 +4,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Common.Caching;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Extensions;
 
 namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Common

@@ -5,7 +5,7 @@ using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Security;
 
 namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Tax
 {
-    public partial class TaxEvaluationContext : ValueObject, IEvaluationContext
+    public partial class TaxEvaluationContext : ValueObject
     {
         public TaxEvaluationContext(string storeId)
         {

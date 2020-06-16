@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Common;
@@ -47,8 +47,8 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Catalog
 
         public SeoInfo SeoInfo { get; set; }
 
-        [JsonIgnore]
-        public int AllProductsCount => Products.GetTotalCount();
+        //[JsonIgnore]
+        //public int AllProductsCount => Products.GetTotalCount(); //todo check this out
 
         /// <summary>
         /// Category main image
