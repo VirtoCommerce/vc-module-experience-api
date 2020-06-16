@@ -48,6 +48,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart
         public Product Product { get; set; }
 
         /// <summary>
+
         /// Gets or sets the value of product id.
         /// </summary>
         public string ProductId { get; set; }
@@ -285,6 +286,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart
         {
             TaxPercentRate = 0m;
             var taxRatesList = taxRates.ToList();
+            
             var taxRate = taxRatesList.FirstOrDefault(x => x.Line.Id != null && x.Line.Id.EqualsInvariant(Id ?? string.Empty))
                        ?? taxRatesList.FirstOrDefault(x => x.Line.Code != null && x.Line.Code.EqualsInvariant(Sku ?? string.Empty));
 

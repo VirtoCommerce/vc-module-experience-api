@@ -6,6 +6,7 @@ namespace VirtoCommerce.Exp.ExtensionSamples
     {
         public InventoryType()
         {
+            Field(d => d.ProductId, nullable: true).Description("product id");
             Field(d => d.FulfillmentCenterId, nullable: true).Description("The warehouse id");
             Field(d => d.InStockQuantity, nullable: true).Description("in stock qty");
            

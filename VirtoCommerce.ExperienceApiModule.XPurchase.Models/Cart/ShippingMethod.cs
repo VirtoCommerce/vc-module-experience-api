@@ -68,7 +68,6 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart
         /// </summary>
         public List<SettingEntry> Settings { get; set; }
 
-        /// <summary>
         ///  price with tax but without discount.
         /// </summary>
         public Money PriceWithTax => Price + (Price * TaxPercentRate);
@@ -148,6 +147,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart
                     && (r.ShippingMethodCode.IsNullOrEmpty() || r.ShippingMethodCode.EqualsInvariant(ShipmentMethodCode)));
 
             Discounts.Clear();
+            
             DiscountAmount = new Money(0m, Currency);
 
             foreach (var reward in shipmentRewards)

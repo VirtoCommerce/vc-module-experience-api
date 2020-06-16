@@ -71,7 +71,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart
         /// Custom properties for payment method
         /// </summary>
         public List<SettingEntry> Settings { get; set; }
-
+        
         public Currency Currency { get; set; }
 
         /// <summary>
@@ -100,7 +100,6 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart
         public Money DiscountAmount { get; set; }
 
         public Money DiscountAmountWithTax => DiscountAmount + (DiscountAmount * TaxPercentRate);
-
 
         /// <summary>
         /// Gets or sets the value of total shipping tax amount.

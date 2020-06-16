@@ -43,6 +43,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Security
         /// Returns the email address of the customer.
         /// </summary>
         public string Email { get; set; }
+
         public string NormalizedEmail { get; set; }
 
         public bool EmailConfirmed { get; set; }
@@ -62,7 +63,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Security
         public virtual int AccessFailedCount { get; set; }
 
         /// <summary>
-        /// Is lockout enabled for this user
+        /// Is lockout enabled for this user.
         /// </summary>
         public virtual bool LockoutEnabled { get; set; }
 

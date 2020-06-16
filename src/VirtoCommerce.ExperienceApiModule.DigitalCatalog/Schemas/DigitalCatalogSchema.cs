@@ -16,25 +16,26 @@ using VirtoCommerce.ExperienceApiModule.DigitalCatalog.Requests;
 
 namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Schemas
 {
-    public class ProductQuery : ISchemaBuilder
+    public class DigitalCatalogSchema : ISchemaBuilder
     {
         private readonly IMediator _mediator;
         private readonly IDataLoaderContextAccessor _dataLoader;
-        public ProductQuery(IMediator mediator, IDataLoaderContextAccessor dataLoader)
+        public DigitalCatalogSchema(IMediator mediator, IDataLoaderContextAccessor dataLoader)
         {
             _mediator = mediator;
             _dataLoader = dataLoader;
         }
         public void Build(ISchema schema)
         {
+            //We can't use the fluent syntax for new types registration provided by dotnet graphql here, because we have the strict requirement for underlying types extensions
+            //and must use GraphTypeExtenstionHelper to resolve the effective type on execution time 
             var productField = new FieldType
             {
                 Name = "product",
                 Arguments = new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id", Description = "id of the product" }),
                 Type = GraphTypeExtenstionHelper.GetActualType<ProductType>(),
                 Resolver = new AsyncFieldResolver<object>(async context =>
-                {
-                    
+                {                    
                     var loader = _dataLoader.Context.GetOrAddBatchLoader<string, ExpProduct>("productsLoader", (ids) => LoadProductsAsync(_mediator, ids, context.SubFields.Values.GetAllNodesPaths()));
                     return await loader.LoadAsync(context.GetArgument<string>("id"));
                 })
