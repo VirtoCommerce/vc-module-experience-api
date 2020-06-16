@@ -20,7 +20,6 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Factories
         private readonly IPromotionEvaluator _promotionEvaluator;
         private readonly ITaxEvaluator _taxEvaluator;
         private readonly ICartService _cartService;
-
         private readonly IShoppingCartSearchService _shoppingCartSearchService;
 
         public ShoppingCartAggregateFactory(IShoppingCartService shoppingCartService,
@@ -50,7 +49,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Factories
                 Name = context.CartName,
                 Type = context.Type
             };
-
+            
             var cartSearchResult = await _shoppingCartSearchService.SearchCartAsync(criteria).ConfigureAwait(false);
 
             var cart = cartSearchResult.Results.FirstOrDefault()?.ToShoppingCart(context.Currency,context.Language,context.User)

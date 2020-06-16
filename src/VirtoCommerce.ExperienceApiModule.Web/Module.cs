@@ -70,9 +70,6 @@ namespace VirtoCommerce.ExperienceApiModule.Web
 
             // use graphql-playground at default url /ui/playground
             appBuilder.UseGraphQLPlayground();
-
-           
-
         }
 
         public void Uninstall()

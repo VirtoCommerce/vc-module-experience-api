@@ -77,7 +77,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Services
             {
                 result.CartPromoEntries = promotionEvaluationContext.Cart.Items.Select(x => x.ToProductPromoEntryDto()).ToList();
 
-                result.CartTotal = /*(double)*/promotionEvaluationContext.Cart.SubTotal.Amount; // Maybe it was rounding?
+                result.CartTotal = /*(double)*/promotionEvaluationContext.Cart.SubTotal.Amount; // todo: remove this comments if this not rounding
                 result.Coupons = promotionEvaluationContext.Cart.Coupons?.Select(c => c.Code).ToList();
                 //Set cart line items as default promo items
                 result.PromoEntries = result.CartPromoEntries;
@@ -87,13 +87,13 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Services
                     var shipment = promotionEvaluationContext.Cart.Shipments.First();
                     result.ShipmentMethodCode = shipment.ShipmentMethodCode;
                     result.ShipmentMethodOption = shipment.ShipmentMethodOption;
-                    result.ShipmentMethodPrice = /*(double)*/shipment.Price.Amount; // Maybe it was rounding?
+                    result.ShipmentMethodPrice = /*(double)*/shipment.Price.Amount; // todo: remove this comments if this not rounding
                 }
                 if (!promotionEvaluationContext.Cart.Payments.IsNullOrEmpty())
                 {
                     var payment = promotionEvaluationContext.Cart.Payments.First();
                     result.PaymentMethodCode = payment.PaymentGatewayCode;
-                    result.PaymentMethodPrice = /*(double)*/payment.Price.Amount; // Maybe it was rounding?
+                    result.PaymentMethodPrice = /*(double)*/payment.Price.Amount; // todo: remove this comments if this not rounding
                 }
             }
 
@@ -124,8 +124,8 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Services
                         ? (int)product.Inventory.InStockQuantity.Value
                         : 0,
                 Variations = product.Variations?.Select(ToProductPromoEntryDto).ToList(),
-                Discount = product.Price != null ? /*(double)*/product.Price.DiscountAmount.Amount : 0, // Maybe it was rounding?
-                Price = product.Price != null ? /*(double)*/product.Price.SalePrice.Amount : 0, // Maybe it was rounding?
+                Discount = product.Price != null ? /*(double)*/product.Price.DiscountAmount.Amount : 0, // todo: remove this comments if this not rounding
+                Price = product.Price != null ? /*(double)*/product.Price.SalePrice.Amount : 0, // todo: remove this comments if this not rounding
             };
 
 

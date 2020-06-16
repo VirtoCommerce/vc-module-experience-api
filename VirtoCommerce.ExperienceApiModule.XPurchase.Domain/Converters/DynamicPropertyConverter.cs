@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Globalization;
 using System.Linq;
 using Newtonsoft.Json.Linq;
@@ -26,7 +26,6 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Converters
                     .ToList()
             };
 
-
             if (propertyDto.Values != null)
             {
                 if (result.IsDictionary)
@@ -52,7 +51,6 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Converters
             return result;
         }
 
-
         public static Platform.Core.DynamicProperties.DynamicObjectProperty ToDynamicPropertyDto(this DynamicProperty dynamicProperty)
             => new Platform.Core.DynamicProperties.DynamicObjectProperty
             {
@@ -66,8 +64,8 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Converters
                         ? valueType
                         : Platform.Core.DynamicProperties.DynamicPropertyValueType.Undefined,
 
-                Values = dynamicProperty?.Values.Select(x => x.ToPropertyValueDto()).ToList()
-                      ?? dynamicProperty?.DictionaryValues.Select(v => v.ToPropertyValueDto()).ToList(),
+                Values = dynamicProperty?.Values?.Select(x => x.ToPropertyValueDto()).ToList()
+                      ?? dynamicProperty?.DictionaryValues?.Select(v => v.ToPropertyValueDto()).ToList(),
             };
 
         private static DynamicPropertyDictionaryItem ToDictItem(this Platform.Core.DynamicProperties.DynamicPropertyDictionaryItem dto)

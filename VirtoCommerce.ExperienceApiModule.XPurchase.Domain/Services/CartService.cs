@@ -92,6 +92,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Services
             return cartDto.ToShoppingCart(currency, language, await _userManager.FindByIdAsync(cartDto.CustomerId));
         }
 
+        // todo: maybe we need this in future
         //public virtual async Task<ShoppingCart> SaveChanges(ShoppingCart cart)
         //{
         //    if (cart == null)
@@ -132,7 +133,5 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Services
         //    return new StaticPagedList<ShoppingCart>(result, criteria.PageNumber, criteria.PageSize, resultDto.TotalCount.Value);
 
         //}
-
-
     }
 }

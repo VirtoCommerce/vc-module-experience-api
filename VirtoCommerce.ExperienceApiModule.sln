@@ -39,7 +39,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "XPurchase", "XPurchase", "{
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtoCommerce.ExperienceApiModule.XPurchase.Models", "VirtoCommerce.ExperienceApiModule.XPurchase.Models\VirtoCommerce.ExperienceApiModule.XPurchase.Models.csproj", "{A4622EAE-6017-4025-875B-9B64E8591F12}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VirtoCommerce.ExperienceApiModule.XPurchase.Domain", "VirtoCommerce.ExperienceApiModule.XPurchase.Domain\VirtoCommerce.ExperienceApiModule.XPurchase.Domain.csproj", "{2103688D-F921-4550-A7A3-B244BFC31172}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtoCommerce.ExperienceApiModule.XPurchase.Domain", "VirtoCommerce.ExperienceApiModule.XPurchase.Domain\VirtoCommerce.ExperienceApiModule.XPurchase.Domain.csproj", "{2103688D-F921-4550-A7A3-B244BFC31172}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VirtoCommerce.ExpirienceApiModule.XPurchase.Domain.Tests", "VirtoCommerce.ExpirienceApiModule.XPurchase.Domain.Tests\VirtoCommerce.ExpirienceApiModule.XPurchase.Domain.Tests.csproj", "{C2F60FDD-7C0F-4EC5-A752-3B14015A9F5F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -99,6 +101,10 @@ Global
 		{2103688D-F921-4550-A7A3-B244BFC31172}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2103688D-F921-4550-A7A3-B244BFC31172}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2103688D-F921-4550-A7A3-B244BFC31172}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C2F60FDD-7C0F-4EC5-A752-3B14015A9F5F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C2F60FDD-7C0F-4EC5-A752-3B14015A9F5F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C2F60FDD-7C0F-4EC5-A752-3B14015A9F5F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C2F60FDD-7C0F-4EC5-A752-3B14015A9F5F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -120,6 +126,7 @@ Global
 		{C2FC6659-3B97-4513-A22C-CCF81A4E4395} = {FAE6CCF7-298C-4AF3-8044-60DAA0C099F0}
 		{A4622EAE-6017-4025-875B-9B64E8591F12} = {C2FC6659-3B97-4513-A22C-CCF81A4E4395}
 		{2103688D-F921-4550-A7A3-B244BFC31172} = {C2FC6659-3B97-4513-A22C-CCF81A4E4395}
+		{C2F60FDD-7C0F-4EC5-A752-3B14015A9F5F} = {C2FC6659-3B97-4513-A22C-CCF81A4E4395}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E56E5C53-D55A-451B-96FA-654D86F96658}
