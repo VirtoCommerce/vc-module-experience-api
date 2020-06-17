@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using VirtoCommerce.CartModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Aggregates;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Converters;
@@ -9,7 +10,6 @@ using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart.Services;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Common;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Marketing.Services;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Security;
-using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Stores;
 
 namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Factories
 {
@@ -20,6 +20,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Factories
         private readonly IPromotionEvaluator _promotionEvaluator;
         private readonly ITaxEvaluator _taxEvaluator;
         private readonly ICartService _cartService;
+        private readonly UserManager<User> _userManager;
         private readonly IShoppingCartSearchService _shoppingCartSearchService;
 
         public ShoppingCartAggregateFactory(IShoppingCartService shoppingCartService,
@@ -27,7 +28,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Factories
             IPromotionEvaluator promotionEvaluator,
             ITaxEvaluator taxEvaluator,
             ICartService cartService,
-
+            UserManager<User> userManager,
             IShoppingCartSearchService shoppingCartSearchService)
         {
             _shoppingCartService = shoppingCartService;
@@ -35,6 +36,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Factories
             _promotionEvaluator = promotionEvaluator;
             _taxEvaluator = taxEvaluator;
             _cartService = cartService;
+            _userManager = userManager;
             _shoppingCartSearchService = shoppingCartSearchService;
         }
 
@@ -44,16 +46,18 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Factories
 
             var criteria = new CartModule.Core.Model.Search.ShoppingCartSearchCriteria
             {
-                StoreId = context.CurrentStore.Id,
-                CustomerId = context.User?.Id,
+                StoreId = context.StoreId,
+                CustomerId = context.UserId,
                 Name = context.CartName,
                 Type = context.Type
             };
-            
+
             var cartSearchResult = await _shoppingCartSearchService.SearchCartAsync(criteria).ConfigureAwait(false);
 
-            var cart = cartSearchResult.Results.FirstOrDefault()?.ToShoppingCart(context.Currency,context.Language,context.User)
-                ?? CreateCart(context.CartName, context.CurrentStore, context.User, context.Language, context.Currency, context.Type);
+            var user = await _userManager.FindByIdAsync(context.UserId);
+
+            var cart = cartSearchResult.Results.FirstOrDefault()?.ToShoppingCart(context.Currency, context.Language, user)
+                ?? CreateCart(context.CartName, context.StoreId, user, context.Language, context.Currency, context.Type);
 
             await aggregate.TakeCartAsync(cart);
             await aggregate.EvaluatePromotionsAsync();
@@ -62,13 +66,13 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Factories
             return aggregate;
         }
 
-        protected virtual ShoppingCart CreateCart(string cartName, Store store, User user, Language language, Currency currency, string type)
+        protected virtual ShoppingCart CreateCart(string cartName, string storeId, User user, Language language, Currency currency, string type)
         {
             var cart = new ShoppingCart(currency, language)
             {
                 CustomerId = user.Id,
                 Name = cartName,
-                StoreId = store.Id,
+                StoreId = storeId,
                 Language = language,
                 Customer = user,
                 Type = type,

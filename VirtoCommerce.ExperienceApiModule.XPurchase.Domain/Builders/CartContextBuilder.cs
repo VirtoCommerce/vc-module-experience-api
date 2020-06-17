@@ -1,7 +1,5 @@
 using VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Models;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Common;
-using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Security;
-using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Stores;
 
 namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Builders
 {
@@ -9,15 +7,9 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Builders
     {
         private readonly ShoppingCartContext _context;
 
-        protected CartContextBuilder()
-        {
-            _context = new ShoppingCartContext();
-        }
+        protected CartContextBuilder() => _context = new ShoppingCartContext();
 
-        public static CartContextBuilder Build()
-        {
-            return new CartContextBuilder();
-        }
+        public static CartContextBuilder Build() => new CartContextBuilder();
 
         public ShoppingCartContext GetContext() => _context;
 
@@ -33,27 +25,26 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Builders
             return this;
         }
 
-        public ICartContextBuilder WithCurrency(Currency сurrency)
+        public ICartContextBuilder WithCurrencyAndLanguage(string сurrencyCode, string cultureName)
         {
-            _context.Currency = сurrency;
-            return this;
-        }
+            var language = new Language(cultureName);
+            var currency = new Currency(language, сurrencyCode); //todo add validation
 
-        public ICartContextBuilder WithLanguage(Language language)
-        {
             _context.Language = language;
+            _context.Currency = currency;
+
             return this;
         }
 
-        public ICartContextBuilder WithStore(Store store)
+        public ICartContextBuilder WithStore(string storeId)
         {
-            _context.CurrentStore = store;
+            _context.StoreId = storeId;
             return this;
         }
 
-        public ICartContextBuilder WithUser(User user)
+        public ICartContextBuilder WithUser(string userId)
         {
-            _context.User = user;
+            _context.UserId = userId;
             return this;
         }
     }

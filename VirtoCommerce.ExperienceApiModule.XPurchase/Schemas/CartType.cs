@@ -13,7 +13,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Schemas
             Field(x => x.ChannelId, nullable: true).Description("Shopping cart channel id");
             Field(x => x.HasPhysicalProducts, nullable: true).Description("Sign that shopping cart contains line items which require shipping");
             Field(x => x.IsAnonymous, nullable: true).Description("Sign that shopping cart is anonymous");
-            Field(x => x.Customer, nullable: true).Description("Shopping cart user"); //Resolve?
+            //Field(x => x.Customer, nullable: true).Description("Shopping cart user"); //todo: add resolver
             Field(x => x.CustomerId, nullable: true).Description("Shopping cart user id");
             Field(x => x.CustomerName, nullable: true).Description("Shopping cart user name");
             Field(x => x.OrganizationId, nullable: true).Description("Shopping cart organization id");

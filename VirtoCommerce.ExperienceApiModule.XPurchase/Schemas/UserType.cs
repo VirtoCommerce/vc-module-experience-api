@@ -1,4 +1,4 @@
-﻿using GraphQL.Types;
+using GraphQL.Types;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Security;
 
 namespace VirtoCommerce.ExperienceApiModule.XPurchase.Schemas

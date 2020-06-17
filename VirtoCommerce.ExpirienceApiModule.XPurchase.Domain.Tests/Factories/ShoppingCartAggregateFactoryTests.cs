@@ -1,8 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
+using Microsoft.AspNetCore.Identity;
 using Moq;
 using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.CartModule.Core.Services;
@@ -16,6 +18,7 @@ using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Enums;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Marketing;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Marketing.Services;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Quote;
+using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Security;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Tax;
 using VirtoCommerce.Platform.Core.DynamicProperties;
 using VirtoCommerce.PricingModule.Core.Model;
@@ -33,6 +36,7 @@ namespace VirtoCommerce.ExpirienceApiModule.XPurchase.Domain.Tests
         private readonly Mock<IPromotionEvaluator> _promotionEvaluatorMock = new Mock<IPromotionEvaluator>();
         private readonly Mock<ITaxEvaluator> _taxEvaluatorMock = new Mock<ITaxEvaluator>();
         private readonly Mock<ICartService> _cartServiceMock = new Mock<ICartService>();
+        private readonly Mock<IUserStore<User>> _userStoreMock;
         private readonly Mock<IShoppingCartSearchService> _shoppingCartSearchServiceMock;
 
         // Testable
@@ -57,6 +61,17 @@ namespace VirtoCommerce.ExpirienceApiModule.XPurchase.Domain.Tests
             _fixture.Register(() => _fixture.Build<ShoppingCart>().Without(x => x.DynamicProperties).Create());
             _fixture.Register<Price>(() => null);
 
+
+            _userStoreMock = new Mock<IUserStore<User>>();
+            _userStoreMock.Setup(x => x.FindByIdAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new User()
+                {
+                    UserName = "test@email.com",
+                    Id = "123"
+                });
+
+            var userManager = new UserManager<User>(_userStoreMock.Object, null, null, null, null, null, null, null, null);
+
             _shoppingCartSearchServiceMock = new Mock<IShoppingCartSearchService>();
             _shoppingCartSearchServiceMock
                 .Setup(x => x.SearchCartAsync(It.IsAny<CartModule.Core.Model.Search.ShoppingCartSearchCriteria>()))
@@ -80,6 +95,7 @@ namespace VirtoCommerce.ExpirienceApiModule.XPurchase.Domain.Tests
                 _promotionEvaluatorMock.Object,
                 _taxEvaluatorMock.Object,
                 _cartServiceMock.Object,
+                userManager,
                 _shoppingCartSearchServiceMock.Object);
         }
 

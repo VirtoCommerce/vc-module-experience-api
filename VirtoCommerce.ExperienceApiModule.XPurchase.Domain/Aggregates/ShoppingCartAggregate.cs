@@ -358,7 +358,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Aggregates
         {
             //Request available shipping rates
             
-            var result = await _cartService.GetAvailableShippingMethodsAsync(Cart, Context.CurrentStore.Id);
+            var result = await _cartService.GetAvailableShippingMethodsAsync(Cart, Context.StoreId);
             if (!result.IsNullOrEmpty())
             {
                 //Evaluate promotions cart and apply rewards for available shipping methods
@@ -366,7 +366,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Aggregates
                 await _promotionEvaluator.EvaluateDiscountsAsync(promoEvalContext, result);
 
                 //Evaluate taxes for available shipping rates
-                var taxEvalContext = Cart.ToTaxEvalContext(Context.CurrentStore.TaxCalculationEnabled, Context.CurrentStore.FixedTaxRate);
+                var taxEvalContext = Cart.ToTaxEvalContext(Context.Store.TaxCalculationEnabled, Context.Store.FixedTaxRate);
                 taxEvalContext.Lines.Clear();
                 taxEvalContext.Lines.AddRange(result.SelectMany(x => x.ToTaxLines()));
                 await _taxEvaluator.EvaluateTaxesAsync(taxEvalContext, result);
@@ -378,7 +378,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Aggregates
         {
             EnsureCartExists();
 
-            var result = await _cartService.GetAvailablePaymentMethodsAsync(Cart, Context.CurrentStore.Id);
+            var result = await _cartService.GetAvailablePaymentMethodsAsync(Cart, Context.StoreId);
 
             if (!result.IsNullOrEmpty())
             {
@@ -387,7 +387,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Aggregates
                 await _promotionEvaluator.EvaluateDiscountsAsync(promoEvalContext, result);
 
                 //Evaluate taxes for available payments
-                var taxEvalContext = Cart.ToTaxEvalContext(Context.CurrentStore.TaxCalculationEnabled, Context.CurrentStore.FixedTaxRate);
+                var taxEvalContext = Cart.ToTaxEvalContext(Context.Store.TaxCalculationEnabled, Context.Store.FixedTaxRate);
                 taxEvalContext.Lines.Clear();
                 taxEvalContext.Lines.AddRange(result.SelectMany(x => x.ToTaxLines()));
                 await _taxEvaluator.EvaluateTaxesAsync(taxEvalContext, result);
@@ -424,7 +424,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Aggregates
 
         public async Task EvaluateTaxesAsync()
         {
-            await _taxEvaluator.EvaluateTaxesAsync(Cart.ToTaxEvalContext(Context.CurrentStore.TaxCalculationEnabled, Context.CurrentStore.FixedTaxRate), new[] { Cart });
+            await _taxEvaluator.EvaluateTaxesAsync(Cart.ToTaxEvalContext(Context.Store.TaxCalculationEnabled, Context.Store.FixedTaxRate), new[] { Cart });
         }
 
         public virtual async Task SaveAsync()
