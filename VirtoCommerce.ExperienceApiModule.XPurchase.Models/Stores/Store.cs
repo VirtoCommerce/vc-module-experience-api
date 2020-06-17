@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Common;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Enums;
-using VirtoCommerce.Platform.Core.DynamicProperties;
 using Entity = VirtoCommerce.ExperienceApiModule.XPurchase.Models.Common.Entity;
 
 namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Stores
@@ -36,7 +35,8 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Stores
         /// </summary>
         public string SecureUrl { get; set; }
 
-        public string Host => !string.IsNullOrEmpty(Url) && Uri.TryCreate(Url, UriKind.Absolute, out var url) ? url.Host : null;
+        public string Host => !string.IsNullOrEmpty(Url)
+            && Uri.TryCreate(Url, UriKind.Absolute, out var url) ? url.Host : null;
 
         /// <summary>
         /// State of store (open, closing, maintenance)
@@ -129,7 +129,6 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Stores
         public bool IsSpa { get; set; }
 
         public decimal FixedTaxRate { get; set; }
-
 
         public IMutablePagedList<DynamicProperty> DynamicProperties { get; set; }
 

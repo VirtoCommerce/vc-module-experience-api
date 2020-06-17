@@ -16,7 +16,9 @@ using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Marketing;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Marketing.Services;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Quote;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Security;
+using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Validators;
 using VirtoCommerce.Platform.Core.Common;
+using FluentValidation;
 
 using IEntity = VirtoCommerce.ExperienceApiModule.XPurchase.Models.Common.IEntity;
 
@@ -358,7 +360,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Aggregates
         {
             //Request available shipping rates
             
-            var result = await _cartService.GetAvailableShippingMethodsAsync(Cart, Context.StoreId);
+            var result = await _cartService.GetAvailableShippingMethodsAsync(Cart);
             if (!result.IsNullOrEmpty())
             {
                 //Evaluate promotions cart and apply rewards for available shipping methods
@@ -378,7 +380,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Aggregates
         {
             EnsureCartExists();
 
-            var result = await _cartService.GetAvailablePaymentMethodsAsync(Cart, Context.StoreId);
+            var result = await _cartService.GetAvailablePaymentMethodsAsync(Cart);
 
             if (!result.IsNullOrEmpty())
             {
@@ -398,8 +400,8 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Aggregates
         public async Task ValidateAsync()
         {
             EnsureCartExists();
-            await Task.WhenAll(ValidateCartItemsAsync(), ValidateCartShipmentsAsync());
-            Cart.IsValid = Cart.Items.All(x => x.IsValid) && Cart.Shipments.All(x => x.IsValid);
+            var result = await new CartValidator(_cartService).ValidateAsync(Cart, ruleSet: Cart.ValidationRuleSet);
+            Cart.IsValid = result.IsValid;
         }
 
         public virtual async Task EvaluatePromotionsAsync()
@@ -440,56 +442,6 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Aggregates
         }
 
         #endregion ICartBuilder Members
-
-        protected virtual Task ValidateCartItemsAsync()
-        {
-            foreach (var lineItem in Cart.Items.ToList())
-            {
-                lineItem.ValidationErrors.Clear();
-
-                if (lineItem.Product == null || !lineItem.Product.IsActive || !lineItem.Product.IsBuyable)
-                {
-                    lineItem.ValidationErrors.Add(new UnavailableError());
-                }
-                else
-                {
-                    var isProductAvailable = new ProductIsAvailableSpecification(lineItem.Product).IsSatisfiedBy(lineItem.Quantity);
-                    if (!isProductAvailable)
-                    {
-                        var availableQuantity = lineItem.Product.AvailableQuantity;
-                        lineItem.ValidationErrors.Add(new QuantityError(availableQuantity));
-                    }
-
-                    var tierPrice = lineItem.Product.Price.GetTierPrice(lineItem.Quantity);
-                    if (tierPrice.Price > lineItem.SalePrice)
-                    {
-                        lineItem.ValidationErrors.Add(new PriceError(lineItem.SalePrice, lineItem.SalePriceWithTax, tierPrice.Price, tierPrice.PriceWithTax));
-                    }
-                }
-
-                lineItem.IsValid = !lineItem.ValidationErrors.Any();
-            }
-            return Task.CompletedTask;
-        }
-
-        protected virtual async Task ValidateCartShipmentsAsync()
-        {
-            foreach (var shipment in Cart.Shipments.ToArray())
-            {
-                shipment.ValidationErrors.Clear();
-
-                var availShippingmethods = await GetAvailableShippingMethodsAsync();
-                var shipmentShippingMethod = availShippingmethods.FirstOrDefault(sm => shipment.HasSameMethod(sm));
-                if (shipmentShippingMethod == null)
-                {
-                    shipment.ValidationErrors.Add(new UnavailableError());
-                }
-                else if (shipmentShippingMethod.Price != shipment.Price)
-                {
-                    shipment.ValidationErrors.Add(new PriceError(shipment.Price, shipment.PriceWithTax, shipmentShippingMethod.Price, shipmentShippingMethod.PriceWithTax));
-                }
-            }
-        }
 
         protected virtual Task RemoveExistingPaymentAsync(Payment payment)
         {

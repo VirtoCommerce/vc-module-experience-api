@@ -3,7 +3,7 @@ using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Extensions;
 
 namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Marketing
 {
-    public partial class Discount : CloneableValueObject, IConvertible<Discount>
+    public partial class Discount : ValueObject, IConvertible<Discount>
     {
         public Discount()
         {
@@ -32,13 +32,14 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Marketing
         /// </summary>
         public string Description { get; set; }
 
-        public Discount ConvertTo(Currency currency) => new Discount(currency)
-        {
-            PromotionId = PromotionId,
-            Description = Description,
-            Coupon = Coupon,
-            Amount = Amount.ConvertTo(currency),
-        };
+        public Discount ConvertTo(Currency currency)
+            => new Discount(currency)
+            {
+                PromotionId = PromotionId,
+                Description = Description,
+                Coupon = Coupon,
+                Amount = Amount.ConvertTo(currency),
+            };
 
         public override object Clone()
         {

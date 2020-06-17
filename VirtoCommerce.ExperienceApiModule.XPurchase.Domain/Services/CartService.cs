@@ -36,9 +36,9 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Services
         public async Task DeleteCartByIdAsync(string cartId)
             => await _shoppingCartService.DeleteAsync(new[] { cartId ?? throw new ArgumentNullException(nameof(cartId)) });
 
-        public async Task<IEnumerable<PaymentMethod>> GetAvailablePaymentMethodsAsync(ShoppingCart cart, string storeId)
+        public async Task<IEnumerable<PaymentMethod>> GetAvailablePaymentMethodsAsync(ShoppingCart cart)
         {
-            if (cart == null || string.IsNullOrEmpty(storeId) || cart.IsTransient())
+            if (cart == null || string.IsNullOrEmpty(cart.StoreId) || cart.IsTransient())
             {
                 return Enumerable.Empty<PaymentMethod>();
             }
@@ -47,7 +47,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Services
             {
                 IsActive = true,
                 Take = int.MaxValue,
-                StoreId = storeId,
+                StoreId = cart.StoreId,
             };
 
             var payments = await _paymentMethodsSearchService.SearchPaymentMethodsAsync(criteria);
@@ -55,9 +55,9 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Services
             return payments.Results.Select(x => x.ToCartPaymentMethod(cart)).OrderBy(x => x.Priority).ToList();            
         }
 
-        public virtual async Task<IEnumerable<ShippingMethod>> GetAvailableShippingMethodsAsync(ShoppingCart cart, string storeId)
+        public virtual async Task<IEnumerable<ShippingMethod>> GetAvailableShippingMethodsAsync(ShoppingCart cart)
         {
-            if (cart == null || string.IsNullOrEmpty(storeId) || cart.IsTransient())
+            if (cart == null || string.IsNullOrEmpty(cart.StoreId) || cart.IsTransient())
             {
                 return Enumerable.Empty<ShippingMethod>();
             }
@@ -66,7 +66,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Services
             {
                 IsActive = true,
                 Take = int.MaxValue,
-                StoreId = storeId
+                StoreId = cart.StoreId,
             };
 
             var shippingRates = await _shippingMethodsSearchService.SearchShippingMethodsAsync(criteria);

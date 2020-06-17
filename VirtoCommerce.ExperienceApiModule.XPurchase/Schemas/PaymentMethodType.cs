@@ -1,5 +1,4 @@
 using GraphQL.Types;
-using VirtoCommerce.ExperienceApiModule.XPurchase.Models;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart;
 
 namespace VirtoCommerce.ExperienceApiModule.XPurchase.Schemas
@@ -29,18 +28,6 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Schemas
             Field(x => x.TaxType, nullable: true).Description("Tax type");
             Field<ListGraphType<TaxDetailType>>("taxDetails", resolve: context => context.Source.TaxDetails);
             Field<ListGraphType<DiscountType>>("discounts", resolve: context => context.Source.Discounts);
-        }
-    }
-
-    public class SettingType : ObjectGraphType<SettingEntry>
-    {
-        public SettingType()
-        {
-            Field(x => x.Name, nullable: true).Description("Name");
-            Field(x => x.Value, nullable: true).Description("Value");
-            Field(x => x.ValueType, nullable: true).Description("ValueType");
-
-            Field(x => x.AllowedValues, nullable: true).Description("AllowedValues");
         }
     }
 }
