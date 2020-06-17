@@ -30,62 +30,65 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Schemas
             Field(x => x.Width, nullable: true).Description("Shopping cart value of width");
 
             // Money
-            Field(x => x.Total, nullable: true).Description("Shopping cart total cost");
-            Field(x => x.SubTotal, nullable: true).Description("Shopping cart subtotal");
-            Field(x => x.SubTotalWithTax, nullable: true).Description("Shopping with taxes");
-            Field(x => x.Currency, nullable: true).Description("Currency");
-            Field(x => x.TaxTotal, nullable: true).Description("TaxTotal");
+            Field<ObjectGraphType<MoneyType>>("total", resolve: context => context.Source.Total);
+            Field<ObjectGraphType<MoneyType>>("subTotal", resolve: context => context.Source.SubTotal);
+            Field<ObjectGraphType<MoneyType>>("subTotalWithTax", resolve: context => context.Source.SubTotalWithTax);
+            Field<ObjectGraphType<CurrencyType>>("currency", resolve: context => context.Source.Currency);
+            Field<ObjectGraphType<MoneyType>>("taxTotal", resolve: context => context.Source.TaxTotal);
             Field(x => x.TaxPercentRate, nullable: true).Description("Tax percent rate");
             Field(x => x.TaxType, nullable: true).Description("Shipping tax type");
-            Field(x => x.TaxDetails, nullable: true).Description("Collection of TaxDetail objects"); // Reslove?
+            Field<ListGraphType<TaxDetailType>>("taxDetails", resolve: context => context.Source.TaxDetails);
 
             // Shipping
-            Field(x => x.ShippingPrice, nullable: true).Description("Sum shipping cost without discount");
-            Field(x => x.ShippingPriceWithTax, nullable: true).Description("Shipping cost with tax");
-            Field(x => x.ShippingTotal, nullable: true).Description("Shipping total cost");
-            Field(x => x.ShippingTotalWithTax, nullable: true).Description("Shipping total cost with tax");
-            Field(x => x.Shipments, nullable: true).Description("Collection of shipments objects");
+            Field<ObjectGraphType<MoneyType>>("shippingPrice", resolve: context => context.Source.ShippingPrice);
+            Field<ObjectGraphType<MoneyType>>("shippingPriceWithTax", resolve: context => context.Source.ShippingPriceWithTax);
+            Field<ObjectGraphType<MoneyType>>("shippingTotal", resolve: context => context.Source.ShippingTotal);
+            Field<ObjectGraphType<MoneyType>>("shippingTotalWithTax", resolve: context => context.Source.ShippingTotalWithTax);
+            Field<ListGraphType<ShipmentType>>("shipments", resolve: context => context.Source.Shipments);
 
             // Payment
-            Field(x => x.PaymentPrice, nullable: true).Description("Sum cost of payments");
-            Field(x => x.PaymentPriceWithTax, nullable: true).Description("Sum cost of payments with tax");
-            Field(x => x.PaymentTotal, nullable: true).Description("Payments total cost");
-            Field(x => x.PaymentTotalWithTax, nullable: true).Description("Payments total cost with tax");
-            Field(x => x.Payments, nullable: true).Description("Collection of payment objects");
-            Field(x => x.AvailablePaymentMethods, nullable: true).Description("Available payment methods");
-            Field(x => x.PaymentPlan, nullable: true).Description("Future subscription payment plan");
+            Field<ObjectGraphType<MoneyType>>("paymentPrice", resolve: context => context.Source.PaymentPrice);
+            Field<ObjectGraphType<MoneyType>>("paymentPriceWithTax", resolve: context => context.Source.PaymentPriceWithTax);
+            Field<ObjectGraphType<MoneyType>>("paymentTotal", resolve: context => context.Source.PaymentTotal);
+            Field<ObjectGraphType<MoneyType>>("paymentTotalWithTax", resolve: context => context.Source.PaymentTotalWithTax);
+            Field<ListGraphType<PaymentType>>("payments", resolve: context => context.Source.Payments);
+            Field<ListGraphType<PaymentMethodType>>("availablePaymentMethods", resolve: context => context.Source.AvailablePaymentMethods);
+            Field<ListGraphType<PaymentPlanType>>("paymentPlan", resolve: context => context.Source.PaymentPlan);
 
             // Extended money
-            Field(x => x.ExtendedPriceTotal, nullable: true).Description("Shopping cart items total extended price");
-            Field(x => x.ExtendedPriceTotalWithTax, nullable: true).Description("Shopping cart items total extended price with tax");
+            Field<ObjectGraphType<MoneyType>>("extendedPriceTotal", resolve: context => context.Source.ExtendedPriceTotal);
+            Field<ObjectGraphType<MoneyType>>("extendedPriceTotalWithTax", resolve: context => context.Source.ExtendedPriceTotalWithTax);
+
 
             // Handling totals
-            Field(x => x.HandlingTotal, nullable: true).Description("Value of handling total cost");
-            Field(x => x.HandlingTotalWithTax, nullable: true).Description("Value of handling total cost with tax");
+            Field<ObjectGraphType<MoneyType>>("handlingTotal", resolve: context => context.Source.HandlingTotal);
+            Field<ObjectGraphType<MoneyType>>("handlingTotalWithTax", resolve: context => context.Source.HandlingTotalWithTax);
 
             // Discounts
-            Field(x => x.DiscountTotal, nullable: true).Description("Total discount amount");
-            Field(x => x.DiscountTotalWithTax, nullable: true).Description("Total discount amount with tax");
-            Field(x => x.Discounts, nullable: true).Description("Collection of discounts");
+            Field<ObjectGraphType<MoneyType>>("discountTotal", resolve: context => context.Source.DiscountTotal);
+            Field<ObjectGraphType<MoneyType>>("discountTotalWithTax", resolve: context => context.Source.DiscountTotalWithTax);
+            Field<ListGraphType<DiscountType>>("discounts", resolve: context => context.Source.Discounts);
 
             // Addresses
-            Field(x => x.Addresses, nullable: true).Description("Collection of address");
+            Field<ListGraphType<AddressType>>("addresses", resolve: context => context.Source.Addresses);
 
             // Items
-            Field(x => x.Items, nullable: true).Description("Collection of items");
+            Field<ListGraphType<LineItemType>>("items", resolve: context => context.Source.Items);
             Field(x => x.ItemsCount, nullable: true).Description("Count of different items");
             Field(x => x.ItemsQuantity, nullable: true).Description("Quantity of items");
-            Field(x => x.RecentlyAddedItem, nullable: true).Description("Recently added item");
+            Field<ObjectGraphType<LineItemType>>("recentlyAddedItem", resolve: context => context.Source.RecentlyAddedItem);
 
             // Coupon
-            Field(x => x.Coupon, nullable: true).Description("First coupon");
-            Field(x => x.Coupons, nullable: true).Description("Collection  of shopping cart coupons");
+            Field<ObjectGraphType<CopuponType>>("coupon", resolve: context => context.Source.Coupon);
+            Field<ListGraphType<CopuponType>>("coupons", resolve: context => context.Source.Coupons);
 
             // Other
             Field(x => x.ObjectType, nullable: true).Description("Object type");
             Field(x => x.DynamicProperties, nullable: true).Description("Dynamic properties collections");
+            Field<ListGraphType<DynamicPropertyType>>("dynamicProperties", resolve: context => context.Source.DynamicProperties);
             Field(x => x.IsValid, nullable: true).Description("Is cart valid");
             Field(x => x.ValidationErrors, nullable: true).Description("Validation errors");
+            Field<ListGraphType<ValidationErrorType>>("validationErrors", resolve: context => context.Source.ValidationErrors);
             Field(x => x.Type, nullable: true).Description("Shopping cart type");
         }
     }
