@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using FluentValidation;
 using VirtoCommerce.CartModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Converters;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Models;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart.Services;
-using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart.ValidationErrors;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Catalog;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Enums;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Exceptions;
@@ -18,8 +18,6 @@ using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Quote;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Security;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Validators;
 using VirtoCommerce.Platform.Core.Common;
-using FluentValidation;
-
 using IEntity = VirtoCommerce.ExperienceApiModule.XPurchase.Models.Common.IEntity;
 
 namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Aggregates
@@ -359,7 +357,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Aggregates
         public virtual async Task<IEnumerable<ShippingMethod>> GetAvailableShippingMethodsAsync()
         {
             //Request available shipping rates
-            
+
             var result = await _cartService.GetAvailableShippingMethodsAsync(Cart);
             if (!result.IsNullOrEmpty())
             {

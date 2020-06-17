@@ -27,7 +27,6 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schema
             services.AddTransient<IValidationRule, AuthorizationValidationRule>();            
         }
 
-
         public static void AddSchemaBuilder<TSchemaBuilder>(this IServiceCollection services) where TSchemaBuilder : class, ISchemaBuilder
         {
             services.AddSingleton<ISchemaBuilder, TSchemaBuilder>();

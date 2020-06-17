@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.DataLoader;
 using GraphQL.Resolvers;
@@ -6,6 +7,7 @@ using MediatR;
 using VirtoCommerce.ExperienceApiModule.Core.Schema;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Builders;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Factories;
+using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart;
 
 namespace VirtoCommerce.ExperienceApiModule.XPurchase.Schemas
 {
@@ -36,7 +38,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Schemas
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "type" }
                 ),
                 Type = GraphTypeExtenstionHelper.GetActualType<CartType>(),
-                Resolver = new AsyncFieldResolver<object>(async context =>
+                Resolver = new AsyncFieldResolver<ShoppingCart>(async context =>
                 {
                     var storeId = context.GetArgument<string>("storeId");
                     var cartName = context.GetArgument<string>("cartName");
@@ -62,6 +64,19 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Schemas
             };
 
             schema.Query.AddField(getCartQuery);
+
+            var testQuery = new FieldType
+            {
+                Name = "test",
+                Type = GraphTypeExtenstionHelper.GetActualType<StringGraphType>(),
+                Resolver = new AsyncFieldResolver<string>(async context =>
+                {
+                    await Task.Delay(2000);
+                    return "test success";
+                })
+            };
+
+            schema.Query.AddField(testQuery);
         }
     }
 }

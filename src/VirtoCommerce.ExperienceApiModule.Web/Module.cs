@@ -43,7 +43,6 @@ namespace VirtoCommerce.ExperienceApiModule.Web
             {
                 _.EnableMetrics = true;
                 _.ExposeExceptions = true;
-                _.ExposeExceptions = true;
             }).AddNewtonsoftJson(deserializerSettings => { }, serializerSettings => { })
             .AddUserContextBuilder(context => new GraphQLUserContext { User = context.User })
             .AddRelayGraphTypes()
