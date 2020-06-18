@@ -1,0 +1,28 @@
+{
+  "virtoCommerce.experienceApi.profileModule": {
+    "blades": {
+      "hello-world": {
+        "title": "Hello world blade"
+      }
+    }
+  },
+  "permissions": {
+    "virtoCommerceExperienceApiProfileModule:access": "Open VirtoCommerceExperienceApiProfileModule menu",
+    "virtoCommerceExperienceApiProfileModule:create": "Create VirtoCommerceExperienceApiProfileModule related data",
+    "virtoCommerceExperienceApiProfileModule:read": "View VirtoCommerceExperienceApiProfileModule related data",
+    "virtoCommerceExperienceApiProfileModule:update": "Update VirtoCommerceExperienceApiProfileModule related data",
+    "virtoCommerceExperienceApiProfileModule:delete": "Delete VirtoCommerceExperienceApiProfileModule related data"
+  },
+  "settings": {
+    "VirtoCommerceExperienceApiProfileModule": {
+      "VirtoCommerceExperienceApiProfileModulePassword": {
+        "title": "VirtoCommerceExperienceApiProfileModule Password",
+        "description": "VirtoCommerceExperienceApiProfileModule Password setting"
+      },
+      "VirtoCommerceExperienceApiProfileModuleEnabled": {
+        "title": "VirtoCommerceExperienceApiProfileModule Enabled",
+        "description": "VirtoCommerceExperienceApiProfileModule Enabled setting"
+      }
+    }
+  }
+}
