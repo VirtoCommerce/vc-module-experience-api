@@ -1,6 +1,5 @@
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
 using VirtoCommerce.CartModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Aggregates;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Converters;
@@ -20,7 +19,6 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Factories
         private readonly IPromotionEvaluator _promotionEvaluator;
         private readonly ITaxEvaluator _taxEvaluator;
         private readonly ICartService _cartService;
-        private readonly UserManager<User> _userManager;
         private readonly IShoppingCartSearchService _shoppingCartSearchService;
 
         public ShoppingCartAggregateFactory(IShoppingCartService shoppingCartService,
@@ -28,7 +26,6 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Factories
             IPromotionEvaluator promotionEvaluator,
             ITaxEvaluator taxEvaluator,
             ICartService cartService,
-            UserManager<User> userManager,
             IShoppingCartSearchService shoppingCartSearchService)
         {
             _shoppingCartService = shoppingCartService;
@@ -36,7 +33,6 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Factories
             _promotionEvaluator = promotionEvaluator;
             _taxEvaluator = taxEvaluator;
             _cartService = cartService;
-            _userManager = userManager;
             _shoppingCartSearchService = shoppingCartSearchService;
         }
 
@@ -54,7 +50,10 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Factories
 
             var cartSearchResult = await _shoppingCartSearchService.SearchCartAsync(criteria).ConfigureAwait(false);
 
-            var user = await _userManager.FindByIdAsync(context.UserId);
+            var user = new User
+            {
+                Id = context.UserId
+            }; //await _userManager.FindByIdAsync(context.UserId); //todo get from user manager
 
             var cart = cartSearchResult.Results.FirstOrDefault()?.ToShoppingCart(context.Currency, context.Language, user)
                 ?? CreateCart(context.CartName, context.StoreId, user, context.Language, context.Currency, context.Type);

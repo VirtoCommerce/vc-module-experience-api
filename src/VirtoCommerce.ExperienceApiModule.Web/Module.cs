@@ -9,11 +9,12 @@ using VirtoCommerce.ExperienceApiModule.DigitalCatalog;
 using VirtoCommerce.ExperienceApiModule.XPurchase;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Factories;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Services;
+using VirtoCommerce.ExperienceApiModule.XPurchase.Extensions;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart.Services;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Marketing.Services;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Schemas;
 using VirtoCommerce.Platform.Core.Modularity;
-using VirtoCommerce.ExperienceApiModule.XPurchase.Extensions;
+
 namespace VirtoCommerce.ExperienceApiModule.Web
 {
     public class Module : IModule

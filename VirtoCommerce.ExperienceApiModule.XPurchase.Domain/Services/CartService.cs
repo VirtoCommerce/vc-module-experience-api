@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
 using VirtoCommerce.CartModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Converters;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart;
@@ -20,17 +19,14 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Services
         private readonly IPaymentMethodsSearchService _paymentMethodsSearchService;
         private readonly IShoppingCartService _shoppingCartService;
         private readonly IShippingMethodsSearchService _shippingMethodsSearchService;
-        private readonly UserManager<User> _userManager;
 
         public CartService(IPaymentMethodsSearchService paymentMethodsSearchService,
             IShoppingCartService shoppingCartService,
-            IShippingMethodsSearchService shippingMethodsSearchService,
-            UserManager<User> userManager)
+            IShippingMethodsSearchService shippingMethodsSearchService)
         {
             _paymentMethodsSearchService = paymentMethodsSearchService;
             _shoppingCartService = shoppingCartService;
             _shippingMethodsSearchService = shippingMethodsSearchService;
-            _userManager = userManager;
         }
 
         public async Task DeleteCartByIdAsync(string cartId)
@@ -42,7 +38,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Services
             {
                 return Enumerable.Empty<PaymentMethod>();
             }
-            
+
             var criteria = new PaymentMethodsSearchCriteria
             {
                 IsActive = true,
@@ -52,7 +48,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Services
 
             var payments = await _paymentMethodsSearchService.SearchPaymentMethodsAsync(criteria);
 
-            return payments.Results.Select(x => x.ToCartPaymentMethod(cart)).OrderBy(x => x.Priority).ToList();            
+            return payments.Results.Select(x => x.ToCartPaymentMethod(cart)).OrderBy(x => x.Priority).ToList();
         }
 
         public virtual async Task<IEnumerable<ShippingMethod>> GetAvailableShippingMethodsAsync(ShoppingCart cart)
@@ -77,7 +73,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Services
                 .ToList();
         }
 
-        public async Task<ShoppingCart> GetByIdAsync(string cartId, Currency currency)
+        public async Task<ShoppingCart> GetByIdAsync(string cartId, Currency currency, string userId)
         {
             var cartDto = await _shoppingCartService.GetByIdAsync(cartId, CartModule.Core.Model.CartResponseGroup.Full.ToString());
             if (cartDto == null)
@@ -89,7 +85,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Services
                 ? Language.InvariantLanguage
                 : new Language(cartDto.LanguageCode);
 
-            return cartDto.ToShoppingCart(currency, language, await _userManager.FindByIdAsync(cartDto.CustomerId));
+            return cartDto.ToShoppingCart(currency, language, new User { Id = userId });
         }
 
         // todo: maybe we need this in future

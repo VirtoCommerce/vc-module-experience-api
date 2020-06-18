@@ -8,7 +8,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart.Services
     {
         //Task<IPagedList<ShoppingCart>> SearchCartsAsync(CartSearchCriteria criteria);
         //Task<ShoppingCart> SaveChanges(ShoppingCart cart);
-        Task<ShoppingCart> GetByIdAsync(string cartId, Currency currency);
+        Task<ShoppingCart> GetByIdAsync(string cartId, Currency currency, string userId);
 
         Task DeleteCartByIdAsync(string cartId);
 

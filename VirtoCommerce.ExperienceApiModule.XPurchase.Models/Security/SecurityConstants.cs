@@ -14,6 +14,14 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Models.Security
             Description = "This role allow to work with carts and create orders",
         };
 
+        public static class Claims
+        {
+            public const string PermissionClaimType = "permission";
+            public const string OperatorUserNameClaimType = "operatorname";
+            public const string OperatorUserIdClaimType = "operatornameidentifier";
+            public const string CurrencyClaimType = "currency";
+        }
+
         public static class Permissions
         {
             public const string CanReadCart = "cart:read";
