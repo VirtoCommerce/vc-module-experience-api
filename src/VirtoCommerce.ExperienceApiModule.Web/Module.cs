@@ -7,13 +7,13 @@ using Microsoft.Extensions.DependencyInjection;
 using VirtoCommerce.ExperienceApiModule.Core.Schema;
 using VirtoCommerce.ExperienceApiModule.DigitalCatalog;
 using VirtoCommerce.ExperienceApiModule.DigitalCatalog.Schemas;
-using VirtoCommerce.ExperienceApiModule.XPurchase;
-using VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Factories;
-using VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Services;
-using VirtoCommerce.ExperienceApiModule.XPurchase.Extensions;
-using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart.Services;
-using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Marketing.Services;
-using VirtoCommerce.ExperienceApiModule.XPurchase.Schemas;
+using VirtoCommerce.XPurchase;
+using VirtoCommerce.XPurchase.Domain.Factories;
+using VirtoCommerce.XPurchase.Domain.Services;
+using VirtoCommerce.XPurchase.Extensions;
+using VirtoCommerce.XPurchase.Models.Cart.Services;
+using VirtoCommerce.XPurchase.Models.Marketing.Services;
+using VirtoCommerce.XPurchase.Schemas;
 using VirtoCommerce.Platform.Core.Modularity;
 
 namespace VirtoCommerce.ExperienceApiModule.Web

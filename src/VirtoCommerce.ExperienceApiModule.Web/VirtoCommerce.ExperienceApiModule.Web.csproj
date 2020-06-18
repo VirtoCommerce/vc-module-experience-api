@@ -38,8 +38,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\VirtoCommerce.ExperienceApiModule.XPurchase\VirtoCommerce.ExperienceApiModule.XPurchase.csproj" />
       <ProjectReference Include="..\VirtoCommerce.ExperienceApiModule.Core\VirtoCommerce.ExperienceApiModule.Core.csproj" />
       <ProjectReference Include="..\VirtoCommerce.ExperienceApiModule.DigitalCatalog\VirtoCommerce.ExperienceApiModule.DigitalCatalog.csproj" />
+      <ProjectReference Include="..\XPurchase\VirtoCommerce.XPurchase\VirtoCommerce.XPurchase.csproj" />
     </ItemGroup>
 </Project>

@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="GraphQL" Version="3.0.0-preview-1490" />
+    <PackageReference Include="MediatR" Version="8.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\VirtoCommerce.ExperienceApiModule.Core\VirtoCommerce.ExperienceApiModule.Core.csproj" />
+    <ProjectReference Include="..\..\VirtoCommerce.ExperienceApiModule.DigitalCatalog\VirtoCommerce.ExperienceApiModule.DigitalCatalog.csproj" />
+    <ProjectReference Include="..\VirtoCommerce.XPurchase.Domain\VirtoCommerce.XPurchase.Domain.csproj" />
+  </ItemGroup>
+
+</Project>
