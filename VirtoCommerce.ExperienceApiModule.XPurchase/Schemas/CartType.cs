@@ -84,10 +84,8 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Schemas
 
             // Other
             Field(x => x.ObjectType, nullable: true).Description("Object type");
-            Field(x => x.DynamicProperties, nullable: true).Description("Dynamic properties collections");
             Field<ListGraphType<DynamicPropertyType>>("dynamicProperties", resolve: context => context.Source.DynamicProperties);
             Field(x => x.IsValid, nullable: true).Description("Is cart valid");
-            Field(x => x.ValidationErrors, nullable: true).Description("Validation errors");
             Field<ListGraphType<ValidationErrorType>>("validationErrors", resolve: context => context.Source.ValidationErrors);
             Field(x => x.Type, nullable: true).Description("Shopping cart type");
         }
