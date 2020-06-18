@@ -11,7 +11,9 @@ using VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Factories;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Services;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart.Services;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Marketing.Services;
+using VirtoCommerce.ExperienceApiModule.XPurchase.Schemas;
 using VirtoCommerce.Platform.Core.Modularity;
+using VirtoCommerce.ExperienceApiModule.XPurchase.Extensions;
 namespace VirtoCommerce.ExperienceApiModule.Web
 {
     public class Module : IModule
@@ -47,14 +49,16 @@ namespace VirtoCommerce.ExperienceApiModule.Web
             .AddUserContextBuilder(context => new GraphQLUserContext { User = context.User })
             .AddRelayGraphTypes()
             .AddGraphTypes(typeof(Anchor))
-            .AddGraphTypes(typeof(XPurchaseAnchor))
             .AddDataLoader();
 
+            services.AddXPurchaseSchemaTypes();
 
             //Register custom GraphQL dependencies
             services.AddPermissionAuthorization();
+
+            services.AddSchemaBuilder<XPurchaseSchema>();
             services.AddGraphShemaBuilders(typeof(Anchor));
-            services.AddGraphShemaBuilders(typeof(XPurchaseAnchor));
+
 
             //Discover the assembly and  register all mapping profiles through reflection
             services.AddAutoMapper(typeof(Module));
