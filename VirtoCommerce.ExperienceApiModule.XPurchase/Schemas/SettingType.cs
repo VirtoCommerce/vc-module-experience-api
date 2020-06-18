@@ -8,7 +8,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Schemas
         public SettingType()
         {
             Field(x => x.Name, nullable: true).Description("Name");
-            Field(x => x.Value, nullable: true).Description("Value");
+            Field<ObjectGraphType>("value", resolve: context => context.Source.Value);
             Field(x => x.ValueType, nullable: true).Description("ValueType");
         }
     }

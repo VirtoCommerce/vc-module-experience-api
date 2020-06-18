@@ -17,7 +17,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Schemas
 
             Field(x => x.Host, nullable: true).Description("Host");
 
-            Field<ObjectGraphType<StoreStatusEnum>>("storeState", resolve: context => context.Source.StoreState);
+            Field<StoreStatusEnum>("storeState", resolve: context => context.Source.StoreState);
 
             Field(x => x.TimeZone, nullable: true).Description("TimeZone");
 
@@ -25,7 +25,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Schemas
 
             Field(x => x.Region, nullable: true).Description("Region");
 
-            Field<ObjectGraphType<LanguageType>>("defaultLanguage", resolve: context => context.Source.DefaultLanguage);
+            Field<LanguageType>("defaultLanguage", resolve: context => context.Source.DefaultLanguage);
 
             Field<ListGraphType<LanguageType>>("languages", resolve: context => context.Source.Languages);
 

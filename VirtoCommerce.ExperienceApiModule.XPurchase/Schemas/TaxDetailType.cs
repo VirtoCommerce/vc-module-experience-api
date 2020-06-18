@@ -7,10 +7,10 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Schemas
     {
         public TaxDetailType()
         {
-            Field<ObjectGraphType<MoneyType>>("rate", resolve: context => context.Source.Rate);
-            Field<ObjectGraphType<MoneyType>>("amount", resolve: context => context.Source.Amount);
-            Field<ObjectGraphType<MoneyType>>("name", resolve: context => context.Source.Name);
-            Field<ObjectGraphType<MoneyType>>("price", resolve: context => context.Source.Price);
+            Field<MoneyType>("rate", resolve: context => context.Source.Rate);
+            Field<MoneyType>("amount", resolve: context => context.Source.Amount);
+            Field<MoneyType>("name", resolve: context => context.Source.Name);
+            Field<MoneyType>("price", resolve: context => context.Source.Price);
         }
     }
 }

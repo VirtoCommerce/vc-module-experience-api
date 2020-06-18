@@ -9,7 +9,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Schemas
         public LineItemType()
         {
             Field(x => x.CreatedDate, nullable: false).Description("Line item created date");
-            Field<ObjectGraphType<ProductType>>("product", resolve: context => context.Source.Product);
+            Field<ProductType>("product", resolve: context => context.Source.Product);
             Field(x => x.ProductId, nullable: true).Description("value of product id");
             Field(x => x.ProductType, nullable: true).Description("type of product (can be Physical, Digital or Subscription)");
             Field(x => x.CatalogId, nullable: true).Description("value of catalog id");
@@ -35,23 +35,23 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Schemas
             Field(x => x.Length, nullable: true).Description("Value of length");
             Field(x => x.Width, nullable: true).Description("Value of width");
             Field(x => x.IsReadOnly, nullable: true).Description("Is readOnly");
-            Field<ObjectGraphType<MoneyType>>("listPrice", resolve: context => context.Source.ListPrice);
-            Field<ObjectGraphType<MoneyType>>("paymentPlan", resolve: context => context.Source.PaymentPlan);
-            Field<ObjectGraphType<MoneyType>>("listPriceWithTax", resolve: context => context.Source.ListPriceWithTax);
-            Field<ObjectGraphType<MoneyType>>("salePrice", resolve: context => context.Source.SalePrice);
-            Field<ObjectGraphType<MoneyType>>("salePriceWithTax", resolve: context => context.Source.SalePriceWithTax);
-            Field<ObjectGraphType<MoneyType>>("placedPrice", resolve: context => context.Source.PlacedPrice);
-            Field<ObjectGraphType<MoneyType>>("placedPriceWithTax", resolve: context => context.Source.PlacedPriceWithTax);
-            Field<ObjectGraphType<MoneyType>>("extendedPrice", resolve: context => context.Source.ExtendedPrice);
-            Field<ObjectGraphType<MoneyType>>("extendedPriceWithTax", resolve: context => context.Source.ExtendedPriceWithTax);
-            Field<ObjectGraphType<MoneyType>>("discountAmount", resolve: context => context.Source.DiscountAmount);
-            Field<ObjectGraphType<MoneyType>>("discountAmountWithTax", resolve: context => context.Source.DiscountAmountWithTax);
-            Field<ObjectGraphType<MoneyType>>("discountTotal", resolve: context => context.Source.DiscountTotal);
-            Field<ObjectGraphType<MoneyType>>("discountTotalWithTax", resolve: context => context.Source.DiscountTotalWithTax);
+            Field<MoneyType>("listPrice", resolve: context => context.Source.ListPrice);
+            Field<MoneyType>("paymentPlan", resolve: context => context.Source.PaymentPlan);
+            Field<MoneyType>("listPriceWithTax", resolve: context => context.Source.ListPriceWithTax);
+            Field<MoneyType>("salePrice", resolve: context => context.Source.SalePrice);
+            Field<MoneyType>("salePriceWithTax", resolve: context => context.Source.SalePriceWithTax);
+            Field<MoneyType>("placedPrice", resolve: context => context.Source.PlacedPrice);
+            Field<MoneyType>("placedPriceWithTax", resolve: context => context.Source.PlacedPriceWithTax);
+            Field<MoneyType>("extendedPrice", resolve: context => context.Source.ExtendedPrice);
+            Field<MoneyType>("extendedPriceWithTax", resolve: context => context.Source.ExtendedPriceWithTax);
+            Field<MoneyType>("discountAmount", resolve: context => context.Source.DiscountAmount);
+            Field<MoneyType>("discountAmountWithTax", resolve: context => context.Source.DiscountAmountWithTax);
+            Field<MoneyType>("discountTotal", resolve: context => context.Source.DiscountTotal);
+            Field<MoneyType>("discountTotalWithTax", resolve: context => context.Source.DiscountTotalWithTax);
             Field(x => x.ObjectType, nullable: true).Description("value of line item quantity");
             Field(x => x.IsValid, nullable: true).Description("value of line item quantity");
-            Field<ObjectGraphType<ValidationErrorType>>("validationErrors", resolve: context => context.Source.ValidationErrors);
-            Field<ObjectGraphType<MoneyType>>("taxTotal", resolve: context => context.Source.TaxTotal);
+            Field<ValidationErrorType>("validationErrors", resolve: context => context.Source.ValidationErrors);
+            Field<MoneyType>("taxTotal", resolve: context => context.Source.TaxTotal);
             Field(x => x.TaxPercentRate, nullable: true).Description("Value of total shipping tax amount");
             Field(x => x.TaxType, nullable: true).Description("Value of shipping tax type");
             Field<ListGraphType<TaxDetailType>>("taxDetails", resolve: context => context.Source.TaxDetails);

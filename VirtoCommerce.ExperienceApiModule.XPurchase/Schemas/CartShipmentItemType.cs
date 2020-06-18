@@ -1,4 +1,4 @@
-﻿using GraphQL.Types;
+using GraphQL.Types;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Models.Cart;
 
 namespace VirtoCommerce.ExperienceApiModule.XPurchase.Schemas
@@ -8,7 +8,7 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Schemas
         public CartShipmentItemType()
         {
             Field(x => x.Quantity, nullable: true).Description("Quantity");
-            Field<ObjectGraphType<LineItemType>>("lineItem", resolve: context => context.Source.LineItem);
+            Field<LineItemType>("lineItem", resolve: context => context.Source.LineItem);
         }
     }
 }
