@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using VirtoCommerce.ExperienceApiModule.Core.Schema;
 using VirtoCommerce.ExperienceApiModule.DigitalCatalog;
+using VirtoCommerce.ExperienceApiModule.DigitalCatalog.Schemas;
 using VirtoCommerce.ExperienceApiModule.XPurchase;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Factories;
 using VirtoCommerce.ExperienceApiModule.XPurchase.Domain.Services;
@@ -27,7 +28,7 @@ namespace VirtoCommerce.ExperienceApiModule.Web
             services.AddMediatR(typeof(Anchor));
             services.AddMediatR(typeof(XPurchaseAnchor));
 
-            services.AddTransient<IShoppingCartAggregateFactory, ShoppingCartAggregateFactory>(); 
+            services.AddTransient<IShoppingCartAggregateFactory, ShoppingCartAggregateFactory>();
             services.AddTransient<ICartService, CartService>();
             services.AddTransient<ICatalogService, CatalogService>();
             services.AddTransient<IPromotionEvaluator, PromotionEvaluator>();
@@ -57,8 +58,12 @@ namespace VirtoCommerce.ExperienceApiModule.Web
             //Register custom GraphQL dependencies
             services.AddPermissionAuthorization();
 
+            services.AddSingleton<ISchema, SchemaFactory>();
+
             services.AddSchemaBuilder<XPurchaseSchema>();
-            services.AddGraphShemaBuilders(typeof(Anchor));
+            services.AddSchemaBuilder<DigitalCatalogSchema>();
+            //TODO: need to fix extension, it's register only types from the last schema
+            //services.AddGraphShemaBuilders(typeof(Anchor));
 
 
             //Discover the assembly and  register all mapping profiles through reflection
@@ -79,7 +84,7 @@ namespace VirtoCommerce.ExperienceApiModule.Web
         public void Uninstall()
         {
         }
-               
+
     }
 }
 

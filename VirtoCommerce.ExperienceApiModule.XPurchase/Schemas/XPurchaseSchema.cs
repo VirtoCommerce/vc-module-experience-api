@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.DataLoader;
 using GraphQL.Resolvers;
@@ -64,19 +63,6 @@ namespace VirtoCommerce.ExperienceApiModule.XPurchase.Schemas
             };
 
             schema.Query.AddField(getCartQuery);
-
-            var testQuery = new FieldType
-            {
-                Name = "test",
-                Type = GraphTypeExtenstionHelper.GetActualType<StringGraphType>(),
-                Resolver = new AsyncFieldResolver<string>(async context =>
-                {
-                    await Task.Delay(2000);
-                    return "test success";
-                })
-            };
-
-            schema.Query.AddField(testQuery);
         }
     }
 }
