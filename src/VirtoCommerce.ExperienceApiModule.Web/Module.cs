@@ -27,7 +27,7 @@ namespace VirtoCommerce.ExperienceApiModule.Web
 
             //Discover the assembly and  register all mapping profiles through reflection
             services.AddAutoMapper(typeof(Anchor));
-            services.AddAutoMapper(typeof(XProfileAnchor));
+            //services.AddAutoMapper(typeof(XProfileAnchor));
 
 
             //Register .NET GraphQL server

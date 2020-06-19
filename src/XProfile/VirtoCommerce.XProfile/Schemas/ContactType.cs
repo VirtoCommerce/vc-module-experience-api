@@ -9,6 +9,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
         {
             Field(x => x.FirstName);
             Field(x => x.LastName);
+            Field<ListGraphType<AddressType>>("addresses", resolve: context => context.Source.Addresses);
         }
     }
 }

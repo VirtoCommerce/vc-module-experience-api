@@ -1,4 +1,3 @@
-using System.Linq;
 using GraphQL.Types;
 using MediatR;
 using VirtoCommerce.ExperienceApiModule.XProfile.Models;
@@ -18,13 +17,16 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             Field(x => x.User.PhoneNumber, nullable: true).Description("Phone Number");
             Field(x => x.User.PhoneNumberConfirmed).Description("Is Phone Number confirmed");
             Field(x => x.User.Email, nullable: true).Description("User email");
-            Field("IsRegisteredUser", x => true).Description("Is User Registered");
+            Field("isRegisteredUser", x => true).Description("Is User Registered");
             Field(x => x.User.IsAdministrator).Description("Is User Administrator");
             Field(d => d.User.UserType).Description("UserType");
-            Field("Permissions", x => x.User.Roles.SelectMany(x => x.Permissions).Select(x => x.Name).Distinct().ToArray()).Description("All User's Permissions");
+            Field<ContactType>("contact", "Customer contact information", resolve: context => context.Source.Contact);
+            Field<ListGraphType<RoleType>>("roles", resolve: context => context.Source.User.Roles);
 
-            //Field<ListGraphType<RoleType>>("roles", resolve: context => context.Source.User.Roles);
-            Field<ContactType>("contact", "Customer object", resolve: context => context.Source.Contact);
+            //Obsolete:
+            //Field("permissions", x => x.User.Roles.SelectMany(x => x.Permissions).Select(x => x.Name).Distinct().ToArray()).Description("All User's Permissions");
+            //Obsolete:
+            //Field<ListGraphType<RoleType>>("externalLogins", resolve: context => context.Source.User.Logins);
         }
     }
 }
