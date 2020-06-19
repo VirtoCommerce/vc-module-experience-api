@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace VirtoCommerce.ExperienceApi.ProfileModule.Core.Requests
+namespace VirtoCommerce.ExperienceApiModule.XProfile.Requests
 {
     public interface IHasIncludeFields
     {

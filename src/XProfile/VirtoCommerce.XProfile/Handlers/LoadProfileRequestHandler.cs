@@ -6,11 +6,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using VirtoCommerce.CustomerModule.Core.Model;
 using VirtoCommerce.CustomerModule.Core.Services;
-using VirtoCommerce.ExperienceApi.ProfileModule.Core.Models;
-using VirtoCommerce.ExperienceApi.ProfileModule.Core.Requests;
 using VirtoCommerce.OrdersModule.Core.Model.Search;
 using VirtoCommerce.OrdersModule.Core.Services;
 using VirtoCommerce.Platform.Core.Security;
+using VirtoCommerce.ExperienceApiModule.XProfile.Models;
+using VirtoCommerce.ExperienceApiModule.XProfile.Requests;
 
 namespace VirtoCommerce.ExperienceApi.ProfileModule.Data.Handlers
 {

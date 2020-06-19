@@ -6,10 +6,11 @@ using GraphQL.DataLoader;
 using GraphQL.Resolvers;
 using GraphQL.Types;
 using MediatR;
-using VirtoCommerce.ExperienceApi.ProfileModule.Core.Requests;
 using VirtoCommerce.ExperienceApiModule.Core.Schema;
+using VirtoCommerce.ExperienceApiModule.XProfile.Models;
+using VirtoCommerce.ExperienceApiModule.XProfile.Requests;
 
-namespace VirtoCommerce.ExperienceApi.ProfileModule.Core.Models
+namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 {
     public class ProfileSchema : ISchemaBuilder
     {
@@ -26,7 +27,7 @@ namespace VirtoCommerce.ExperienceApi.ProfileModule.Core.Models
         {
             var customerField = new FieldType
             {
-                Name = "me",
+                Name = "customer",
                 Arguments = new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id", Description = "user id" }),
                 Type = GraphTypeExtenstionHelper.GetActualType<ProfileType>(),
                 Resolver = new AsyncFieldResolver<object>(async context =>

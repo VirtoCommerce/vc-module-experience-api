@@ -6,7 +6,9 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using VirtoCommerce.ExperienceApiModule.Core.Schema;
 using VirtoCommerce.ExperienceApiModule.DigitalCatalog;
+using VirtoCommerce.ExperienceApiModule.XProfile;
 using VirtoCommerce.Platform.Core.Modularity;
+
 namespace VirtoCommerce.ExperienceApiModule.Web
 {
     public class Module : IModule
@@ -17,13 +19,15 @@ namespace VirtoCommerce.ExperienceApiModule.Web
         {
 
             services.AddMediatR(typeof(Anchor));
+            services.AddMediatR(typeof(XProfileAnchor));
 
-          
+
             //services.AddSingleton(typeof(IPipelineBehavior<,>), typeof(RequestExceptionProcessorBehavior<,>));
             //serviceCollection.AddSingleton(typeof(IRequestPreProcessor<>), typeof(GenericRequestPreProcessor<>));
-                      
+
             //Discover the assembly and  register all mapping profiles through reflection
             services.AddAutoMapper(typeof(Anchor));
+            services.AddAutoMapper(typeof(XProfileAnchor));
 
 
             //Register .NET GraphQL server
@@ -36,16 +40,16 @@ namespace VirtoCommerce.ExperienceApiModule.Web
             .AddUserContextBuilder(context => new GraphQLUserContext { User = context.User })
             .AddRelayGraphTypes()
             .AddGraphTypes(typeof(Anchor))
+            .AddGraphTypes(typeof(XProfileAnchor))
             .AddDataLoader();
 
 
             //Register custom GraphQL dependencies
             services.AddPermissionAuthorization();
-            services.AddGraphShemaBuilders(typeof(Anchor));
+            //services.AddGraphShemaBuilders(typeof(Anchor));
+            services.AddGraphShemaBuilders(typeof(XProfileAnchor));
 
-            //Discover the assembly and  register all mapping profiles through reflection
             services.AddAutoMapper(typeof(Module));
-
         }
 
         public void PostInitialize(IApplicationBuilder appBuilder)
@@ -57,14 +61,14 @@ namespace VirtoCommerce.ExperienceApiModule.Web
             // use graphql-playground at default url /ui/playground
             appBuilder.UseGraphQLPlayground();
 
-           
+
 
         }
 
         public void Uninstall()
         {
         }
-               
+
     }
 }
 

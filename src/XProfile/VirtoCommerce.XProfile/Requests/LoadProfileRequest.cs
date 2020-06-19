@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using MediatR;
 
-namespace VirtoCommerce.ExperienceApi.ProfileModule.Core.Requests
+namespace VirtoCommerce.ExperienceApiModule.XProfile.Requests
 {
     public class LoadProfileRequest : IRequest<LoadProfileResponse>, IHasIncludeFields
     {

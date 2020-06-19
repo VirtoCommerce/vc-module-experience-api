@@ -1,8 +1,9 @@
 using System.Linq;
 using GraphQL.Types;
 using MediatR;
+using VirtoCommerce.ExperienceApiModule.XProfile.Models;
 
-namespace VirtoCommerce.ExperienceApi.ProfileModule.Core.Models
+namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 {
     public class ProfileType : ObjectGraphType<Profile>
     {

@@ -1,7 +1,7 @@
 using GraphQL.Types;
 using VirtoCommerce.CustomerModule.Core.Model;
 
-namespace VirtoCommerce.ExperienceApi.ProfileModule.Core.Models
+namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 {
     public class ContactType : ObjectGraphType<Contact>
     {

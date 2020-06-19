@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using VirtoCommerce.ExperienceApi.ProfileModule.Core.Models;
+using VirtoCommerce.ExperienceApiModule.XProfile.Models;
 
-namespace VirtoCommerce.ExperienceApi.ProfileModule.Core.Requests
+namespace VirtoCommerce.ExperienceApiModule.XProfile.Requests
 {
     public class LoadProfileResponse
     {
