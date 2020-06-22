@@ -5,57 +5,64 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentValidation;
 using VirtoCommerce.CartModule.Core.Services;
+using VirtoCommerce.PaymentModule.Core.Model.Search;
+using VirtoCommerce.PaymentModule.Core.Services;
+using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.ShippingModule.Core.Services;
 using VirtoCommerce.XPurchase.Domain.Converters;
 using VirtoCommerce.XPurchase.Domain.Models;
 using VirtoCommerce.XPurchase.Models.Cart;
 using VirtoCommerce.XPurchase.Models.Cart.Services;
 using VirtoCommerce.XPurchase.Models.Catalog;
+using VirtoCommerce.XPurchase.Models.Common;
 using VirtoCommerce.XPurchase.Models.Enums;
 using VirtoCommerce.XPurchase.Models.Exceptions;
 using VirtoCommerce.XPurchase.Models.Marketing;
 using VirtoCommerce.XPurchase.Models.Marketing.Services;
+using VirtoCommerce.XPurchase.Models.OperationResults;
 using VirtoCommerce.XPurchase.Models.Quote;
 using VirtoCommerce.XPurchase.Models.Security;
 using VirtoCommerce.XPurchase.Models.Validators;
-using VirtoCommerce.Platform.Core.Common;
 using IEntity = VirtoCommerce.XPurchase.Models.Common.IEntity;
 
 namespace VirtoCommerce.XPurchase.Domain.Aggregates
 {
     public class ShoppingCartAggregate : IShoppingCartAggregate
     {
-        private readonly IShoppingCartService _shoppingCartService;
         private readonly ICatalogService _catalogService;
+        private readonly IPaymentMethodsSearchService _paymentMethodsSearchService;
         private readonly IPromotionEvaluator _promotionEvaluator;
+        private readonly IShippingMethodsSearchService _shippingMethodsSearchService;
+        private readonly IShoppingCartService _shoppingCartService;
         private readonly ITaxEvaluator _taxEvaluator;
-        private readonly ICartService _cartService;
 
-        public ShoppingCartAggregate(IShoppingCartService shoppingCartService,
+        public ShoppingCartAggregate(
             ICatalogService catalogSearchService,
+            IPaymentMethodsSearchService paymentMethodsSearchService,
             IPromotionEvaluator promotionEvaluator,
+            IShippingMethodsSearchService shippingMethodsSearchService,
+            IShoppingCartService shoppingCartService,
             ITaxEvaluator taxEvaluator,
-            ICartService cartService,
             ShoppingCartContext context)
         {
-            _shoppingCartService = shoppingCartService;
             _catalogService = catalogSearchService;
+            _paymentMethodsSearchService = paymentMethodsSearchService;
             _promotionEvaluator = promotionEvaluator;
+            _shippingMethodsSearchService = shippingMethodsSearchService;
+            _shoppingCartService = shoppingCartService;
             _taxEvaluator = taxEvaluator;
-            _cartService = cartService;
             Context = context;
         }
-
-        #region ICartBuilder Members
 
         public virtual ShoppingCart Cart { get; protected set; }
 
         protected virtual ShoppingCartContext Context { get; set; }
 
-        public virtual async Task TakeCartAsync(ShoppingCart cart)
+        public virtual async Task<OperationResult> TakeCartAsync(ShoppingCart cart)
         {
             if (cart == null)
             {
-                throw new ArgumentNullException(nameof(cart));
+                return new ErrorResult(ErrorType.Critical, "Shopping cart is null");
             }
 
             //Load products for cart line items
@@ -65,20 +72,22 @@ namespace VirtoCommerce.XPurchase.Domain.Aggregates
                 var products = await _catalogService.GetProductsAsync(productIds, Context.Currency, Context.Language, ItemResponseGroup.ItemWithPrices | ItemResponseGroup.ItemWithDiscounts | ItemResponseGroup.Inventory | ItemResponseGroup.Outlines);
                 foreach (var item in cart.Items)
                 {
-                    item.Product = products.FirstOrDefault(x => x.Id.EqualsInvariant(item.ProductId));
+                    item.Product = products?.FirstOrDefault(x => x.Id.EqualsInvariant(item.ProductId));
                 }
             }
 
             Cart = cart;
+
+            return new SuccessResult();
         }
 
-        public virtual Task UpdateCartComment(string comment)
+        public virtual Task<OperationResult> UpdateCartComment(string comment)
         {
             EnsureCartExists();
 
             Cart.Comment = comment;
 
-            return Task.CompletedTask;
+            return Task.FromResult<OperationResult>(new SuccessResult());
         }
 
         public virtual async Task<bool> AddItemAsync(Product product, int quantity)
@@ -95,7 +104,7 @@ namespace VirtoCommerce.XPurchase.Domain.Aggregates
             return isProductAvailable;
         }
 
-        public virtual async Task ChangeItemQuantityByIdAsync(string lineItemId, int quantity)
+        public virtual async Task<OperationResult> ChangeItemQuantityByIdAsync(string lineItemId, int quantity)
         {
             EnsureCartExists();
 
@@ -104,9 +113,11 @@ namespace VirtoCommerce.XPurchase.Domain.Aggregates
             {
                 await ChangeItemQuantityAsync(lineItem, quantity);
             }
+
+            return new SuccessResult();
         }
 
-        public virtual async Task ChangeItemQuantityByIndexAsync(int lineItemIndex, int quantity)
+        public virtual async Task<OperationResult> ChangeItemQuantityByIndexAsync(int lineItemIndex, int quantity)
         {
             EnsureCartExists();
 
@@ -115,9 +126,11 @@ namespace VirtoCommerce.XPurchase.Domain.Aggregates
             {
                 await ChangeItemQuantityAsync(lineItem, quantity);
             }
+
+            return new SuccessResult();
         }
 
-        public virtual async Task ChangeItemsQuantitiesAsync(int[] quantities)
+        public virtual async Task<OperationResult> ChangeItemsQuantitiesAsync(int[] quantities)
         {
             EnsureCartExists();
 
@@ -129,9 +142,11 @@ namespace VirtoCommerce.XPurchase.Domain.Aggregates
                     await ChangeItemQuantityAsync(lineItem, quantities[i]);
                 }
             }
+
+            return new SuccessResult();
         }
 
-        public virtual Task RemoveItemAsync(string lineItemId)
+        public virtual Task<OperationResult> RemoveItemAsync(string lineItemId)
         {
             EnsureCartExists();
 
@@ -141,10 +156,10 @@ namespace VirtoCommerce.XPurchase.Domain.Aggregates
                 Cart.Items.Remove(lineItem);
             }
 
-            return Task.FromResult((object)null);
+            return Task.FromResult<OperationResult>(new SuccessResult());
         }
 
-        public virtual Task AddCouponAsync(string couponCode)
+        public virtual Task<OperationResult> AddCouponAsync(string couponCode)
         {
             EnsureCartExists();
             if (!Cart.Coupons.Any(c => c.Code.EqualsInvariant(couponCode)))
@@ -152,10 +167,10 @@ namespace VirtoCommerce.XPurchase.Domain.Aggregates
                 Cart.Coupons.Add(new Coupon { Code = couponCode });
             }
 
-            return Task.FromResult((object)null);
+            return Task.FromResult<OperationResult>(new SuccessResult());
         }
 
-        public virtual Task RemoveCouponAsync(string couponCode = null)
+        public virtual Task<OperationResult> RemoveCouponAsync(string couponCode = null)
         {
             EnsureCartExists();
             if (string.IsNullOrEmpty(couponCode))
@@ -167,17 +182,19 @@ namespace VirtoCommerce.XPurchase.Domain.Aggregates
                 Cart.Coupons.Remove(Cart.Coupons.FirstOrDefault(c => c.Code.EqualsInvariant(couponCode)));
             }
 
-            return Task.FromResult((object)null);
+            return Task.FromResult<OperationResult>(new SuccessResult());
         }
 
-        public virtual Task ClearAsync()
+        public virtual async Task<OperationResult> ClearAsync()
         {
             EnsureCartExists();
+
             Cart.Items.Clear();
-            return Task.FromResult((object)null);
+
+            return new SuccessResult();
         }
 
-        public virtual async Task AddOrUpdateShipmentAsync(Shipment shipment)
+        public virtual async Task<OperationResult> AddOrUpdateShipmentAsync(Shipment shipment)
         {
             EnsureCartExists();
 
@@ -194,7 +211,7 @@ namespace VirtoCommerce.XPurchase.Domain.Aggregates
 
             if (string.IsNullOrEmpty(shipment.ShipmentMethodCode) || Cart.IsTransient())
             {
-                return;
+                return new ErrorResult(ErrorType.Info, "Shipment method code is null or cart is transient");
             }
 
             var availableShippingMethods = await GetAvailableShippingMethodsAsync();
@@ -210,9 +227,11 @@ namespace VirtoCommerce.XPurchase.Domain.Aggregates
             shipment.Price = shippingMethod.Price;
             shipment.DiscountAmount = shippingMethod.DiscountAmount;
             shipment.TaxType = shippingMethod.TaxType;
+
+            return new SuccessResult();
         }
 
-        public virtual Task RemoveShipmentAsync(string shipmentId)
+        public virtual Task<OperationResult> RemoveShipmentAsync(string shipmentId)
         {
             EnsureCartExists();
 
@@ -222,10 +241,10 @@ namespace VirtoCommerce.XPurchase.Domain.Aggregates
                 Cart.Shipments.Remove(shipment);
             }
 
-            return Task.FromResult((object)null);
+            return Task.FromResult<OperationResult>(new SuccessResult());
         }
 
-        public virtual async Task AddOrUpdatePaymentAsync(Payment payment)
+        public virtual async Task<OperationResult> AddOrUpdatePaymentAsync(Payment payment)
         {
             EnsureCartExists();
 
@@ -247,9 +266,11 @@ namespace VirtoCommerce.XPurchase.Domain.Aggregates
                     throw new Exception("Unknown payment method " + payment.PaymentGatewayCode);
                 }
             }
+
+            return new SuccessResult();
         }
 
-        public virtual async Task MergeWithCartAsync(ShoppingCart cart)
+        public virtual async Task<OperationResult> MergeWithCartAsync(ShoppingCart cart)
         {
             EnsureCartExists();
 
@@ -281,15 +302,20 @@ namespace VirtoCommerce.XPurchase.Domain.Aggregates
             {
                 await AddOrUpdatePaymentAsync(payment);
             }
+
+            return new SuccessResult();
         }
 
-        public virtual async Task RemoveCartAsync()
+        public virtual async Task<OperationResult> RemoveCartAsync()
         {
             EnsureCartExists();
+
             await _shoppingCartService.DeleteAsync(new[] { Cart.Id });
+
+            return new SuccessResult();
         }
 
-        public virtual async Task FillFromQuoteRequestAsync(QuoteRequest quoteRequest)
+        public virtual async Task<OperationResult> FillFromQuoteRequestAsync(QuoteRequest quoteRequest)
         {
             EnsureCartExists();
 
@@ -351,14 +377,17 @@ namespace VirtoCommerce.XPurchase.Domain.Aggregates
             }
 
             Cart.Payments.Clear();
+
             Cart.Payments.Add(payment);
+
+            return new SuccessResult();
         }
 
         public virtual async Task<IEnumerable<ShippingMethod>> GetAvailableShippingMethodsAsync()
         {
             //Request available shipping rates
 
-            var result = await _cartService.GetAvailableShippingMethodsAsync(Cart);
+            var result = await GetAvailableShippingMethodsAsync(Cart);
             if (!result.IsNullOrEmpty())
             {
                 //Evaluate promotions cart and apply rewards for available shipping methods
@@ -378,7 +407,7 @@ namespace VirtoCommerce.XPurchase.Domain.Aggregates
         {
             EnsureCartExists();
 
-            var result = await _cartService.GetAvailablePaymentMethodsAsync(Cart);
+            var result = await GetAvailablePaymentMethodsAsync(Cart);
 
             if (!result.IsNullOrEmpty())
             {
@@ -395,14 +424,20 @@ namespace VirtoCommerce.XPurchase.Domain.Aggregates
             return result;
         }
 
-        public async Task ValidateAsync()
+        public async Task<OperationResult> ValidateAsync()
         {
             EnsureCartExists();
-            var result = await new CartValidator(_cartService).ValidateAsync(Cart, ruleSet: Cart.ValidationRuleSet);
+
+            var shippingMethods = await GetAvailableShippingMethodsAsync();
+
+            var result = await new CartValidator(shippingMethods).ValidateAsync(Cart, ruleSet: Cart.ValidationRuleSet);
+
             Cart.IsValid = result.IsValid;
+
+            return new SuccessResult();
         }
 
-        public virtual async Task EvaluatePromotionsAsync()
+        public virtual async Task<OperationResult> EvaluatePromotionsAsync()
         {
             EnsureCartExists();
 
@@ -420,28 +455,29 @@ namespace VirtoCommerce.XPurchase.Domain.Aggregates
                 var evalContext = Cart.ToPromotionEvaluationContext();
                 await _promotionEvaluator.EvaluateDiscountsAsync(evalContext, new IDiscountable[] { Cart });
             }
+
+            return new SuccessResult();
         }
 
-        public async Task EvaluateTaxesAsync()
+        public async Task<OperationResult> EvaluateTaxesAsync()
         {
             await _taxEvaluator.EvaluateTaxesAsync(Cart.ToTaxEvalContext(Context.Store.TaxCalculationEnabled, Context.Store.FixedTaxRate), new[] { Cart });
+
+            return new SuccessResult();
         }
 
-        public virtual async Task SaveAsync()
+        public virtual async Task<OperationResult> SaveAsync()
         {
             EnsureCartExists();
 
-            await EvaluatePromotionsAsync();
-            await EvaluateTaxesAsync();
+            var cartDto = Cart.ToShoppingCartDto();
 
-            // todo: implement!
-            //var cart = await _cartService.SaveChanges(Cart);
-            //await TakeCartAsync(cart);
+            await _shoppingCartService.SaveChangesAsync(new CartModule.Core.Model.ShoppingCart[] { cartDto });
+
+            return new SuccessResult();
         }
 
-        #endregion ICartBuilder Members
-
-        protected virtual Task RemoveExistingPaymentAsync(Payment payment)
+        protected virtual Task<OperationResult> RemoveExistingPaymentAsync(Payment payment)
         {
             if (payment != null)
             {
@@ -452,10 +488,10 @@ namespace VirtoCommerce.XPurchase.Domain.Aggregates
                 }
             }
 
-            return Task.FromResult((object)null);
+            return Task.FromResult<OperationResult>(new SuccessResult());
         }
 
-        protected virtual Task RemoveExistingShipmentAsync(Shipment shipment)
+        protected virtual Task<OperationResult> RemoveExistingShipmentAsync(Shipment shipment)
         {
             if (shipment != null)
             {
@@ -466,10 +502,10 @@ namespace VirtoCommerce.XPurchase.Domain.Aggregates
                 }
             }
 
-            return Task.FromResult((object)null);
+            return Task.FromResult<OperationResult>(new SuccessResult());
         }
 
-        protected virtual Task ChangeItemQuantityAsync(LineItem lineItem, int quantity)
+        protected virtual Task<OperationResult> ChangeItemQuantityAsync(LineItem lineItem, int quantity)
         {
             if (lineItem != null && !lineItem.IsReadOnly)
             {
@@ -495,10 +531,11 @@ namespace VirtoCommerce.XPurchase.Domain.Aggregates
                     Cart.Items.Remove(lineItem);
                 }
             }
-            return Task.CompletedTask;
+
+            return Task.FromResult<OperationResult>(new SuccessResult());
         }
 
-        protected virtual async Task AddLineItemAsync(LineItem lineItem)
+        protected virtual async Task<OperationResult> AddLineItemAsync(LineItem lineItem)
         {
             var existingLineItem = Cart.Items.FirstOrDefault(li => li.ProductId == lineItem.ProductId);
             if (existingLineItem != null)
@@ -510,6 +547,8 @@ namespace VirtoCommerce.XPurchase.Domain.Aggregates
                 lineItem.Id = null;
                 Cart.Items.Add(lineItem);
             }
+
+            return new SuccessResult();
         }
 
         protected virtual void EnsureCartExists()
@@ -519,5 +558,93 @@ namespace VirtoCommerce.XPurchase.Domain.Aggregates
                 throw new CartException("Cart not loaded.");
             }
         }
+
+        public async Task<OperationResult> DeleteCartByIdAsync(string cartId)
+        {
+            await _shoppingCartService.DeleteAsync(new[] { cartId ?? throw new ArgumentNullException(nameof(cartId)) });
+
+            return new SuccessResult();
+        }
+
+        public async Task<IEnumerable<PaymentMethod>> GetAvailablePaymentMethodsAsync(ShoppingCart cart)
+        {
+            if (cart == null || string.IsNullOrEmpty(cart.StoreId) || cart.IsTransient())
+            {
+                return Enumerable.Empty<PaymentMethod>();
+            }
+
+            var criteria = new PaymentMethodsSearchCriteria
+            {
+                IsActive = true,
+                Take = int.MaxValue,
+                StoreId = cart.StoreId,
+            };
+
+            var payments = await _paymentMethodsSearchService.SearchPaymentMethodsAsync(criteria);
+
+            return payments.Results.Select(x => x.ToCartPaymentMethod(cart)).OrderBy(x => x.Priority).ToList();
+        }
+
+        public virtual async Task<IEnumerable<ShippingMethod>> GetAvailableShippingMethodsAsync(ShoppingCart cart)
+        {
+            if (cart == null || string.IsNullOrEmpty(cart.StoreId) || cart.IsTransient())
+            {
+                return Enumerable.Empty<ShippingMethod>();
+            }
+
+            var criteria = new ShippingModule.Core.Model.Search.ShippingMethodsSearchCriteria
+            {
+                IsActive = true,
+                Take = int.MaxValue,
+                StoreId = cart.StoreId,
+            };
+
+            var shippingRates = await _shippingMethodsSearchService.SearchShippingMethodsAsync(criteria);
+
+            return shippingRates.Results
+                .Select(x => x.ToShippingMethod(cart.Currency))
+                .OrderBy(x => x.Priority)
+                .ToList();
+        }
+
+        public async Task<ShoppingCart> GetByIdAsync(string cartId, Currency currency, string userId)
+        {
+            var cartDto = await _shoppingCartService.GetByIdAsync(cartId, CartModule.Core.Model.CartResponseGroup.Full.ToString());
+            if (cartDto == null)
+            {
+                return null;
+            }
+
+            var language = string.IsNullOrEmpty(cartDto.LanguageCode)
+                ? Language.InvariantLanguage
+                : new Language(cartDto.LanguageCode);
+
+            return cartDto.ToShoppingCart(currency, language, new User
+            {
+                Id = userId
+            });
+        }
+
+        //public virtual async Task<IPagedList<ShoppingCart>> SearchCartsAsync(CartSearchCriteria criteria)
+        //{
+        //    if (criteria == null)
+        //    {
+        //        throw new ArgumentNullException(nameof(criteria));
+        //    }
+
+        //    var resultDto = await _cartApi.SearchShoppingCartAsync(criteria.ToSearchCriteriaDto());
+        //    var result = new List<ShoppingCart>();
+        //    foreach (var cartDto in resultDto.Results)
+        //    {
+        //        var currency = _workContextAccessor.WorkContext.AllCurrencies.FirstOrDefault(x => x.Equals(cartDto.Currency));
+        //        var language = string.IsNullOrEmpty(cartDto.LanguageCode) ? Language.InvariantLanguage : new Language(cartDto.LanguageCode);
+        //        var user = await _userManager.FindByIdAsync(cartDto.CustomerId) ?? criteria.Customer;
+        //        var cart = cartDto.ToShoppingCart(currency, language, user);
+        //        result.Add(cart);
+        //    }
+
+        //    return new StaticPagedList<ShoppingCart>(result, criteria.PageNumber, criteria.PageSize, resultDto.TotalCount.Value);
+
+        //}
     }
 }

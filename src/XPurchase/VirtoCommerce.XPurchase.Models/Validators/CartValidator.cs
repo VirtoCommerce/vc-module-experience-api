@@ -1,12 +1,12 @@
+using System.Collections.Generic;
 using FluentValidation;
 using VirtoCommerce.XPurchase.Models.Cart;
-using VirtoCommerce.XPurchase.Models.Cart.Services;
 
 namespace VirtoCommerce.XPurchase.Models.Validators
 {
     public class CartValidator : AbstractValidator<ShoppingCart>
     {
-        public CartValidator(ICartService cartService)
+        public CartValidator(IEnumerable<ShippingMethod> availableShippingMethods)
         {
             RuleFor(x => x.Name).NotNull().NotEmpty();
             RuleFor(x => x.Currency).NotNull();
@@ -15,7 +15,7 @@ namespace VirtoCommerce.XPurchase.Models.Validators
             RuleSet("strict", () =>
             {
                 RuleForEach(x => x.Items).SetValidator(cart => new CartLineItemValidator(cart));
-                RuleForEach(x => x.Shipments).SetValidator(cart => new CartShipmentValidator(cart, cartService));
+                RuleForEach(x => x.Shipments).SetValidator(cart => new CartShipmentValidator(availableShippingMethods));
             });
         }
     }

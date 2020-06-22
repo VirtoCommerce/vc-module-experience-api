@@ -3,18 +3,16 @@ using VirtoCommerce.XPurchase.Models.Cart;
 
 namespace VirtoCommerce.XPurchase.Schemas
 {
-    public class PaymentMethodType : ObjectGraphType<PaymentMethod>
+    public class ShippingMethodType : ObjectGraphType<ShippingMethod>
     {
-        public PaymentMethodType()
+        public ShippingMethodType()
         {
-            Field(x => x.Code, nullable: true).Description("Value of payment gateway code");
-            Field(x => x.Name, nullable: true).Description("Value of payment method name");
-            Field(x => x.LogoUrl, nullable: true).Description("Value of payment method logo absolute URL");
-            Field(x => x.Description, nullable: true).Description("Value of payment method description");
-            Field(x => x.PaymentMethodType, nullable: true).Description("Value of payment method type");
-            Field(x => x.PaymentMethodGroupType, nullable: true).Description("Value of payment group type");
-            Field(x => x.Priority, nullable: true).Description("Value of payment method priority");
-            Field(x => x.IsAvailableForPartial, nullable: true).Description("Is payment method available for partial payments");
+            Field(x => x.ShipmentMethodCode, nullable: true).Description("Value of shipping gateway code");
+            Field(x => x.Name, nullable: true).Description("Value of shipping method name");
+            Field(x => x.LogoUrl, nullable: true).Description("Value of shipping method logo absolute URL");
+            Field(x => x.OptionName, nullable: true).Description("Value of shipping method option name");
+            Field(x => x.OptionDescription, nullable: true).Description("Value of shipping method option description");
+            Field(x => x.Priority, nullable: true).Description("Value of shipping method priority");
             Field<ListGraphType<SettingType>>("settings", resolve: context => context.Source.Settings);
             Field<CurrencyType>("currency", resolve: context => context.Source.Currency);
             Field<MoneyType>("price", resolve: context => context.Source.Price);

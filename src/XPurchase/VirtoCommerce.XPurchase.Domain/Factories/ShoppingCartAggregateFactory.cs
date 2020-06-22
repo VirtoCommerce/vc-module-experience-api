@@ -1,6 +1,8 @@
 using System.Linq;
 using System.Threading.Tasks;
 using VirtoCommerce.CartModule.Core.Services;
+using VirtoCommerce.PaymentModule.Core.Services;
+using VirtoCommerce.ShippingModule.Core.Services;
 using VirtoCommerce.XPurchase.Domain.Aggregates;
 using VirtoCommerce.XPurchase.Domain.Converters;
 using VirtoCommerce.XPurchase.Domain.Models;
@@ -14,32 +16,33 @@ namespace VirtoCommerce.XPurchase.Domain.Factories
 {
     public class ShoppingCartAggregateFactory : IShoppingCartAggregateFactory
     {
-        private readonly IShoppingCartService _shoppingCartService;
         private readonly ICatalogService _catalogService;
+        private readonly IPaymentMethodsSearchService _paymentMethodsSearchService;
         private readonly IPromotionEvaluator _promotionEvaluator;
-        private readonly ITaxEvaluator _taxEvaluator;
-        private readonly ICartService _cartService;
+        private readonly IShippingMethodsSearchService _shippingMethodsSearchService;
         private readonly IShoppingCartSearchService _shoppingCartSearchService;
+        private readonly IShoppingCartService _shoppingCartService;
+        private readonly ITaxEvaluator _taxEvaluator;
 
-        public ShoppingCartAggregateFactory(IShoppingCartService shoppingCartService,
-            ICatalogService catalogSearchService,
+        public ShoppingCartAggregateFactory(ICatalogService catalogSearchService,
+            IPaymentMethodsSearchService paymentMethodsSearchService,
             IPromotionEvaluator promotionEvaluator,
-            ITaxEvaluator taxEvaluator,
-            ICartService cartService,
-            IShoppingCartSearchService shoppingCartSearchService)
+            IShippingMethodsSearchService shippingMethodsSearchService,
+            IShoppingCartSearchService shoppingCartSearchService,
+            IShoppingCartService shoppingCartService,
+            ITaxEvaluator taxEvaluator)
         {
             _shoppingCartService = shoppingCartService;
             _catalogService = catalogSearchService;
             _promotionEvaluator = promotionEvaluator;
             _taxEvaluator = taxEvaluator;
-            _cartService = cartService;
+            _paymentMethodsSearchService = paymentMethodsSearchService;
+            _shippingMethodsSearchService = shippingMethodsSearchService;
             _shoppingCartSearchService = shoppingCartSearchService;
         }
 
         public async Task<ShoppingCartAggregate> CreateOrGetShoppingCartAggregateAsync(ShoppingCartContext context)
         {
-            var aggregate = new ShoppingCartAggregate(_shoppingCartService, _catalogService, _promotionEvaluator, _taxEvaluator, _cartService, context);
-
             var criteria = new CartModule.Core.Model.Search.ShoppingCartSearchCriteria
             {
                 StoreId = context.StoreId,
@@ -58,9 +61,16 @@ namespace VirtoCommerce.XPurchase.Domain.Factories
             var cart = cartSearchResult.Results.FirstOrDefault()?.ToShoppingCart(context.Currency, context.Language, user)
                 ?? CreateCart(context.CartName, context.StoreId, user, context.Language, context.Currency, context.Type);
 
+            var aggregate = new ShoppingCartAggregate(
+                _catalogService,
+                _paymentMethodsSearchService,
+                _promotionEvaluator,
+                _shippingMethodsSearchService,
+                _shoppingCartService,
+                _taxEvaluator,
+                context);
+
             await aggregate.TakeCartAsync(cart);
-            await aggregate.EvaluatePromotionsAsync();
-            await aggregate.EvaluateTaxesAsync();
 
             return aggregate;
         }

@@ -13,7 +13,6 @@ using VirtoCommerce.XPurchase.Domain.Services;
 using VirtoCommerce.XPurchase.Extensions;
 using VirtoCommerce.XPurchase.Models.Cart.Services;
 using VirtoCommerce.XPurchase.Models.Marketing.Services;
-using VirtoCommerce.XPurchase.Schemas;
 using VirtoCommerce.Platform.Core.Modularity;
 
 namespace VirtoCommerce.ExperienceApiModule.Web
@@ -24,12 +23,10 @@ namespace VirtoCommerce.ExperienceApiModule.Web
 
         public void Initialize(IServiceCollection services)
         {
-
             services.AddMediatR(typeof(Anchor));
             services.AddMediatR(typeof(XPurchaseAnchor));
 
             services.AddTransient<IShoppingCartAggregateFactory, ShoppingCartAggregateFactory>();
-            services.AddTransient<ICartService, CartService>();
             services.AddTransient<ICatalogService, CatalogService>();
             services.AddTransient<IPromotionEvaluator, PromotionEvaluator>();
             services.AddTransient<ITaxEvaluator, TaxEvaluator>();
@@ -40,7 +37,6 @@ namespace VirtoCommerce.ExperienceApiModule.Web
             //Discover the assembly and  register all mapping profiles through reflection
             services.AddAutoMapper(typeof(Anchor));
             services.AddAutoMapper(typeof(XPurchaseAnchor));
-
 
             //Register .NET GraphQL server
             services.AddGraphQL(_ =>
@@ -60,20 +56,17 @@ namespace VirtoCommerce.ExperienceApiModule.Web
 
             services.AddSingleton<ISchema, SchemaFactory>();
 
-            services.AddSchemaBuilder<XPurchaseSchema>();
+            services.AddSchemaBuilder<XPurchaseSchemaBuilder>();
             services.AddSchemaBuilder<DigitalCatalogSchema>();
             //TODO: need to fix extension, it's register only types from the last schema
             //services.AddGraphShemaBuilders(typeof(Anchor));
 
-
             //Discover the assembly and  register all mapping profiles through reflection
             services.AddAutoMapper(typeof(Module));
-
         }
 
         public void PostInitialize(IApplicationBuilder appBuilder)
         {
-
             // add http for Schema at default url /graphql
             appBuilder.UseGraphQL<ISchema>();
 
@@ -84,7 +77,5 @@ namespace VirtoCommerce.ExperienceApiModule.Web
         public void Uninstall()
         {
         }
-
     }
 }
-

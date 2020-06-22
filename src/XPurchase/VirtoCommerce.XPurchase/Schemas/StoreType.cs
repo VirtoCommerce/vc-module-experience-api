@@ -40,8 +40,6 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field(x => x.AdminEmail, nullable: true).Description("Administrator contact email of store");
 
             Field(x => x.ThemeName, nullable: true).Description("Store theme name");
-
-
         }
     }
 }
