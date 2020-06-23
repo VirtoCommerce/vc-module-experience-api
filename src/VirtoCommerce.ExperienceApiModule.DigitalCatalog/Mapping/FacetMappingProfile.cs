@@ -18,11 +18,15 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Mapping
             {
                 var aggregations =  context.Items["aggregations"] as IList<AggregationResponse>;
                 var aggregation = aggregations.FirstOrDefault(x => x.Id.EqualsInvariant(request.Id));
-                return new TermFacetResult
+                if (aggregation != null)
                 {
-                    Name = request.Id,
-                    Terms = aggregation.Values.Select(x => new FacetTerm { Count = x.Count, Term = x.Id }).ToList()
-                };
+                    return new TermFacetResult
+                    {
+                        Name = request.Id,
+                        Terms = aggregation.Values.Select(x => new FacetTerm { Count = x.Count, Term = x.Id }).ToList()
+                    };
+                }
+                return null;
             });
             CreateMap<RangeAggregationRequest, RangeFacetResult>().ConvertUsing((request, facet, context) =>
             {

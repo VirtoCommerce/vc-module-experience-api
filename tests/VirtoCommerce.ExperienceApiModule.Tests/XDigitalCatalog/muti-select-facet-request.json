@@ -1,0 +1,78 @@
+{
+  "aggs": {
+    "Brand": {
+      "aggs": {
+        "Brand": {
+          "terms": {
+            "field": "brand"
+          }
+        }
+      },
+      "filter": {
+        "bool": {
+          "must": [
+            { "terms": { "catalog": [ "4974648a41df4e6ea67ef2ad76d7bbd4" ] } },
+            { "terms": { "__outline": [ "4974648a41df4e6ea67ef2ad76d7bbd4/0d4ad9bab9184d69a6e586effdf9c2ea" ] } },
+            { "terms": { "status": [ "visible" ] } },
+            { "terms": { "color": [ "Sheer Gold", "White" ] } }
+          ]
+        }
+      }
+    },
+    "Color": {
+      "aggs": {
+        "Color": {
+          "terms": {
+            "field": "color"
+          }
+        }
+      },
+      "filter": {
+        "bool": {
+          "must": [
+            { "terms": { "catalog": [ "4974648a41df4e6ea67ef2ad76d7bbd4" ] } },
+            { "terms": { "__outline": [ "4974648a41df4e6ea67ef2ad76d7bbd4/0d4ad9bab9184d69a6e586effdf9c2ea" ] } },
+            { "terms": { "status": [ "visible" ] } },
+            { "terms": { "brand": [ "Microsoft" ] } }
+          ]
+        }
+      }
+    }
+  },
+  "from": 0,
+  "post_filter": {
+    "bool": {
+      "must": [
+        { "terms": { "catalog": [ "4974648a41df4e6ea67ef2ad76d7bbd4" ] } },
+        { "terms": { "__outline": [ "4974648a41df4e6ea67ef2ad76d7bbd4/0d4ad9bab9184d69a6e586effdf9c2ea" ] } },
+        { "terms": { "status": [ "visible" ] } },
+        { "terms": { "brand": [ "Microsoft" ] } },
+        { "terms": { "color": [ "Sheer Gold", "White" ] } }
+      ]
+    }
+  },
+  "size": 20,
+  "sort": [
+    {
+      "priority_4974648a41df4e6ea67ef2ad76d7bbd4_0d4ad9bab9184d69a6e586effdf9c2ea": {
+        "unmapped_type": "long",
+        "missing": "_last",
+        "order": "desc"
+      }
+    },
+    {
+      "priority": {
+        "unmapped_type": "long",
+        "missing": "_last",
+        "order": "desc"
+      }
+    },
+    {
+      "name": {
+        "unmapped_type": "long",
+        "missing": "_last",
+        "order": "asc"
+      }
+    }
+  ]
+}

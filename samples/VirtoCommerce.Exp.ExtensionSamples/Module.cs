@@ -34,13 +34,13 @@ namespace VirtoCommerce.Exp.ExtensionSamples
             #endregion
 
             #region UseCase OnTheFlyEvaluation: evaluate product inventories on the fly 
-            services.AddSingleton(typeof(IRequestPostProcessor<,>), typeof(EvalInventoriesForProductsPipelineBehaviour<,>));
+            //services.AddSingleton(typeof(IRequestPostProcessor<,>), typeof(EvalInventoriesForProductsPipelineBehaviour<,>));
             #endregion
 
             #region  UseCase CombinedDataSource: paginating data from multiple sources (VC catalog and Pets store)
-            services.AddTransient<IPetsSearchService, PetsSearchService>();
-            services.AddHttpClient<PetstoreClient>(c => c.BaseAddress = new Uri("http://petstore.swagger.io/v2/"));
-            services.AddSingleton(typeof(IRequestPostProcessor<,>), typeof(VcAndPetsSearchPipelineBehaviour<,>));
+            //services.AddTransient<IPetsSearchService, PetsSearchService>();
+            //services.AddHttpClient<PetstoreClient>(c => c.BaseAddress = new Uri("http://petstore.swagger.io/v2/"));
+            //services.AddSingleton(typeof(IRequestPostProcessor<,>), typeof(VcAndPetsSearchPipelineBehaviour<,>));
             #endregion
 
             #region UseCase DataSourceSubstitution: replace data source to another
