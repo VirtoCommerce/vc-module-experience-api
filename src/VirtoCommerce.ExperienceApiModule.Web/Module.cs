@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using VirtoCommerce.ExperienceApiModule.Core.Schema;
 using VirtoCommerce.ExperienceApiModule.DigitalCatalog;
 using VirtoCommerce.ExperienceApiModule.XProfile;
+using VirtoCommerce.ExperienceApiModule.XProfile.Services;
 using VirtoCommerce.Platform.Core.Modularity;
 
 namespace VirtoCommerce.ExperienceApiModule.Web
@@ -48,6 +49,7 @@ namespace VirtoCommerce.ExperienceApiModule.Web
             services.AddPermissionAuthorization();
             //services.AddGraphShemaBuilders(typeof(Anchor));
             services.AddGraphShemaBuilders(typeof(XProfileAnchor));
+            services.AddTransient<IMemberServiceX, MemberServiceX>();
 
             services.AddAutoMapper(typeof(Module));
         }
