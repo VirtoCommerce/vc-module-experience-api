@@ -13,13 +13,13 @@ using DynamicProperty = VirtoCommerce.XPurchase.Models.DynamicProperty;
 using marketingDto = VirtoCommerce.MarketingModule.Core.Model.Promotions;
 
 using cartDtos = VirtoCommerce.CartModule.Core.Model;
+
 using coreDtos = VirtoCommerce.CartModule.Core.Model;
 
 namespace VirtoCommerce.XPurchase.Domain.Converters
 {
     public static partial class CartConverter
     {
-
         public static Platform.Core.DynamicProperties.DynamicObjectProperty ToCartDynamicPropertyDto(this DynamicProperty property)
             => property.ToDynamicPropertyDto().JsonConvert<Platform.Core.DynamicProperties.DynamicObjectProperty>();
 
@@ -464,7 +464,6 @@ namespace VirtoCommerce.XPurchase.Domain.Converters
             return result;
         }
 
-
         /// <summary>
         /// Get TaxEvaluationContext
         /// </summary>
@@ -621,7 +620,7 @@ namespace VirtoCommerce.XPurchase.Domain.Converters
 
             if (lineItemDto.DynamicProperties != null)
             {
-                result.DynamicProperties = new MutablePagedList<DynamicProperty>(lineItemDto.DynamicProperties.Select(x=>x.ToDynamicProperty()).ToList());
+                result.DynamicProperties = new MutablePagedList<DynamicProperty>(lineItemDto.DynamicProperties.Select(x => x.ToDynamicProperty()).ToList());
             }
 
             if (!lineItemDto.Discounts.IsNullOrEmpty())
@@ -642,7 +641,6 @@ namespace VirtoCommerce.XPurchase.Domain.Converters
             result.Width = lineItemDto.Width;
             result.Height = lineItemDto.Height;
             result.Length = lineItemDto.Length;
-
 
             result.DiscountAmountWithTax = new Money(lineItemDto.DiscountAmountWithTax, currency);
             result.DiscountTotal = new Money(lineItemDto.DiscountTotal, currency);

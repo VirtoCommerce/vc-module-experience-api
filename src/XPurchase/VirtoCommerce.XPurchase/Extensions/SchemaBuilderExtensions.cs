@@ -28,9 +28,23 @@ namespace VirtoCommerce.XPurchase.Extensions
         {
             var queryBuilder = new T();
 
-            var query = queryBuilder.GetQuery(mediator, dataLoader, cartFactory);
+            var query = queryBuilder.GetQueryType(mediator, dataLoader, cartFactory);
 
             schema.Query.AddField(query);
+
+            return schema;
+        }
+
+        public static ISchema RegisterMutationType<T>(this ISchema schema,
+            IMediator mediator,
+            IDataLoaderContextAccessor dataLoader)
+            where T : class, IBuildableMutation, new()
+        {
+            var mutationBuilder = new T();
+
+            var mutation = mutationBuilder.GetMutationType(mediator, dataLoader);
+
+            schema.Mutation.AddField(mutation);
 
             return schema;
         }

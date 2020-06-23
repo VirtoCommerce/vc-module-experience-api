@@ -7,6 +7,6 @@ namespace VirtoCommerce.XPurchase.Interfaces
 {
     public interface ISmartQueryType : IBuildableQuery
     {
-        FieldType GetQuery(IMediator mediator, IDataLoaderContextAccessor dataLoader, IShoppingCartAggregateFactory cartFactory);
+        FieldType GetQueryType(IMediator mediator, IDataLoaderContextAccessor dataLoader, IShoppingCartAggregateFactory cartFactory);
     }
 }

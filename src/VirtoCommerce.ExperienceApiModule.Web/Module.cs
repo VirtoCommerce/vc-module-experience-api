@@ -27,7 +27,7 @@ namespace VirtoCommerce.ExperienceApiModule.Web
             services.AddMediatR(typeof(XPurchaseAnchor));
 
             services.AddTransient<IShoppingCartAggregateFactory, ShoppingCartAggregateFactory>();
-            services.AddTransient<ICatalogService, CatalogService>();
+            services.AddTransient<IProductsService, ProductsRepository>();
             services.AddTransient<IPromotionEvaluator, PromotionEvaluator>();
             services.AddTransient<ITaxEvaluator, TaxEvaluator>();
 

@@ -30,6 +30,8 @@ namespace VirtoCommerce.XPurchase.Extensions
             services.AddSchemaType<UserType>();
             services.AddSchemaType<ValidationErrorType>();
 
+            services.AddSchemaType<AddCartItemType>();
+
             return services;
         }
     }

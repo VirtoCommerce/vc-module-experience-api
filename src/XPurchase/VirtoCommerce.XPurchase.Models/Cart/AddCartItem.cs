@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 using VirtoCommerce.XPurchase.Models.Catalog;
 
@@ -10,6 +10,7 @@ namespace VirtoCommerce.XPurchase.Models.Cart
         {
             Quantity = 1;
         }
+
         [JsonProperty("Id")]
         public string Id
         {
@@ -43,7 +44,6 @@ namespace VirtoCommerce.XPurchase.Models.Cart
         /// </summary>
         [JsonProperty("price")]
         public decimal? Price { get; set; }
-
 
         /// <summary>
         /// Comment
