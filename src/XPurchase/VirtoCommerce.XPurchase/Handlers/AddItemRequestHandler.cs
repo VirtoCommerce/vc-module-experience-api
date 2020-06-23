@@ -17,9 +17,9 @@ namespace VirtoCommerce.XPurchase.Handlers
     public class AddItemRequestHandler : IRequestHandler<AddItemRequest, AddItemResponse>
     {
         private readonly IShoppingCartAggregateFactory _cartFactory;
-        private readonly IProductsService _catalogService;
+        private readonly IProductsRepository _catalogService;
 
-        public AddItemRequestHandler(IShoppingCartAggregateFactory cartFactory, IProductsService catalogService)
+        public AddItemRequestHandler(IShoppingCartAggregateFactory cartFactory, IProductsRepository catalogService)
         {
             _cartFactory = cartFactory;
             _catalogService = catalogService;

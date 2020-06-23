@@ -29,7 +29,7 @@ namespace VirtoCommerce.XPurchase.Domain.Tests.Aggregates
     {
         private readonly Fixture _fixture = new Fixture();
 
-        private readonly Mock<IProductsService> _catalogServiceMock = new Mock<IProductsService>();
+        private readonly Mock<IProductsRepository> _catalogServiceMock = new Mock<IProductsRepository>();
         private readonly Mock<IPaymentMethodsSearchService> _paymentMethodsSearchServiceMock = new Mock<IPaymentMethodsSearchService>();
         private readonly Mock<IPromotionEvaluator> _promotionEvaluatorMock = new Mock<IPromotionEvaluator>();
         private readonly Mock<IShippingMethodsSearchService> _shippingMethodsSearchServiceMock = new Mock<IShippingMethodsSearchService>();

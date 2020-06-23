@@ -26,7 +26,7 @@ namespace VirtoCommerce.ExpirienceApiModule.XPurchase.Domain.Tests
     public class ShoppingCartAggregateFactoryTests
     {
         // Mocks
-        private readonly Mock<IProductsService> _catalogServiceMock = new Mock<IProductsService>();
+        private readonly Mock<IProductsRepository> _catalogServiceMock = new Mock<IProductsRepository>();
 
         // Fixture
         private readonly Fixture _fixture;

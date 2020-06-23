@@ -30,7 +30,7 @@ namespace VirtoCommerce.XPurchase.Domain.Aggregates
 {
     public class ShoppingCartAggregate : IShoppingCartAggregate
     {
-        private readonly IProductsService _catalogService;
+        private readonly IProductsRepository _catalogService;
         private readonly IPaymentMethodsSearchService _paymentMethodsSearchService;
         private readonly IPromotionEvaluator _promotionEvaluator;
         private readonly IShippingMethodsSearchService _shippingMethodsSearchService;
@@ -38,7 +38,7 @@ namespace VirtoCommerce.XPurchase.Domain.Aggregates
         private readonly ITaxEvaluator _taxEvaluator;
 
         public ShoppingCartAggregate(
-            IProductsService catalogSearchService,
+            IProductsRepository catalogSearchService,
             IPaymentMethodsSearchService paymentMethodsSearchService,
             IPromotionEvaluator promotionEvaluator,
             IShippingMethodsSearchService shippingMethodsSearchService,

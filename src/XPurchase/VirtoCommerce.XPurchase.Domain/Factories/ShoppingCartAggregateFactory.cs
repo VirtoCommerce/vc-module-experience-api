@@ -16,7 +16,7 @@ namespace VirtoCommerce.XPurchase.Domain.Factories
 {
     public class ShoppingCartAggregateFactory : IShoppingCartAggregateFactory
     {
-        private readonly IProductsService _catalogService;
+        private readonly IProductsRepository _catalogService;
         private readonly IPaymentMethodsSearchService _paymentMethodsSearchService;
         private readonly IPromotionEvaluator _promotionEvaluator;
         private readonly IShippingMethodsSearchService _shippingMethodsSearchService;
@@ -24,7 +24,7 @@ namespace VirtoCommerce.XPurchase.Domain.Factories
         private readonly IShoppingCartService _shoppingCartService;
         private readonly ITaxEvaluator _taxEvaluator;
 
-        public ShoppingCartAggregateFactory(IProductsService catalogSearchService,
+        public ShoppingCartAggregateFactory(IProductsRepository catalogSearchService,
             IPaymentMethodsSearchService paymentMethodsSearchService,
             IPromotionEvaluator promotionEvaluator,
             IShippingMethodsSearchService shippingMethodsSearchService,

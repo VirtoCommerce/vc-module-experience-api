@@ -11,7 +11,7 @@ using VirtoCommerce.XPurchase.Models.Extensions;
 
 namespace VirtoCommerce.XPurchase.Domain.Services
 {
-    public class ProductsRepository : IProductsService
+    public class ProductsRepository : IProductsRepository
     {
         private readonly IItemService _itemsService;
 
