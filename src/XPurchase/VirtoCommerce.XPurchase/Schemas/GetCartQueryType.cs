@@ -4,6 +4,7 @@ using GraphQL.Types;
 using VirtoCommerce.ExperienceApiModule.Core.Schema;
 using VirtoCommerce.XPurchase.Domain.Builders;
 using VirtoCommerce.XPurchase.Domain.Factories;
+using VirtoCommerce.XPurchase.Domain.Models;
 using VirtoCommerce.XPurchase.Interfaces;
 using VirtoCommerce.XPurchase.Models.Cart;
 
@@ -15,29 +16,15 @@ namespace VirtoCommerce.XPurchase.Schemas
         {
             Name = "cart",
             Arguments = new QueryArguments(
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "storeId" },
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "cartName" },
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "userId" },
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "cultureName" },
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "currencyCode" },
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "type" }
-                ),
+                new QueryArgument<NonNullGraphType<CartContextInputType>> { Name = "context" }
+            ),
             Type = GraphTypeExtenstionHelper.GetActualType<CartType>(),
             Resolver = new AsyncFieldResolver<ShoppingCart>(async context =>
             {
-                var storeId = context.GetArgument<string>("storeId");
-                var cartName = context.GetArgument<string>("cartName");
-                var userId = context.GetArgument<string>("userId");
-                var cultureName = context.GetArgument<string>("cultureName");
-                var currencyCode = context.GetArgument<string>("currencyCode");
-                var type = context.GetArgument<string>("type");
+                var cartContext = context.GetArgument<ShoppingCartContext>("context");
 
-                var shoppingCartContext = CartContextBuilder.Build()
-                                                            .WithStore(storeId)
-                                                            .WithCartName(cartName)
-                                                            .WithUser(userId)
-                                                            .WithCurrencyAndLanguage(currencyCode, cultureName)
-                                                            .WithCartType(type)
+                var shoppingCartContext = CartContextBuilder.Initialize(cartContext)
+                                                            .WithDefaults()
                                                             .GetContext();
 
                 var cartAggregate = await cartFactory.CreateOrGetShoppingCartAggregateAsync(shoppingCartContext);

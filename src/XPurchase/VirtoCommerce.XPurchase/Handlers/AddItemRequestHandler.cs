@@ -27,15 +27,11 @@ namespace VirtoCommerce.XPurchase.Handlers
 
         public async Task<AddItemResponse> Handle(AddItemRequest request, CancellationToken cancellationToken)
         {
-            request.CartItem.Type = request.Type;
-            request.CartItem.ListName = request.CartName;
+            request.CartItem.Type = request.CartContext.Type;
+            request.CartItem.ListName = request.CartContext.CartName;
 
-            var context = CartContextBuilder.Build()
-                                            .WithStore(request.StoreId)
-                                            .WithCartName(request.CartName)
-                                            .WithUser(request.UserId)
-                                            .WithCurrencyAndLanguage(request.CurrencyCode, request.CultureName)
-                                            .WithCartType(request.Type)
+            var context = CartContextBuilder.Initialize(request.CartContext)
+                                            .WithDefaults()
                                             .GetContext();
 
             var cartAggregate = await _cartFactory

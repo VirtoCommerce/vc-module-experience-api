@@ -8,10 +8,12 @@ namespace VirtoCommerce.XPurchase.Extensions
     {
         public static IServiceCollection AddXPurchaseSchemaTypes(this IServiceCollection services)
         {
+            services.AddSchemaType<AddCartItemInputType>();
             services.AddSchemaType<AddressType>();
             services.AddSchemaType<CartShipmentItemType>();
             services.AddSchemaType<CartType>();
             services.AddSchemaType<CopuponType>();
+            services.AddSchemaType<CartContextInputType>();
             services.AddSchemaType<CurrencyType>();
             services.AddSchemaType<DiscountType>();
             services.AddSchemaType<DynamicPropertyType>();
@@ -19,18 +21,16 @@ namespace VirtoCommerce.XPurchase.Extensions
             services.AddSchemaType<LineItemType>();
             services.AddSchemaType<MoneyType>();
             services.AddSchemaType<PaymentMethodType>();
-            services.AddSchemaType<ShippingMethodType>();
             services.AddSchemaType<PaymentPlanType>();
             services.AddSchemaType<PaymentType>();
             services.AddSchemaType<SettingType>();
             services.AddSchemaType<ShipmentType>();
+            services.AddSchemaType<ShippingMethodType>();
             services.AddSchemaType<StoreStatusEnum>();
             services.AddSchemaType<StoreType>();
             services.AddSchemaType<TaxDetailType>();
             services.AddSchemaType<UserType>();
             services.AddSchemaType<ValidationErrorType>();
-
-            services.AddSchemaType<AddCartItemType>();
 
             return services;
         }

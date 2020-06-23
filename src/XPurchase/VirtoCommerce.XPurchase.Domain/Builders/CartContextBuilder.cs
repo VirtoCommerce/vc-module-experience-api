@@ -1,5 +1,7 @@
+using System;
 using VirtoCommerce.XPurchase.Domain.Models;
 using VirtoCommerce.XPurchase.Models.Common;
+using VirtoCommerce.XPurchase.Models.OperationResults;
 
 namespace VirtoCommerce.XPurchase.Domain.Builders
 {
@@ -7,44 +9,50 @@ namespace VirtoCommerce.XPurchase.Domain.Builders
     {
         private readonly ShoppingCartContext _context;
 
-        protected CartContextBuilder() => _context = new ShoppingCartContext();
+        protected CartContextBuilder(ShoppingCartContext prefilledContext)
+            => _context = prefilledContext;
 
-        public static CartContextBuilder Build() => new CartContextBuilder();
+        public static CartContextBuilder Initialize(ShoppingCartContext prefilledContext)
+            => new CartContextBuilder(prefilledContext);
 
-        public ShoppingCartContext GetContext() => _context;
+        /// <summary>
+        /// Get <seealso cref="ShoppingCartContext"/> from <seealso cref="CartContextBuilder"/>.
+        /// </summary>
+        /// <returns></returns>
+        public ShoppingCartContext GetContext()
+            => _context.InitializationStatus == ShoppingCartContext.ContextState.NotInitialized
+                ? WithDefaults().GetContext()
+                : _context;
 
-        public ICartContextBuilder WithCartName(string сartName)
+        public ICartContextBuilder WithDefaults()
         {
-            _context.CartName = сartName;
-            return this;
-        }
+            try
+            {
+                var language = new Language(_context.CultureName);
+                _context.SetLanguage(language);
+            }
+            catch (Exception)
+            {
+                _context.InitializationErrors.Add(new ErrorResult(
+                    ErrorType.Warning,
+                    $"Culture name \"{_context.CultureName}\" is incorrect!")
+                );
+            }
 
-        public ICartContextBuilder WithCartType(string type)
-        {
-            _context.Type = type;
-            return this;
-        }
+            try
+            {
+                var currency = new Currency(_context.Language, _context.CurrencyCode);
+                _context.SetCurrency(currency);
+            }
+            catch (Exception)
+            {
+                _context.InitializationErrors.Add(new ErrorResult(
+                    ErrorType.Warning,
+                    $"Currency code \"{_context.CurrencyCode}\" is incorrect!")
+                );
+            }
 
-        public ICartContextBuilder WithCurrencyAndLanguage(string сurrencyCode, string cultureName)
-        {
-            var language = new Language(cultureName);
-            var currency = new Currency(language, сurrencyCode); //todo add validation
-
-            _context.Language = language;
-            _context.Currency = currency;
-
-            return this;
-        }
-
-        public ICartContextBuilder WithStore(string storeId)
-        {
-            _context.StoreId = storeId; //todo load store here
-            return this;
-        }
-
-        public ICartContextBuilder WithUser(string userId)
-        {
-            _context.UserId = userId;
+            _context.InitializationStatus = ShoppingCartContext.ContextState.Initialized;
             return this;
         }
     }

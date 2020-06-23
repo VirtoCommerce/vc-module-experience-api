@@ -3,9 +3,9 @@ using VirtoCommerce.XPurchase.Models.Cart;
 
 namespace VirtoCommerce.XPurchase.Schemas
 {
-    public class AddCartItemType : InputObjectGraphType<AddCartItem>
+    public class AddCartItemInputType : InputObjectGraphType<AddCartItem>
     {
-        public AddCartItemType()
+        public AddCartItemInputType()
         {
             Field(x => x.ProductId, nullable: false).Description("Product id");
             Field(x => x.Quantity, nullable: false).Description("Product quantity");
