@@ -38,7 +38,7 @@ namespace VirtoCommerce.XPurchase.Domain.Builders
 
         public ICartContextBuilder WithStore(string storeId)
         {
-            _context.StoreId = storeId;
+            _context.StoreId = storeId; //todo load store here
             return this;
         }
 

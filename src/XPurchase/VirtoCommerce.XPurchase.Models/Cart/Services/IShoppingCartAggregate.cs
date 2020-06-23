@@ -1,10 +1,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using VirtoCommerce.XPurchase.Models.Catalog;
-using VirtoCommerce.XPurchase.Models.Common;
+
+using VirtoCommerce.XPurchase.Models.OperationResults;
 using VirtoCommerce.XPurchase.Models.Quote;
-using VirtoCommerce.XPurchase.Models.Security;
-using VirtoCommerce.XPurchase.Models.Stores;
 
 namespace VirtoCommerce.XPurchase.Models.Cart.Services
 {
@@ -20,14 +19,14 @@ namespace VirtoCommerce.XPurchase.Models.Cart.Services
         /// </summary>
         /// <param name="cart"></param>
         /// <returns></returns>
-        Task TakeCartAsync(ShoppingCart cart);
+        Task<OperationResult> TakeCartAsync(ShoppingCart cart);
 
         /// <summary>
         /// Update shopping cart comment
         /// </summary>
         /// <param name="comment"></param>
         /// <returns></returns>
-        Task UpdateCartComment(string comment);
+        Task<OperationResult> UpdateCartComment(string comment);
 
         /// <summary>
         /// Add new product to cart
@@ -43,7 +42,7 @@ namespace VirtoCommerce.XPurchase.Models.Cart.Services
         /// <param name="lineItemId"></param>
         /// <param name="quantity"></param>
         /// <returns></returns>
-        Task ChangeItemQuantityByIdAsync(string lineItemId, int quantity);
+        Task<OperationResult> ChangeItemQuantityByIdAsync(string lineItemId, int quantity);
 
         /// <summary>
         /// Change cart item qty by item id
@@ -51,77 +50,77 @@ namespace VirtoCommerce.XPurchase.Models.Cart.Services
         /// <param name="lineItemIndex"></param>
         /// <param name="quantity"></param>
         /// <returns></returns>
-        Task ChangeItemQuantityByIndexAsync(int lineItemIndex, int quantity);
+        Task<OperationResult> ChangeItemQuantityByIndexAsync(int lineItemIndex, int quantity);
 
-        Task ChangeItemsQuantitiesAsync(int[] quantities);
+        Task<OperationResult> ChangeItemsQuantitiesAsync(int[] quantities);
 
         /// <summary>
         /// Remove item from cart by id
         /// </summary>
         /// <param name="lineItemId"></param>
         /// <returns></returns>
-        Task RemoveItemAsync(string lineItemId);
+        Task<OperationResult> RemoveItemAsync(string lineItemId);
 
         /// <summary>
         /// Apply marketing coupon to captured cart
         /// </summary>
         /// <param name="couponCode"></param>
         /// <returns></returns>
-        Task AddCouponAsync(string couponCode);
+        Task<OperationResult> AddCouponAsync(string couponCode);
 
         /// <summary>
         /// remove exist coupon from cart
         /// </summary>
         /// <param name="couponCode"></param>
         /// <returns></returns>
-        Task RemoveCouponAsync(string couponCode = null);
+        Task<OperationResult> RemoveCouponAsync(string couponCode = null);
 
         /// <summary>
         /// Clear cart remove all items and shipments and payments
         /// </summary>
         /// <returns></returns>
-        Task ClearAsync();
+        Task<OperationResult> ClearAsync();
 
         /// <summary>
         /// Add or update shipment to cart
         /// </summary>
         /// <param name="shipment"></param>
         /// <returns></returns>
-        Task AddOrUpdateShipmentAsync(Shipment shipment);
+        Task<OperationResult> AddOrUpdateShipmentAsync(Shipment shipment);
 
         /// <summary>
         /// Remove exist shipment from cart
         /// </summary>
         /// <param name="shipmentId"></param>
         /// <returns></returns>
-        Task RemoveShipmentAsync(string shipmentId);
+        Task<OperationResult> RemoveShipmentAsync(string shipmentId);
 
         /// <summary>
         /// Add or update payment in cart
         /// </summary>
         /// <param name="payment"></param>
         /// <returns></returns>
-        Task AddOrUpdatePaymentAsync(Payment payment);
+        Task<OperationResult> AddOrUpdatePaymentAsync(Payment payment);
 
         /// <summary>
         /// Merge other cart with captured
         /// </summary>
         /// <param name="cart"></param>
         /// <returns></returns>
-        Task MergeWithCartAsync(ShoppingCart cart);
+        Task<OperationResult> MergeWithCartAsync(ShoppingCart cart);
 
         /// <summary>
         /// Remove cart from service
         /// </summary>
         /// <returns></returns>
-        Task RemoveCartAsync();
+        Task<OperationResult> RemoveCartAsync();
 
         /// <summary>
         /// Fill current captured cart from RFQ
         /// </summary>
         /// <param name="quoteRequest"></param>
         /// <returns></returns>
-        Task FillFromQuoteRequestAsync(QuoteRequest quoteRequest);
+        Task<OperationResult> FillFromQuoteRequestAsync(QuoteRequest quoteRequest);
 
         /// <summary>
         /// Returns all available shipment methods for current cart
@@ -139,16 +138,16 @@ namespace VirtoCommerce.XPurchase.Models.Cart.Services
         /// Evaluate marketing discounts for captured cart
         /// </summary>
         /// <returns></returns>
-        Task EvaluatePromotionsAsync();
+        Task<OperationResult> EvaluatePromotionsAsync();
 
         /// <summary>
         /// Evaluate taxes  for captured cart
         /// </summary>
         /// <returns></returns>
-        Task EvaluateTaxesAsync();
+        Task<OperationResult> EvaluateTaxesAsync();
 
-        Task ValidateAsync();
+        Task<OperationResult> ValidateAsync();
 
-        Task SaveAsync();
+        Task<OperationResult> SaveAsync();
     }
 }

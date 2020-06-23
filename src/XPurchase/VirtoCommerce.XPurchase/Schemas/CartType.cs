@@ -1,12 +1,25 @@
+using System.Linq;
 using GraphQL.Types;
+using VirtoCommerce.PaymentModule.Core.Model.Search;
+using VirtoCommerce.PaymentModule.Core.Services;
+using VirtoCommerce.ShippingModule.Core.Model.Search;
+using VirtoCommerce.ShippingModule.Core.Services;
+using VirtoCommerce.XPurchase.Domain.Converters;
 using VirtoCommerce.XPurchase.Models.Cart;
+using VirtoCommerce.XPurchase.Models.Cart.Services;
+using VirtoCommerce.XPurchase.Models.Extensions;
+using VirtoCommerce.XPurchase.Models.Marketing.Services;
 
 namespace VirtoCommerce.XPurchase.Schemas
 {
     public class CartType : ObjectGraphType<ShoppingCart>
     {
-        public CartType()
+        public CartType(IPromotionEvaluator promotionEvaluator,
+            ITaxEvaluator taxEvaluator,
+            IPaymentMethodsSearchService paymentMethodsSearchService,
+            IShippingMethodsSearchService shippingMethodsSearchService)
         {
+            Field(x => x.Id, nullable: true).Description("Shopping cart Id");
             Field(x => x.Name, nullable: false).Description("Shopping cart name");
             Field(x => x.Status, nullable: true).Description("Shopping cart status");
             Field(x => x.StoreId, nullable: true).Description("Shopping cart store id");
@@ -45,6 +58,45 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field<MoneyType>("shippingTotal", resolve: context => context.Source.ShippingTotal);
             Field<MoneyType>("shippingTotalWithTax", resolve: context => context.Source.ShippingTotalWithTax);
             Field<ListGraphType<ShipmentType>>("shipments", resolve: context => context.Source.Shipments);
+            FieldAsync<ListGraphType<ShippingMethodType>>("availableShippingMethods", resolve: async context =>
+            {
+                var shoppingCart = context.Source;
+
+                if (string.IsNullOrEmpty(shoppingCart.StoreId))
+                {
+                    return Enumerable.Empty<ShippingMethod>();
+                }
+
+                var criteria = new ShippingMethodsSearchCriteria
+                {
+                    IsActive = true,
+                    Take = int.MaxValue,
+                    StoreId = shoppingCart.StoreId,
+                };
+
+                var Shippings = await shippingMethodsSearchService.SearchShippingMethodsAsync(criteria);
+
+                var result = Shippings.Results.Select(x => x.ToShippingMethod(shoppingCart.Currency)).OrderBy(x => x.Priority).ToList();
+
+                if (shoppingCart != null && !result.IsNullOrEmpty() && !shoppingCart.IsTransient())
+                {
+                    //Evaluate promotions cart and apply rewards for available shipping methods
+                    var promoEvalContext = shoppingCart.ToPromotionEvaluationContext();
+                    await promotionEvaluator.EvaluateDiscountsAsync(promoEvalContext, result);
+
+                    // Load from
+                    var taxCalculationEnabled = context.UserContext.TryGetValue("taxCalculationEnabled", out var taxCalculationEnabledBoxed) && (bool)taxCalculationEnabledBoxed;
+                    var fixedTaxRate = context.UserContext.TryGetValue("fixedTaxRate", out var fixedTaxRateBoxed) ? (decimal)fixedTaxRateBoxed : 0M;
+
+                    //Evaluate taxes for available Shippings
+                    var taxEvalContext = shoppingCart.ToTaxEvalContext(taxCalculationEnabled, fixedTaxRate);
+                    taxEvalContext.Lines.Clear();
+                    taxEvalContext.Lines.AddRange(result.SelectMany(x => x.ToTaxLines()));
+                    await taxEvaluator.EvaluateTaxesAsync(taxEvalContext, result);
+                }
+
+                return result;
+            });
 
             // Payment
             Field<MoneyType>("paymentPrice", resolve: context => context.Source.PaymentPrice);
@@ -52,13 +104,50 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field<MoneyType>("paymentTotal", resolve: context => context.Source.PaymentTotal);
             Field<MoneyType>("paymentTotalWithTax", resolve: context => context.Source.PaymentTotalWithTax);
             Field<ListGraphType<PaymentType>>("payments", resolve: context => context.Source.Payments);
-            Field<ListGraphType<PaymentMethodType>>("availablePaymentMethods", resolve: context => context.Source.AvailablePaymentMethods);
+            FieldAsync<ListGraphType<PaymentMethodType>>("availablePaymentMethods", resolve: async context =>
+            {
+                var shoppingCart = context.Source;
+
+                if (string.IsNullOrEmpty(shoppingCart.StoreId))
+                {
+                    return Enumerable.Empty<PaymentMethod>();
+                }
+
+                var criteria = new PaymentMethodsSearchCriteria
+                {
+                    IsActive = true,
+                    Take = int.MaxValue,
+                    StoreId = shoppingCart.StoreId,
+                };
+
+                var payments = await paymentMethodsSearchService.SearchPaymentMethodsAsync(criteria);
+
+                var result = payments.Results.Select(x => x.ToCartPaymentMethod(shoppingCart)).OrderBy(x => x.Priority).ToList();
+
+                if (shoppingCart != null && !result.IsNullOrEmpty() && !shoppingCart.IsTransient())
+                {
+                    //Evaluate promotions cart and apply rewards for available shipping methods
+                    var promoEvalContext = shoppingCart.ToPromotionEvaluationContext();
+                    await promotionEvaluator.EvaluateDiscountsAsync(promoEvalContext, result);
+
+                    // Load from
+                    var taxCalculationEnabled = context.UserContext.TryGetValue("taxCalculationEnabled", out var taxCalculationEnabledBoxed) && (bool)taxCalculationEnabledBoxed;
+                    var fixedTaxRate = context.UserContext.TryGetValue("fixedTaxRate", out var fixedTaxRateBoxed) ? (decimal)fixedTaxRateBoxed : 0M;
+
+                    //Evaluate taxes for available payments
+                    var taxEvalContext = shoppingCart.ToTaxEvalContext(taxCalculationEnabled, fixedTaxRate);
+                    taxEvalContext.Lines.Clear();
+                    taxEvalContext.Lines.AddRange(result.SelectMany(x => x.ToTaxLines()));
+                    await taxEvaluator.EvaluateTaxesAsync(taxEvalContext, result);
+                }
+
+                return result;
+            });
             Field<ListGraphType<PaymentPlanType>>("paymentPlan", resolve: context => context.Source.PaymentPlan);
 
             // Extended money
             Field<MoneyType>("extendedPriceTotal", resolve: context => context.Source.ExtendedPriceTotal);
             Field<MoneyType>("extendedPriceTotalWithTax", resolve: context => context.Source.ExtendedPriceTotalWithTax);
-
 
             // Handling totals
             Field<MoneyType>("handlingTotal", resolve: context => context.Source.HandlingTotal);

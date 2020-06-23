@@ -1,13 +1,14 @@
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
-using Microsoft.AspNetCore.Identity;
 using Moq;
 using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.CartModule.Core.Services;
+using VirtoCommerce.PaymentModule.Core.Services;
+using VirtoCommerce.Platform.Core.DynamicProperties;
+using VirtoCommerce.PricingModule.Core.Model;
+using VirtoCommerce.ShippingModule.Core.Services;
 using VirtoCommerce.XPurchase.Domain.Factories;
 using VirtoCommerce.XPurchase.Domain.Models;
 using VirtoCommerce.XPurchase.Models;
@@ -15,13 +16,8 @@ using VirtoCommerce.XPurchase.Models.Cart.Services;
 using VirtoCommerce.XPurchase.Models.Common;
 using VirtoCommerce.XPurchase.Models.Customer;
 using VirtoCommerce.XPurchase.Models.Enums;
-using VirtoCommerce.XPurchase.Models.Marketing;
 using VirtoCommerce.XPurchase.Models.Marketing.Services;
 using VirtoCommerce.XPurchase.Models.Quote;
-using VirtoCommerce.XPurchase.Models.Security;
-using VirtoCommerce.XPurchase.Models.Tax;
-using VirtoCommerce.Platform.Core.DynamicProperties;
-using VirtoCommerce.PricingModule.Core.Model;
 using Xunit;
 using DynamicProperty = VirtoCommerce.XPurchase.Models.DynamicProperty;
 
@@ -29,14 +25,18 @@ namespace VirtoCommerce.ExpirienceApiModule.XPurchase.Domain.Tests
 {
     public class ShoppingCartAggregateFactoryTests
     {
+        // Mocks
+        private readonly Mock<ICatalogService> _catalogServiceMock = new Mock<ICatalogService>();
+
+        // Fixture
         private readonly Fixture _fixture;
 
-        private readonly Mock<IShoppingCartService> _shoppingCartServiceMock = new Mock<IShoppingCartService>();
-        private readonly Mock<ICatalogService> _catalogServiceMock = new Mock<ICatalogService>();
+        private readonly Mock<IPaymentMethodsSearchService> _paymentMethodsSearchServiceMock = new Mock<IPaymentMethodsSearchService>();
         private readonly Mock<IPromotionEvaluator> _promotionEvaluatorMock = new Mock<IPromotionEvaluator>();
-        private readonly Mock<ITaxEvaluator> _taxEvaluatorMock = new Mock<ITaxEvaluator>();
-        private readonly Mock<ICartService> _cartServiceMock = new Mock<ICartService>();
+        private readonly Mock<IShippingMethodsSearchService> _shippingMethodsSearchServiceMock = new Mock<IShippingMethodsSearchService>();
         private readonly Mock<IShoppingCartSearchService> _shoppingCartSearchServiceMock;
+        private readonly Mock<IShoppingCartService> _shoppingCartServiceMock = new Mock<IShoppingCartService>();
+        private readonly Mock<ITaxEvaluator> _taxEvaluatorMock = new Mock<ITaxEvaluator>();
 
         // Testable
         private readonly ShoppingCartAggregateFactory factory;
@@ -78,12 +78,13 @@ namespace VirtoCommerce.ExpirienceApiModule.XPurchase.Domain.Tests
                     };
                 });
 
-            factory = new ShoppingCartAggregateFactory(_shoppingCartServiceMock.Object,
-                _catalogServiceMock.Object,
+            factory = new ShoppingCartAggregateFactory(_catalogServiceMock.Object,
+                _paymentMethodsSearchServiceMock.Object,
                 _promotionEvaluatorMock.Object,
-                _taxEvaluatorMock.Object,
-                _cartServiceMock.Object,
-                _shoppingCartSearchServiceMock.Object);
+                _shippingMethodsSearchServiceMock.Object,
+                _shoppingCartSearchServiceMock.Object,
+                _shoppingCartServiceMock.Object,
+                _taxEvaluatorMock.Object);
         }
 
         [Fact]
@@ -110,18 +111,6 @@ namespace VirtoCommerce.ExpirienceApiModule.XPurchase.Domain.Tests
                     It.IsAny<Currency>(),
                     It.IsAny<Language>(),
                     It.IsAny<ItemResponseGroup>()
-                ), Times.Once);
-
-            _promotionEvaluatorMock
-                .Verify(x => x.EvaluateDiscountsAsync(
-                    It.IsAny<PromotionEvaluationContext>(),
-                    It.IsAny<IEnumerable<IDiscountable>>()
-                ), Times.Once, "Should call if no one item is read only");
-
-            _taxEvaluatorMock
-                .Verify(x => x.EvaluateTaxesAsync(
-                    It.IsAny<TaxEvaluationContext>(),
-                    It.IsAny<IEnumerable<ITaxable>>()
                 ), Times.Once);
         }
     }
