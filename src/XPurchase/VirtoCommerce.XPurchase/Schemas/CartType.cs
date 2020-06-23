@@ -19,6 +19,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             IPaymentMethodsSearchService paymentMethodsSearchService,
             IShippingMethodsSearchService shippingMethodsSearchService)
         {
+            Field(x => x.Id, nullable: true).Description("Shopping cart Id");
             Field(x => x.Name, nullable: false).Description("Shopping cart name");
             Field(x => x.Status, nullable: true).Description("Shopping cart status");
             Field(x => x.StoreId, nullable: true).Description("Shopping cart store id");
