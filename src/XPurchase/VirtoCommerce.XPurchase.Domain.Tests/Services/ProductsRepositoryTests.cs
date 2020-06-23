@@ -29,7 +29,7 @@ namespace VirtoCommerce.ExpirienceApiModule.XPurchase.Domain.Tests.Services
             _itemsService = new Mock<IItemService>();
             _itemsService
                 .Setup(x => x.GetByIdsAsync(It.IsAny<string[]>(), It.IsAny<string>(), It.IsAny<string>()))
-                .ReturnsAsync(new List<CatalogModule.Core.Model.CatalogProduct>().ToArray()); // todo add full object and correct tests
+                .ReturnsAsync(new List<CatalogModule.Core.Model.CatalogProduct>().ToArray()); // todo add full object and correct GetProductsAsync_ShouldReturnMockedProducts test
 
             service = new ProductsRepository(_itemsService.Object);
         }
