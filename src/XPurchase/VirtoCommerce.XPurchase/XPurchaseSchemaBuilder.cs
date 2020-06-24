@@ -26,6 +26,7 @@ namespace VirtoCommerce.XPurchase
 
         public void Build(ISchema schema)
             => schema.RegisterQueryType<GetCartQueryType>(_cartFactory)
-                     .RegisterQueryType<ClearCartQueryType>(_cartFactory);
+                     .RegisterQueryType<ClearCartQueryType>(_cartFactory)
+                     .RegisterMutationType<AddCartItemMutationType>(_mediator, _dataLoader);
     }
 }

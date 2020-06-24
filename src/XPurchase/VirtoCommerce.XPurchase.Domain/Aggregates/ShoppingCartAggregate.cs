@@ -11,6 +11,7 @@ using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.ShippingModule.Core.Services;
 using VirtoCommerce.XPurchase.Domain.Converters;
 using VirtoCommerce.XPurchase.Domain.Models;
+using VirtoCommerce.XPurchase.Models;
 using VirtoCommerce.XPurchase.Models.Cart;
 using VirtoCommerce.XPurchase.Models.Cart.Services;
 using VirtoCommerce.XPurchase.Models.Catalog;
@@ -29,7 +30,7 @@ namespace VirtoCommerce.XPurchase.Domain.Aggregates
 {
     public class ShoppingCartAggregate : IShoppingCartAggregate
     {
-        private readonly ICatalogService _catalogService;
+        private readonly IProductsRepository _catalogService;
         private readonly IPaymentMethodsSearchService _paymentMethodsSearchService;
         private readonly IPromotionEvaluator _promotionEvaluator;
         private readonly IShippingMethodsSearchService _shippingMethodsSearchService;
@@ -37,7 +38,7 @@ namespace VirtoCommerce.XPurchase.Domain.Aggregates
         private readonly ITaxEvaluator _taxEvaluator;
 
         public ShoppingCartAggregate(
-            ICatalogService catalogSearchService,
+            IProductsRepository catalogSearchService,
             IPaymentMethodsSearchService paymentMethodsSearchService,
             IPromotionEvaluator promotionEvaluator,
             IShippingMethodsSearchService shippingMethodsSearchService,
@@ -90,18 +91,42 @@ namespace VirtoCommerce.XPurchase.Domain.Aggregates
             return Task.FromResult<OperationResult>(new SuccessResult());
         }
 
-        public virtual async Task<bool> AddItemAsync(Product product, int quantity)
+        public virtual async Task<OperationResult> AddItemAsync(AddCartItem command)
         {
             EnsureCartExists();
 
-            var isProductAvailable = new ProductIsAvailableSpecification(product).IsSatisfiedBy(quantity);
-            if (isProductAvailable)
+            var result = await new AddCartItemValidator(Cart).ValidateAsync(command, ruleSet: Cart.ValidationRuleSet);
+            if (!result.IsValid)
             {
-                var lineItem = product.ToLineItem(Cart.Language, quantity);
-                lineItem.Product = product;
-                await AddLineItemAsync(lineItem);
+                return new ErrorResult(ErrorType.Critical, string.Join(" ", result.Errors.Select(x => x.ErrorMessage)));
             }
-            return isProductAvailable;
+
+            var lineItem = command.Product.ToLineItem(Cart.Language, command.Quantity);
+            lineItem.Product = command.Product;
+            if (command.Price != null)
+            {
+                var listPrice = new Money(command.Price.Value, Cart.Currency);
+                lineItem.ListPrice = listPrice;
+                lineItem.SalePrice = listPrice;
+            }
+
+            if (!string.IsNullOrEmpty(command.Comment))
+            {
+                lineItem.Comment = command.Comment;
+            }
+
+            if (!command.DynamicProperties.IsNullOrEmpty())
+            {
+                lineItem.DynamicProperties = new MutablePagedList<DynamicProperty>(command.DynamicProperties.Select(x => new DynamicProperty
+                {
+                    Name = x.Key,
+                    Values = new[] { new LocalizedString { Language = Cart.Language, Value = x.Value } }
+                }));
+            }
+
+            await AddLineItemAsync(lineItem);
+
+            return new SuccessResult();
         }
 
         public virtual async Task<OperationResult> ChangeItemQuantityByIdAsync(string lineItemId, int quantity)
@@ -541,6 +566,9 @@ namespace VirtoCommerce.XPurchase.Domain.Aggregates
             if (existingLineItem != null)
             {
                 await ChangeItemQuantityAsync(existingLineItem, existingLineItem.Quantity + Math.Max(1, lineItem.Quantity));
+                await ChangeItemPriceAsync(existingLineItem, new ChangeCartItemPrice() { LineItemId = existingLineItem.Id, NewPrice = lineItem.ListPrice.Amount });
+                existingLineItem.Comment = lineItem.Comment;
+                existingLineItem.DynamicProperties = lineItem.DynamicProperties;
             }
             else
             {
@@ -549,6 +577,14 @@ namespace VirtoCommerce.XPurchase.Domain.Aggregates
             }
 
             return new SuccessResult();
+        }
+
+        public virtual async Task ChangeItemPriceAsync(LineItem lineItem, ChangeCartItemPrice changePrice)
+        {
+            await new ChangeCartItemPriceValidator(Cart).ValidateAndThrowAsync(changePrice, ruleSet: Cart.ValidationRuleSet);
+            var newPriceMoney = new Money(changePrice.NewPrice, Cart.Currency);
+            lineItem.ListPrice = newPriceMoney;
+            lineItem.SalePrice = newPriceMoney;
         }
 
         protected virtual void EnsureCartExists()

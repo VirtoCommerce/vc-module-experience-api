@@ -1,7 +1,5 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using VirtoCommerce.XPurchase.Models.Catalog;
-
 using VirtoCommerce.XPurchase.Models.OperationResults;
 using VirtoCommerce.XPurchase.Models.Quote;
 
@@ -31,10 +29,7 @@ namespace VirtoCommerce.XPurchase.Models.Cart.Services
         /// <summary>
         /// Add new product to cart
         /// </summary>
-        /// <param name="product"></param>
-        /// <param name="quantity"></param>
-        /// <returns></returns>
-        Task<bool> AddItemAsync(Product product, int quantity);
+        Task<OperationResult> AddItemAsync(AddCartItem command);
 
         /// <summary>
         /// Change cart item qty by product index

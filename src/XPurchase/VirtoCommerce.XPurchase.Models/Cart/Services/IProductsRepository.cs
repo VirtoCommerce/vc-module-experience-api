@@ -9,7 +9,7 @@ namespace VirtoCommerce.XPurchase.Models.Cart.Services
     /// <summary>
     /// Represent abstraction to search in catalog api (products, categories etc)
     /// </summary>
-    public interface ICatalogService
+    public interface IProductsRepository
     {
         Task<IEnumerable<Product>> GetProductsAsync(string[] ids, Currency currency, Language language, ItemResponseGroup responseGroup = ItemResponseGroup.None);
     }
