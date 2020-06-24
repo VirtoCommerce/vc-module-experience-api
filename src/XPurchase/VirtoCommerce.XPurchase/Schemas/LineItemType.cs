@@ -1,6 +1,6 @@
 using GraphQL.Types;
+using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.DigitalCatalog.Schemas;
-using VirtoCommerce.XPurchase.Models.Cart;
 
 namespace VirtoCommerce.XPurchase.Schemas
 {
@@ -36,7 +36,8 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field(x => x.Width, nullable: true).Description("Value of width");
             Field(x => x.IsReadOnly, nullable: true).Description("Is readOnly");
             Field<MoneyType>("listPrice", resolve: context => context.Source.ListPrice);
-            Field<MoneyType>("paymentPlan", resolve: context => context.Source.PaymentPlan);
+            //TODO:
+            //Field<MoneyType>("paymentPlan", resolve: context => context.Source.PaymentPlan);
             Field<MoneyType>("listPriceWithTax", resolve: context => context.Source.ListPriceWithTax);
             Field<MoneyType>("salePrice", resolve: context => context.Source.SalePrice);
             Field<MoneyType>("salePriceWithTax", resolve: context => context.Source.SalePriceWithTax);
@@ -49,8 +50,9 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field<MoneyType>("discountTotal", resolve: context => context.Source.DiscountTotal);
             Field<MoneyType>("discountTotalWithTax", resolve: context => context.Source.DiscountTotalWithTax);
             Field(x => x.ObjectType, nullable: true).Description("Value of line item quantity");
-            Field(x => x.IsValid, nullable: true).Description("Value of line item quantity");
-            Field<ValidationErrorType>("validationErrors", resolve: context => context.Source.ValidationErrors);
+            //TODO: Need to load from CartAggregate.ValidationErrors on the client
+            //Field(x => x.IsValid, nullable: true).Description("Value of line item quantity");
+            //Field<ValidationErrorType>("validationErrors", resolve: context => context.Source.ValidationErrors);
             Field<MoneyType>("taxTotal", resolve: context => context.Source.TaxTotal);
             Field(x => x.TaxPercentRate, nullable: true).Description("Value of total shipping tax amount");
             Field(x => x.TaxType, nullable: true).Description("Value of shipping tax type");

@@ -37,11 +37,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "XPurchase", "XPurchase", "{
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtoCommerce.XPurchase", "src\XPurchase\VirtoCommerce.XPurchase\VirtoCommerce.XPurchase.csproj", "{E2012C08-74B0-4888-BC5F-4582ACDBC631}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtoCommerce.XPurchase.Domain", "src\XPurchase\VirtoCommerce.XPurchase.Domain\VirtoCommerce.XPurchase.Domain.csproj", "{32A54A81-7CEA-4A54-9C0F-018CBFAD5CF1}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtoCommerce.XPurchase.Domain.Tests", "src\XPurchase\VirtoCommerce.XPurchase.Domain.Tests\VirtoCommerce.XPurchase.Domain.Tests.csproj", "{06F46E24-0C8F-49B1-8C56-7201BFB18355}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtoCommerce.XPurchase.Models", "src\XPurchase\VirtoCommerce.XPurchase.Models\VirtoCommerce.XPurchase.Models.csproj", "{29B0B110-7DC8-4138-A6DB-27A0CF87878C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -93,18 +89,10 @@ Global
 		{E2012C08-74B0-4888-BC5F-4582ACDBC631}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E2012C08-74B0-4888-BC5F-4582ACDBC631}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E2012C08-74B0-4888-BC5F-4582ACDBC631}.Release|Any CPU.Build.0 = Release|Any CPU
-		{32A54A81-7CEA-4A54-9C0F-018CBFAD5CF1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{32A54A81-7CEA-4A54-9C0F-018CBFAD5CF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{32A54A81-7CEA-4A54-9C0F-018CBFAD5CF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{32A54A81-7CEA-4A54-9C0F-018CBFAD5CF1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{06F46E24-0C8F-49B1-8C56-7201BFB18355}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{06F46E24-0C8F-49B1-8C56-7201BFB18355}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{06F46E24-0C8F-49B1-8C56-7201BFB18355}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{06F46E24-0C8F-49B1-8C56-7201BFB18355}.Release|Any CPU.Build.0 = Release|Any CPU
-		{29B0B110-7DC8-4138-A6DB-27A0CF87878C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{29B0B110-7DC8-4138-A6DB-27A0CF87878C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{29B0B110-7DC8-4138-A6DB-27A0CF87878C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{29B0B110-7DC8-4138-A6DB-27A0CF87878C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -124,9 +112,7 @@ Global
 		{A7A7BB91-6148-46E8-AA1E-156036A2469D} = {96726105-C4DE-4ABB-A5B7-AD910202B1C9}
 		{C2FC6659-3B97-4513-A22C-CCF81A4E4395} = {FAE6CCF7-298C-4AF3-8044-60DAA0C099F0}
 		{E2012C08-74B0-4888-BC5F-4582ACDBC631} = {C2FC6659-3B97-4513-A22C-CCF81A4E4395}
-		{32A54A81-7CEA-4A54-9C0F-018CBFAD5CF1} = {C2FC6659-3B97-4513-A22C-CCF81A4E4395}
 		{06F46E24-0C8F-49B1-8C56-7201BFB18355} = {C2FC6659-3B97-4513-A22C-CCF81A4E4395}
-		{29B0B110-7DC8-4138-A6DB-27A0CF87878C} = {C2FC6659-3B97-4513-A22C-CCF81A4E4395}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E56E5C53-D55A-451B-96FA-654D86F96658}

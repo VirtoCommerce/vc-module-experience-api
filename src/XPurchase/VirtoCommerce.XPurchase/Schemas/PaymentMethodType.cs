@@ -1,5 +1,5 @@
 using GraphQL.Types;
-using VirtoCommerce.XPurchase.Models.Cart;
+using VirtoCommerce.PaymentModule.Core.Model;
 
 namespace VirtoCommerce.XPurchase.Schemas
 {
@@ -10,7 +10,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field(x => x.Code, nullable: true).Description("Value of payment gateway code");
             Field(x => x.Name, nullable: true).Description("Value of payment method name");
             Field(x => x.LogoUrl, nullable: true).Description("Value of payment method logo absolute URL");
-            Field(x => x.Description, nullable: true).Description("Value of payment method description");
+            //Field(x => x.Description, nullable: true).Description("Value of payment method description");
             Field(x => x.PaymentMethodType, nullable: true).Description("Value of payment method type");
             Field(x => x.PaymentMethodGroupType, nullable: true).Description("Value of payment group type");
             Field(x => x.Priority, nullable: true).Description("Value of payment method priority");
@@ -27,7 +27,8 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field(x => x.TaxPercentRate, nullable: true).Description("Tax percent rate");
             Field(x => x.TaxType, nullable: true).Description("Tax type");
             Field<ListGraphType<TaxDetailType>>("taxDetails", resolve: context => context.Source.TaxDetails);
-            Field<ListGraphType<DiscountType>>("discounts", resolve: context => context.Source.Discounts);
+            //TODO: Extend the paymentmethod domain model
+            //Field<ListGraphType<DiscountType>>("discounts", resolve: context => context.Source.Discounts);
         }
     }
 }

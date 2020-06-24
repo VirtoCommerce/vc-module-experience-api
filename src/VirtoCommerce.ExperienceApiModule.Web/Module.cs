@@ -7,13 +7,9 @@ using Microsoft.Extensions.DependencyInjection;
 using VirtoCommerce.ExperienceApiModule.Core.Schema;
 using VirtoCommerce.ExperienceApiModule.DigitalCatalog;
 using VirtoCommerce.ExperienceApiModule.DigitalCatalog.Schemas;
-using VirtoCommerce.XPurchase;
-using VirtoCommerce.XPurchase.Domain.Factories;
-using VirtoCommerce.XPurchase.Domain.Services;
-using VirtoCommerce.XPurchase.Extensions;
-using VirtoCommerce.XPurchase.Models.Cart.Services;
-using VirtoCommerce.XPurchase.Models.Marketing.Services;
 using VirtoCommerce.Platform.Core.Modularity;
+using VirtoCommerce.XPurchase;
+using VirtoCommerce.XPurchase.Extensions;
 
 namespace VirtoCommerce.ExperienceApiModule.Web
 {
@@ -24,13 +20,7 @@ namespace VirtoCommerce.ExperienceApiModule.Web
         public void Initialize(IServiceCollection services)
         {
             services.AddMediatR(typeof(Anchor));
-            services.AddMediatR(typeof(XPurchaseAnchor));
-
-            services.AddTransient<IShoppingCartAggregateFactory, ShoppingCartAggregateFactory>();
-            services.AddTransient<ICatalogService, CatalogService>();
-            services.AddTransient<IPromotionEvaluator, PromotionEvaluator>();
-            services.AddTransient<ITaxEvaluator, TaxEvaluator>();
-
+       
             //services.AddSingleton(typeof(IPipelineBehavior<,>), typeof(RequestExceptionProcessorBehavior<,>));
             //serviceCollection.AddSingleton(typeof(IRequestPreProcessor<>), typeof(GenericRequestPreProcessor<>));
 
@@ -49,15 +39,15 @@ namespace VirtoCommerce.ExperienceApiModule.Web
             .AddGraphTypes(typeof(Anchor))
             .AddDataLoader();
 
-            services.AddXPurchaseSchemaTypes();
-
             //Register custom GraphQL dependencies
             services.AddPermissionAuthorization();
 
             services.AddSingleton<ISchema, SchemaFactory>();
 
-            services.AddSchemaBuilder<XPurchaseSchemaBuilder>();
             services.AddSchemaBuilder<DigitalCatalogSchema>();
+
+            //Register all purchase dependencies
+            services.AddXPurchase();
             //TODO: need to fix extension, it's register only types from the last schema
             //services.AddGraphShemaBuilders(typeof(Anchor));
 

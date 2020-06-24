@@ -1,4 +1,4 @@
-﻿using GraphQL.Types;
+using GraphQL.Types;
 using VirtoCommerce.XPurchase.Models.Cart;
 
 namespace VirtoCommerce.XPurchase.Schemas

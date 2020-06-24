@@ -1,5 +1,5 @@
 using GraphQL.Types;
-using VirtoCommerce.XPurchase.Models.Cart;
+using VirtoCommerce.CartModule.Core.Model;
 
 namespace VirtoCommerce.XPurchase.Schemas
 {

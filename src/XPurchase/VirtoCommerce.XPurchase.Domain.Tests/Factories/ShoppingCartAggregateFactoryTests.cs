@@ -32,14 +32,14 @@ namespace VirtoCommerce.ExpirienceApiModule.XPurchase.Domain.Tests
         private readonly Fixture _fixture;
 
         private readonly Mock<IPaymentMethodsSearchService> _paymentMethodsSearchServiceMock = new Mock<IPaymentMethodsSearchService>();
-        private readonly Mock<IPromotionEvaluator> _promotionEvaluatorMock = new Mock<IPromotionEvaluator>();
+        private readonly Mock<ICartPromotionEvaluator> _promotionEvaluatorMock = new Mock<ICartPromotionEvaluator>();
         private readonly Mock<IShippingMethodsSearchService> _shippingMethodsSearchServiceMock = new Mock<IShippingMethodsSearchService>();
         private readonly Mock<IShoppingCartSearchService> _shoppingCartSearchServiceMock;
         private readonly Mock<IShoppingCartService> _shoppingCartServiceMock = new Mock<IShoppingCartService>();
         private readonly Mock<ITaxEvaluator> _taxEvaluatorMock = new Mock<ITaxEvaluator>();
 
         // Testable
-        private readonly ShoppingCartAggregateFactory factory;
+        private readonly ShoppingCartAggregateRepository factory;
 
         // Constructor
         public ShoppingCartAggregateFactoryTests()
@@ -78,7 +78,7 @@ namespace VirtoCommerce.ExpirienceApiModule.XPurchase.Domain.Tests
                     };
                 });
 
-            factory = new ShoppingCartAggregateFactory(_catalogServiceMock.Object,
+            factory = new ShoppingCartAggregateRepository(_catalogServiceMock.Object,
                 _paymentMethodsSearchServiceMock.Object,
                 _promotionEvaluatorMock.Object,
                 _shippingMethodsSearchServiceMock.Object,

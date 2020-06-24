@@ -31,7 +31,7 @@ namespace VirtoCommerce.XPurchase.Domain.Tests.Aggregates
 
         private readonly Mock<ICatalogService> _catalogServiceMock = new Mock<ICatalogService>();
         private readonly Mock<IPaymentMethodsSearchService> _paymentMethodsSearchServiceMock = new Mock<IPaymentMethodsSearchService>();
-        private readonly Mock<IPromotionEvaluator> _promotionEvaluatorMock = new Mock<IPromotionEvaluator>();
+        private readonly Mock<ICartPromotionEvaluator> _promotionEvaluatorMock = new Mock<ICartPromotionEvaluator>();
         private readonly Mock<IShippingMethodsSearchService> _shippingMethodsSearchServiceMock = new Mock<IShippingMethodsSearchService>();
         private readonly Mock<IShoppingCartService> _shoppingCartServiceMock = new Mock<IShoppingCartService>();
         private readonly Mock<ITaxEvaluator> _taxEvaluatorMock = new Mock<ITaxEvaluator>();

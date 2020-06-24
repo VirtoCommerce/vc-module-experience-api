@@ -1,5 +1,5 @@
 using GraphQL.Types;
-using VirtoCommerce.XPurchase.Models.Tax;
+using VirtoCommerce.CoreModule.Core.Tax;
 
 namespace VirtoCommerce.XPurchase.Schemas
 {

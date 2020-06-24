@@ -1,5 +1,5 @@
-﻿using GraphQL.Types;
-using VirtoCommerce.XPurchase.Models;
+using GraphQL.Types;
+using VirtoCommerce.Platform.Core.DynamicProperties;
 
 namespace VirtoCommerce.XPurchase.Schemas
 {

@@ -17,9 +17,4 @@
     <PackageReference Include="coverlet.collector" Version="1.2.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\VirtoCommerce.XPurchase.Domain\VirtoCommerce.XPurchase.Domain.csproj" />
-    <ProjectReference Include="..\VirtoCommerce.XPurchase.Models\VirtoCommerce.XPurchase.Models.csproj" />
-  </ItemGroup>
-
 </Project>

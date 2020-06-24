@@ -1,9 +1,9 @@
 using GraphQL.Types;
-using VirtoCommerce.XPurchase.Models.Cart;
+using VirtoCommerce.CartModule.Core.Model;
 
 namespace VirtoCommerce.XPurchase.Schemas
 {
-    public class CartShipmentItemType : ObjectGraphType<CartShipmentItem>
+    public class CartShipmentItemType : ObjectGraphType<ShipmentItem>
     {
         public CartShipmentItemType()
         {
