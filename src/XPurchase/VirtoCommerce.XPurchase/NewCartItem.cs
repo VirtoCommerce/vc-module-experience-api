@@ -9,7 +9,8 @@ namespace VirtoCommerce.XPurchase
             ProductId = productId;
             Quantity = quantity;
         }
-        public string ProductId { get;  private set; }
+
+        public string ProductId { get; private set; }
 
         public CartProduct CartProduct { get; set; }
 
