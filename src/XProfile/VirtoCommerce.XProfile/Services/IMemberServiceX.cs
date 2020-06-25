@@ -8,8 +8,8 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Services
     {
         Task<Contact> GetContactByIdAsync(string contactId);
         Task<Contact> CreateContactAsync(Contact contact);
-        Task UpdateContactAsync(Contact contact);
-        Task UpdateContactAddressesAsync(string contactId, IList<Address> addresses);
+        Task UpdateContactAsync(UserUpdateInfo userUpdateInfo);
+        Task<Contact> UpdateContactAddressesAsync(string contactId, IList<Address> addresses);
         Task DeleteContactAsync(string contactId);
 
         //IPagedList<Contact> SearchOrganizationContacts(OrganizationContactsSearchCriteria criteria);

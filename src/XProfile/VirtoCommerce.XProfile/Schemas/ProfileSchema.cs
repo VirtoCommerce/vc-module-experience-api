@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -44,15 +43,13 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             };
             schema.Query.AddField(customerField);
 
-            schema.Mutation.AddField(FieldBuilder.Create<UserUpdateInfo, UserUpdateInfo>(GraphTypeExtenstionHelper.GetActualType<UserUpdateInfoType>())
-                            .Name("testUpdateAccount")
+            schema.Mutation.AddField(FieldBuilder.Create<UserUpdateInfo, bool>(typeof(BooleanGraphType))
+                            .Name("updateAccount")
                             .Argument<NonNullGraphType<UserUpdateInfoInputType>>("userUpdateInfo")
-                            .Resolve(context =>
+                            .ResolveAsync(async context =>
                             {
-                                var item = context.GetArgument<UserUpdateInfo>("userUpdateInfo");
-                                //TODO: Insert mutation logic here
-                                item.Id = Guid.NewGuid().ToString();
-                                return item;
+                                await _memberService.UpdateContactAsync(context.GetArgument<UserUpdateInfo>("userUpdateInfo"));
+                                return true;
                             }).FieldType);
 
             schema.Mutation.AddField(FieldBuilder.Create<IList<string>, string>(typeof(StringGraphType))
@@ -72,17 +69,15 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                                 return items.FirstOrDefault();
                             }).FieldType);
 
-            schema.Mutation.AddField(FieldBuilder.Create<IList<Address>, bool>(typeof(BooleanGraphType))
+            schema.Mutation.AddField(FieldBuilder.Create<IList<Address>, Contact>(GraphTypeExtenstionHelper.GetActualType<ContactType>())
                             .Name("updateAddresses")
-                            .Argument<ListGraphType<AddressInputType>>("addresses")
                             .Argument<NonNullGraphType<StringGraphType>>("customerId")
+                            .Argument<ListGraphType<AddressInputType>>("addresses")
                             .ResolveAsync(async context =>
                             {
-                                await _memberService.UpdateContactAddressesAsync(
-                                            context.GetArgument<string>("customerId"),
-                                            context.GetArgument<IList<Address>>("addresses"));
-
-                                return true;
+                                return await _memberService.UpdateContactAddressesAsync(
+                                             context.GetArgument<string>("customerId"),
+                                             context.GetArgument<IList<Address>>("addresses"));
                             }).FieldType);
         }
 

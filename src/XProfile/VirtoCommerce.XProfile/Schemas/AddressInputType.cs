@@ -7,24 +7,22 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
     {
         public AddressInputType()
         {
-            Field<NonNullGraphType<StringGraphType>>(nameof(Address.Name));
+            Field<StringGraphType>(nameof(Address.Name));
             Field<NonNullGraphType<StringGraphType>>(nameof(Address.AddressType));
 
             Field<NonNullGraphType<StringGraphType>>(nameof(Address.City));
             Field<NonNullGraphType<StringGraphType>>(nameof(Address.CountryCode));
             Field<NonNullGraphType<StringGraphType>>(nameof(Address.CountryName));
             Field<NonNullGraphType<StringGraphType>>(nameof(Address.Email));
-            Field<NonNullGraphType<StringGraphType>>(nameof(Address.FirstName));
-            Field<NonNullGraphType<StringGraphType>>(nameof(Address.LastName));
+            Field<StringGraphType>(nameof(Address.FirstName));
+            Field<StringGraphType>(nameof(Address.LastName));
             Field<NonNullGraphType<StringGraphType>>(nameof(Address.Line1));
-            Field<NonNullGraphType<StringGraphType>>(nameof(Address.Line2));
-            Field<NonNullGraphType<StringGraphType>>(nameof(Address.MiddleName));
-            Field<NonNullGraphType<StringGraphType>>(nameof(Address.Organization));
-            Field<NonNullGraphType<StringGraphType>>(nameof(Address.Phone));
+            Field<StringGraphType>(nameof(Address.Line2));
+            Field<StringGraphType>(nameof(Address.Organization));
+            Field<StringGraphType>(nameof(Address.Phone));
             Field<NonNullGraphType<StringGraphType>>(nameof(Address.PostalCode));
-            Field<NonNullGraphType<StringGraphType>>(nameof(Address.RegionId));
-            Field<NonNullGraphType<StringGraphType>>(nameof(Address.RegionName));
-            Field<NonNullGraphType<StringGraphType>>(nameof(Address.Zip));
+            Field<StringGraphType>(nameof(Address.RegionId));
+            Field<StringGraphType>(nameof(Address.RegionName));
         }
     }
 
