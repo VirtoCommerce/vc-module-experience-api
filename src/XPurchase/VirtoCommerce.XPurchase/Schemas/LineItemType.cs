@@ -1,6 +1,6 @@
 using GraphQL.Types;
 using VirtoCommerce.CartModule.Core.Model;
-using VirtoCommerce.ExperienceApiModule.DigitalCatalog.Schemas;
+using VirtoCommerce.ExperienceApiModule.Core;
 
 namespace VirtoCommerce.XPurchase.Schemas
 {
@@ -37,25 +37,25 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field(x => x.Length, nullable: true).Description("Value of length");
             Field(x => x.Width, nullable: true).Description("Value of width");
             Field(x => x.IsReadOnly, nullable: true).Description("Is readOnly");
-            Field<MoneyType>("listPrice", resolve: context => context.Source.ListPrice);
+            Field<MoneyType>("listPrice", resolve: context => context.Source.ListPrice.ToMoney(context.Source.Currency));
             //TODO:
             //Field<MoneyType>("paymentPlan", resolve: context => context.Source.PaymentPlan);
-            Field<MoneyType>("listPriceWithTax", resolve: context => context.Source.ListPriceWithTax);
-            Field<MoneyType>("salePrice", resolve: context => context.Source.SalePrice);
-            Field<MoneyType>("salePriceWithTax", resolve: context => context.Source.SalePriceWithTax);
-            Field<MoneyType>("placedPrice", resolve: context => context.Source.PlacedPrice);
-            Field<MoneyType>("placedPriceWithTax", resolve: context => context.Source.PlacedPriceWithTax);
-            Field<MoneyType>("extendedPrice", resolve: context => context.Source.ExtendedPrice);
-            Field<MoneyType>("extendedPriceWithTax", resolve: context => context.Source.ExtendedPriceWithTax);
-            Field<MoneyType>("discountAmount", resolve: context => context.Source.DiscountAmount);
-            Field<MoneyType>("discountAmountWithTax", resolve: context => context.Source.DiscountAmountWithTax);
-            Field<MoneyType>("discountTotal", resolve: context => context.Source.DiscountTotal);
-            Field<MoneyType>("discountTotalWithTax", resolve: context => context.Source.DiscountTotalWithTax);
+            Field<MoneyType>("listPriceWithTax", resolve: context => context.Source.ListPriceWithTax.ToMoney(context.Source.Currency));
+            Field<MoneyType>("salePrice", resolve: context => context.Source.SalePrice.ToMoney(context.Source.Currency));
+            Field<MoneyType>("salePriceWithTax", resolve: context => context.Source.SalePriceWithTax.ToMoney(context.Source.Currency));
+            Field<MoneyType>("placedPrice", resolve: context => context.Source.PlacedPrice.ToMoney(context.Source.Currency));
+            Field<MoneyType>("placedPriceWithTax", resolve: context => context.Source.PlacedPriceWithTax.ToMoney(context.Source.Currency));
+            Field<MoneyType>("extendedPrice", resolve: context => context.Source.ExtendedPrice.ToMoney(context.Source.Currency));
+            Field<MoneyType>("extendedPriceWithTax", resolve: context => context.Source.ExtendedPriceWithTax.ToMoney(context.Source.Currency));
+            Field<MoneyType>("discountAmount", resolve: context => context.Source.DiscountAmount.ToMoney(context.Source.Currency));
+            Field<MoneyType>("discountAmountWithTax", resolve: context => context.Source.DiscountAmountWithTax.ToMoney(context.Source.Currency));
+            Field<MoneyType>("discountTotal", resolve: context => context.Source.DiscountTotal.ToMoney(context.Source.Currency));
+            Field<MoneyType>("discountTotalWithTax", resolve: context => context.Source.DiscountTotalWithTax.ToMoney(context.Source.Currency));
             Field(x => x.ObjectType, nullable: true).Description("Value of line item quantity");
             //TODO: Need to load from CartAggregate.ValidationErrors on the client
             //Field(x => x.IsValid, nullable: true).Description("Value of line item quantity");
             //Field<ValidationErrorType>("validationErrors", resolve: context => context.Source.ValidationErrors);
-            Field<MoneyType>("taxTotal", resolve: context => context.Source.TaxTotal);
+            Field<MoneyType>("taxTotal", resolve: context => context.Source.TaxTotal.ToMoney(context.Source.Currency));
             Field(x => x.TaxPercentRate, nullable: true).Description("Value of total shipping tax amount");
             Field(x => x.TaxType, nullable: true).Description("Value of shipping tax type");
             Field<ListGraphType<TaxDetailType>>("taxDetails", resolve: context => context.Source.TaxDetails);

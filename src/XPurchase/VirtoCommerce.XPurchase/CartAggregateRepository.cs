@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.CartModule.Core.Services;
+using VirtoCommerce.CoreModule.Core.Tax;
 using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.XPurchase
@@ -68,6 +70,11 @@ namespace VirtoCommerce.XPurchase
             cart.StoreId = storeId;
             cart.LanguageCode = languageCode;
             cart.Type = type;
+            cart.Items = new List<LineItem>();
+            cart.Shipments = new List<Shipment>();
+            cart.Payments = new List<Payment>();
+            cart.Addresses = new List<Address>();
+            cart.TaxDetails = new List<TaxDetail>();
             //TODO:
             //cart.IsAnonymous = !user.IsRegisteredUser,
             //    CustomerName = user.IsRegisteredUser ? user.UserName : SecurityConstants.AnonymousUsername,
