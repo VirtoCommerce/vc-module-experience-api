@@ -1,3 +1,4 @@
+using System;
 using AutoMapper;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,11 +22,11 @@ namespace VirtoCommerce.XPurchase.Extensions
             services.AddSchemaType<LanguageType>();
             services.AddSchemaType<LineItemType>();
             services.AddSchemaType<MoneyType>();
-            services.AddSchemaType<PaymentMethodType>();
             services.AddSchemaType<ShippingMethodType>();
             //TODO:
             //services.AddSchemaType<PaymentPlanType>();
             services.AddSchemaType<PaymentType>();
+            services.AddSchemaType<PaymentMethodType>();
             //services.AddSchemaType<SettingType>();
             services.AddSchemaType<ShipmentType>();
             //services.AddSchemaType<StoreStatusEnum>();
@@ -33,6 +34,7 @@ namespace VirtoCommerce.XPurchase.Extensions
             services.AddSchemaType<TaxDetailType>();
             //services.AddSchemaType<UserType>();
             services.AddSchemaType<ValidationErrorType>();
+            services.AddSchemaType<InputClearCartType>();
 
             services.AddSchemaBuilder<PurchaseSchema>();
 
@@ -41,9 +43,14 @@ namespace VirtoCommerce.XPurchase.Extensions
 
             services.AddMediatR(typeof(XPurchaseAnchor));
 
+            //TODO: Not work
             services.AddAutoMapper(typeof(XPurchaseAnchor));
 
             services.AddTransient<ICartProductService, CartProductService>();
+
+            services.AddTransient<CartAggregate>();
+            services.AddTransient<Func<CartAggregate>>(provider => () => provider.CreateScope().ServiceProvider.GetRequiredService<CartAggregate>());
+
 
             return services;
         }

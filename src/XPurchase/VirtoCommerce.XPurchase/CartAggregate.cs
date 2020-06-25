@@ -488,8 +488,8 @@ namespace VirtoCommerce.XPurchase
         public virtual async Task<CartAggregate> RecalculateAsync()
         {
             EnsureCartExists();
-            await EvaluatePromotionsAsync();
-            await EvaluateTaxesAsync();
+            //await EvaluatePromotionsAsync();
+            //await EvaluateTaxesAsync();
             _cartTotalsCalculator.CalculateTotals(Cart);
             return this;
         }

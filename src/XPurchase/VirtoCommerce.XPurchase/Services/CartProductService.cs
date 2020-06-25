@@ -54,7 +54,7 @@ namespace VirtoCommerce.XPurchase.Services
             var products = await _productService.GetByIdsAsync(ids, ItemResponseGroup.ItemMedium.ToString());
             if (products.IsNullOrEmpty())
             {
-                var loadCartStoreTask = _storeService.GetByIdAsync(cart.StoreId);
+                var store = await _storeService.GetByIdAsync(cart.StoreId);
 
                 var loadInventoriesTask = _inventorySearchService.SearchInventoriesAsync(new InventorySearchCriteria
                 {
@@ -64,10 +64,11 @@ namespace VirtoCommerce.XPurchase.Services
 
                 var pricesEvalContext = _mapper.Map<PriceEvaluationContext>(cart);
                 pricesEvalContext.ProductIds = ids;
+                pricesEvalContext.CatalogId = store.Catalog;
+
                 var evalPricesTask = _pricingService.EvaluateProductPricesAsync(pricesEvalContext);
 
-                await Task.WhenAll(loadInventoriesTask, evalPricesTask, loadCartStoreTask);
-                var store = loadCartStoreTask.Result;
+                await Task.WhenAll(loadInventoriesTask, evalPricesTask);
                 var availFullfilmentCentersIds =  (store.AdditionalFulfillmentCenterIds ?? Array.Empty<string>()).Concat(new[] { store.MainFulfillmentCenterId });
 
                 foreach (var product in products)

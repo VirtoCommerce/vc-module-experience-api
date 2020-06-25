@@ -33,7 +33,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                         new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "userId" },
                         new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "cultureName" },
                         new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "currencyCode" },
-                        new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "type" }),
+                        new QueryArgument<StringGraphType> { Name = "type" }),
                 Type = GraphTypeExtenstionHelper.GetActualType<CartType>(),
                 Resolver = new AsyncFieldResolver<object>(async context =>
                 {
