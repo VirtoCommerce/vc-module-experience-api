@@ -4,8 +4,11 @@ using AutoMapper;
 using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.DigitalCatalog;
 using VirtoCommerce.MarketingModule.Core.Model.Promotions;
+using VirtoCommerce.PaymentModule.Core.Model;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.DynamicProperties;
+using VirtoCommerce.PricingModule.Core.Model;
+using VirtoCommerce.ShippingModule.Core.Model;
 using VirtoCommerce.TaxModule.Core.Model;
 
 namespace VirtoCommerce.XPurchase.Mapping
@@ -50,9 +53,7 @@ namespace VirtoCommerce.XPurchase.Mapping
                 lineItem.Price = context.Mapper.Map<ProductPrice, PricingModule.Core.Model.Price>(newCartItem.CartProduct.Price);
                 lineItem.PriceId = newCartItem.CartProduct.Price.PricelistId;
                 lineItem.ProductId = newCartItem.ProductId;
-                lineItem.ProductId = newCartItem.ProductId;
                 lineItem.ProductType = newCartItem.CartProduct.Product.ProductType;
-                lineItem.Quantity = newCartItem.Quantity;
                 lineItem.Quantity = newCartItem.Quantity;
                 lineItem.SalePrice = newCartItem.CartProduct.Price.SalePrice.InternalAmount;
                 lineItem.Sku = newCartItem.CartProduct.Product.Code;
@@ -66,10 +67,70 @@ namespace VirtoCommerce.XPurchase.Mapping
                 return lineItem;
             });
 
-            //TODO: LineItem -> IEnumerable<TaxLine>
-            //TODO: ShipingRate -> IEnumerable<TaxLine>
-            //TODO: PaymentMethod -> IEnumerable<TaxLine>
-            //TODO: ShoppingCart -> PriceEvaluationContext
+            //TODO:
+            // Check if this correct
+            CreateMap<LineItem, IEnumerable<TaxLine>>().ConvertUsing((lineItem, taxLines, context) =>
+            {
+                return new[]
+                {
+                    new TaxLine
+                    {
+                        Id = lineItem.Id,
+                        Code = lineItem.Sku,
+                        Name = lineItem.Name,
+                        TaxType = lineItem.TaxType,
+                        //Special case when product have 100% discount and need to calculate tax for old value
+                        Amount =  lineItem.Price.List > 0 ? lineItem.Price.List : lineItem.Price.Sale ?? 0M
+                    }
+                };
+            });
+
+            CreateMap<ShippingRate, IEnumerable<TaxLine>>().ConvertUsing((shipmentRate, taxLines, context) =>
+            {
+                return new[]
+                {
+                    new TaxLine
+                    {
+                        Id = string.Join("&", shipmentRate.ShippingMethod.Code, shipmentRate.OptionName),
+                        Code = shipmentRate.ShippingMethod.Code,
+                        TaxType = shipmentRate.ShippingMethod.TaxType,
+                        //TODO: Is second param is shipmentRate.Rate ?
+                        Amount = shipmentRate.DiscountAmount > 0 ? shipmentRate.DiscountAmount : shipmentRate.Rate
+                    }
+                };
+            });
+
+            CreateMap<PaymentMethod, IEnumerable<TaxLine>>().ConvertUsing((paymentMethod, taxLines, context) =>
+            {
+                return new[]
+                {
+                    new TaxLine
+                    {
+                        Id = paymentMethod.Code,
+                        Code = paymentMethod.Code,
+                        TaxType = paymentMethod.TaxType,
+                        Amount = paymentMethod.Total > 0 ? paymentMethod.Total : paymentMethod.Price
+                    }
+                };
+            });
+
+            CreateMap<ShoppingCart, PriceEvaluationContext>().ConvertUsing((cart, priceEvaluationContext, context) =>
+            {
+                var result = AbstractTypeFactory<PriceEvaluationContext>.TryCreateInstance();
+
+                result.StoreId = priceEvaluationContext.StoreId;
+                result.CatalogId = priceEvaluationContext.CatalogId;
+                result.ProductIds = priceEvaluationContext.ProductIds;
+                result.PricelistIds = priceEvaluationContext.PricelistIds;
+                result.ReturnAllMatchedPrices = priceEvaluationContext.ReturnAllMatchedPrices;
+                result.Quantity = priceEvaluationContext.Quantity;
+                result.CustomerId = priceEvaluationContext.CustomerId;
+                result.OrganizationId = priceEvaluationContext.OrganizationId;
+                result.CertainDate = priceEvaluationContext.CertainDate;
+                result.Currency = priceEvaluationContext.Currency;
+
+                return result;
+            });
 
             CreateMap<ExpProduct, LineItem>().ConvertUsing((cart, promoEvalcontext, context) =>
             {
