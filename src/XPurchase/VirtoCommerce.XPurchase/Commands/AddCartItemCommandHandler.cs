@@ -1,9 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
-using VirtoCommerce.XPurchase.Domain.CartAggregate;
-using VirtoCommerce.XPurchase.Domain.Factories;
 
-namespace VirtoCommerce.XPurchase.Domain.Commands
+namespace VirtoCommerce.XPurchase.Commands
 {
     public class AddCartItemCommandHandler : CartCommandHandler<AddCartItemCommand>
     {
@@ -20,7 +18,7 @@ namespace VirtoCommerce.XPurchase.Domain.Commands
                 DynamicProperties = request.DynamicProperties,
                 Price = request.Price
             });
-           await cartAggr.SaveAsync();
+            await CartAggrRepository.SaveAsync(cartAggr);
         }
     }
 }

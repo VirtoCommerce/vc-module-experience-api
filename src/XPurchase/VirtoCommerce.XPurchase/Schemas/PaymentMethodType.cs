@@ -15,7 +15,8 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field(x => x.PaymentMethodGroupType, nullable: true).Description("Value of payment group type");
             Field(x => x.Priority, nullable: true).Description("Value of payment method priority");
             Field(x => x.IsAvailableForPartial, nullable: true).Description("Is payment method available for partial payments");
-            Field<ListGraphType<SettingType>>("settings", resolve: context => context.Source.Settings);
+            //TODO: ???? Check if this is required.
+            //Field<ListGraphType<SettingType>>("settings", resolve: context => context.Source.Settings);
             Field<CurrencyType>("currency", resolve: context => context.Source.Currency);
             Field<MoneyType>("price", resolve: context => context.Source.Price);
             Field<MoneyType>("priceWithTax", resolve: context => context.Source.PriceWithTax);

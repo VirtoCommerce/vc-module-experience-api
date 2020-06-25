@@ -1,29 +1,19 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
+using FluentValidation.Results;
 using VirtoCommerce.Platform.Core.Common;
 
-namespace VirtoCommerce.XPurchase.Domain.CartAggregate
+namespace VirtoCommerce.XPurchase
 {
-    public class CartValidationError
+    public class CartValidationError : ValidationFailure
     {
-        protected  CartValidationError()
+        public CartValidationError(IEntity entity, string error, string errorCode = null)
+            : base(entity.ToString(), error)
         {
+            ObjectType = entity.GetType().Name;
+            ObjectId = entity.Id;
+            ErrorMessage = error;
+            ErrorCode = errorCode;
         }
         public string ObjectType { get; set; }
         public string ObjectId { get; set; }
-        public string ErrorCode { get; set; }
-        public string Error { get; set; }
-
-        public static CartValidationError FromEntity(IEntity entity, string error, string errorCode = null)
-        {
-            return new CartValidationError
-            {
-                ObjectType = entity.GetType().Name,
-                ObjectId = entity.Id,
-                Error = error,
-                ErrorCode = errorCode
-            };
-        }
     }
 }

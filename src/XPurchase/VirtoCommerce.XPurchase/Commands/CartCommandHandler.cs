@@ -1,30 +1,19 @@
 using System.Threading.Tasks;
 using MediatR;
-using VirtoCommerce.XPurchase.Domain.Aggregates;
-using VirtoCommerce.XPurchase.Domain.Builders;
-using VirtoCommerce.XPurchase.Domain.Factories;
 
-namespace VirtoCommerce.XPurchase.Domain.Commands
+namespace VirtoCommerce.XPurchase.Commands
 {
     public abstract class CartCommandHandler<TCartCommand> : AsyncRequestHandler<TCartCommand> where TCartCommand : CartCommand
     {
-        private readonly ICartAggregateRepository _cartAggrFactory;
-        protected CartCommandHandler(ICartAggregateRepository cartAggrFactory)
+        protected CartCommandHandler(ICartAggregateRepository cartAggrRepository)
         {
-            _cartAggrFactory = cartAggrFactory;
+            CartAggrRepository = cartAggrRepository;
         }
-       
-        protected Task<Aggregates.CartAggregate> GetCartAggregateFromCommandAsync(TCartCommand request)
-        {
-            var shoppingCartContext = CartContextBuilder.Build()
-                                                            .WithStore(request.StoreId)
-                                                            .WithCartName(request.CartName)
-                                                            .WithUser(request.UserId)
-                                                            .WithCurrencyAndLanguage(request.Currency, request.Language)
-                                                            .WithCartType(request.CartType)
-                                                            .GetContext();
+        protected ICartAggregateRepository CartAggrRepository { get; private set; }
 
-            return _cartAggrFactory.CreateOrGetShoppingCartAggregateAsync(shoppingCartContext);
+        protected Task<CartAggregate> GetCartAggregateFromCommandAsync(TCartCommand request)
+        {
+            return CartAggrRepository.GetOrCreateAsync(request.CartName, request.StoreId, request.UserId, request.Language, request.Currency, request.CartType);
         }
     }
 }

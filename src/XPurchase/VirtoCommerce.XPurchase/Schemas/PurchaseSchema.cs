@@ -5,8 +5,7 @@ using GraphQL.Types;
 using MediatR;
 using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.Core.Schema;
-using VirtoCommerce.XPurchase.Domain.Commands;
-using VirtoCommerce.XPurchase.Domain.Factories;
+using VirtoCommerce.XPurchase.Commands;
 
 namespace VirtoCommerce.XPurchase.Schemas
 {

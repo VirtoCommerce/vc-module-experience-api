@@ -9,7 +9,8 @@ namespace VirtoCommerce.XPurchase.Schemas
         public LineItemType()
         {
             Field(x => x.CreatedDate, nullable: false).Description("Line item created date");
-            Field<ProductType>("product", resolve: context => context.Source.Product);
+            //TODO: Get from DigitalCatalog
+            //Field<ProductType>("product", resolve: context => context.Source.Product);
             Field(x => x.ProductId, nullable: true).Description("Value of product id");
             Field(x => x.ProductType, nullable: true).Description("type of product (can be Physical, Digital or Subscription)");
             Field(x => x.CatalogId, nullable: true).Description("Value of catalog id");
@@ -17,15 +18,16 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field(x => x.Sku, nullable: true).Description("Value of product SKU");
             Field(x => x.Name, nullable: true).Description("Value of line item name");
             Field(x => x.Quantity, nullable: true).Description("Value of line item quantity");
-            Field(x => x.InStockQuantity, nullable: true).Description("InStockQuantity");
-            Field(x => x.WarehouseLocation, nullable: true).Description("Value of line item warehouse location");
+            //TODO:
+            //Field(x => x.InStockQuantity, nullable: true).Description("InStockQuantity");
+            //Field(x => x.WarehouseLocation, nullable: true).Description("Value of line item warehouse location");
             Field(x => x.ShipmentMethodCode, nullable: true).Description("Value of line item shipping method code");
             Field(x => x.RequiredShipping, nullable: true).Description("requirement for line item shipping");
             Field(x => x.ThumbnailImageUrl, nullable: true).Description("Value of line item thumbnail image absolute URL");
             Field(x => x.ImageUrl, nullable: true).Description("Value of line item image absolute URL");
             Field(x => x.IsGift, nullable: true).Description("flag of line item is a gift");
             Field(x => x.LanguageCode, nullable: true).Description("Culture name in ISO 3166-1 alpha-3 format");
-            Field(x => x.Comment, nullable: true).Description("Value of line item comment");
+            Field(x => x.Note, nullable: true).Description("Value of line item comment");
             Field(x => x.IsReccuring, nullable: true).Description("flag of line item is recurring");
             Field(x => x.VolumetricWeight, nullable: true).Description("Value of volumetric weight");
             Field(x => x.WeightUnit, nullable: true).Description("Value of weight unit");

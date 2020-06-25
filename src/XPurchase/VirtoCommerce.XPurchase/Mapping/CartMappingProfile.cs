@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
 using VirtoCommerce.CartModule.Core.Model;
@@ -5,8 +6,9 @@ using VirtoCommerce.ExperienceApiModule.DigitalCatalog;
 using VirtoCommerce.MarketingModule.Core.Model.Promotions;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.TaxModule.Core.Model;
+using VirtoCommerce.Tools;
 
-namespace VirtoCommerce.XPurchase.Domain.Mapping
+namespace VirtoCommerce.XPurchase.Mapping
 {
     public class CartMappingProfile : Profile
     {
@@ -16,6 +18,7 @@ namespace VirtoCommerce.XPurchase.Domain.Mapping
             //TODO: LineItem -> IEnumerable<TaxLine>
             //TODO: ShipingRate -> IEnumerable<TaxLine>
             //TODO: PaymentMethod -> IEnumerable<TaxLine>
+            //TODO: ShoppingCart -> PriceEvaluationContext
 
 
             CreateMap<ExpProduct, LineItem>().ConvertUsing((cart, promoEvalcontext, context) =>
@@ -25,34 +28,51 @@ namespace VirtoCommerce.XPurchase.Domain.Mapping
                 return result;
             });
 
-            CreateMap<ShoppingCart, PromotionEvaluationContext>().ConvertUsing((cart, promoEvalcontext, context) =>
+            CreateMap<CartAggregate, PromotionEvaluationContext>().ConvertUsing((cartAggr, promoEvalcontext, context) =>
             {
                 promoEvalcontext = AbstractTypeFactory<PromotionEvaluationContext>.TryCreateInstance();
                 //TODO: Add mapping config for ProductPromoEntry
-                promoEvalcontext.CartPromoEntries = cart.Items.Select(x => context.Mapper.Map<ProductPromoEntry>(x)).ToList();
-
-                promoEvalcontext.CartTotal = cart.SubTotal;
-                promoEvalcontext.StoreId = cart.StoreId;
-                promoEvalcontext.Coupons = cart.Coupons?.ToList();
-                promoEvalcontext.Currency = cart.Currency;
-                promoEvalcontext.CustomerId = cart.CustomerId;
+                promoEvalcontext.CartPromoEntries = new List<ProductPromoEntry>();
+                foreach(var lineItem in cartAggr.Cart.Items)
+                {
+                    var cartProduct = cartAggr.CartProductsDict[lineItem.ProductId];
+                    var promoEntry = new ProductPromoEntry
+                    {
+                        CatalogId = lineItem.CatalogId,
+                        CategoryId = lineItem.CategoryId,
+                        Code = lineItem.Sku,
+                        ProductId = lineItem.ProductId,
+                        Discount = lineItem.DiscountTotal,
+                        //Use only base price for discount evaluation
+                        Price = lineItem.SalePrice,
+                        Quantity = lineItem.Quantity,
+                        InStockQuantity = (int)cartProduct.Inventory.InStockQuantity,
+                        Outline = cartProduct.Product.Outlines.Select(x=> context.Mapper.Map<Tools.Models.Outline>(x)).GetOutlinePath(cartProduct.Product.CatalogId)
+                    };
+                    promoEvalcontext.CartPromoEntries.Add(promoEntry);
+                }
+                promoEvalcontext.CartTotal = cartAggr.Cart.SubTotal;
+                promoEvalcontext.StoreId = cartAggr.Cart.StoreId;
+                promoEvalcontext.Coupons = cartAggr.Cart.Coupons?.ToList();
+                promoEvalcontext.Currency = cartAggr.Cart.Currency;
+                promoEvalcontext.CustomerId = cartAggr.Cart.CustomerId;
                 //TODO:
                 //promoEvalcontext.UserGroups = cart.Customer?.Contact?.UserGroups;
-                promoEvalcontext.IsRegisteredUser = !cart.IsAnonymous;
-                promoEvalcontext.Language = cart.LanguageCode;
+                promoEvalcontext.IsRegisteredUser = !cartAggr.Cart.IsAnonymous;
+                promoEvalcontext.Language = cartAggr.Cart.LanguageCode;
                 //Set cart line items as default promo items
                 promoEvalcontext.PromoEntries = promoEvalcontext.CartPromoEntries;
 
-                if (!cart.Shipments.IsNullOrEmpty())
+                if (!cartAggr.Cart.Shipments.IsNullOrEmpty())
                 {
-                    var shipment = cart.Shipments.First();
+                    var shipment = cartAggr.Cart.Shipments.First();
                     promoEvalcontext.ShipmentMethodCode = shipment.ShipmentMethodCode;
                     promoEvalcontext.ShipmentMethodOption = shipment.ShipmentMethodOption;
                     promoEvalcontext.ShipmentMethodPrice = shipment.Price;
                 }
-                if (!cart.Payments.IsNullOrEmpty())
+                if (!cartAggr.Cart.Payments.IsNullOrEmpty())
                 {
-                    var payment = cart.Payments.First();
+                    var payment = cartAggr.Cart.Payments.First();
                     promoEvalcontext.PaymentMethodCode = payment.PaymentGatewayCode;
                     promoEvalcontext.PaymentMethodPrice = payment.Price;
                 }
@@ -65,17 +85,17 @@ namespace VirtoCommerce.XPurchase.Domain.Mapping
             });
 
             //TODO: Need to think about extensibility for converters
-            CreateMap<ShoppingCart, TaxEvaluationContext>().ConvertUsing((cart, taxEvalcontext, context) =>
+            CreateMap<CartAggregate, TaxEvaluationContext>().ConvertUsing((cartAggr, taxEvalcontext, context) =>
             {
                 taxEvalcontext = AbstractTypeFactory<TaxEvaluationContext>.TryCreateInstance();
-                taxEvalcontext.StoreId = cart.StoreId;
-                taxEvalcontext.Code = cart.Name;
+                taxEvalcontext.StoreId = cartAggr.Cart.StoreId;
+                taxEvalcontext.Code = cartAggr.Cart.Name;
                 taxEvalcontext.Type = "Cart";
-                taxEvalcontext.CustomerId = cart.CustomerId;
+                taxEvalcontext.CustomerId = cartAggr.Cart.CustomerId;
                 //TODO: Customer
 
 
-                foreach (var lineItem in cart.Items)
+                foreach (var lineItem in cartAggr.Cart.Items)
                 {
                     taxEvalcontext.Lines.Add(new TaxLine()
                     {
@@ -92,7 +112,7 @@ namespace VirtoCommerce.XPurchase.Domain.Mapping
                     });
                 }
 
-                foreach (var shipment in cart.Shipments)
+                foreach (var shipment in cartAggr.Cart.Shipments)
                 {
                     var totalTaxLine = new TaxLine
                     {
@@ -113,7 +133,7 @@ namespace VirtoCommerce.XPurchase.Domain.Mapping
                     }
                 }
 
-                foreach (var payment in cart.Payments)
+                foreach (var payment in cartAggr.Cart.Payments)
                 {
                     var totalTaxLine = new TaxLine
                     {

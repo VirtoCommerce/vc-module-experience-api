@@ -1,6 +1,6 @@
 using MediatR;
 
-namespace VirtoCommerce.XPurchase.Domain.Commands
+namespace VirtoCommerce.XPurchase.Commands
 {
     public abstract class CartCommand : IRequest
     {

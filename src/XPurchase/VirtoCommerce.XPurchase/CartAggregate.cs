@@ -5,9 +5,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using FluentValidation;
+using FluentValidation.Results;
 using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.CartModule.Core.Services;
-using VirtoCommerce.ExperienceApiModule.Core;
 using VirtoCommerce.MarketingModule.Core.Model.Promotions;
 using VirtoCommerce.MarketingModule.Core.Services;
 using VirtoCommerce.PaymentModule.Core.Model;
@@ -22,10 +22,10 @@ using VirtoCommerce.ShippingModule.Core.Services;
 using VirtoCommerce.TaxModule.Core.Model;
 using VirtoCommerce.TaxModule.Core.Model.Search;
 using VirtoCommerce.TaxModule.Core.Services;
-using VirtoCommerce.XPurchase.Domain.CartAggregate;
-using VirtoCommerce.XPurchase.Models.Validators;
+using VirtoCommerce.XPurchase.Services;
+using VirtoCommerce.XPurchase.Validators;
 
-namespace VirtoCommerce.XPurchase.Domain.Aggregates
+namespace VirtoCommerce.XPurchase
 {
     public class CartAggregate : Entity, IAggregateRoot
     {
@@ -34,12 +34,14 @@ namespace VirtoCommerce.XPurchase.Domain.Aggregates
         private readonly IMarketingPromoEvaluator _marketingEvaluator;
         private readonly IShippingMethodsSearchService _shippingMethodsSearchService;
         private readonly IShoppingCartTotalsCalculator _cartTotalsCalculator;
+        private readonly ICartProductService _cartProductService;
         private readonly IMapper _mapper;
         public CartAggregate(
             IPaymentMethodsSearchService paymentMethodsSearchService,
             IMarketingPromoEvaluator marketingEvaluator,
             IShippingMethodsSearchService shippingMethodsSearchService,
             ITaxProviderSearchService taxProviderSearchService,
+            ICartProductService cartProductService,
             IShoppingCartTotalsCalculator cartTotalsCalculator,
             IMapper mapper
             )
@@ -49,11 +51,14 @@ namespace VirtoCommerce.XPurchase.Domain.Aggregates
             _shippingMethodsSearchService = shippingMethodsSearchService;
             _taxProviderSearchService = taxProviderSearchService;
             _cartTotalsCalculator = cartTotalsCalculator;
+            _cartProductService = cartProductService;
             _mapper = mapper;
         }
 
 
         public virtual ShoppingCart Cart { get; protected set; }
+
+        public virtual IDictionary<string, CartProduct> CartProductsDict { get; protected set; } = new Dictionary<string, CartProduct>().WithDefaultValue(null);
 
         /// <summary>
         /// Contains a new of validation rule set that will be executed each time the basket is changed.
@@ -62,7 +67,7 @@ namespace VirtoCommerce.XPurchase.Domain.Aggregates
         /// </summary>        
         public string ValidationRuleSet { get; set; } = "default, strict";
         public bool IsValid => ValidationErrors.Any();
-        public IList<CartValidationError> ValidationErrors { get; set; } = new List<CartValidationError>();
+        public IList<ValidationFailure> ValidationErrors { get; set; } = new List<ValidationFailure>();
 
         public virtual async Task<CartAggregate> TakeCartAsync(ShoppingCart cart)
         {
@@ -73,6 +78,13 @@ namespace VirtoCommerce.XPurchase.Domain.Aggregates
             Id = cart.Id;
 
             Cart = cart;
+
+            //Load products for all cart items
+            if(cart.Items.Any())
+            {
+                CartProductsDict = (await _cartProductService.GetCartProductsByIdsAsync(cart, cart.Items.Select(x => x.Id).ToArray())).ToDictionary(x=>x.Id).WithDefaultValue(null);
+            }
+            
             await RecalculateAsync();
             return this;
         }
@@ -89,8 +101,9 @@ namespace VirtoCommerce.XPurchase.Domain.Aggregates
         public virtual async Task<CartAggregate> AddItemAsync(NewCartItem newCartItem)
         {
             EnsureCartExists();
-
-           await new AddCartItemValidator(Cart).ValidateAndThrowAsync(newCartItem, ruleSet: ValidationRuleSet);
+            //Load actual cart product with all prices and inventories  for newly added item
+            newCartItem.CartProduct = (await _cartProductService.GetCartProductsByIdsAsync(Cart, new[] { newCartItem.ProductId })).FirstOrDefault();
+            await new NewCartItemValidator().ValidateAndThrowAsync(newCartItem, ruleSet: ValidationRuleSet);
 
             var lineItem = _mapper.Map<LineItem>(newCartItem);
 
@@ -127,7 +140,7 @@ namespace VirtoCommerce.XPurchase.Domain.Aggregates
             var lineItem = Cart.Items.FirstOrDefault(x => x.Id == priceAdjustment.LineItemId);
             if (lineItem != null)
             {
-                await new ChangeCartItemPriceValidator(Cart).ValidateAndThrowAsync(priceAdjustment, ruleSet: ValidationRuleSet);
+                await new ChangeCartItemPriceValidator(this).ValidateAndThrowAsync(priceAdjustment, ruleSet: ValidationRuleSet);
                 lineItem.ListPrice = priceAdjustment.NewPrice;
                 lineItem.SalePrice = priceAdjustment.NewPrice;
                 await RecalculateAsync();
@@ -143,18 +156,20 @@ namespace VirtoCommerce.XPurchase.Domain.Aggregates
 
             if (lineItem != null && !lineItem.IsReadOnly)
             {
-                if (lineItem.Product != null)
+                var lineItemProduct = CartProductsDict[lineItem.ProductId];
+                if (lineItemProduct != null)
                 {
-                    var salePrice = lineItem.Product.Price.GetTierPrice(quantity).Price;
+                    var salePrice = lineItemProduct.Price.GetTierPrice(qtyAdjustment.NewQuantity).Price;
                     if (salePrice != 0)
                     {
-                        lineItem.SalePrice = salePrice;
+                        lineItem.SalePrice = salePrice.Amount;
                     }
                     //List price should be always greater ot equals sale price because it may cause incorrect totals calculation
                     if (lineItem.ListPrice < lineItem.SalePrice)
                     {
                         lineItem.ListPrice = lineItem.SalePrice;
                     }
+
                 }
                 if (qtyAdjustment.NewQuantity > 0)
                 {
@@ -431,8 +446,11 @@ namespace VirtoCommerce.XPurchase.Domain.Aggregates
         public async Task<CartAggregate> ValidateAsync()
         {
             EnsureCartExists();
-            var result = await new CartValidator(await GetAvailableShippingRatesAsync()).ValidateAsync(Cart, ruleSet: ValidationRuleSet);
-            IsValid = result.IsValid;
+            var result = await new CartValidator().ValidateAsync(this, ruleSet: ValidationRuleSet);
+            if (!result.IsValid)
+            {
+                ValidationErrors.AddRange(result.Errors);
+            }
             return this;
         }
 
@@ -443,15 +461,7 @@ namespace VirtoCommerce.XPurchase.Domain.Aggregates
             var isReadOnlyLineItems = Cart.Items.Any(i => i.IsReadOnly);
             if (!isReadOnlyLineItems)
             {
-                //Get product inventory to fill InStockQuantity parameter of LineItem
-                //required for some promotions evaluation
-
-                foreach (var lineItem in Cart.Items.Where(x => x.Product != null).ToList())
-                {
-                    lineItem.InStockQuantity = (int)lineItem.Product.AvailableQuantity;
-                }
-
-                var evalContext = _mapper.Map<PromotionEvaluationContext>(Cart);
+                var evalContext = _mapper.Map<PromotionEvaluationContext>(this);
                 await _marketingEvaluator.EvaluatePromotionAsync(evalContext);
             }
             return this;
@@ -516,12 +526,13 @@ namespace VirtoCommerce.XPurchase.Domain.Aggregates
         {
             if (lineItem != null && !lineItem.IsReadOnly)
             {
-                if (lineItem.Product != null)
+                var cartProduct = CartProductsDict[lineItem.ProductId];
+                if (cartProduct != null)
                 {
-                    var salePrice = lineItem.Product.Price.GetTierPrice(quantity).Price;
+                    var salePrice = cartProduct.Price.GetTierPrice(quantity).Price;
                     if (salePrice != 0)
                     {
-                        lineItem.SalePrice = salePrice;
+                        lineItem.SalePrice = salePrice.Amount;
                     }
                     //List price should be always greater ot equals sale price because it may cause incorrect totals calculation
                     if (lineItem.ListPrice < lineItem.SalePrice)
@@ -583,19 +594,8 @@ namespace VirtoCommerce.XPurchase.Domain.Aggregates
             var payments = await _paymentMethodsSearchService.SearchPaymentMethodsAsync(criteria);
 
             return payments.Results.OrderBy(x => x.Priority).ToList();
-        }
+        }       
 
-       
-
-        public async Task<ShoppingCart> GetByIdAsync(string cartId, Currency currency, string userId)
-        {
-            var cart = await _shoppingCartService.GetByIdAsync(cartId, CartResponseGroup.Full.ToString());
-            if (cart == null)
-            {
-                return null;
-            }
-            return cart;
-        }
 
         protected async Task<TaxProvider> GetActiveTaxProviderAsync()
         {

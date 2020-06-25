@@ -1,18 +1,17 @@
 using System.Collections.Generic;
-using VirtoCommerce.CatalogModule.Core.Model;
-using VirtoCommerce.InventoryModule.Core.Model;
-using VirtoCommerce.PricingModule.Core.Model;
 
-namespace VirtoCommerce.XPurchase.Domain.CartAggregate
+namespace VirtoCommerce.XPurchase
 {
     public class NewCartItem
     {
-        public NewCartItem(CatalogProduct product, int quantity)
+        public NewCartItem(string productId, int quantity)
         {
-            Product = product;
+            ProductId = productId;
             Quantity = quantity;
         }
-        public CatalogProduct Product { get;  private set; }
+        public string ProductId { get;  private set; }
+
+        public CartProduct CartProduct { get; set; }
 
         public int Quantity { get; private set; }
 
@@ -20,7 +19,6 @@ namespace VirtoCommerce.XPurchase.Domain.CartAggregate
         /// Manual price
         /// </summary>
         public decimal? Price { get; set; }
-
 
         /// <summary>
         /// Comment

@@ -1,22 +1,19 @@
-using System.Collections.Generic;
 using FluentValidation;
-using VirtoCommerce.CartModule.Core.Model;
-using VirtoCommerce.ShippingModule.Core.Model;
 
-namespace VirtoCommerce.XPurchase.Models.Validators
+namespace VirtoCommerce.XPurchase.Validators
 {
-    public class CartValidator : AbstractValidator<ShoppingCart>
+    public class CartValidator : AbstractValidator<CartAggregate>
     {
-        public CartValidator(IEnumerable<ShippingRate> availableShippingRates)
+        public CartValidator()
         {
-            RuleFor(x => x.Name).NotNull().NotEmpty();
-            RuleFor(x => x.Currency).NotNull();
-            RuleFor(x => x.CustomerId).NotNull().NotEmpty();
+            RuleFor(x => x.Cart.Name).NotNull().NotEmpty();
+            RuleFor(x => x.Cart.Currency).NotNull();
+            RuleFor(x => x.Cart.CustomerId).NotNull().NotEmpty();
 
             RuleSet("strict", () =>
             {
-                RuleForEach(x => x.Items).SetValidator(cart => new CartLineItemValidator(cart));
-                RuleForEach(x => x.Shipments).SetValidator(cart => new CartShipmentValidator(availableShippingRates));
+                RuleForEach(x => x.Cart.Items).SetValidator(cartAggr => new CartLineItemValidator(cartAggr));
+                RuleForEach(x => x.Cart.Shipments).SetValidator(cartAggr => new CartShipmentValidator(cartAggr));
             });
         }
     }

@@ -1,4 +1,4 @@
-namespace VirtoCommerce.XPurchase.Domain.Commands
+namespace VirtoCommerce.XPurchase.Commands
 {
     public class ClearCartCommand : CartCommand
     {

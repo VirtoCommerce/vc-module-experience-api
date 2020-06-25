@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace VirtoCommerce.XPurchase.Domain.Commands
+namespace VirtoCommerce.XPurchase.Commands
 {
     public class AddCartItemCommand : CartCommand
     {

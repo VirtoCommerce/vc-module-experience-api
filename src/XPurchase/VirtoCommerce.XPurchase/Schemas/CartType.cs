@@ -1,5 +1,7 @@
+using System.Collections.Generic;
+using System.Linq;
 using GraphQL.Types;
-using VirtoCommerce.XPurchase.Domain.Aggregates;
+using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.XPurchase.Schemas
 {
@@ -92,13 +94,27 @@ namespace VirtoCommerce.XPurchase.Schemas
 
             // Coupon
             Field<CopuponType>("coupon", resolve: context => context.Source.Cart.Coupon);
-            Field<ListGraphType<CopuponType>>("coupons", resolve: context => context.Source.Cart.Coupons);
+            Field<ListGraphType<CopuponType>>("coupons", resolve: context =>
+            {
+                var result = new List<CartCoupon>();
+                foreach(var coupon in context.Source.Cart.Coupons)
+                {
+                    var cartCoupon = new CartCoupon
+                    {
+                        Code = coupon,
+                        //TODO: Check what this will work
+                        IsAppliedSuccessfully = context.Source.Cart.Discounts.Any(x => x.Coupon.EqualsInvariant(coupon))
+                    };
+                    result.Add(cartCoupon);
+                }
+                return result;
+            });
 
             // Other
             //Field<ListGraphType<DynamicPropertyType>>("dynamicProperties", resolve: context => context.Source.DynamicProperties); //todo add dynamic properties
             //TODO:
             Field(x => x.IsValid, nullable: true).Description("Is cart valid");
-            Field<ListGraphType<ValidationErrorType>>("validationErrors", resolve: context => context.Source.ValidationErrors);
+            Field<ListGraphType<ValidationErrorType>>("validationErrors", resolve: context => context.Source.ValidationErrors.OfType<CartValidationError>());
             Field(x => x.Cart.Type, nullable: true).Description("Shopping cart type");
         }
     }

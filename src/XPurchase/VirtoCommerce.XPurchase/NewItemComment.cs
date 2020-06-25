@@ -1,4 +1,4 @@
-namespace VirtoCommerce.XPurchase.Domain.CartAggregate
+namespace VirtoCommerce.XPurchase
 {
     public class NewItemComment
     {

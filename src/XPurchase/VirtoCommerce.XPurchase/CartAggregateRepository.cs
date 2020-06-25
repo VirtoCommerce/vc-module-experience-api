@@ -5,15 +5,15 @@ using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.CartModule.Core.Services;
 using VirtoCommerce.Platform.Core.Common;
 
-namespace VirtoCommerce.XPurchase.Domain.Factories
+namespace VirtoCommerce.XPurchase
 {
     public class CartAggregateRepository : ICartAggregateRepository
     {
-        private readonly Func<Aggregates.CartAggregate> _cartAggregateFactory;
+        private readonly Func<CartAggregate> _cartAggregateFactory;
         private readonly IShoppingCartSearchService _shoppingCartSearchService;
         private readonly IShoppingCartService _shoppingCartService;
         public CartAggregateRepository(
-            Func<Aggregates.CartAggregate> cartAggregateFactory
+            Func<CartAggregate> cartAggregateFactory
             , IShoppingCartSearchService shoppingCartSearchService
             , IShoppingCartService shoppingCartService)
         {
@@ -22,13 +22,13 @@ namespace VirtoCommerce.XPurchase.Domain.Factories
             _shoppingCartService = shoppingCartService;
         }
 
-        public async Task SaveAsync(Aggregates.CartAggregate cartAggregate)
+        public async Task SaveAsync(CartAggregate cartAggregate)
         {
             await cartAggregate.RecalculateAsync();
             await _shoppingCartService.SaveChangesAsync(new ShoppingCart[] { cartAggregate.Cart });
         }
 
-        public async Task<Aggregates.CartAggregate> GetForCartAsync(ShoppingCart cart)
+        public async Task<CartAggregate> GetForCartAsync(ShoppingCart cart)
         {
             var result = _cartAggregateFactory();
 
@@ -37,7 +37,7 @@ namespace VirtoCommerce.XPurchase.Domain.Factories
             return result;
 
         }
-        public async Task<Aggregates.CartAggregate> GetOrCreateAsync(string cartName, string storeId, string userId, string language, string currency, string type = null)
+        public async Task<CartAggregate> GetOrCreateAsync(string cartName, string storeId, string userId, string language, string currency, string type = null)
         {
             var criteria = new CartModule.Core.Model.Search.ShoppingCartSearchCriteria
             {

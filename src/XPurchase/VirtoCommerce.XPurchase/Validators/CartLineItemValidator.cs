@@ -1,42 +1,35 @@
 using FluentValidation;
-using FluentValidation.Results;
 using VirtoCommerce.CartModule.Core.Model;
 
-namespace VirtoCommerce.XPurchase.Models.Validators
+namespace VirtoCommerce.XPurchase.Validators
 {
     public class CartLineItemValidator : AbstractValidator<LineItem>
     {
-        public CartLineItemValidator(ShoppingCart cart)
+        public CartLineItemValidator(CartAggregate cartAggr)
         {
             RuleSet("strict", () =>
             {
                 RuleFor(x => x).Custom((lineItem, context) =>
                 {
-                    lineItem.ValidationErrors.Clear();
-
-                    if (lineItem.Product == null || !lineItem.Product.IsActive || !lineItem.Product.IsBuyable)
+                    var cartProduct = cartAggr.CartProductsDict[lineItem.ProductId];
+                    if (cartProduct == null || !cartProduct.Product.IsActive.GetValueOrDefault(false) || !cartProduct.Product.IsBuyable.GetValueOrDefault(false))
                     {
-                        var unavailableError = new UnavailableError();
-                        lineItem.ValidationErrors.Add(unavailableError);
-                        context.AddFailure(new ValidationFailure(nameof(lineItem.Product), "The product is not longer available for purchase"));
+                        context.AddFailure(CartErrorDescriber.ProductUnavailableError(lineItem));
                     }
                     else
                     {
-                        var isProductAvailable = new ProductIsAvailableSpecification(lineItem.Product).IsSatisfiedBy(lineItem.Quantity);
+                        var isProductAvailable = new ProductIsAvailableSpecification().IsSatisfiedBy(cartProduct, lineItem.Quantity);
                         if (!isProductAvailable)
                         {
-                            var availableQuantity = lineItem.Product.AvailableQuantity;
-                            var qtyError = new QuantityError(availableQuantity);
-                            lineItem.ValidationErrors.Add(qtyError);
-                            context.AddFailure(new ValidationFailure(nameof(lineItem.Product.AvailableQuantity), "The product available qty is changed"));
+                            var availableQuantity = cartProduct.AvailableQuantity;
+                            context.AddFailure(CartErrorDescriber.ProductQtyChangedError(lineItem, availableQuantity));
                         }
 
-                        var tierPrice = lineItem.Product.Price.GetTierPrice(lineItem.Quantity);
-                        if (tierPrice.Price > lineItem.SalePrice)
+                        var tierPrice = cartProduct.Price.GetTierPrice(lineItem.Quantity);
+                        if (tierPrice.Price.Amount > lineItem.SalePrice)
                         {
-                            var priceError = new PriceError(lineItem.SalePrice, lineItem.SalePriceWithTax, tierPrice.Price, tierPrice.PriceWithTax);
-                            lineItem.ValidationErrors.Add(priceError);
-                            context.AddFailure(new ValidationFailure(nameof(lineItem.SalePrice), "The product price is changed"));
+                            context.AddFailure(CartErrorDescriber.ProductPriceChangedError(lineItem, lineItem.SalePrice, lineItem.SalePriceWithTax, tierPrice.Price.Amount, tierPrice.PriceWithTax.Amount));
+
                         }
                     }
                 });

@@ -1,6 +1,6 @@
 using VirtoCommerce.Platform.Core.Common;
 
-namespace VirtoCommerce.XPurchase.Domain.CartAggregate
+namespace VirtoCommerce.XPurchase
 {
     public class PriceAdjustment : ValueObject
     {

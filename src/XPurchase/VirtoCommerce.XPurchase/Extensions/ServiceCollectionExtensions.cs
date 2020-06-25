@@ -1,9 +1,10 @@
+using AutoMapper;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using VirtoCommerce.ExperienceApiModule.Core.Schema;
-using VirtoCommerce.XPurchase.Domain.Factories;
 using VirtoCommerce.XPurchase.Schemas;
-using MediatR;
-using AutoMapper;
+using VirtoCommerce.XPurchase.Services;
+
 namespace VirtoCommerce.XPurchase.Extensions
 {
     public static class ServiceCollectionExtensions
@@ -22,14 +23,15 @@ namespace VirtoCommerce.XPurchase.Extensions
             services.AddSchemaType<MoneyType>();
             services.AddSchemaType<PaymentMethodType>();
             services.AddSchemaType<ShippingMethodType>();
-            services.AddSchemaType<PaymentPlanType>();
+            //TODO:
+            //services.AddSchemaType<PaymentPlanType>();
             services.AddSchemaType<PaymentType>();
-            services.AddSchemaType<SettingType>();
+            //services.AddSchemaType<SettingType>();
             services.AddSchemaType<ShipmentType>();
-            services.AddSchemaType<StoreStatusEnum>();
-            services.AddSchemaType<StoreType>();
+            //services.AddSchemaType<StoreStatusEnum>();
+            //services.AddSchemaType<StoreType>();
             services.AddSchemaType<TaxDetailType>();
-            services.AddSchemaType<UserType>();
+            //services.AddSchemaType<UserType>();
             services.AddSchemaType<ValidationErrorType>();
 
             services.AddSchemaBuilder<PurchaseSchema>();
@@ -40,6 +42,8 @@ namespace VirtoCommerce.XPurchase.Extensions
             services.AddMediatR(typeof(XPurchaseAnchor));
 
             services.AddAutoMapper(typeof(XPurchaseAnchor));
+
+            services.AddTransient<ICartProductService, CartProductService>();
 
             return services;
         }
