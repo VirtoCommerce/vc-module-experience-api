@@ -51,8 +51,8 @@ namespace VirtoCommerce.XPurchase.Services
             }
 
             var result = new List<CartProduct>();
-            var products = await _productService.GetByIdsAsync(ids, ItemResponseGroup.ItemMedium.ToString());
-            if (products.IsNullOrEmpty())
+            var products = await _productService.GetByIdsAsync(ids, (ItemResponseGroup.ItemAssets | ItemResponseGroup.ItemInfo | ItemResponseGroup.Outlines | ItemResponseGroup.Seo).ToString());
+            if (!products.IsNullOrEmpty())
             {
                 var store = await _storeService.GetByIdAsync(cart.StoreId);
 

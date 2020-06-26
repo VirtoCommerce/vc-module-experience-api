@@ -2,11 +2,13 @@ using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
 using VirtoCommerce.CartModule.Core.Model;
-using VirtoCommerce.ExperienceApiModule.DigitalCatalog;
+using VirtoCommerce.CoreModule.Core.Outlines;
+using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.MarketingModule.Core.Model.Promotions;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.Platform.Core.DynamicProperties;
+using VirtoCommerce.PricingModule.Core.Model;
 using VirtoCommerce.TaxModule.Core.Model;
+using VirtoCommerce.Tools;
 
 namespace VirtoCommerce.XPurchase.Mapping
 {
@@ -14,54 +16,39 @@ namespace VirtoCommerce.XPurchase.Mapping
     {
         public CartMappingProfile()
         {
-            CreateMap<NewCartItem, LineItem>().ConvertUsing((newCartItem, lineItem, context) =>
+            CreateMap<CartProduct, LineItem>().ConvertUsing((cartProduct, lineItem, context) =>
             {
                 lineItem = AbstractTypeFactory<LineItem>.TryCreateInstance();
 
                 //TODO:
                 //lineItem.ValidationType
-
-                //TODO:
                 //lineItem.IsReadOnly = newCartItem.CartProduct.Product.IsReadOnly;
-
-                //TODO:
                 //lineItem.ShipmentMethodCode = newCartItem.CartProduct.Price.ShipmentMethodCode;
-
-                //TODO:
                 //lineItem.ThumbnailImageUrl = newCartItem.CartProduct.Product.ThumbnailImageUrl;
-
-                //TODO:
                 //lineItem.VolumetricWeight = newCartItem.CartProduct.Product.VolumetricWeight;
 
-                lineItem.CatalogId = newCartItem.CartProduct.Product.CatalogId;
-                lineItem.CategoryId = newCartItem.CartProduct.Product.CategoryId;
-                lineItem.Currency = newCartItem.CartProduct.Price.Currency.Code;
-                lineItem.DiscountAmount = newCartItem.CartProduct.Price.DiscountAmount.InternalAmount;
-                lineItem.Discounts = newCartItem.CartProduct.Price.Discounts;
-                lineItem.DynamicProperties = context.Mapper.Map<Dictionary<string, string>, ICollection<DynamicObjectProperty>>(newCartItem.DynamicProperties);
-                lineItem.Height = newCartItem.CartProduct.Product.Height;
-                lineItem.Id = newCartItem.CartProduct.Id;
-                lineItem.ImageUrl = newCartItem.CartProduct.Product.ImgSrc;
-                lineItem.Length = newCartItem.CartProduct.Product.Length;
-                lineItem.ListPrice = newCartItem.CartProduct.Price.ListPrice.InternalAmount;
-                lineItem.MeasureUnit = newCartItem.CartProduct.Product.MeasureUnit;
-                lineItem.Name = newCartItem.CartProduct.Product.Name;
-                lineItem.Note = newCartItem.Comment;
-                lineItem.Price = context.Mapper.Map<ProductPrice, PricingModule.Core.Model.Price>(newCartItem.CartProduct.Price);
-                lineItem.PriceId = newCartItem.CartProduct.Price.PricelistId;
-                lineItem.ProductId = newCartItem.ProductId;
-                lineItem.ProductId = newCartItem.ProductId;
-                lineItem.ProductType = newCartItem.CartProduct.Product.ProductType;
-                lineItem.Quantity = newCartItem.Quantity;
-                lineItem.Quantity = newCartItem.Quantity;
-                lineItem.SalePrice = newCartItem.CartProduct.Price.SalePrice.InternalAmount;
-                lineItem.Sku = newCartItem.CartProduct.Product.Code;
-                lineItem.TaxDetails = newCartItem.CartProduct.Price.TaxDetails;
-                lineItem.TaxPercentRate = newCartItem.CartProduct.Price.TaxPercentRate;
-                lineItem.TaxType = newCartItem.CartProduct.Product.TaxType;
-                lineItem.Weight = newCartItem.CartProduct.Product.Weight;
-                lineItem.WeightUnit = newCartItem.CartProduct.Product.WeightUnit;
-                lineItem.Width = newCartItem.CartProduct.Product.Width;
+                lineItem.CatalogId = cartProduct.Product.CatalogId;
+                lineItem.CategoryId = cartProduct.Product.CategoryId;
+                lineItem.Currency = cartProduct.Price.Currency.Code;
+                lineItem.DiscountAmount = cartProduct.Price.DiscountAmount.InternalAmount;
+                lineItem.Discounts = cartProduct.Price.Discounts;                
+                lineItem.Height = cartProduct.Product.Height;
+                lineItem.ImageUrl = cartProduct.Product.ImgSrc;
+                lineItem.Length = cartProduct.Product.Length;
+                lineItem.ListPrice = cartProduct.Price.ListPrice.InternalAmount;
+                lineItem.MeasureUnit = cartProduct.Product.MeasureUnit;
+                lineItem.Name = cartProduct.Product.Name;
+                lineItem.PriceId = cartProduct.Price.PricelistId;
+                lineItem.ProductId = cartProduct.Product.Id;
+                lineItem.ProductType = cartProduct.Product.ProductType;
+                lineItem.SalePrice = cartProduct.Price.SalePrice.InternalAmount;
+                lineItem.Sku = cartProduct.Product.Code;
+                lineItem.TaxDetails = cartProduct.Price.TaxDetails;
+                lineItem.TaxPercentRate = cartProduct.Price.TaxPercentRate;
+                lineItem.TaxType = cartProduct.Product.TaxType;
+                lineItem.Weight = cartProduct.Product.Weight;
+                lineItem.WeightUnit = cartProduct.Product.WeightUnit;
+                lineItem.Width = cartProduct.Product.Width;
 
                 return lineItem;
             });
@@ -69,13 +56,48 @@ namespace VirtoCommerce.XPurchase.Mapping
             //TODO: LineItem -> IEnumerable<TaxLine>
             //TODO: ShipingRate -> IEnumerable<TaxLine>
             //TODO: PaymentMethod -> IEnumerable<TaxLine>
-            //TODO: ShoppingCart -> PriceEvaluationContext
 
-            CreateMap<ExpProduct, LineItem>().ConvertUsing((cart, promoEvalcontext, context) =>
+            CreateMap<Outline, Tools.Models.Outline>();
+            CreateMap<OutlineItem, Tools.Models.OutlineItem>();
+            CreateMap<SeoInfo, Tools.Models.SeoInfo>();
+
+            CreateMap<ShoppingCart, PriceEvaluationContext>().ConvertUsing((cart, priceEvalContext, context) =>
             {
+                priceEvalContext = AbstractTypeFactory<PriceEvaluationContext>.TryCreateInstance();
+                priceEvalContext.Language = cart.LanguageCode;
+                priceEvalContext.StoreId = cart.StoreId;               
                 //TODO:
-                var result = AbstractTypeFactory<LineItem>.TryCreateInstance();
-                return result;
+                //if (cart.CustomerId != null)
+                //{
+                //    result.CustomerId = workContext.CurrentUser.Id;
+                //    var contact = workContext.CurrentUser?.Contact;
+
+                //    if (contact != null)
+                //    {
+                //        result.GeoTimeZone = contact.TimeZone;
+                //        var address = contact.DefaultShippingAddress ?? contact.DefaultBillingAddress;
+                //        if (address != null)
+                //        {
+                //            result.GeoCity = address.City;
+                //            result.GeoCountry = address.CountryCode;
+                //            result.GeoState = address.RegionName;
+                //            result.GeoZipCode = address.PostalCode;
+                //        }
+                //        if (contact.UserGroups != null)
+                //        {
+                //            result.UserGroups = contact.UserGroups;
+                //        }
+                //    }
+                //}
+                //if (pricelists != null)
+                //{
+                //    result.PricelistIds = pricelists.Select(p => p.Id).ToList();
+                //}
+                //if (products != null)
+                //{
+                //    result.ProductIds = products.Select(p => p.Id).ToList();
+                //}
+                return priceEvalContext;
             });
 
             CreateMap<CartAggregate, PromotionEvaluationContext>().ConvertUsing((cartAggr, promoEvalcontext, context) =>
@@ -97,7 +119,7 @@ namespace VirtoCommerce.XPurchase.Mapping
                         Price = lineItem.SalePrice,
                         Quantity = lineItem.Quantity,
                         InStockQuantity = (int)cartProduct.Inventory.InStockQuantity,
-                        //Outline = cartProduct.Product.Outlines.Select(x => context.Mapper.Map<Tools.Models.Outline>(x)).GetOutlinePath(cartProduct.Product.CatalogId)
+                        Outline = cartProduct.Product.Outlines.Select(x => context.Mapper.Map<Tools.Models.Outline>(x)).GetOutlinePath(cartProduct.Product.CatalogId)
                     };
                     promoEvalcontext.CartPromoEntries.Add(promoEntry);
                 }

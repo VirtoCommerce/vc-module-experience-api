@@ -12,7 +12,9 @@ namespace VirtoCommerce.XPurchase
         public CartProduct(CatalogProduct product)
         {
             Product = product;
-        }
+            Id = product.Id;
+        }   
+
         public CatalogProduct Product { get; private set; }
 
         public ProductPrice Price { get; set; }

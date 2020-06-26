@@ -82,7 +82,7 @@ namespace VirtoCommerce.XPurchase
             //Load products for all cart items
             if(cart.Items.Any())
             {
-                CartProductsDict = (await _cartProductService.GetCartProductsByIdsAsync(cart, cart.Items.Select(x => x.Id).ToArray())).ToDictionary(x=>x.Id).WithDefaultValue(null);
+                CartProductsDict = (await _cartProductService.GetCartProductsByIdsAsync(cart, cart.Items.Select(x => x.ProductId).ToArray())).ToDictionary(x=>x.Id).WithDefaultValue(null);
             }
             
             await RecalculateAsync();
@@ -105,7 +105,7 @@ namespace VirtoCommerce.XPurchase
             newCartItem.CartProduct = (await _cartProductService.GetCartProductsByIdsAsync(Cart, new[] { newCartItem.ProductId })).FirstOrDefault();
             await new NewCartItemValidator().ValidateAndThrowAsync(newCartItem, ruleSet: ValidationRuleSet);
 
-            var lineItem = _mapper.Map<LineItem>(newCartItem);
+            var lineItem = _mapper.Map<LineItem>(newCartItem.CartProduct);
 
             if (newCartItem.Price != null)
             {
@@ -474,7 +474,7 @@ namespace VirtoCommerce.XPurchase
             var taxProvider = await GetActiveTaxProviderAsync();
             if (taxProvider != null)
             {
-                var taxEvalContext = _mapper.Map<TaxEvaluationContext>(Cart);
+                var taxEvalContext = _mapper.Map<TaxEvaluationContext>(this);
                 var taxRates = taxProvider.CalculateRates(taxEvalContext);
                 foreach (var taxRate in taxRates)
                 {
@@ -488,8 +488,8 @@ namespace VirtoCommerce.XPurchase
         public virtual async Task<CartAggregate> RecalculateAsync()
         {
             EnsureCartExists();
-            //await EvaluatePromotionsAsync();
-            //await EvaluateTaxesAsync();
+            await EvaluatePromotionsAsync();
+            await EvaluateTaxesAsync();
             _cartTotalsCalculator.CalculateTotals(Cart);
             return this;
         }
