@@ -65,7 +65,7 @@ namespace VirtoCommerce.XPurchase
         /// FluentValidation RuleSets allow you to group validation rules together which can be executed together as a group. You can set exists rule set name to evaluate default.
         /// <see cref="CartValidator"/>
         /// </summary>        
-        public string ValidationRuleSet { get; set; } = "default, strict";
+        public string ValidationRuleSet { get; set; } = "default,strict";
         public bool IsValid => ValidationErrors.Any();
         public IList<ValidationFailure> ValidationErrors { get; set; } = new List<ValidationFailure>();
 
