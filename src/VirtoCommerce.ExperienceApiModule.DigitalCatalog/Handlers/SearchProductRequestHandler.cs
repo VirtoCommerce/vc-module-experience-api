@@ -36,12 +36,12 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Handlers
                                             .AddSorting(request.Sort)
                                             //TODO: Remove hardcoded field name  __object from here
                                             .WithIncludeFields(request.IncludeFields.Concat(new[] { "id" }).Select(x => "__object." + x).ToArray())
-                                            .WithIncludeFields(request.IncludeFields.Where(x=>x.StartsWith("prices.")).Concat(new[] { "id" }).Select(x => "__prices." + x.TrimStart("prices.")).ToArray())
+                                            .WithIncludeFields(request.IncludeFields.Where(x => x.StartsWith("prices.")).Concat(new[] { "id" }).Select(x => "__prices." + x.TrimStart("prices.")).ToArray())
                                             .Build();
-                                           
+
             var searchResult = await _searchProvider.SearchAsync(KnownDocumentTypes.Product, searchRequest);
-            result.Results = searchResult.Documents?.Select(x => _mapper.Map<ExpProduct>(x)).ToList();
-            result.Facets = searchRequest.Aggregations?.Select(x => _mapper.Map<FacetResult>(x, opts => opts.Items["aggregations"] = searchResult.Aggregations)).ToList();
+            result.Results = searchResult.Documents?.Select(x => _mapper.Map<ExpProduct>(x)).Where(x => x != null).ToList();
+            result.Facets = searchRequest.Aggregations?.Select(x => _mapper.Map<FacetResult>(x, opts => opts.Items["aggregations"] = searchResult.Aggregations)).Where(x => x != null).ToList();
 
             result.TotalCount = (int)searchResult.TotalCount;
             return result;

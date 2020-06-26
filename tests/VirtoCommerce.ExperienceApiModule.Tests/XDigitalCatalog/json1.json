@@ -1,0 +1,89 @@
+{
+  "aggs": {
+    "color": {
+      "aggs": { "color": { "terms": { "field": "color" } } },
+      "filter": {
+        "bool": {
+          "must": [
+            {
+              "range": {
+                "price": {
+                  "gt": "0",
+                  "lt": "100"
+                }
+              }
+            },
+            { "terms": { "brand": [ "Samsung" ] } },
+            { "terms": { "__outline": [ "4974648a41df4e6ea67ef2ad76d7bbd4/0d4ad9bab9184d69a6e586effdf9c2ea" ] } }
+          ]
+        }
+      }
+    },
+    "brand": {
+      "aggs": { "brand": { "terms": { "field": "brand" } } },
+      "filter": {
+        "bool": {
+          "must": [
+            {
+              "range": {
+                "price": {
+                  "gt": "0",
+                  "lt": "100"
+                }
+              }
+            },
+            { "terms": { "color": [ "Black", " White" ] } },
+            { "terms": { "__outline": [ "4974648a41df4e6ea67ef2ad76d7bbd4/0d4ad9bab9184d69a6e586effdf9c2ea" ] } }
+          ]
+        }
+      }
+    },
+    "pricerange-*-100": { "filter": { "bool": { "must": [ { "range": { "price": { "lt": "100" } } } ] } } },
+    "pricerange-100-200": {
+      "filter": {
+        "bool": {
+          "must": [
+            {
+              "range": {
+                "price": {
+                  "gte": "100",
+                  "lte": "200"
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "pricerange-200-*": { "filter": { "bool": { "must": [ { "range": { "price": { "gt": "200" } } } ] } } }
+  },
+  "from": 0,
+  "post_filter": {
+    "bool": {
+      "must": [
+        {
+          "range": {
+            "price": {
+              "gt": "0",
+              "lt": "100"
+            }
+          }
+        },
+        { "terms": { "color": [ "Black", " White" ] } },
+        { "terms": { "brand": [ "Samsung" ] } },
+        { "terms": { "__outline": [ "4974648a41df4e6ea67ef2ad76d7bbd4/0d4ad9bab9184d69a6e586effdf9c2ea" ] } }
+      ]
+    }
+  },
+  "size": 20,
+  "sort": [
+    {
+      "__sort": {
+        "unmapped_type": "long",
+        "missing": "_last",
+        "order": "asc"
+      }
+    }
+  ],
+  "_source": { "includes": [ "__object.totalCount", "__object.id", "__object.name", "__object.range_facets.name", "__object.range_facets.ranges.from", "__object.range_facets.ranges.to", "__object.range_facets.ranges.count", "__object.range_facets.ranges.includeTo", "__object.range_facets.ranges.includeFrom", "__object.term_facets.name", "__object.term_facets.terms.term", "__object.term_facets.terms.count", "__object.id", "__prices.id" ] }
+}

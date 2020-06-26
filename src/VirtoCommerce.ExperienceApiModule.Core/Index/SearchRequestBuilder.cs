@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json.Linq;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.SearchModule.Core.Model;
 using VirtoCommerce.SearchModule.Core.Services;
@@ -35,6 +36,13 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Index
 
         public virtual SearchRequest Build()
         {
+            //Apply multi-select facet search policy by default
+            foreach(var aggr in SearchRequest.Aggregations)
+            {
+                var clonedFilter = SearchRequest.Filter.Clone() as AndFilter;
+                clonedFilter.ChildFilters = clonedFilter.ChildFilters.Where(x => !(x is INamedFilter namedFilter) || !namedFilter.FieldName.EqualsInvariant(aggr.FieldName)).ToList();
+                aggr.Filter = clonedFilter;
+            }
             return SearchRequest;
         }
 
