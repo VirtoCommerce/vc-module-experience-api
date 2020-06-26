@@ -5,8 +5,11 @@ using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.CoreModule.Core.Outlines;
 using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.MarketingModule.Core.Model.Promotions;
+using VirtoCommerce.PaymentModule.Core.Model;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.DynamicProperties;
 using VirtoCommerce.PricingModule.Core.Model;
+using VirtoCommerce.ShippingModule.Core.Model;
 using VirtoCommerce.TaxModule.Core.Model;
 using VirtoCommerce.Tools;
 
@@ -53,13 +56,54 @@ namespace VirtoCommerce.XPurchase.Mapping
                 return lineItem;
             });
 
-            //TODO: LineItem -> IEnumerable<TaxLine>
-            //TODO: ShipingRate -> IEnumerable<TaxLine>
-            //TODO: PaymentMethod -> IEnumerable<TaxLine>
+            //TODO:
+            // Check if this correct
+            CreateMap<LineItem, IEnumerable<TaxLine>>().ConvertUsing((lineItem, taxLines, context) =>
+            {
+                return new[]
+                {
+                    new TaxLine
+                    {
+                        Id = lineItem.Id,
+                        Code = lineItem.Sku,
+                        Name = lineItem.Name,
+                        TaxType = lineItem.TaxType,
+                        //Special case when product have 100% discount and need to calculate tax for old value
+                        Amount =  lineItem.Price.List > 0 ? lineItem.Price.List : lineItem.Price.Sale ?? 0M
+                    }
+                };
+            });
 
-            CreateMap<Outline, Tools.Models.Outline>();
-            CreateMap<OutlineItem, Tools.Models.OutlineItem>();
-            CreateMap<SeoInfo, Tools.Models.SeoInfo>();
+            CreateMap<ShippingRate, IEnumerable<TaxLine>>().ConvertUsing((shipmentRate, taxLines, context) =>
+            {
+                return new[]
+                {
+                    new TaxLine
+                    {
+                        Id = string.Join("&", shipmentRate.ShippingMethod.Code, shipmentRate.OptionName),
+                        Code = shipmentRate.ShippingMethod.Code,
+                        TaxType = shipmentRate.ShippingMethod.TaxType,
+                        //TODO: Is second param is shipmentRate.Rate ?
+                        Amount = shipmentRate.DiscountAmount > 0 ? shipmentRate.DiscountAmount : shipmentRate.Rate
+                    }
+                };
+            });
+
+            CreateMap<PaymentMethod, IEnumerable<TaxLine>>().ConvertUsing((paymentMethod, taxLines, context) =>
+            {
+                return new[]
+                {
+                    new TaxLine
+                    {
+                        Id = paymentMethod.Code,
+                        Code = paymentMethod.Code,
+                        TaxType = paymentMethod.TaxType,
+                        Amount = paymentMethod.Total > 0 ? paymentMethod.Total : paymentMethod.Price
+                    }
+                };
+            });
+
+           
 
             CreateMap<ShoppingCart, PriceEvaluationContext>().ConvertUsing((cart, priceEvalContext, context) =>
             {
