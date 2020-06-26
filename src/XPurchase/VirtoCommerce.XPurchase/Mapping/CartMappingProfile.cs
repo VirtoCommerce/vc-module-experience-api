@@ -7,7 +7,6 @@ using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.MarketingModule.Core.Model.Promotions;
 using VirtoCommerce.PaymentModule.Core.Model;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.Platform.Core.DynamicProperties;
 using VirtoCommerce.PricingModule.Core.Model;
 using VirtoCommerce.ShippingModule.Core.Model;
 using VirtoCommerce.TaxModule.Core.Model;
@@ -34,7 +33,7 @@ namespace VirtoCommerce.XPurchase.Mapping
                 lineItem.CategoryId = cartProduct.Product.CategoryId;
                 lineItem.Currency = cartProduct.Price.Currency.Code;
                 lineItem.DiscountAmount = cartProduct.Price.DiscountAmount.InternalAmount;
-                lineItem.Discounts = cartProduct.Price.Discounts;                
+                lineItem.Discounts = cartProduct.Price.Discounts;
                 lineItem.Height = cartProduct.Product.Height;
                 lineItem.ImageUrl = cartProduct.Product.ImgSrc;
                 lineItem.Length = cartProduct.Product.Length;
@@ -107,13 +106,11 @@ namespace VirtoCommerce.XPurchase.Mapping
                 };
             });
 
-           
-
             CreateMap<ShoppingCart, PriceEvaluationContext>().ConvertUsing((cart, priceEvalContext, context) =>
             {
                 priceEvalContext = AbstractTypeFactory<PriceEvaluationContext>.TryCreateInstance();
                 priceEvalContext.Language = cart.LanguageCode;
-                priceEvalContext.StoreId = cart.StoreId;               
+                priceEvalContext.StoreId = cart.StoreId;
                 //TODO:
                 //if (cart.CustomerId != null)
                 //{

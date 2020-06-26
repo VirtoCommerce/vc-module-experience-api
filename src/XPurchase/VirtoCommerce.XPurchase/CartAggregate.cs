@@ -22,6 +22,7 @@ using VirtoCommerce.ShippingModule.Core.Services;
 using VirtoCommerce.TaxModule.Core.Model;
 using VirtoCommerce.TaxModule.Core.Model.Search;
 using VirtoCommerce.TaxModule.Core.Services;
+using VirtoCommerce.XPurchase.Extensions;
 using VirtoCommerce.XPurchase.Services;
 using VirtoCommerce.XPurchase.Validators;
 
@@ -36,6 +37,7 @@ namespace VirtoCommerce.XPurchase
         private readonly IShoppingCartTotalsCalculator _cartTotalsCalculator;
         private readonly ICartProductService _cartProductService;
         private readonly IMapper _mapper;
+
         public CartAggregate(
             IPaymentMethodsSearchService paymentMethodsSearchService,
             IMarketingPromoEvaluator marketingEvaluator,
@@ -55,7 +57,6 @@ namespace VirtoCommerce.XPurchase
             _mapper = mapper;
         }
 
-
         public virtual ShoppingCart Cart { get; protected set; }
 
         public virtual IDictionary<string, CartProduct> CartProductsDict { get; protected set; } = new Dictionary<string, CartProduct>().WithDefaultValue(null);
@@ -64,8 +65,9 @@ namespace VirtoCommerce.XPurchase
         /// Contains a new of validation rule set that will be executed each time the basket is changed.
         /// FluentValidation RuleSets allow you to group validation rules together which can be executed together as a group. You can set exists rule set name to evaluate default.
         /// <see cref="CartValidator"/>
-        /// </summary>        
-        public string ValidationRuleSet { get; set; } = "default,strict";
+        /// </summary>
+        public string ValidationRuleSet { get; set; } = "default, strict";
+
         public bool IsValid => ValidationErrors.Any();
         public IList<ValidationFailure> ValidationErrors { get; set; } = new List<ValidationFailure>();
 
@@ -80,11 +82,11 @@ namespace VirtoCommerce.XPurchase
             Cart = cart;
 
             //Load products for all cart items
-            if(cart.Items.Any())
+            if (cart.Items.Any())
             {
-                CartProductsDict = (await _cartProductService.GetCartProductsByIdsAsync(cart, cart.Items.Select(x => x.ProductId).ToArray())).ToDictionary(x=>x.Id).WithDefaultValue(null);
+                CartProductsDict = (await _cartProductService.GetCartProductsByIdsAsync(cart, cart.Items.Select(x => x.ProductId).ToArray())).ToDictionary(x => x.Id).WithDefaultValue(null);
             }
-            
+
             await RecalculateAsync();
             return this;
         }
@@ -132,7 +134,6 @@ namespace VirtoCommerce.XPurchase
             return this;
         }
 
-
         public virtual async Task<CartAggregate> ChangeItemPriceAsync(PriceAdjustment priceAdjustment)
         {
             EnsureCartExists();
@@ -145,6 +146,7 @@ namespace VirtoCommerce.XPurchase
                 lineItem.SalePrice = priceAdjustment.NewPrice;
                 await RecalculateAsync();
             }
+
             return this;
         }
 
@@ -169,7 +171,6 @@ namespace VirtoCommerce.XPurchase
                     {
                         lineItem.ListPrice = lineItem.SalePrice;
                     }
-
                 }
                 if (qtyAdjustment.NewQuantity > 0)
                 {
@@ -187,14 +188,15 @@ namespace VirtoCommerce.XPurchase
         public virtual Task<CartAggregate> ChangeItemCommentAsync(NewItemComment newItemComment)
         {
             EnsureCartExists();
+
             var lineItem = Cart.Items.FirstOrDefault(x => x.Id == newItemComment.LineItemId);
             if (lineItem != null)
             {
                 lineItem.Note = newItemComment.Comment;
             }
+
             return Task.FromResult(this);
         }
-
 
         public virtual async Task<CartAggregate> RemoveItemAsync(string lineItemId)
         {
@@ -255,11 +257,10 @@ namespace VirtoCommerce.XPurchase
             if (shipment.DeliveryAddress != null)
             {
                 //Reset address key because it can equal a customer address from profile and if not do that it may cause
-                //address primary key duplication error for multiple carts with the same address 
+                //address primary key duplication error for multiple carts with the same address
                 shipment.DeliveryAddress.Key = null;
             }
             Cart.Shipments.Add(shipment);
-
 
             if (!string.IsNullOrEmpty(shipment.ShipmentMethodCode) && !Cart.IsTransient())
             {
@@ -300,7 +301,7 @@ namespace VirtoCommerce.XPurchase
             if (payment.BillingAddress != null)
             {
                 //Reset address key because it can equal a customer address from profile and if not do that it may cause
-                //address primary key duplication error for multiple carts with the same address 
+                //address primary key duplication error for multiple carts with the same address
                 payment.BillingAddress.Key = null;
             }
             Cart.Payments.Add(payment);
@@ -353,7 +354,7 @@ namespace VirtoCommerce.XPurchase
             await RecalculateAsync();
             return this;
         }
-     
+
         //TODO: Remove code duplication and move out from here to the service or query
         public virtual async Task<IEnumerable<ShippingRate>> GetAvailableShippingRatesAsync()
         {
@@ -374,31 +375,34 @@ namespace VirtoCommerce.XPurchase
             var availableShippingRates = activeAvailableShippingMethods
                 .SelectMany(x => x.CalculateRates(shippingEvaluationContext))
                 .Where(x => x.ShippingMethod == null || x.ShippingMethod.IsActive)
-                .ToArray();  
+                .ToArray();
 
-            if (!availableShippingRates.IsNullOrEmpty())
+            if (availableShippingRates.IsNullOrEmpty())
             {
-                //Evaluate promotions cart and apply rewards for available shipping methods
-                var evalContext = _mapper.Map<PromotionEvaluationContext>(Cart);
-                var promoResult = await _marketingEvaluator.EvaluatePromotionAsync(evalContext);
-                foreach (var reward in promoResult.Rewards)
-                {
-                    //TODO: Apply reward to shipping methods rates  need to write and extension methods for this
-                }
-                var taxProvider = await  GetActiveTaxProviderAsync();
-                if(taxProvider != null)
-                {
-                    var taxEvalContext = _mapper.Map<TaxEvaluationContext>(Cart);
-                    taxEvalContext.Lines.Clear();
-                    taxEvalContext.Lines.AddRange(availableShippingRates.SelectMany(x => _mapper.Map<IEnumerable<TaxLine>>(x)));
-                    var taxRates = taxProvider.CalculateRates(taxEvalContext);
-                    foreach (var reward in taxRates)
-                    {
-                        //TODO: Apply taxRates  to shipping methods rates  need to write and extension methods for this
-                    }
-                }
-              
+                return Enumerable.Empty<ShippingRate>();
             }
+
+            //Evaluate promotions cart and apply rewards for available shipping methods
+            var evalContext = _mapper.Map<PromotionEvaluationContext>(Cart);
+            var promoResult = await _marketingEvaluator.EvaluatePromotionAsync(evalContext);
+            foreach (var reward in promoResult.Rewards)
+            {
+                //TODO: Apply reward to shipping methods rates  need to write and extension methods for this
+            }
+
+            var taxProvider = await GetActiveTaxProviderAsync();
+            if (taxProvider != null)
+            {
+                var taxEvalContext = _mapper.Map<TaxEvaluationContext>(Cart);
+                taxEvalContext.Lines.Clear();
+                taxEvalContext.Lines.AddRange(availableShippingRates.SelectMany(x => _mapper.Map<IEnumerable<TaxLine>>(x)));
+                var taxRates = taxProvider.CalculateRates(taxEvalContext);
+                foreach (var shippingRate in availableShippingRates)
+                {
+                    shippingRate.ApplyTaxRates(taxRates);
+                }
+            }
+
             return availableShippingRates;
         }
 
@@ -406,7 +410,7 @@ namespace VirtoCommerce.XPurchase
         public virtual async Task<IEnumerable<PaymentMethod>> GetAvailablePaymentMethodsAsync()
         {
             EnsureCartExists();
-          
+
             var criteria = new PaymentMethodsSearchCriteria
             {
                 IsActive = true,
@@ -415,31 +419,32 @@ namespace VirtoCommerce.XPurchase
             };
 
             var result = await _paymentMethodsSearchService.SearchPaymentMethodsAsync(criteria);
-
-            if (!result.Results.IsNullOrEmpty())
+            if (result.Results.IsNullOrEmpty())
             {
-                var evalContext = _mapper.Map<PromotionEvaluationContext>(Cart);
-                var promoResult = await _marketingEvaluator.EvaluatePromotionAsync(evalContext);
-                foreach (var reward in promoResult.Rewards)
-                {
-                    //TODO: Apply reward to payment methods   need to write and extension methods for this
-                }
+                return Enumerable.Empty<PaymentMethod>();
+            }
 
-                //Evaluate taxes for available payments
-                var taxProvider = await GetActiveTaxProviderAsync();
-                if (taxProvider != null)
+            var evalContext = _mapper.Map<PromotionEvaluationContext>(Cart);
+            var promoResult = await _marketingEvaluator.EvaluatePromotionAsync(evalContext);
+            foreach (var reward in promoResult.Rewards)
+            {
+                //TODO: Apply reward to payment methods   need to write and extension methods for this
+            }
+
+            //Evaluate taxes for available payments
+            var taxProvider = await GetActiveTaxProviderAsync();
+            if (taxProvider != null)
+            {
+                var taxEvalContext = _mapper.Map<TaxEvaluationContext>(Cart);
+                taxEvalContext.Lines.Clear();
+                taxEvalContext.Lines.AddRange(result.Results.SelectMany(x => _mapper.Map<IEnumerable<TaxLine>>(x)));
+                var taxRates = taxProvider.CalculateRates(taxEvalContext);
+                foreach (var paymentMethod in result.Results)
                 {
-                    var taxEvalContext = _mapper.Map<TaxEvaluationContext>(Cart);
-                    taxEvalContext.Lines.Clear();
-                    //TODO: 
-                    taxEvalContext.Lines.AddRange(result.Results.SelectMany(x => _mapper.Map<IEnumerable<TaxLine>>(x)));
-                    var taxRates = taxProvider.CalculateRates(taxEvalContext);
-                    foreach (var reward in taxRates)
-                    {
-                        //TODO: Apply taxRates  to payment methods need to write and extension methods for this
-                    }
+                    paymentMethod.ApplyTaxRates(taxRates);
                 }
             }
+
             return result.Results;
         }
 
@@ -476,14 +481,11 @@ namespace VirtoCommerce.XPurchase
             {
                 var taxEvalContext = _mapper.Map<TaxEvaluationContext>(this);
                 var taxRates = taxProvider.CalculateRates(taxEvalContext);
-                foreach (var taxRate in taxRates)
-                {
-                    //TODO: Apply taxRates  to cart with using extension methods
-                }
+                Cart.ApplyTaxRates(taxRates);
             }
+
             return this;
         }
-
 
         public virtual async Task<CartAggregate> RecalculateAsync()
         {
@@ -493,7 +495,6 @@ namespace VirtoCommerce.XPurchase
             _cartTotalsCalculator.CalculateTotals(Cart);
             return this;
         }
-               
 
         protected virtual Task<CartAggregate> RemoveExistingPaymentAsync(Payment payment)
         {
@@ -576,7 +577,7 @@ namespace VirtoCommerce.XPurchase
                 throw new OperationCanceledException("Cart not loaded.");
             }
         }
-        
+
         public async Task<IEnumerable<PaymentMethod>> GetAvailablePaymentMethodsAsync(ShoppingCart cart)
         {
             if (cart == null || string.IsNullOrEmpty(cart.StoreId) || cart.IsTransient())
@@ -594,8 +595,7 @@ namespace VirtoCommerce.XPurchase
             var payments = await _paymentMethodsSearchService.SearchPaymentMethodsAsync(criteria);
 
             return payments.Results.OrderBy(x => x.Priority).ToList();
-        }       
-
+        }
 
         protected async Task<TaxProvider> GetActiveTaxProviderAsync()
         {
@@ -607,11 +607,10 @@ namespace VirtoCommerce.XPurchase
 
             var storeTaxProviders = await _taxProviderSearchService.SearchTaxProvidersAsync(new TaxProviderSearchCriteria
             {
-                StoreIds = new[] { Cart.StoreId }                
+                StoreIds = new[] { Cart.StoreId }
             });
 
             return storeTaxProviders.Results.FirstOrDefault(x => x.IsActive);
-
         }
     }
 }
