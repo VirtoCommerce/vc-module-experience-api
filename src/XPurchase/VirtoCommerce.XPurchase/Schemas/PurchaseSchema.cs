@@ -61,21 +61,6 @@ namespace VirtoCommerce.XPurchase.Schemas
             schema.Query.AddField(cartField);
 
             //Mutations
-            //TODO: User result type with errors 
-            var clearCartField = FieldBuilder.Create<CartAggregate, CartAggregate>(typeof(CartType))
-                                                 .Name("clearCart")
-                                                 .Argument<NonNullGraphType<InputClearCartType>>("command")
-                                                 .ResolveAsync(async context =>
-                                                 {
-                                                     //TODO: Move to extension methods
-                                                     var clearCartCmd = context.GetArgument<ClearCartCommand>("command");                                                    
-                                                     var result = await _mediator.Send(clearCartCmd);
-                                                     return result;
-                                                 }).FieldType;
-
-          
-            schema.Mutation.AddField(clearCartField);
-
             /// <example>
             /// This is an example JSON request for a mutation
             /// {
@@ -99,7 +84,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                                                .Argument<NonNullGraphType<InputAddItemType>>("command")
                                                .ResolveAsync(async context =>
                                                {
-                                                   //TODO: Move to extension methods
+                                                   //TODO: Write the unit-tests for successfully mapping input variable to the command
                                                    var addItemCommand = context.GetArgument<AddCartItemCommand>("command");
 
                                                    var result = await _mediator.Send(addItemCommand);
@@ -108,6 +93,22 @@ namespace VirtoCommerce.XPurchase.Schemas
 
             schema.Mutation.AddField(addItemField);
 
-        }       
+            //TODO: User result type with errors 
+            var clearCartField = FieldBuilder.Create<CartAggregate, CartAggregate>(typeof(CartType))
+                                                 .Name("clearCart")
+                                                 .Argument<NonNullGraphType<InputClearCartType>>("command")
+                                                 .ResolveAsync(async context =>
+                                                 {
+                                                     //TODO: Move to extension methods
+                                                     var clearCartCmd = context.GetArgument<ClearCartCommand>("command");
+                                                     var result = await _mediator.Send(clearCartCmd);
+                                                     return result;
+                                                 }).FieldType;
+
+
+            schema.Mutation.AddField(clearCartField);
+
+
+        }
     }
 }
