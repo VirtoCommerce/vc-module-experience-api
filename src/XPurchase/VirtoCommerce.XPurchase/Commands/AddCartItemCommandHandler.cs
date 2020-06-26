@@ -9,7 +9,8 @@ namespace VirtoCommerce.XPurchase.Commands
             :base(cartRepository)
         {
         }
-        protected override async Task Handle(AddCartItemCommand request, CancellationToken cancellationToken)
+
+        public override async Task<CartAggregate> Handle(AddCartItemCommand request, CancellationToken cancellationToken)
         {
             var cartAggr = await GetCartAggregateFromCommandAsync(request);
             await cartAggr.AddItemAsync(new NewCartItem(request.ProductId, request.Quantity)
@@ -19,6 +20,7 @@ namespace VirtoCommerce.XPurchase.Commands
                 Price = request.Price
             });
             await CartAggrRepository.SaveAsync(cartAggr);
-        }
+            return cartAggr;
+        }    
     }
 }

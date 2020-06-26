@@ -2,8 +2,8 @@ namespace VirtoCommerce.XPurchase.Commands
 {
     public class ClearCartCommand : CartCommand
     {
-        public ClearCartCommand(string storeId, string cartType, string cartName, string userId, string currency, string language)
-            :base(storeId, cartType, cartName, userId, currency, language)
+        public ClearCartCommand(string storeId, string type, string cartName, string userId, string currency, string language)
+            :base(storeId, type, cartName, userId, currency, language)
         {
         }                     
     }

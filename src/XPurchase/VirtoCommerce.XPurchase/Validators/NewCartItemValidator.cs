@@ -12,7 +12,7 @@ namespace VirtoCommerce.XPurchase.Validators
             {
                 RuleFor(x => x).Custom((newCartItem, context) =>
                 {
-                    if (new ProductIsAvailableSpecification().IsSatisfiedBy(newCartItem.CartProduct, newCartItem.Quantity))
+                    if (!new ProductIsAvailableSpecification().IsSatisfiedBy(newCartItem.CartProduct, newCartItem.Quantity))
                     {
                         context.AddFailure(CartErrorDescriber.ProductUnavailableError(newCartItem.CartProduct));
                     }
@@ -25,6 +25,7 @@ namespace VirtoCommerce.XPurchase.Validators
                             context.AddFailure(CartErrorDescriber.UnableToSetLessPrice(newCartItem.CartProduct));
                         }
                     }
+                 
                 });
             });
 

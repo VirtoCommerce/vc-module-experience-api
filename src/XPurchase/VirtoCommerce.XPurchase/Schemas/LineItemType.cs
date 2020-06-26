@@ -8,6 +8,7 @@ namespace VirtoCommerce.XPurchase.Schemas
     {
         public LineItemType()
         {
+            Field(x => x.Id, nullable: false).Description("Line item id");
             Field(x => x.CreatedDate, nullable: false).Description("Line item created date");
             //TODO: Get from DigitalCatalog
             //Field<ProductType>("product", resolve: context => context.Source.Product);

@@ -9,7 +9,7 @@ namespace VirtoCommerce.XPurchase
             if (product == null)
                 throw new ArgumentNullException(nameof(product));
 
-            return product.Product.IsActive.GetValueOrDefault(false) && product.Product.IsBuyable.GetValueOrDefault(false);
+            return product.Product.IsActive.GetValueOrDefault(false) && product.Product.IsBuyable.GetValueOrDefault(false) && product.Price != null;
         }
 
     }
