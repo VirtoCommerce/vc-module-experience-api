@@ -93,7 +93,22 @@ namespace VirtoCommerce.XPurchase.Schemas
 
             schema.Mutation.AddField(addItemField);
 
-            //TODO: User result type with errors 
+            /// <example>
+            /// This is an example JSON request for a mutation
+            /// {
+            ///   "query": "mutation (command:InputClearCartType!){ clearCart(command: $command) {  total { formatedAmount } } }",
+            ///   "variables": {
+            ///      "command": {
+            ///          "storeId": "Electronics",
+            ///          "cartName": "default",
+            ///          "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
+            ///          "language": "en-US",
+            ///          "currency": "USD",
+            ///          "cartType": ""
+            ///          }
+            ///   }
+            /// }
+            /// </example>            
             var clearCartField = FieldBuilder.Create<CartAggregate, CartAggregate>(typeof(CartType))
                                                  .Name("clearCart")
                                                  .Argument<NonNullGraphType<InputClearCartType>>("command")
