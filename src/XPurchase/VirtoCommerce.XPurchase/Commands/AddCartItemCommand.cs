@@ -4,9 +4,16 @@ namespace VirtoCommerce.XPurchase.Commands
 {
     public class AddCartItemCommand : CartCommand
     {
-        public AddCartItemCommand(string storeId, string cartType, string cartName, string userId, string currency, string language)
-            :base(storeId, cartType, cartName, userId, currency, language)
+        public AddCartItemCommand()
         {
+        }
+        public AddCartItemCommand(string storeId, string cartType, string cartName, string userId, string currency, string lang, string productId, int quantity, decimal? price, string comment)
+            : base(storeId, cartType, cartName, userId, currency, lang)
+        {
+            ProductId = productId;
+            Quantity = quantity;
+            Comment = comment;
+            Price = price;
         }
 
 
