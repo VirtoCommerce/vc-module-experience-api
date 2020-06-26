@@ -56,6 +56,10 @@ namespace VirtoCommerce.XPurchase.Mapping
                 return lineItem;
             });
 
+            CreateMap<Outline, Tools.Models.Outline>();
+            CreateMap<OutlineItem, Tools.Models.OutlineItem>();
+            CreateMap<SeoInfo, Tools.Models.SeoInfo>();
+
             //TODO:
             // Check if this correct
             CreateMap<LineItem, IEnumerable<TaxLine>>().ConvertUsing((lineItem, taxLines, context) =>
