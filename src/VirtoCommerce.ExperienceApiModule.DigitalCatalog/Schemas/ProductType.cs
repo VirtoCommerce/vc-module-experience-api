@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using GraphQL;
+using GraphQL.Authorization;
 using GraphQL.Builders;
 using GraphQL.DataLoader;
 using GraphQL.Types;
@@ -9,7 +10,6 @@ using GraphQL.Types.Relay.DataObjects;
 using MediatR;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
-using VirtoCommerce.ExperienceApiModule.DigitalCatalog.Index;
 using VirtoCommerce.ExperienceApiModule.DigitalCatalog.Requests;
 using VirtoCommerce.Platform.Core.Common;
 
@@ -92,6 +92,6 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Schemas
                 },
                 TotalCount = response.Result.TotalCount,
             };
-        }    
+        }
     }
 }

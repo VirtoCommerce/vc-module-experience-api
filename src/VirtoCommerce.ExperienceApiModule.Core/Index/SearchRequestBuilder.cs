@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json.Linq;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.SearchModule.Core.Model;
 using VirtoCommerce.SearchModule.Core.Services;
@@ -14,7 +13,7 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Index
 
         private SearchRequest SearchRequest { get; set; }
         public SearchRequestBuilder(ISearchPhraseParser phraseParser)
-            :this()
+            : this()
         {
             _phraseParser = phraseParser;
         }
@@ -37,7 +36,7 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Index
         public virtual SearchRequest Build()
         {
             //Apply multi-select facet search policy by default
-            foreach(var aggr in SearchRequest.Aggregations)
+            foreach (var aggr in SearchRequest.Aggregations)
             {
                 var clonedFilter = SearchRequest.Filter.Clone() as AndFilter;
                 clonedFilter.ChildFilters = clonedFilter.ChildFilters.Where(x => !(x is INamedFilter namedFilter) || !namedFilter.FieldName.EqualsInvariant(aggr.FieldName)).ToList();
@@ -73,7 +72,7 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Index
 
         public SearchRequestBuilder WithIncludeFields(params string[] includeFields)
         {
-            if(SearchRequest.IncludeFields == null)
+            if (SearchRequest.IncludeFields == null)
             {
                 SearchRequest.IncludeFields = new List<string>() { };
             }
@@ -153,13 +152,13 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Index
             {
                 throw new OperationCanceledException("phrase parser must be initialized");
             }
-           
+
             //TODO: Support aliases for Facet expressions e.g price.usd[TO 200) as price_below_200
             //TODO: Need to create a new  Antlr file with g4-lexer rules and generate parser especially for facets expression that will return proper AggregationRequests objects
             var parseResult = _phraseParser.Parse(facetPhrase);
             var aggrs = new List<AggregationRequest>();
             //Term facets
-            if(!string.IsNullOrEmpty(parseResult.Keyword))
+            if (!string.IsNullOrEmpty(parseResult.Keyword))
             {
                 var termFacetExpressions = parseResult.Keyword.Split(" ");
                 aggrs.AddRange(termFacetExpressions.Select(x => new TermAggregationRequest { FieldName = x, Id = x }));
@@ -221,7 +220,7 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Index
                 sortingField.IsDescending = sortInfo.SortDirection == SortDirection.Descending;
 
                 switch (sortingField.FieldName)
-                {                   
+                {
                     case "name":
                     case "title":
                         sortFields.Add(new SortingField("name", sortingField.IsDescending));
