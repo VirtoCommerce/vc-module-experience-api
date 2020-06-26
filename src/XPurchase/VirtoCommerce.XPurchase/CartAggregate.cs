@@ -8,6 +8,8 @@ using FluentValidation;
 using FluentValidation.Results;
 using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.CartModule.Core.Services;
+using VirtoCommerce.CoreModule.Core.Common;
+using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.MarketingModule.Core.Model.Promotions;
 using VirtoCommerce.MarketingModule.Core.Services;
 using VirtoCommerce.PaymentModule.Core.Model;
@@ -19,12 +21,15 @@ using VirtoCommerce.Platform.Core.DynamicProperties;
 using VirtoCommerce.ShippingModule.Core.Model;
 using VirtoCommerce.ShippingModule.Core.Model.Search;
 using VirtoCommerce.ShippingModule.Core.Services;
+using VirtoCommerce.StoreModule.Core.Model;
+using VirtoCommerce.StoreModule.Core.Services;
 using VirtoCommerce.TaxModule.Core.Model;
 using VirtoCommerce.TaxModule.Core.Model.Search;
 using VirtoCommerce.TaxModule.Core.Services;
 using VirtoCommerce.XPurchase.Extensions;
 using VirtoCommerce.XPurchase.Services;
 using VirtoCommerce.XPurchase.Validators;
+using Store = VirtoCommerce.StoreModule.Core.Model.Store;
 
 namespace VirtoCommerce.XPurchase
 {
@@ -36,6 +41,8 @@ namespace VirtoCommerce.XPurchase
         private readonly IShippingMethodsSearchService _shippingMethodsSearchService;
         private readonly IShoppingCartTotalsCalculator _cartTotalsCalculator;
         private readonly ICartProductService _cartProductService;
+        private readonly ICurrencyService _currencyService;
+        private readonly IStoreService _storeService;
         private readonly IMapper _mapper;
 
         public CartAggregate(
@@ -44,6 +51,8 @@ namespace VirtoCommerce.XPurchase
             IShippingMethodsSearchService shippingMethodsSearchService,
             ITaxProviderSearchService taxProviderSearchService,
             ICartProductService cartProductService,
+            ICurrencyService currencyService,
+            IStoreService storeService,
             IShoppingCartTotalsCalculator cartTotalsCalculator,
             IMapper mapper
             )
@@ -54,8 +63,13 @@ namespace VirtoCommerce.XPurchase
             _taxProviderSearchService = taxProviderSearchService;
             _cartTotalsCalculator = cartTotalsCalculator;
             _cartProductService = cartProductService;
+            _currencyService = currencyService;
+            _storeService = storeService;
             _mapper = mapper;
         }
+
+        public Store Store { get; protected set; }
+        public Currency Currency { get; protected set; }
 
         public virtual ShoppingCart Cart { get; protected set; }
 
@@ -66,7 +80,7 @@ namespace VirtoCommerce.XPurchase
         /// FluentValidation RuleSets allow you to group validation rules together which can be executed together as a group. You can set exists rule set name to evaluate default.
         /// <see cref="CartValidator"/>
         /// </summary>
-        public string ValidationRuleSet { get; set; } = "default, strict";
+        public string ValidationRuleSet { get; set; } = "default,strict";
 
         public bool IsValid => ValidationErrors.Any();
         public IList<ValidationFailure> ValidationErrors { get; set; } = new List<ValidationFailure>();
@@ -77,14 +91,31 @@ namespace VirtoCommerce.XPurchase
             {
                 throw new ArgumentNullException(nameof(cart));
             }
+
             Id = cart.Id;
 
             Cart = cart;
 
+            var allCurrencies = await _currencyService.GetAllCurrenciesAsync();
+
+            var cartCurrency = allCurrencies.FirstOrDefault(x => x.Code.EqualsInvariant(cart.Currency));
+            if (cartCurrency == null)
+            {
+                throw new OperationCanceledException($"cart currency {cart.Currency} is not registered in the system");
+            }
+            //Clone  currency with cart language
+            //TODO: Use language from request context
+            Currency = new Currency(new Language(cart.LanguageCode), cartCurrency.Code, cartCurrency.Name, cartCurrency.Symbol, cartCurrency.ExchangeRate)
+            {
+                CustomFormatting = cartCurrency.CustomFormatting
+            };
+
+            Store = await _storeService.GetByIdAsync(cart.StoreId);
+
             //Load products for all cart items
             if (cart.Items.Any())
             {
-                CartProductsDict = (await _cartProductService.GetCartProductsByIdsAsync(cart, cart.Items.Select(x => x.ProductId).ToArray())).ToDictionary(x => x.Id).WithDefaultValue(null);
+                CartProductsDict = (await _cartProductService.GetCartProductsByIdsAsync(this, cart.Items.Select(x => x.ProductId).ToArray())).ToDictionary(x => x.Id).WithDefaultValue(null);
             }
 
             await RecalculateAsync();
@@ -104,7 +135,7 @@ namespace VirtoCommerce.XPurchase
         {
             EnsureCartExists();
             //Load actual cart product with all prices and inventories  for newly added item
-            newCartItem.CartProduct = (await _cartProductService.GetCartProductsByIdsAsync(Cart, new[] { newCartItem.ProductId })).FirstOrDefault();
+            newCartItem.CartProduct = (await _cartProductService.GetCartProductsByIdsAsync(this, new[] { newCartItem.ProductId })).FirstOrDefault();
             await new NewCartItemValidator().ValidateAndThrowAsync(newCartItem, ruleSet: ValidationRuleSet);
 
             var lineItem = _mapper.Map<LineItem>(newCartItem.CartProduct);
@@ -393,7 +424,7 @@ namespace VirtoCommerce.XPurchase
             var taxProvider = await GetActiveTaxProviderAsync();
             if (taxProvider != null)
             {
-                var taxEvalContext = _mapper.Map<TaxEvaluationContext>(Cart);
+                var taxEvalContext = _mapper.Map<TaxEvaluationContext>(this);
                 taxEvalContext.Lines.Clear();
                 taxEvalContext.Lines.AddRange(availableShippingRates.SelectMany(x => _mapper.Map<IEnumerable<TaxLine>>(x)));
                 var taxRates = taxProvider.CalculateRates(taxEvalContext);

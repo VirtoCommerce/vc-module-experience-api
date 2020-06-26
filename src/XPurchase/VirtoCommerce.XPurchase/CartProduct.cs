@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using VirtoCommerce.CatalogModule.Core.Model;
+using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.InventoryModule.Core.Model;
 using VirtoCommerce.Platform.Core.Common;
 
@@ -55,7 +56,7 @@ namespace VirtoCommerce.XPurchase
         /// <param name="prices"></param>
         /// <param name="currentCurrency"></param>
         /// <param name="allCurrencies"></param>
-        public void ApplyPrices(IEnumerable<ProductPrice> prices, string currency)
+        public void ApplyPrices(IEnumerable<ProductPrice> prices, Currency currency)
         {
             AllPrices.Clear();
             Price = null;
@@ -73,7 +74,7 @@ namespace VirtoCommerce.XPurchase
                 AllPrices.Add(nominalPrice);
             }
             //Set current product price for current currency
-            Price = AllPrices.FirstOrDefault(x => x.Currency.Code == currency);
+            Price = AllPrices.FirstOrDefault(x => x.Currency.Equals(currency));
         }             
 
     }

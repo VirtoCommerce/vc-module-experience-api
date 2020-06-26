@@ -51,9 +51,8 @@ namespace VirtoCommerce.XPurchase.Schemas
                     await cartAggregate.ValidateAsync();
                     await cartAggregate.RecalculateAsync();
 
-                    //TODO:
-                    //context.UserContext.Add("taxCalculationEnabled", shoppingCartContext.Store.TaxCalculationEnabled);
-                    //context.UserContext.Add("fixedTaxRate", shoppingCartContext.Store.FixedTaxRate);
+                    //store cart aggregate in the user context for future usage in the graph types resolvers
+                    context.UserContext.Add("cartAggregate", cartAggregate);
 
                     return cartAggregate;
                 })

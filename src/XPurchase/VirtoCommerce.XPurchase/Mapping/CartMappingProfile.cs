@@ -106,11 +106,13 @@ namespace VirtoCommerce.XPurchase.Mapping
                 };
             });
 
-            CreateMap<ShoppingCart, PriceEvaluationContext>().ConvertUsing((cart, priceEvalContext, context) =>
+            CreateMap<CartAggregate, PriceEvaluationContext>().ConvertUsing((cartAggr, priceEvalContext, context) =>
             {
                 priceEvalContext = AbstractTypeFactory<PriceEvaluationContext>.TryCreateInstance();
-                priceEvalContext.Language = cart.LanguageCode;
-                priceEvalContext.StoreId = cart.StoreId;
+                priceEvalContext.Language = cartAggr.Cart.LanguageCode;
+                priceEvalContext.StoreId = cartAggr.Cart.StoreId;
+                priceEvalContext.CatalogId = cartAggr.Store.Catalog;
+
                 //TODO:
                 //if (cart.CustomerId != null)
                 //{
