@@ -37,7 +37,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "XPurchase", "XPurchase", "{
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtoCommerce.XPurchase", "src\XPurchase\VirtoCommerce.XPurchase\VirtoCommerce.XPurchase.csproj", "{E2012C08-74B0-4888-BC5F-4582ACDBC631}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtoCommerce.XPurchase.Domain.Tests", "src\XPurchase\VirtoCommerce.XPurchase.Domain.Tests\VirtoCommerce.XPurchase.Domain.Tests.csproj", "{06F46E24-0C8F-49B1-8C56-7201BFB18355}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtoCommerce.XPurchase.Tests", "src\XPurchase\VirtoCommerce.XPurchase.Domain.Tests\VirtoCommerce.XPurchase.Tests.csproj", "{06F46E24-0C8F-49B1-8C56-7201BFB18355}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "XDigitalCatalog", "XDigitalCatalog", "{0AEAD417-D794-4905-AA0C-8CDB875AFEB3}"
 EndProject

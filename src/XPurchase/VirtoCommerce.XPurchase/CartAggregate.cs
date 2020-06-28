@@ -30,30 +30,31 @@ namespace VirtoCommerce.XPurchase
 {
     public class CartAggregate : Entity, IAggregateRoot
     {
-        private readonly ITaxProviderSearchService _taxProviderSearchService;
-        private readonly IPaymentMethodsSearchService _paymentMethodsSearchService;
+        private readonly ICartProductService _cartProductService;
         private readonly IMarketingPromoEvaluator _marketingEvaluator;
+        private readonly IPaymentMethodsSearchService _paymentMethodsSearchService;
         private readonly IShippingMethodsSearchService _shippingMethodsSearchService;
         private readonly IShoppingCartTotalsCalculator _cartTotalsCalculator;
-        private readonly ICartProductService _cartProductService;
+        private readonly ITaxProviderSearchService _taxProviderSearchService;
+
         private readonly IMapper _mapper;
 
         public CartAggregate(
-            IPaymentMethodsSearchService paymentMethodsSearchService,
-            IMarketingPromoEvaluator marketingEvaluator,
-            IShippingMethodsSearchService shippingMethodsSearchService,
-            ITaxProviderSearchService taxProviderSearchService,
             ICartProductService cartProductService,
+            IMarketingPromoEvaluator marketingEvaluator,
+            IPaymentMethodsSearchService paymentMethodsSearchService,
+            IShippingMethodsSearchService shippingMethodsSearchService,
             IShoppingCartTotalsCalculator cartTotalsCalculator,
+            ITaxProviderSearchService taxProviderSearchService,
             IMapper mapper
             )
         {
-            _paymentMethodsSearchService = paymentMethodsSearchService;
+            _cartProductService = cartProductService;
+            _cartTotalsCalculator = cartTotalsCalculator;
             _marketingEvaluator = marketingEvaluator;
+            _paymentMethodsSearchService = paymentMethodsSearchService;
             _shippingMethodsSearchService = shippingMethodsSearchService;
             _taxProviderSearchService = taxProviderSearchService;
-            _cartTotalsCalculator = cartTotalsCalculator;
-            _cartProductService = cartProductService;
             _mapper = mapper;
         }
 
@@ -77,17 +78,23 @@ namespace VirtoCommerce.XPurchase
             {
                 throw new ArgumentNullException(nameof(cart));
             }
+
             Id = cart.Id;
 
             Cart = cart;
 
             //Load products for all cart items
-            if (cart.Items.Any())
+            if (!cart.Items.IsNullOrEmpty())
             {
-                CartProductsDict = (await _cartProductService.GetCartProductsByIdsAsync(cart, cart.Items.Select(x => x.ProductId).ToArray())).ToDictionary(x => x.Id).WithDefaultValue(null);
+                var cartItems = cart.Items.Select(x => x.ProductId).ToArray();
+
+                var cartProducts = await _cartProductService.GetCartProductsByIdsAsync(cart, cartItems).ConfigureAwait(false);
+
+                CartProductsDict = cartProducts.ToDictionary(x => x.Id).WithDefaultValue(null);
             }
 
             await RecalculateAsync();
+
             return this;
         }
 
@@ -103,8 +110,21 @@ namespace VirtoCommerce.XPurchase
         public virtual async Task<CartAggregate> AddItemAsync(NewCartItem newCartItem)
         {
             EnsureCartExists();
+
+            if (newCartItem == null)
+            {
+                throw new ArgumentNullException(nameof(newCartItem));
+            }
+
+            // TODO: no behavior for newCartItem.ProductId == null before using _cartProductService.GetCartProductsByIdsAsync
+
             //Load actual cart product with all prices and inventories  for newly added item
-            newCartItem.CartProduct = (await _cartProductService.GetCartProductsByIdsAsync(Cart, new[] { newCartItem.ProductId })).FirstOrDefault();
+            var cartProducts = await _cartProductService
+                .GetCartProductsByIdsAsync(Cart, new[] { newCartItem.ProductId })
+                .ConfigureAwait(false);
+
+            newCartItem.CartProduct = cartProducts.FirstOrDefault();
+
             await new NewCartItemValidator().ValidateAndThrowAsync(newCartItem, ruleSet: ValidationRuleSet);
 
             var lineItem = _mapper.Map<LineItem>(newCartItem.CartProduct);
@@ -114,6 +134,7 @@ namespace VirtoCommerce.XPurchase
                 lineItem.ListPrice = newCartItem.Price.Value;
                 lineItem.SalePrice = newCartItem.Price.Value;
             }
+
             if (!string.IsNullOrEmpty(newCartItem.Comment))
             {
                 lineItem.Note = newCartItem.Comment;
@@ -128,8 +149,9 @@ namespace VirtoCommerce.XPurchase
                 }).ToList();
             }
 
-            await AddLineItemAsync(lineItem);
-            await RecalculateAsync();
+            await AddLineItemAsync(lineItem).ConfigureAwait(false);
+
+            await RecalculateAsync().ConfigureAwait(false);
 
             return this;
         }
@@ -463,12 +485,14 @@ namespace VirtoCommerce.XPurchase
         {
             EnsureCartExists();
 
-            var isReadOnlyLineItems = Cart.Items.Any(i => i.IsReadOnly);
-            if (!isReadOnlyLineItems)
+            if (Cart.Items.IsNullOrEmpty() || !Cart.Items.Any(i => i.IsReadOnly))
             {
-                var evalContext = _mapper.Map<PromotionEvaluationContext>(this);
-                await _marketingEvaluator.EvaluatePromotionAsync(evalContext);
+                return this;
             }
+
+            var evalContext = _mapper.Map<PromotionEvaluationContext>(this);
+            await _marketingEvaluator.EvaluatePromotionAsync(evalContext);
+
             return this;
         }
 
@@ -610,7 +634,7 @@ namespace VirtoCommerce.XPurchase
                 StoreIds = new[] { Cart.StoreId }
             });
 
-            return storeTaxProviders.Results.FirstOrDefault(x => x.IsActive);
+            return storeTaxProviders?.Results.FirstOrDefault(x => x.IsActive);
         }
     }
 }

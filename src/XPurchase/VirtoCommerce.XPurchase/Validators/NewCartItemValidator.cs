@@ -19,16 +19,14 @@ namespace VirtoCommerce.XPurchase.Validators
                     if (newCartItem.Price != null)
                     {
                         var productSalePrice = newCartItem.CartProduct.Price.GetTierPrice(newCartItem.Quantity).Price;
-        
+
                         if (newCartItem.Price < productSalePrice.Amount)
                         {
                             context.AddFailure(CartErrorDescriber.UnableToSetLessPrice(newCartItem.CartProduct));
                         }
                     }
-                 
                 });
             });
-
         }
     }
 }

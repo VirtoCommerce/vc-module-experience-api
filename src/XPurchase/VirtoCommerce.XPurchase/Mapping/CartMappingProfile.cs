@@ -145,14 +145,38 @@ namespace VirtoCommerce.XPurchase.Mapping
                 return priceEvalContext;
             });
 
+            CreateMap<LineItem, ProductPromoEntry>().ConvertUsing((lineItem, productPromoEntry, context) =>
+            {
+                productPromoEntry = AbstractTypeFactory<ProductPromoEntry>.TryCreateInstance();
+
+                // TODO:
+                // productPromoEntry.InStockQuantity = lineItem.InStockQuantity;
+                // productPromoEntry.Outline = lineItem.Product.Outline;
+                // productPromoEntry.Variations = null;
+
+                productPromoEntry.CatalogId = lineItem.CatalogId;
+                productPromoEntry.CategoryId = lineItem.CategoryId;
+                productPromoEntry.Code = lineItem.Sku;
+                productPromoEntry.Discount = lineItem.DiscountTotal;
+                productPromoEntry.Price = lineItem.SalePrice;
+                productPromoEntry.ProductId = lineItem.ProductId;
+                productPromoEntry.Quantity = lineItem.Quantity;
+
+                return productPromoEntry;
+            });
+
             CreateMap<CartAggregate, PromotionEvaluationContext>().ConvertUsing((cartAggr, promoEvalcontext, context) =>
             {
                 promoEvalcontext = AbstractTypeFactory<PromotionEvaluationContext>.TryCreateInstance();
-                //TODO: Add mapping config for ProductPromoEntry
-                promoEvalcontext.CartPromoEntries = new List<ProductPromoEntry>();
+
+                promoEvalcontext.CartPromoEntries = cartAggr.Cart.Items
+                    ?.Select(lineItem => context.Mapper.Map<ProductPromoEntry>(lineItem)).ToList()
+                    ?? Enumerable.Empty<ProductPromoEntry>().ToList();
+
                 foreach (var lineItem in cartAggr.Cart.Items)
                 {
                     var cartProduct = cartAggr.CartProductsDict[lineItem.ProductId];
+
                     var promoEntry = new ProductPromoEntry
                     {
                         CatalogId = lineItem.CatalogId,
@@ -164,8 +188,9 @@ namespace VirtoCommerce.XPurchase.Mapping
                         Price = lineItem.SalePrice,
                         Quantity = lineItem.Quantity,
                         InStockQuantity = (int)cartProduct.Inventory.InStockQuantity,
-                        Outline = cartProduct.Product.Outlines.Select(x => context.Mapper.Map<Tools.Models.Outline>(x)).GetOutlinePath(cartProduct.Product.CatalogId)
+                        Outline = cartProduct.Product.Outlines.Select(x => context.Mapper.Map<Tools.Models.Outline>(x)).GetOutlinePath(cartProduct.Product.CatalogId),
                     };
+
                     promoEvalcontext.CartPromoEntries.Add(promoEntry);
                 }
                 promoEvalcontext.CartTotal = cartAggr.Cart.SubTotal;
