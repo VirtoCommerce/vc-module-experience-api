@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.CoreModule.Core.Tax;
 using VirtoCommerce.ExperienceApiModule.Core;
 using VirtoCommerce.Platform.Core.Common;
