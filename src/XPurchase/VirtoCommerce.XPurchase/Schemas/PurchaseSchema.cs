@@ -3,9 +3,9 @@ using GraphQL.Builders;
 using GraphQL.Resolvers;
 using GraphQL.Types;
 using MediatR;
-using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.Core.Schema;
 using VirtoCommerce.XPurchase.Commands;
+using VirtoCommerce.XPurchase.Extensions;
 
 namespace VirtoCommerce.XPurchase.Schemas
 {
@@ -13,17 +13,19 @@ namespace VirtoCommerce.XPurchase.Schemas
     {
         private readonly ICartAggregateRepository _cartAggrRepository;
         private readonly IMediator _mediator;
+        public const string _commandName = "command";
+
         public PurchaseSchema(IMediator mediator, ICartAggregateRepository cartAggrFactory)
         {
             _mediator = mediator;
             _cartAggrRepository = cartAggrFactory;
         }
+
         public void Build(ISchema schema)
         {
-
             //Queries
             //We can't use the fluent syntax for new types registration provided by dotnet graphql here, because we have the strict requirement for underlying types extensions
-            //and must use GraphTypeExtenstionHelper to resolve the effective type on execution time 
+            //and must use GraphTypeExtenstionHelper to resolve the effective type on execution time
             var cartField = new FieldType
             {
                 Name = "cart",
@@ -44,7 +46,6 @@ namespace VirtoCommerce.XPurchase.Schemas
                     var cultureName = context.GetArgument<string>("cultureName");
                     var currencyCode = context.GetArgument<string>("currencyCode");
                     var type = context.GetArgument<string>("type");
-                                     
 
                     var cartAggregate = await _cartAggrRepository.GetOrCreateAsync(cartName, storeId, userId, cultureName, currencyCode, type);
 
@@ -74,21 +75,16 @@ namespace VirtoCommerce.XPurchase.Schemas
             ///          "cartType": "",
             ///          "productId": "9cbd8f316e254a679ba34a900fccb076",
             ///          "quantity": 1
-            ///          }
+            ///      }
             ///   }
             /// }
-            /// </example>            
+            /// </example>
             var addItemField = FieldBuilder.Create<CartAggregate, CartAggregate>(typeof(CartType))
-                                               .Name("addItem")
-                                               .Argument<NonNullGraphType<InputAddItemType>>("command")
-                                               .ResolveAsync(async context =>
-                                               {
-                                                   //TODO: Write the unit-tests for successfully mapping input variable to the command
-                                                   var addItemCommand = context.GetArgument<AddCartItemCommand>("command");
-
-                                                   var result = await _mediator.Send(addItemCommand);
-                                                   return result;
-                                               }).FieldType;
+                                           .Name("addItem")
+                                           .Argument<NonNullGraphType<InputAddItemType>>(_commandName)
+                                           //TODO: Write the unit-tests for successfully mapping input variable to the command
+                                           .ResolveAsync(async context => await _mediator.Send(context.GetCartCommand<AddCartItemCommand>()))
+                                           .FieldType;
 
             schema.Mutation.AddField(addItemField);
 
@@ -104,25 +100,17 @@ namespace VirtoCommerce.XPurchase.Schemas
             ///          "language": "en-US",
             ///          "currency": "USD",
             ///          "cartType": ""
-            ///          }
+            ///      }
             ///   }
             /// }
-            /// </example>            
+            /// </example>
             var clearCartField = FieldBuilder.Create<CartAggregate, CartAggregate>(typeof(CartType))
-                                                 .Name("clearCart")
-                                                 .Argument<NonNullGraphType<InputClearCartType>>("command")
-                                                 .ResolveAsync(async context =>
-                                                 {
-                                                     //TODO: Move to extension methods
-                                                     var clearCartCmd = context.GetArgument<ClearCartCommand>("command");
-                                                     var result = await _mediator.Send(clearCartCmd);
-                                                     return result;
-                                                 }).FieldType;
-
+                                             .Name("clearCart")
+                                             .Argument<NonNullGraphType<InputClearCartType>>(_commandName)
+                                             .ResolveAsync(async context => await _mediator.Send(context.GetCartCommand<ClearCartCommand>()))
+                                             .FieldType;
 
             schema.Mutation.AddField(clearCartField);
-
-
         }
     }
 }
