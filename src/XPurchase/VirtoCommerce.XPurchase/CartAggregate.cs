@@ -117,7 +117,7 @@ namespace VirtoCommerce.XPurchase
             {
                 var cartItems = cart.Items.Select(x => x.ProductId).ToArray();
 
-                var cartProducts = await _cartProductService.GetCartProductsByIdsAsync(this, cartItems).ConfigureAwait(false);
+                var cartProducts = await _cartProductService.GetCartProductsByIdsAsync(this, cartItems);
 
                 CartProductsDict = cartProducts.ToDictionary(x => x.Id).WithDefaultValue(null);
             }
@@ -148,9 +148,7 @@ namespace VirtoCommerce.XPurchase
             // TODO: no behavior for newCartItem.ProductId == null before using _cartProductService.GetCartProductsByIdsAsync
 
             //Load actual cart product with all prices and inventories  for newly added item
-            var cartProducts = await _cartProductService
-                .GetCartProductsByIdsAsync(this, new[] { newCartItem.ProductId })
-                .ConfigureAwait(false);
+            var cartProducts = await _cartProductService.GetCartProductsByIdsAsync(this, new[] { newCartItem.ProductId });
 
             newCartItem.CartProduct = cartProducts.FirstOrDefault();
 
@@ -178,9 +176,9 @@ namespace VirtoCommerce.XPurchase
                 }).ToList();
             }
 
-            await AddLineItemAsync(lineItem).ConfigureAwait(false);
+            await AddLineItemAsync(lineItem);
 
-            await RecalculateAsync().ConfigureAwait(false);
+            await RecalculateAsync();
 
             return this;
         }
