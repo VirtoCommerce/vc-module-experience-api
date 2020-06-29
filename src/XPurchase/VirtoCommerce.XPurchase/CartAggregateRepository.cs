@@ -70,6 +70,7 @@ namespace VirtoCommerce.XPurchase
             cart.StoreId = storeId;
             cart.LanguageCode = languageCode;
             cart.Type = type;
+            cart.Currency = currencyCode;
             cart.Items = new List<LineItem>();
             cart.Shipments = new List<Shipment>();
             cart.Payments = new List<Payment>();
