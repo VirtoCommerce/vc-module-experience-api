@@ -1,4 +1,5 @@
 using System.Linq;
+using GraphQL.Authorization;
 using GraphQL.Resolvers;
 using GraphQL.Types;
 using VirtoCommerce.CustomerModule.Core.Model;
@@ -14,6 +15,8 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
         public ContactType(IMemberService memberService)
         {
             _memberService = memberService;
+
+            //this.AuthorizeWith(CustomerModule.Core.ModuleConstants.Security.Permissions.Read);
 
             Field(x => x.FirstName);
             Field(x => x.LastName);

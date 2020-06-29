@@ -30,7 +30,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 
         public void Build(ISchema schema)
         {
-            var customerField = new FieldType
+            schema.Query.AddField(new FieldType
             {
                 Name = "customer",
                 Arguments = new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id", Description = "user id" }),
@@ -40,8 +40,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                     var loader = _dataLoader.Context.GetOrAddBatchLoader<string, Profile>("profileLoader", (id) => LoadProfileAsync(_mediator, id, context.SubFields.Values.GetAllNodesPaths()));
                     return await loader.LoadAsync(context.GetArgument<string>("id"));
                 })
-            };
-            schema.Query.AddField(customerField);
+            });
 
             schema.Mutation.AddField(FieldBuilder.Create<UserUpdateInfo, bool>(typeof(BooleanGraphType))
                             .Name("updateAccount")
@@ -78,6 +77,15 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                                 return await _memberService.UpdateContactAddressesAsync(
                                              context.GetArgument<string>("customerId"),
                                              context.GetArgument<IList<Address>>("addresses"));
+                            }).FieldType);
+
+            schema.Mutation.AddField(FieldBuilder.Create<OrganizationUpdateInfo, Organization>(GraphTypeExtenstionHelper.GetActualType<OrganizationType>())
+                            .Name("updateOrganization")
+                            .Argument<NonNullGraphType<OrganizationUpdateInfoInputType>>("input")
+                            .ResolveAsync(async context =>
+                            {
+                                return await _memberService.UpdateOrganizationAsync(
+                                             context.GetArgument<OrganizationUpdateInfo>("input"));
                             }).FieldType);
         }
 

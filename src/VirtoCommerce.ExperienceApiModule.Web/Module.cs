@@ -6,7 +6,9 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using VirtoCommerce.ExperienceApiModule.Core.Schema;
 using VirtoCommerce.ExperienceApiModule.DigitalCatalog;
+using VirtoCommerce.ExperienceApiModule.DigitalCatalog.Mapping;
 using VirtoCommerce.ExperienceApiModule.XProfile;
+using VirtoCommerce.ExperienceApiModule.XProfile.Mapping;
 using VirtoCommerce.ExperienceApiModule.XProfile.Services;
 using VirtoCommerce.Platform.Core.Modularity;
 
@@ -51,7 +53,17 @@ namespace VirtoCommerce.ExperienceApiModule.Web
             services.AddGraphShemaBuilders(typeof(XProfileAnchor));
             services.AddTransient<IMemberServiceX, MemberServiceX>();
 
-            services.AddAutoMapper(typeof(Module));
+            //services.AddAutoMapper(typeof(Module));
+
+            //TODO: Need to find proper way to register mapping profiles from the different projects 
+            var mappingConfig = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new MappingProfile());
+                mc.AddProfile(new ProductMappingProfile());
+                mc.AddProfile(new ProfileMappingProfile());
+            });
+            var mapper = mappingConfig.CreateMapper();
+            services.AddSingleton(mapper);
         }
 
         public void PostInitialize(IApplicationBuilder appBuilder)

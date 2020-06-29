@@ -2,11 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using VirtoCommerce.CustomerModule.Core.Model;
 using VirtoCommerce.CustomerModule.Core.Services;
+using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Security;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Services
@@ -17,14 +19,16 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Services
         private readonly IMemberSearchService _memberSearchService;
         private readonly IAuthorizationService _authorizationService;
         private readonly IServiceProvider _services;
+        private readonly IMapper _mapper;
 
 
-        public MemberServiceX(IMemberService memberService, IMemberSearchService memberSearchService, IAuthorizationService authorizationService, IServiceProvider services)
+        public MemberServiceX(IMemberService memberService, IMemberSearchService memberSearchService, IAuthorizationService authorizationService, IServiceProvider services, IMapper mapper)
         {
             _memberService = memberService;
             _memberSearchService = memberSearchService;
             _authorizationService = authorizationService;
             _services = services;
+            _mapper = mapper;
         }
 
         public Task<Contact> CreateContactAsync(Contact contact)
@@ -122,9 +126,26 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Services
             }
         }
 
-        public Task UpdateOrganizationAsync(Organization organization)
+        public async Task<Organization> UpdateOrganizationAsync(OrganizationUpdateInfo organizationUpdateInfo)
         {
-            throw new NotImplementedException();
+            //Allow to register new users only within own organization
+            //var authorizationResult = await _authorizationService.AuthorizeAsync(User, organization, CanEditOrganizationResourceAuthorizeRequirement.PolicyName);
+            //if (!authorizationResult.Succeeded)
+            //{
+            //    return Unauthorized();
+            //}
+            var member = await _memberService.GetByIdAsync(organizationUpdateInfo.Id, null, nameof(Organization)) as Organization;
+            if (member != null)
+            {
+                _mapper.Map(organizationUpdateInfo, member);
+
+                await _memberService.SaveChangesAsync(new[] { member });
+
+
+                return await _memberService.GetByIdAsync(organizationUpdateInfo.Id, null, nameof(Organization)) as Organization;
+            }
+
+            return default;
         }
     }
 }

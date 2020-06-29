@@ -17,7 +17,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Services
 
         Task<Organization> GetOrganizationByIdAsync(string organizationId);
         Task<Organization> CreateOrganizationAsync(Organization organization);
-        Task UpdateOrganizationAsync(Organization organization);
+        Task<Organization> UpdateOrganizationAsync(OrganizationUpdateInfo organizationUpdateInfo);
 
 
         //Task<Vendor[]> GetVendorsByIdsAsync(Store store, Language language, params string[] vendorIds);
