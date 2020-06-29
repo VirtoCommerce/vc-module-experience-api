@@ -10,10 +10,12 @@ using Moq;
 using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.CartModule.Core.Services;
 using VirtoCommerce.CatalogModule.Core.Model;
+using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.MarketingModule.Core.Services;
 using VirtoCommerce.PaymentModule.Core.Services;
 using VirtoCommerce.PricingModule.Core.Model;
 using VirtoCommerce.ShippingModule.Core.Services;
+using VirtoCommerce.StoreModule.Core.Services;
 using VirtoCommerce.TaxModule.Core.Services;
 using VirtoCommerce.XPurchase.Services;
 using Xunit;
@@ -25,10 +27,12 @@ namespace VirtoCommerce.XPurchase.Tests.Aggregates
         private readonly Fixture _fixture = new Fixture();
 
         private readonly Mock<ICartProductService> _cartProductServiceMock;
+        private readonly Mock<ICurrencyService> _currencyServiceMock;
         private readonly Mock<IMarketingPromoEvaluator> _marketingPromoEvaluatorMock;
         private readonly Mock<IPaymentMethodsSearchService> _paymentMethodsSearchServiceMock;
         private readonly Mock<IShippingMethodsSearchService> _shippingMethodsSearchServiceMock;
         private readonly Mock<IShoppingCartTotalsCalculator> _shoppingCartTotalsCalculatorMock;
+        private readonly Mock<IStoreService> _storeServiceMock;
         private readonly Mock<ITaxProviderSearchService> _taxProviderSearchServiceMock;
 
         private readonly Mock<IMapper> _mappereMock;
@@ -60,20 +64,24 @@ namespace VirtoCommerce.XPurchase.Tests.Aggregates
             _fixture.Register<Price>(() => null);
 
             _cartProductServiceMock = new Mock<ICartProductService>();
+            _currencyServiceMock = new Mock<ICurrencyService>();
             _marketingPromoEvaluatorMock = new Mock<IMarketingPromoEvaluator>();
             _paymentMethodsSearchServiceMock = new Mock<IPaymentMethodsSearchService>();
             _shippingMethodsSearchServiceMock = new Mock<IShippingMethodsSearchService>();
             _shoppingCartTotalsCalculatorMock = new Mock<IShoppingCartTotalsCalculator>();
+            _storeServiceMock = new Mock<IStoreService>();
             _taxProviderSearchServiceMock = new Mock<ITaxProviderSearchService>();
 
             _mappereMock = new Mock<IMapper>();
 
             aggregate = new CartAggregate(
                 _cartProductServiceMock.Object,
+                _currencyServiceMock.Object,
                 _marketingPromoEvaluatorMock.Object,
                 _paymentMethodsSearchServiceMock.Object,
                 _shippingMethodsSearchServiceMock.Object,
                 _shoppingCartTotalsCalculatorMock.Object,
+                _storeServiceMock.Object,
                 _taxProviderSearchServiceMock.Object,
                 _mappereMock.Object);
         }
@@ -112,7 +120,7 @@ namespace VirtoCommerce.XPurchase.Tests.Aggregates
                 .ToList();
 
             _cartProductServiceMock
-                .Setup(x => x.GetCartProductsByIdsAsync(It.IsAny<ShoppingCart>(), productIds))
+                .Setup(x => x.GetCartProductsByIdsAsync(It.IsAny<CartAggregate>(), productIds))
                 .ReturnsAsync(cartProducts);
 
             var shoppingCart = _fixture.Build<ShoppingCart>()
@@ -263,7 +271,7 @@ namespace VirtoCommerce.XPurchase.Tests.Aggregates
                 .Create();
 
             _cartProductServiceMock
-                .Setup(x => x.GetCartProductsByIdsAsync(It.IsAny<ShoppingCart>(), new[] { productId }))
+                .Setup(x => x.GetCartProductsByIdsAsync(It.IsAny<CartAggregate>(), new[] { productId }))
                 .ReturnsAsync(new List<CartProduct>() { new CartProduct(new CatalogProduct()) });
 
             // Act

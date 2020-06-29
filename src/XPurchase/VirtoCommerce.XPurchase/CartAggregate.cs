@@ -21,7 +21,6 @@ using VirtoCommerce.Platform.Core.DynamicProperties;
 using VirtoCommerce.ShippingModule.Core.Model;
 using VirtoCommerce.ShippingModule.Core.Model.Search;
 using VirtoCommerce.ShippingModule.Core.Services;
-using VirtoCommerce.StoreModule.Core.Model;
 using VirtoCommerce.StoreModule.Core.Services;
 using VirtoCommerce.TaxModule.Core.Model;
 using VirtoCommerce.TaxModule.Core.Model.Search;
@@ -36,29 +35,35 @@ namespace VirtoCommerce.XPurchase
     public class CartAggregate : Entity, IAggregateRoot
     {
         private readonly ICartProductService _cartProductService;
+        private readonly ICurrencyService _currencyService;
         private readonly IMarketingPromoEvaluator _marketingEvaluator;
         private readonly IPaymentMethodsSearchService _paymentMethodsSearchService;
         private readonly IShippingMethodsSearchService _shippingMethodsSearchService;
         private readonly IShoppingCartTotalsCalculator _cartTotalsCalculator;
+        private readonly IStoreService _storeService;
         private readonly ITaxProviderSearchService _taxProviderSearchService;
 
         private readonly IMapper _mapper;
 
         public CartAggregate(
             ICartProductService cartProductService,
+            ICurrencyService currencyService,
             IMarketingPromoEvaluator marketingEvaluator,
             IPaymentMethodsSearchService paymentMethodsSearchService,
             IShippingMethodsSearchService shippingMethodsSearchService,
             IShoppingCartTotalsCalculator cartTotalsCalculator,
+            IStoreService storeService,
             ITaxProviderSearchService taxProviderSearchService,
             IMapper mapper
             )
         {
             _cartProductService = cartProductService;
             _cartTotalsCalculator = cartTotalsCalculator;
+            _currencyService = currencyService;
             _marketingEvaluator = marketingEvaluator;
             _paymentMethodsSearchService = paymentMethodsSearchService;
             _shippingMethodsSearchService = shippingMethodsSearchService;
+            _storeService = storeService;
             _taxProviderSearchService = taxProviderSearchService;
             _mapper = mapper;
         }
@@ -112,7 +117,7 @@ namespace VirtoCommerce.XPurchase
             {
                 var cartItems = cart.Items.Select(x => x.ProductId).ToArray();
 
-                var cartProducts = await _cartProductService.GetCartProductsByIdsAsync(cart, cartItems).ConfigureAwait(false);
+                var cartProducts = await _cartProductService.GetCartProductsByIdsAsync(this, cartItems).ConfigureAwait(false);
 
                 CartProductsDict = cartProducts.ToDictionary(x => x.Id).WithDefaultValue(null);
             }
@@ -144,7 +149,7 @@ namespace VirtoCommerce.XPurchase
 
             //Load actual cart product with all prices and inventories  for newly added item
             var cartProducts = await _cartProductService
-                .GetCartProductsByIdsAsync(Cart, new[] { newCartItem.ProductId })
+                .GetCartProductsByIdsAsync(this, new[] { newCartItem.ProductId })
                 .ConfigureAwait(false);
 
             newCartItem.CartProduct = cartProducts.FirstOrDefault();
