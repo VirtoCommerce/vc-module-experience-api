@@ -10,6 +10,7 @@ namespace VirtoCommerce.XPurchase.Commands
         {
             CartAggrRepository = cartAggrRepository;
         }
+
         protected ICartAggregateRepository CartAggrRepository { get; private set; }
 
         public abstract Task<CartAggregate> Handle(TCartCommand request, CancellationToken cancellationToken);

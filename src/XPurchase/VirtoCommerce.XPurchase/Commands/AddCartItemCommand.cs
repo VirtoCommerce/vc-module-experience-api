@@ -7,6 +7,7 @@ namespace VirtoCommerce.XPurchase.Commands
         public AddCartItemCommand()
         {
         }
+
         public AddCartItemCommand(string storeId, string cartType, string cartName, string userId, string currency, string lang, string productId, int quantity, decimal? price, string comment)
             : base(storeId, cartType, cartName, userId, currency, lang)
         {
@@ -16,7 +17,6 @@ namespace VirtoCommerce.XPurchase.Commands
             Price = price;
         }
 
-
         public string ProductId { get; set; }
         public int Quantity { get; set; }
 
@@ -24,7 +24,6 @@ namespace VirtoCommerce.XPurchase.Commands
         /// Manual price
         /// </summary>
         public decimal? Price { get; set; }
-
 
         /// <summary>
         /// Comment

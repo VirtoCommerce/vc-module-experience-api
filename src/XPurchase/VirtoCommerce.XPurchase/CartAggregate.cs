@@ -199,7 +199,7 @@ namespace VirtoCommerce.XPurchase
             return this;
         }
 
-        public virtual async Task<CartAggregate> ChangeItemQuantitysync(ItemQtyAdjustment qtyAdjustment)
+        public virtual async Task<CartAggregate> ChangeItemQuantityAsync(ItemQtyAdjustment qtyAdjustment)
         {
             EnsureCartExists();
 
