@@ -1,6 +1,5 @@
 using GraphQL.Types;
 using VirtoCommerce.CartModule.Core.Model;
-using VirtoCommerce.ExperienceApiModule.Core;
 using VirtoCommerce.XPurchase.Extensions;
 
 namespace VirtoCommerce.XPurchase.Schemas

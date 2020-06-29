@@ -1,4 +1,4 @@
-﻿namespace VirtoCommerce.XPurchase.Commands
+namespace VirtoCommerce.XPurchase.Commands
 {
     public class RemoveCouponCommand : CartCommand
     {
