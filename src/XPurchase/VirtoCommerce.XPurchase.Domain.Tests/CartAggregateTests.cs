@@ -10,6 +10,7 @@ using Moq;
 using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.CartModule.Core.Services;
 using VirtoCommerce.CatalogModule.Core.Model;
+using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.MarketingModule.Core.Services;
 using VirtoCommerce.PaymentModule.Core.Services;
@@ -41,8 +42,14 @@ namespace VirtoCommerce.XPurchase.Tests.Aggregates
 
         public CartAggregateTests()
         {
-            //_fixture.Register(() => new Language("en-US"));
-            //_fixture.Register(() => new Currency(_fixture.Create<Language>(), "USD"));
+            _fixture.Register(() => new Language("en-US"));
+            _fixture.Register(() => new Currency(_fixture.Create<Language>(), "USD"));
+            _fixture.Register(() => _fixture
+                .Build<ShoppingCart>()
+                .With(x => x.Currency, "USD")
+                .With(x => x.LanguageCode, "en-US")
+                .Without(x => x.Items)
+                .Create());
             //_fixture.Register<IMutablePagedList<DynamicProperty>>(() => null);
             //_fixture.Register(() => _fixture.Build<DynamicPropertyName>().With(x => x.Locale, "en-US").Create());
             //_fixture.Register(() => _fixture.Build<DynamicPropertyObjectValue>().With(x => x.Locale, "en-US").Create());
@@ -64,7 +71,12 @@ namespace VirtoCommerce.XPurchase.Tests.Aggregates
             _fixture.Register<Price>(() => null);
 
             _cartProductServiceMock = new Mock<ICartProductService>();
+
             _currencyServiceMock = new Mock<ICurrencyService>();
+            _currencyServiceMock
+                .Setup(x => x.GetAllCurrenciesAsync())
+                .ReturnsAsync(_fixture.CreateMany<Currency>(1).ToList());
+
             _marketingPromoEvaluatorMock = new Mock<IMarketingPromoEvaluator>();
             _paymentMethodsSearchServiceMock = new Mock<IPaymentMethodsSearchService>();
             _shippingMethodsSearchServiceMock = new Mock<IShippingMethodsSearchService>();
@@ -123,9 +135,8 @@ namespace VirtoCommerce.XPurchase.Tests.Aggregates
                 .Setup(x => x.GetCartProductsByIdsAsync(It.IsAny<CartAggregate>(), productIds))
                 .ReturnsAsync(cartProducts);
 
-            var shoppingCart = _fixture.Build<ShoppingCart>()
-                .With(x => x.Items, products)
-                .Create();
+            var shoppingCart = _fixture.Create<ShoppingCart>();
+            shoppingCart.Items = products;
 
             // Act
             await aggregate.TakeCartAsync(shoppingCart);
@@ -139,10 +150,7 @@ namespace VirtoCommerce.XPurchase.Tests.Aggregates
         public async Task TakeCartAsync_ShouldAlwaysCalculateTotals()
         {
             // Arrange
-            var shoppingCart = _fixture
-                .Build<ShoppingCart>()
-                .Without(x => x.Items)
-                .Create();
+            var shoppingCart = _fixture.Create<ShoppingCart>();
 
             // Act
             await aggregate.TakeCartAsync(shoppingCart);
@@ -155,10 +163,7 @@ namespace VirtoCommerce.XPurchase.Tests.Aggregates
         public async Task TakeCartAsync_ShouldAlwaysSaveCartToAggregate()
         {
             // Arrange
-            var shoppingCart = _fixture
-                .Build<ShoppingCart>()
-                .Without(x => x.Items)
-                .Create();
+            var shoppingCart = _fixture.Create<ShoppingCart>();
 
             // Act
             await aggregate.TakeCartAsync(shoppingCart);
@@ -172,10 +177,7 @@ namespace VirtoCommerce.XPurchase.Tests.Aggregates
         public async Task TakeCartAsync_ShouldAlwaysSaveIdToAggregate()
         {
             // Arrange
-            var shoppingCart = _fixture
-                .Build<ShoppingCart>()
-                .Without(x => x.Items)
-                .Create();
+            var shoppingCart = _fixture.Create<ShoppingCart>();
 
             // Act
             await aggregate.TakeCartAsync(shoppingCart);
@@ -206,10 +208,7 @@ namespace VirtoCommerce.XPurchase.Tests.Aggregates
         {
             // Arrange
             var comment = _fixture.Create<string>();
-            var shoppingCart = _fixture
-                .Build<ShoppingCart>()
-                .Without(x => x.Items)
-                .Create();
+            var shoppingCart = _fixture.Create<ShoppingCart>();
 
             // Act
             await aggregate.TakeCartAsync(shoppingCart);
@@ -243,10 +242,7 @@ namespace VirtoCommerce.XPurchase.Tests.Aggregates
             // Arrange
             NewCartItem newCartItem = null;
 
-            var shoppingCart = _fixture
-                .Build<ShoppingCart>()
-                .Without(x => x.Items)
-                .Create();
+            var shoppingCart = _fixture.Create<ShoppingCart>();
 
             // Act
             await aggregate.TakeCartAsync(shoppingCart);
@@ -265,10 +261,8 @@ namespace VirtoCommerce.XPurchase.Tests.Aggregates
             var productId = _fixture.Create<string>();
             var newCartItem = new NewCartItem(productId, quantity);
 
-            var shoppingCart = _fixture
-                .Build<ShoppingCart>()
-                .With(x => x.Items, Enumerable.Empty<LineItem>().ToList())
-                .Create();
+            var shoppingCart = _fixture.Create<ShoppingCart>();
+            shoppingCart.Items = Enumerable.Empty<LineItem>().ToList();
 
             _cartProductServiceMock
                 .Setup(x => x.GetCartProductsByIdsAsync(It.IsAny<CartAggregate>(), new[] { productId }))
