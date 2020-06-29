@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-
 namespace VirtoCommerce.ExperienceApiModule.Core
 {
     public static class StringExtensions

@@ -1,0 +1,10 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
+namespace VirtoCommerce.XPurchase.Services
+{
+    public interface ICartProductService
+    {
+        Task<IEnumerable<CartProduct>> GetCartProductsByIdsAsync(CartAggregate cartAggr, string[] ids);
+    }
+}

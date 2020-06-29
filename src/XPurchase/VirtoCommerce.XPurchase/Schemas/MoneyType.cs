@@ -1,5 +1,5 @@
 using GraphQL.Types;
-using VirtoCommerce.XPurchase.Models.Common;
+using VirtoCommerce.CoreModule.Core.Currency;
 
 namespace VirtoCommerce.XPurchase.Schemas
 {

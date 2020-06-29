@@ -6,14 +6,12 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using VirtoCommerce.ExperienceApiModule.Core.Schema;
 using VirtoCommerce.ExperienceApiModule.DigitalCatalog;
+using VirtoCommerce.ExperienceApiModule.DigitalCatalog.Mapping;
 using VirtoCommerce.ExperienceApiModule.DigitalCatalog.Schemas;
-using VirtoCommerce.XPurchase;
-using VirtoCommerce.XPurchase.Domain.Factories;
-using VirtoCommerce.XPurchase.Domain.Services;
-using VirtoCommerce.XPurchase.Extensions;
-using VirtoCommerce.XPurchase.Models.Cart.Services;
-using VirtoCommerce.XPurchase.Models.Marketing.Services;
 using VirtoCommerce.Platform.Core.Modularity;
+using VirtoCommerce.XPurchase;
+using VirtoCommerce.XPurchase.Extensions;
+using VirtoCommerce.XPurchase.Mapping;
 
 namespace VirtoCommerce.ExperienceApiModule.Web
 {
@@ -24,13 +22,7 @@ namespace VirtoCommerce.ExperienceApiModule.Web
         public void Initialize(IServiceCollection services)
         {
             services.AddMediatR(typeof(Anchor));
-            services.AddMediatR(typeof(XPurchaseAnchor));
-
-            services.AddTransient<IShoppingCartAggregateFactory, ShoppingCartAggregateFactory>();
-            services.AddTransient<IProductsRepository, ProductsRepository>();
-            services.AddTransient<IPromotionEvaluator, PromotionEvaluator>();
-            services.AddTransient<ITaxEvaluator, TaxEvaluator>();
-
+       
             //services.AddSingleton(typeof(IPipelineBehavior<,>), typeof(RequestExceptionProcessorBehavior<,>));
             //serviceCollection.AddSingleton(typeof(IRequestPreProcessor<>), typeof(GenericRequestPreProcessor<>));
 
@@ -49,20 +41,31 @@ namespace VirtoCommerce.ExperienceApiModule.Web
             .AddGraphTypes(typeof(Anchor))
             .AddDataLoader();
 
-            services.AddXPurchaseSchemaTypes();
-
             //Register custom GraphQL dependencies
             services.AddPermissionAuthorization();
 
             services.AddSingleton<ISchema, SchemaFactory>();
 
-            services.AddSchemaBuilder<XPurchaseSchemaBuilder>();
             services.AddSchemaBuilder<DigitalCatalogSchema>();
+
+            //Register all purchase dependencies
+            services.AddXPurchase();
             //TODO: need to fix extension, it's register only types from the last schema
             //services.AddGraphShemaBuilders(typeof(Anchor));
 
             //Discover the assembly and  register all mapping profiles through reflection
-            services.AddAutoMapper(typeof(Module));
+            //TODO: Not work for profiles defined in the different projects
+            //services.AddAutoMapper(typeof(Module));
+
+            //TODO: Need to find proper way to register mapping profiles from the different projects 
+            var mappingConfig = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new MappingProfile());
+                mc.AddProfile(new ProductMappingProfile());
+                mc.AddProfile(new CartMappingProfile());
+            });
+            var mapper = mappingConfig.CreateMapper();
+            services.AddSingleton(mapper);
         }
 
         public void PostInitialize(IApplicationBuilder appBuilder)
