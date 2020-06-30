@@ -37,7 +37,7 @@ namespace VirtoCommerce.XPurchase.Extensions
                 //When a discount is applied to the cart subtotal, the tax calculation has already been applied, and is reflected in the tax subtotal.
                 //Therefore, a discount applying to the cart subtotal will occur after tax.
                 //For instance, if the cart subtotal is $100, and $15 is the tax subtotal, a cart - wide discount of 10 % will yield a total of $105($100 subtotal – $10 discount + $15 tax on the original $100).
-                var discount = new CoreModule.Core.Common.Discount
+                var discount = new Discount
                 {
                     Coupon = reward.Coupon,
                     Description = reward.Promotion?.Description,
@@ -114,7 +114,7 @@ namespace VirtoCommerce.XPurchase.Extensions
 
             foreach (var reward in shipmentRewards)
             {
-                var discount = new CoreModule.Core.Common.Discount
+                var discount = new Discount
                 {
                     Coupon = reward.Coupon,
                     Description = reward.Promotion?.Description,
@@ -144,7 +144,7 @@ namespace VirtoCommerce.XPurchase.Extensions
 
             foreach (var reward in paymentRewards)
             {
-                var discount = new CoreModule.Core.Common.Discount
+                var discount = new Discount
                 {
                     Coupon = reward.Coupon,
                     Description = reward.Promotion?.Description,
