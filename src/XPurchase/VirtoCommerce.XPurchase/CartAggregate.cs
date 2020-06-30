@@ -537,6 +537,8 @@ namespace VirtoCommerce.XPurchase
 
             var promotionResult = await _marketingEvaluator.EvaluatePromotionAsync(evalContext);
 
+            Cart.ApplyRewards(promotionResult.Rewards);
+
             return promotionResult;
         }
 
