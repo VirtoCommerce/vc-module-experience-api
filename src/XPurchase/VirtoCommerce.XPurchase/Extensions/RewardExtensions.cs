@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using VirtoCommerce.CartModule.Core.Model;
+using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.MarketingModule.Core.Model.Promotions;
 using VirtoCommerce.PaymentModule.Core.Model;
 using VirtoCommerce.Platform.Core.Common;
@@ -83,7 +84,7 @@ namespace VirtoCommerce.XPurchase.Extensions
 
             foreach (var reward in lineItemRewards)
             {
-                var discount = new CoreModule.Core.Common.Discount
+                var discount = new Discount
                 {
                     Coupon = reward.Coupon,
                     Description = reward.Promotion?.Description,
