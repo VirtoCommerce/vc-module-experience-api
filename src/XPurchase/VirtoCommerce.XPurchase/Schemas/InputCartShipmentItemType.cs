@@ -1,14 +1,13 @@
-﻿using GraphQL.Types;
-using VirtoCommerce.CartModule.Core.Model;
+using GraphQL.Types;
 
 namespace VirtoCommerce.XPurchase.Schemas
 {
-    public class InputCartShipmentItemType : InputObjectGraphType<ShipmentItem>
+    public class InputCartShipmentItemType : InputObjectGraphType
     {
         public InputCartShipmentItemType()
         {
-            Field(x => x.Quantity, nullable: true).Description("Quantity");
-            Field<InputLineItemType>("lineItem", resolve: context => context.Source.LineItem);
+            Field<NonNullGraphType<IntGraphType>>("quantity");
+            Field<NonNullGraphType<StringGraphType>>("lineItemId");
         }
     }
 }
