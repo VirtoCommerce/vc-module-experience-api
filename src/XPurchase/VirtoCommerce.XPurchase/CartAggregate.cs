@@ -432,7 +432,7 @@ namespace VirtoCommerce.XPurchase
             }
 
             //Evaluate promotions cart and apply rewards for available shipping methods
-            var evalContext = _mapper.Map<PromotionEvaluationContext>(Cart);
+            var evalContext = _mapper.Map<PromotionEvaluationContext>(this);
             var promoResult = await _marketingEvaluator.EvaluatePromotionAsync(evalContext);
             foreach (var reward in promoResult.Rewards)
             {
@@ -473,7 +473,7 @@ namespace VirtoCommerce.XPurchase
                 return Enumerable.Empty<PaymentMethod>();
             }
 
-            var evalContext = _mapper.Map<PromotionEvaluationContext>(Cart);
+            var evalContext = _mapper.Map<PromotionEvaluationContext>(this);
             var promoResult = await _marketingEvaluator.EvaluatePromotionAsync(evalContext);
             foreach (var reward in promoResult.Rewards)
             {
@@ -484,7 +484,7 @@ namespace VirtoCommerce.XPurchase
             var taxProvider = await GetActiveTaxProviderAsync();
             if (taxProvider != null)
             {
-                var taxEvalContext = _mapper.Map<TaxEvaluationContext>(Cart);
+                var taxEvalContext = _mapper.Map<TaxEvaluationContext>(this);
                 taxEvalContext.Lines.Clear();
                 taxEvalContext.Lines.AddRange(result.Results.SelectMany(x => _mapper.Map<IEnumerable<TaxLine>>(x)));
                 var taxRates = taxProvider.CalculateRates(taxEvalContext);
