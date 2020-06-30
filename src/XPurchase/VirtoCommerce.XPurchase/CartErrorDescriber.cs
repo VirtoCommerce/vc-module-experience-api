@@ -4,6 +4,18 @@ namespace VirtoCommerce.XPurchase
 {
     public static class CartErrorDescriber
     {
+        public static CartValidationError LineItemIsReadOnly(IEntity entity)
+        {
+            var result = new CartValidationError(entity, $"Line item is read only", "LINE_ITEM_IS_READ_ONLY");
+            return result;
+        }
+
+        public static CartValidationError LineItemWithGivenIdNotFound(IEntity entity)
+        {
+            var result = new CartValidationError(entity, $"Line item with {entity.Id} not found", "LINE_ITEM_NOT_FOUND");
+            return result;
+        }
+
         public static CartValidationError UnableToSetLessPrice(IEntity entity)
         {
             var result = new CartValidationError(entity, "Unable to set less price", "UNABLE_SET_LESS_PRICE");
@@ -43,9 +55,15 @@ namespace VirtoCommerce.XPurchase
             return result;
         }
 
-        public static CartValidationError ShipmentMethodUnavailable(IEntity entity)
+        public static CartValidationError PaymentMethodUnavailable(IEntity entity, string name)
         {
-            var result = new CartValidationError(entity, "The shipment method is no longer available", "SHIPMENT_METHOD_UNAVAILABLE");
+            var result = new CartValidationError(entity, $"The payment method {name} unavailable", "PAYMENT_METHOD_UNAVAILABLE");
+            return result;
+        }
+
+        public static CartValidationError ShipmentMethodUnavailable(IEntity entity, string name)
+        {
+            var result = new CartValidationError(entity, $"The shipment method {name} unavailable", "SHIPMENT_METHOD_UNAVAILABLE");
             return result;
         }
 

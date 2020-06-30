@@ -14,6 +14,7 @@ namespace VirtoCommerce.XPurchase.Validators
             {
                 RuleForEach(x => x.Cart.Items).SetValidator(cartAggr => new CartLineItemValidator(cartAggr));
                 RuleForEach(x => x.Cart.Shipments).SetValidator(cartAggr => new CartShipmentValidator(cartAggr));
+                RuleForEach(x => x.Cart.Payments).SetValidator(cartAggr => new CartPaymentValidator(cartAggr));
             });
         }
     }

@@ -8,6 +8,7 @@ namespace VirtoCommerce.XPurchase.Validators
         {
             RuleFor(x => x.Quantity).GreaterThan(0);
             RuleFor(x => x.ProductId).NotNull();
+            RuleFor(x => x.CartProduct).NotNull();
             RuleSet("strict", () =>
             {
                 RuleFor(x => x).Custom((newCartItem, context) =>

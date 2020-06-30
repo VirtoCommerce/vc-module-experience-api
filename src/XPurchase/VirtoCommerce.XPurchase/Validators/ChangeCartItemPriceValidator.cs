@@ -20,7 +20,7 @@ namespace VirtoCommerce.XPurchase.Validators
                         var newSalePrice = newPriceRequest.NewPrice;
                         if (lineItem.SalePrice > newSalePrice)
                         {
-                            context.AddFailure(new ValidationFailure(nameof(lineItem.SalePrice), "Unable to set less price") { CustomState = lineItem });
+                            context.AddFailure(CartErrorDescriber.UnableToSetLessPrice(lineItem));
                         }
 
                     }

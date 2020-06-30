@@ -123,6 +123,7 @@ namespace VirtoCommerce.XPurchase
             }
 
             await RecalculateAsync();
+            await ValidateAsync();
 
             return this;
         }
@@ -177,9 +178,6 @@ namespace VirtoCommerce.XPurchase
             }
 
             await AddLineItemAsync(lineItem);
-
-            await RecalculateAsync();
-
             return this;
         }
 
@@ -193,7 +191,6 @@ namespace VirtoCommerce.XPurchase
                 await new ChangeCartItemPriceValidator(this).ValidateAndThrowAsync(priceAdjustment, ruleSet: ValidationRuleSet);
                 lineItem.ListPrice = priceAdjustment.NewPrice;
                 lineItem.SalePrice = priceAdjustment.NewPrice;
-                await RecalculateAsync();
             }
 
             return this;
@@ -203,9 +200,11 @@ namespace VirtoCommerce.XPurchase
         {
             EnsureCartExists();
 
+            await new ItemQtyAdjustmentValidator(this).ValidateAndThrowAsync(qtyAdjustment, ruleSet: ValidationRuleSet);
+
             var lineItem = Cart.Items.FirstOrDefault(i => i.Id == qtyAdjustment.LineItemId);
 
-            if (lineItem != null && !lineItem.IsReadOnly)
+            if (lineItem != null)
             {
                 var lineItemProduct = CartProductsDict[lineItem.ProductId];
                 if (lineItemProduct != null)
@@ -230,7 +229,6 @@ namespace VirtoCommerce.XPurchase
                     Cart.Items.Remove(lineItem);
                 }
             }
-            await RecalculateAsync();
             return this;
         }
 
@@ -255,7 +253,6 @@ namespace VirtoCommerce.XPurchase
             if (lineItem != null)
             {
                 Cart.Items.Remove(lineItem);
-                await RecalculateAsync();
             }
 
             return this;
@@ -267,7 +264,6 @@ namespace VirtoCommerce.XPurchase
             if (!Cart.Coupons.Any(c => c.EqualsInvariant(couponCode)))
             {
                 Cart.Coupons.Add(couponCode);
-                await RecalculateAsync();
             }
             return this;
         }
@@ -283,7 +279,6 @@ namespace VirtoCommerce.XPurchase
             {
                 Cart.Coupons.Remove(Cart.Coupons.FirstOrDefault(c => c.EqualsInvariant(couponCode)));
             }
-            await RecalculateAsync();
             return this;
         }
 
@@ -292,7 +287,6 @@ namespace VirtoCommerce.XPurchase
             EnsureCartExists();
 
             Cart.Items.Clear();
-            await RecalculateAsync();
             return this;
         }
 
@@ -324,8 +318,6 @@ namespace VirtoCommerce.XPurchase
                 //TODO:
                 //shipment.TaxType = shippingMethod.TaxType;
             }
-
-            await RecalculateAsync();
             return this;
         }
 
@@ -338,13 +330,14 @@ namespace VirtoCommerce.XPurchase
             {
                 Cart.Shipments.Remove(shipment);
             }
-            await RecalculateAsync();
             return this;
         }
 
         public virtual async Task<CartAggregate> AddOrUpdatePaymentAsync(Payment payment)
         {
             EnsureCartExists();
+
+            await new CartPaymentValidator(this).ValidateAndThrowAsync(payment, ruleSet: ValidationRuleSet);
 
             await RemoveExistingPaymentAsync(payment);
             if (payment.BillingAddress != null)
@@ -364,7 +357,6 @@ namespace VirtoCommerce.XPurchase
                     throw new InvalidOperationException("Unknown payment method " + payment.PaymentGatewayCode);
                 }
             }
-            await RecalculateAsync();
             return this;
         }
 
@@ -400,7 +392,6 @@ namespace VirtoCommerce.XPurchase
             {
                 await AddOrUpdatePaymentAsync(payment);
             }
-            await RecalculateAsync();
             return this;
         }
 
@@ -501,6 +492,8 @@ namespace VirtoCommerce.XPurchase
         public async Task<CartAggregate> ValidateAsync()
         {
             EnsureCartExists();
+
+            ValidationErrors.Clear();
             var result = await new CartValidator().ValidateAsync(this, ruleSet: ValidationRuleSet);
             if (!result.IsValid)
             {
@@ -536,6 +529,7 @@ namespace VirtoCommerce.XPurchase
             var evalContext = _mapper.Map<PromotionEvaluationContext>(this);
 
             var promotionResult = await _marketingEvaluator.EvaluatePromotionAsync(evalContext);
+          
 
             return promotionResult;
         }
@@ -558,6 +552,7 @@ namespace VirtoCommerce.XPurchase
         public virtual async Task<CartAggregate> RecalculateAsync()
         {
             EnsureCartExists();
+
             await EvaluatePromotionsAsync();
             await EvaluateTaxesAsync();
             _cartTotalsCalculator.CalculateTotals(Cart);

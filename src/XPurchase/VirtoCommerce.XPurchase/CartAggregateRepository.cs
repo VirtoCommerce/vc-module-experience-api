@@ -27,6 +27,7 @@ namespace VirtoCommerce.XPurchase
         public async Task SaveAsync(CartAggregate cartAggregate)
         {
             await cartAggregate.RecalculateAsync();
+            await cartAggregate.ValidateAsync();
             await _shoppingCartService.SaveChangesAsync(new ShoppingCart[] { cartAggregate.Cart });
         }
 
