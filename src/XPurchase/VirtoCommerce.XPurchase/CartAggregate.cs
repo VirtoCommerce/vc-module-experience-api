@@ -123,6 +123,7 @@ namespace VirtoCommerce.XPurchase
             }
 
             await RecalculateAsync();
+            await ValidateAsync();
 
             return this;
         }
@@ -177,9 +178,6 @@ namespace VirtoCommerce.XPurchase
             }
 
             await AddLineItemAsync(lineItem);
-
-            await RecalculateAsync();
-
             return this;
         }
 
@@ -193,7 +191,6 @@ namespace VirtoCommerce.XPurchase
                 await new ChangeCartItemPriceValidator(this).ValidateAndThrowAsync(priceAdjustment, ruleSet: ValidationRuleSet);
                 lineItem.ListPrice = priceAdjustment.NewPrice;
                 lineItem.SalePrice = priceAdjustment.NewPrice;
-                await RecalculateAsync();
             }
 
             return this;
@@ -203,9 +200,11 @@ namespace VirtoCommerce.XPurchase
         {
             EnsureCartExists();
 
+            await new ItemQtyAdjustmentValidator(this).ValidateAndThrowAsync(qtyAdjustment, ruleSet: ValidationRuleSet);
+
             var lineItem = Cart.Items.FirstOrDefault(i => i.Id == qtyAdjustment.LineItemId);
 
-            if (lineItem != null && !lineItem.IsReadOnly)
+            if (lineItem != null)
             {
                 var lineItemProduct = CartProductsDict[lineItem.ProductId];
                 if (lineItemProduct != null)
@@ -230,7 +229,6 @@ namespace VirtoCommerce.XPurchase
                     Cart.Items.Remove(lineItem);
                 }
             }
-            await RecalculateAsync();
             return this;
         }
 
@@ -247,7 +245,7 @@ namespace VirtoCommerce.XPurchase
             return Task.FromResult(this);
         }
 
-        public virtual async Task<CartAggregate> RemoveItemAsync(string lineItemId)
+        public virtual Task<CartAggregate> RemoveItemAsync(string lineItemId)
         {
             EnsureCartExists();
 
@@ -255,24 +253,22 @@ namespace VirtoCommerce.XPurchase
             if (lineItem != null)
             {
                 Cart.Items.Remove(lineItem);
-                await RecalculateAsync();
             }
 
-            return this;
+            return Task.FromResult(this);
         }
 
-        public virtual async Task<CartAggregate> AddCouponAsync(string couponCode)
+        public virtual Task<CartAggregate> AddCouponAsync(string couponCode)
         {
             EnsureCartExists();
             if (!Cart.Coupons.Any(c => c.EqualsInvariant(couponCode)))
             {
                 Cart.Coupons.Add(couponCode);
-                await RecalculateAsync();
             }
-            return this;
+            return Task.FromResult(this);
         }
 
-        public virtual async Task<CartAggregate> RemoveCouponAsync(string couponCode = null)
+        public virtual Task<CartAggregate> RemoveCouponAsync(string couponCode = null)
         {
             EnsureCartExists();
             if (string.IsNullOrEmpty(couponCode))
@@ -283,17 +279,15 @@ namespace VirtoCommerce.XPurchase
             {
                 Cart.Coupons.Remove(Cart.Coupons.FirstOrDefault(c => c.EqualsInvariant(couponCode)));
             }
-            await RecalculateAsync();
-            return this;
+            return Task.FromResult(this);
         }
 
-        public virtual async Task<CartAggregate> ClearAsync()
+        public virtual Task<CartAggregate> ClearAsync()
         {
             EnsureCartExists();
 
             Cart.Items.Clear();
-            await RecalculateAsync();
-            return this;
+            return Task.FromResult(this);
         }
 
         public virtual async Task<CartAggregate> AddOrUpdateShipmentAsync(Shipment shipment)
@@ -324,12 +318,10 @@ namespace VirtoCommerce.XPurchase
                 //TODO:
                 //shipment.TaxType = shippingMethod.TaxType;
             }
-
-            await RecalculateAsync();
             return this;
         }
 
-        public virtual async Task<CartAggregate> RemoveShipmentAsync(string shipmentId)
+        public virtual Task<CartAggregate> RemoveShipmentAsync(string shipmentId)
         {
             EnsureCartExists();
 
@@ -338,13 +330,14 @@ namespace VirtoCommerce.XPurchase
             {
                 Cart.Shipments.Remove(shipment);
             }
-            await RecalculateAsync();
-            return this;
+            return Task.FromResult(this);
         }
 
         public virtual async Task<CartAggregate> AddOrUpdatePaymentAsync(Payment payment)
         {
             EnsureCartExists();
+
+            await new CartPaymentValidator(this).ValidateAndThrowAsync(payment, ruleSet: ValidationRuleSet);
 
             await RemoveExistingPaymentAsync(payment);
             if (payment.BillingAddress != null)
@@ -364,7 +357,6 @@ namespace VirtoCommerce.XPurchase
                     throw new InvalidOperationException("Unknown payment method " + payment.PaymentGatewayCode);
                 }
             }
-            await RecalculateAsync();
             return this;
         }
 
@@ -400,7 +392,6 @@ namespace VirtoCommerce.XPurchase
             {
                 await AddOrUpdatePaymentAsync(payment);
             }
-            await RecalculateAsync();
             return this;
         }
 
@@ -432,11 +423,10 @@ namespace VirtoCommerce.XPurchase
             }
 
             //Evaluate promotions cart and apply rewards for available shipping methods
-            var evalContext = _mapper.Map<PromotionEvaluationContext>(this);
-            var promoResult = await _marketingEvaluator.EvaluatePromotionAsync(evalContext);
-            foreach (var reward in promoResult.Rewards)
+            var promoEvalResult = await EvaluatePromotionsAsync();
+            foreach (var shippingRate in availableShippingRates)
             {
-                //TODO: Apply reward to shipping methods rates  need to write and extension methods for this
+                shippingRate.ApplyRewards(promoEvalResult.Rewards);
             }
 
             var taxProvider = await GetActiveTaxProviderAsync();
@@ -475,9 +465,10 @@ namespace VirtoCommerce.XPurchase
 
             var evalContext = _mapper.Map<PromotionEvaluationContext>(this);
             var promoResult = await _marketingEvaluator.EvaluatePromotionAsync(evalContext);
-            foreach (var reward in promoResult.Rewards)
+
+            foreach (var paymentMethod in result.Results)
             {
-                //TODO: Apply reward to payment methods   need to write and extension methods for this
+                paymentMethod.ApplyRewards(promoResult.Rewards);
             }
 
             //Evaluate taxes for available payments
@@ -500,6 +491,8 @@ namespace VirtoCommerce.XPurchase
         public async Task<CartAggregate> ValidateAsync()
         {
             EnsureCartExists();
+
+            ValidationErrors.Clear();
             var result = await new CartValidator().ValidateAsync(this, ruleSet: ValidationRuleSet);
             if (!result.IsValid)
             {
@@ -527,38 +520,39 @@ namespace VirtoCommerce.XPurchase
         {
             EnsureCartExists();
 
-            if (Cart.Items.IsNullOrEmpty() || !Cart.Items.Any(i => i.IsReadOnly))
+            var promotionResult = new PromotionResult();
+            if (!Cart.Items.Any(i => i.IsReadOnly))
             {
-                return null;
+                var evalContext = _mapper.Map<PromotionEvaluationContext>(this);
+                promotionResult = await _marketingEvaluator.EvaluatePromotionAsync(evalContext);
             }
-
-            var evalContext = _mapper.Map<PromotionEvaluationContext>(this);
-
-            var promotionResult = await _marketingEvaluator.EvaluatePromotionAsync(evalContext);
-
+         
             return promotionResult;
         }
 
-        protected async Task<CartAggregate> EvaluateTaxesAsync()
+        protected async Task<IEnumerable<TaxRate>> EvaluateTaxesAsync()
         {
             EnsureCartExists();
-
+            var result = Enumerable.Empty<TaxRate>();
             var taxProvider = await GetActiveTaxProviderAsync();
             if (taxProvider != null)
             {
                 var taxEvalContext = _mapper.Map<TaxEvaluationContext>(this);
-                var taxRates = taxProvider.CalculateRates(taxEvalContext);
-                Cart.ApplyTaxRates(taxRates);
+                result = taxProvider.CalculateRates(taxEvalContext);
             }
-
-            return this;
+            return result;
         }
 
         public virtual async Task<CartAggregate> RecalculateAsync()
         {
             EnsureCartExists();
-            await EvaluatePromotionsAsync();
-            await EvaluateTaxesAsync();
+
+            var promotionEvalResult = await EvaluatePromotionsAsync();
+            Cart.ApplyRewards(promotionEvalResult.Rewards);
+
+            var taxRates = await EvaluateTaxesAsync();
+            Cart.ApplyTaxRates(taxRates);
+
             _cartTotalsCalculator.CalculateTotals(Cart);
             return this;
         }

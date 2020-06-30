@@ -13,10 +13,10 @@ namespace VirtoCommerce.XPurchase.Validators
             {
                 RuleFor(x => x).CustomAsync(async (shipment, context, cancellationToken) =>
                 {
-                    var shipmentShippingMethod =  (await cartAggr.GetAvailableShippingRatesAsync()).FirstOrDefault(sm => shipment.ShipmentMethodCode.EqualsInvariant(sm.ShippingMethod.Code) && shipment.ShipmentMethodOption.EqualsInvariant(sm.OptionName));
+                    var shipmentShippingMethod = (await cartAggr.GetAvailableShippingRatesAsync()).FirstOrDefault(sm => shipment.ShipmentMethodCode.EqualsInvariant(sm.ShippingMethod.Code) && shipment.ShipmentMethodOption.EqualsInvariant(sm.OptionName));
                     if (shipmentShippingMethod == null)
                     {
-                        context.AddFailure(CartErrorDescriber.ShipmentMethodUnavailable(shipment));
+                        context.AddFailure(CartErrorDescriber.ShipmentMethodUnavailable(shipment, shipment.ShipmentMethodCode));
                     }
                     else if (shipmentShippingMethod.Rate != shipment.Price)
                     {
