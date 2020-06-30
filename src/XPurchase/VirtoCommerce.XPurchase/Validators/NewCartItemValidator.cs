@@ -9,11 +9,12 @@ namespace VirtoCommerce.XPurchase.Validators
             RuleFor(x => x.Quantity).GreaterThan(0);
             RuleFor(x => x.ProductId).NotNull();
             RuleFor(x => x.CartProduct).NotNull();
+
             RuleSet("strict", () =>
             {
                 RuleFor(x => x).Custom((newCartItem, context) =>
                 {
-                    if (!new ProductIsAvailableSpecification().IsSatisfiedBy(newCartItem.CartProduct, newCartItem.Quantity))
+                    if (newCartItem.CartProduct != null && !new ProductIsAvailableSpecification().IsSatisfiedBy(newCartItem.CartProduct, newCartItem.Quantity))
                     {
                         context.AddFailure(CartErrorDescriber.ProductUnavailableError(newCartItem.CartProduct));
                     }

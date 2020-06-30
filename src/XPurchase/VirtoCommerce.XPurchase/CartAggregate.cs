@@ -135,6 +135,10 @@ namespace VirtoCommerce.XPurchase
             };
 
             Store = await _storeService.GetByIdAsync(cart.StoreId);
+            if (Store == null)
+            {
+                throw new OperationCanceledException($"store with id {cart.StoreId} not found");
+            }
 
             //Load products for all cart items
             if (!cart.Items.IsNullOrEmpty())

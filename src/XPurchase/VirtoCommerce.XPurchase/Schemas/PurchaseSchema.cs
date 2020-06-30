@@ -31,17 +31,17 @@ namespace VirtoCommerce.XPurchase.Schemas
                 Name = "cart",
                 Arguments = new QueryArguments(
                         new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "storeId" },
-                        new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "cartName" },
                         new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "userId" },
-                        new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "cultureName" },
                         new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "currencyCode" },
+                        new QueryArgument<StringGraphType> { Name = "cultureName" },
+                        new QueryArgument<StringGraphType> { Name = "cartName" },
                         new QueryArgument<StringGraphType> { Name = "type" }),
                 Type = GraphTypeExtenstionHelper.GetActualType<CartType>(),
                 Resolver = new AsyncFieldResolver<object>(async context =>
                 {
                     //TODO: Move to extension methods
                     var storeId = context.GetArgument<string>("storeId");
-                    var cartName = context.GetArgument<string>("cartName");
+                    var cartName = context.GetArgument("cartName", "default");
                     var userId = context.GetArgument<string>("userId");
                     var cultureName = context.GetArgument<string>("cultureName");
                     var currencyCode = context.GetArgument<string>("currencyCode");
