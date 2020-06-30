@@ -1,11 +1,11 @@
-using GraphQL.Types;
+﻿using GraphQL.Types;
 using VirtoCommerce.CartModule.Core.Model;
 
 namespace VirtoCommerce.XPurchase.Schemas
 {
-    public class AddressType : ObjectGraphType<Address>
+    public class InputAddressType : InputObjectGraphType<Address>
     {
-        public AddressType()
+        public InputAddressType()
         {
             Field(x => x.City, nullable: false).Description("City");
             Field(x => x.CountryCode, nullable: false).Description("Country code");

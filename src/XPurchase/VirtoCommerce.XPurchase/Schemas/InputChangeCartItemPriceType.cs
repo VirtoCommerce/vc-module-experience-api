@@ -1,4 +1,4 @@
-﻿using GraphQL.Types;
+using GraphQL.Types;
 
 namespace VirtoCommerce.XPurchase.Schemas
 {
@@ -7,7 +7,7 @@ namespace VirtoCommerce.XPurchase.Schemas
         public InputChangeCartItemPriceType()
         {
             Field<NonNullGraphType<StringGraphType>>("productId");
-            Field<NonNullGraphType< DecimalGraphType>>("price");
+            Field<NonNullGraphType<DecimalGraphType>>("price");
         }
     }
 }

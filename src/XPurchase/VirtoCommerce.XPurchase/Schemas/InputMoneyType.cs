@@ -1,11 +1,11 @@
-using GraphQL.Types;
+﻿using GraphQL.Types;
 using VirtoCommerce.CoreModule.Core.Currency;
 
 namespace VirtoCommerce.XPurchase.Schemas
 {
-    public class MoneyType : ObjectGraphType<Money>
+    public class InputMoneyType : InputObjectGraphType<Money>
     {
-        public MoneyType()
+        public InputMoneyType()
         {
             Field(x => x.Amount, nullable: false).Description("A decimal with the amount rounded to the significant number of decimal digits.");
             Field(x => x.DecimalDigits, nullable: false).Description("Number of decimal digits for the associated currency.");

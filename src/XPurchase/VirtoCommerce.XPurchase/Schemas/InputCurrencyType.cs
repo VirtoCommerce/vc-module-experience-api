@@ -1,11 +1,11 @@
-using GraphQL.Types;
+﻿using GraphQL.Types;
 using VirtoCommerce.CoreModule.Core.Currency;
 
 namespace VirtoCommerce.XPurchase.Schemas
 {
-    public class CurrencyType : ObjectGraphType<Currency>
+    public class InputCurrencyType : InputObjectGraphType<Currency>
     {
-        public CurrencyType()
+        public InputCurrencyType()
         {
             //TODO:
             //Field(x => x.CultureName, nullable: false).Description("Culture name");
