@@ -30,20 +30,24 @@ namespace VirtoCommerce.XPurchase.Extensions
             services.AddSchemaType<InputAddItemType>();
             services.AddSchemaType<InputAddOrUpdateCartPaymentType>();
             services.AddSchemaType<InputAddOrUpdateCartShipmentType>();
+            services.AddSchemaType<InputCartShipmentItemType>();
             services.AddSchemaType<InputChangeCartItemPriceType>();
             services.AddSchemaType<InputChangeCartItemQuantityType>();
             services.AddSchemaType<InputChangeCommentType>();
             services.AddSchemaType<InputClearCartType>();
+            services.AddSchemaType<InputPaymentType>();
             services.AddSchemaType<InputRemoveCouponType>();
             services.AddSchemaType<InputRemoveItemType>();
+            services.AddSchemaType<InputShipmentType>();
+            services.AddSchemaType<InputAddressType>();
             services.AddSchemaType<InputValidateCouponType>();
             services.AddSchemaType<LanguageType>();
             services.AddSchemaType<LineItemType>();
             services.AddSchemaType<MoneyType>();
             services.AddSchemaType<PaymentMethodType>();
             services.AddSchemaType<PaymentType>();
-            services.AddSchemaType<ShippingMethodType>();
             services.AddSchemaType<ShipmentType>();
+            services.AddSchemaType<ShippingMethodType>();
             services.AddSchemaType<TaxDetailType>();
             services.AddSchemaType<ValidationErrorType>();
 

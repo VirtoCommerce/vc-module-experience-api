@@ -34,7 +34,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             //Field(x => x.IsValid, nullable: true).Description("Is valid");
             //Field<ListGraphType<ValidationErrorType>>("validationErrors", resolve: context => context.Source.ValidationErrors);
             Field<ListGraphType<DiscountType>>("discounts", resolve: context => context.Source.Discounts);
-            Field<CurrencyType>("currency", resolve: context => context.Source.Currency);
+            Field<CurrencyType>("currency", resolve: context => context.GetCart().Currency);
         }
     }
 }
