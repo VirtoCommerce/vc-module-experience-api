@@ -94,23 +94,8 @@ namespace VirtoCommerce.XPurchase.Schemas
             //TODO:
             //Field<LineItemType>("recentlyAddedItem", resolve: context => context.Source.Cart.RecentlyAddedItem);
 
-            // Coupon
-            Field<CouponType>("coupon", resolve: context => context.Source.Cart.Coupon);
-            Field<ListGraphType<CouponType>>("coupons", resolve: context =>
-            {
-                var result = new List<CartCoupon>();
-                foreach(var coupon in context.Source.Cart.Coupons)
-                {
-                    var cartCoupon = new CartCoupon
-                    {
-                        Code = coupon,
-                        //TODO: Check what this will work
-                        IsAppliedSuccessfully = context.Source.Cart.Discounts.Any(x => x.Coupon.EqualsInvariant(coupon))
-                    };
-                    result.Add(cartCoupon);
-                }
-                return result;
-            });
+            // Coupons
+            Field<ListGraphType<CouponType>>("coupons", resolve: context => context.Source.Coupons);
 
             // Other
             //Field<ListGraphType<DynamicPropertyType>>("dynamicProperties", resolve: context => context.Source.DynamicProperties); //todo add dynamic properties

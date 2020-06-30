@@ -256,7 +256,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             /// <example>
             /// This is an example JSON request for a mutation
             /// {
-            ///   "query": "mutation ($command:InputAddCouponType!){ removeCartItem(command: $command) {  total { formatedAmount } } }",
+            ///   "query": "mutation ($command:InputAddCouponType!){ addCoupon(command: $command) {  total { formatedAmount } } }",
             ///   "variables": {
             ///      "command": {
             ///          "storeId": "Electronics",

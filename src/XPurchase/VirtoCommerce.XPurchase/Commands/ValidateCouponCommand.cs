@@ -1,4 +1,4 @@
-﻿using MediatR;
+using MediatR;
 
 namespace VirtoCommerce.XPurchase.Commands
 {
@@ -8,7 +8,7 @@ namespace VirtoCommerce.XPurchase.Commands
         {
         }
 
-        public ValidateCouponCommand(string storeId, string cartType, string cartName, string userId, string currency, string lang, CartCoupon coupon)
+        public ValidateCouponCommand(string storeId, string cartType, string cartName, string userId, string currency, string lang, string coupon)
         {
             StoreId = storeId;
             CartType = cartType;
@@ -25,6 +25,6 @@ namespace VirtoCommerce.XPurchase.Commands
         public string UserId { get; set; }
         public string Currency { get; set; }
         public string Language { get; set; }
-        public CartCoupon Coupon { get; set; }
+        public string Coupon { get; set; }
     }
 }

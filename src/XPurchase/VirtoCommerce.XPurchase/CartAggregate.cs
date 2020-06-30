@@ -71,6 +71,30 @@ namespace VirtoCommerce.XPurchase
         public Store Store { get; protected set; }
         public Currency Currency { get; protected set; }
 
+        public virtual IEnumerable<CartCoupon> Coupons
+        {
+            get
+            {
+                //TODO: refactor to be more performance
+                var allAppliedCoupons = Cart.GetFlatObjectsListWithInterface<IHasDiscounts>()
+                                            .SelectMany(x => x.Discounts ?? Array.Empty<Discount>())
+                                            .Where(x => !string.IsNullOrEmpty(x.Coupon)).Select(x => x.Coupon)
+                                            .Distinct()
+                                            .ToList();
+
+                foreach (var coupon in Cart.Coupons)
+                {
+                    var cartCoupon = new CartCoupon
+                    {
+                        Code = coupon,
+                        IsAppliedSuccessfully = allAppliedCoupons.Contains(coupon)
+                    };
+                    yield return cartCoupon;
+                }
+            }
+        }
+
+
         public virtual ShoppingCart Cart { get; protected set; }
 
         public virtual IDictionary<string, CartProduct> CartProductsDict { get; protected set; } = new Dictionary<string, CartProduct>().WithDefaultValue(null);
@@ -501,7 +525,7 @@ namespace VirtoCommerce.XPurchase
             return this;
         }
 
-        public async Task<bool> ValidateCouponAsync(CartCoupon coupon)
+        public async Task<bool> ValidateCouponAsync(string coupon)
         {
             EnsureCartExists();
 
@@ -511,7 +535,7 @@ namespace VirtoCommerce.XPurchase
                 return false;
             }
 
-            var validCoupon = promotionResult.Rewards.FirstOrDefault(x => x.IsValid && x.Coupon == coupon.Code);
+            var validCoupon = promotionResult.Rewards.FirstOrDefault(x => x.IsValid && x.Coupon == coupon);
 
             return validCoupon != null;
         }
