@@ -6,7 +6,7 @@ namespace VirtoCommerce.XPurchase.Schemas
     {
         public InputAddOrUpdateCartShipmentType()
         {
-            //Field<NonNullGraphType<ShipmentType>>("shipment");
+            Field<NonNullGraphType<InputShipmentType>>("shipment");
         }
     }
 }

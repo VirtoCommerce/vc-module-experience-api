@@ -13,7 +13,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field(x => x.Symbol, nullable: true).Description("Symbol");
             //TODO:
             //Field(x => x.EnglishName, nullable: false).Description("English name");
-            Field(x => x.ExchangeRate, nullable: false).Description("Exchange rate");
+            Field(x => x.ExchangeRate, nullable: true).Description("Exchange rate");
             Field(x => x.CustomFormatting, nullable: true).Description("Currency custom formatting");
         }
     }
