@@ -95,8 +95,8 @@ namespace VirtoCommerce.XPurchase.Schemas
             //Field<LineItemType>("recentlyAddedItem", resolve: context => context.Source.Cart.RecentlyAddedItem);
 
             // Coupon
-            Field<CopuponType>("coupon", resolve: context => context.Source.Cart.Coupon);
-            Field<ListGraphType<CopuponType>>("coupons", resolve: context =>
+            Field<CouponType>("coupon", resolve: context => context.Source.Cart.Coupon);
+            Field<ListGraphType<CouponType>>("coupons", resolve: context =>
             {
                 var result = new List<CartCoupon>();
                 foreach(var coupon in context.Source.Cart.Coupons)

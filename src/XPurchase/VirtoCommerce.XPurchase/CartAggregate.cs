@@ -199,7 +199,7 @@ namespace VirtoCommerce.XPurchase
             return this;
         }
 
-        public virtual async Task<CartAggregate> ChangeItemQuantitysync(ItemQtyAdjustment qtyAdjustment)
+        public virtual async Task<CartAggregate> ChangeItemQuantityAsync(ItemQtyAdjustment qtyAdjustment)
         {
             EnsureCartExists();
 
@@ -508,19 +508,35 @@ namespace VirtoCommerce.XPurchase
             return this;
         }
 
-        protected virtual async Task<CartAggregate> EvaluatePromotionsAsync()
+        public async Task<bool> ValidateCouponAsync(CartCoupon coupon)
+        {
+            EnsureCartExists();
+
+            var promotionResult = await EvaluatePromotionsAsync();
+            if (promotionResult.Rewards == null)
+            {
+                return false;
+            }
+
+            var validCoupon = promotionResult.Rewards.FirstOrDefault(x => x.IsValid && x.Coupon == coupon.Code);
+
+            return validCoupon != null;
+        }
+
+        protected virtual async Task<PromotionResult> EvaluatePromotionsAsync()
         {
             EnsureCartExists();
 
             if (Cart.Items.IsNullOrEmpty() || !Cart.Items.Any(i => i.IsReadOnly))
             {
-                return this;
+                return null;
             }
 
             var evalContext = _mapper.Map<PromotionEvaluationContext>(this);
-            await _marketingEvaluator.EvaluatePromotionAsync(evalContext);
 
-            return this;
+            var promotionResult = await _marketingEvaluator.EvaluatePromotionAsync(evalContext);
+
+            return promotionResult;
         }
 
         protected async Task<CartAggregate> EvaluateTaxesAsync()

@@ -64,7 +64,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             /// <example>
             /// This is an example JSON request for a mutation
             /// {
-            ///   "query": "mutation (command:InputAddItemType!){ addItem(command: $command) {  total { formatedAmount } } }",
+            ///   "query": "mutation ($command:InputAddItemType!){ addItem(command: $command) {  total { formatedAmount } } }",
             ///   "variables": {
             ///      "command": {
             ///          "storeId": "Electronics",
@@ -72,7 +72,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             ///          "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
             ///          "language": "en-US",
             ///          "currency": "USD",
-            ///          "cartType": "",
+            ///          "cartType": "cart",
             ///          "productId": "9cbd8f316e254a679ba34a900fccb076",
             ///          "quantity": 1
             ///      }
@@ -91,7 +91,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             /// <example>
             /// This is an example JSON request for a mutation
             /// {
-            ///   "query": "mutation (command:InputClearCartType!){ clearCart(command: $command) {  total { formatedAmount } } }",
+            ///   "query": "mutation ($command:InputClearCartType!){ clearCart(command: $command) {  total { formatedAmount } } }",
             ///   "variables": {
             ///      "command": {
             ///          "storeId": "Electronics",
@@ -99,7 +99,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             ///          "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
             ///          "language": "en-US",
             ///          "currency": "USD",
-            ///          "cartType": ""
+            ///          "cartType": "cart"
             ///      }
             ///   }
             /// }
@@ -111,6 +111,237 @@ namespace VirtoCommerce.XPurchase.Schemas
                                              .FieldType;
 
             schema.Mutation.AddField(clearCartField);
+
+            /// <example>
+            /// This is an example JSON request for a mutation
+            /// {
+            ///   "query": "mutation ($command:InputChangeCommentType!){ changeComment(command: $command) {  total { formatedAmount } } }",
+            ///   "variables": {
+            ///      "command": {
+            ///          "storeId": "Electronics",
+            ///          "cartName": "default",
+            ///          "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
+            ///          "language": "en-US",
+            ///          "currency": "USD",
+            ///          "cartType": "cart",
+            ///          "comment": "Hi, Virto!"
+            ///      }
+            ///   }
+            /// }
+            /// </example>
+            var changeCommentField = FieldBuilder.Create<CartAggregate, CartAggregate>(typeof(CartType))
+                                                 .Name("changeComment")
+                                                 .Argument<NonNullGraphType<InputChangeCommentType>>(_commandName)
+                                                 .ResolveAsync(async context => await _mediator.Send(context.GetCartCommand<ChangeCommentCommand>()))
+                                                 .FieldType;
+
+            schema.Mutation.AddField(changeCommentField);
+
+            /// <example>
+            /// This is an example JSON request for a mutation
+            /// {
+            ///   "query": "mutation ($command:InputChangeCartItemPriceType!){ changeCartItemPrice(command: $command) {  total { formatedAmount } } }",
+            ///   "variables": {
+            ///      "command": {
+            ///          "storeId": "Electronics",
+            ///          "cartName": "default",
+            ///          "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
+            ///          "language": "en-US",
+            ///          "currency": "USD",
+            ///          "cartType": "cart",
+            ///          "productId": "9cbd8f316e254a679ba34a900fccb076",
+            ///          "price": 777
+            ///      }
+            ///   }
+            /// }
+            /// </example>
+            var changeCartItemPriceField = FieldBuilder.Create<CartAggregate, CartAggregate>(typeof(CartType))
+                                                       .Name("changeCartItemPrice")
+                                                       .Argument<NonNullGraphType<InputChangeCartItemPriceType>>(_commandName)
+                                                       .ResolveAsync(async context => await _mediator.Send(context.GetCartCommand<ChangeCartItemPriceCommand>()))
+                                                       .FieldType;
+
+            schema.Mutation.AddField(changeCartItemPriceField);
+
+            /// <example>
+            /// This is an example JSON request for a mutation
+            /// {
+            ///   "query": "mutation ($command:InputChangeCartItemQuantityType!){ changeCartItemQuantity(command: $command) {  total { formatedAmount } } }",
+            ///   "variables": {
+            ///      "command": {
+            ///          "storeId": "Electronics",
+            ///          "cartName": "default",
+            ///          "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
+            ///          "language": "en-US",
+            ///          "currency": "USD",
+            ///          "cartType": "cart",
+            ///          "productId": "9cbd8f316e254a679ba34a900fccb076",
+            ///          "quantity": 777
+            ///      }
+            ///   }
+            /// }
+            /// </example>
+            var changeCartItemQuantityField = FieldBuilder.Create<CartAggregate, CartAggregate>(typeof(CartType))
+                                                          .Name("changeCartItemQuantity")
+                                                          .Argument<NonNullGraphType<InputChangeCartItemQuantityType>>(_commandName)
+                                                          .ResolveAsync(async context => await _mediator.Send(context.GetCartCommand<ChangeCartItemQuantityCommand>()))
+                                                          .FieldType;
+
+            schema.Mutation.AddField(changeCartItemQuantityField);
+
+            /// <example>
+            /// This is an example JSON request for a mutation
+            /// {
+            ///   "query": "mutation ($command:InputRemoveItemType!){ removeCartItem(command: $command) {  total { formatedAmount } } }",
+            ///   "variables": {
+            ///      "command": {
+            ///          "storeId": "Electronics",
+            ///          "cartName": "default",
+            ///          "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
+            ///          "language": "en-US",
+            ///          "currency": "USD",
+            ///          "cartType": "cart",
+            ///          "productId": "9cbd8f316e254a679ba34a900fccb076"
+            ///      }
+            ///   }
+            /// }
+            /// </example>
+            var removeCartItemField = FieldBuilder.Create<CartAggregate, CartAggregate>(typeof(CartType))
+                                                  .Name("removeCartItem")
+                                                  .Argument<NonNullGraphType<InputRemoveItemType>>(_commandName)
+                                                  .ResolveAsync(async context => await _mediator.Send(context.GetCartCommand<RemoveCartItemCommand>()))
+                                                  .FieldType;
+
+            schema.Mutation.AddField(removeCartItemField);
+
+            /// <example>
+            /// This is an example JSON request for a mutation
+            /// {
+            ///   "query": "mutation ($command:InputAddCouponType!){ removeCartItem(command: $command) {  total { formatedAmount } } }",
+            ///   "variables": {
+            ///      "command": {
+            ///          "storeId": "Electronics",
+            ///          "cartName": "default",
+            ///          "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
+            ///          "language": "en-US",
+            ///          "currency": "USD",
+            ///          "cartType": "cart",
+            ///          "couponCode": "verynicecouponcode"
+            ///      }
+            ///   }
+            /// }
+            /// </example>
+            var addCouponField = FieldBuilder.Create<CartAggregate, CartAggregate>(typeof(CartType))
+                                             .Name("addCoupon")
+                                             .Argument<NonNullGraphType<InputAddCouponType>>(_commandName)
+                                             .ResolveAsync(async context => await _mediator.Send(context.GetCartCommand<AddCouponCommand>()))
+                                             .FieldType;
+
+            schema.Mutation.AddField(addCouponField);
+
+            /// <example>
+            /// This is an example JSON request for a mutation
+            /// {
+            ///   "query": "mutation ($command:InputRemoveCouponType!){ removeCoupon(command: $command) {  total { formatedAmount } } }",
+            ///   "variables": {
+            ///      "command": {
+            ///          "storeId": "Electronics",
+            ///          "cartName": "default",
+            ///          "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
+            ///          "language": "en-US",
+            ///          "currency": "USD",
+            ///          "cartType": "cart",
+            ///          "couponCode": "verynicecouponcode"
+            ///      }
+            ///   }
+            /// }
+            /// </example>
+            var removeCouponField = FieldBuilder.Create<CartAggregate, CartAggregate>(typeof(CartType))
+                                                .Name("removeCoupon")
+                                                .Argument<NonNullGraphType<InputRemoveCouponType>>(_commandName)
+                                                .ResolveAsync(async context => await _mediator.Send(context.GetCartCommand<RemoveCouponCommand>()))
+                                                .FieldType;
+
+            schema.Mutation.AddField(removeCouponField);
+
+            //TODO: add shipment model to example
+            /// <example>
+            /// This is an example JSON request for a mutation
+            /// {
+            ///   "query": "mutation ($command:InputAddOrUpdateCartShipmentType!){ removeCoupon(command: $command) {  total { formatedAmount } } }",
+            ///   "variables": {
+            ///      "command": {
+            ///          "storeId": "Electronics",
+            ///          "cartName": "default",
+            ///          "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
+            ///          "language": "en-US",
+            ///          "currency": "USD",
+            ///          "cartType": "cart",
+            ///          "shipment": { }
+            ///      }
+            ///   }
+            /// }
+            /// </example>
+            var addOrUpdateCartShipmentField = FieldBuilder.Create<CartAggregate, CartAggregate>(typeof(CartType))
+                                                           .Name("addOrUpdateCartShipment")
+                                                           .Argument<NonNullGraphType<InputAddOrUpdateCartShipmentType>>(_commandName)
+                                                           .ResolveAsync(async context => await _mediator.Send(context.GetCartCommand<AddOrUpdateCartShipmentCommand>()))
+                                                           .FieldType;
+
+            schema.Mutation.AddField(addOrUpdateCartShipmentField);
+
+            //TODO: add payment model to example
+            /// <example>
+            /// This is an example JSON request for a mutation
+            /// {
+            ///   "query": "mutation ($command:InputAddOrUpdateCartPaymentType!){ removeCoupon(command: $command) {  total { formatedAmount } } }",
+            ///   "variables": {
+            ///      "command": {
+            ///          "storeId": "Electronics",
+            ///          "cartName": "default",
+            ///          "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
+            ///          "language": "en-US",
+            ///          "currency": "USD",
+            ///          "cartType": "cart",
+            ///          "payment": { }
+            ///      }
+            ///   }
+            /// }
+            /// </example>
+            var addOrUpdateCartPaymentField = FieldBuilder.Create<CartAggregate, CartAggregate>(typeof(CartType))
+                                                          .Name("addOrUpdateCartPayment")
+                                                          .Argument<NonNullGraphType<InputAddOrUpdateCartPaymentType>>(_commandName)
+                                                          .ResolveAsync(async context => await _mediator.Send(context.GetCartCommand<AddOrUpdateCartPaymentCommand>()))
+                                                          .FieldType;
+
+            schema.Mutation.AddField(addOrUpdateCartPaymentField);
+
+            /// <example>
+            /// This is an example JSON request for a mutation
+            /// {
+            ///   "query": "mutation ($command:InputValidateCouponType!){ removeCoupon(command: $command) {  total { formatedAmount } } }",
+            ///   "variables": {
+            ///      "command": {
+            ///          "storeId": "Electronics",
+            ///          "cartName": "default",
+            ///          "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
+            ///          "language": "en-US",
+            ///          "currency": "USD",
+            ///          "cartType": "cart",
+            ///          "coupon": {
+            ///             "code":"verynicecodeforvalidation"
+            ///         }
+            ///      }
+            ///   }
+            /// }
+            /// </example>
+            var validateCouponField = FieldBuilder.Create<CartAggregate, bool>(typeof(CartType))
+                                                  .Name("validateCoupon")
+                                                  .Argument<NonNullGraphType<InputValidateCouponType>>(_commandName)
+                                                  .ResolveAsync(async context => await _mediator.Send(context.GetArgument<ValidateCouponCommand>(PurchaseSchema._commandName)))
+                                                  .FieldType;
+
+            schema.Mutation.AddField(validateCouponField);
         }
     }
 }

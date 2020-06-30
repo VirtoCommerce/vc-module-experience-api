@@ -15,7 +15,7 @@ namespace VirtoCommerce.XPurchase.Extensions
             services.AddSchemaType<AddressType>();
             services.AddSchemaType<CartShipmentItemType>();
             services.AddSchemaType<CartType>();
-            services.AddSchemaType<CopuponType>();
+            services.AddSchemaType<CouponType>();
             services.AddSchemaType<CurrencyType>();
             services.AddSchemaType<DiscountType>();
             services.AddSchemaType<DynamicPropertyType>();

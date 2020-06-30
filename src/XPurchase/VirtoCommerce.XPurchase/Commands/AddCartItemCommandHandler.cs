@@ -6,7 +6,7 @@ namespace VirtoCommerce.XPurchase.Commands
     public class AddCartItemCommandHandler : CartCommandHandler<AddCartItemCommand>
     {
         public AddCartItemCommandHandler(ICartAggregateRepository cartRepository)
-            :base(cartRepository)
+            : base(cartRepository)
         {
         }
 
@@ -21,6 +21,6 @@ namespace VirtoCommerce.XPurchase.Commands
             });
             await CartAggrRepository.SaveAsync(cartAggr);
             return cartAggr;
-        }    
+        }
     }
 }

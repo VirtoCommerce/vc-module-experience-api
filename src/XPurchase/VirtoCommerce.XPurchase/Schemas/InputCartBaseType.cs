@@ -13,6 +13,5 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field<NonNullGraphType<StringGraphType>>("language");
             Field<NonNullGraphType<StringGraphType>>("cartType");
         }
-       
     }
 }
