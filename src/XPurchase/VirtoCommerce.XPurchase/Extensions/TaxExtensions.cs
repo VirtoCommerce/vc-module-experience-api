@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using VirtoCommerce.CartModule.Core.Model;
-using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.PaymentModule.Core.Model;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.ShippingModule.Core.Model;
