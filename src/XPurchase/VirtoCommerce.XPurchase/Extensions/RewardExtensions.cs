@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.CoreModule.Core.Common;
+using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.MarketingModule.Core.Model.Promotions;
 using VirtoCommerce.PaymentModule.Core.Model;
 using VirtoCommerce.Platform.Core.Common;
@@ -28,7 +29,7 @@ namespace VirtoCommerce.XPurchase.Extensions
 
         public static void ApplyRewards(this ShoppingCart shoppingCart, ICollection<PromotionReward> rewards)
         {
-            shoppingCart.Discounts.Clear();
+            shoppingCart.Discounts?.Clear();
             shoppingCart.DiscountAmount = 0M;
 
             var cartRewards = rewards.OfType<CartSubtotalReward>();
@@ -40,11 +41,15 @@ namespace VirtoCommerce.XPurchase.Extensions
                 var discount = new Discount
                 {
                     Coupon = reward.Coupon,
+                    Currency = shoppingCart.Currency,
                     Description = reward.Promotion?.Description,
                     DiscountAmount = reward.GetRewardAmount(shoppingCart.SubTotal, 1),
                     PromotionId = reward.PromotionId,
                 };
-
+                if (shoppingCart.Discounts == null)
+                {
+                    shoppingCart.Discounts = new List<Discount>();
+                }
                 shoppingCart.Discounts.Add(discount);
                 shoppingCart.DiscountAmount += discount.DiscountAmount;
             }
@@ -52,29 +57,30 @@ namespace VirtoCommerce.XPurchase.Extensions
             var lineItemRewards = rewards.OfType<CatalogItemAmountReward>();
             foreach (var lineItem in shoppingCart.Items)
             {
-                lineItem.ApplyRewards(lineItemRewards);
+                lineItem.ApplyRewards(shoppingCart.Currency, lineItemRewards);
             }
 
             var shipmentRewards = rewards.OfType<ShipmentReward>();
             foreach (var shipment in shoppingCart.Shipments)
             {
-                shipment.ApplyRewards(shipmentRewards);
+                shipment.ApplyRewards(shoppingCart.Currency, shipmentRewards);
             }
 
             var paymentRewards = rewards.OfType<PaymentReward>();
             foreach (var payment in shoppingCart.Payments)
             {
-                payment.ApplyRewards(paymentRewards);
+                payment.ApplyRewards(shoppingCart.Currency, paymentRewards);
             }
         }
 
-        public static void ApplyRewards(this LineItem lineItem, IEnumerable<CatalogItemAmountReward> rewards)
+        public static void ApplyRewards(this LineItem lineItem, string currency, IEnumerable<CatalogItemAmountReward> rewards)
         {
             var lineItemRewards = rewards
                 .Where(r => r.IsValid)
                 .Where(r => r.ProductId.IsNullOrEmpty() || r.ProductId.EqualsInvariant(lineItem.ProductId));
 
-            lineItem.Discounts.Clear();
+            
+            lineItem.Discounts?.Clear();
             lineItem.DiscountAmount = Math.Max(0, lineItem.ListPrice - lineItem.SalePrice);
 
             if (lineItem.Quantity == 0)
@@ -87,9 +93,10 @@ namespace VirtoCommerce.XPurchase.Extensions
                 var discount = new Discount
                 {
                     Coupon = reward.Coupon,
+                    Currency = currency,
                     Description = reward.Promotion?.Description,
                     DiscountAmount = reward.GetRewardAmount(lineItem.ListPrice - lineItem.DiscountAmount, lineItem.Quantity),
-                    PromotionId = reward.PromotionId,
+                    PromotionId = reward.PromotionId ?? reward.Promotion?.Id,
                 };
 
                 // Pass invalid discounts
@@ -98,18 +105,22 @@ namespace VirtoCommerce.XPurchase.Extensions
                     continue;
                 }
 
+                if (lineItem.Discounts == null)
+                {
+                    lineItem.Discounts = new List<Discount>();
+                }
                 lineItem.Discounts.Add(discount);
                 lineItem.DiscountAmount += discount.DiscountAmount;
             }
         }
 
-        public static void ApplyRewards(this Shipment shipment, IEnumerable<ShipmentReward> rewards)
+        public static void ApplyRewards(this Shipment shipment, string currency, IEnumerable<ShipmentReward> rewards)
         {
             var shipmentRewards = rewards
                 .Where(r => r.IsValid)
                 .Where(r => r.ShippingMethod.IsNullOrEmpty() || r.ShippingMethod.EqualsInvariant(shipment.ShipmentMethodCode));
 
-            shipment.Discounts.Clear();
+            shipment.Discounts?.Clear();
             shipment.DiscountAmount = 0M;
 
             foreach (var reward in shipmentRewards)
@@ -117,9 +128,10 @@ namespace VirtoCommerce.XPurchase.Extensions
                 var discount = new Discount
                 {
                     Coupon = reward.Coupon,
+                    Currency = currency,
                     Description = reward.Promotion?.Description,
                     DiscountAmount = reward.GetRewardAmount(shipment.Price - shipment.DiscountAmount, 1),
-                    PromotionId = reward.PromotionId,
+                    PromotionId = reward.PromotionId ?? reward.Promotion?.Id,
                 };
 
                 // Pass invalid discounts
@@ -127,19 +139,22 @@ namespace VirtoCommerce.XPurchase.Extensions
                 {
                     continue;
                 }
-
+                if (shipment.Discounts == null)
+                {
+                    shipment.Discounts = new List<Discount>();
+                }
                 shipment.Discounts.Add(discount);
                 shipment.DiscountAmount += discount.DiscountAmount;
             }
         }
 
-        public static void ApplyRewards(this Payment payment, IEnumerable<PaymentReward> rewards)
+        public static void ApplyRewards(this Payment payment, string currency, IEnumerable<PaymentReward> rewards)
         {
             var paymentRewards = rewards
                 .Where(r => r.IsValid)
                 .Where(r => r.PaymentMethod.IsNullOrEmpty() || r.PaymentMethod.EqualsInvariant(payment.PaymentGatewayCode));
 
-            payment.Discounts.Clear();
+            payment.Discounts?.Clear();
             payment.DiscountAmount = 0M;
 
             foreach (var reward in paymentRewards)
@@ -147,9 +162,10 @@ namespace VirtoCommerce.XPurchase.Extensions
                 var discount = new Discount
                 {
                     Coupon = reward.Coupon,
+                    Currency = currency,
                     Description = reward.Promotion?.Description,
                     DiscountAmount = reward.GetRewardAmount(payment.Price - payment.DiscountAmount, 1),
-                    PromotionId = reward.PromotionId,
+                    PromotionId = reward.PromotionId ?? reward.Promotion?.Id,
                 };
 
                 // Pass invalid discounts
@@ -157,7 +173,10 @@ namespace VirtoCommerce.XPurchase.Extensions
                 {
                     continue;
                 }
-
+                if (payment.Discounts == null)
+                {
+                    payment.Discounts = new List<Discount>();
+                }
                 payment.Discounts.Add(discount);
                 payment.DiscountAmount += discount.DiscountAmount;
             }
