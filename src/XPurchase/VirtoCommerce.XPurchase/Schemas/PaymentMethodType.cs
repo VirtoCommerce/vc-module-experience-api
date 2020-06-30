@@ -18,7 +18,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field(x => x.IsAvailableForPartial, nullable: true).Description("Is payment method available for partial payments");
             //TODO: ???? Check if this is required.
             //Field<ListGraphType<SettingType>>("settings", resolve: context => context.Source.Settings);
-            Field<CurrencyType>("currency", resolve: context => context.Source.Currency);
+            Field<CurrencyType>("currency", resolve: context => context.GetCart().Currency);
             Field<MoneyType>("price", resolve: context => context.Source.Price.ToMoney(context.GetCart().Currency));
             Field<MoneyType>("priceWithTax", resolve: context => context.Source.PriceWithTax.ToMoney(context.GetCart().Currency));
             Field<MoneyType>("total", resolve: context => context.Source.Total.ToMoney(context.GetCart().Currency));

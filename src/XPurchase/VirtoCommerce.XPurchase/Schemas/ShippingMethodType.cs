@@ -14,7 +14,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field(x => x.OptionName, nullable: true).Description("Value of shipping method option name");
             Field(x => x.OptionDescription, nullable: true).Description("Value of shipping method option description");
             Field(x => x.ShippingMethod.Priority, nullable: true).Description("Value of shipping method priority");
-            Field<CurrencyType>("currency", resolve: context => context.Source.Currency);
+            Field<CurrencyType>("currency", resolve: context => context.GetCart().Currency);
             Field<MoneyType>("price", resolve: context => context.Source.Rate.ToMoney(context.GetCart().Currency));
             Field<MoneyType>("priceWithTax", resolve: context => context.Source.RateWithTax.ToMoney(context.GetCart().Currency));
             Field<MoneyType>("total", resolve: context => (context.Source.Rate - context.Source.DiscountAmount).ToMoney(context.GetCart().Currency));
