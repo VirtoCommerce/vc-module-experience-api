@@ -434,9 +434,9 @@ namespace VirtoCommerce.XPurchase
             //Evaluate promotions cart and apply rewards for available shipping methods
             var evalContext = _mapper.Map<PromotionEvaluationContext>(Cart);
             var promoResult = await _marketingEvaluator.EvaluatePromotionAsync(evalContext);
-            foreach (var reward in promoResult.Rewards)
+            foreach (var shippingRate in availableShippingRates)
             {
-                //TODO: Apply reward to shipping methods rates  need to write and extension methods for this
+                shippingRate.ApplyRewards(promoResult.Rewards);
             }
 
             var taxProvider = await GetActiveTaxProviderAsync();
@@ -475,9 +475,10 @@ namespace VirtoCommerce.XPurchase
 
             var evalContext = _mapper.Map<PromotionEvaluationContext>(Cart);
             var promoResult = await _marketingEvaluator.EvaluatePromotionAsync(evalContext);
-            foreach (var reward in promoResult.Rewards)
+
+            foreach (var paymentMethod in result.Results)
             {
-                //TODO: Apply reward to payment methods   need to write and extension methods for this
+                paymentMethod.ApplyRewards(promoResult.Rewards);
             }
 
             //Evaluate taxes for available payments
