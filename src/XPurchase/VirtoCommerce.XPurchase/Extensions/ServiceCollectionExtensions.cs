@@ -12,6 +12,13 @@ namespace VirtoCommerce.XPurchase.Extensions
     {
         public static IServiceCollection AddXPurchase(this IServiceCollection services)
         {
+            //TODO:
+            //services.AddSchemaType<PaymentPlanType>();
+            //services.AddSchemaType<SettingType>();
+            //services.AddSchemaType<StoreStatusEnum>();
+            //services.AddSchemaType<StoreType>();
+            //services.AddSchemaType<UserType>();
+
             services.AddSchemaType<AddressType>();
             services.AddSchemaType<CartShipmentItemType>();
             services.AddSchemaType<CartType>();
@@ -19,23 +26,26 @@ namespace VirtoCommerce.XPurchase.Extensions
             services.AddSchemaType<CurrencyType>();
             services.AddSchemaType<DiscountType>();
             services.AddSchemaType<DynamicPropertyType>();
+            services.AddSchemaType<InputAddCouponType>();
+            services.AddSchemaType<InputAddItemType>();
+            services.AddSchemaType<InputAddOrUpdateCartPaymentType>();
+            services.AddSchemaType<InputAddOrUpdateCartShipmentType>();
+            services.AddSchemaType<InputChangeCartItemPriceType>();
+            services.AddSchemaType<InputChangeCartItemQuantityType>();
+            services.AddSchemaType<InputChangeCommentType>();
+            services.AddSchemaType<InputClearCartType>();
+            services.AddSchemaType<InputRemoveCouponType>();
+            services.AddSchemaType<InputRemoveItemType>();
+            services.AddSchemaType<InputValidateCouponType>();
             services.AddSchemaType<LanguageType>();
             services.AddSchemaType<LineItemType>();
             services.AddSchemaType<MoneyType>();
-            services.AddSchemaType<ShippingMethodType>();
-            //TODO:
-            //services.AddSchemaType<PaymentPlanType>();
-            services.AddSchemaType<PaymentType>();
             services.AddSchemaType<PaymentMethodType>();
-            //services.AddSchemaType<SettingType>();
+            services.AddSchemaType<PaymentType>();
+            services.AddSchemaType<ShippingMethodType>();
             services.AddSchemaType<ShipmentType>();
-            //services.AddSchemaType<StoreStatusEnum>();
-            //services.AddSchemaType<StoreType>();
             services.AddSchemaType<TaxDetailType>();
-            //services.AddSchemaType<UserType>();
             services.AddSchemaType<ValidationErrorType>();
-            services.AddSchemaType<InputClearCartType>();
-            services.AddSchemaType<InputAddItemType>();
 
             services.AddSchemaBuilder<PurchaseSchema>();
 
@@ -51,7 +61,6 @@ namespace VirtoCommerce.XPurchase.Extensions
 
             services.AddTransient<CartAggregate>();
             services.AddTransient<Func<CartAggregate>>(provider => () => provider.CreateScope().ServiceProvider.GetRequiredService<CartAggregate>());
-
 
             return services;
         }
