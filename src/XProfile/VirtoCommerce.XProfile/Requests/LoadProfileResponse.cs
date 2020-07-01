@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using VirtoCommerce.ExperienceApiModule.XProfile.Models;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Requests
 {

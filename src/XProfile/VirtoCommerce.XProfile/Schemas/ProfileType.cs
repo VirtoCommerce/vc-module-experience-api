@@ -1,6 +1,5 @@
 using GraphQL.Types;
 using MediatR;
-using VirtoCommerce.ExperienceApiModule.XProfile.Models;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 {

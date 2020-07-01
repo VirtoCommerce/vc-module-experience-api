@@ -7,9 +7,9 @@ using GraphQL.DataLoader;
 using GraphQL.Resolvers;
 using GraphQL.Types;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
 using VirtoCommerce.CustomerModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.Core.Schema;
-using VirtoCommerce.ExperienceApiModule.XProfile.Models;
 using VirtoCommerce.ExperienceApiModule.XProfile.Requests;
 using VirtoCommerce.ExperienceApiModule.XProfile.Services;
 
@@ -42,13 +42,51 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                 })
             });
 
-            schema.Mutation.AddField(FieldBuilder.Create<UserUpdateInfo, bool>(typeof(BooleanGraphType))
+            schema.Mutation.AddField(FieldBuilder.Create<UserUpdateInfo, Profile>(GraphTypeExtenstionHelper.GetActualType<ProfileType>())
                             .Name("updateAccount")
                             .Argument<NonNullGraphType<UserUpdateInfoInputType>>("userUpdateInfo")
                             .ResolveAsync(async context =>
                             {
-                                await _memberService.UpdateContactAsync(context.GetArgument<UserUpdateInfo>("userUpdateInfo"));
-                                return true;
+                                return await _memberService.UpdateContactAsync(context.GetArgument<UserUpdateInfo>("userUpdateInfo"));
+                            }).FieldType);
+
+            /* 
+            mutation ($input: PhoneNumberUpdateInfoInputType!){
+                updatePhoneNumber(input: $input){
+                succeeded
+                }
+            }
+           {
+              "input": { "id": "be77bbe9-91a7-42bf-b253-9ed3a976af08",
+                "phoneNumber": "66653176"
+              }
+            }
+            */
+            schema.Mutation.AddField(FieldBuilder.Create<PhoneNumberUpdateInfo, IdentityResult>(typeof(IdentityResultType))
+                            .Name("updatePhoneNumber")
+                            .Argument<NonNullGraphType<PhoneNumberUpdateInfoInputType>>("input")
+                            .ResolveAsync(async context =>
+                            {
+                                return await _memberService.UpdatePhoneNumberAsync(context.GetArgument<PhoneNumberUpdateInfo>("input"));
+                            }).FieldType);
+
+
+            /*
+            mutation ($input: String!){
+              removePhoneNumber(input: $input){
+                succeeded
+              }
+            }
+            {
+              "input": "be77bbe9-91a7-42bf-b253-9ed3a976af08"
+            }
+             */
+            schema.Mutation.AddField(FieldBuilder.Create<string, IdentityResult>(typeof(IdentityResultType))
+                            .Name("removePhoneNumber")
+                            .Argument<NonNullGraphType<StringGraphType>>("input")
+                            .ResolveAsync(async context =>
+                            {
+                                return await _memberService.RemovePhoneNumberAsync(context.GetArgument<string>("input"));
                             }).FieldType);
 
             schema.Mutation.AddField(FieldBuilder.Create<IList<string>, string>(typeof(StringGraphType))

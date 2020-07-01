@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using VirtoCommerce.CustomerModule.Core.Model;
 using VirtoCommerce.Platform.Core.Security;
 
-namespace VirtoCommerce.ExperienceApiModule.XProfile.Models
+namespace VirtoCommerce.ExperienceApiModule.XProfile
 {
     public class Profile
     {

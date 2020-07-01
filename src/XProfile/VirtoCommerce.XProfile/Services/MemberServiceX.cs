@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using VirtoCommerce.CustomerModule.Core.Model;
 using VirtoCommerce.CustomerModule.Core.Services;
+using VirtoCommerce.OrdersModule.Core.Model.Search;
+using VirtoCommerce.OrdersModule.Core.Services;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Security;
 
@@ -17,15 +19,17 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Services
     {
         private readonly IMemberService _memberService;
         private readonly IMemberSearchService _memberSearchService;
+        private readonly ICustomerOrderSearchService _orderSearchService;
         private readonly IAuthorizationService _authorizationService;
         private readonly IServiceProvider _services;
         private readonly IMapper _mapper;
 
 
-        public MemberServiceX(IMemberService memberService, IMemberSearchService memberSearchService, IAuthorizationService authorizationService, IServiceProvider services, IMapper mapper)
+        public MemberServiceX(IMemberService memberService, IMemberSearchService memberSearchService, ICustomerOrderSearchService orderSearchService, IAuthorizationService authorizationService, IServiceProvider services, IMapper mapper)
         {
             _memberService = memberService;
             _memberSearchService = memberSearchService;
+            _orderSearchService = orderSearchService;
             _authorizationService = authorizationService;
             _services = services;
             _mapper = mapper;
@@ -46,10 +50,36 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Services
             throw new NotImplementedException();
         }
 
-        public Task<Contact> GetContactByIdAsync(string contactId)
+        public async Task<Profile> GetProfileByIdAsync(string userId)
         {
-            // TODO: move logic from LoadProfileRequestHandler to here
-            throw new NotImplementedException();
+            // UserManager<ApplicationUser> requires scoped service
+            using (var scope = _services.CreateScope())
+            {
+                var _userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+                var user = await _userManager.FindByIdAsync(userId);
+                if (user != null)
+                {
+                    var orderSearchResult = await _orderSearchService.SearchCustomerOrdersAsync(new CustomerOrderSearchCriteria
+                    {
+                        CustomerId = user.Id,
+                        Take = 0
+                    });
+
+                    var profile = new Profile();
+                    profile.IsFirstTimeBuyer = orderSearchResult.TotalCount == 0;
+                    profile.User = user;
+
+                    //Load the associated contact
+                    if (user.MemberId != null)
+                    {
+                        profile.Contact = await _memberService.GetByIdAsync(user.MemberId, null, nameof(Contact)) as Contact;
+                    }
+
+                    return profile;
+                }
+            }
+
+            return default;
         }
 
         public Task<Organization> GetOrganizationByIdAsync(string organizationId)
@@ -75,16 +105,8 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Services
             return default;
         }
 
-        public async Task UpdateContactAsync(UserUpdateInfo userUpdateInfo)
+        public async Task<Profile> UpdateContactAsync(UserUpdateInfo userUpdateInfo)
         {
-            //TODO:Check authorization
-            //if (string.IsNullOrEmpty(userUpdateInfo.Id))
-            //{
-            //    userUpdateInfo.Id = WorkContext.CurrentUser.Id;
-            //}
-            //var isSelfEditing = userUpdateInfo.Id == WorkContext.CurrentUser.Id;
-            var isSelfEditing = true;
-
             if (!string.IsNullOrEmpty(userUpdateInfo.Id))
             {
                 // UserManager<ApplicationUser> requires scoped service
@@ -95,6 +117,13 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Services
 
                     if (user != null)
                     {
+                        //TODO:Check authorization
+                        //if (string.IsNullOrEmpty(userUpdateInfo.Id))
+                        //{
+                        //    userUpdateInfo.Id = WorkContext.CurrentUser.Id;
+                        //}
+                        //var isSelfEditing = userUpdateInfo.Id == WorkContext.CurrentUser.Id;
+                        var isSelfEditing = true;
                         if (!isSelfEditing)
                         {
                             //var authorizationResult = await _authorizationService.AuthorizeAsync(User, null, SecurityConstants.Permissions.CanEditUsers);
@@ -111,19 +140,83 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Services
                             user.Roles = userUpdateInfo.Roles?.Select(x => new Role { Id = x, Name = x }).ToList();
                         }
 
-                        //if (user.Contact != null)
-                        //{
-                        //    user.Contact.FirstName = userUpdateInfo.FirstName;
-                        //    user.Contact.LastName = userUpdateInfo.LastName;
-                        //    user.Contact.FullName = userUpdateInfo.FullName;
-                        //}
+                        if (!user.MemberId.IsNullOrEmpty())
+                        {
+                            var member = await _memberService.GetByIdAsync(user.MemberId);
+                            if (member != null)
+                            {
+                                _mapper.Map(userUpdateInfo, member);
+                                member.Id = user.MemberId;
 
-                        user.Email = userUpdateInfo.Email;
+                                await _memberService.SaveChangesAsync(new[] { member });
+                            }
+                        }
+
+                        _mapper.Map(userUpdateInfo, user);
 
                         await _userManager.UpdateAsync(user);
+
+                        return await GetProfileByIdAsync(userUpdateInfo.Id);
                     }
                 }
             }
+
+            return default;
+        }
+
+        public async Task<IdentityResult> UpdatePhoneNumberAsync(PhoneNumberUpdateInfo updateInfo)
+        {
+            // UserManager<ApplicationUser> requires scoped service
+            using (var scope = _services.CreateScope())
+            {
+                var _userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+                var user = await _userManager.FindByIdAsync(updateInfo.Id);
+
+                if (user != null)
+                {
+                    var code = await _userManager.GenerateChangePhoneNumberTokenAsync(user, updateInfo.PhoneNumber);
+                    return await _userManager.ChangePhoneNumberAsync(user, updateInfo.PhoneNumber, code);
+                }
+            }
+
+            return default;
+        }
+
+        public async Task<IdentityResult> RemovePhoneNumberAsync(string userId)
+        {
+            // UserManager<ApplicationUser> requires scoped service
+            using (var scope = _services.CreateScope())
+            {
+                var _userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+                var user = await _userManager.FindByIdAsync(userId);
+
+                if (user != null)
+                {
+                    var twoFactorAuthEnabled = await _userManager.GetTwoFactorEnabledAsync(user);
+                    if (twoFactorAuthEnabled)
+                    {
+                        return IdentityResult.Failed(new[] { new IdentityError { Description = "Can't remove while two factor authentication enabled." } });
+                    }
+
+                    return await _userManager.SetPhoneNumberAsync(user, null);
+                }
+            }
+
+            return IdentityResult.Failed(new[] { new IdentityError { Description = "User not found." } });
+        }
+
+        private async Task<ApplicationUser> FindUserByIdAsync(string id)
+        {
+            ApplicationUser result;
+
+            // UserManager<ApplicationUser> requires scoped service
+            using (var scope = _services.CreateScope())
+            {
+                var _userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+                result = await _userManager.FindByIdAsync(id);
+            }
+
+            return result;
         }
 
         public async Task<Organization> UpdateOrganizationAsync(OrganizationUpdateInfo organizationUpdateInfo)
