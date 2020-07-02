@@ -94,7 +94,6 @@ namespace VirtoCommerce.XPurchase
             }
         }
 
-
         public virtual ShoppingCart Cart { get; protected set; }
 
         public virtual IDictionary<string, CartProduct> CartProductsDict { get; protected set; } = new Dictionary<string, CartProduct>().WithDefaultValue(null);
@@ -438,7 +437,7 @@ namespace VirtoCommerce.XPurchase
                 StoreId = Cart.StoreId
             };
 
-            var activeAvailableShippingMethods = (await _shippingMethodsSearchService.SearchShippingMethodsAsync(criteria)).Results;
+            var activeAvailableShippingMethods = (await _shippingMethodsSearchService.SearchShippingMethodsAsync(criteria))?.Results ?? Enumerable.Empty<ShippingMethod>();
 
             var availableShippingRates = activeAvailableShippingMethods
                 .SelectMany(x => x.CalculateRates(shippingEvaluationContext))
@@ -486,7 +485,7 @@ namespace VirtoCommerce.XPurchase
             };
 
             var result = await _paymentMethodsSearchService.SearchPaymentMethodsAsync(criteria);
-            if (result.Results.IsNullOrEmpty())
+            if (result?.Results.IsNullOrEmpty() ?? true)
             {
                 return Enumerable.Empty<PaymentMethod>();
             }
@@ -549,12 +548,12 @@ namespace VirtoCommerce.XPurchase
             EnsureCartExists();
 
             var promotionResult = new PromotionResult();
-            if (!Cart.Items.Any(i => i.IsReadOnly))
+            if (!Cart.Items.IsNullOrEmpty() && !Cart.Items.Any(i => i.IsReadOnly))
             {
                 var evalContext = _mapper.Map<PromotionEvaluationContext>(this);
                 promotionResult = await _marketingEvaluator.EvaluatePromotionAsync(evalContext);
             }
-         
+
             return promotionResult;
         }
 
