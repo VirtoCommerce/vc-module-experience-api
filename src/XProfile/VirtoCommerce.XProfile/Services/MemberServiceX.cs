@@ -7,8 +7,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using VirtoCommerce.CustomerModule.Core.Model;
+using VirtoCommerce.CustomerModule.Core.Model.Search;
 using VirtoCommerce.CustomerModule.Core.Services;
-using VirtoCommerce.OrdersModule.Core.Model.Search;
 using VirtoCommerce.OrdersModule.Core.Services;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Security;
@@ -52,31 +52,19 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Services
 
         public async Task<Profile> GetProfileByIdAsync(string userId)
         {
-            // UserManager<ApplicationUser> requires scoped service
-            using (var scope = _services.CreateScope())
+            var user = await FindUserByIdAsync(userId);
+
+            if (user != null)
             {
-                var _userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-                var user = await _userManager.FindByIdAsync(userId);
-                if (user != null)
+                var profile = new Profile();
+                profile.User = user;
+
+                if (user.MemberId != null)
                 {
-                    var orderSearchResult = await _orderSearchService.SearchCustomerOrdersAsync(new CustomerOrderSearchCriteria
-                    {
-                        CustomerId = user.Id,
-                        Take = 0
-                    });
-
-                    var profile = new Profile();
-                    profile.IsFirstTimeBuyer = orderSearchResult.TotalCount == 0;
-                    profile.User = user;
-
-                    //Load the associated contact
-                    if (user.MemberId != null)
-                    {
-                        profile.Contact = await _memberService.GetByIdAsync(user.MemberId, null, nameof(Contact)) as Contact;
-                    }
-
-                    return profile;
+                    profile.Contact = await _memberService.GetByIdAsync(user.MemberId, null, nameof(Contact)) as Contact;
                 }
+
+                return profile;
             }
 
             return default;
@@ -239,6 +227,22 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Services
             }
 
             return default;
+        }
+
+        public async Task<ProfileSearchResult> SearchOrganizationContactsAsync(MembersSearchCriteria criteria)
+        {
+            var result = AbstractTypeFactory<ProfileSearchResult>.TryCreateInstance();
+            var searchResult = await _memberSearchService.SearchMembersAsync(criteria);
+            var profiles = await Task.WhenAll(searchResult.Results
+                        .OfType<Contact>()
+                        .Where(x => x.SecurityAccounts.Any())
+                        .Select(x => GetProfileByIdAsync(x.SecurityAccounts.FirstOrDefault().Id))
+                        );
+
+            result.Results = profiles;
+            result.TotalCount = searchResult.TotalCount;
+
+            return result;
         }
     }
 }
