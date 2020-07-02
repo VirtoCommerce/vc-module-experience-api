@@ -65,7 +65,7 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Schemas
 
         public static async Task<IDictionary<string, ExpProduct>> LoadProductsAsync(IMediator mediator, IEnumerable<string> ids, IEnumerable<string> includeFields)
         {
-            var response = await mediator.Send(new LoadProductRequest { Ids = ids.ToArray(), IncludeFields = includeFields });
+            var response = await mediator.Send(new LoadProductCommand { Ids = ids.ToArray(), IncludeFields = includeFields });
             return response.Products.ToDictionary(x => x.Id);
         }
 
@@ -75,7 +75,7 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Schemas
             var first = context.First;
             var skip = Convert.ToInt32(context.After ?? 0.ToString());
             var includeFields = context.SubFields.Values.GetAllNodesPaths().Select(x => x.TrimStart("items.")).ToArray();
-            var request = new SearchProductRequest
+            var request = new SearchProductCommand
             {
                 Skip = skip,
                 Take = first ?? context.PageSize ?? 10,

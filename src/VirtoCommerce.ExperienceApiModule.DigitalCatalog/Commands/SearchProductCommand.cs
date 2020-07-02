@@ -4,7 +4,7 @@ using MediatR;
 
 namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Requests
 {
-    public class SearchProductRequest : IRequest<SearchProductResponse>, IHasIncludeFields
+    public class SearchProductCommand : IRequest<SearchProductResponse>, IHasIncludeFields
     {
         public string Query { get; set; }
         public bool Fuzzy { get; set; }

@@ -43,7 +43,7 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Schemas
 
         public static async Task<IDictionary<string, ExpProduct>> LoadProductsAsync(IMediator mediator, IEnumerable<string> ids)
         {
-            var response = await mediator.Send(new LoadProductRequest { Ids = ids.ToArray() });
+            var response = await mediator.Send(new LoadProductCommand { Ids = ids.ToArray() });
             return response.Products.ToDictionary(x => x.Id);
         }
     }

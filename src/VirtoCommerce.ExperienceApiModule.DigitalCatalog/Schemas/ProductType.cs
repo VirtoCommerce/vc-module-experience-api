@@ -72,7 +72,7 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Schemas
                 Group = context.GetArgument<string>("group"),
                 ObjectIds = new[] { context.Source.CatalogProduct.Id }
             };
-            var response = await madiator.Send(new SearchProductAssociationsRequest { Criteria = criteria });
+            var response = await madiator.Send(new SearchProductAssociationsCommand { Criteria = criteria });
             return new Connection<ProductAssociation>()
             {
                 Edges = response.Result.Results

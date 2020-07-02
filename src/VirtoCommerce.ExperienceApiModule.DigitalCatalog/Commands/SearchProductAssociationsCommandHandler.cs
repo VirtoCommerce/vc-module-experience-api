@@ -6,13 +6,13 @@ using VirtoCommerce.ExperienceApiModule.DigitalCatalog.Requests;
 
 namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Handlers
 {
-    public class SearchProductAssociationsHandler : IRequestHandler<SearchProductAssociationsRequest, SearchProductAssociationsResponse>
+    public class SearchProductAssociationsCommandHandler : IRequestHandler<SearchProductAssociationsCommand, SearchProductAssociationsResponse>
     {
-        public SearchProductAssociationsHandler()
+        public SearchProductAssociationsCommandHandler()
         {
         }
 
-        public Task<SearchProductAssociationsResponse> Handle(SearchProductAssociationsRequest request, CancellationToken cancellationToken)
+        public Task<SearchProductAssociationsResponse> Handle(SearchProductAssociationsCommand request, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
 

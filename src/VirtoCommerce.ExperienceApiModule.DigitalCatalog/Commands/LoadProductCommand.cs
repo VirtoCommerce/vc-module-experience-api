@@ -4,7 +4,7 @@ using MediatR;
 
 namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Requests
 {
-    public class LoadProductRequest : IRequest<LoadProductResponse>, IHasIncludeFields
+    public class LoadProductCommand : IRequest<LoadProductResponse>, IHasIncludeFields
     {
         public string[] Ids { get; set; }
         public IEnumerable<string> IncludeFields { get; set; } = Array.Empty<string>();

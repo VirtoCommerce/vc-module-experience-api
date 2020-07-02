@@ -12,18 +12,18 @@ using VirtoCommerce.SearchModule.Core.Services;
 
 namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Handlers
 {
-    public class LoadProductsRequestHandler : IRequestHandler<LoadProductRequest, LoadProductResponse>
+    public class LoadProductsCommandHandler : IRequestHandler<LoadProductCommand, LoadProductResponse>
     {
         private readonly IMapper _mapper;
         private readonly ISearchProvider _searchProvider;
  
-        public LoadProductsRequestHandler(ISearchProvider searchProvider, IMapper mapper)
+        public LoadProductsCommandHandler(ISearchProvider searchProvider, IMapper mapper)
         {
             _searchProvider = searchProvider;
             _mapper = mapper;
         }
 
-        public virtual async Task<LoadProductResponse> Handle(LoadProductRequest request, CancellationToken cancellationToken)
+        public virtual async Task<LoadProductResponse> Handle(LoadProductCommand request, CancellationToken cancellationToken)
         {
             var result = new LoadProductResponse();
             var searchRequest = new SearchRequestBuilder()
