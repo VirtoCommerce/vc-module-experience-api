@@ -77,6 +77,7 @@ namespace VirtoCommerce.XPurchase
             cart.Payments = new List<Payment>();
             cart.Addresses = new List<Address>();
             cart.TaxDetails = new List<TaxDetail>();
+            cart.Coupons = new List<string>();
             //TODO:
             //cart.IsAnonymous = !user.IsRegisteredUser,
             //    CustomerName = user.IsRegisteredUser ? user.UserName : SecurityConstants.AnonymousUsername,
