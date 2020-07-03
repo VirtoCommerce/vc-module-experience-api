@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using FluentValidation.Results;
 using VirtoCommerce.Platform.Core.Common;
 
@@ -12,6 +13,7 @@ namespace VirtoCommerce.XPurchase
             ObjectId = entity.Id;
             ErrorMessage = error;
             ErrorCode = errorCode;
+            FormattedMessagePlaceholderValues = new Dictionary<string, object>();
         }
         public string ObjectType { get; set; }
         public string ObjectId { get; set; }
