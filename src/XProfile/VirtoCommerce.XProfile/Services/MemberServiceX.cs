@@ -244,5 +244,56 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Services
 
             return result;
         }
+
+        public async Task<IdentityResult> LockUserAsync(string userId)
+        {
+            // UserManager<ApplicationUser> requires scoped service
+            using (var scope = _services.CreateScope())
+            {
+                var _userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+                var user = await _userManager.FindByIdAsync(userId);
+
+                if (user != null)
+                {
+                    // TODO: auth.
+                    ////Allow to register new users only within own organization
+                    //var authorizationResult = await _authorizationService.AuthorizeAsync(User, user?.Contact?.Organization, CanEditOrganizationResourceAuthorizeRequirement.PolicyName);
+                    //if (!authorizationResult.Succeeded)
+                    //{
+                    //    return Unauthorized();
+                    //}
+
+                    return await _userManager.SetLockoutEndDateAsync(user, DateTimeOffset.MaxValue);
+                }
+            }
+
+            return IdentityResult.Failed(new[] { new IdentityError { Description = "User not found." } });
+        }
+
+        public async Task<IdentityResult> UnlockUserAsync(string userId)
+        {
+            // UserManager<ApplicationUser> requires scoped service
+            using (var scope = _services.CreateScope())
+            {
+                var _userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+                var user = await _userManager.FindByIdAsync(userId);
+
+                if (user != null)
+                {
+                    // TODO: auth.
+                    ////Allow to register new users only within own organization
+                    //var authorizationResult = await _authorizationService.AuthorizeAsync(User, user?.Contact?.Organization, CanEditOrganizationResourceAuthorizeRequirement.PolicyName);
+                    //if (!authorizationResult.Succeeded)
+                    //{
+                    //    return Unauthorized();
+                    //}
+
+                    await _userManager.ResetAccessFailedCountAsync(user);
+                    return await _userManager.SetLockoutEndDateAsync(user, null);
+                }
+            }
+
+            return IdentityResult.Failed(new[] { new IdentityError { Description = "User not found." } });
+        }
     }
 }

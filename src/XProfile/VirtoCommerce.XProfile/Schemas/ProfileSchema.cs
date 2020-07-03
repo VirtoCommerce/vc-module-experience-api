@@ -34,7 +34,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 
         public void Build(ISchema schema)
         {
-            schema.Query.AddField(new FieldType
+            _ = schema.Query.AddField(new FieldType
             {
                 Name = "customer",
                 Arguments = new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id", Description = "user id" }),
@@ -60,9 +60,9 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
               .Unidirectional()
               .PageSize(20);
             connectionBuilder.ResolveAsync(ResolveOrganizationUsersConnectionAsync);
-            schema.Query.AddField(connectionBuilder.FieldType);
+            _ = schema.Query.AddField(connectionBuilder.FieldType);
 
-            schema.Mutation.AddField(FieldBuilder.Create<UserUpdateInfo, Profile>(GraphTypeExtenstionHelper.GetActualType<ProfileType>())
+            _ = schema.Mutation.AddField(FieldBuilder.Create<UserUpdateInfo, Profile>(GraphTypeExtenstionHelper.GetActualType<ProfileType>())
                             .Name("updateAccount")
                             .Argument<NonNullGraphType<UserUpdateInfoInputType>>("userUpdateInfo")
                             .ResolveAsync(async context =>
@@ -81,7 +81,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             /// }
             ///}
             /// </example>
-            schema.Mutation.AddField(FieldBuilder.Create<PhoneNumberUpdateInfo, IdentityResult>(typeof(IdentityResultType))
+            _ = schema.Mutation.AddField(FieldBuilder.Create<PhoneNumberUpdateInfo, IdentityResult>(typeof(IdentityResultType))
                             .Name("updatePhoneNumber")
                             .Argument<NonNullGraphType<PhoneNumberUpdateInfoInputType>>("input")
                             .ResolveAsync(async context =>
@@ -100,7 +100,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             ///   "input": "be77bbe9-91a7-42bf-b253-9ed3a976af08"
             /// }
             /// </example>
-            schema.Mutation.AddField(FieldBuilder.Create<string, IdentityResult>(typeof(IdentityResultType))
+            _ = schema.Mutation.AddField(FieldBuilder.Create<string, IdentityResult>(typeof(IdentityResultType))
                             .Name("removePhoneNumber")
                             .Argument<NonNullGraphType<StringGraphType>>("input")
                             .ResolveAsync(async context =>
@@ -108,24 +108,24 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                                 return await _memberService.RemovePhoneNumberAsync(context.GetArgument<string>("input"));
                             }).FieldType);
 
-            schema.Mutation.AddField(FieldBuilder.Create<IList<string>, string>(typeof(StringGraphType))
-                            .Name("testSimple")
-                            .Argument<NonNullGraphType<StringGraphType>>("customerId")
-                            .Resolve(context =>
-                            {
-                                return context.GetArgument<string>("customerId");
-                            }).FieldType);
+            //schema.Mutation.AddField(FieldBuilder.Create<IList<string>, string>(typeof(StringGraphType))
+            //                .Name("testSimple")
+            //                .Argument<NonNullGraphType<StringGraphType>>("customerId")
+            //                .Resolve(context =>
+            //                {
+            //                    return context.GetArgument<string>("customerId");
+            //                }).FieldType);
 
-            schema.Mutation.AddField(FieldBuilder.Create<IList<string>, string>(typeof(StringGraphType))
-                            .Name("testList")
-                            .Argument<ListGraphType<StringGraphType>>("items")
-                            .Resolve(context =>
-                            {
-                                var items = context.GetArgument<IList<string>>("items");
-                                return items.FirstOrDefault();
-                            }).FieldType);
+            //schema.Mutation.AddField(FieldBuilder.Create<IList<string>, string>(typeof(StringGraphType))
+            //                .Name("testList")
+            //                .Argument<ListGraphType<StringGraphType>>("items")
+            //                .Resolve(context =>
+            //                {
+            //                    var items = context.GetArgument<IList<string>>("items");
+            //                    return items.FirstOrDefault();
+            //                }).FieldType);
 
-            schema.Mutation.AddField(FieldBuilder.Create<IList<Address>, Contact>(GraphTypeExtenstionHelper.GetActualType<ContactType>())
+            _ = schema.Mutation.AddField(FieldBuilder.Create<IList<Address>, Contact>(GraphTypeExtenstionHelper.GetActualType<ContactType>())
                             .Name("updateAddresses")
                             .Argument<NonNullGraphType<StringGraphType>>("customerId")
                             .Argument<ListGraphType<AddressInputType>>("addresses")
@@ -136,7 +136,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                                              context.GetArgument<IList<Address>>("addresses"));
                             }).FieldType);
 
-            schema.Mutation.AddField(FieldBuilder.Create<OrganizationUpdateInfo, Organization>(GraphTypeExtenstionHelper.GetActualType<OrganizationType>())
+            _ = schema.Mutation.AddField(FieldBuilder.Create<OrganizationUpdateInfo, Organization>(GraphTypeExtenstionHelper.GetActualType<OrganizationType>())
                             .Name("updateOrganization")
                             .Argument<NonNullGraphType<OrganizationUpdateInfoInputType>>("input")
                             .ResolveAsync(async context =>
@@ -144,6 +144,29 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                                 return await _memberService.UpdateOrganizationAsync(
                                              context.GetArgument<OrganizationUpdateInfo>("input"));
                             }).FieldType);
+
+            /// <example>
+            /// This is a sample mutation to lockUser.
+            /// mutation ($input: String!){
+            ///   lockUser(input: $input){ succeeded }
+            /// }
+            /// query variables:
+            /// {
+            ///   "input": "be77bbe9-91a7-42bf-b253-9ed3a976af08"
+            /// }
+            /// </example>
+            _ = schema.Mutation.AddField(FieldBuilder.Create<string, IdentityResult>(typeof(IdentityResultType))
+                            .Name("lockUser")
+                            .Argument<NonNullGraphType<LockUserInputType>>(_commandName)
+                            .ResolveAsync(async context => await _mediator.Send(context.GetArgument<LockUserCommand>(_commandName)))
+                            .FieldType);
+
+            /// Check the lockUser above for a sample.
+            _ = schema.Mutation.AddField(FieldBuilder.Create<string, IdentityResult>(typeof(IdentityResultType))
+                            .Name("unlockUser")
+                            .Argument<NonNullGraphType<UnlockUserInputType>>(_commandName)
+                            .ResolveAsync(async context => await _mediator.Send(context.GetArgument<UnlockUserCommand>(_commandName)))
+                            .FieldType);
         }
 
         public static async Task<IDictionary<string, Profile>> LoadProfileAsync(IMediator mediator, IEnumerable<string> ids, IEnumerable<string> includeFields)

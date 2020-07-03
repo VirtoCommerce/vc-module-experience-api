@@ -16,6 +16,8 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Services
         Task<Contact> UpdateContactAddressesAsync(string contactId, IList<Address> addresses);
         Task DeleteContactAsync(string contactId);
         Task<ProfileSearchResult> SearchOrganizationContactsAsync(MembersSearchCriteria criteria);
+        Task<IdentityResult> LockUserAsync(string userId);
+        Task<IdentityResult> UnlockUserAsync(string userId);
 
         Task<Organization> GetOrganizationByIdAsync(string organizationId);
         Task<Organization> CreateOrganizationAsync(Organization organization);
