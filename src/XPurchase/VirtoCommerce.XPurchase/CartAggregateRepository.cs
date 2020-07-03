@@ -50,10 +50,11 @@ namespace VirtoCommerce.XPurchase
         public async Task<CartAggregate> GetCartByIdAsync(string cartId, string language = null)
         {
             var cart = await _shoppingCartService.GetByIdAsync(cartId);
-            if(cart != null)
+            if (cart != null)
             {
                 return await InnerGetCartAggregateFromCartAsync(cart, language ?? Language.InvariantLanguage.CultureName);
             }
+
             return null;
         }
 
@@ -77,9 +78,9 @@ namespace VirtoCommerce.XPurchase
             var cart = cartSearchResult.Results.FirstOrDefault();
             if (cart != null)
             {
-
                 return await InnerGetCartAggregateFromCartAsync(cart, language);
             }
+
             return null;
         }
 
@@ -115,6 +116,6 @@ namespace VirtoCommerce.XPurchase
             await aggregate.ValidateAsync(await _cartValidationContextFactory.CreateValidationContextAsync(aggregate));
 
             return aggregate;
-        }      
+        }
     }
 }
