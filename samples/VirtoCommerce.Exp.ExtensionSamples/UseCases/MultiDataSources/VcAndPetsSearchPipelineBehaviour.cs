@@ -7,7 +7,7 @@ using MediatR.Pipeline;
 using PetsStoreClient;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.DigitalCatalog;
-using VirtoCommerce.ExperienceApiModule.DigitalCatalog.Requests;
+using VirtoCommerce.ExperienceApiModule.DigitalCatalog.Queries;
 using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.Exp.ExtensionSamples
@@ -22,7 +22,7 @@ namespace VirtoCommerce.Exp.ExtensionSamples
 
         public async Task Process(TRequest request, TResponse response, CancellationToken cancellationToken)
         {
-            if (request is LoadProductRequest loadProductRequest && response is LoadProductResponse loadProductResponse)
+            if (request is LoadProductQuery loadProductRequest && response is LoadProductResponse loadProductResponse)
             {
                 var notLoadedProductIds = loadProductRequest.Ids.Except(loadProductResponse.Products.Select(x => x.Id)).Where(x => long.TryParse(x, out var _));
                 if (notLoadedProductIds.Any())
@@ -40,7 +40,7 @@ namespace VirtoCommerce.Exp.ExtensionSamples
                 }
 
             }
-            else if (request is SearchProductRequest searchProductRequest && response is SearchProductResponse searchProductResponse)
+            else if (request is SearchProductQuery searchProductRequest && response is SearchProductResponse searchProductResponse)
             {
                 var totalCount = searchProductResponse.TotalCount;
                 var skip = Math.Min(totalCount, searchProductRequest.Skip);

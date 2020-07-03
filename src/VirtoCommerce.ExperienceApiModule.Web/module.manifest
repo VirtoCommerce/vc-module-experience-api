@@ -8,6 +8,7 @@
     <description></description>
     <dependencies>
         <dependency id="VirtoCommerce.ElasticSearch" version="3.0.2" />
+        <dependency id="VirtoCommerce.Marketing" version="3.4.0" />
     </dependencies>
     <groups>
         <group>commerce</group>
@@ -18,7 +19,7 @@
     <owners>
         <owner>Virto Commerce</owner>
     </owners>
-	<groups>
+    <groups>
         <group>commerce</group>
     </groups>
     <projectUrl>https://virtocommerce.com</projectUrl>
@@ -29,8 +30,8 @@
 
     <assemblyFile>VirtoCommerce.ExperienceApiModule.Web.dll</assemblyFile>
     <moduleType>VirtoCommerce.ExperienceApiModule.Web.Module, VirtoCommerce.ExperienceApiModule.Web</moduleType>
-    
+
     <incompatibilities>
     </incompatibilities>
-    
+
 </module>

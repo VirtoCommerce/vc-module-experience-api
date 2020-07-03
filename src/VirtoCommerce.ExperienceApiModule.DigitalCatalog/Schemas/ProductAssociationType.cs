@@ -7,8 +7,7 @@ using GraphQL.Types;
 using MediatR;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.Core.Schema;
-using VirtoCommerce.ExperienceApiModule.DigitalCatalog.Index;
-using VirtoCommerce.ExperienceApiModule.DigitalCatalog.Requests;
+using VirtoCommerce.ExperienceApiModule.DigitalCatalog.Queries;
 
 namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Schemas
 {
@@ -43,7 +42,7 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Schemas
 
         public static async Task<IDictionary<string, ExpProduct>> LoadProductsAsync(IMediator mediator, IEnumerable<string> ids)
         {
-            var response = await mediator.Send(new LoadProductRequest { Ids = ids.ToArray() });
+            var response = await mediator.Send(new LoadProductQuery { Ids = ids.ToArray() });
             return response.Products.ToDictionary(x => x.Id);
         }
     }
