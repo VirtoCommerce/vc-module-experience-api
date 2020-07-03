@@ -146,23 +146,45 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                             }).FieldType);
 
             /// <example>
-            /// This is a sample mutation to lockUser.
-            /// mutation ($input: String!){
-            ///   lockUser(input: $input){ succeeded }
+            /// This is a sample mutation to createUserInvitations.
+            /// mutation($command: CreateUserInvitationsInputType!){
+            ///     createUserInvitations(command: $command){
+            ///         succeeded errors { description }
+            ///     }
             /// }
             /// query variables:
             /// {
-            ///   "input": "be77bbe9-91a7-42bf-b253-9ed3a976af08"
+            ///     "command": {
+            ///         "message": "welcome {{userName}}", "roles": ["Organization employee"], "emails": ["test1@virtoway.com", "CreateUserInvitation1@virtoway.com"], "organizationId": "689a72757c754bef97cde51afc663430", "storeId": "Electronics", "storeEmail": "storeadmin@virtoway.com", "language": "en-US"
+            ///     }
             /// }
             /// </example>
-            _ = schema.Mutation.AddField(FieldBuilder.Create<string, IdentityResult>(typeof(IdentityResultType))
+            _ = schema.Mutation.AddField(FieldBuilder.Create<Profile, IdentityResult>(typeof(IdentityResultType))
+                            .Name("createUserInvitations")
+                            .Argument<NonNullGraphType<CreateUserInvitationsInputType>>(_commandName)
+                            .ResolveAsync(async context => await _mediator.Send(context.GetArgument<CreateUserInvitationsCommand>(_commandName)))
+                            .FieldType);
+
+            /// <example>
+            /// This is a sample mutation to lockUser.
+            /// mutation lockUser($input: LockUserInputType!){
+            ///     lockUser(command: $input){
+            ///         succeeded
+            ///     }
+            /// }
+            /// query variables:
+            /// {
+            ///     "input": { "userId": "a9fa82c5-d1b9-4838-b3ba-bec4e7b358dc" }
+            /// }
+            /// </example>
+            _ = schema.Mutation.AddField(FieldBuilder.Create<Profile, IdentityResult>(typeof(IdentityResultType))
                             .Name("lockUser")
                             .Argument<NonNullGraphType<LockUserInputType>>(_commandName)
                             .ResolveAsync(async context => await _mediator.Send(context.GetArgument<LockUserCommand>(_commandName)))
                             .FieldType);
 
             /// Check the lockUser above for a sample.
-            _ = schema.Mutation.AddField(FieldBuilder.Create<string, IdentityResult>(typeof(IdentityResultType))
+            _ = schema.Mutation.AddField(FieldBuilder.Create<Profile, IdentityResult>(typeof(IdentityResultType))
                             .Name("unlockUser")
                             .Argument<NonNullGraphType<UnlockUserInputType>>(_commandName)
                             .ResolveAsync(async context => await _mediator.Send(context.GetArgument<UnlockUserCommand>(_commandName)))
