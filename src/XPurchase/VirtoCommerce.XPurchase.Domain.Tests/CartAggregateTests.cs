@@ -19,73 +19,17 @@ using VirtoCommerce.ShippingModule.Core.Services;
 using VirtoCommerce.StoreModule.Core.Services;
 using VirtoCommerce.TaxModule.Core.Services;
 using VirtoCommerce.XPurchase.Services;
+using VirtoCommerce.XPurchase.Tests.Helpers;
 using Xunit;
 
-namespace VirtoCommerce.XPurchase.Tests.Aggregates
+namespace VirtoCommerce.XPurchase.Tests
 {
-    public class CartAggregateTests
+    public class CartAggregateTests : MoqHelper
     {
-        private readonly Fixture _fixture = new Fixture();
-
-        private readonly Mock<ICartProductService> _cartProductServiceMock;
-        private readonly Mock<ICurrencyService> _currencyServiceMock;
-        private readonly Mock<IMarketingPromoEvaluator> _marketingPromoEvaluatorMock;
-        private readonly Mock<IPaymentMethodsSearchService> _paymentMethodsSearchServiceMock;
-        private readonly Mock<IShippingMethodsSearchService> _shippingMethodsSearchServiceMock;
-        private readonly Mock<IShoppingCartTotalsCalculator> _shoppingCartTotalsCalculatorMock;
-        private readonly Mock<IStoreService> _storeServiceMock;
-        private readonly Mock<ITaxProviderSearchService> _taxProviderSearchServiceMock;
-
-        private readonly Mock<IMapper> _mappereMock;
-
         private readonly CartAggregate aggregate;
 
         public CartAggregateTests()
         {
-            _fixture.Register(() => new Language("en-US"));
-            _fixture.Register(() => new Currency(_fixture.Create<Language>(), "USD"));
-            _fixture.Register(() => _fixture
-                .Build<ShoppingCart>()
-                .With(x => x.Currency, "USD")
-                .With(x => x.LanguageCode, "en-US")
-                .Without(x => x.Items)
-                .Create());
-            //_fixture.Register<IMutablePagedList<DynamicProperty>>(() => null);
-            //_fixture.Register(() => _fixture.Build<DynamicPropertyName>().With(x => x.Locale, "en-US").Create());
-            //_fixture.Register(() => _fixture.Build<DynamicPropertyObjectValue>().With(x => x.Locale, "en-US").Create());
-            //_fixture.Register<IMutablePagedList<SettingEntry>>(() => null);
-            //_fixture.Register<IMutablePagedList<Contact>>(() => null);
-            //_fixture.Register<IMutablePagedList<QuoteRequest>>(() => null);
-            //_fixture.Register<IMutablePagedList<Category>>(() => null);
-            //_fixture.Register<IMutablePagedList<Product>>(() => null);
-            //_fixture.Register<IList<Product>>(() => null);
-            //_fixture.Register<IList<ValidationError>>(() => null);
-            //_fixture.Register<IMutablePagedList<CatalogProperty>>(() => null);
-            //_fixture.Register<IMutablePagedList<ProductAssociation>>(() => null);
-            //_fixture.Register<IMutablePagedList<EditorialReview>>(() => null);
-            //_fixture.Register(() => _fixture.Build<LineItem>()
-            //                                .Without(x => x.DynamicProperties)
-            //                                .With(x => x.IsReadOnly, false)
-            //                                .Create());
-            //_fixture.Register(() => _fixture.Build<ShoppingCart>().Without(x => x.DynamicProperties).Create());
-            _fixture.Register<Price>(() => null);
-
-            _cartProductServiceMock = new Mock<ICartProductService>();
-
-            _currencyServiceMock = new Mock<ICurrencyService>();
-            _currencyServiceMock
-                .Setup(x => x.GetAllCurrenciesAsync())
-                .ReturnsAsync(_fixture.CreateMany<Currency>(1).ToList());
-
-            _marketingPromoEvaluatorMock = new Mock<IMarketingPromoEvaluator>();
-            _paymentMethodsSearchServiceMock = new Mock<IPaymentMethodsSearchService>();
-            _shippingMethodsSearchServiceMock = new Mock<IShippingMethodsSearchService>();
-            _shoppingCartTotalsCalculatorMock = new Mock<IShoppingCartTotalsCalculator>();
-            _storeServiceMock = new Mock<IStoreService>();
-            _taxProviderSearchServiceMock = new Mock<ITaxProviderSearchService>();
-
-            _mappereMock = new Mock<IMapper>();
-
             aggregate = new CartAggregate(
                 //_cartProductServiceMock.Object,
                 //_currencyServiceMock.Object,
@@ -95,7 +39,7 @@ namespace VirtoCommerce.XPurchase.Tests.Aggregates
                 _shoppingCartTotalsCalculatorMock.Object,
                 //_storeServiceMock.Object,
                 _taxProviderSearchServiceMock.Object,
-                _mappereMock.Object);
+                _mapperMock.Object);
         }
 
         #region UpdateCartComment

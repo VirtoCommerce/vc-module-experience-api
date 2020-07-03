@@ -74,7 +74,6 @@ namespace VirtoCommerce.XPurchase
             }
         }
 
-
         public ShoppingCart Cart { get; protected set; }
 
         public IDictionary<string, CartProduct> CartProductsDict { get; protected set; } = new Dictionary<string, CartProduct>().WithDefaultValue(null);
@@ -107,7 +106,6 @@ namespace VirtoCommerce.XPurchase
             //TODO: Need to check what member.Name contains name for all derived member types such as contact etc.
             Cart.CustomerName = member?.Name ?? "Anonymous";
 
-         
             await RecalculateAsync();
 
             return this;
@@ -157,6 +155,7 @@ namespace VirtoCommerce.XPurchase
             }
 
             await AddLineItemAsync(lineItem);
+
             return this;
         }
 
@@ -323,7 +322,7 @@ namespace VirtoCommerce.XPurchase
                 payment.BillingAddress.Key = null;
             }
             Cart.Payments.Add(payment);
-            
+
             return this;
         }
 
@@ -363,7 +362,7 @@ namespace VirtoCommerce.XPurchase
             }
             return this;
         }
-      
+
         public async Task<IList<ValidationFailure>> ValidateAsync(CartValidationContext validationContext)
         {
             EnsureCartExists();
@@ -514,7 +513,7 @@ namespace VirtoCommerce.XPurchase
                 throw new OperationCanceledException("Cart not loaded.");
             }
         }
-       
+
         protected async Task<TaxProvider> GetActiveTaxProviderAsync()
         {
             //TODO:

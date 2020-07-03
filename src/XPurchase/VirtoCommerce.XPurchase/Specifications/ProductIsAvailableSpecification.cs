@@ -12,13 +12,12 @@ namespace VirtoCommerce.XPurchase
                 if (result)
                 {
                     result = product.Inventory.AllowPreorder ||
-                                  product.Inventory.AllowBackorder ||
-                                  product.AvailableQuantity >= requestedQuantity;
+                             product.Inventory.AllowBackorder ||
+                             product.AvailableQuantity >= requestedQuantity;
                 }
-
             }
+
             return result;
         }
-
     }
 }

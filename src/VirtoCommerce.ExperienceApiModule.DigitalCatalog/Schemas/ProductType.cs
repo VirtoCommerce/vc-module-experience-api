@@ -9,8 +9,7 @@ using GraphQL.Types.Relay.DataObjects;
 using MediatR;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
-using VirtoCommerce.ExperienceApiModule.DigitalCatalog.Index;
-using VirtoCommerce.ExperienceApiModule.DigitalCatalog.Requests;
+using VirtoCommerce.ExperienceApiModule.DigitalCatalog.Queries;
 using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Schemas
@@ -72,7 +71,7 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Schemas
                 Group = context.GetArgument<string>("group"),
                 ObjectIds = new[] { context.Source.CatalogProduct.Id }
             };
-            var response = await madiator.Send(new SearchProductAssociationsCommand { Criteria = criteria });
+            var response = await madiator.Send(new SearchProductAssociationsQuery { Criteria = criteria });
             return new Connection<ProductAssociation>()
             {
                 Edges = response.Result.Results
