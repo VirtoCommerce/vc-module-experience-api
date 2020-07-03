@@ -1,20 +1,24 @@
-﻿using System.Threading;
+using System;
+using System.Threading;
 using System.Threading.Tasks;
+using VirtoCommerce.XPurchase.Services;
 
 namespace VirtoCommerce.XPurchase.Commands
 {
     public class AddOrUpdateCartShipmentCommandHandler : CartCommandHandler<AddOrUpdateCartShipmentCommand>
     {
-        public AddOrUpdateCartShipmentCommandHandler(ICartAggregateRepository cartRepository)
+        private readonly ICartAvailMethodsService _cartAvailMethodService;
+        public AddOrUpdateCartShipmentCommandHandler(ICartAggregateRepository cartRepository, ICartAvailMethodsService cartAvailMethodService)
             : base(cartRepository)
         {
+            _cartAvailMethodService = cartAvailMethodService;
         }
 
         public override async Task<CartAggregate> Handle(AddOrUpdateCartShipmentCommand request, CancellationToken cancellationToken)
         {
-            var cartAggr = await GetCartAggregateFromCommandAsync(request);
-            await cartAggr.AddOrUpdateShipmentAsync(request.Shipment);
-            await CartAggrRepository.SaveAsync(cartAggr);
+            var cartAggr = await GetOrCreateCartFromCommandAsync(request);
+            await cartAggr.AddOrUpdateShipmentAsync(request.Shipment, await _cartAvailMethodService.GetAvailableShippingRatesAsync(cartAggr));
+            await CartRepository.SaveAsync(cartAggr);
             return cartAggr;
         }
     }

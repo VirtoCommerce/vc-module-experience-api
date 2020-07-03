@@ -1,14 +1,14 @@
-using System.Collections.Generic;
+using System;
 using System.Linq;
 using GraphQL.Types;
-using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.XPurchase.Extensions;
+using VirtoCommerce.XPurchase.Services;
 
 namespace VirtoCommerce.XPurchase.Schemas
 {
     public class CartType : ObjectGraphType<CartAggregate>
     {
-        public CartType()
+        public CartType(ICartAvailMethodsService cartAvailMethods)
         {
             Field(x => x.Id, nullable: true).Description("Shopping cart Id");
             Field(x => x.Cart.Name, nullable: false).Description("Shopping cart name");
@@ -53,7 +53,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field<ListGraphType<ShipmentType>>("shipments", resolve: context => context.Source.Cart.Shipments);
             FieldAsync<ListGraphType<ShippingMethodType>>("availableShippingMethods", resolve: async context =>
             {
-                return await context.Source.GetAvailableShippingRatesAsync();
+                return await cartAvailMethods.GetAvailableShippingRatesAsync(context.Source);
             });
 
             // Payment
@@ -64,7 +64,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field<ListGraphType<PaymentType>>("payments", resolve: context => context.Source.Cart.Payments);
             FieldAsync<ListGraphType<PaymentMethodType>>("availablePaymentMethods", resolve: async context =>
             {
-                return await context.Source.GetAvailablePaymentMethodsAsync();
+                return await cartAvailMethods.GetAvailablePaymentMethodsAsync(context.Source);
             });
             //TODO:
             //Field<ListGraphType<PaymentPlanType>>("paymentPlan", resolve: context => context.Source.PaymentPlan);

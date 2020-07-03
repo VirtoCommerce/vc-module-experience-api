@@ -6,19 +6,18 @@ using MediatR;
 using VirtoCommerce.ExperienceApiModule.Core.Schema;
 using VirtoCommerce.XPurchase.Commands;
 using VirtoCommerce.XPurchase.Extensions;
+using VirtoCommerce.XPurchase.Queries;
 
 namespace VirtoCommerce.XPurchase.Schemas
 {
     public class PurchaseSchema : ISchemaBuilder
     {
-        private readonly ICartAggregateRepository _cartAggrRepository;
         private readonly IMediator _mediator;
         public const string _commandName = "command";
 
-        public PurchaseSchema(IMediator mediator, ICartAggregateRepository cartAggrFactory)
+        public PurchaseSchema(IMediator mediator)
         {
             _mediator = mediator;
-            _cartAggrRepository = cartAggrFactory;
         }
 
         public void Build(ISchema schema)
@@ -40,6 +39,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                 Resolver = new AsyncFieldResolver<object>(async context =>
                 {
                     //TODO: Move to extension methods
+
                     var storeId = context.GetArgument<string>("storeId");
                     var cartName = context.GetArgument("cartName", "default");
                     var userId = context.GetArgument<string>("userId");
@@ -47,10 +47,13 @@ namespace VirtoCommerce.XPurchase.Schemas
                     var currencyCode = context.GetArgument<string>("currencyCode");
                     var type = context.GetArgument<string>("type");
 
-                    var cartAggregate = await _cartAggrRepository.GetOrCreateAsync(cartName, storeId, userId, cultureName, currencyCode, type);
-
-                    await cartAggregate.ValidateAsync();
-                    await cartAggregate.RecalculateAsync();
+                    var getCartQuery = new GetCartQuery(storeId, type, cartName, userId, currencyCode, cultureName);
+                    var cartAggregate = await _mediator.Send(getCartQuery);
+                    if(cartAggregate == null)
+                    {
+                        var createCartCommand = new CreateCartCommand(storeId, type, cartName, userId, currencyCode, cultureName);
+                        cartAggregate = await _mediator.Send(createCartCommand);
+                    }
 
                     //store cart aggregate in the user context for future usage in the graph types resolvers
                     context.UserContext.Add("cartAggregate", cartAggregate);

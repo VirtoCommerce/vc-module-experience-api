@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using VirtoCommerce.ExperienceApiModule.Core.Schema;
 using VirtoCommerce.XPurchase.Schemas;
 using VirtoCommerce.XPurchase.Services;
+using VirtoCommerce.XPurchase.Validators;
 
 namespace VirtoCommerce.XPurchase.Extensions
 {
@@ -53,9 +54,11 @@ namespace VirtoCommerce.XPurchase.Extensions
 
             services.AddSchemaBuilder<PurchaseSchema>();
 
-            //TODO: Move to single method serviceCollectionExtensions.AddPurchase in  the Purchase project
             services.AddTransient<ICartAggregateRepository, CartAggregateRepository>();
 
+            services.AddTransient<ICartValidationContextFactory, CartValidationContextFactory>();
+            services.AddTransient<ICartAvailMethodsService, CartAvailMethodsService>();
+          
             services.AddMediatR(typeof(XPurchaseAnchor));
 
             //TODO: Not work
