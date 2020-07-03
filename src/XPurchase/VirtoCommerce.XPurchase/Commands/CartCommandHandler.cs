@@ -34,7 +34,7 @@ namespace VirtoCommerce.XPurchase.Commands
             var cart = AbstractTypeFactory<ShoppingCart>.TryCreateInstance();
 
             cart.CustomerId = request.UserId;
-            cart.Name = request.CartName;
+            cart.Name = request.CartName ?? "default";
             cart.StoreId = request.StoreId;
             cart.LanguageCode = request.Language;
             cart.Type = request.CartType;
