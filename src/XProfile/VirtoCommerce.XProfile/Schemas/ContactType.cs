@@ -20,7 +20,13 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 
             Field(x => x.FirstName);
             Field(x => x.LastName);
-            Field<ListGraphType<AddressType>>("addresses", resolve: context => context.Source.Addresses);
+            Field<DateGraphType>("birthDate", resolve: context => context.Source.BirthDate);
+            Field(x => x.FullName);
+            Field(x => x.Id);
+            Field(x => x.MiddleName, true);
+            Field(x => x.Name);
+            Field(x => x.OuterId, true);
+            Field<ListGraphType<AddressTypePro>>("addresses", resolve: context => context.Source.Addresses);
             Field<ListGraphType<StringGraphType>>("organizations", resolve: context => context.Source.Organizations);
 
 

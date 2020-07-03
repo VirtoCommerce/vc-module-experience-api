@@ -9,6 +9,7 @@ using VirtoCommerce.ExperienceApiModule.DigitalCatalog;
 using VirtoCommerce.ExperienceApiModule.DigitalCatalog.Mapping;
 using VirtoCommerce.ExperienceApiModule.DigitalCatalog.Schemas;
 using VirtoCommerce.ExperienceApiModule.XProfile;
+using VirtoCommerce.ExperienceApiModule.XProfile.Extensions;
 using VirtoCommerce.ExperienceApiModule.XProfile.Mapping;
 using VirtoCommerce.Platform.Core.Modularity;
 using VirtoCommerce.XPurchase;
@@ -53,6 +54,7 @@ namespace VirtoCommerce.ExperienceApiModule.Web
             services.AddSchemaBuilder<DigitalCatalogSchema>();
 
             //Register all purchase dependencies
+            services.AddXProfile();
             services.AddXPurchase();
             //TODO: need to fix extension, it's register only types from the last schema
             //services.AddGraphShemaBuilders(typeof(Anchor));

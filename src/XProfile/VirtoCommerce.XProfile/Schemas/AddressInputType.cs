@@ -3,27 +3,28 @@ using VirtoCommerce.CustomerModule.Core.Model;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 {
-    public class AddressInputType : InputObjectGraphType
+    public class AddressInputType : InputObjectGraphType<Address>
     {
         public AddressInputType()
         {
-            Field<StringGraphType>(nameof(Address.Name));
-            Field<NonNullGraphType<StringGraphType>>(nameof(Address.AddressType));
-
-            Field<NonNullGraphType<StringGraphType>>(nameof(Address.City));
-            Field<NonNullGraphType<StringGraphType>>(nameof(Address.CountryCode));
-            Field<NonNullGraphType<StringGraphType>>(nameof(Address.CountryName));
-            Field<NonNullGraphType<StringGraphType>>(nameof(Address.Email));
-            Field<StringGraphType>(nameof(Address.FirstName));
-            Field<StringGraphType>(nameof(Address.LastName));
-            Field<NonNullGraphType<StringGraphType>>(nameof(Address.Line1));
-            Field<StringGraphType>(nameof(Address.Line2));
-            Field<StringGraphType>(nameof(Address.Organization));
-            Field<StringGraphType>(nameof(Address.Phone));
-            Field<NonNullGraphType<StringGraphType>>(nameof(Address.PostalCode));
-            Field<StringGraphType>(nameof(Address.RegionId));
-            Field<StringGraphType>(nameof(Address.RegionName));
+            Field(x => x.City).Description("City");
+            Field(x => x.CountryCode).Description("Country code");
+            Field(x => x.CountryName).Description("Country name");
+            Field(x => x.Email).Description("Email");
+            Field(x => x.FirstName, nullable: true).Description("First name");
+            Field(x => x.Key, nullable: true).Description("Id");
+            Field(x => x.LastName, nullable: true).Description("Last name");
+            Field(x => x.Line1).Description("Line1");
+            Field(x => x.Line2, nullable: true).Description("Line2");
+            Field(x => x.MiddleName, nullable: true).Description("Middle name");
+            Field(x => x.Name, nullable: true).Description("Name");
+            Field(x => x.Organization, nullable: true).Description("Company name");
+            Field(x => x.Phone, nullable: true).Description("Phone");
+            Field(x => x.PostalCode).Description("Postal code");
+            Field(x => x.RegionId, nullable: true).Description("Region id");
+            Field(x => x.RegionName, nullable: true).Description("Region name");
+            Field(x => x.Zip, nullable: true).Description("Zip");
+            Field<NonNullGraphType<AddressTypeEnum>>(nameof(Address.AddressType));
         }
     }
-
 }

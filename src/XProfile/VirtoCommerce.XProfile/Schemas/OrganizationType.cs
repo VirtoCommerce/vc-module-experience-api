@@ -20,7 +20,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             Field(x => x.Name).Description("Name");
             Field(x => x.MemberType).Description("Member type");
             Field(x => x.OuterId, nullable: true).Description("Outer id");
-            Field<NonNullGraphType<ListGraphType<AddressType>>>("addresses", resolve: x => x.Source.Addresses);
+            Field<NonNullGraphType<ListGraphType<AddressTypePro>>>("addresses", resolve: x => x.Source.Addresses);
             Field(x => x.Phones);
             Field(x => x.Emails);
             Field(x => x.Groups);

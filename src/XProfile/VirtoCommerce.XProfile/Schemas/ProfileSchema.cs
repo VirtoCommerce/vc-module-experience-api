@@ -128,7 +128,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             _ = schema.Mutation.AddField(FieldBuilder.Create<IList<Address>, Contact>(GraphTypeExtenstionHelper.GetActualType<ContactType>())
                             .Name("updateAddresses")
                             .Argument<NonNullGraphType<StringGraphType>>("customerId")
-                            .Argument<ListGraphType<AddressInputType>>("addresses")
+                            .Argument<NonNullGraphType<ListGraphType<AddressInputType>>>("addresses")
                             .ResolveAsync(async context =>
                             {
                                 return await _memberService.UpdateContactAddressesAsync(
