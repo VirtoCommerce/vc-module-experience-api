@@ -1,3 +1,4 @@
+using System.Linq;
 using GraphQL.Types;
 using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.XPurchase.Extensions;
@@ -10,11 +11,13 @@ namespace VirtoCommerce.XPurchase.Schemas
         {
             //TODO:
             //Field<ProductType>("product", resolve: context => context.Source.Product);
-            //Field(x => x.InStockQuantity, nullable: true).Description("InStockQuantity");
-            //Field(x => x.WarehouseLocation, nullable: true).Description("Value of line item warehouse location");
+        
             //Field<MoneyType>("paymentPlan", resolve: context => context.Source.PaymentPlan);
-            //Field(x => x.IsValid, nullable: true).Description("Value of line item quantity");
-            //Field<ValidationErrorType>("validationErrors", resolve: context => context.Source.ValidationErrors);
+            Field<IntGraphType>("inStockQuantity", resolve: context => context.GetCart().CartProducts[context.Source.ProductId]?.AvailableQuantity);
+            Field<StringGraphType>("warehouseLocation", resolve: context => context.GetCart().CartProducts[context.Source.ProductId]?.Inventory?.FulfillmentCenter?.Address);
+            
+            Field<BooleanGraphType>("IsValid", resolve: context => !context.GetCart().ValidationErrors.GetEntityCartErrors(context.Source).Any());
+            Field<ListGraphType<ValidationErrorType>>("validationErrors", resolve: context => context.GetCart().ValidationErrors.GetEntityCartErrors(context.Source));
 
             Field(x => x.CatalogId, nullable: true).Description("Value of catalog id");
             Field(x => x.CategoryId, nullable: true).Description("Value of category id");

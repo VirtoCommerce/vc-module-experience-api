@@ -8,6 +8,7 @@ using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.CustomerModule.Core.Services;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.StoreModule.Core.Services;
+using VirtoCommerce.XPurchase.Services;
 using VirtoCommerce.XPurchase.Validators;
 
 namespace VirtoCommerce.XPurchase
@@ -110,10 +111,15 @@ namespace VirtoCommerce.XPurchase
 
             var member = await _memberService.GetByIdAsync(cart.CustomerId);
             var aggregate = _cartAggregateFactory();
-            await aggregate.TakeCartAsync(cart, store, member, currency);
-
+            await aggregate.GrabCartAsync(cart, store, member, currency);
+            var validationContext = await _cartValidationContextFactory.CreateValidationContextAsync(aggregate);
+            //Populate aggregate.CartProducts with the  products data for all cart  line items
+            foreach (var cartProduct in validationContext.AllCartProducts)
+            {
+                aggregate.CartProducts[cartProduct.Id] = cartProduct;
+            }
             //Run validation
-            await aggregate.ValidateAsync(await _cartValidationContextFactory.CreateValidationContextAsync(aggregate));
+            await aggregate.ValidateAsync(validationContext);
 
             return aggregate;
         }

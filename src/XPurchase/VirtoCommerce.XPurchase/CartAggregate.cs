@@ -76,7 +76,10 @@ namespace VirtoCommerce.XPurchase
 
         public ShoppingCart Cart { get; protected set; }
 
-        public IDictionary<string, CartProduct> CartProductsDict { get; protected set; } = new Dictionary<string, CartProduct>().WithDefaultValue(null);
+        /// <summary>
+        /// Represents the dictionary of all CartProducts data for each  existing cart line item
+        /// </summary>
+        public IDictionary<string, CartProduct> CartProducts { get; protected set; } = new Dictionary<string, CartProduct>().WithDefaultValue(null);
 
         /// <summary>
         /// Contains a new of validation rule set that will be executed each time the basket is changed.
@@ -85,10 +88,10 @@ namespace VirtoCommerce.XPurchase
         /// </summary>
         public string ValidationRuleSet { get; set; } = "default,strict";
 
-        public bool IsValid => ValidationErrors.Any();
+        public bool IsValid => !ValidationErrors.Any();
         public IList<ValidationFailure> ValidationErrors { get; protected set; } = new List<ValidationFailure>();
 
-        public virtual async Task<CartAggregate> TakeCartAsync(ShoppingCart cart, Store store, Member member, Currency currency)
+        public virtual async Task<CartAggregate> GrabCartAsync(ShoppingCart cart, Store store, Member member, Currency currency)
         {
             if (cart == null)
             {
@@ -154,7 +157,9 @@ namespace VirtoCommerce.XPurchase
                 }).ToList();
             }
 
-            await AddLineItemAsync(lineItem);
+            CartProducts[newCartItem.CartProduct.Id] = newCartItem.CartProduct;
+
+            await InnerAddLineItemAsync(lineItem, newCartItem.CartProduct);
 
             return this;
         }
@@ -184,20 +189,17 @@ namespace VirtoCommerce.XPurchase
 
             if (lineItem != null)
             {
-                var lineItemProduct = CartProductsDict[lineItem.ProductId];
-                if (lineItemProduct != null)
+                var salePrice = qtyAdjustment.CartProduct.Price.GetTierPrice(qtyAdjustment.NewQuantity).Price;
+                if (salePrice != 0)
                 {
-                    var salePrice = lineItemProduct.Price.GetTierPrice(qtyAdjustment.NewQuantity).Price;
-                    if (salePrice != 0)
-                    {
-                        lineItem.SalePrice = salePrice.Amount;
-                    }
-                    //List price should be always greater ot equals sale price because it may cause incorrect totals calculation
-                    if (lineItem.ListPrice < lineItem.SalePrice)
-                    {
-                        lineItem.ListPrice = lineItem.SalePrice;
-                    }
+                    lineItem.SalePrice = salePrice.Amount;
                 }
+                //List price should be always greater ot equals sale price because it may cause incorrect totals calculation
+                if (lineItem.ListPrice < lineItem.SalePrice)
+                {
+                    lineItem.ListPrice = lineItem.SalePrice;
+                }
+
                 if (qtyAdjustment.NewQuantity > 0)
                 {
                     lineItem.Quantity = qtyAdjustment.NewQuantity;
@@ -326,36 +328,36 @@ namespace VirtoCommerce.XPurchase
             return this;
         }
 
-        public virtual async Task<CartAggregate> MergeWithCartAsync(ShoppingCart cart)
+        public virtual async Task<CartAggregate> MergeWithCartAsync(CartAggregate otherCart)
         {
             EnsureCartExists();
 
             //Reset primary keys for all aggregated entities before merge
             //To prevent insertions same Ids for target cart
             //exclude user because it might be the current one
-            var entities = cart.GetFlatObjectsListWithInterface<IEntity>();
+            var entities = otherCart.Cart.GetFlatObjectsListWithInterface<IEntity>();
             foreach (var entity in entities)
             {
                 entity.Id = null;
             }
 
-            foreach (var lineItem in cart.Items)
+            foreach (var lineItem in otherCart.Cart.Items)
             {
-                await AddLineItemAsync(lineItem);
+                await InnerAddLineItemAsync(lineItem, otherCart.CartProducts[lineItem.ProductId]);
             }
 
-            foreach (var coupon in cart.Coupons)
+            foreach (var coupon in otherCart.Cart.Coupons)
             {
                 await AddCouponAsync(coupon);
             }
 
-            foreach (var shipment in cart.Shipments)
+            foreach (var shipment in otherCart.Cart.Shipments)
             {
                 //Skip validation, do not pass avail methods
                 await AddOrUpdateShipmentAsync(shipment, null);
             }
 
-            foreach (var payment in cart.Payments)
+            foreach (var payment in otherCart.Cart.Payments)
             {
                 //Skip validation, do not pass avail methods
                 await AddOrUpdatePaymentAsync(payment, null);
@@ -459,43 +461,43 @@ namespace VirtoCommerce.XPurchase
             return Task.FromResult(this);
         }
 
-        protected virtual Task<CartAggregate> ChangeItemQuantityAsync(LineItem lineItem, int quantity)
+        protected virtual Task<CartAggregate> InnerChangeItemQuantityAsync(LineItem lineItem, int quantity, CartProduct product = null)
         {
-            if (lineItem != null && !lineItem.IsReadOnly)
+            if (lineItem == null)
             {
-                var cartProduct = CartProductsDict[lineItem.ProductId];
-                if (cartProduct != null)
-                {
-                    var salePrice = cartProduct.Price.GetTierPrice(quantity).Price;
-                    if (salePrice != 0)
-                    {
-                        lineItem.SalePrice = salePrice.Amount;
-                    }
-                    //List price should be always greater ot equals sale price because it may cause incorrect totals calculation
-                    if (lineItem.ListPrice < lineItem.SalePrice)
-                    {
-                        lineItem.ListPrice = lineItem.SalePrice;
-                    }
-                }
-                if (quantity > 0)
-                {
-                    lineItem.Quantity = quantity;
-                }
-                else
-                {
-                    Cart.Items.Remove(lineItem);
-                }
+                throw new ArgumentNullException(nameof(lineItem));
             }
 
+            if (!lineItem.IsReadOnly && product != null)
+            {
+                var salePrice = product.Price.GetTierPrice(quantity).Price;
+                if (salePrice != 0)
+                {
+                    lineItem.SalePrice = salePrice.Amount;
+                }
+                //List price should be always greater ot equals sale price because it may cause incorrect totals calculation
+                if (lineItem.ListPrice < lineItem.SalePrice)
+                {
+                    lineItem.ListPrice = lineItem.SalePrice;
+                }
+            }
+            if (quantity > 0)
+            {
+                lineItem.Quantity = quantity;
+            }
+            else
+            {
+                Cart.Items.Remove(lineItem);
+            }
             return Task.FromResult(this);
         }
 
-        protected virtual async Task<CartAggregate> AddLineItemAsync(LineItem lineItem)
+        protected virtual async Task<CartAggregate> InnerAddLineItemAsync(LineItem lineItem, CartProduct product = null)
         {
             var existingLineItem = Cart.Items.FirstOrDefault(li => li.ProductId == lineItem.ProductId);
             if (existingLineItem != null)
             {
-                await ChangeItemQuantityAsync(existingLineItem, existingLineItem.Quantity + Math.Max(1, lineItem.Quantity));
+                await InnerChangeItemQuantityAsync(existingLineItem, existingLineItem.Quantity + Math.Max(1, lineItem.Quantity), product);
             }
             else
             {

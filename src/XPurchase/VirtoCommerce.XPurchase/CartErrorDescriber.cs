@@ -25,7 +25,7 @@ namespace VirtoCommerce.XPurchase
 
         public static CartValidationError ProductPriceChangedError(IEntity entity, decimal oldPrice, decimal oldPriceWithTax, decimal newPrice, decimal newPriceWithTax)
         {
-            var result = new CartValidationError(entity, "The product price is changed", "PRODUCT_PRICE_CHANGED")
+            var result = new CartValidationError(entity, $"The product price is changed the new price is {newPrice}", "PRODUCT_PRICE_CHANGED")
             {
                 FormattedMessagePlaceholderValues = new Dictionary<string, object>
                 {

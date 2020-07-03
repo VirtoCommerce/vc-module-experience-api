@@ -179,7 +179,7 @@ namespace VirtoCommerce.XPurchase.Mapping
 
                 foreach (var lineItem in cartAggr.Cart.Items)
                 {
-                    var cartProduct = cartAggr.CartProductsDict[lineItem.ProductId];
+                    var cartProduct = cartAggr.CartProducts[lineItem.ProductId];
                     if (cartProduct != null)
                     {
                         var promoEntry = new ProductPromoEntry

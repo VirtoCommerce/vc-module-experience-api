@@ -12,7 +12,7 @@ namespace VirtoCommerce.XPurchase.Validators
 
             RuleSet("strict", () =>
             {
-                RuleForEach(x => x.Cart.Items).SetValidator(cartAggr => new CartLineItemValidator(validationContext.AllCartProducts));
+                RuleForEach(x => x.Cart.Items).SetValidator(cartAggr => new CartLineItemValidator(validationContext.AllCartProducts ?? cartAggr.CartProducts.Values));
                 RuleForEach(x => x.Cart.Shipments).SetValidator(cartAggr => new CartShipmentValidator(validationContext.AvailShippingRates));
                 RuleForEach(x => x.Cart.Payments).SetValidator(cartAggr => new CartPaymentValidator(validationContext.AvailPaymentMethods));
             });
