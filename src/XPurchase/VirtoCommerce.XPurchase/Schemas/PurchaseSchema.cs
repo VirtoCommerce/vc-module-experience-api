@@ -205,7 +205,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             ///          "language": "en-US",
             ///          "currency": "USD",
             ///          "cartType": "cart",
-            ///          "productId": "9cbd8f316e254a679ba34a900fccb076",
+            ///          "lineItemId": "9cbd8f316e254a679ba34a900fccb076",
             ///          "quantity": 777
             ///      }
             ///   }
@@ -237,7 +237,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             ///          "language": "en-US",
             ///          "currency": "USD",
             ///          "cartType": "cart",
-            ///          "productId": "9cbd8f316e254a679ba34a900fccb076"
+            ///          "lineItemId": "9cbd8f316e254a679ba34a900fccb076"
             ///      }
             ///   }
             /// }
