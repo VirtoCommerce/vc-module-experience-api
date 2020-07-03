@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
+using FluentAssertions;
 using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.CoreModule.Core.Outlines;
 using VirtoCommerce.CoreModule.Core.Seo;
@@ -113,30 +114,29 @@ namespace VirtoCommerce.XPurchase.Mapping
                 priceEvalContext.Language = cartAggr.Cart.LanguageCode;
                 priceEvalContext.StoreId = cartAggr.Cart.StoreId;
                 priceEvalContext.CatalogId = cartAggr.Store.Catalog;
+                priceEvalContext.CustomerId = cartAggr.Cart.CustomerId;
 
-                //TODO:
-                //if (cart.CustomerId != null)
-                //{
-                //    result.CustomerId = workContext.CurrentUser.Id;
-                //    var contact = workContext.CurrentUser?.Contact;
+                var contact = cartAggr.Member;
+                if (contact != null)
+                {
+                    //priceEvalContext.GeoTimeZone = contact.TimeZome;
 
-                //    if (contact != null)
-                //    {
-                //        result.GeoTimeZone = contact.TimeZone;
-                //        var address = contact.DefaultShippingAddress ?? contact.DefaultBillingAddress;
-                //        if (address != null)
-                //        {
-                //            result.GeoCity = address.City;
-                //            result.GeoCountry = address.CountryCode;
-                //            result.GeoState = address.RegionName;
-                //            result.GeoZipCode = address.PostalCode;
-                //        }
-                //        if (contact.UserGroups != null)
-                //        {
-                //            result.UserGroups = contact.UserGroups;
-                //        }
-                //    }
-                //}
+                    var address = contact.Addresses.FirstOrDefault(x => x.AddressType == CoreModule.Core.Common.AddressType.Shipping)
+                               ?? contact.Addresses.FirstOrDefault(x => x.AddressType == CoreModule.Core.Common.AddressType.Billing);
+
+                    if (address != null)
+                    {
+                        priceEvalContext.GeoCity = address.City;
+                        priceEvalContext.GeoCountry = address.CountryCode;
+                        priceEvalContext.GeoState = address.RegionName;
+                        priceEvalContext.GeoZipCode = address.PostalCode;
+                    }
+                    if (contact.Groups != null)
+                    {
+                        priceEvalContext.UserGroups = contact.Groups.ToArray();
+                    }
+                }
+
                 //if (pricelists != null)
                 //{
                 //    result.PricelistIds = pricelists.Select(p => p.Id).ToList();
