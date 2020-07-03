@@ -1,12 +1,15 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.CartModule.Core.Services;
 using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.CoreModule.Core.Currency;
+using VirtoCommerce.CustomerModule.Core.Model;
 using VirtoCommerce.CustomerModule.Core.Services;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.Security;
 using VirtoCommerce.StoreModule.Core.Services;
 using VirtoCommerce.XPurchase.Services;
 using VirtoCommerce.XPurchase.Validators;
@@ -22,6 +25,7 @@ namespace VirtoCommerce.XPurchase
         private readonly ICurrencyService _currencyService;
         private readonly IMemberService _memberService;
         private readonly IStoreService _storeService;
+        private readonly UserManager<ApplicationUser> _userManager;
 
         public CartAggregateRepository(
             Func<CartAggregate> cartAggregateFactory
@@ -30,7 +34,8 @@ namespace VirtoCommerce.XPurchase
             , ICurrencyService currencyService
             , IMemberService memberService
             , IStoreService storeService
-            , ICartValidationContextFactory cartValidationContextFactory)
+            , ICartValidationContextFactory cartValidationContextFactory
+            , Func<UserManager<ApplicationUser>>  userManager)
         {
             _cartAggregateFactory = cartAggregateFactory;
             _shoppingCartSearchService = shoppingCartSearchService;
@@ -39,6 +44,7 @@ namespace VirtoCommerce.XPurchase
             _memberService = memberService;
             _storeService = storeService;
             _cartValidationContextFactory = cartValidationContextFactory;
+            _userManager = userManager();
         }
 
         public async Task SaveAsync(CartAggregate cartAggregate)
@@ -109,7 +115,7 @@ namespace VirtoCommerce.XPurchase
                 CustomFormatting = currency.CustomFormatting
             };
 
-            var member = await _memberService.GetByIdAsync(cart.CustomerId);
+            var member = await GetCustomerAsync(cart.CustomerId);
             var aggregate = _cartAggregateFactory();
             await aggregate.GrabCartAsync(cart, store, member, currency);
             var validationContext = await _cartValidationContextFactory.CreateValidationContextAsync(aggregate);
@@ -122,6 +128,24 @@ namespace VirtoCommerce.XPurchase
             await aggregate.ValidateAsync(validationContext);
 
             return aggregate;
+        }
+
+        protected virtual async Task<Member> GetCustomerAsync(string customerId)
+        {
+            // Try to find contact
+            var result = await _memberService.GetByIdAsync(customerId);
+
+            if (result == null)
+            {
+                var user = await _userManager.FindByIdAsync(customerId);
+
+                if (user != null)
+                {
+                    result = await _memberService.GetByIdAsync(user.MemberId);
+                }
+            }
+
+            return result;
         }
     }
 }

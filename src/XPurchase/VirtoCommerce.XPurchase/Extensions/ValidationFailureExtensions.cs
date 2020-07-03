@@ -18,7 +18,7 @@ namespace VirtoCommerce.XPurchase.Extensions
             {
                 throw new ArgumentNullException(nameof(entity));
             }
-            return errors.OfType<CartValidationError>().Where(x => x.ObjectType.EqualsInvariant(entity.GetType().Name));
+            return errors.OfType<CartValidationError>().Where(x => x.ObjectType.EqualsInvariant(entity.GetType().Name) && x.ObjectId == entity.Id);
         }
     }
 }

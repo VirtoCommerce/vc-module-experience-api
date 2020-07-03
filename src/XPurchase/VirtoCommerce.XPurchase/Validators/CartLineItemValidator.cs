@@ -24,8 +24,7 @@ namespace VirtoCommerce.XPurchase.Validators
                         var isProductAvailable = new ProductIsAvailableSpecification().IsSatisfiedBy(cartProduct, lineItem.Quantity);
                         if (!isProductAvailable)
                         {
-                            var availableQuantity = cartProduct.AvailableQuantity;
-                            context.AddFailure(CartErrorDescriber.ProductQtyChangedError(lineItem, availableQuantity));
+                            context.AddFailure(CartErrorDescriber.ProductQtyChangedError(lineItem, cartProduct.AvailableQuantity));
                         }
 
                         var tierPrice = cartProduct.Price.GetTierPrice(lineItem.Quantity);
