@@ -37,6 +37,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "xProfile", "xProfile", "{70
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtoCommerce.ExperienceApiModule.XProfile", "src\XProfile\VirtoCommerce.XProfile\VirtoCommerce.ExperienceApiModule.XProfile.csproj", "{DCC0EB9F-D6AD-4ECE-B45B-9E03BFA43E91}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VirtoCommerce.ExperienceApiModule.XProfile.Tests", "src\XProfile\VirtoCommerce.ExperienceApiModule.XProfile.Tests\VirtoCommerce.ExperienceApiModule.XProfile.Tests.csproj", "{2AE44EF0-6219-429B-86A8-4B34AB1B23A4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -87,6 +89,10 @@ Global
 		{DCC0EB9F-D6AD-4ECE-B45B-9E03BFA43E91}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DCC0EB9F-D6AD-4ECE-B45B-9E03BFA43E91}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DCC0EB9F-D6AD-4ECE-B45B-9E03BFA43E91}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2AE44EF0-6219-429B-86A8-4B34AB1B23A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2AE44EF0-6219-429B-86A8-4B34AB1B23A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2AE44EF0-6219-429B-86A8-4B34AB1B23A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2AE44EF0-6219-429B-86A8-4B34AB1B23A4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -106,6 +112,7 @@ Global
 		{A7A7BB91-6148-46E8-AA1E-156036A2469D} = {96726105-C4DE-4ABB-A5B7-AD910202B1C9}
 		{707F829B-1576-4DAF-B53A-09F62600D996} = {FAE6CCF7-298C-4AF3-8044-60DAA0C099F0}
 		{DCC0EB9F-D6AD-4ECE-B45B-9E03BFA43E91} = {707F829B-1576-4DAF-B53A-09F62600D996}
+		{2AE44EF0-6219-429B-86A8-4B34AB1B23A4} = {707F829B-1576-4DAF-B53A-09F62600D996}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E56E5C53-D55A-451B-96FA-654D86F96658}
