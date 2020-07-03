@@ -184,6 +184,7 @@ namespace VirtoCommerce.XPurchase
             await new NewCartItemValidator().ValidateAndThrowAsync(newCartItem, ruleSet: ValidationRuleSet);
 
             var lineItem = _mapper.Map<LineItem>(newCartItem.CartProduct);
+            lineItem.Quantity = newCartItem.Quantity;
 
             if (newCartItem.Price != null)
             {
@@ -554,7 +555,7 @@ namespace VirtoCommerce.XPurchase
                 var evalContext = _mapper.Map<PromotionEvaluationContext>(this);
                 promotionResult = await _marketingEvaluator.EvaluatePromotionAsync(evalContext);
             }
-         
+
             return promotionResult;
         }
 
