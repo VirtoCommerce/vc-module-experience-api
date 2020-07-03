@@ -2,17 +2,16 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-using VirtoCommerce.ExperienceApiModule.DigitalCatalog.Requests;
 
-namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Handlers
+namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Queries
 {
-    public class SearchProductAssociationsCommandHandler : IRequestHandler<SearchProductAssociationsCommand, SearchProductAssociationsResponse>
+    public class SearchProductAssociationsCommandHandler : IRequestHandler<SearchProductAssociationsQuery, SearchProductAssociationsResponse>
     {
         public SearchProductAssociationsCommandHandler()
         {
         }
 
-        public Task<SearchProductAssociationsResponse> Handle(SearchProductAssociationsCommand request, CancellationToken cancellationToken)
+        public Task<SearchProductAssociationsResponse> Handle(SearchProductAssociationsQuery request, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
 

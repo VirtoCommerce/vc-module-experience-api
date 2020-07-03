@@ -1,6 +1,6 @@
 using MediatR;
 
-namespace VirtoCommerce.XPurchase.Commands
+namespace VirtoCommerce.ExperienceApiModule.Core.Infrastructure
 {
     public interface ICommand<out TResult> : IRequest<TResult>
     {
