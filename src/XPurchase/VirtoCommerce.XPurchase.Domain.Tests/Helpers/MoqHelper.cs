@@ -7,6 +7,7 @@ using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.CartModule.Core.Services;
 using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.CoreModule.Core.Currency;
+using VirtoCommerce.CustomerModule.Core.Model;
 using VirtoCommerce.MarketingModule.Core.Model.Promotions;
 using VirtoCommerce.MarketingModule.Core.Services;
 using VirtoCommerce.PaymentModule.Core.Services;
@@ -92,9 +93,13 @@ namespace VirtoCommerce.XPurchase.Tests.Helpers
             _mapperMock = new Mock<IMapper>();
         }
 
-        protected ShoppingCart CreateCart() => _fixture.Create<ShoppingCart>();
+        protected ShoppingCart GetCart() => _fixture.Create<ShoppingCart>();
 
         protected Currency GetCurrency() => _fixture.Create<Currency>();
+
+        protected Member GetMember() => _fixture.Create<MockedMember>();
+
+        protected Store GetStore() => _fixture.Create<Store>();
 
         protected NewCartItem BuildNewCartItem(string productId, int quantity, decimal productPrice)
         {
@@ -130,5 +135,9 @@ namespace VirtoCommerce.XPurchase.Tests.Helpers
     public class MockedPromotionResult : PromotionResult
     {
         public new ICollection<PromotionReward> Rewards { get => Enumerable.Empty<PromotionReward>().ToList(); }
+    }
+
+    public class MockedMember : Member
+    {
     }
 }

@@ -3,22 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoFixture;
-using AutoMapper;
 using FluentAssertions;
 using FluentValidation;
 using Moq;
 using VirtoCommerce.CartModule.Core.Model;
-using VirtoCommerce.CartModule.Core.Services;
 using VirtoCommerce.CatalogModule.Core.Model;
-using VirtoCommerce.CoreModule.Core.Common;
-using VirtoCommerce.CoreModule.Core.Currency;
-using VirtoCommerce.MarketingModule.Core.Services;
-using VirtoCommerce.PaymentModule.Core.Services;
-using VirtoCommerce.PricingModule.Core.Model;
-using VirtoCommerce.ShippingModule.Core.Services;
-using VirtoCommerce.StoreModule.Core.Services;
-using VirtoCommerce.TaxModule.Core.Services;
-using VirtoCommerce.XPurchase.Services;
 using VirtoCommerce.XPurchase.Tests.Helpers;
 using Xunit;
 
@@ -31,38 +20,26 @@ namespace VirtoCommerce.XPurchase.Tests
         public CartAggregateTests()
         {
             aggregate = new CartAggregate(
-                //_cartProductServiceMock.Object,
-                //_currencyServiceMock.Object,
                 _marketingPromoEvaluatorMock.Object,
-                //_paymentMethodsSearchServiceMock.Object,
-                //_shippingMethodsSearchServiceMock.Object,
                 _shoppingCartTotalsCalculatorMock.Object,
-                //_storeServiceMock.Object,
                 _taxProviderSearchServiceMock.Object,
                 _mapperMock.Object);
+
+            var cart = GetCart();
+            var member = GetMember();
+            var store = GetStore();
+            var currency = GetCurrency();
+
+            aggregate.TakeCartAsync(cart, store, member, currency).GetAwaiter().GetResult();
         }
 
         #region UpdateCartComment
-
-        [Fact]
-        public void UpdateCartComment_ShouldThrowOperationCanceledException_IfCartNotLoaded()
-        {
-            // Arrange
-            var comment = _fixture.Create<string>();
-
-            // Act
-            Action action = () => aggregate.UpdateCartComment(comment).GetAwaiter().GetResult();
-
-            // Assert
-            action.Should().ThrowExactly<OperationCanceledException>("Cart not loaded");
-        }
 
         [Fact]
         public async Task UpdateCartComment_ShouldSaveCommentToAggregate()
         {
             // Arrange
             var comment = _fixture.Create<string>();
-            var shoppingCart = _fixture.Create<ShoppingCart>();
 
             // Act
             await aggregate.UpdateCartComment(comment);
@@ -77,25 +54,10 @@ namespace VirtoCommerce.XPurchase.Tests
         #region AddItemAsync
 
         [Fact]
-        public void AddItemAsync_ShouldThrowOperationCanceledException_IfCartNotLoaded()
+        public void AddItemAsync_ShouldThrowArgumentNullException_IfNewCartItemIsNull()
         {
             // Arrange
             NewCartItem newCartItem = null;
-
-            // Act
-            Action action = () => aggregate.AddItemAsync(newCartItem).GetAwaiter().GetResult();
-
-            // Assert
-            action.Should().ThrowExactly<OperationCanceledException>("Cart not loaded");
-        }
-
-        [Fact]
-        public async Task AddItemAsync_ShouldThrowArgumentNullException_IfNewCartItemIsNullAsync()
-        {
-            // Arrange
-            NewCartItem newCartItem = null;
-
-            var shoppingCart = _fixture.Create<ShoppingCart>();
 
             // Act
             Action action = () => aggregate.AddItemAsync(newCartItem).GetAwaiter().GetResult();
@@ -107,7 +69,7 @@ namespace VirtoCommerce.XPurchase.Tests
         [Theory]
         [InlineData(-1)]
         [InlineData(0)]
-        public async Task AddItemAsync_ShouldThrow_IfQuantityLessOrEqualZero(int quantity)
+        public void AddItemAsync_ShouldThrow_IfQuantityLessOrEqualZero(int quantity)
         {
             // Arrange
             var productId = _fixture.Create<string>();

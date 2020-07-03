@@ -410,7 +410,7 @@ namespace VirtoCommerce.XPurchase.Tests
                 .RuleFor(s => s.ShipmentMethodOption, f => "")
                 .RuleFor(s => s.Price, f => 20);
 
-            var cart = CreateCart();
+            var cart = GetCart();
             cart.Items = testItems.Generate(5).ToList();
             cart.Shipments = testShipments.Generate(1).ToList();
             cart.CustomerId = Guid.NewGuid().ToString();
