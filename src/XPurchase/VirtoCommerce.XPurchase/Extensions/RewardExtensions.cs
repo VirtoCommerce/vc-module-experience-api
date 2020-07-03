@@ -55,19 +55,19 @@ namespace VirtoCommerce.XPurchase.Extensions
             }
 
             var lineItemRewards = rewards.OfType<CatalogItemAmountReward>();
-            foreach (var lineItem in shoppingCart.Items)
+            foreach (var lineItem in shoppingCart.Items ?? Enumerable.Empty<LineItem>())
             {
                 lineItem.ApplyRewards(shoppingCart.Currency, lineItemRewards);
             }
 
             var shipmentRewards = rewards.OfType<ShipmentReward>();
-            foreach (var shipment in shoppingCart.Shipments)
+            foreach (var shipment in shoppingCart.Shipments ?? Enumerable.Empty<Shipment>())
             {
                 shipment.ApplyRewards(shoppingCart.Currency, shipmentRewards);
             }
 
             var paymentRewards = rewards.OfType<PaymentReward>();
-            foreach (var payment in shoppingCart.Payments)
+            foreach (var payment in shoppingCart.Payments ?? Enumerable.Empty<Payment>())
             {
                 payment.ApplyRewards(shoppingCart.Currency, paymentRewards);
             }
@@ -79,7 +79,6 @@ namespace VirtoCommerce.XPurchase.Extensions
                 .Where(r => r.IsValid)
                 .Where(r => r.ProductId.IsNullOrEmpty() || r.ProductId.EqualsInvariant(lineItem.ProductId));
 
-            
             lineItem.Discounts?.Clear();
             lineItem.DiscountAmount = Math.Max(0, lineItem.ListPrice - lineItem.SalePrice);
 

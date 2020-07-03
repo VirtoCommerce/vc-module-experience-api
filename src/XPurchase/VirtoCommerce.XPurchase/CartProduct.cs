@@ -16,7 +16,7 @@ namespace VirtoCommerce.XPurchase
         {
             Product = product;
             Id = product.Id;
-        }   
+        }
 
         public CatalogProduct Product { get; private set; }
 
@@ -51,7 +51,6 @@ namespace VirtoCommerce.XPurchase
             }
         }
 
-
         /// <summary>
         /// Apply prices to product
         /// </summary>
@@ -63,18 +62,19 @@ namespace VirtoCommerce.XPurchase
             AllPrices.Clear();
             Price = null;
 
-            AllPrices = prices.Where(x => x.ProductId == Id).Select(x =>
-                                              {
-                                                  var productPrice = new ProductPrice(currency)
-                                                  {
-                                                      PricelistId = x.PricelistId,
-                                                      ListPrice = new Money(x.List, currency),
-                                                      MinQuantity = x.MinQuantity
-                                                  };
-                                                  productPrice.SalePrice = x.Sale == null ? productPrice.ListPrice : new Money(x.Sale.GetValueOrDefault(), currency);
-                                                  return productPrice;
-                                              }).ToList();
+            AllPrices = prices.Where(x => x.ProductId == Id)
+                              .Select(x =>
+                              {
+                                  var productPrice = new ProductPrice(currency)
+                                  {
+                                      PricelistId = x.PricelistId,
+                                      ListPrice = new Money(x.List, currency),
+                                      MinQuantity = x.MinQuantity
+                                  };
+                                  productPrice.SalePrice = x.Sale == null ? productPrice.ListPrice : new Money(x.Sale.GetValueOrDefault(), currency);
 
+                                  return productPrice;
+                              }).ToList();
 
             //group prices by currency
             var groupByCurrencyPrices = AllPrices.GroupBy(x => x.Currency).Where(x => x.Any());
@@ -85,7 +85,7 @@ namespace VirtoCommerce.XPurchase
                 var nominalPrice = orderedPrices.FirstOrDefault();
                 //and add to nominal price other prices as tier prices
                 nominalPrice.TierPrices.AddRange(orderedPrices.Select(x => new TierPrice(x.SalePrice, x.MinQuantity ?? 1)));
-                //Add nominal price to product prices list 
+                //Add nominal price to product prices list
                 AllPrices.Add(nominalPrice);
             }
             //Set current product price for current currency
@@ -105,7 +105,6 @@ namespace VirtoCommerce.XPurchase
 
             var availFullfilmentCentersIds = (store.AdditionalFulfillmentCenterIds ?? Array.Empty<string>()).Concat(new[] { store.MainFulfillmentCenterId });
 
-
             AllInventories.Clear();
             Inventory = null;
             AllInventories = inventories.Where(x => x.ProductId == Id && availFullfilmentCentersIds.Contains(x.FulfillmentCenterId)).ToList();
@@ -117,6 +116,5 @@ namespace VirtoCommerce.XPurchase
                 Inventory = AllInventories.FirstOrDefault(x => x.FulfillmentCenterId == store.MainFulfillmentCenterId) ?? Inventory;
             }
         }
-
     }
 }

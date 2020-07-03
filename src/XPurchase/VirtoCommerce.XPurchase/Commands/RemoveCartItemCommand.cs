@@ -1,4 +1,4 @@
-﻿namespace VirtoCommerce.XPurchase.Commands
+namespace VirtoCommerce.XPurchase.Commands
 {
     public class RemoveCartItemCommand : CartCommand
     {
@@ -6,12 +6,12 @@
         {
         }
 
-        public RemoveCartItemCommand(string storeId, string cartType, string cartName, string userId, string currency, string lang, string productId)
+        public RemoveCartItemCommand(string storeId, string cartType, string cartName, string userId, string currency, string lang, string lineItemId)
             : base(storeId, cartType, cartName, userId, currency, lang)
         {
-            ProductId = productId;
+            LineItemId = lineItemId;
         }
 
-        public string ProductId { get; set; }
+        public string LineItemId { get; set; }
     }
 }

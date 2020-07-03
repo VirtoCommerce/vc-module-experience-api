@@ -153,7 +153,7 @@ namespace VirtoCommerce.XPurchase.Extensions
         public static void ApplyTaxRates(this ShoppingCart shoppingCart, IEnumerable<TaxRate> taxRates)
         {
             shoppingCart.TaxPercentRate = 0m;
-            foreach (var lineItem in shoppingCart.Items)
+            foreach (var lineItem in shoppingCart.Items ?? Enumerable.Empty<LineItem>())
             {
                 //Get percent rate from line item
                 if (shoppingCart.TaxPercentRate == 0)
@@ -162,11 +162,11 @@ namespace VirtoCommerce.XPurchase.Extensions
                 }
                 lineItem.ApplyTaxRates(taxRates);
             }
-            foreach (var shipment in shoppingCart.Shipments)
+            foreach (var shipment in shoppingCart.Shipments ?? Enumerable.Empty<Shipment>())
             {
                 shipment.ApplyTaxRates(taxRates);
             }
-            foreach (var payment in shoppingCart.Payments)
+            foreach (var payment in shoppingCart.Payments ?? Enumerable.Empty<Payment>())
             {
                 payment.ApplyTaxRates(taxRates);
             }

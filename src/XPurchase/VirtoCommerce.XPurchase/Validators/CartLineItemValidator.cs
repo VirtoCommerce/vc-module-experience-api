@@ -32,13 +32,10 @@ namespace VirtoCommerce.XPurchase.Validators
                         if (tierPrice.Price.Amount > lineItem.SalePrice)
                         {
                             context.AddFailure(CartErrorDescriber.ProductPriceChangedError(lineItem, lineItem.SalePrice, lineItem.SalePriceWithTax, tierPrice.Price.Amount, tierPrice.PriceWithTax.Amount));
-
                         }
                     }
                 });
             });
-
-
         }
     }
 }

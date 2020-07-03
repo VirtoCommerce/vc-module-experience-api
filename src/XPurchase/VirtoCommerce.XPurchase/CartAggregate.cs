@@ -398,7 +398,7 @@ namespace VirtoCommerce.XPurchase
             EnsureCartExists();
 
             var promotionResult = new PromotionResult();
-            if (!Cart.Items.Any(i => i.IsReadOnly))
+            if (!Cart.Items.IsNullOrEmpty() && !Cart.Items.Any(i => i.IsReadOnly))
             {
                 var evalContext = _mapper.Map<PromotionEvaluationContext>(this);
                 promotionResult = await _marketingEvaluator.EvaluatePromotionAsync(evalContext);
