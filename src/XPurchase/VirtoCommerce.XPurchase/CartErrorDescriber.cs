@@ -49,6 +49,17 @@ namespace VirtoCommerce.XPurchase
             return result;
         }
 
+        public static CartValidationError ProductQtyInsufficientError(IEntity entity, long newQty, long availQty)
+        {
+            var result = new CartValidationError(entity, $"The product available quantity {availQty} is insufficient for requested {newQty}", "PRODUCT_QTY_INSUFFICIENT");
+            result.FormattedMessagePlaceholderValues = new Dictionary<string, object>
+            {
+                ["new_qty"] = newQty,
+                ["availQty"] = availQty
+            };
+            return result;
+        }
+
         public static CartValidationError ProductUnavailableError(IEntity entity)
         {
             var result = new CartValidationError(entity, "The product is not longer available for purchase", "CART_PRODUCT_UNAVAILABLE");

@@ -23,6 +23,11 @@ namespace VirtoCommerce.XPurchase.Validators
                 {
                     context.AddFailure(CartErrorDescriber.LineItemIsReadOnly(lineItem));
                 }
+
+                if (qtyAdjust.CartProduct != null && !new ProductIsAvailableSpecification().IsSatisfiedBy(qtyAdjust.CartProduct, qtyAdjust.NewQuantity))
+                {
+                    context.AddFailure(CartErrorDescriber.ProductQtyInsufficientError(qtyAdjust.CartProduct, qtyAdjust.NewQuantity, qtyAdjust.CartProduct.AvailableQuantity));
+                }
             });
 
         }
