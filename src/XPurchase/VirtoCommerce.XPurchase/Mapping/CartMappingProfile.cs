@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
+using FluentAssertions;
 using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.CoreModule.Core.Outlines;
 using VirtoCommerce.CoreModule.Core.Seo;
@@ -114,29 +115,29 @@ namespace VirtoCommerce.XPurchase.Mapping
                 priceEvalContext.StoreId = cartAggr.Cart.StoreId;
                 priceEvalContext.CatalogId = cartAggr.Store.Catalog;
 
-                //TODO:
-                //if (cart.CustomerId != null)
-                //{
-                //    result.CustomerId = workContext.CurrentUser.Id;
-                //    var contact = workContext.CurrentUser?.Contact;
+                var contact = cartAggr.Member;
+                if (contact != null)
+                {
+                    priceEvalContext.CustomerId = contact.Id;
 
-                //    if (contact != null)
-                //    {
-                //        result.GeoTimeZone = contact.TimeZone;
-                //        var address = contact.DefaultShippingAddress ?? contact.DefaultBillingAddress;
-                //        if (address != null)
-                //        {
-                //            result.GeoCity = address.City;
-                //            result.GeoCountry = address.CountryCode;
-                //            result.GeoState = address.RegionName;
-                //            result.GeoZipCode = address.PostalCode;
-                //        }
-                //        if (contact.UserGroups != null)
-                //        {
-                //            result.UserGroups = contact.UserGroups;
-                //        }
-                //    }
-                //}
+                    //priceEvalContext.GeoTimeZone = contact.TimeZome;
+
+                    var address = contact.Addresses.FirstOrDefault(x => x.AddressType == CoreModule.Core.Common.AddressType.Shipping)
+                               ?? contact.Addresses.FirstOrDefault(x => x.AddressType == CoreModule.Core.Common.AddressType.Billing);
+
+                    if (address != null)
+                    {
+                        priceEvalContext.GeoCity = address.City;
+                        priceEvalContext.GeoCountry = address.CountryCode;
+                        priceEvalContext.GeoState = address.RegionName;
+                        priceEvalContext.GeoZipCode = address.PostalCode;
+                    }
+                    if (contact.Groups != null)
+                    {
+                        priceEvalContext.UserGroups = contact.Groups.ToArray();
+                    }
+                }
+
                 //if (pricelists != null)
                 //{
                 //    result.PricelistIds = pricelists.Select(p => p.Id).ToList();
@@ -202,8 +203,7 @@ namespace VirtoCommerce.XPurchase.Mapping
                 promoEvalcontext.Coupons = cartAggr.Cart.Coupons?.ToList();
                 promoEvalcontext.Currency = cartAggr.Cart.Currency;
                 promoEvalcontext.CustomerId = cartAggr.Cart.CustomerId;
-                //TODO:
-                //promoEvalcontext.UserGroups = cart.Customer?.Contact?.UserGroups;
+                promoEvalcontext.UserGroups = cartAggr.Member?.Groups.ToArray();
                 promoEvalcontext.IsRegisteredUser = !cartAggr.Cart.IsAnonymous;
                 promoEvalcontext.Language = cartAggr.Cart.LanguageCode;
                 //Set cart line items as default promo items
@@ -225,7 +225,7 @@ namespace VirtoCommerce.XPurchase.Mapping
 
                 promoEvalcontext.IsEveryone = true;
                 //TODO:
-                //promoEvalcontext.IsFirstTimeBuyer = cart.User.IsFirstTimeBuyer;
+                //promoEvalcontext.IsFirstTimeBuyer = cartAggr.Member.IsFirstTimeBuyer;
 
                 return promoEvalcontext;
             });

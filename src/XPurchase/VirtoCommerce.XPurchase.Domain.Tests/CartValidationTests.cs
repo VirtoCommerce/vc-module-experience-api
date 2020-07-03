@@ -1,21 +1,10 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using AutoFixture;
-using AutoMapper;
 using Bogus;
 using FluentValidation;
 using FluentValidation.Validators;
-using Moq;
 using VirtoCommerce.CartModule.Core.Model;
-using VirtoCommerce.CartModule.Core.Services;
-using VirtoCommerce.CoreModule.Core.Currency;
-using VirtoCommerce.MarketingModule.Core.Services;
-using VirtoCommerce.PaymentModule.Core.Services;
-using VirtoCommerce.ShippingModule.Core.Services;
-using VirtoCommerce.StoreModule.Core.Services;
-using VirtoCommerce.TaxModule.Core.Services;
-using VirtoCommerce.XPurchase.Services;
 using VirtoCommerce.XPurchase.Tests.Helpers;
 using VirtoCommerce.XPurchase.Validators;
 using Xunit;
@@ -24,8 +13,6 @@ namespace VirtoCommerce.XPurchase.Tests
 {
     public class CartValidationTests : MoqHelper
     {
-        private const string CART_NAME = "default";
-        private const string CURRENCY_CODE = "USD";
         private const int InStockQuantity = 100;
         private const decimal MIN_PRICE = 1;
         private const decimal MAX_PRICE = 50;
@@ -37,7 +24,7 @@ namespace VirtoCommerce.XPurchase.Tests
         public async Task ValidateCart_RuleSetDefault_Valid()
         {
             // Arrange
-            var validator = new CartValidator();
+            var validator = new CartValidator(new CartValidationContext());
             var aggregate = await GetValidCartAggregateAsync();
 
             // Act
@@ -54,7 +41,7 @@ namespace VirtoCommerce.XPurchase.Tests
         {
             // Arrange
 
-            var validator = new CartValidator();
+            var validator = new CartValidator(new CartValidationContext());
             var aggregate = await GetValidCartAggregateAsync();
             aggregate.Cart.Name = null;
             aggregate.Cart.CustomerId = null;
@@ -82,7 +69,7 @@ namespace VirtoCommerce.XPurchase.Tests
             var aggregate = await GetValidCartAggregateAsync();
 
             // Act
-            var validator = new CartShipmentValidator(aggregate);
+            var validator = new CartShipmentValidator(new CartValidationContext().AvailShippingRates);
             var shipmentForValidation = aggregate.Cart.Shipments.ToList()[0];
             var result = await validator.ValidateAsync(shipmentForValidation, ruleSet: "strict");
 
@@ -105,7 +92,7 @@ namespace VirtoCommerce.XPurchase.Tests
             aggregate.Cart.Shipments.Add(unavailableShipment);
 
             // Act
-            var validator = new CartShipmentValidator(aggregate);
+            var validator = new CartShipmentValidator(new CartValidationContext().AvailShippingRates);
             var result = await validator.ValidateAsync(unavailableShipment, ruleSet: "strict");
 
             // Assert
@@ -128,7 +115,7 @@ namespace VirtoCommerce.XPurchase.Tests
             aggregate.Cart.Shipments.Add(shipment);
 
             // Act
-            var validator = new CartShipmentValidator(aggregate);
+            var validator = new CartShipmentValidator(new CartValidationContext().AvailShippingRates);
             var result = await validator.ValidateAsync(shipment, ruleSet: "strict");
 
             // Assert
@@ -329,7 +316,7 @@ namespace VirtoCommerce.XPurchase.Tests
             var item = Faker.PickRandom(aggregate.Cart.Items);
 
             // Act
-            var validator = new CartLineItemValidator(aggregate);
+            var validator = new CartLineItemValidator(new CartValidationContext().AllCartProducts);
             var result = await validator.ValidateAsync(item, ruleSet: "strict");
 
             // Assert
@@ -363,7 +350,7 @@ namespace VirtoCommerce.XPurchase.Tests
             }
 
             // Act
-            var validator = new CartLineItemValidator(aggregate);
+            var validator = new CartLineItemValidator(new CartValidationContext().AllCartProducts);
             var result = await validator.ValidateAsync(lineItem, ruleSet: "strict");
 
             // Assert
@@ -382,7 +369,7 @@ namespace VirtoCommerce.XPurchase.Tests
             item.Quantity = InStockQuantity * 2;
 
             // Act
-            var validator = new CartLineItemValidator(aggregate);
+            var validator = new CartLineItemValidator(new CartValidationContext().AllCartProducts);
             var result = await validator.ValidateAsync(item, ruleSet: "strict");
 
             // Assert
@@ -400,7 +387,7 @@ namespace VirtoCommerce.XPurchase.Tests
             item.SalePrice /= 2m;
 
             // Act
-            var validator = new CartLineItemValidator(aggregate);
+            var validator = new CartLineItemValidator(new CartValidationContext().AllCartProducts);
             var result = await validator.ValidateAsync(item, ruleSet: "strict");
 
             // Assert
@@ -430,17 +417,12 @@ namespace VirtoCommerce.XPurchase.Tests
             cart.CustomerName = Faker.Name.FullName();
 
             var aggregate = new CartAggregate(
-                _cartProductServiceMock.Object,
-                _currencyServiceMock.Object,
                 _marketingPromoEvaluatorMock.Object,
-                _paymentMethodsSearchServiceMock.Object,
-                _shippingMethodsSearchServiceMock.Object,
                 _shoppingCartTotalsCalculatorMock.Object,
-                _storeServiceMock.Object,
                 _taxProviderSearchServiceMock.Object,
                 _mapperMock.Object);
 
-            return await aggregate.TakeCartAsync(cart);
+            return aggregate;
         }
     }
 }

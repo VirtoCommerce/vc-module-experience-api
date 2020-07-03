@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
-using MediatR;
+using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 
-namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Requests
+namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Queries
 {
-    public class SearchProductRequest : IRequest<SearchProductResponse>, IHasIncludeFields
+    public class SearchProductQuery : IQuery<SearchProductResponse>, IHasIncludeFields
     {
         public string Query { get; set; }
         public bool Fuzzy { get; set; }

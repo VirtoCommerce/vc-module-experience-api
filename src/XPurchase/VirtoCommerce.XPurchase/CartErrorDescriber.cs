@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.XPurchase
@@ -24,18 +25,27 @@ namespace VirtoCommerce.XPurchase
 
         public static CartValidationError ProductPriceChangedError(IEntity entity, decimal oldPrice, decimal oldPriceWithTax, decimal newPrice, decimal newPriceWithTax)
         {
-            var result = new CartValidationError(entity, "The product price is changed", "PRODUCT_PRICE_CHANGED");
-            result.FormattedMessagePlaceholderValues["old_price"] = oldPrice;
-            result.FormattedMessagePlaceholderValues["old_price_with_tax"] = oldPriceWithTax;
-            result.FormattedMessagePlaceholderValues["new_price"] = newPrice;
-            result.FormattedMessagePlaceholderValues["new_price_with_tax"] = newPriceWithTax;
+            var result = new CartValidationError(entity, "The product price is changed", "PRODUCT_PRICE_CHANGED")
+            {
+                FormattedMessagePlaceholderValues = new Dictionary<string, object>
+                {
+                    ["old_price"] = oldPrice,
+                    ["old_price_with_tax"] = oldPriceWithTax,
+                    ["new_price"] = newPrice,
+                    ["new_price_with_tax"] = newPriceWithTax
+                }
+            };
+
             return result;
         }
 
         public static CartValidationError ProductQtyChangedError(IEntity entity, long newQty)
         {
             var result = new CartValidationError(entity, "The product available qty is changed", "PRODUCT_QTY_CHANGED");
-            result.FormattedMessagePlaceholderValues["new_qty"] = newQty;
+            result.FormattedMessagePlaceholderValues = new Dictionary<string, object>
+            {
+                ["new_qty"] = newQty
+            };
             return result;
         }
 
@@ -47,11 +57,16 @@ namespace VirtoCommerce.XPurchase
 
         public static CartValidationError ShipmentMethodPriceChanged(IEntity entity, decimal oldPrice, decimal oldPriceWithTax, decimal newPrice, decimal newPriceWithTax)
         {
-            var result = new CartValidationError(entity, "The shipment method price is changed", "SHIPMENT_METHOD_PRICE_CHANGED");
-            result.FormattedMessagePlaceholderValues["old_price"] = oldPrice;
-            result.FormattedMessagePlaceholderValues["old_price_with_tax"] = oldPriceWithTax;
-            result.FormattedMessagePlaceholderValues["new_price"] = newPrice;
-            result.FormattedMessagePlaceholderValues["new_price_with_tax"] = newPriceWithTax;
+            var result = new CartValidationError(entity, "The shipment method price is changed", "SHIPMENT_METHOD_PRICE_CHANGED")
+            {
+                FormattedMessagePlaceholderValues = new Dictionary<string, object>
+                {
+                    ["old_price"] = oldPrice,
+                    ["old_price_with_tax"] = oldPriceWithTax,
+                    ["new_price"] = newPrice,
+                    ["new_price_with_tax"] = newPriceWithTax
+                }
+            };
             return result;
         }
 

@@ -1,17 +1,20 @@
+using System.Collections.Generic;
+using System.Linq;
 using FluentValidation;
 using VirtoCommerce.CartModule.Core.Model;
+using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.XPurchase.Validators
 {
     public class CartLineItemValidator : AbstractValidator<LineItem>
     {
-        public CartLineItemValidator(CartAggregate cartAggr)
+        public CartLineItemValidator(IEnumerable<CartProduct> allCartProducts)
         {
             RuleSet("strict", () =>
             {
                 RuleFor(x => x).Custom((lineItem, context) =>
                 {
-                    var cartProduct = cartAggr.CartProductsDict[lineItem.ProductId];
+                    var cartProduct = allCartProducts.FirstOrDefault(x=>x.Id.EqualsInvariant(lineItem.ProductId));
                     if (cartProduct == null || !cartProduct.Product.IsActive.GetValueOrDefault(false) || !cartProduct.Product.IsBuyable.GetValueOrDefault(false))
                     {
                         context.AddFailure(CartErrorDescriber.ProductUnavailableError(lineItem));

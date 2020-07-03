@@ -7,11 +7,11 @@ namespace VirtoCommerce.XPurchase.Schemas
         protected InputCartBaseType()
         {
             Field<NonNullGraphType<StringGraphType>>("storeId");
-            Field<NonNullGraphType<StringGraphType>>("cartName");
+            Field<StringGraphType>("cartName");
             Field<NonNullGraphType<StringGraphType>>("userId");
-            Field<NonNullGraphType<StringGraphType>>("currency");
-            Field<NonNullGraphType<StringGraphType>>("language");
-            Field<NonNullGraphType<StringGraphType>>("cartType");
+            Field<StringGraphType>("currency");
+            Field<StringGraphType>("language");
+            Field<StringGraphType>("cartType");
         }
     }
 }

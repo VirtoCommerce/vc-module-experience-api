@@ -33,15 +33,19 @@ namespace VirtoCommerce.XPurchase.Tests.Helpers
         protected readonly Mock<ITaxProviderSearchService> _taxProviderSearchServiceMock;
         protected readonly Mock<IMapper> _mapperMock;
 
+        private const string CART_NAME = "default";
+        private const string CURRENCY_CODE = "USD";
+        private const string CULTURE_NAME = "en-US";
+
         public MoqHelper()
         {
-            _fixture.Register(() => new Language("en-US"));
-            _fixture.Register(() => new Currency(_fixture.Create<Language>(), "USD"));
+            _fixture.Register(() => new Language(CULTURE_NAME));
+            _fixture.Register(() => new Currency(_fixture.Create<Language>(), CURRENCY_CODE));
             _fixture.Register(() => _fixture
                 .Build<ShoppingCart>()
-                .With(x => x.Currency, "USD")
-                .With(x => x.LanguageCode, "en-US")
-                .With(x => x.Name, "default")
+                .With(x => x.Currency, CURRENCY_CODE)
+                .With(x => x.LanguageCode, CULTURE_NAME)
+                .With(x => x.Name, CART_NAME)
                 .Without(x => x.Items)
                 .Create());
             //_fixture.Register<IMutablePagedList<DynamicProperty>>(() => null);
@@ -90,15 +94,33 @@ namespace VirtoCommerce.XPurchase.Tests.Helpers
 
         protected ShoppingCart CreateCart() => _fixture.Create<ShoppingCart>();
 
+        protected Currency GetCurrency() => _fixture.Create<Currency>();
+
         protected NewCartItem BuildNewCartItem(string productId, int quantity, decimal productPrice)
         {
+            var catalogProductId = _fixture.Create<string>();
+
+            var catalogProduct = new CatalogModule.Core.Model.CatalogProduct
+            {
+                Id = catalogProductId
+            };
+
+            var cartProduct = new CartProduct(catalogProduct);
+            cartProduct.ApplyPrices(new List<Price>()
+            {
+                new Price
+                {
+                    ProductId = catalogProductId,
+                    PricelistId = _fixture.Create<string>(),
+                    List = _fixture.Create<decimal>(),
+                    MinQuantity = _fixture.Create<int>(),
+                }
+            }, GetCurrency());
+
             var newCartItem = new NewCartItem(productId, quantity)
             {
                 Price = productPrice,
-                CartProduct = new CartProduct(new CatalogModule.Core.Model.CatalogProduct())
-                {
-                    Price = new ProductPrice(_fixture.Create<Currency>())
-                }
+                CartProduct = cartProduct
             };
 
             return newCartItem;

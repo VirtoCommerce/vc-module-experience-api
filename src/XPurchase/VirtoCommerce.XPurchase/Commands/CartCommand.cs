@@ -1,8 +1,8 @@
-using MediatR;
+using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 
 namespace VirtoCommerce.XPurchase.Commands
 {
-    public abstract class CartCommand : IRequest<CartAggregate>
+    public abstract class CartCommand : ICommand<CartAggregate>
     {
         protected CartCommand()
         {

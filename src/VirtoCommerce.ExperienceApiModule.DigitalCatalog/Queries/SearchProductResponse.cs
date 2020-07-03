@@ -1,7 +1,6 @@
 using System.Collections.Generic;
-using VirtoCommerce.ExperienceApiModule.DigitalCatalog.Index;
 
-namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Requests
+namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Queries
 {
     public class SearchProductResponse 
     {

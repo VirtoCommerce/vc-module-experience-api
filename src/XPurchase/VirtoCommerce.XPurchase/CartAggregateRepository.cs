@@ -1,88 +1,121 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.CartModule.Core.Services;
-using VirtoCommerce.CoreModule.Core.Tax;
+using VirtoCommerce.CoreModule.Core.Common;
+using VirtoCommerce.CoreModule.Core.Currency;
+using VirtoCommerce.CustomerModule.Core.Services;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.StoreModule.Core.Services;
+using VirtoCommerce.XPurchase.Validators;
 
 namespace VirtoCommerce.XPurchase
 {
     public class CartAggregateRepository : ICartAggregateRepository
     {
         private readonly Func<CartAggregate> _cartAggregateFactory;
+        private readonly ICartValidationContextFactory _cartValidationContextFactory;
         private readonly IShoppingCartSearchService _shoppingCartSearchService;
         private readonly IShoppingCartService _shoppingCartService;
+        private readonly ICurrencyService _currencyService;
+        private readonly IMemberService _memberService;
+        private readonly IStoreService _storeService;
+
         public CartAggregateRepository(
             Func<CartAggregate> cartAggregateFactory
             , IShoppingCartSearchService shoppingCartSearchService
-            , IShoppingCartService shoppingCartService)
+            , IShoppingCartService shoppingCartService
+            , ICurrencyService currencyService
+            , IMemberService memberService
+            , IStoreService storeService
+            , ICartValidationContextFactory cartValidationContextFactory)
         {
             _cartAggregateFactory = cartAggregateFactory;
             _shoppingCartSearchService = shoppingCartSearchService;
             _shoppingCartService = shoppingCartService;
+            _currencyService = currencyService;
+            _memberService = memberService;
+            _storeService = storeService;
+            _cartValidationContextFactory = cartValidationContextFactory;
         }
 
         public async Task SaveAsync(CartAggregate cartAggregate)
         {
             await cartAggregate.RecalculateAsync();
-            await cartAggregate.ValidateAsync();
+            await cartAggregate.ValidateAsync(await _cartValidationContextFactory.CreateValidationContextAsync(cartAggregate));
             await _shoppingCartService.SaveChangesAsync(new ShoppingCart[] { cartAggregate.Cart });
         }
 
-        public async Task<CartAggregate> GetForCartAsync(ShoppingCart cart)
+        public async Task<CartAggregate> GetCartByIdAsync(string cartId, string language = null)
         {
-            var result = _cartAggregateFactory();
+            var cart = await _shoppingCartService.GetByIdAsync(cartId);
+            if (cart != null)
+            {
+                return await InnerGetCartAggregateFromCartAsync(cart, language ?? Language.InvariantLanguage.CultureName);
+            }
 
-            await result.TakeCartAsync(cart);
-
-            return result;
-
+            return null;
         }
-        public async Task<CartAggregate> GetOrCreateAsync(string cartName, string storeId, string userId, string language, string currency, string type = null)
+
+        public async Task<CartAggregate> GetCartForShoppingCartAsync(ShoppingCart cart, string language = null)
+        {
+            return await InnerGetCartAggregateFromCartAsync(cart, language ?? Language.InvariantLanguage.CultureName);
+        }
+
+        public async Task<CartAggregate> GetCartAsync(string cartName, string storeId, string userId, string language, string currencyCode, string type = null)
         {
             var criteria = new CartModule.Core.Model.Search.ShoppingCartSearchCriteria
             {
                 StoreId = storeId,
                 CustomerId = userId,
                 Name = cartName,
-                Currency = currency,
+                Currency = currencyCode,
                 Type = type
             };
 
             var cartSearchResult = await _shoppingCartSearchService.SearchCartAsync(criteria);
+            var cart = cartSearchResult.Results.FirstOrDefault();
+            if (cart != null)
+            {
+                return await InnerGetCartAggregateFromCartAsync(cart, language);
+            }
 
-            var cart = cartSearchResult.Results.FirstOrDefault() ?? CreateCart(cartName, storeId, userId, language, currency, type);
-
-
-            var aggregate = _cartAggregateFactory();
-
-            await aggregate.TakeCartAsync(cart);
-
-            return aggregate;
+            return null;
         }
 
-        protected virtual ShoppingCart CreateCart(string cartName, string storeId, string userId, string languageCode, string currencyCode, string type)
+        protected virtual async Task<CartAggregate> InnerGetCartAggregateFromCartAsync(ShoppingCart cart, string language)
         {
-            var cart = AbstractTypeFactory<ShoppingCart>.TryCreateInstance();
-            cart.CustomerId = userId;
-            cart.Name = cartName;
-            cart.StoreId = storeId;
-            cart.LanguageCode = languageCode;
-            cart.Type = type;
-            cart.Currency = currencyCode;
-            cart.Items = new List<LineItem>();
-            cart.Shipments = new List<Shipment>();
-            cart.Payments = new List<Payment>();
-            cart.Addresses = new List<Address>();
-            cart.TaxDetails = new List<TaxDetail>();
-            //TODO:
-            //cart.IsAnonymous = !user.IsRegisteredUser,
-            //    CustomerName = user.IsRegisteredUser ? user.UserName : SecurityConstants.AnonymousUsername,
-            //};
+            var store = await _storeService.GetByIdAsync(cart.StoreId);
+            if (store == null)
+            {
+                throw new OperationCanceledException($"store with id {cart.StoreId} not found");
+            }
+            if (string.IsNullOrEmpty(cart.Currency))
+            {
+                cart.Currency = store.DefaultCurrency;
+            }
+            var allCurrencies = await _currencyService.GetAllCurrenciesAsync();
 
-            return cart;
+            var currency = allCurrencies.FirstOrDefault(x => x.Code.EqualsInvariant(cart.Currency));
+            if (currency == null)
+            {
+                throw new OperationCanceledException($"cart currency {cart.Currency} is not registered in the system");
+            }
+            //Clone  currency with cart language
+            currency = new Currency(language != null ? new Language(language) : Language.InvariantLanguage, currency.Code, currency.Name, currency.Symbol, currency.ExchangeRate)
+            {
+                CustomFormatting = currency.CustomFormatting
+            };
+
+            var member = await _memberService.GetByIdAsync(cart.CustomerId);
+            var aggregate = _cartAggregateFactory();
+            await aggregate.TakeCartAsync(cart, store, member, currency);
+
+            //Run validation
+            await aggregate.ValidateAsync(await _cartValidationContextFactory.CreateValidationContextAsync(aggregate));
+
+            return aggregate;
         }
     }
 }
