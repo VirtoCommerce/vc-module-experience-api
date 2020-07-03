@@ -87,106 +87,16 @@ namespace VirtoCommerce.XPurchase.Tests.Aggregates
             _mappereMock = new Mock<IMapper>();
 
             aggregate = new CartAggregate(
-                _cartProductServiceMock.Object,
-                _currencyServiceMock.Object,
+                //_cartProductServiceMock.Object,
+                //_currencyServiceMock.Object,
                 _marketingPromoEvaluatorMock.Object,
-                _paymentMethodsSearchServiceMock.Object,
-                _shippingMethodsSearchServiceMock.Object,
+                //_paymentMethodsSearchServiceMock.Object,
+                //_shippingMethodsSearchServiceMock.Object,
                 _shoppingCartTotalsCalculatorMock.Object,
-                _storeServiceMock.Object,
+                //_storeServiceMock.Object,
                 _taxProviderSearchServiceMock.Object,
                 _mappereMock.Object);
         }
-
-        #region TakeCartAsync
-
-        [Fact]
-        public void TakeCartAsync_ShouldThrowArgumentNullException_IfCartIsNull()
-        {
-            // Arrange
-            ShoppingCart shoppingCart = null;
-
-            // Act
-            Action action = () => aggregate.TakeCartAsync(shoppingCart).GetAwaiter().GetResult();
-
-            // Assert
-            action.Should().ThrowExactly<ArgumentNullException>("Shopping cart is null");
-        }
-
-        [Fact]
-        public async Task TakeCartAsync_ShouldSaveProductsToAggregate_IfCartContainsProductsAsync()
-        {
-            // Arrange
-            var products = _fixture.Build<LineItem>()
-                .With(x => x.IsReadOnly, true)
-                .CreateMany()
-                .ToList();
-
-            var productIds = products.Select(x => x.ProductId).ToArray();
-
-            var cartProducts = productIds
-                .Select(productId => new CartProduct(new CatalogProduct
-                {
-                    Id = productId
-                }))
-                .ToList();
-
-            _cartProductServiceMock
-                .Setup(x => x.GetCartProductsByIdsAsync(It.IsAny<CartAggregate>(), productIds))
-                .ReturnsAsync(cartProducts);
-
-            var shoppingCart = _fixture.Create<ShoppingCart>();
-            shoppingCart.Items = products;
-
-            // Act
-            await aggregate.TakeCartAsync(shoppingCart);
-
-            // Assert
-            aggregate.CartProductsDict.Should().NotBeNull();
-            aggregate.CartProductsDict.Select(x => x.Key).Should().BeSubsetOf(productIds);
-        }
-
-        [Fact]
-        public async Task TakeCartAsync_ShouldAlwaysCalculateTotals()
-        {
-            // Arrange
-            var shoppingCart = _fixture.Create<ShoppingCart>();
-
-            // Act
-            await aggregate.TakeCartAsync(shoppingCart);
-
-            // Assert
-            _shoppingCartTotalsCalculatorMock.Verify(x => x.CalculateTotals(It.IsAny<ShoppingCart>()), Times.Once);
-        }
-
-        [Fact]
-        public async Task TakeCartAsync_ShouldAlwaysSaveCartToAggregate()
-        {
-            // Arrange
-            var shoppingCart = _fixture.Create<ShoppingCart>();
-
-            // Act
-            await aggregate.TakeCartAsync(shoppingCart);
-
-            // Assert
-            aggregate.Cart.Should().NotBeNull();
-            aggregate.Cart.Should().BeEquivalentTo(shoppingCart);
-        }
-
-        [Fact]
-        public async Task TakeCartAsync_ShouldAlwaysSaveIdToAggregate()
-        {
-            // Arrange
-            var shoppingCart = _fixture.Create<ShoppingCart>();
-
-            // Act
-            await aggregate.TakeCartAsync(shoppingCart);
-
-            // Assert
-            aggregate.Id.Should().Be(shoppingCart.Id);
-        }
-
-        #endregion TakeCartAsync
 
         #region UpdateCartComment
 
@@ -211,7 +121,6 @@ namespace VirtoCommerce.XPurchase.Tests.Aggregates
             var shoppingCart = _fixture.Create<ShoppingCart>();
 
             // Act
-            await aggregate.TakeCartAsync(shoppingCart);
             await aggregate.UpdateCartComment(comment);
 
             // Assert
@@ -245,7 +154,6 @@ namespace VirtoCommerce.XPurchase.Tests.Aggregates
             var shoppingCart = _fixture.Create<ShoppingCart>();
 
             // Act
-            await aggregate.TakeCartAsync(shoppingCart);
             Action action = () => aggregate.AddItemAsync(newCartItem).GetAwaiter().GetResult();
 
             // Assert
@@ -269,7 +177,6 @@ namespace VirtoCommerce.XPurchase.Tests.Aggregates
                 .ReturnsAsync(new List<CartProduct>() { new CartProduct(new CatalogProduct()) });
 
             // Act
-            await aggregate.TakeCartAsync(shoppingCart);
             Action action = () => aggregate.AddItemAsync(newCartItem).GetAwaiter().GetResult();
 
             // Assert
