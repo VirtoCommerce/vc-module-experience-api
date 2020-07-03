@@ -12,9 +12,9 @@ namespace VirtoCommerce.XPurchase.Commands
 
         public override async Task<CartAggregate> Handle(ChangeCartItemPriceCommand request, CancellationToken cancellationToken)
         {
-            var cartAggr = await GetCartAggregateFromCommandAsync(request);
+            var cartAggr = await GetOrCreateCartFromCommandAsync(request);
             await cartAggr.ChangeItemPriceAsync(new PriceAdjustment(request.ProductId, request.Price));
-            await CartAggrRepository.SaveAsync(cartAggr);
+            await CartRepository.SaveAsync(cartAggr);
             return cartAggr;
         }
     }

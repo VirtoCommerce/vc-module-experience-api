@@ -11,6 +11,7 @@ namespace VirtoCommerce.XPurchase.Validators
         {
             RuleFor(x => x.NewQuantity).GreaterThan(0);
             RuleFor(x => x.LineItemId).NotNull();
+            RuleFor(x => x.CartProduct).NotNull();
             RuleFor(x => x).Custom((qtyAdjust, context) =>
             {
                 var lineItem = cartAggr.Cart.Items.FirstOrDefault(x => x.Id.EqualsInvariant(qtyAdjust.LineItemId));
