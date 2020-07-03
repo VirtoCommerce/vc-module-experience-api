@@ -1,6 +1,6 @@
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 
-namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Requests
+namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Queries
 {
     public class SearchProductAssociationsResponse 
     {

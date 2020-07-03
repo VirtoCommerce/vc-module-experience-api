@@ -1,3 +1,5 @@
+using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
+
 namespace VirtoCommerce.XPurchase.Queries
 {
     public class GetCartByIdQuery : IQuery<CartAggregate>

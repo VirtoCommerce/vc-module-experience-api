@@ -1,5 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
+using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 
 namespace VirtoCommerce.XPurchase.Queries
 {
