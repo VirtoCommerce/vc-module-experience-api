@@ -154,10 +154,7 @@ namespace VirtoCommerce.XPurchase
                 }).ToList();
             }
 
-            if (IsValid)
-            {
-                await AddLineItemAsync(lineItem);
-            }
+            await AddLineItemAsync(lineItem);
 
             return this;
         }

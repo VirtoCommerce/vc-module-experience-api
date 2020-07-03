@@ -114,11 +114,12 @@ namespace VirtoCommerce.XPurchase.Mapping
                 priceEvalContext.Language = cartAggr.Cart.LanguageCode;
                 priceEvalContext.StoreId = cartAggr.Cart.StoreId;
                 priceEvalContext.CatalogId = cartAggr.Store.Catalog;
-                priceEvalContext.CustomerId = cartAggr.Cart.CustomerId;
 
                 var contact = cartAggr.Member;
                 if (contact != null)
                 {
+                    priceEvalContext.CustomerId = contact.Id;
+
                     //priceEvalContext.GeoTimeZone = contact.TimeZome;
 
                     var address = contact.Addresses.FirstOrDefault(x => x.AddressType == CoreModule.Core.Common.AddressType.Shipping)
@@ -202,8 +203,7 @@ namespace VirtoCommerce.XPurchase.Mapping
                 promoEvalcontext.Coupons = cartAggr.Cart.Coupons?.ToList();
                 promoEvalcontext.Currency = cartAggr.Cart.Currency;
                 promoEvalcontext.CustomerId = cartAggr.Cart.CustomerId;
-                //TODO:
-                //promoEvalcontext.UserGroups = cart.Customer?.Contact?.UserGroups;
+                promoEvalcontext.UserGroups = cartAggr.Member?.Groups.ToArray();
                 promoEvalcontext.IsRegisteredUser = !cartAggr.Cart.IsAnonymous;
                 promoEvalcontext.Language = cartAggr.Cart.LanguageCode;
                 //Set cart line items as default promo items
@@ -225,7 +225,7 @@ namespace VirtoCommerce.XPurchase.Mapping
 
                 promoEvalcontext.IsEveryone = true;
                 //TODO:
-                //promoEvalcontext.IsFirstTimeBuyer = cart.User.IsFirstTimeBuyer;
+                //promoEvalcontext.IsFirstTimeBuyer = cartAggr.Member.IsFirstTimeBuyer;
 
                 return promoEvalcontext;
             });
