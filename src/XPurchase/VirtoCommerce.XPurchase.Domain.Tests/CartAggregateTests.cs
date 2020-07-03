@@ -30,7 +30,7 @@ namespace VirtoCommerce.XPurchase.Tests
             var store = GetStore();
             var currency = GetCurrency();
 
-            aggregate.TakeCartAsync(cart, store, member, currency).GetAwaiter().GetResult();
+            aggregate.GrabCartAsync(cart, store, member, currency).GetAwaiter().GetResult();
         }
 
         #region UpdateCartComment

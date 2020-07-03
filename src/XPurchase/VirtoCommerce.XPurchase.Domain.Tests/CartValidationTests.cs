@@ -332,7 +332,7 @@ namespace VirtoCommerce.XPurchase.Tests
         {
             // Arrange
             var aggregate = await GetValidCartAggregateAsync();
-            var cartProduct = Faker.PickRandom(aggregate.CartProductsDict["defaultProduct"]);
+            var cartProduct = Faker.PickRandom(aggregate.CartProducts["defaultProduct"]);
             var lineItem = new LineItem { ProductId = cartProduct.Id };
             switch (scenario)
             {
