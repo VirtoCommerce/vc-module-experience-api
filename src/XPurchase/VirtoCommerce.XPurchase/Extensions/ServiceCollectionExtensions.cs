@@ -31,16 +31,20 @@ namespace VirtoCommerce.XPurchase.Extensions
             services.AddSchemaType<InputAddItemType>();
             services.AddSchemaType<InputAddOrUpdateCartPaymentType>();
             services.AddSchemaType<InputAddOrUpdateCartShipmentType>();
+            services.AddSchemaType<InputAddressType>();
             services.AddSchemaType<InputCartShipmentItemType>();
+            services.AddSchemaType<InputChangeCartItemCommentType>();
             services.AddSchemaType<InputChangeCartItemPriceType>();
             services.AddSchemaType<InputChangeCartItemQuantityType>();
             services.AddSchemaType<InputChangeCommentType>();
             services.AddSchemaType<InputClearCartType>();
+            services.AddSchemaType<InputMergeCartType>();
             services.AddSchemaType<InputPaymentType>();
+            services.AddSchemaType<InputRemoveCartType>();
             services.AddSchemaType<InputRemoveCouponType>();
             services.AddSchemaType<InputRemoveItemType>();
+            services.AddSchemaType<InputRemoveShipmentType>();
             services.AddSchemaType<InputShipmentType>();
-            services.AddSchemaType<InputAddressType>();
             services.AddSchemaType<InputValidateCouponType>();
             services.AddSchemaType<LanguageType>();
             services.AddSchemaType<LineItemType>();
@@ -58,7 +62,7 @@ namespace VirtoCommerce.XPurchase.Extensions
 
             services.AddTransient<ICartValidationContextFactory, CartValidationContextFactory>();
             services.AddTransient<ICartAvailMethodsService, CartAvailMethodsService>();
-          
+
             services.AddMediatR(typeof(XPurchaseAnchor));
 
             //TODO: Not work

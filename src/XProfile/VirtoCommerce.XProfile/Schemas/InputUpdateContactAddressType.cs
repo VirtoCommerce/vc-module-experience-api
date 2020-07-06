@@ -9,7 +9,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
         {
             Field<NonNullGraphType<StringGraphType>>(nameof(Contact.Id));
             Field<NonNullGraphType<StringGraphType>>(nameof(Contact.Name));
-            Field<NonNullGraphType<ListGraphType<InputAddressType>>>(nameof(Member.Addresses));
+            Field<NonNullGraphType<ListGraphType<AddressInputType>>>(nameof(Member.Addresses));
         }
     }
 }

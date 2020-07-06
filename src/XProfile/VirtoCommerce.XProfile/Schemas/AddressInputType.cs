@@ -3,16 +3,17 @@ using VirtoCommerce.CustomerModule.Core.Model;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 {
-    public class InputAddressType : InputObjectGraphType<Address>
+    public class AddressInputType : InputObjectGraphType<Address>
     {
-        public InputAddressType()
+        public AddressInputType()
         {
             Field(x => x.City).Description("City");
             Field(x => x.CountryCode).Description("Country code");
             Field(x => x.CountryName).Description("Country name");
             Field(x => x.Email, true).Description("Email");
             Field(x => x.FirstName, true).Description("First name");
-            Field(x => x.Key, true).Description("Id");
+            Field<StringGraphType>("Id");
+            Field(x => x.Key, true).Description("key");
             Field(x => x.LastName, true).Description("Last name");
             Field(x => x.Line1).Description("Line1");
             Field(x => x.Line2, true).Description("Line2");
@@ -24,7 +25,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             Field(x => x.RegionId, true).Description("Region id");
             Field(x => x.RegionName, true).Description("Region name");
             Field(x => x.Zip, true).Description("Zip");
-            Field<NonNullGraphType<AddressTypeEnum>>(nameof(Address.AddressType));
+            Field<NonNullGraphType<AddressTypeEnum>>("type");
         }
     }
 }

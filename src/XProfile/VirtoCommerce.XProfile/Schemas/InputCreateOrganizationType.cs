@@ -8,7 +8,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
         public InputCreateOrganizationType()
         {
             Field<NonNullGraphType<StringGraphType>>(nameof(Organization.Name));
-            Field<NonNullGraphType<ListGraphType<InputAddressType>>>(nameof(Member.Addresses));
+            Field<NonNullGraphType<ListGraphType<AddressInputType>>>(nameof(Member.Addresses));
         }
     }
 }
