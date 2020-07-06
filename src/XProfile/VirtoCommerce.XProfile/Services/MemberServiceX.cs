@@ -225,16 +225,25 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Services
             {
                 _mapper.Map(organizationUpdateInfo, member);
 
-                await _memberService.SaveChangesAsync(new[] { member });
-
-
-                return await _memberService.GetByIdAsync(organizationUpdateInfo.Id, null, nameof(Organization)) as Organization;
+                return await UpdateOrganizationAsync(member);
             }
 
             return default;
         }
 
-        public async Task<ProfileSearchResult> SearchOrganizationContactsAsync(MembersSearchCriteria criteria)
+        public async Task<Organization> UpdateOrganizationAsync(Organization org)
+        {
+            await _memberService.SaveChangesAsync(new[] { org });
+
+            return await _memberService.GetByIdAsync(org.Id, null, nameof(Organization)) as Organization;
+        }
+
+        public async Task<MemberSearchResult> SearchOrganizationContactsAsync(MembersSearchCriteria criteria)
+        {
+            return await _memberSearchService.SearchMembersAsync(criteria);
+        }
+
+        public async Task<ProfileSearchResult> SearchOrganizationProfilesAsync(MembersSearchCriteria criteria)
         {
             var result = AbstractTypeFactory<ProfileSearchResult>.TryCreateInstance();
             var searchResult = await _memberSearchService.SearchMembersAsync(criteria);

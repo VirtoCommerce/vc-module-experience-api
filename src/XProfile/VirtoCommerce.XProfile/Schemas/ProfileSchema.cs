@@ -55,9 +55,9 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             ///    }
             ///}
             /// </example>
-            var connectionBuilder = GraphTypeExtenstionHelper.CreateConnection<ProfileType, object>()
-              .Name("organizationUsers")
-              .Argument<NonNullGraphType<GetOrganizationUsersInputType>>(_commandName, "Query command")
+            var connectionBuilder = GraphTypeExtenstionHelper.CreateConnection<ContactType, object>()
+              .Name("searchOrganizationMembers")
+              .Argument<NonNullGraphType<SearchOrganizationMembersInputType>>(_commandName, "Query command")
               .Unidirectional()
               .PageSize(20);
             connectionBuilder.ResolveAsync(ResolveOrganizationUsersConnectionAsync);
@@ -137,8 +137,15 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                                              context.GetArgument<IList<Address>>("addresses"));
                             }).FieldType);
 
-            _ = schema.Mutation.AddField(FieldBuilder.Create<OrganizationUpdateInfo, Organization>(GraphTypeExtenstionHelper.GetActualType<OrganizationInputType>())
-                            .Name("updateOrganization")
+            /// <example>
+            /// mutation ($input: OrganizationUpdateInfoInputType!){
+            ///    updateOrganizationInfo(input: $input){
+            ///        name addresses{ line1 }
+            ///    }
+            ///}
+            /// </example>
+            _ = schema.Mutation.AddField(FieldBuilder.Create<OrganizationUpdateInfo, Organization>(GraphTypeExtenstionHelper.GetActualType<OrganizationType>())
+                            .Name("updateOrganizationInfo")
                             .Argument<NonNullGraphType<OrganizationUpdateInfoInputType>>("input")
                             .ResolveAsync(async context =>
                             {
@@ -147,22 +154,39 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                             }).FieldType);
 
             /// <example>
+            ///mutation($command: OrganizationInputType!){
+            ///    updateOrganization(command: $command){
+            ///        name addresses { line1 }
+            ///    }
+            ///}
+            /// </example>
+            _ = schema.Mutation.AddField(FieldBuilder.Create<object, Organization>(GraphTypeExtenstionHelper.GetActualType<OrganizationType>())
+                            .Name("updateOrganization")
+                            .Argument<NonNullGraphType<OrganizationType>>(_commandName)
+                            .ResolveAsync(async context => await _mediator.Send(context.GetArgument<OrganizationCommand>(_commandName)))
+                            //.ResolveAsync(async context =>
+                            //{
+                            //    return await _memberService.UpdateOrganizationAsync(context.GetArgument<Organization>("input"));
+                            //})
+                            .FieldType);
+
+            /// <example>
             /// This is a sample mutation to createOrganization.
-            /// mutation($command: CreateOrganizationType!){
-            ///     createOrganization(command: $command){
+            /// mutation($command: createOrganization!){
+            ///     createUserInvitations(command: $command){
             ///         succeeded errors { description }
             ///     }
             /// }
             /// query variables:
             /// {
             ///     "command": {
-            
+
             ///     }
             /// }
             /// </example>
-            _ = schema.Mutation.AddField(FieldBuilder.Create<OrganizationRequest, Organization>(typeof(OrganizationInputType))
+            _ = schema.Mutation.AddField(FieldBuilder.Create<OrganizationRequest, Organization>(typeof(OrganizationType))
                             .Name("createOrganization")
-                            .Argument<NonNullGraphType<OrganizationInputType>>(_commandName)
+                            .Argument<NonNullGraphType<OrganizationType>>(_commandName)
                             .ResolveAsync(async context => await _mediator.Send(context.GetArgument<CreateOrganizationCommand>(_commandName)))
                             .FieldType);
 
@@ -202,15 +226,15 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
         {
             var first = context.First;
             var skip = Convert.ToInt32(context.After ?? 0.ToString());
-            var command = context.GetArgument<GetOrganizationUsersCommand>(_commandName);
+            var command = context.GetArgument<SearchOrganizationMembersQuery>(_commandName);
             command.Take = first ?? 20;
             command.Skip = skip;
             var response = await _mediator.Send(command);
 
-            var result = new Connection<Profile>()
+            var result = new Connection<Member>()
             {
                 Edges = response.Results.Select((x, index) =>
-                        new Edge<Profile>()
+                        new Edge<Member>()
                         {
                             Cursor = (skip + index).ToString(),
                             Node = x,

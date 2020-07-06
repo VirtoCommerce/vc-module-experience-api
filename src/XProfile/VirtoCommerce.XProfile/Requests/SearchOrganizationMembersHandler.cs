@@ -4,18 +4,18 @@ using MediatR;
 using VirtoCommerce.CustomerModule.Core.Model.Search;
 using VirtoCommerce.ExperienceApiModule.XProfile.Services;
 
-namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
+namespace VirtoCommerce.ExperienceApiModule.XProfile.Requests
 {
-    public class GetOrganizationUsersCommandHandler : IRequestHandler<GetOrganizationUsersCommand, ProfileSearchResult>
+    public class SearchOrganizationMembersHandler : IRequestHandler<SearchOrganizationMembersQuery, MemberSearchResult>
     {
         private readonly IMemberServiceX _memberService;
 
-        public GetOrganizationUsersCommandHandler(IMemberServiceX memberService)
+        public SearchOrganizationMembersHandler(IMemberServiceX memberService)
         {
             _memberService = memberService;
         }
 
-        public async Task<ProfileSearchResult> Handle(GetOrganizationUsersCommand request, CancellationToken cancellationToken)
+        public async Task<MemberSearchResult> Handle(SearchOrganizationMembersQuery request, CancellationToken cancellationToken)
         {
             //TODO: check authentication by request.UserId
 

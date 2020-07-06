@@ -16,7 +16,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
 
         public Task<Organization> Handle(CreateOrganizationCommand request, CancellationToken cancellationToken)
         {
-            return _memberServiceX.CreateOrganizationAsync(request.Organization);
+            return _memberServiceX.CreateOrganizationAsync(request);
         }
     }
 }

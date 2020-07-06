@@ -11,6 +11,5 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Requests
         //[JsonIgnore]
         //[IgnoreDataMember]
         //public IMutablePagedList<ContactRequest> Contacts { get; set; }
-        public IList<ContactRequest> Contacts { get; set; }
     }
 }
