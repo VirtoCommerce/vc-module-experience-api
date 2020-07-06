@@ -401,10 +401,15 @@ namespace VirtoCommerce.XPurchase
             if (!Cart.Items.IsNullOrEmpty() && !Cart.Items.Any(i => i.IsReadOnly))
             {
                 var evalContext = _mapper.Map<PromotionEvaluationContext>(this);
-                promotionResult = await _marketingEvaluator.EvaluatePromotionAsync(evalContext);
+                promotionResult = await EvaluatePromotionsAsync(evalContext);
             }
 
             return promotionResult;
+        }
+
+        public virtual async Task<PromotionResult> EvaluatePromotionsAsync(PromotionEvaluationContext evalContext)
+        {
+            return await _marketingEvaluator.EvaluatePromotionAsync(evalContext);
         }
 
         protected async Task<IEnumerable<TaxRate>> EvaluateTaxesAsync()
