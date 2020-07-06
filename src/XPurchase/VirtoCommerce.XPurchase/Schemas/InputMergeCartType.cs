@@ -1,10 +1,10 @@
-﻿using GraphQL.Types;
+using GraphQL.Types;
 
 namespace VirtoCommerce.XPurchase.Schemas
 {
-    public class MergeCartType : InputCartBaseType
+    public class InputMergeCartType : InputCartBaseType
     {
-        public MergeCartType()
+        public InputMergeCartType()
         {
             Field<NonNullGraphType<StringGraphType>>("secondCartId");
         }

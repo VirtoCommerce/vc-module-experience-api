@@ -44,10 +44,11 @@ namespace VirtoCommerce.XPurchase.Extensions
             services.AddSchemaType<InputValidateCouponType>();
             services.AddSchemaType<LanguageType>();
             services.AddSchemaType<LineItemType>();
-            services.AddSchemaType<MergeCartType>();
+            services.AddSchemaType<InputMergeCartType>();
             services.AddSchemaType<MoneyType>();
             services.AddSchemaType<PaymentMethodType>();
             services.AddSchemaType<PaymentType>();
+            services.AddSchemaType<InputRemoveCartType>();
             services.AddSchemaType<ShipmentType>();
             services.AddSchemaType<ShippingMethodType>();
             services.AddSchemaType<TaxDetailType>();
