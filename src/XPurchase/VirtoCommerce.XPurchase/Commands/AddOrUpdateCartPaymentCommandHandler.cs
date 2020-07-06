@@ -1,4 +1,3 @@
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 using VirtoCommerce.XPurchase.Services;
@@ -8,6 +7,7 @@ namespace VirtoCommerce.XPurchase.Commands
     public class AddOrUpdateCartPaymentCommandHandler : CartCommandHandler<AddOrUpdateCartPaymentCommand>
     {
         private readonly ICartAvailMethodsService _cartAvailMethodService;
+
         public AddOrUpdateCartPaymentCommandHandler(ICartAggregateRepository cartRepository, ICartAvailMethodsService cartAvailMethodService)
             : base(cartRepository)
         {

@@ -49,7 +49,7 @@ namespace VirtoCommerce.XPurchase.Schemas
 
                     var getCartQuery = new GetCartQuery(storeId, type, cartName, userId, currencyCode, cultureName);
                     var cartAggregate = await _mediator.Send(getCartQuery);
-                    if(cartAggregate == null)
+                    if (cartAggregate == null)
                     {
                         var createCartCommand = new CreateCartCommand(storeId, type, cartName, userId, currencyCode, cultureName);
                         cartAggregate = await _mediator.Send(createCartCommand);
@@ -97,7 +97,6 @@ namespace VirtoCommerce.XPurchase.Schemas
                                            .FieldType;
 
             schema.Mutation.AddField(addItemField);
-
 
             /// <example>
             /// This is an example JSON request for a mutation
@@ -408,6 +407,37 @@ namespace VirtoCommerce.XPurchase.Schemas
                                                   .FieldType;
 
             schema.Mutation.AddField(validateCouponField);
+
+            /// <example>
+            /// This is an example JSON request for a mutation
+            /// {
+            ///   "query": "mutation ($command:MergeCartType!){ mergeCart(command: $command) {  total { formatedAmount } } }",
+            ///   "variables": {
+            ///      "command": {
+            ///          "storeId": "Electronics",
+            ///          "cartName": "default",
+            ///          "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
+            ///          "language": "en-US",
+            ///          "currency": "USD",
+            ///          "cartType": "cart",
+            ///          "secondCartId": "7777-7777-7777-7777"
+            ///      }
+            ///   }
+            /// }
+            /// </example>
+            var margeCartField = FieldBuilder.Create<CartAggregate, CartAggregate>(typeof(CartType))
+                                             .Name("mergeCart")
+                                             .Argument<NonNullGraphType<MergeCartType>>(_commandName)
+                                             .ResolveAsync(async context =>
+                                             {
+                                                 //TODO: Need to refactor later to prevent ugly code duplication
+                                                 //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
+                                                 var cartAggregate = await _mediator.Send(context.GetCartCommand<MergeCartCommand>());
+                                                 context.UserContext.Add("cartAggregate", cartAggregate);
+                                                 return cartAggregate;
+                                             }).FieldType;
+
+            schema.Mutation.AddField(margeCartField);
         }
     }
 }
