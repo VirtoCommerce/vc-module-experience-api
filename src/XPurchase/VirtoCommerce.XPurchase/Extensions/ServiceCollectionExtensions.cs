@@ -51,6 +51,7 @@ namespace VirtoCommerce.XPurchase.Extensions
             services.AddSchemaType<MoneyType>();
             services.AddSchemaType<PaymentMethodType>();
             services.AddSchemaType<PaymentType>();
+            services.AddSchemaType<InputRemoveCartType>();
             services.AddSchemaType<ShipmentType>();
             services.AddSchemaType<ShippingMethodType>();
             services.AddSchemaType<TaxDetailType>();

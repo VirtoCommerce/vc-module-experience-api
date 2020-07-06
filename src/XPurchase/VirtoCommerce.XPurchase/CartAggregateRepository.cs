@@ -93,7 +93,19 @@ namespace VirtoCommerce.XPurchase
 
         protected virtual async Task<CartAggregate> InnerGetCartAggregateFromCartAsync(ShoppingCart cart, string language)
         {
-            var store = await _storeService.GetByIdAsync(cart.StoreId);
+            if (cart == null)
+            {
+                throw new ArgumentNullException(nameof(cart));
+            }
+
+            var storeLoadTask = _storeService.GetByIdAsync(cart.StoreId);
+            var allCurrenciesLoadTask = _currencyService.GetAllCurrenciesAsync();
+
+            await Task.WhenAll(storeLoadTask, allCurrenciesLoadTask);
+
+            var store = storeLoadTask.Result;
+            var allCurrencies = allCurrenciesLoadTask.Result;
+
             if (store == null)
             {
                 throw new OperationCanceledException($"store with id {cart.StoreId} not found");
@@ -102,8 +114,7 @@ namespace VirtoCommerce.XPurchase
             {
                 cart.Currency = store.DefaultCurrency;
             }
-            var allCurrencies = await _currencyService.GetAllCurrenciesAsync();
-
+          
             var currency = allCurrencies.FirstOrDefault(x => x.Code.EqualsInvariant(cart.Currency));
             if (currency == null)
             {
