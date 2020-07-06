@@ -11,6 +11,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Extensions
         public static IServiceCollection AddXProfile(this IServiceCollection services)
         {
             //services.AddSchemaType<UserUpdateInfoInputType>();
+            services.AddSchemaType<OrganizationInputType>();
 
             services.AddSchemaBuilder<ProfileSchema>();
 

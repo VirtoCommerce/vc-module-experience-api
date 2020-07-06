@@ -3,6 +3,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using VirtoCommerce.CustomerModule.Core.Model;
 using VirtoCommerce.CustomerModule.Core.Model.Search;
+using VirtoCommerce.ExperienceApiModule.XProfile.Commands;
+using VirtoCommerce.ExperienceApiModule.XProfile.Requests;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Services
 {
@@ -20,7 +22,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Services
         Task<IdentityResult> UnlockUserAsync(string userId);
 
         Task<Organization> GetOrganizationByIdAsync(string organizationId);
-        Task<Organization> CreateOrganizationAsync(Organization organization);
+        Task<Organization> CreateOrganizationAsync(CreateOrganizationCommand organization);
         Task<Organization> UpdateOrganizationAsync(OrganizationUpdateInfo organizationUpdateInfo);
 
 

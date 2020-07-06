@@ -1,6 +1,6 @@
 using MediatR;
 
-namespace VirtoCommerce.ExperienceApiModule.XProfile.Requests
+namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
 {
     public class GetOrganizationUsersCommand : IRequest<ProfileSearchResult>
     {

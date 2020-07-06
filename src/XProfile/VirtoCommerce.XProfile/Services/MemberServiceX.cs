@@ -9,6 +9,8 @@ using Microsoft.Extensions.DependencyInjection;
 using VirtoCommerce.CustomerModule.Core.Model;
 using VirtoCommerce.CustomerModule.Core.Model.Search;
 using VirtoCommerce.CustomerModule.Core.Services;
+using VirtoCommerce.ExperienceApiModule.XProfile.Commands;
+using VirtoCommerce.ExperienceApiModule.XProfile.Requests;
 using VirtoCommerce.OrdersModule.Core.Services;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Security;
@@ -40,9 +42,12 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Services
             throw new NotImplementedException();
         }
 
-        public Task<Organization> CreateOrganizationAsync(Organization organization)
+        public async Task<Organization> CreateOrganizationAsync(CreateOrganizationCommand organizationRequest)
         {
-            throw new NotImplementedException();
+            Organization organization = _mapper.Map<Organization>(organizationRequest);
+            await _memberService.SaveChangesAsync(new[] { organization });
+
+            return organization;
         }
 
         public Task DeleteContactAsync(string contactId)

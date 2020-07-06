@@ -12,6 +12,7 @@ using MediatR;
 using Microsoft.AspNetCore.Identity;
 using VirtoCommerce.CustomerModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.Core.Schema;
+using VirtoCommerce.ExperienceApiModule.XProfile.Commands;
 using VirtoCommerce.ExperienceApiModule.XProfile.Requests;
 using VirtoCommerce.ExperienceApiModule.XProfile.Services;
 
@@ -136,7 +137,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                                              context.GetArgument<IList<Address>>("addresses"));
                             }).FieldType);
 
-            _ = schema.Mutation.AddField(FieldBuilder.Create<OrganizationUpdateInfo, Organization>(GraphTypeExtenstionHelper.GetActualType<OrganizationType>())
+            _ = schema.Mutation.AddField(FieldBuilder.Create<OrganizationUpdateInfo, Organization>(GraphTypeExtenstionHelper.GetActualType<OrganizationInputType>())
                             .Name("updateOrganization")
                             .Argument<NonNullGraphType<OrganizationUpdateInfoInputType>>("input")
                             .ResolveAsync(async context =>
@@ -146,23 +147,23 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                             }).FieldType);
 
             /// <example>
-            /// This is a sample mutation to createUserInvitations.
-            /// mutation($command: CreateUserInvitationsInputType!){
-            ///     createUserInvitations(command: $command){
+            /// This is a sample mutation to createOrganization.
+            /// mutation($command: CreateOrganizationType!){
+            ///     createOrganization(command: $command){
             ///         succeeded errors { description }
             ///     }
             /// }
             /// query variables:
             /// {
             ///     "command": {
-            ///         "message": "welcome {{userName}}", "roles": ["Organization employee"], "emails": ["test1@virtoway.com", "CreateUserInvitation1@virtoway.com"], "organizationId": "689a72757c754bef97cde51afc663430", "storeId": "Electronics", "storeEmail": "storeadmin@virtoway.com", "language": "en-US"
+            
             ///     }
             /// }
             /// </example>
-            _ = schema.Mutation.AddField(FieldBuilder.Create<Profile, IdentityResult>(typeof(IdentityResultType))
-                            .Name("createUserInvitations")
-                            .Argument<NonNullGraphType<CreateUserInvitationsInputType>>(_commandName)
-                            .ResolveAsync(async context => await _mediator.Send(context.GetArgument<CreateUserInvitationsCommand>(_commandName)))
+            _ = schema.Mutation.AddField(FieldBuilder.Create<OrganizationRequest, Organization>(typeof(OrganizationInputType))
+                            .Name("createOrganization")
+                            .Argument<NonNullGraphType<OrganizationInputType>>(_commandName)
+                            .ResolveAsync(async context => await _mediator.Send(context.GetArgument<CreateOrganizationCommand>(_commandName)))
                             .FieldType);
 
             /// <example>

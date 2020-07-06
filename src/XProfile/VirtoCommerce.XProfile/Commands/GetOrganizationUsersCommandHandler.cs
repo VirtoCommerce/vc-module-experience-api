@@ -4,13 +4,13 @@ using MediatR;
 using VirtoCommerce.CustomerModule.Core.Model.Search;
 using VirtoCommerce.ExperienceApiModule.XProfile.Services;
 
-namespace VirtoCommerce.ExperienceApiModule.XProfile.Requests
+namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
 {
-    public class GetOrganizationUsersResponse : IRequestHandler<GetOrganizationUsersCommand, ProfileSearchResult>
+    public class GetOrganizationUsersCommandHandler : IRequestHandler<GetOrganizationUsersCommand, ProfileSearchResult>
     {
         private readonly IMemberServiceX _memberService;
 
-        public GetOrganizationUsersResponse(IMemberServiceX memberService)
+        public GetOrganizationUsersCommandHandler(IMemberServiceX memberService)
         {
             _memberService = memberService;
         }

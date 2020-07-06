@@ -34,7 +34,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             {
                 Name = "organization",
                 Description = "Organization",
-                Type = GraphTypeExtenstionHelper.GetActualType<OrganizationType>(),
+                Type = GraphTypeExtenstionHelper.GetActualType<OrganizationInputType>(),
                 Resolver = new AsyncFieldResolver<Contact, object>(async context => await _memberService.GetByIdAsync(context.Source.Organizations.FirstOrDefault(), null, typeof(Organization).Name))
             };
             AddField(organizationField);
