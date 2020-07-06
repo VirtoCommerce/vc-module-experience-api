@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using AutoMapper;
 using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.MarketingModule.Core.Model.Promotions;
-using VirtoCommerce.MarketingModule.Core.Services;
 using VirtoCommerce.PaymentModule.Core.Model;
 using VirtoCommerce.PaymentModule.Core.Model.Search;
 using VirtoCommerce.PaymentModule.Core.Services;
@@ -23,29 +22,25 @@ namespace VirtoCommerce.XPurchase.Services
     public class CartAvailMethodsService : ICartAvailMethodsService
     {
         private readonly IPaymentMethodsSearchService _paymentMethodsSearchService;
-        private readonly IMarketingPromoEvaluator _marketingEvaluator;
         private readonly ITaxProviderSearchService _taxProviderSearchService;
         private readonly IShippingMethodsSearchService _shippingMethodsSearchService;
 
-
         private readonly IMapper _mapper;
+
         public CartAvailMethodsService(
             IPaymentMethodsSearchService paymentMethodsSearchService
             , IShippingMethodsSearchService shippingMethodsSearchService
-            , IMarketingPromoEvaluator marketingEvaluator
             , ITaxProviderSearchService taxProviderSearchService
             , IMapper mapper)
         {
             _paymentMethodsSearchService = paymentMethodsSearchService;
             _shippingMethodsSearchService = shippingMethodsSearchService;
             _taxProviderSearchService = taxProviderSearchService;
-            _marketingEvaluator = marketingEvaluator;
             _mapper = mapper;
         }
 
         public async Task<IEnumerable<ShippingRate>> GetAvailableShippingRatesAsync(CartAggregate cartAggr)
         {
-
             //Request available shipping rates
             var shippingEvaluationContext = new ShippingEvaluationContext(cartAggr.Cart);
 
@@ -69,7 +64,7 @@ namespace VirtoCommerce.XPurchase.Services
 
             //Evaluate promotions cart and apply rewards for available shipping methods
             var evalContext = _mapper.Map<PromotionEvaluationContext>(cartAggr);
-            var promoEvalResult = await _marketingEvaluator.EvaluatePromotionAsync(evalContext);
+            var promoEvalResult = await cartAggr.EvaluatePromotionsAsync(evalContext);
             foreach (var shippingRate in availableShippingRates)
             {
                 shippingRate.ApplyRewards(promoEvalResult.Rewards);
@@ -90,13 +85,14 @@ namespace VirtoCommerce.XPurchase.Services
 
             return availableShippingRates;
         }
+
         public async Task<IEnumerable<PaymentMethod>> GetAvailablePaymentMethodsAsync(CartAggregate cartAggr)
         {
             if (cartAggr == null)
             {
                 throw new ArgumentNullException(nameof(cartAggr));
             }
-            
+
             var criteria = new PaymentMethodsSearchCriteria
             {
                 IsActive = true,
@@ -111,7 +107,7 @@ namespace VirtoCommerce.XPurchase.Services
             }
 
             var evalContext = _mapper.Map<PromotionEvaluationContext>(cartAggr);
-            var promoResult = await _marketingEvaluator.EvaluatePromotionAsync(evalContext);
+            var promoResult = await cartAggr.EvaluatePromotionsAsync(evalContext);
 
             foreach (var paymentMethod in result.Results)
             {
