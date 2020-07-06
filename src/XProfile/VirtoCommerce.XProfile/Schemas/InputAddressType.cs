@@ -3,9 +3,9 @@ using VirtoCommerce.CustomerModule.Core.Model;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 {
-    public class AddressInputType : InputObjectGraphType<Address>
+    public class InputAddressType : InputObjectGraphType<Address>
     {
-        public AddressInputType()
+        public InputAddressType()
         {
             Field(x => x.City).Description("City");
             Field(x => x.CountryCode).Description("Country code");

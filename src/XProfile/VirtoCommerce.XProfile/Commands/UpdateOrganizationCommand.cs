@@ -1,22 +1,21 @@
 using System.Collections.Generic;
 using System.Linq;
 using VirtoCommerce.CustomerModule.Core.Model;
-using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.Platform.Core.DynamicProperties;
 
-namespace VirtoCommerce.ExperienceApiModule.XProfile.Requests
+namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
 {
-    public class MemberRequest : Entity
+    public class UpdateOrganizationCommand : ICommand<OrganizationAggregate>
     {
-        public IList<string> PhoneNumbers { get; set; } = new List<string>();
-        public string Email
+        public UpdateOrganizationCommand()
         {
-            get
-            {
-                return Emails.OrderBy(x => x).FirstOrDefault();
-            }
+            MemberType = nameof(Organization);
         }
 
+        public string Id { get; set; }
+
+        public IList<string> PhoneNumbers { get; set; } = new List<string>();
         /// <summary>
         /// Returns the email address of the customer.
         /// </summary>
@@ -32,13 +31,6 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Requests
         /// User groups such as VIP, Wholesaler etc
         /// </summary>
         public IList<string> UserGroups { get; set; } = new List<string>();
-        //TODO
-        //public IMutablePagedList<DynamicProperty> DynamicProperties { get; set; } = new MutablePagedList<DynamicProperty>(Enumerable.Empty<DynamicProperty>());
         public IList<DynamicProperty> DynamicProperties { get; set; } = new List<DynamicProperty>(Enumerable.Empty<DynamicProperty>());
-
-        public override string ToString()
-        {
-            return $"{MemberType} {Name}";
-        }
     }
 }

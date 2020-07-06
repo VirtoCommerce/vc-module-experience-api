@@ -3,9 +3,9 @@ using VirtoCommerce.Platform.Core.Security;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 {
-    public class PhoneNumberUpdateInfoInputType : IdInputType
+    public class InputUpdatePhoneNumberInfoType : InputIdType
     {
-        public PhoneNumberUpdateInfoInputType()
+        public InputUpdatePhoneNumberInfoType()
         {
             Field<NonNullGraphType<StringGraphType>>(nameof(ApplicationUser.PhoneNumber));
         }

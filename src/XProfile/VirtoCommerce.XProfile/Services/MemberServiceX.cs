@@ -44,10 +44,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Services
 
         public async Task<Organization> CreateOrganizationAsync(CreateOrganizationCommand organizationRequest)
         {
-            Organization organization = _mapper.Map<Organization>(organizationRequest);
-            await _memberService.SaveChangesAsync(new[] { organization });
-
-            return organization;
+            throw new NotImplementedException();
         }
 
         public Task DeleteContactAsync(string contactId)

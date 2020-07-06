@@ -4,9 +4,9 @@ using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
 {
-    public class CreateOrganizationCommand : ICommand<OrganizationAggregate>
+    public class UpdateContactAddressesCommand : ICommand<ContactAggregate>
     {
-        public string Name { get; set; }
-        public IList<Address> Addresses { get; set; } = new List<Address>();        
+        public string contactId { get; set; }
+        public IList<Address> Addresses { get; set; }
     }
 }

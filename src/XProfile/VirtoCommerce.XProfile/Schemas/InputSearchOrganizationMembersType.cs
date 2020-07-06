@@ -3,9 +3,9 @@ using VirtoCommerce.ExperienceApiModule.XProfile.Requests;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 {
-    public class SearchOrganizationMembersInputType : InputObjectGraphType
+    public class InputSearchOrganizationMembersType : InputObjectGraphType
     {
-        public SearchOrganizationMembersInputType()
+        public InputSearchOrganizationMembersType()
         {
             Field<NonNullGraphType<StringGraphType>>(nameof(SearchOrganizationMembersQuery.OrganizationId), "Organization ID");
             Field<StringGraphType>(nameof(SearchOrganizationMembersQuery.SearchPhrase));

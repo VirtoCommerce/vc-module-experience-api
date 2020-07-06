@@ -3,9 +3,9 @@ using VirtoCommerce.Platform.Core.Security;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 {
-    public class IdInputType : InputObjectGraphType
+    public class InputIdType : InputObjectGraphType
     {
-        public IdInputType()
+        public InputIdType()
         {
             Field<NonNullGraphType<StringGraphType>>(nameof(ApplicationUser.Id));
         }

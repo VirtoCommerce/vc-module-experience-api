@@ -1,22 +1,27 @@
 using System.Threading;
 using System.Threading.Tasks;
+using AutoMapper;
 using MediatR;
-using VirtoCommerce.CustomerModule.Core.Model;
-using VirtoCommerce.ExperienceApiModule.XProfile.Services;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
 {
-    public class CreateOrganizationCommandHandler : IRequestHandler<CreateOrganizationCommand, Organization>
+    public class CreateOrganizationCommandHandler : IRequestHandler<CreateOrganizationCommand, OrganizationAggregate>
     {
-        private readonly IMemberServiceX _memberServiceX;
-        public CreateOrganizationCommandHandler(IMemberServiceX memberServiceX)
+        private readonly IMapper _mapper;
+        private readonly IOrganizationAggregateRepository _organizationAggregateRepository;
+
+        public CreateOrganizationCommandHandler(IMapper mapper, IOrganizationAggregateRepository organizationAggregateRepository)
         {
-            _memberServiceX = memberServiceX;
+            _mapper = mapper;
+            _organizationAggregateRepository = organizationAggregateRepository;
         }
 
-        public Task<Organization> Handle(CreateOrganizationCommand request, CancellationToken cancellationToken)
+        public async Task<OrganizationAggregate> Handle(CreateOrganizationCommand request, CancellationToken cancellationToken)
         {
-            return _memberServiceX.CreateOrganizationAsync(request);
+            var organizationAggregate = _mapper.Map<OrganizationAggregate>(request);
+            await _organizationAggregateRepository.SaveAsync(organizationAggregate);
+
+            return organizationAggregate;
         }
     }
 }
