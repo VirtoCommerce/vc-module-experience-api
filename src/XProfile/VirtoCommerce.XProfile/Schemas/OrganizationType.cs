@@ -13,13 +13,14 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             Description = "Organization info";
             //this.AuthorizeWith(CustomerModule.Core.ModuleConstants.Security.Permissions.Read);
 
-            Field(x => x.Description, nullable: true).Description("Description");
-            Field(x => x.BusinessCategory, nullable: true).Description("Business category");
-            Field(x => x.OwnerId, nullable: true).Description("Owner id");
-            Field(x => x.ParentId, nullable: true).Description("Parent id");
+            Field(x => x.Id).Description("Description");
+            Field(x => x.Description, true).Description("Description");
+            Field(x => x.BusinessCategory, true).Description("Business category");
+            Field(x => x.OwnerId, true).Description("Owner id");
+            Field(x => x.ParentId, true).Description("Parent id");
             Field(x => x.Name).Description("Name");
             Field(x => x.MemberType).Description("Member type");
-            Field(x => x.OuterId, nullable: true).Description("Outer id");
+            Field(x => x.OuterId, true).Description("Outer id");
             Field<NonNullGraphType<ListGraphType<AddressTypePro>>>("addresses", resolve: x => x.Source.Addresses);
             Field(x => x.Phones);
             Field(x => x.Emails);

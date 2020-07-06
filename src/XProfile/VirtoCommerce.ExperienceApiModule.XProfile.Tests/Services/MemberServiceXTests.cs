@@ -170,7 +170,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Tests.Services
             //Assert
             result.Should().NotBeNull();
             result.Results.Should().NotBeEmpty();
-            result.Results.FirstOrDefault().Contact.Id.Should().Be(user.MemberId);
+            result.Results.FirstOrDefault().Id.Should().Be(user.MemberId);
         }
 
 

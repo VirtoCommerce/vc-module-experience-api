@@ -6,16 +6,16 @@ using VirtoCommerce.ExperienceApiModule.XProfile.Services;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Requests
 {
-    public class GetOrganizationUsersResponse : IRequestHandler<GetOrganizationUsersCommand, ProfileSearchResult>
+    public class SearchOrganizationMembersHandler : IRequestHandler<SearchOrganizationMembersQuery, MemberSearchResult>
     {
         private readonly IMemberServiceX _memberService;
 
-        public GetOrganizationUsersResponse(IMemberServiceX memberService)
+        public SearchOrganizationMembersHandler(IMemberServiceX memberService)
         {
             _memberService = memberService;
         }
 
-        public async Task<ProfileSearchResult> Handle(GetOrganizationUsersCommand request, CancellationToken cancellationToken)
+        public async Task<MemberSearchResult> Handle(SearchOrganizationMembersQuery request, CancellationToken cancellationToken)
         {
             //TODO: check authentication by request.UserId
 
