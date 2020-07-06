@@ -29,7 +29,7 @@ namespace VirtoCommerce.XPurchase.Commands
             return result;
         }
 
-        protected async virtual Task<ShoppingCart> GetCartById(string cartId, string language) => (await CartRepository.GetCartByIdAsync(cartId, language))?.Cart;
+        protected async virtual Task<CartAggregate> GetCartById(string cartId, string language) => await CartRepository.GetCartByIdAsync(cartId, language);
 
         protected virtual Task<CartAggregate> CreateNewCartAggregateAsync(TCartCommand request)
         {

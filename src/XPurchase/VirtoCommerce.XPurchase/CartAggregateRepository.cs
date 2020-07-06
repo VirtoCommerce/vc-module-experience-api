@@ -35,7 +35,7 @@ namespace VirtoCommerce.XPurchase
             , IMemberService memberService
             , IStoreService storeService
             , ICartValidationContextFactory cartValidationContextFactory
-            , Func<UserManager<ApplicationUser>>  userManager)
+            , Func<UserManager<ApplicationUser>> userManager)
         {
             _cartAggregateFactory = cartAggregateFactory;
             _shoppingCartSearchService = shoppingCartSearchService;
@@ -147,5 +147,7 @@ namespace VirtoCommerce.XPurchase
 
             return result;
         }
+
+        public virtual async Task RemoveCartAsync(string cartId) => await _shoppingCartService.DeleteAsync(new[] { cartId });
     }
 }
