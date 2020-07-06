@@ -5,11 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
+using Microsoft.AspNetCore.Identity;
 using Moq;
 using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.CartModule.Core.Services;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.CustomerModule.Core.Services;
+using VirtoCommerce.Platform.Core.Security;
 using VirtoCommerce.StoreModule.Core.Services;
 using VirtoCommerce.XPurchase.Validators;
 using Xunit;
@@ -26,6 +28,7 @@ namespace VirtoCommerce.XPurchase.Tests
         private readonly Mock<ICurrencyService> _currencyService;
         private readonly Mock<IMemberService> _memberService;
         private readonly Mock<IStoreService> _storeService;
+        private readonly Mock<UserManager<ApplicationUser>> _userManager;
 
         private readonly CartAggregateRepository repository;
 
@@ -37,6 +40,7 @@ namespace VirtoCommerce.XPurchase.Tests
             _currencyService = new Mock<ICurrencyService>();
             _memberService = new Mock<IMemberService>();
             _storeService = new Mock<IStoreService>();
+            _userManager = new Mock<UserManager<ApplicationUser>>();
 
             repository = new CartAggregateRepository(
                 () => _fixture.Create<CartAggregate>(),
@@ -45,7 +49,8 @@ namespace VirtoCommerce.XPurchase.Tests
                 _currencyService.Object,
                 _memberService.Object,
                 _storeService.Object,
-                _cartValidationContextFactory.Object
+                _cartValidationContextFactory.Object,
+                () => _userManager.Object
                 );
         }
 
