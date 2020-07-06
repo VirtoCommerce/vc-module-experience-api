@@ -8,6 +8,7 @@ namespace VirtoCommerce.XPurchase.Commands
     public class ChangeCartItemQuantityCommandHangler : CartCommandHandler<ChangeCartItemQuantityCommand>
     {
         private readonly ICartProductService _cartProductService;
+
         public ChangeCartItemQuantityCommandHangler(ICartAggregateRepository cartRepository, ICartProductService cartProductService)
             : base(cartRepository)
         {
@@ -19,7 +20,7 @@ namespace VirtoCommerce.XPurchase.Commands
             var cartAggr = await GetOrCreateCartFromCommandAsync(request);
             var lineItem = cartAggr.Cart.Items.FirstOrDefault(x => x.Id.Equals(request.LineItemId));
             CartProduct product = null;
-            if(lineItem != null)
+            if (lineItem != null)
             {
                 product = (await _cartProductService.GetCartProductsByIdsAsync(cartAggr, new[] { lineItem.ProductId })).FirstOrDefault();
             }
