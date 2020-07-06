@@ -317,6 +317,37 @@ namespace VirtoCommerce.XPurchase.Schemas
 
             schema.Mutation.AddField(removeCouponField);
 
+            /// <example>
+            /// This is an example JSON request for a mutation
+            /// {
+            ///   "query": "mutation ($command:InputRemoveShipmentType!){ removeShipment(command: $command) {  total { formatedAmount } } }",
+            ///   "variables": {
+            ///      "command": {
+            ///          "storeId": "Electronics",
+            ///          "cartName": "default",
+            ///          "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
+            ///          "language": "en-US",
+            ///          "currency": "USD",
+            ///          "cartType": "cart",
+            ///          "couponCode": "verynicecouponcode"
+            ///      }
+            ///   }
+            /// }
+            /// </example>
+            var removeShipmentField = FieldBuilder.Create<CartAggregate, CartAggregate>(typeof(CartType))
+                                                  .Name("removeShipment")
+                                                  .Argument<NonNullGraphType<InputRemoveShipmentType>>(_commandName)
+                                                  .ResolveAsync(async context =>
+                                                  {
+                                                      //TODO: Need to refactor later to prevent ugly code duplication
+                                                      //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
+                                                      var cartAggregate = await _mediator.Send(context.GetCartCommand<RemoveShipmentCommand>());
+                                                      context.UserContext.Add("cartAggregate", cartAggregate);
+                                                      return cartAggregate;
+                                                  }).FieldType;
+
+            schema.Mutation.AddField(removeShipmentField);
+
             //TODO: add shipment model to example
             /// <example>
             /// This is an example JSON request for a mutation
@@ -353,7 +384,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             /// <example>
             /// This is an example JSON request for a mutation
             /// {
-            ///   "query": "mutation ($command:InputAddOrUpdateCartPaymentType!){ removeCoupon(command: $command) {  total { formatedAmount } } }",
+            ///   "query": "mutation ($command:InputAddOrUpdateCartPaymentType!){ addOrUpdateCartPayment(command: $command) {  total { formatedAmount } } }",
             ///   "variables": {
             ///      "command": {
             ///          "storeId": "Electronics",
@@ -384,7 +415,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             /// <example>
             /// This is an example JSON request for a mutation
             /// {
-            ///   "query": "mutation ($command:InputValidateCouponType!){ removeCoupon(command: $command) {  total { formatedAmount } } }",
+            ///   "query": "mutation ($command:InputValidateCouponType!){ validateCoupon(command: $command) {  total { formatedAmount } } }",
             ///   "variables": {
             ///      "command": {
             ///          "storeId": "Electronics",
@@ -451,10 +482,10 @@ namespace VirtoCommerce.XPurchase.Schemas
             /// }
             /// </example>
             var removeCartField = FieldBuilder.Create<CartAggregate, bool>(typeof(CartType))
-                                                  .Name("removeCart")
-                                                  .Argument<NonNullGraphType<InputRemoveCartType>>(_commandName)
-                                                  .ResolveAsync(async context => await _mediator.Send(context.GetArgument<RemoveCartCommand>(_commandName)))
-                                                  .FieldType;
+                                              .Name("removeCart")
+                                              .Argument<NonNullGraphType<InputRemoveCartType>>(_commandName)
+                                              .ResolveAsync(async context => await _mediator.Send(context.GetArgument<RemoveCartCommand>(_commandName)))
+                                              .FieldType;
 
             schema.Mutation.AddField(removeCartField);
         }
