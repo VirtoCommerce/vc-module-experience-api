@@ -2,6 +2,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
+using VirtoCommerce.CustomerModule.Core.Model;
+using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
 {
@@ -17,7 +19,8 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
         }
         public async Task<ContactAggregate> Handle(CreateContactCommand request, CancellationToken cancellationToken)
         {
-            var contactAggregate = _mapper.Map<ContactAggregate>(request);
+            var contactAggregate = new ContactAggregate(AbstractTypeFactory<Contact>.TryCreateInstance());
+            _mapper.Map(request, contactAggregate.Contact);
             await _contactAggregateRepository.SaveAsync(contactAggregate);
 
             return contactAggregate;

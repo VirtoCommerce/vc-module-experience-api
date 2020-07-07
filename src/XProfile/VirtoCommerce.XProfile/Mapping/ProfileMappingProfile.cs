@@ -1,5 +1,6 @@
 using VirtoCommerce.CustomerModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.XProfile.Commands;
+using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Security;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Mapping
@@ -12,13 +13,16 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Mapping
             CreateMap<UserUpdateInfo, ApplicationUser>();
             CreateMap<OrganizationUpdateInfo, Member>().IncludeAllDerived();
             CreateMap<CreateOrganizationCommand, OrganizationAggregate>()
-                .ForMember(dest => dest.Organization, opt => opt.MapFrom(src => src));
-            CreateMap<UpdateOrganizationCommand, OrganizationAggregate>()
-                .ForMember(dest => dest.Organization, opt => opt.MapFrom(src => src));
-            CreateMap<CreateContactCommand, ContactAggregate>()
-                .ForMember(dest => dest.Contact, opt => opt.MapFrom(src => src));
-            CreateMap<UpdateContactCommand, ContactAggregate>()
-                .ForMember(dest => dest.Contact, opt => opt.MapFrom(src => src));
+                .ConvertUsing((command, aggregate, context) => {
+                    aggregate = new OrganizationAggregate(AbstractTypeFactory<Organization>.TryCreateInstance());
+                    aggregate.Organization.Name = command.Name;
+                    aggregate.Organization.Addresses = command.Addresses;
+
+                    return aggregate;
+                });
+            CreateMap<UpdateOrganizationCommand, Organization>();
+            CreateMap<CreateContactCommand, Contact>();
+            CreateMap<UpdateContactCommand, Contact>();
             CreateMap<UpdateContactAddressesCommand, ContactAggregate>()
                 .ForMember(dest => dest.Contact, opt => opt.MapFrom(src => src));
         }

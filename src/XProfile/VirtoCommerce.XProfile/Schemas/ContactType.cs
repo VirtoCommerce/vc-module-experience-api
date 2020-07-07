@@ -10,12 +10,9 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 {
     public class ContactType : ObjectGraphType<ContactAggregate>
     {
-        private readonly IMemberService _memberService;
 
-        public ContactType(IMemberService memberService)
+        public ContactType()
         {
-            _memberService = memberService;
-
             //this.AuthorizeWith(CustomerModule.Core.ModuleConstants.Security.Permissions.Read);
 
             Field(x => x.Contact.FirstName);
@@ -27,17 +24,17 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             Field(x => x.Contact.Name);
             Field(x => x.Contact.OuterId, true);
             Field<ListGraphType<AddressTypePro>>("addresses", resolve: context => context.Source.Contact.Addresses);
-            Field<ListGraphType<StringGraphType>>("organizations", resolve: context => context.Source.Contact.Organizations);
+            //Field<ListGraphType<StringGraphType>>("organizations", resolve: context => context.Source.Contact.Organizations);
 
 
-            var organizationField = new FieldType
-            {
-                Name = "organization",
-                Description = "Organization",
-                Type = GraphTypeExtenstionHelper.GetActualType<OrganizationType>(),
-                Resolver = new AsyncFieldResolver<ContactAggregate, object>(async context => await _memberService.GetByIdAsync(context.Source.Contact.Organizations.FirstOrDefault(), null, typeof(Organization).Name))
-            };
-            AddField(organizationField);
+            //var organizationField = new FieldType
+            //{
+            //    Name = "organization",
+            //    Description = "Organization",
+            //    Type = GraphTypeExtenstionHelper.GetActualType<OrganizationType>(),
+            //    Resolver = new AsyncFieldResolver<ContactAggregate, object>(async context => await _memberService.GetByIdAsync(context.Source.Contact.Organizations.FirstOrDefault(), null, typeof(Organization).Name))
+            //};
+            //AddField(organizationField);
 
 
 

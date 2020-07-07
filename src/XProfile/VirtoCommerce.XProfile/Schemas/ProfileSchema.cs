@@ -75,28 +75,6 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             schema.Query.AddField(contactField);
 
             /// <example>
-            /// {
-            ///     customer(id: "9d5b5d2ee74b48ffb1212bb87d47864f"){
-            ///         firstName
-            ///         organization{ name }
-            ///         addresses { line1 }
-            ///     }
-            /// }
-            /// </example>
-            _ = schema.Query.AddField(new FieldType
-            {
-                Name = "customer",
-                Arguments = new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id", Description = "user id" }),
-                Type = GraphTypeExtenstionHelper.GetActualType<ContactType>(),
-                Resolver = new AsyncFieldResolver<Contact>(async context =>
-                {
-                    var getCartQuery = new GetContactByIdQuery(context.GetArgument<string>("id"));
-                    var cartAggregate = await _mediator.Send(getCartQuery);
-                    return cartAggregate.Contact;
-                })
-            });
-
-            /// <example>
             /// This is a sample request for organization users (connection) query. Valid organizationId required
             ///{
             ///    organizationUsers(command: { organizationId: "2e4c562f-f51c-4d49-84c3-8ba9f661aee7", userId: "62223176-92db-4bf7-963a-15a07928095c"}){

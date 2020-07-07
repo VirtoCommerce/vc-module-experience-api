@@ -23,7 +23,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
             string photoUrl = default(string),
             //IList<ApplicationUser> securityAccounts = default(IList<ApplicationUser>),
             string name = default(string),
-            string memberType = default(string),
+            string memberType = nameof(Contact),
             IList<Address> addresses = default(IList<Address>),
             IList<string> phones = default(IList<string>),
             IList<string> emails = default(IList<string>),
@@ -93,7 +93,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
         //public IEnumerable<SecurityAccount> SecurityAccounts { get; set; }
 
         public string Name { get; set; }
-        public string MemberType { get; set; }
+        public string MemberType { get; set; } = nameof(Contact);
 
         public IList<string> PhoneNumbers { get; set; } = new List<string>();
         public IList<string> Emails { get; set; } = new List<string>();
