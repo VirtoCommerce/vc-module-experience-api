@@ -15,6 +15,10 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Mapping
                 .ForMember(dest => dest.Organization, opt => opt.MapFrom(src => src));
             CreateMap<UpdateOrganizationCommand, OrganizationAggregate>()
                 .ForMember(dest => dest.Organization, opt => opt.MapFrom(src => src));
+            CreateMap<CreateContactCommand, ContactAggregate>()
+                .ForMember(dest => dest.Contact, opt => opt.MapFrom(src => src));
+            CreateMap<UpdateContactCommand, ContactAggregate>()
+                .ForMember(dest => dest.Contact, opt => opt.MapFrom(src => src));
             CreateMap<UpdateContactAddressesCommand, ContactAggregate>()
                 .ForMember(dest => dest.Contact, opt => opt.MapFrom(src => src));
         }
