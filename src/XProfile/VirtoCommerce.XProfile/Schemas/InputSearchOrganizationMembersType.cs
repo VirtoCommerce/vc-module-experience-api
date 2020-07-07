@@ -1,5 +1,5 @@
 using GraphQL.Types;
-using VirtoCommerce.ExperienceApiModule.XProfile.Requests;
+using VirtoCommerce.ExperienceApiModule.XProfile.Queries;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 {

@@ -1,7 +1,7 @@
 using MediatR;
 using VirtoCommerce.CustomerModule.Core.Model.Search;
 
-namespace VirtoCommerce.ExperienceApiModule.XProfile.Requests
+namespace VirtoCommerce.ExperienceApiModule.XProfile.Queries
 {
     public class SearchOrganizationMembersQuery : IRequest<MemberSearchResult>
     {

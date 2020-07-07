@@ -1,26 +1,17 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
 using VirtoCommerce.CustomerModule.Core.Model;
 using VirtoCommerce.CustomerModule.Core.Model.Search;
 using VirtoCommerce.ExperienceApiModule.XProfile.Commands;
-using VirtoCommerce.ExperienceApiModule.XProfile.Requests;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Services
 {
     public interface IMemberServiceX
     {
-        Task<Profile> GetProfileByIdAsync(string userId);
         Task<Contact> CreateContactAsync(Contact contact);
-        Task<Profile> UpdateContactAsync(UserUpdateInfo userUpdateInfo);
-        Task<IdentityResult> UpdatePhoneNumberAsync(PhoneNumberUpdateInfo updateInfo);
-        Task<IdentityResult> RemovePhoneNumberAsync(string userId);
         Task<Contact> UpdateContactAddressesAsync(string contactId, IList<Address> addresses);
         Task DeleteContactAsync(string contactId);
         Task<MemberSearchResult> SearchOrganizationContactsAsync(MembersSearchCriteria criteria);
-        Task<ProfileSearchResult> SearchOrganizationProfilesAsync(MembersSearchCriteria criteria);
-        Task<IdentityResult> LockUserAsync(string userId);
-        Task<IdentityResult> UnlockUserAsync(string userId);
 
         Task<Organization> GetOrganizationByIdAsync(string organizationId);
         Task<Organization> CreateOrganizationAsync(CreateOrganizationCommand organization);

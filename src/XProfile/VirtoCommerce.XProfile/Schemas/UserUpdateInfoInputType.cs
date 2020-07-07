@@ -9,8 +9,6 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
         public UserUpdateInfoInputType()
         {
             Field<NonNullGraphType<StringGraphType>>(nameof(ApplicationUser.Id));
-            Field<NonNullGraphType<StringGraphType>>(nameof(ApplicationUser.Email));
-            Field<ListGraphType<StringGraphType>>(nameof(ApplicationUser.Roles));
             Field<NonNullGraphType<StringGraphType>>(nameof(Contact.FirstName));
             Field<NonNullGraphType<StringGraphType>>(nameof(Contact.LastName));
             Field<NonNullGraphType<StringGraphType>>(nameof(Contact.FullName));

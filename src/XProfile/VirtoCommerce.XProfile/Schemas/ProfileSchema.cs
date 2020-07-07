@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GraphQL;
@@ -9,12 +8,10 @@ using GraphQL.Resolvers;
 using GraphQL.Types;
 using GraphQL.Types.Relay.DataObjects;
 using MediatR;
-using Microsoft.AspNetCore.Identity;
 using VirtoCommerce.CustomerModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.Core.Schema;
 using VirtoCommerce.ExperienceApiModule.XProfile.Commands;
 using VirtoCommerce.ExperienceApiModule.XProfile.Queries;
-using VirtoCommerce.ExperienceApiModule.XProfile.Requests;
 using VirtoCommerce.ExperienceApiModule.XProfile.Services;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
@@ -77,15 +74,25 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             };
             schema.Query.AddField(contactField);
 
+            /// <example>
+            /// {
+            ///     customer(id: "9d5b5d2ee74b48ffb1212bb87d47864f"){
+            ///         firstName
+            ///         organization{ name }
+            ///         addresses { line1 }
+            ///     }
+            /// }
+            /// </example>
             _ = schema.Query.AddField(new FieldType
             {
                 Name = "customer",
                 Arguments = new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id", Description = "user id" }),
-                Type = GraphTypeExtenstionHelper.GetActualType<ProfileType>(),
-                Resolver = new AsyncFieldResolver<object>(async context =>
+                Type = GraphTypeExtenstionHelper.GetActualType<ContactType>(),
+                Resolver = new AsyncFieldResolver<Contact>(async context =>
                 {
-                    var loader = _dataLoader.Context.GetOrAddBatchLoader<string, Profile>("profileLoader", (id) => LoadProfileAsync(_mediator, id, context.SubFields.Values.GetAllNodesPaths()));
-                    return await loader.LoadAsync(context.GetArgument<string>("id"));
+                    var getCartQuery = new GetContactByIdQuery(context.GetArgument<string>("id"));
+                    var cartAggregate = await _mediator.Send(getCartQuery);
+                    return cartAggregate.Contact;
                 })
             });
 
@@ -105,67 +112,12 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             connectionBuilder.ResolveAsync(ResolveOrganizationUsersConnectionAsync);
             _ = schema.Query.AddField(connectionBuilder.FieldType);
 
-            _ = schema.Mutation.AddField(FieldBuilder.Create<UserUpdateInfo, Profile>(GraphTypeExtenstionHelper.GetActualType<ProfileType>())
-                            .Name("updateAccount")
-                            .Argument<NonNullGraphType<UserUpdateInfoInputType>>("userUpdateInfo")
-                            .ResolveAsync(async context =>
-                            {
-                                return await _memberService.UpdateContactAsync(context.GetArgument<UserUpdateInfo>("userUpdateInfo"));
-                            }).FieldType);
-
-            /// <example>
-            /// This is a sample mutation to updatePhoneNumber.
-            /// mutation($input: PhoneNumberUpdateInfoInputType!){
-            ///     updatePhoneNumber(input: $input){ succeeded }
-            /// }
-            /// query variables:
-            /// {
-            ///   "input": { "id": "be77bbe9-91a7-42bf-b253-9ed3a976af08", "phoneNumber": "666-5556" }
-            /// }
-            ///}
-            /// </example>
-            _ = schema.Mutation.AddField(FieldBuilder.Create<PhoneNumberUpdateInfo, IdentityResult>(typeof(IdentityResultType))
-                            .Name("updatePhoneNumber")
-                            .Argument<NonNullGraphType<InputUpdatePhoneNumberInfoType>>("input")
-                            .ResolveAsync(async context =>
-                            {
-                                return await _memberService.UpdatePhoneNumberAsync(context.GetArgument<PhoneNumberUpdateInfo>("input"));
-                            }).FieldType);
-
-
-            /// <example>
-            /// This is a sample mutation to removePhoneNumber.
-            /// mutation ($input: String!){
-            ///   removePhoneNumber(input: $input){ succeeded }
-            /// }
-            /// query variables:
-            /// {
-            ///   "input": "be77bbe9-91a7-42bf-b253-9ed3a976af08"
-            /// }
-            /// </example>
-            _ = schema.Mutation.AddField(FieldBuilder.Create<string, IdentityResult>(typeof(IdentityResultType))
-                            .Name("removePhoneNumber")
-                            .Argument<NonNullGraphType<StringGraphType>>("input")
-                            .ResolveAsync(async context =>
-                            {
-                                return await _memberService.RemovePhoneNumberAsync(context.GetArgument<string>("input"));
-                            }).FieldType);
-
-            //schema.Mutation.AddField(FieldBuilder.Create<IList<string>, string>(typeof(StringGraphType))
-            //                .Name("testSimple")
-            //                .Argument<NonNullGraphType<StringGraphType>>("customerId")
-            //                .Resolve(context =>
+            //_ = schema.Mutation.AddField(FieldBuilder.Create<UserUpdateInfo, Contact>(GraphTypeExtenstionHelper.GetActualType<ContactType>())
+            //                .Name("updateAccount")
+            //                .Argument<NonNullGraphType<UserUpdateInfoInputType>>("userUpdateInfo")
+            //                .ResolveAsync(async context =>
             //                {
-            //                    return context.GetArgument<string>("customerId");
-            //                }).FieldType);
-
-            //schema.Mutation.AddField(FieldBuilder.Create<IList<string>, string>(typeof(StringGraphType))
-            //                .Name("testList")
-            //                .Argument<ListGraphType<StringGraphType>>("items")
-            //                .Resolve(context =>
-            //                {
-            //                    var items = context.GetArgument<IList<string>>("items");
-            //                    return items.FirstOrDefault();
+            //                    return await _memberService.UpdateContactAsync(context.GetArgument<UserUpdateInfo>("userUpdateInfo"));
             //                }).FieldType);
 
             _ = schema.Mutation.AddField(FieldBuilder.Create<ContactAggregate, ContactAggregate>(typeof(ContactType))
@@ -213,7 +165,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             /// query variables:
             /// {
             ///     "command": {
-            
+
             ///     }
             /// }
             /// </example>
@@ -221,31 +173,6 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                             .Name("createOrganization")
                             .Argument<NonNullGraphType<InputCreateOrganizationType>>(_commandName)
                             .ResolveAsync(async context => await _mediator.Send(context.GetArgument<CreateOrganizationCommand>(_commandName)))
-                            .FieldType);
-
-            /// <example>
-            /// This is a sample mutation to lockUser.
-            /// mutation lockUser($input: LockUserInputType!){
-            ///     lockUser(command: $input){
-            ///         succeeded
-            ///     }
-            /// }
-            /// query variables:
-            /// {
-            ///     "input": { "userId": "a9fa82c5-d1b9-4838-b3ba-bec4e7b358dc" }
-            /// }
-            /// </example>
-            _ = schema.Mutation.AddField(FieldBuilder.Create<Profile, IdentityResult>(typeof(IdentityResultType))
-                            .Name("lockUser")
-                            .Argument<NonNullGraphType<LockUserInputType>>(_commandName)
-                            .ResolveAsync(async context => await _mediator.Send(context.GetArgument<LockUserCommand>(_commandName)))
-                            .FieldType);
-
-            /// Check the lockUser above for a sample.
-            _ = schema.Mutation.AddField(FieldBuilder.Create<Profile, IdentityResult>(typeof(IdentityResultType))
-                            .Name("unlockUser")
-                            .Argument<NonNullGraphType<UnlockUserInputType>>(_commandName)
-                            .ResolveAsync(async context => await _mediator.Send(context.GetArgument<UnlockUserCommand>(_commandName)))
                             .FieldType);
 
             _ = schema.Mutation.AddField(FieldBuilder.Create<ContactAggregate, ContactAggregate>(typeof(ContactType))
@@ -265,12 +192,6 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                             .Argument<NonNullGraphType<InputDeleteContactType>>(_commandName)
                             .ResolveAsync(async context => await _mediator.Send(context.GetArgument<DeleteContactCommand>(_commandName)))
                             .FieldType);
-        }
-
-        public static async Task<IDictionary<string, Profile>> LoadProfileAsync(IMediator mediator, IEnumerable<string> ids, IEnumerable<string> includeFields)
-        {
-            var response = await mediator.Send(new LoadProfileRequest { Id = ids.FirstOrDefault(), IncludeFields = includeFields });
-            return response.Results;
         }
 
         private async Task<object> ResolveOrganizationUsersConnectionAsync(IResolveConnectionContext<object> context)
