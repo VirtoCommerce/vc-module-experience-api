@@ -18,6 +18,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Extensions
             services.AddSchemaType<InputCreateContactType>();
             services.AddSchemaType<InputUpdateContactType>();
             services.AddSchemaType<InputUpdateContactAddressType>();
+            services.AddSchemaType<InputDeleteContactType>();
 
             services.AddSchemaBuilder<ProfileSchema>();
 

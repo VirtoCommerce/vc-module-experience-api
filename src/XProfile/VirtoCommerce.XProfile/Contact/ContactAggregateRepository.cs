@@ -26,9 +26,9 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile
             return null;
         }
 
-        public async Task SaveAsync(ContactAggregate contactAggregate)
+        public Task SaveAsync(ContactAggregate contactAggregate)
         {
-            await _memberService.SaveChangesAsync(new[] { contactAggregate.Contact });
+            return _memberService.SaveChangesAsync(new[] { contactAggregate.Contact });
         }
 
         protected virtual async Task<ContactAggregate> InnerGetContactByIdAsync(Contact contact)
@@ -41,6 +41,11 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile
             var aggregate = new ContactAggregate(contact);
 
             return await Task.FromResult(aggregate);
+        }
+
+        public Task DeleteContactAsync(string contactId)
+        {
+            return _memberService.DeleteAsync(new[] { contactId });
         }
     }
 }

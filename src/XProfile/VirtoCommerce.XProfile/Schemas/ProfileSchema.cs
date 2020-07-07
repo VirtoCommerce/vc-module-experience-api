@@ -259,6 +259,12 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                             .Argument<NonNullGraphType<InputUpdateContactType>>(_commandName)
                             .ResolveAsync(async context => await _mediator.Send(context.GetArgument<UpdateContactCommand>(_commandName)))
                             .FieldType);
+
+            _ = schema.Mutation.AddField(FieldBuilder.Create<ContactAggregate, bool>(typeof(ContactType))
+                            .Name("deleteContact")
+                            .Argument<NonNullGraphType<InputDeleteContactType>>(_commandName)
+                            .ResolveAsync(async context => await _mediator.Send(context.GetArgument<DeleteContactCommand>(_commandName)))
+                            .FieldType);
         }
 
         public static async Task<IDictionary<string, Profile>> LoadProfileAsync(IMediator mediator, IEnumerable<string> ids, IEnumerable<string> includeFields)

@@ -6,5 +6,6 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile
     {
         Task SaveAsync(ContactAggregate contactAggregate);
         Task<ContactAggregate> GetContactByIdAsync(string contactId);
+        Task DeleteContactAsync(string contactId);
     }
 }
