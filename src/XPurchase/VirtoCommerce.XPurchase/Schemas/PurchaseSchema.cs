@@ -447,7 +447,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             /// <example>
             /// This is an example JSON request for a mutation
             /// {
-            ///   "query": "mutation ($command:InputValidateCouponType!){ validateCoupon(command: $command) {  total { formatedAmount } } }",
+            ///   "query": "mutation ($command:InputValidateCouponType!){ validateCoupon(command: $command) }",
             ///   "variables": {
             ///      "command": {
             ///          "storeId": "Electronics",
@@ -463,7 +463,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             ///   }
             /// }
             /// </example>
-            var validateCouponField = FieldBuilder.Create<CartAggregate, bool>(typeof(CartType))
+            var validateCouponField = FieldBuilder.Create<CartAggregate, bool>(typeof(BooleanGraphType))
                                                   .Name("validateCoupon")
                                                   .Argument<NonNullGraphType<InputValidateCouponType>>(_commandName)
                                                   .ResolveAsync(async context => await _mediator.Send(context.GetArgument<ValidateCouponCommand>(_commandName)))
