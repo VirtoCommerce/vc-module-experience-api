@@ -15,7 +15,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
 
         public async Task<ContactAggregate> Handle(UpdateContactAddressesCommand request, CancellationToken cancellationToken)
         {
-            var contactAggregate = await _contactAggregateRepository.GetContactByIdAsync(request.contactId);
+            var contactAggregate = await _contactAggregateRepository.GetContactByIdAsync(request.ContactId);
             contactAggregate.UpdateContactAddresses(request.Addresses);
             await _contactAggregateRepository.SaveAsync(contactAggregate);
 

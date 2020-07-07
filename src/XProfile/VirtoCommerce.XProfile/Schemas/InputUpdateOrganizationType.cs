@@ -3,18 +3,12 @@ using VirtoCommerce.CustomerModule.Core.Model;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 {
-    public class InputUpdateOrganizationType : InputObjectGraphType
+    public class InputUpdateOrganizationType : InputMemberBaseType
     {
         public InputUpdateOrganizationType()
         {
             Field<NonNullGraphType<StringGraphType>>(nameof(Organization.Id));
             Field<NonNullGraphType<StringGraphType>>(nameof(Organization.Name));
-            Field<NonNullGraphType<ListGraphType<AddressInputType>>>(nameof(Member.Addresses));
-            Field<NonNullGraphType<ListGraphType<StringGraphType>>>(nameof(Member.Phones));
-            Field<NonNullGraphType<ListGraphType<StringGraphType>>>(nameof(Member.Emails));
-            Field<NonNullGraphType<ListGraphType<StringGraphType>>>(nameof(Member.Groups));
-            //TODO
-            // Field<NonNullGraphType<ListGraphType<DynamicObjectPropertyInputType>>>(nameof(Member.DynamicProperties));
         }
     }
 

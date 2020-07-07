@@ -227,6 +227,18 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                             .Argument<NonNullGraphType<UnlockUserInputType>>(_commandName)
                             .ResolveAsync(async context => await _mediator.Send(context.GetArgument<UnlockUserCommand>(_commandName)))
                             .FieldType);
+
+            _ = schema.Mutation.AddField(FieldBuilder.Create<ContactAggregate, ContactAggregate>(typeof(ContactType))
+                            .Name("createContact")
+                            .Argument<NonNullGraphType<InputCreateContactType>>(_commandName)
+                            .ResolveAsync(async context => await _mediator.Send(context.GetArgument<CreateContactCommand>(_commandName)))
+                            .FieldType);
+
+            _ = schema.Mutation.AddField(FieldBuilder.Create<ContactAggregate, ContactAggregate>(typeof(ContactType))
+                            .Name("updateContact")
+                            .Argument<NonNullGraphType<InputUpdateContactType>>(_commandName)
+                            .ResolveAsync(async context => await _mediator.Send(context.GetArgument<UpdateContactCommand>(_commandName)))
+                            .FieldType);
         }
 
         public static async Task<IDictionary<string, Profile>> LoadProfileAsync(IMediator mediator, IEnumerable<string> ids, IEnumerable<string> includeFields)

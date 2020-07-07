@@ -6,7 +6,18 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
 {
     public class UpdateContactAddressesCommand : ICommand<ContactAggregate>
     {
-        public string contactId { get; set; }
+        public UpdateContactAddressesCommand()
+        {
+
+        }
+
+        public UpdateContactAddressesCommand(string contactId, IList<Address> addresses)
+        {
+            ContactId = contactId;
+            Addresses = addresses;
+        }
+
+        public string ContactId { get; set; }
         public IList<Address> Addresses { get; set; }
     }
 }
