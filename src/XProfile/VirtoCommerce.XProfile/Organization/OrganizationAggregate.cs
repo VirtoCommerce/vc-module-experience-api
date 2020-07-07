@@ -8,7 +8,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile
     {
         public Organization Organization { get; protected set; }
 
-        public void SetOrganization(Organization organization)
+        public OrganizationAggregate(Organization organization)
         {
             Organization = organization;
         }

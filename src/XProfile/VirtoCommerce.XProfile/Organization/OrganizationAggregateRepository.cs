@@ -8,12 +8,10 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile
     public class OrganizationAggregateRepository : IOrganizationAggregateRepository
     {
         private readonly IMemberService _memberService;
-        private readonly Func<OrganizationAggregate> _organizationAggregateFactory;
 
-        public OrganizationAggregateRepository(IMemberService memberService, Func<OrganizationAggregate> organizationAggregateFactory)
+        public OrganizationAggregateRepository(IMemberService memberService)
         {
             _memberService = memberService;
-            _organizationAggregateFactory = organizationAggregateFactory;
         }
 
         public async Task<OrganizationAggregate> GetOrganizationByIdAsync(string organizationId)
@@ -40,8 +38,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile
                 throw new ArgumentNullException(nameof(organization));
             }
 
-            var aggregate = _organizationAggregateFactory();
-            aggregate.SetOrganization(organization);
+            var aggregate = new OrganizationAggregate(organization);
             
             return await Task.FromResult(aggregate);
         }

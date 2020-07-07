@@ -8,12 +8,13 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile
 {
     public class ContactAggregate : Entity, IAggregateRoot
     {
-        public Contact Contact { get; protected set; }
-
-        public virtual void SetContact(Contact contact)
+        public ContactAggregate(Contact contact)
         {
             Contact = contact;
         }
+
+        public Contact Contact { get; protected set; }
+
 
         public virtual ContactAggregate UpdateContactAddresses(IList<Address> addresses)
         {
