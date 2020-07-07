@@ -147,7 +147,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             /// </example>
             var changeCommentField = FieldBuilder.Create<CartAggregate, CartAggregate>(typeof(CartType))
                                                  .Name("changeComment")
-                                                 .Argument<NonNullGraphType<InputChangeCommentType>>(_commandName)
+                                                 .Argument<InputChangeCommentType>(_commandName)
                                                  .ResolveAsync(async context =>
                                                  {
                                                      //TODO: Need to refactor later to prevent ugly code duplication
