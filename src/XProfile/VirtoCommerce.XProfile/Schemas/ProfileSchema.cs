@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Identity;
 using VirtoCommerce.CustomerModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.Core.Schema;
 using VirtoCommerce.ExperienceApiModule.XProfile.Commands;
+using VirtoCommerce.ExperienceApiModule.XProfile.Queries;
 using VirtoCommerce.ExperienceApiModule.XProfile.Requests;
 using VirtoCommerce.ExperienceApiModule.XProfile.Services;
 
@@ -35,6 +36,27 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 
         public void Build(ISchema schema)
         {
+            //Queries
+            var organizationFiled = new FieldType
+            {
+                Name = "organization",
+                Arguments = new QueryArguments(),
+                Type = GraphTypeExtenstionHelper.GetActualType<OrganizationType>(),
+                Resolver = new AsyncFieldResolver<object>(async context =>
+                {
+                    var organizationId = context.GetArgument<string>("organizationId");
+
+                    var getOrganizationByIdQuery = new GetOrganizationByIdQuery(organizationId);
+                    var organizationAggregate = await _mediator.Send(getOrganizationByIdQuery);
+
+                    //store organization aggregate in the user context for future usage in the graph types resolvers
+                    context.UserContext.Add("organizationAggregate", organizationAggregate);
+
+                    return organizationAggregate;
+                })
+            };
+            schema.Query.AddField(organizationFiled);
+
             _ = schema.Query.AddField(new FieldType
             {
                 Name = "customer",
