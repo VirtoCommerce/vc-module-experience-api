@@ -40,7 +40,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             var organizationFiled = new FieldType
             {
                 Name = "organization",
-                Arguments = new QueryArguments(),
+                Arguments = new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "organizationId" }),
                 Type = GraphTypeExtenstionHelper.GetActualType<OrganizationType>(),
                 Resolver = new AsyncFieldResolver<object>(async context =>
                 {
@@ -56,6 +56,26 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                 })
             };
             schema.Query.AddField(organizationFiled);
+
+            var contactField = new FieldType
+            {
+                Name = "contact",
+                Arguments = new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "contactId" }),
+                Type = GraphTypeExtenstionHelper.GetActualType<ContactType>(),
+                Resolver = new AsyncFieldResolver<object>(async context =>
+                {
+                    var contactId = context.GetArgument<string>("contactId");
+
+                    var getContactByIdQuery = new GetContactByIdQuery(contactId);
+                    var contactAggregate = await _mediator.Send(getContactByIdQuery);
+
+                    //store organization aggregate in the user context for future usage in the graph types resolvers
+                    context.UserContext.Add("contactAggregate", contactAggregate);
+
+                    return contactAggregate;
+                })
+            };
+            schema.Query.AddField(contactField);
 
             _ = schema.Query.AddField(new FieldType
             {
