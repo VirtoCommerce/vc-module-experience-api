@@ -27,7 +27,7 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Queries
         {
             var result = new SearchProductResponse();
             var searchRequest = new SearchRequestBuilder(_searchPhraseParser)
-                                            .WithFuzzy(request.Fuzzy)
+                                            .WithFuzzy(request.Fuzzy, request.FuzzyLevel)
                                             .ParseFilters(request.Filter)
                                             .ParseFacets(request.Facet)
                                             .WithSearchPhrase(request.Query)
