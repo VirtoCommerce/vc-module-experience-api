@@ -31,7 +31,17 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
         public void Build(ISchema schema)
         {
             //Queries
-            var organizationFiled = new FieldType
+
+            /* organization query with contacts connection filtering:
+            {
+              organization(id: "689a72757c754bef97cde51afc663430"){
+                 id contacts(first:10, after: "0", searchPhrase: null){
+                  totalCount items {id firstName}
+                }
+              }
+            }
+             */
+            schema.Query.AddField(new FieldType
             {
                 Name = "organization",
                 Arguments = new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id" }),
@@ -48,8 +58,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 
                     return organizationAggregate;
                 })
-            };
-            schema.Query.AddField(organizationFiled);
+            });
 
             /// <example>
             /*
@@ -77,22 +86,6 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                     return contactAggregate;
                 })
             });
-
-            /// <example>
-            /// This is a sample request for organization users (connection) query. Valid organizationId required
-            ///{
-            ///    organizationUsers(command: { organizationId: "2e4c562f-f51c-4d49-84c3-8ba9f661aee7", userId: "62223176-92db-4bf7-963a-15a07928095c"}){
-            ///        totalCount items { contact{ firstName } userName }
-            ///    }
-            ///}
-            /// </example>
-            var connectionBuilder = GraphTypeExtenstionHelper.CreateConnection<ContactType, object>()
-              .Name("searchOrganizationMembers")
-              .Argument<NonNullGraphType<InputSearchOrganizationMembersType>>(_commandName, "Query command")
-              .Unidirectional()
-              .PageSize(20);
-            connectionBuilder.ResolveAsync(ResolveOrganizationUsersConnectionAsync);
-            _ = schema.Query.AddField(connectionBuilder.FieldType);
 
             _ = schema.Mutation.AddField(FieldBuilder.Create<ContactAggregate, ContactAggregate>(typeof(ContactType))
                             .Name("updateAddresses")
@@ -150,37 +143,6 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                             .Argument<NonNullGraphType<InputDeleteContactType>>(_commandName)
                             .ResolveAsync(async context => await _mediator.Send(context.GetArgument<DeleteContactCommand>(_commandName)))
                             .FieldType);
-        }
-
-        private async Task<object> ResolveOrganizationUsersConnectionAsync(IResolveConnectionContext<object> context)
-        {
-            var first = context.First;
-            var skip = Convert.ToInt32(context.After ?? 0.ToString());
-            var command = context.GetArgument<SearchOrganizationMembersQuery>(_commandName);
-            command.Take = first ?? 20;
-            command.Skip = skip;
-            var response = await _mediator.Send(command);
-
-            var result = new Connection<Member>()
-            {
-                Edges = response.Results.Select((x, index) =>
-                        new Edge<Member>()
-                        {
-                            Cursor = (skip + index).ToString(),
-                            Node = x,
-                        })
-                    .ToList(),
-                PageInfo = new PageInfo()
-                {
-                    HasNextPage = response.TotalCount > (skip + first),
-                    HasPreviousPage = skip > 0,
-                    StartCursor = skip.ToString(),
-                    EndCursor = Math.Min(response.TotalCount, (int)(skip + first)).ToString()
-                },
-                TotalCount = response.TotalCount,
-            };
-
-            return result;
         }
     }
 }
