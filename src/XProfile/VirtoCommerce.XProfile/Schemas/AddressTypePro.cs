@@ -11,9 +11,9 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
     {
         public AddressTypePro()
         {
-            //todo add address type!
+            Field<NonNullGraphType<AddressTypeEnum>>(nameof(Address.AddressType));
             Field(x => x.Key).Description("Id");
-            Field(x => x.Name).Description("Name");
+            Field(x => x.Name, true).Description("Name");
             Field(x => x.Organization, true).Description("Company name");
             Field(x => x.CountryCode).Description("Country code");
             Field(x => x.CountryName).Description("Country name");
@@ -24,8 +24,8 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             Field(x => x.Line2, true).Description("Line2");
             Field(x => x.RegionId, true).Description("Region id");
             Field(x => x.RegionName, true).Description("Region name");
-            Field(x => x.FirstName).Description("First name");
-            Field(x => x.LastName).Description("Last name");
+            Field(x => x.FirstName, true).Description("First name");
+            Field(x => x.LastName, true).Description("Last name");
             Field(x => x.MiddleName, true).Description("Middle name");
             Field(x => x.Phone, true).Description("Phone");
             Field(x => x.Email, true).Description("Email");

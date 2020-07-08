@@ -21,9 +21,9 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             Field(x => x.Organization.MemberType).Description("Member type");
             Field(x => x.Organization.OuterId, true).Description("Outer id");
             Field<NonNullGraphType<ListGraphType<AddressTypePro>>>("addresses", resolve: x => x.Source.Organization.Addresses);
-            Field(x => x.Organization.Phones);
-            Field(x => x.Organization.Emails);
-            Field(x => x.Organization.Groups);
+            Field(x => x.Organization.Phones, true);
+            Field(x => x.Organization.Emails, true);
+            Field(x => x.Organization.Groups, true);
             Field(x => x.Organization.SeoObjectType).Description("SEO object type");
 
             // TODO:
