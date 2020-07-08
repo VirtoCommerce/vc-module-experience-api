@@ -12,7 +12,6 @@ using VirtoCommerce.CustomerModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.Core.Schema;
 using VirtoCommerce.ExperienceApiModule.XProfile.Commands;
 using VirtoCommerce.ExperienceApiModule.XProfile.Queries;
-using VirtoCommerce.ExperienceApiModule.XProfile.Services;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 {
@@ -22,13 +21,11 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 
         private readonly IMediator _mediator;
         private readonly IDataLoaderContextAccessor _dataLoader;
-        private readonly IMemberServiceX _memberService;
 
-        public ProfileSchema(IMediator mediator, IDataLoaderContextAccessor dataLoader, IMemberServiceX memberService)
+        public ProfileSchema(IMediator mediator, IDataLoaderContextAccessor dataLoader)
         {
             _mediator = mediator;
             _dataLoader = dataLoader;
-            _memberService = memberService;
         }
 
         public void Build(ISchema schema)
@@ -37,11 +34,11 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             var organizationFiled = new FieldType
             {
                 Name = "organization",
-                Arguments = new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "organizationId" }),
+                Arguments = new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id" }),
                 Type = GraphTypeExtenstionHelper.GetActualType<OrganizationType>(),
                 Resolver = new AsyncFieldResolver<object>(async context =>
                 {
-                    var organizationId = context.GetArgument<string>("organizationId");
+                    var organizationId = context.GetArgument<string>("id");
 
                     var getOrganizationByIdQuery = new GetOrganizationByIdQuery(organizationId);
                     var organizationAggregate = await _mediator.Send(getOrganizationByIdQuery);
@@ -54,16 +51,24 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             };
             schema.Query.AddField(organizationFiled);
 
-            var contactField = new FieldType
+            /// <example>
+            /*
+             {
+              contact(id: "51311ae5-371c-453b-9394-e6d352f1cea7"){
+                  firstName memberType organizationIds organizations { id businessCategory description emails groups memberType name outerId ownerId parentId phones seoObjectType }
+                  addresses { line1 phone }
+             }
+            }
+             */
+            /// </example>
+            schema.Query.AddField(new FieldType
             {
                 Name = "contact",
-                Arguments = new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "contactId" }),
+                Arguments = new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id" }),
                 Type = GraphTypeExtenstionHelper.GetActualType<ContactType>(),
                 Resolver = new AsyncFieldResolver<object>(async context =>
                 {
-                    var contactId = context.GetArgument<string>("contactId");
-
-                    var getContactByIdQuery = new GetContactByIdQuery(contactId);
+                    var getContactByIdQuery = new GetContactByIdQuery(context.GetArgument<string>("id"));
                     var contactAggregate = await _mediator.Send(getContactByIdQuery);
 
                     //store organization aggregate in the user context for future usage in the graph types resolvers
@@ -71,8 +76,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 
                     return contactAggregate;
                 })
-            };
-            schema.Query.AddField(contactField);
+            });
 
             /// <example>
             /// This is a sample request for organization users (connection) query. Valid organizationId required
@@ -90,35 +94,11 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             connectionBuilder.ResolveAsync(ResolveOrganizationUsersConnectionAsync);
             _ = schema.Query.AddField(connectionBuilder.FieldType);
 
-            //_ = schema.Mutation.AddField(FieldBuilder.Create<UserUpdateInfo, Contact>(GraphTypeExtenstionHelper.GetActualType<ContactType>())
-            //                .Name("updateAccount")
-            //                .Argument<NonNullGraphType<UserUpdateInfoInputType>>("userUpdateInfo")
-            //                .ResolveAsync(async context =>
-            //                {
-            //                    return await _memberService.UpdateContactAsync(context.GetArgument<UserUpdateInfo>("userUpdateInfo"));
-            //                }).FieldType);
-
             _ = schema.Mutation.AddField(FieldBuilder.Create<ContactAggregate, ContactAggregate>(typeof(ContactType))
                             .Name("updateAddresses")
                             .Argument<NonNullGraphType<InputUpdateContactAddressType>>(_commandName)
                             .ResolveAsync(async context => await _mediator.Send(context.GetArgument<UpdateContactAddressesCommand>(_commandName)))
                             .FieldType);
-
-            /// <example>
-            /// mutation ($input: OrganizationUpdateInfoInputType!){
-            ///    updateOrganizationInfo(input: $input){
-            ///        name addresses{ line1 }
-            ///    }
-            ///}
-            /// </example>
-            _ = schema.Mutation.AddField(FieldBuilder.Create<OrganizationUpdateInfo, Organization>(GraphTypeExtenstionHelper.GetActualType<OrganizationType>())
-                            .Name("updateOrganizationInfo")
-                            .Argument<NonNullGraphType<InputUpdateOrganizationType>>("input")
-                            .ResolveAsync(async context =>
-                            {
-                                return await _memberService.UpdateOrganizationAsync(
-                                             context.GetArgument<OrganizationUpdateInfo>("input"));
-                            }).FieldType);
 
             /// <example>
             ///mutation($command: OrganizationInputType!){

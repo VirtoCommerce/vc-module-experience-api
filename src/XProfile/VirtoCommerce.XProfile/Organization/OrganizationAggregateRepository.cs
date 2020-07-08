@@ -1,7 +1,10 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using VirtoCommerce.CustomerModule.Core.Model;
 using VirtoCommerce.CustomerModule.Core.Services;
+using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile
 {
@@ -26,6 +29,20 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile
             return null;
         }
 
+        public async Task<IList<OrganizationAggregate>> GetOrganizationsByIdsAsync(string[] ids)
+        {
+            var members = await _memberService.GetByIdsAsync(ids, null, new[] { nameof(Organization) });
+
+            if (members.IsNullOrEmpty())
+            {
+                return null;
+            }
+            else
+            {
+                return await Task.WhenAll(members.OfType<Organization>().Select(InnerGetOrganizationByIdAsync));
+            }
+        }
+
         public async Task SaveAsync(OrganizationAggregate organizationAggregate)
         {
             await _memberService.SaveChangesAsync(new[] { organizationAggregate.Organization });
@@ -39,7 +56,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile
             }
 
             var aggregate = new OrganizationAggregate(organization);
-            
+
             return await Task.FromResult(aggregate);
         }
     }

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile
@@ -6,5 +7,6 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile
     {
         Task SaveAsync(OrganizationAggregate organizationAggregate);
         Task<OrganizationAggregate> GetOrganizationByIdAsync(string organizationId);
+        Task<IList<OrganizationAggregate>> GetOrganizationsByIdsAsync(string[] ids);
     }
 }
