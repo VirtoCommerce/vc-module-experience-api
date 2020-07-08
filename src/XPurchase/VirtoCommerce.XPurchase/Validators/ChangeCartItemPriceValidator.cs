@@ -1,6 +1,5 @@
 using System.Linq;
 using FluentValidation;
-using FluentValidation.Results;
 
 namespace VirtoCommerce.XPurchase.Validators
 {
@@ -22,11 +21,9 @@ namespace VirtoCommerce.XPurchase.Validators
                         {
                             context.AddFailure(CartErrorDescriber.UnableToSetLessPrice(lineItem));
                         }
-
                     }
                 });
             });
-
         }
     }
 }
