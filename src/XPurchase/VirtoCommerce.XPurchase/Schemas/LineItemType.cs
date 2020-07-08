@@ -11,11 +11,11 @@ namespace VirtoCommerce.XPurchase.Schemas
         {
             //TODO:
             //Field<ProductType>("product", resolve: context => context.Source.Product);
-        
+
             //Field<MoneyType>("paymentPlan", resolve: context => context.Source.PaymentPlan);
-            Field<IntGraphType>("inStockQuantity", resolve: context => context.GetCart().CartProducts[context.Source.ProductId]?.AvailableQuantity);
+            Field<IntGraphType>("inStockQuantity", resolve: context => context.GetCart().CartProducts[context.Source.ProductId]?.AvailableQuantity ?? 0);
             Field<StringGraphType>("warehouseLocation", resolve: context => context.GetCart().CartProducts[context.Source.ProductId]?.Inventory?.FulfillmentCenter?.Address);
-            
+
             Field<BooleanGraphType>("IsValid", resolve: context => !context.GetCart().ValidationErrors.GetEntityCartErrors(context.Source).Any());
             Field<ListGraphType<ValidationErrorType>>("validationErrors", resolve: context => context.GetCart().ValidationErrors.GetEntityCartErrors(context.Source));
 

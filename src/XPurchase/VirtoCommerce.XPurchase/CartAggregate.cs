@@ -341,27 +341,28 @@ namespace VirtoCommerce.XPurchase
                 entity.Id = null;
             }
 
-            foreach (var lineItem in otherCart.Cart.Items)
+            foreach (var lineItem in otherCart.Cart.Items.ToList())
             {
                 await InnerAddLineItemAsync(lineItem, otherCart.CartProducts[lineItem.ProductId]);
             }
 
-            foreach (var coupon in otherCart.Cart.Coupons)
+            foreach (var coupon in otherCart.Cart.Coupons.ToList())
             {
                 await AddCouponAsync(coupon);
             }
 
-            foreach (var shipment in otherCart.Cart.Shipments)
+            foreach (var shipment in otherCart.Cart.Shipments.ToList())
             {
                 //Skip validation, do not pass avail methods
                 await AddOrUpdateShipmentAsync(shipment, null);
             }
 
-            foreach (var payment in otherCart.Cart.Payments)
+            foreach (var payment in otherCart.Cart.Payments.ToList())
             {
                 //Skip validation, do not pass avail methods
                 await AddOrUpdatePaymentAsync(payment, null);
             }
+
             return this;
         }
 
