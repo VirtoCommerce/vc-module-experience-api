@@ -99,33 +99,8 @@ namespace VirtoCommerce.XPurchase.Tests.Helpers
                 Id = _fixture.Create<string>(),
                 IsActive = true,
                 IsBuyable = true,
-            }
-            //_fixture
-            //    .Build<CatalogProduct>()
-            //    .Without(x => x.Catalog)
-            //    .Without(x => x.Category)
-            //    .Without(x => x.MainProduct)
-            //    .Without(x => x.Properties)
-            //    .Without(x => x.PropertyValues)
-            //    .Without(x => x.Links)
-            //    .Without(x => x.Variations)
-            //    .Without(x => x.Associations)
-            //    .Create()
-                );
+            });
 
-            //_fixture.Register<IMutablePagedList<DynamicProperty>>(() => null);
-            //_fixture.Register(() => _fixture.Build<DynamicPropertyName>().With(x => x.Locale, "en-US").Create());
-            //_fixture.Register(() => _fixture.Build<DynamicPropertyObjectValue>().With(x => x.Locale, "en-US").Create());
-            //_fixture.Register<IMutablePagedList<SettingEntry>>(() => null);
-            //_fixture.Register<IMutablePagedList<Contact>>(() => null);
-            //_fixture.Register<IMutablePagedList<QuoteRequest>>(() => null);
-            //_fixture.Register<IMutablePagedList<Category>>(() => null);
-            //_fixture.Register<IMutablePagedList<Product>>(() => null);
-            //_fixture.Register<IList<Product>>(() => null);
-            //_fixture.Register<IList<ValidationError>>(() => null);
-            //_fixture.Register<IMutablePagedList<CatalogProperty>>(() => null);
-            //_fixture.Register<IMutablePagedList<ProductAssociation>>(() => null);
-            //_fixture.Register<IMutablePagedList<EditorialReview>>(() => null);
             _fixture.Register(() => _fixture.Build<LineItem>()
                                             .Without(x => x.DynamicProperties)
                                             .With(x => x.IsReadOnly, false)
@@ -133,7 +108,7 @@ namespace VirtoCommerce.XPurchase.Tests.Helpers
                                             .With(x => x.SalePrice, ItemCost)
                                             .With(x => x.ListPrice, ItemCost)
                                             .Create());
-            //_fixture.Register(() => _fixture.Build<ShoppingCart>().Without(x => x.DynamicProperties).Create());
+
             _fixture.Register<Price>(() => null);
 
             _cartProductServiceMock = new Mock<ICartProductService>();
@@ -172,7 +147,7 @@ namespace VirtoCommerce.XPurchase.Tests.Helpers
         {
             var catalogProductId = _fixture.Create<string>();
 
-            var catalogProduct = new CatalogModule.Core.Model.CatalogProduct
+            var catalogProduct = new CatalogProduct
             {
                 Id = catalogProductId
             };
@@ -208,7 +183,7 @@ namespace VirtoCommerce.XPurchase.Tests.Helpers
                 _taxProviderSearchServiceMock.Object,
                 _mapperMock.Object);
 
-            aggregate.GrabCartAsync(cart, new StoreModule.Core.Model.Store(), GetMember(), GetCurrency()).GetAwaiter().GetResult();
+            aggregate.GrabCartAsync(cart, new Store(), GetMember(), GetCurrency()).GetAwaiter().GetResult();
 
             return aggregate;
         }
