@@ -1,5 +1,4 @@
 using System.Linq;
-using GraphQL.Authorization;
 using GraphQL.Resolvers;
 using GraphQL.Types;
 using VirtoCommerce.CustomerModule.Core.Model;
@@ -20,24 +19,24 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             Field<DateGraphType>("birthDate", resolve: context => context.Source.Contact.BirthDate);
             Field(x => x.Contact.FullName);
             Field(x => x.Contact.Id);
+            Field(x => x.Contact.MemberType);
             Field(x => x.Contact.MiddleName, true);
-            Field(x => x.Contact.Name);
+            Field(x => x.Contact.Name, true);
             Field(x => x.Contact.OuterId, true);
             Field<ListGraphType<AddressTypePro>>("addresses", resolve: context => context.Source.Contact.Addresses);
             //Field<ListGraphType<StringGraphType>>("organizations", resolve: context => context.Source.Contact.Organizations);
 
-
-            //var organizationField = new FieldType
+            //AddField(new FieldType
             //{
             //    Name = "organization",
             //    Description = "Organization",
             //    Type = GraphTypeExtenstionHelper.GetActualType<OrganizationType>(),
-            //    Resolver = new AsyncFieldResolver<ContactAggregate, object>(async context => await _memberService.GetByIdAsync(context.Source.Contact.Organizations.FirstOrDefault(), null, typeof(Organization).Name))
-            //};
-            //AddField(organizationField);
-
-
-
+            //    Resolver = new AsyncFieldResolver<ContactAggregate, OrganizationAggregate>(async context =>
+            //    {
+            //        var org = await _memberService.GetByIdAsync(context.Source.Contact.Organizations.FirstOrDefault(), null, nameof(Organization));
+            //        return new OrganizationAggregate(org as Organization);
+            //    })
+            //});
         }
     }
 }

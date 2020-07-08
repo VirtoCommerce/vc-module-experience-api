@@ -52,7 +52,5 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
         {
             Id = id;
         }
-
-        public string Id { get; set; }
     }
 }

@@ -1,36 +1,35 @@
 using System.Collections.Generic;
-using System.Linq;
 using VirtoCommerce.CustomerModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
-using VirtoCommerce.Platform.Core.DynamicProperties;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
 {
-    public abstract class ContactCommand : ICommand<ContactAggregate>
+    public abstract class ContactCommand : Contact, ICommand<ContactAggregate>
     {
         protected ContactCommand()
         {
+            MemberType = nameof(Contact);
         }
 
         protected ContactCommand(string salutation,
-            string fullName = default(string),
-            string firstName = default(string),
-            string middleName = default(string),
-            string lastName = default(string),
-            string defaultLanguage = default(string),
-            string timeZone = default(string),
-            IList<string> organizations = default(IList<string>),
-            string photoUrl = default(string),
+            string fullName = default,
+            string firstName = default,
+            string middleName = default,
+            string lastName = default,
+            string defaultLanguage = default,
+            string timeZone = default,
+            IList<string> organizations = default,
+            string photoUrl = default,
             //IList<ApplicationUser> securityAccounts = default(IList<ApplicationUser>),
-            string name = default(string),
+            string name = default,
             string memberType = nameof(Contact),
-            IList<Address> addresses = default(IList<Address>),
-            IList<string> phones = default(IList<string>),
-            IList<string> emails = default(IList<string>),
-            IList<string> groups = default(IList<string>)
+            IList<Address> addresses = default,
+            IList<string> phones = default,
+            IList<string> emails = default,
+            IList<string> groups = default
             //IList<DynamicObjectProperty> dynamicProperties = default(IList<DynamicObjectProperty>),
-            //string id = default(string)
-            )
+            //string id = default
+            ) : this()
         {
             Salutation = salutation;
             FullName = fullName;
@@ -49,24 +48,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
             Groups = groups;
         }
 
-        public string FullName { get; set; }
-        /// <summary>
-        /// Returns the first name of the customer.
-        /// </summary>
-        public string FirstName { get; set; }
-        /// <summary>
-        /// Returns the last name of the customer.
-        /// </summary>
-        public string LastName { get; set; }
 
-        public string MiddleName { get; set; }
-
-        public string Salutation { get; set; }
-
-        public string PhotoUrl { get; set; }
-
-        public string TimeZone { get; set; }
-        public string DefaultLanguage { get; set; }
 
         public Address DefaultBillingAddress { get; set; }
         public Address DefaultShippingAddress { get; set; }
@@ -92,21 +74,11 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
         /// </summary>
         //public IEnumerable<SecurityAccount> SecurityAccounts { get; set; }
 
-        public string Name { get; set; }
-        public string MemberType { get; set; } = nameof(Contact);
-
         public IList<string> PhoneNumbers { get; set; } = new List<string>();
-        public IList<string> Emails { get; set; } = new List<string>();
-
-        
-        public IList<Address> Addresses { get; set; } = new List<Address>();
-        public IList<string> Phones { get; set; } = new List<string>();
-        public IList<string> Groups { get; set; } = new List<string>();
 
         /// <summary>
         /// User groups such as VIP, Wholesaler etc
         /// </summary>
         public IList<string> UserGroups { get; set; } = new List<string>();
-        public IList<DynamicProperty> DynamicProperties { get; set; } = new List<DynamicProperty>(Enumerable.Empty<DynamicProperty>());
     }
 }

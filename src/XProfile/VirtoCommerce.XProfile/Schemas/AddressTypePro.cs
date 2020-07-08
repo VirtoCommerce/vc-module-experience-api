@@ -27,8 +27,8 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             Field(x => x.FirstName).Description("First name");
             Field(x => x.LastName).Description("Last name");
             Field(x => x.MiddleName, true).Description("Middle name");
-            Field(x => x.Phone).Description("Phone");
-            Field(x => x.Email).Description("Email");
+            Field(x => x.Phone, true).Description("Phone");
+            Field(x => x.Email, true).Description("Email");
         }
     }
 }
