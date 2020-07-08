@@ -458,12 +458,17 @@ namespace VirtoCommerce.XPurchase
         {
             if (shipment != null)
             {
-                var existShipment = !shipment.IsTransient() ? Cart.Shipments.FirstOrDefault(s => s.Id == shipment.Id) : null;
+                // Get unique shipment from shipments by code/option pair or by id
+                var existShipment = Cart.Shipments.FirstOrDefault(
+                    s => (s.ShipmentMethodCode == shipment.ShipmentMethodCode && s.ShipmentMethodOption == shipment.ShipmentMethodOption)
+                      || (!shipment.IsTransient() && s.Id == shipment.Id));
+
                 if (existShipment != null)
                 {
                     Cart.Shipments.Remove(existShipment);
                 }
             }
+
             return Task.FromResult(this);
         }
 
