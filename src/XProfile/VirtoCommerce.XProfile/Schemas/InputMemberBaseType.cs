@@ -8,6 +8,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
         protected InputMemberBaseType()
         {
             Field<StringGraphType>(nameof(Member.Id));
+            Field<StringGraphType>(nameof(Member.MemberType));
             Field<NonNullGraphType<ListGraphType<AddressInputType>>>(nameof(Member.Addresses));
             Field<ListGraphType<StringGraphType>>(nameof(Member.Phones));
             Field<ListGraphType<StringGraphType>>(nameof(Member.Emails));

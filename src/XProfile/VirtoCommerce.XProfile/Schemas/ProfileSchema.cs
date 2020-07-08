@@ -145,7 +145,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                             .ResolveAsync(async context => await _mediator.Send(context.GetArgument<UpdateContactCommand>(_commandName)))
                             .FieldType);
 
-            _ = schema.Mutation.AddField(FieldBuilder.Create<ContactAggregate, bool>(typeof(ContactType))
+            _ = schema.Mutation.AddField(FieldBuilder.Create<ContactAggregate, bool>(typeof(BooleanGraphType))
                             .Name("deleteContact")
                             .Argument<NonNullGraphType<InputDeleteContactType>>(_commandName)
                             .ResolveAsync(async context => await _mediator.Send(context.GetArgument<DeleteContactCommand>(_commandName)))
