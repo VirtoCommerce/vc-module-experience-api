@@ -12,6 +12,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field<InputAddressType>("billingAddress");
             Field(x => x.Currency, nullable: true);
             Field(x => x.Price, nullable: true);
+            Field(x => x.Amount, nullable: true);
         }
     }
 }
