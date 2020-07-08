@@ -17,7 +17,7 @@ namespace VirtoCommerce.XPurchase.Commands
         public override async Task<CartAggregate> Handle(AddOrUpdateCartShipmentCommand request, CancellationToken cancellationToken)
         {
             var cartAggr = await GetOrCreateCartFromCommandAsync(request);
-            await cartAggr.AddOrUpdateShipmentAsync(request.Shipment, await _cartAvailMethodService.GetAvailableShippingRatesAsync(cartAggr));
+            await cartAggr.AddShipmentAsync(request.Shipment, await _cartAvailMethodService.GetAvailableShippingRatesAsync(cartAggr));
             await CartRepository.SaveAsync(cartAggr);
             return cartAggr;
         }

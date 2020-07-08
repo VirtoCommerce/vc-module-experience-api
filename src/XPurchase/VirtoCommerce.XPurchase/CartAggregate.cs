@@ -270,7 +270,7 @@ namespace VirtoCommerce.XPurchase
             return Task.FromResult(this);
         }
 
-        public virtual async Task<CartAggregate> AddOrUpdateShipmentAsync(Shipment shipment, IEnumerable<ShippingRate> availRates)
+        public virtual async Task<CartAggregate> AddShipmentAsync(Shipment shipment, IEnumerable<ShippingRate> availRates)
         {
             EnsureCartExists();
 
@@ -310,7 +310,7 @@ namespace VirtoCommerce.XPurchase
             return Task.FromResult(this);
         }
 
-        public virtual async Task<CartAggregate> AddOrUpdatePaymentAsync(Payment payment, IEnumerable<PaymentMethod> availPaymentMethods)
+        public virtual async Task<CartAggregate> AddPaymentAsync(Payment payment, IEnumerable<PaymentMethod> availPaymentMethods)
         {
             EnsureCartExists();
 
@@ -323,6 +323,9 @@ namespace VirtoCommerce.XPurchase
                 //address primary key duplication error for multiple carts with the same address
                 payment.BillingAddress.Key = null;
             }
+
+            payment.Price = payment.Amount;
+
             Cart.Payments.Add(payment);
 
             return this;
@@ -354,13 +357,13 @@ namespace VirtoCommerce.XPurchase
             foreach (var shipment in otherCart.Cart.Shipments.ToList())
             {
                 //Skip validation, do not pass avail methods
-                await AddOrUpdateShipmentAsync(shipment, null);
+                await AddShipmentAsync(shipment, null);
             }
 
             foreach (var payment in otherCart.Cart.Payments.ToList())
             {
                 //Skip validation, do not pass avail methods
-                await AddOrUpdatePaymentAsync(payment, null);
+                await AddPaymentAsync(payment, null);
             }
 
             return this;
@@ -459,9 +462,7 @@ namespace VirtoCommerce.XPurchase
             if (shipment != null)
             {
                 // Get unique shipment from shipments by code/option pair or by id
-                var existShipment = Cart.Shipments.FirstOrDefault(
-                    s => (s.ShipmentMethodCode == shipment.ShipmentMethodCode && s.ShipmentMethodOption == shipment.ShipmentMethodOption)
-                      || (!shipment.IsTransient() && s.Id == shipment.Id));
+                var existShipment = Cart.Shipments.FirstOrDefault(s => !shipment.IsTransient() && s.Id == shipment.Id);
 
                 if (existShipment != null)
                 {
