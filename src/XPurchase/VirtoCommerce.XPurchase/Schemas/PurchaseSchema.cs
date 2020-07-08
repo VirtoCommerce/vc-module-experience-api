@@ -513,7 +513,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             ///   }
             /// }
             /// </example>
-            var removeCartField = FieldBuilder.Create<CartAggregate, bool>(typeof(CartType))
+            var removeCartField = FieldBuilder.Create<CartAggregate, bool>(typeof(BooleanGraphType))
                                               .Name("removeCart")
                                               .Argument<NonNullGraphType<InputRemoveCartType>>(_commandName)
                                               .ResolveAsync(async context => await _mediator.Send(context.GetArgument<RemoveCartCommand>(_commandName)))
