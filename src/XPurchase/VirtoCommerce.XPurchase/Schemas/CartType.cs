@@ -15,8 +15,11 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field(x => x.Cart.Status, nullable: true).Description("Shopping cart status");
             Field(x => x.Cart.StoreId, nullable: true).Description("Shopping cart store id");
             Field(x => x.Cart.ChannelId, nullable: true).Description("Shopping cart channel id");
-            //TODO:
-            //Field(x => x.HasPhysicalProducts, nullable: true).Description("Sign that shopping cart contains line items which require shipping");
+            Field<BooleanGraphType>("hasPhysicalProducts", resolve: context => context.Source.Cart.
+                Items?.Any(i => string.IsNullOrEmpty(i.ProductType) ||
+                               !string.IsNullOrEmpty(i.ProductType) &&
+                               i.ProductType.Equals("Physical", StringComparison.OrdinalIgnoreCase))
+                ?? false);
             Field(x => x.Cart.IsAnonymous, nullable: true).Description("Sign that shopping cart is anonymous");
             //Field(x => x.Customer, nullable: true).Description("Shopping cart user"); //todo: add resolver
             Field(x => x.Cart.CustomerId, nullable: true).Description("Shopping cart user id");
@@ -90,7 +93,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field<ListGraphType<LineItemType>>("items", resolve: context => context.Source.Cart.Items);
 
             Field<IntGraphType>("itemsCount", "Count of different items", resolve: context => context.Source.Cart.Items.Count);
-            Field<IntGraphType>("itemsQuantity", "Quantity of items", resolve: context => context.Source.Cart.Items.Sum(x=> x.Quantity));
+            Field<IntGraphType>("itemsQuantity", "Quantity of items", resolve: context => context.Source.Cart.Items.Sum(x => x.Quantity));
             //TODO:
             //Field<LineItemType>("recentlyAddedItem", resolve: context => context.Source.Cart.RecentlyAddedItem);
 
