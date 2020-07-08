@@ -9,9 +9,9 @@ using VirtoCommerce.XPurchase.Tests.Helpers;
 using VirtoCommerce.XPurchase.Validators;
 using Xunit;
 
-namespace VirtoCommerce.XPurchase.Tests
+namespace VirtoCommerce.XPurchase.Tests.Validators
 {
-    public class CartValidationTests : MoqHelper
+    public class CartValidatorTests : MoqHelper
     {
         private const int InStockQuantity = 100;
         private const decimal MIN_PRICE = 1;
