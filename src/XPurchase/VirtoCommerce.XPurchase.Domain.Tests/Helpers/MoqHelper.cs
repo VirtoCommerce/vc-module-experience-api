@@ -2,16 +2,20 @@ using System.Collections.Generic;
 using System.Linq;
 using AutoFixture;
 using AutoMapper;
+using Bogus;
 using Moq;
 using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.CartModule.Core.Services;
+using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.CustomerModule.Core.Model;
+using VirtoCommerce.InventoryModule.Core.Model;
 using VirtoCommerce.MarketingModule.Core.Model.Promotions;
 using VirtoCommerce.MarketingModule.Core.Services;
 using VirtoCommerce.PaymentModule.Core.Services;
 using VirtoCommerce.PricingModule.Core.Model;
+using VirtoCommerce.ShippingModule.Core.Model;
 using VirtoCommerce.ShippingModule.Core.Services;
 using VirtoCommerce.StoreModule.Core.Model;
 using VirtoCommerce.StoreModule.Core.Services;
@@ -34,9 +38,14 @@ namespace VirtoCommerce.XPurchase.Tests.Helpers
         protected readonly Mock<ITaxProviderSearchService> _taxProviderSearchServiceMock;
         protected readonly Mock<IMapper> _mapperMock;
 
+        protected readonly Randomizer Rand = new Randomizer();
+
         private const string CART_NAME = "default";
         private const string CURRENCY_CODE = "USD";
         private const string CULTURE_NAME = "en-US";
+
+        protected const int InStockQuantity = 100;
+        protected const int ItemCost = 50;
 
         public MoqHelper()
         {
@@ -49,6 +58,61 @@ namespace VirtoCommerce.XPurchase.Tests.Helpers
                 .With(x => x.Name, CART_NAME)
                 .Without(x => x.Items)
                 .Create());
+
+            _fixture.Register(() =>
+            {
+                var catalogProduct = _fixture.Create<CatalogProduct>();
+
+                catalogProduct.TrackInventory = true;
+
+                var cartProduct = new CartProduct(catalogProduct);
+
+                cartProduct.ApplyPrices(new List<Price>()
+                {
+                    new Price
+                    {
+                        ProductId = catalogProduct.Id,
+                        PricelistId = _fixture.Create<string>(),
+                        List = ItemCost,
+                        MinQuantity = 1,
+                    }
+                }, GetCurrency());
+
+                var store = GetStore();
+
+                cartProduct.ApplyInventories(new List<InventoryInfo>()
+                {
+                    new InventoryInfo
+                    {
+                        ProductId=catalogProduct.Id,
+                        FulfillmentCenterId = store.MainFulfillmentCenterId,
+                        InStockQuantity = InStockQuantity,
+                        ReservedQuantity = 0,
+                    }
+                }, store);
+
+                return cartProduct;
+            });
+
+            _fixture.Register(() => new CatalogProduct
+            {
+                Id = _fixture.Create<string>(),
+                IsActive = true,
+                IsBuyable = true,
+            }
+            //_fixture
+            //    .Build<CatalogProduct>()
+            //    .Without(x => x.Catalog)
+            //    .Without(x => x.Category)
+            //    .Without(x => x.MainProduct)
+            //    .Without(x => x.Properties)
+            //    .Without(x => x.PropertyValues)
+            //    .Without(x => x.Links)
+            //    .Without(x => x.Variations)
+            //    .Without(x => x.Associations)
+            //    .Create()
+                );
+
             //_fixture.Register<IMutablePagedList<DynamicProperty>>(() => null);
             //_fixture.Register(() => _fixture.Build<DynamicPropertyName>().With(x => x.Locale, "en-US").Create());
             //_fixture.Register(() => _fixture.Build<DynamicPropertyObjectValue>().With(x => x.Locale, "en-US").Create());
@@ -62,10 +126,13 @@ namespace VirtoCommerce.XPurchase.Tests.Helpers
             //_fixture.Register<IMutablePagedList<CatalogProperty>>(() => null);
             //_fixture.Register<IMutablePagedList<ProductAssociation>>(() => null);
             //_fixture.Register<IMutablePagedList<EditorialReview>>(() => null);
-            //_fixture.Register(() => _fixture.Build<LineItem>()
-            //                                .Without(x => x.DynamicProperties)
-            //                                .With(x => x.IsReadOnly, false)
-            //                                .Create());
+            _fixture.Register(() => _fixture.Build<LineItem>()
+                                            .Without(x => x.DynamicProperties)
+                                            .With(x => x.IsReadOnly, false)
+                                            .With(x => x.Quantity, InStockQuantity)
+                                            .With(x => x.SalePrice, ItemCost)
+                                            .With(x => x.ListPrice, ItemCost)
+                                            .Create());
             //_fixture.Register(() => _fixture.Build<ShoppingCart>().Without(x => x.DynamicProperties).Create());
             _fixture.Register<Price>(() => null);
 
@@ -130,6 +197,21 @@ namespace VirtoCommerce.XPurchase.Tests.Helpers
 
             return newCartItem;
         }
+
+        protected CartAggregate GetValidCartAggregate()
+        {
+            var cart = GetCart();
+
+            var aggregate = new CartAggregate(
+                _marketingPromoEvaluatorMock.Object,
+                _shoppingCartTotalsCalculatorMock.Object,
+                _taxProviderSearchServiceMock.Object,
+                _mapperMock.Object);
+
+            aggregate.GrabCartAsync(cart, new StoreModule.Core.Model.Store(), GetMember(), GetCurrency()).GetAwaiter().GetResult();
+
+            return aggregate;
+        }
     }
 
     public class MockedPromotionResult : PromotionResult
@@ -139,5 +221,17 @@ namespace VirtoCommerce.XPurchase.Tests.Helpers
 
     public class MockedMember : Member
     {
+    }
+
+    public class MockedShippingMethod : ShippingMethod
+    {
+        public MockedShippingMethod(string code) : base(code)
+        {
+        }
+
+        public override IEnumerable<ShippingRate> CalculateRates(IEvaluationContext context)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }
