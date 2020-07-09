@@ -11,7 +11,8 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
     {
         public MemberAddressType()
         {
-            Field<NonNullGraphType<AddressTypeEnum>>(nameof(Address.AddressType));
+            //TODO:
+            //Field<NonNullGraphType<AddressTypeEnum>>(nameof(Address.AddressType));
             Field(x => x.Key, true).Description("Id");
             Field(x => x.Name, true).Description("Name");
             Field(x => x.Organization, true).Description("Company name");

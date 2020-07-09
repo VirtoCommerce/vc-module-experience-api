@@ -38,7 +38,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
             LastName = lastName;
             DefaultLanguage = defaultLanguage;
             TimeZone = timeZone;
-            OrganizationsIds = organizations;
+            Organizations = organizations;
             PhotoUrl = photoUrl;
             Name = name;
             MemberType = memberType;
@@ -53,10 +53,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
         public Address DefaultBillingAddress { get; set; }
         public Address DefaultShippingAddress { get; set; }
 
-        public string OrganizationId { get; set; }
-        public Organization Organization { get; set; }
-        //TODO: It needs to be rework to support only a multiple  organizations for a customer by design.
-        public IList<string> OrganizationsIds { get; set; } = new List<string>();
+        public IList<string> Organizations { get; set; } = new List<string>();
 
         /// <summary>
         /// Returns true if the customer accepts marketing, returns false if the customer does not.
