@@ -9,7 +9,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             Name = "AddressTypeEnum";
             AddValue("Billing", "Billing", 1);
             AddValue("Shipping", "Shipping", 2);
-            AddValue("Pickup", "Pickup", 3);
+            AddValue("Pickup", "Pickup", 4);
             AddValue("BillingAndShipping", "BillingAndShipping", 3);
         }
     }

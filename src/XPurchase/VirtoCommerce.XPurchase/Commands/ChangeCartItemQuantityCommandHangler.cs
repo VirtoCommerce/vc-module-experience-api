@@ -17,16 +17,16 @@ namespace VirtoCommerce.XPurchase.Commands
 
         public override async Task<CartAggregate> Handle(ChangeCartItemQuantityCommand request, CancellationToken cancellationToken)
         {
-            var cartAggr = await GetOrCreateCartFromCommandAsync(request);
-            var lineItem = cartAggr.Cart.Items.FirstOrDefault(x => x.Id.Equals(request.LineItemId));
+            var cartAggregate = await GetOrCreateCartFromCommandAsync(request);
+            var lineItem = cartAggregate.Cart.Items.FirstOrDefault(x => x.Id.Equals(request.LineItemId));
             CartProduct product = null;
             if (lineItem != null)
             {
-                product = (await _cartProductService.GetCartProductsByIdsAsync(cartAggr, new[] { lineItem.ProductId })).FirstOrDefault();
+                product = (await _cartProductService.GetCartProductsByIdsAsync(cartAggregate, new[] { lineItem.ProductId })).FirstOrDefault();
             }
-            await cartAggr.ChangeItemQuantityAsync(new ItemQtyAdjustment(request.LineItemId, request.Quantity, product));
-            await CartRepository.SaveAsync(cartAggr);
-            return cartAggr;
+            await cartAggregate.ChangeItemQuantityAsync(new ItemQtyAdjustment(request.LineItemId, request.Quantity, product));
+
+            return await SaveCartAsync(cartAggregate);
         }
     }
 }

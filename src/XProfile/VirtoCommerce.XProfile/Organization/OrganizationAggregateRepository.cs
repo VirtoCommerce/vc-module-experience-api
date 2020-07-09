@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -23,13 +22,13 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile
 
             if (organization != null)
             {
-                return await InnerGetOrganizationByIdAsync((Organization)organization);
+                return new OrganizationAggregate((Organization)organization);
             }
 
             return null;
         }
 
-        public async Task<IList<OrganizationAggregate>> GetOrganizationsByIdsAsync(string[] ids)
+        public async Task<IEnumerable<OrganizationAggregate>> GetOrganizationsByIdsAsync(string[] ids)
         {
             var members = await _memberService.GetByIdsAsync(ids, null, new[] { nameof(Organization) });
 
@@ -39,7 +38,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile
             }
             else
             {
-                return await Task.WhenAll(members.OfType<Organization>().Select(InnerGetOrganizationByIdAsync));
+                return members.OfType<Organization>().Select(x=> new OrganizationAggregate(x));
             }
         }
 
@@ -47,17 +46,6 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile
         {
             await _memberService.SaveChangesAsync(new[] { organizationAggregate.Organization });
         }
-
-        protected virtual async Task<OrganizationAggregate> InnerGetOrganizationByIdAsync(Organization organization)
-        {
-            if (organization == null)
-            {
-                throw new ArgumentNullException(nameof(organization));
-            }
-
-            var aggregate = new OrganizationAggregate(organization);
-
-            return await Task.FromResult(aggregate);
-        }
+    
     }
 }

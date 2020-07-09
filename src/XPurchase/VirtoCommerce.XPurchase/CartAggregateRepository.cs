@@ -150,7 +150,7 @@ namespace VirtoCommerce.XPurchase
             {
                 var user = await _userManager.FindByIdAsync(customerId);
 
-                if (user != null)
+                if (user != null && user.MemberId != null)
                 {
                     result = await _memberService.GetByIdAsync(user.MemberId);
                 }

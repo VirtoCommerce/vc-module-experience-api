@@ -26,7 +26,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             Field(x => x.Contact.MiddleName, true);
             Field(x => x.Contact.Name, true);
             Field(x => x.Contact.OuterId, true);
-            Field<ListGraphType<AddressTypePro>>("addresses", resolve: context => context.Source.Contact.Addresses);
+            Field<ListGraphType<MemberAddressType>>("addresses", resolve: context => context.Source.Contact.Addresses);
             Field("OrganizationIds", x => x.Contact.Organizations);
 
             AddField(new FieldType
@@ -34,7 +34,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                 Name = "Organizations",
                 Description = "All contact's organizations",
                 Type = GraphTypeExtenstionHelper.GetActualType<ListGraphType<OrganizationType>>(),
-                Resolver = new AsyncFieldResolver<ContactAggregate, IList<OrganizationAggregate>>(async context =>
+                Resolver = new AsyncFieldResolver<ContactAggregate, IEnumerable<OrganizationAggregate>>(async context =>
                 {
                     if (context.Source.Contact.Organizations.IsNullOrEmpty())
                     {

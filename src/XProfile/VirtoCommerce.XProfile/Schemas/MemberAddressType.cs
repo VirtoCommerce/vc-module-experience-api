@@ -7,9 +7,9 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
     /// <summary>
     /// Platform fails to start if 2 identical class names found. Name suffix added
     /// </summary>
-    public class AddressTypePro : ObjectGraphType<Address>
+    public class MemberAddressType : ObjectGraphType<Address>
     {
-        public AddressTypePro()
+        public MemberAddressType()
         {
             Field<NonNullGraphType<AddressTypeEnum>>(nameof(Address.AddressType));
             Field(x => x.Key).Description("Id");

@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
@@ -16,7 +13,7 @@ using VirtoCommerce.StoreModule.Core.Services;
 using VirtoCommerce.XPurchase.Validators;
 using Xunit;
 
-namespace VirtoCommerce.XPurchase.Tests
+namespace VirtoCommerce.XPurchase.Tests.Repositories
 {
     public class CartAggregateRepositoryTests
     {
