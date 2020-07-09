@@ -3,7 +3,7 @@
 ## X-Digital-Catalog key features: 
 -	Full-text search
 -	Fuzzy search
--	Filters (the new syntax)
+-	Filters (syntax)
 -	Filter by category subtree
 -	Filter by price
 -	Filter by custom properties
@@ -104,7 +104,7 @@ Example requests:
 
 ## Filters
 
-Search results can optionally be filtered and these filters are applied to the search hits at the very end of a search request, after all facets  have already been calculated and don’t influence facet counts any more.
+Search results can optionally be filtered and these filters are applied to the search hits **at the very end of a search request**, after all facets  have already been calculated and don’t influence facet counts any more.
 
 ```GraphQL
 # The following example search request filters products of a certain color “Black” OR "Blue" AND price between 100 USD inclusive TO 200 USD exlusive AND name starts with "ASUS ZenFone 2"
@@ -208,3 +208,5 @@ use ? to replace a single character, and * to replace zero or more characters
 
 `color:Black price:[100 TO 200)`
 combine keywords and filters
+
+
