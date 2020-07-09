@@ -10,11 +10,11 @@
         <dependency id="VirtoCommerce.ElasticSearch" version="3.0.2" />
         <!--XPurchase-->
         <dependency id="VirtoCommerce.Cart" version="3.2.0" />
-        <dependency id="VirtoCommerce.Marketing" version="3.5.0" />
-        <dependency id="VirtoCommerce.Inventory" version="3.3.0" />
+        <dependency id="VirtoCommerce.Marketing" version="3.4.0" />
+        <dependency id="VirtoCommerce.Inventory" version="3.2.0" />
         <dependency id="VirtoCommerce.Payment" version="3.1.0" />
         <dependency id="VirtoCommerce.Shipping" version="3.1.0" />
-        <dependency id="VirtoCommerce.Customer" version="3.2.0" />
+        <dependency id="VirtoCommerce.Customer" version="3.1.0" />
     </dependencies>
     <groups>
         <group>commerce</group>
@@ -27,7 +27,7 @@
     <owners>
         <owner>Virto Commerce</owner>
     </owners>
-	<groups>
+    <groups>
         <group>commerce</group>
     </groups>
     <projectUrl>https://virtocommerce.com</projectUrl>
@@ -38,8 +38,8 @@
 
     <assemblyFile>VirtoCommerce.ExperienceApiModule.Web.dll</assemblyFile>
     <moduleType>VirtoCommerce.ExperienceApiModule.Web.Module, VirtoCommerce.ExperienceApiModule.Web</moduleType>
-    
+
     <incompatibilities>
     </incompatibilities>
-    
+
 </module>

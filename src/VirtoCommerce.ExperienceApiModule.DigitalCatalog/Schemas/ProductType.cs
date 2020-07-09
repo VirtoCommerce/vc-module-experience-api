@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using GraphQL;
+using GraphQL.Authorization;
 using GraphQL.Builders;
 using GraphQL.DataLoader;
 using GraphQL.Types;
@@ -91,6 +92,6 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Schemas
                 },
                 TotalCount = response.Result.TotalCount,
             };
-        }    
+        }
     }
 }
