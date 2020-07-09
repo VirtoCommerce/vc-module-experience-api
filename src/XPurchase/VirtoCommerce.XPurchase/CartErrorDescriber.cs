@@ -87,12 +87,10 @@ namespace VirtoCommerce.XPurchase
             return result;
         }
 
-        public static CartValidationError ShipmentMethodUnavailable(IEntity entity, string name)
+        public static CartValidationError ShipmentMethodUnavailable(IEntity entity, string shipmentMethodCode, string shipmentMethodOption)
         {
-            var result = new CartValidationError(entity, $"The shipment method {name} unavailable", "SHIPMENT_METHOD_UNAVAILABLE");
+            var result = new CartValidationError(entity, $"The shipment method {shipmentMethodCode ?? "NULLShipmentMethodCode".ToUpper()} with {shipmentMethodOption ?? "NULLshipmentMethodOption".ToUpper()} unavailable", "SHIPMENT_METHOD_UNAVAILABLE");
             return result;
         }
-
-
     }
 }

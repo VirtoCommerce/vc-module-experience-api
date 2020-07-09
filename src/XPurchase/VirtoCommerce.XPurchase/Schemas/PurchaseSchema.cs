@@ -520,6 +520,44 @@ namespace VirtoCommerce.XPurchase.Schemas
                                               .FieldType;
 
             schema.Mutation.AddField(removeCartField);
+
+            /// <example>
+            /// This is an example JSON request for a mutation
+            /// {
+            ///   "query": "mutation ($command:InputRemoveCartType!){ clearShipments(command: $command) {  total { formatedAmount } } }",
+            ///   "variables": {
+            ///      "command": {
+            ///          "cartId": "7777-7777-7777-7777"
+            ///      }
+            ///   }
+            /// }
+            /// </example>
+            var clearShipmentsField = FieldBuilder.Create<CartAggregate, CartAggregate>(typeof(CartType))
+                                              .Name("clearShipments")
+                                              .Argument<NonNullGraphType<InputCartBaseType>>(_commandName)
+                                              .ResolveAsync(async context => await _mediator.Send(context.GetArgument<ClearShipmentsCommand>(_commandName)))
+                                              .FieldType;
+
+            schema.Mutation.AddField(clearShipmentsField);
+
+            /// <example>
+            /// This is an example JSON request for a mutation
+            /// {
+            ///   "query": "mutation ($command:InputRemoveCartType!){ clearPayments(command: $command) {  total { formatedAmount } } }",
+            ///   "variables": {
+            ///      "command": {
+            ///          "cartId": "7777-7777-7777-7777"
+            ///      }
+            ///   }
+            /// }
+            /// </example>
+            var clearPaymentsField = FieldBuilder.Create<CartAggregate, CartAggregate>(typeof(CartType))
+                                              .Name("clearPayments")
+                                              .Argument<NonNullGraphType<InputCartBaseType>>(_commandName)
+                                              .ResolveAsync(async context => await _mediator.Send(context.GetArgument<ClearPaymentsCommand>(_commandName)))
+                                              .FieldType;
+
+            schema.Mutation.AddField(clearPaymentsField);
         }
     }
 }
