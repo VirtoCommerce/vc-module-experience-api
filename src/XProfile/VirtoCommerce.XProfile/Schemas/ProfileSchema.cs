@@ -1,14 +1,9 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Builders;
 using GraphQL.DataLoader;
 using GraphQL.Resolvers;
 using GraphQL.Types;
-using GraphQL.Types.Relay.DataObjects;
 using MediatR;
-using VirtoCommerce.CustomerModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.Core.Schema;
 using VirtoCommerce.ExperienceApiModule.XProfile.Commands;
 using VirtoCommerce.ExperienceApiModule.XProfile.Queries;
@@ -61,14 +56,16 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             });
 
             /// <example>
+#pragma warning disable S125 // Sections of code should not be commented out
             /*
-             {
-              contact(id: "51311ae5-371c-453b-9394-e6d352f1cea7"){
-                  firstName memberType organizationIds organizations { id businessCategory description emails groups memberType name outerId ownerId parentId phones seoObjectType }
-                  addresses { line1 phone }
-             }
-            }
-             */
+                         {
+                          contact(id: "51311ae5-371c-453b-9394-e6d352f1cea7"){
+                              firstName memberType organizationIds organizations { id businessCategory description emails groups memberType name outerId ownerId parentId phones seoObjectType }
+                              addresses { line1 phone }
+                         }
+                        }
+                         */
+#pragma warning restore S125 // Sections of code should not be commented out
             /// </example>
             schema.Query.AddField(new FieldType
             {
@@ -87,6 +84,26 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                 })
             });
 
+            /// sample code for updating addresses:
+#pragma warning disable S125 // Sections of code should not be commented out
+            /*
+                        mutation updateAddresses($command: InputUpdateContactAddressType!){
+                        contact: updateAddresses(command: $command)
+                          {
+                            firstName lastName
+                            addresses { key city countryCode countryName email firstName  lastName line1 line2 middleName name phone postalCode regionId regionName zip }
+                          }
+                        }
+                        query variables:
+                        { 
+                            "command": {
+                              "contactId": "acc3b262-a21e-45f9-a612-b4b1530d27ef",
+                              "addresses": [{"addressType": "Shipping", "name": "string", "countryCode": "string", "countryName": "string", "city": "string", "postalCode": "string", "line1": "string", "regionId": "string", "regionName": "string", "firstName": "string", "lastName": "string", "phone": "string", "email": "string", "regionId": "string"
+                                }]
+                            }
+                        }
+                         */
+#pragma warning restore S125 // Sections of code should not be commented out
             _ = schema.Mutation.AddField(FieldBuilder.Create<ContactAggregate, ContactAggregate>(typeof(ContactType))
                             .Name("updateAddresses")
                             .Argument<NonNullGraphType<InputUpdateContactAddressType>>(_commandName)
@@ -106,20 +123,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                             .ResolveAsync(async context => await _mediator.Send(context.GetArgument<UpdateOrganizationCommand>(_commandName)))
                             .FieldType);
 
-            /// <example>
-            /// This is a sample mutation to createOrganization.
-            /// mutation($command: createOrganization!){
-            ///     createUserInvitations(command: $command){
-            ///         succeeded errors { description }
-            ///     }
-            /// }
-            /// query variables:
-            /// {
-            ///     "command": {
-
-            ///     }
-            /// }
-            /// </example>
+          
             _ = schema.Mutation.AddField(FieldBuilder.Create<OrganizationAggregate, OrganizationAggregate>(typeof(OrganizationType))
                             .Name("createOrganization")
                             .Argument<NonNullGraphType<InputCreateOrganizationType>>(_commandName)

@@ -19,7 +19,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
             contactAggregate.UpdateContactAddresses(request.Addresses);
             await _contactAggregateRepository.SaveAsync(contactAggregate);
 
-            return contactAggregate;
+            return await _contactAggregateRepository.GetContactByIdAsync(request.ContactId);
         }
     }
 }
