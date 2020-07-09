@@ -50,5 +50,11 @@ namespace VirtoCommerce.XPurchase.Commands
 
             return CartRepository.GetCartForShoppingCartAsync(cart);
         }
+
+        protected async virtual Task<CartAggregate> SaveCartAsync(CartAggregate cartAggregate)
+        {
+            await CartRepository.SaveAsync(cartAggregate);
+            return cartAggregate;
+        }
     }
 }

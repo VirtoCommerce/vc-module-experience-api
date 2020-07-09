@@ -11,6 +11,5 @@ namespace VirtoCommerce.XPurchase
 
             return product.Product.IsActive.GetValueOrDefault(false) && product.Product.IsBuyable.GetValueOrDefault(false) && product.Price != null;
         }
-
     }
 }

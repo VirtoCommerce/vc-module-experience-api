@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using GraphQL.Types;
 using VirtoCommerce.XPurchase.Extensions;
@@ -15,11 +14,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field(x => x.Cart.Status, nullable: true).Description("Shopping cart status");
             Field(x => x.Cart.StoreId, nullable: true).Description("Shopping cart store id");
             Field(x => x.Cart.ChannelId, nullable: true).Description("Shopping cart channel id");
-            Field<BooleanGraphType>("hasPhysicalProducts", resolve: context => context.Source.Cart.
-                Items?.Any(i => string.IsNullOrEmpty(i.ProductType) ||
-                               !string.IsNullOrEmpty(i.ProductType) &&
-                               i.ProductType.Equals("Physical", StringComparison.OrdinalIgnoreCase))
-                ?? false);
+            Field<BooleanGraphType>("hasPhysicalProducts", resolve: context => new CartHasPhysicalProductsSpecification().IsSatisfiedBy(context.Source.Cart));
             Field(x => x.Cart.IsAnonymous, nullable: true).Description("Sign that shopping cart is anonymous");
             //Field(x => x.Customer, nullable: true).Description("Shopping cart user"); //todo: add resolver
             Field(x => x.Cart.CustomerId, nullable: true).Description("Shopping cart user id");
