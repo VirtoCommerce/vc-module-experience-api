@@ -324,8 +324,6 @@ namespace VirtoCommerce.XPurchase
                 payment.BillingAddress.Key = null;
             }
 
-            payment.Price = payment.Amount;
-
             Cart.Payments.Add(payment);
 
             return this;
