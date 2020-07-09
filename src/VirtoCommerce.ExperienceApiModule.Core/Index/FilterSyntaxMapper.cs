@@ -113,7 +113,7 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Index
             new RegexpNameMapper(new Regex(@"properties.([A-Za-z0-9_\s+])", RegexOptions.Compiled | RegexOptions.IgnoreCase), "$1")
         };
 
-        public static IFilter MapFilterSyntax(IFilter filter)
+        public static IFilter MapFilterAdditionalSyntax(IFilter filter)
         {
             foreach (var mapper in _allMappers)
             {

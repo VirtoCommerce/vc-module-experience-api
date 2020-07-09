@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using VirtoCommerce.XPurchase.Services;
@@ -17,18 +17,17 @@ namespace VirtoCommerce.XPurchase.Commands
 
         public override async Task<CartAggregate> Handle(ChangeCartItemCommentCommand request, CancellationToken cancellationToken)
         {
-            var cartAggr = await GetOrCreateCartFromCommandAsync(request);
-            var lineItem = cartAggr.Cart.Items.FirstOrDefault(x => x.Id.Equals(request.LineItemId));
+            var cartAggregate = await GetOrCreateCartFromCommandAsync(request);
+            var lineItem = cartAggregate.Cart.Items.FirstOrDefault(x => x.Id.Equals(request.LineItemId));
 
-            if ((await _cartProductService.GetCartProductsByIdsAsync(cartAggr, new[] { lineItem.ProductId })).FirstOrDefault() == null)
+            if ((await _cartProductService.GetCartProductsByIdsAsync(cartAggregate, new[] { lineItem.ProductId })).FirstOrDefault() == null)
             {
-                return cartAggr;
+                return cartAggregate;
             }
 
-            await cartAggr.ChangeItemCommentAsync(new NewItemComment(request.LineItemId, request.Comment));
-            await CartRepository.SaveAsync(cartAggr);
+            await cartAggregate.ChangeItemCommentAsync(new NewItemComment(request.LineItemId, request.Comment));
 
-            return cartAggr;
+            return await SaveCartAsync(cartAggregate);
         }
     }
 }

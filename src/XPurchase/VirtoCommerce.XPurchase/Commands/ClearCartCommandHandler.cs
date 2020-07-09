@@ -6,17 +6,16 @@ namespace VirtoCommerce.XPurchase.Commands
     public class ClearCartCommandHandler : CartCommandHandler<ClearCartCommand>
     {
         public ClearCartCommandHandler(ICartAggregateRepository cartAggrFactory)
-            :base(cartAggrFactory)
+            : base(cartAggrFactory)
         {
         }
 
         public override async Task<CartAggregate> Handle(ClearCartCommand request, CancellationToken cancellationToken)
         {
-            var cartAggr = await GetOrCreateCartFromCommandAsync(request);
-            await cartAggr.ClearAsync();
-            await CartRepository.SaveAsync(cartAggr);
-            return cartAggr;
+            var cartAggregate = await GetOrCreateCartFromCommandAsync(request);
+            await cartAggregate.ClearAsync();
+
+            return await SaveCartAsync(cartAggregate);
         }
-       
     }
 }

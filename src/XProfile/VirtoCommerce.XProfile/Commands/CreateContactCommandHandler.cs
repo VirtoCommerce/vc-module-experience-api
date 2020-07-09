@@ -1,9 +1,11 @@
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
+using FluentValidation;
 using MediatR;
 using VirtoCommerce.CustomerModule.Core.Model;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.XPurchase.Validators;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
 {
@@ -21,6 +23,9 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
         {
             var contactAggregate = new ContactAggregate(AbstractTypeFactory<Contact>.TryCreateInstance());
             _mapper.Map(request, contactAggregate.Contact);
+
+            await new NewContactValidator().ValidateAndThrowAsync(contactAggregate.Contact);
+
             await _contactAggregateRepository.SaveAsync(contactAggregate);
 
             return contactAggregate;

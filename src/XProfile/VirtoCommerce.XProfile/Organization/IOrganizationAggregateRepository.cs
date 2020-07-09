@@ -7,6 +7,6 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile
     {
         Task SaveAsync(OrganizationAggregate organizationAggregate);
         Task<OrganizationAggregate> GetOrganizationByIdAsync(string organizationId);
-        Task<IList<OrganizationAggregate>> GetOrganizationsByIdsAsync(string[] ids);
+        Task<IEnumerable<OrganizationAggregate>> GetOrganizationsByIdsAsync(string[] ids);
     }
 }

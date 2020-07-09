@@ -45,9 +45,14 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Schemas
             //var productsConnectionBuilder = ConnectionBuilder.Create<ProductType, EdgeType<ProductType>, ProductsConnectonType<ProductType>, object>()
             var productsConnectionBuilder = GraphTypeExtenstionHelper.CreateConnection<ProductType, EdgeType<ProductType>, ProductsConnectonType<ProductType>, object>()
                 .Name("products")
+                .Argument<StringGraphType>("storeId", "The store id where products are searched")
+                .Argument<StringGraphType>("lang", "The language for which all localized product data will be returned")
+                .Argument<StringGraphType>("customerId", "The customer id for search result impersonalization")
+                .Argument<StringGraphType>("currency", "The currency for which all prices data will be returned")
                 .Argument<StringGraphType>("query", "The query parameter performs the full-text search")
                 .Argument<StringGraphType>("filter", "This parameter applies a filter to the query results")
                 .Argument<BooleanGraphType>("fuzzy", "When the fuzzy query parameter is set to true the search endpoint will also return products that contain slight differences to the search text.")
+                .Argument<IntGraphType>("fuzzyLevel", "The fuzziness level is quantified in terms of the Damerau-Levenshtein distance, this distance being the number of operations needed to transform one word into another.")
                 .Argument<StringGraphType>("facet", "Facets calculate statistical counts to aid in faceted navigation.")
                 .Argument<StringGraphType>("sort", "The sort expression")
                 .Unidirectional()
@@ -75,14 +80,20 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Schemas
             var first = context.First;
             var skip = Convert.ToInt32(context.After ?? 0.ToString());
             var includeFields = context.SubFields.Values.GetAllNodesPaths().Select(x => x.TrimStart("items.")).ToArray();
+            
             var request = new SearchProductQuery
             {
                 Skip = skip,
                 Take = first ?? context.PageSize ?? 10,
+                Lang = context.GetArgument<string>("lang"),
+                StoreId = context.GetArgument<string>("storeId"),
+                CustomerId = context.GetArgument<string>("customerId"),
+                Currency = context.GetArgument<string>("currency"),
                 Query = context.GetArgument<string>("query"),
                 Filter = context.GetArgument<string>("filter"),
                 Facet = context.GetArgument<string>("facet"),
                 Fuzzy = context.GetArgument<bool>("fuzzy"),
+                FuzzyLevel = context.GetArgument<int?>("fuzzyLevel"),
                 Sort = context.GetArgument<string>("sort"),
                 IncludeFields = includeFields.ToArray(),
             };

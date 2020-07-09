@@ -45,9 +45,10 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Index
             return SearchRequest;
         }
 
-        public SearchRequestBuilder WithFuzzy(bool fuzzy)
+        public SearchRequestBuilder WithFuzzy(bool fuzzy, int? fuzzyLevel)
         {
             SearchRequest.IsFuzzySearch = fuzzy;
+            SearchRequest.Fuzziness = fuzzyLevel;
             return this;
         }
 
@@ -117,16 +118,26 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Index
             var filters = new List<IFilter>();
             foreach (var filter in parseResult.Filters)
             {
-                FilterSyntaxMapper.MapFilterSyntax(filter);
+                FilterSyntaxMapper.MapFilterAdditionalSyntax(filter);
                 if (filter is TermFilter termFilter)
                 {
                     var wildcardValues = termFilter.Values.Where(x => new[] { "?", "*" }.Any(x.Contains));
                     if (wildcardValues.Any())
                     {
-                        filters.AddRange(wildcardValues.Select(x => new WildCardTermFilter { FieldName = termFilter.FieldName, Value = x }));
+                        var orFilter = new OrFilter
+                        {
+                            ChildFilters = new List<IFilter>()
+                        };
+                        var wildcardTermFilters = wildcardValues.Select(x => new WildCardTermFilter { FieldName = termFilter.FieldName, Value = x }).ToList();
+                        orFilter.ChildFilters.AddRange(wildcardTermFilters);
                         termFilter.Values = termFilter.Values.Except(wildcardValues).ToList();
+                        if (termFilter.Values.Any())
+                        {
+                            orFilter.ChildFilters.Add(termFilter);
+                        }
+                        filters.Add(orFilter);
                     }
-                    if (termFilter.Values.Any())
+                    else
                     {
                         filters.Add(termFilter);
                     }
@@ -166,7 +177,7 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Index
 
             foreach (var filter in parseResult.Filters)
             {
-                FilterSyntaxMapper.MapFilterSyntax(filter);
+                FilterSyntaxMapper.MapFilterAdditionalSyntax(filter);
                 //Range facets
                 if (filter is RangeFilter rangeFilter)
                 {

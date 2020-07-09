@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using VirtoCommerce.ExperienceApiModule.Core.Schema;
 using VirtoCommerce.ExperienceApiModule.DigitalCatalog;
+using VirtoCommerce.ExperienceApiModule.DigitalCatalog.Extensions;
 using VirtoCommerce.ExperienceApiModule.DigitalCatalog.Mapping;
 using VirtoCommerce.ExperienceApiModule.DigitalCatalog.Schemas;
 using VirtoCommerce.ExperienceApiModule.XProfile;
@@ -24,26 +25,22 @@ namespace VirtoCommerce.ExperienceApiModule.Web
 
         public void Initialize(IServiceCollection services)
         {
-            services.AddMediatR(typeof(Anchor));
-
             //services.AddSingleton(typeof(IPipelineBehavior<,>), typeof(RequestExceptionProcessorBehavior<,>));
             //serviceCollection.AddSingleton(typeof(IRequestPreProcessor<>), typeof(GenericRequestPreProcessor<>));
 
             //Discover the assembly and  register all mapping profiles through reflection
-            services.AddAutoMapper(typeof(Anchor));
+            services.AddAutoMapper(typeof(XDigitalCatalogAnchor));
             //services.AddAutoMapper(typeof(XProfileAnchor));
             services.AddAutoMapper(typeof(XPurchaseAnchor));
 
             //Register .NET GraphQL server
-            services.AddGraphQL(_ =>
+            var graphQlBuilder =  services.AddGraphQL(_ =>
             {
                 _.EnableMetrics = true;
                 _.ExposeExceptions = true;
             }).AddNewtonsoftJson(deserializerSettings => { }, serializerSettings => { })
             .AddUserContextBuilder(context => new GraphQLUserContext { User = context.User })
             .AddRelayGraphTypes()
-            .AddGraphTypes(typeof(Anchor))
-            .AddGraphTypes(typeof(XProfileAnchor))
             .AddDataLoader();
 
             //Register custom GraphQL dependencies
@@ -51,11 +48,10 @@ namespace VirtoCommerce.ExperienceApiModule.Web
 
             services.AddSingleton<ISchema, SchemaFactory>();
 
-            services.AddSchemaBuilder<DigitalCatalogSchema>();
-
             //Register all purchase dependencies
-            services.AddXProfile();
-            services.AddXPurchase();
+            services.AddXCatalog(graphQlBuilder);
+            services.AddXProfile(graphQlBuilder);
+            services.AddXPurchase(graphQlBuilder);
             //TODO: need to fix extension, it's register only types from the last schema
             //services.AddGraphShemaBuilders(typeof(Anchor));
 
