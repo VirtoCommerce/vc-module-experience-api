@@ -14,7 +14,7 @@ namespace VirtoCommerce.XPurchase.Validators
             {
                 RuleFor(x => x).Custom((lineItem, context) =>
                 {
-                    var cartProduct = allCartProducts.FirstOrDefault(x=>x.Id.EqualsInvariant(lineItem.ProductId));
+                    var cartProduct = allCartProducts.FirstOrDefault(x => x.Id.EqualsInvariant(lineItem.ProductId));
                     if (cartProduct == null || !cartProduct.Product.IsActive.GetValueOrDefault(false) || !cartProduct.Product.IsBuyable.GetValueOrDefault(false))
                     {
                         context.AddFailure(CartErrorDescriber.ProductUnavailableError(lineItem));

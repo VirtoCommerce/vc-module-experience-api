@@ -21,7 +21,7 @@ namespace VirtoCommerce.XPurchase.Validators
                         var shipmentShippingMethod = availShippingRates.FirstOrDefault(sm => shipment.ShipmentMethodCode.EqualsInvariant(sm.ShippingMethod.Code) && shipment.ShipmentMethodOption.EqualsInvariant(sm.OptionName));
                         if (shipmentShippingMethod == null)
                         {
-                            context.AddFailure(CartErrorDescriber.ShipmentMethodUnavailable(shipment, shipment.ShipmentMethodCode));
+                            context.AddFailure(CartErrorDescriber.ShipmentMethodUnavailable(shipment, shipment.ShipmentMethodCode, shipment.ShipmentMethodOption));
                         }
                         else if (shipmentShippingMethod.Rate != shipment.Price)
                         {

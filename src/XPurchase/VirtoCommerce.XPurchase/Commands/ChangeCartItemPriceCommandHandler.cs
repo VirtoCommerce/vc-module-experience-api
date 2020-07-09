@@ -1,4 +1,4 @@
-﻿using System.Threading;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace VirtoCommerce.XPurchase.Commands
@@ -12,10 +12,10 @@ namespace VirtoCommerce.XPurchase.Commands
 
         public override async Task<CartAggregate> Handle(ChangeCartItemPriceCommand request, CancellationToken cancellationToken)
         {
-            var cartAggr = await GetOrCreateCartFromCommandAsync(request);
-            await cartAggr.ChangeItemPriceAsync(new PriceAdjustment(request.ProductId, request.Price));
-            await CartRepository.SaveAsync(cartAggr);
-            return cartAggr;
+            var cartAggregate = await GetOrCreateCartFromCommandAsync(request);
+            await cartAggregate.ChangeItemPriceAsync(new PriceAdjustment(request.ProductId, request.Price));
+
+            return await SaveCartAsync(cartAggregate);
         }
     }
 }

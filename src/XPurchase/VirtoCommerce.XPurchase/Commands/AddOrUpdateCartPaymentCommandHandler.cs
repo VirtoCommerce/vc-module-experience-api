@@ -16,10 +16,10 @@ namespace VirtoCommerce.XPurchase.Commands
 
         public override async Task<CartAggregate> Handle(AddOrUpdateCartPaymentCommand request, CancellationToken cancellationToken)
         {
-            var cartAggr = await GetOrCreateCartFromCommandAsync(request);
-            await cartAggr.AddOrUpdatePaymentAsync(request.Payment, await _cartAvailMethodService.GetAvailablePaymentMethodsAsync(cartAggr));
-            await CartRepository.SaveAsync(cartAggr);
-            return cartAggr;
+            var cartAggregate = await GetOrCreateCartFromCommandAsync(request);
+            await cartAggregate.AddPaymentAsync(request.Payment, await _cartAvailMethodService.GetAvailablePaymentMethodsAsync(cartAggregate));
+
+            return await SaveCartAsync(cartAggregate);
         }
     }
 }
