@@ -4,6 +4,7 @@ using GraphQL.DataLoader;
 using GraphQL.Resolvers;
 using GraphQL.Types;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
 using VirtoCommerce.ExperienceApiModule.Core.Schema;
 using VirtoCommerce.ExperienceApiModule.XProfile.Commands;
 using VirtoCommerce.ExperienceApiModule.XProfile.Queries;
@@ -123,7 +124,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                             .ResolveAsync(async context => await _mediator.Send(context.GetArgument<UpdateOrganizationCommand>(_commandName)))
                             .FieldType);
 
-          
+
             _ = schema.Mutation.AddField(FieldBuilder.Create<OrganizationAggregate, OrganizationAggregate>(typeof(OrganizationType))
                             .Name("createOrganization")
                             .Argument<NonNullGraphType<InputCreateOrganizationType>>(_commandName)
@@ -147,6 +148,167 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                             .Argument<NonNullGraphType<InputDeleteContactType>>(_commandName)
                             .ResolveAsync(async context => await _mediator.Send(context.GetArgument<DeleteContactCommand>(_commandName)))
                             .FieldType);
+
+            // Security API fields
+
+#pragma warning disable S125 // Sections of code should not be commented out
+            /*
+                            {
+                                getUserById(id: "1eb2fa8ac6574541afdb525833dadb46"){
+                                userName isAdministrator roles { name } userType memberId storeId
+                                }
+                            }
+                         */
+#pragma warning restore S125 // Sections of code should not be commented out
+            _ = schema.Query.AddField(new FieldType
+            {
+                Name = "getUserById",
+                Arguments = new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id" }),
+                Type = GraphTypeExtenstionHelper.GetActualType<UserType>(),
+                Resolver = new AsyncFieldResolver<object>(async context =>
+                {
+                    var result = await _mediator.Send(new GetUserByIdQuery(context.GetArgument<string>("id")));
+
+                    return result;
+                })
+            });
+
+            _ = schema.Query.AddField(new FieldType
+            {
+                Name = "getUserByName",
+                Arguments = new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "userName" }),
+                Type = GraphTypeExtenstionHelper.GetActualType<UserType>(),
+                Resolver = new AsyncFieldResolver<object>(async context =>
+                {
+                    var result = await _mediator.Send(new GetUserByNameQuery(context.GetArgument<string>("userName")));
+
+                    return result;
+                })
+            });
+
+            _ = schema.Query.AddField(new FieldType
+            {
+                Name = "getUserByEmail",
+                Arguments = new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "email" }),
+                Type = GraphTypeExtenstionHelper.GetActualType<UserType>(),
+                Resolver = new AsyncFieldResolver<object>(async context =>
+                {
+                    var result = await _mediator.Send(new GetUserByEmailQuery(context.GetArgument<string>("email")));
+
+                    return result;
+                })
+            });
+
+#pragma warning disable S125 // Sections of code should not be commented out
+            /*
+                         {
+                          getRole(roleName: "Use api"){
+                           permissions
+                          }
+                        }
+                         */
+#pragma warning restore S125 // Sections of code should not be commented out
+            _ = schema.Query.AddField(new FieldType
+            {
+                Name = "getRole",
+                Arguments = new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "roleName" }),
+                Type = GraphTypeExtenstionHelper.GetActualType<RoleType>(),
+                Resolver = new AsyncFieldResolver<object>(async context =>
+                {
+                    var result = await _mediator.Send(new GetRoleQuery(context.GetArgument<string>("roleName")));
+
+                    return result;
+                })
+            });
+
+
+#pragma warning disable S125 // Sections of code should not be commented out
+            /*
+            mutation ($command: InputCreateUserType!){
+                createUser(command: $command){ succeeded errors { code }}
+            }
+            Query variables:
+            {
+                "command": {
+                "createdBy": "eXp1", "email": "eXp1@mail.com", "password":"eXp1@mail.com", "userName": "eXp1@mail.com", "userType": "Customer"
+                }
+            }
+             */
+#pragma warning restore S125 // Sections of code should not be commented out
+            _ = schema.Mutation.AddField(FieldBuilder.Create<object, IdentityResult>(typeof(IdentityResultType))
+                        .Name("createUser")
+                        .Argument<NonNullGraphType<InputCreateUserType>>(_commandName)
+                        .ResolveAsync(async context => await _mediator.Send(context.GetArgument<CreateUserCommand>(_commandName)))
+                        .FieldType);
+
+
+#pragma warning disable S125 // Sections of code should not be commented out
+            /*
+                         mutation ($command: InputUpdateUserType!){
+                          updateUser(command: $command){ succeeded errors { description } }
+                        }
+                        Query variables:
+                        {
+                         "command":{
+                          "isAdministrator": false,
+                          "userType": "Customer",
+                          "roles": [],
+                          "id": "b5d28a83-c296-4212-b89e-046fca3866be",
+                          "userName": "_loGIN999",
+                          "email": "_loGIN999@gmail.com"
+                            }
+                        }
+                         */
+#pragma warning restore S125 // Sections of code should not be commented out
+            _ = schema.Mutation.AddField(FieldBuilder.Create<object, IdentityResult>(typeof(IdentityResultType))
+                        .Name("updateUser")
+                        .Argument<NonNullGraphType<InputUpdateUserType>>(_commandName)
+                        .ResolveAsync(async context => await _mediator.Send(context.GetArgument<UpdateUserCommand>(_commandName)))
+                        .FieldType);
+
+
+#pragma warning disable S125 // Sections of code should not be commented out
+            /*
+             mutation ($command: InputDeleteUserType!){
+              deleteUser(command: $command){ succeeded errors { description } }
+            }
+            Query variables:
+            {
+              "command": {
+                "userNames": ["admin",  "eXp1@mail.com"]
+              }
+            }
+             */
+#pragma warning restore S125 // Sections of code should not be commented out
+            _ = schema.Mutation.AddField(FieldBuilder.Create<object, IdentityResult>(typeof(IdentityResultType))
+                        .Name("deleteUser")
+                        .Argument<NonNullGraphType<InputDeleteUserType>>(_commandName)
+                        .ResolveAsync(async context => await _mediator.Send(context.GetArgument<DeleteUserCommand>(_commandName)))
+                        .FieldType);
+
+
+
+#pragma warning disable S125 // Sections of code should not be commented out
+            /*
+                         mutation ($command: InputUpdateRoleType!){
+                          updateRole(command: $command){ succeeded errors { description } }
+                        }
+                        Query variables:
+                        {
+                         "command":{
+                         "id": "graphtest",  "name": "graphtest", "permissions": [ 
+                            { "name": "security:call_api", "assignedScopes": [] },
+                            { "name": "order:read", "assignedScopes": [{"scope": "{{userId}}", "type": "OnlyOrderResponsibleScope" }] }
+                          ]
+                         }
+                        }
+                         */
+#pragma warning restore S125 // Sections of code should not be commented out
+            _ = schema.Mutation.AddField(FieldBuilder.Create<object, IdentityResult>(typeof(IdentityResultType))
+                     .Name("updateRole")
+                     .Argument<NonNullGraphType<InputUpdateRoleType>>(_commandName)
+                     .ResolveAsync(async context => await _mediator.Send(context.GetArgument<UpdateRoleCommand>(_commandName)))
+                     .FieldType);
         }
     }
 }
