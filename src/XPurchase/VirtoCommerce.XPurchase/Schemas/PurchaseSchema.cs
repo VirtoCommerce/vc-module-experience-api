@@ -532,9 +532,9 @@ namespace VirtoCommerce.XPurchase.Schemas
             ///   }
             /// }
             /// </example>
-            var clearShipmentsField = FieldBuilder.Create<CartAggregate, bool>(typeof(BooleanGraphType))
+            var clearShipmentsField = FieldBuilder.Create<CartAggregate, CartAggregate>(typeof(CartType))
                                               .Name("clearShipments")
-                                              .Argument<NonNullGraphType<InputRemoveCartType>>(_commandName)
+                                              .Argument<NonNullGraphType<InputCartBaseType>>(_commandName)
                                               .ResolveAsync(async context => await _mediator.Send(context.GetArgument<ClearShipmentsCommand>(_commandName)))
                                               .FieldType;
 
@@ -551,9 +551,9 @@ namespace VirtoCommerce.XPurchase.Schemas
             ///   }
             /// }
             /// </example>
-            var clearPaymentsField = FieldBuilder.Create<CartAggregate, bool>(typeof(BooleanGraphType))
+            var clearPaymentsField = FieldBuilder.Create<CartAggregate, CartAggregate>(typeof(CartType))
                                               .Name("clearPayments")
-                                              .Argument<NonNullGraphType<InputRemoveCartType>>(_commandName)
+                                              .Argument<NonNullGraphType<InputCartBaseType>>(_commandName)
                                               .ResolveAsync(async context => await _mediator.Send(context.GetArgument<ClearPaymentsCommand>(_commandName)))
                                               .FieldType;
 

@@ -1,18 +1,14 @@
-﻿using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
-
 namespace VirtoCommerce.XPurchase.Commands
 {
-    public class ClearShipmentsCommand : ICommand<bool>
+    public class ClearShipmentsCommand : CartCommand
     {
         public ClearShipmentsCommand()
         {
         }
 
-        public ClearShipmentsCommand(string cartId)
+        public ClearShipmentsCommand(string storeId, string cartType, string cartName, string userId, string currency, string lang)
+            : base(storeId, cartType, cartName, userId, currency, lang)
         {
-            CartId = cartId;
         }
-
-        public string CartId { get; set; }
     }
 }

@@ -1,32 +1,26 @@
-﻿using System.Threading;
+using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
 
 namespace VirtoCommerce.XPurchase.Commands
 {
-    public class ClearShipmentsCommandHandler : IRequestHandler<ClearShipmentsCommand, bool>
+    public class ClearShipmentsCommandHandler : CartCommandHandler<ClearShipmentsCommand>
     {
         public ClearShipmentsCommandHandler(ICartAggregateRepository cartAggrRepository)
+            : base(cartAggrRepository)
         {
-            CartAggrRepository = cartAggrRepository;
         }
 
-        private ICartAggregateRepository CartAggrRepository { get; set; }
-
-        public virtual async Task<bool> Handle(ClearShipmentsCommand request, CancellationToken cancellationToken)
+        public override async Task<CartAggregate> Handle(ClearShipmentsCommand request, CancellationToken cancellationToken)
         {
-            var aggregate = await CartAggrRepository.GetCartByIdAsync(request.CartId);
-
+            var aggregate = await GetOrCreateCartFromCommandAsync(request);
             if (aggregate == null)
             {
-                return false;
+                return null;
             }
 
             aggregate.Cart.Shipments.Clear();
 
-            await CartAggrRepository.SaveAsync(aggregate);
-
-            return true;
+            return await SaveCartAsync(aggregate);
         }
     }
 }
