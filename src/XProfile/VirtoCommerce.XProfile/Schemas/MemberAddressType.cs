@@ -11,8 +11,6 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
     {
         public MemberAddressType()
         {
-            //TODO:
-            //Field<NonNullGraphType<AddressTypeEnum>>(nameof(Address.AddressType));
             Field(x => x.Key, true).Description("Id");
             Field(x => x.Name, true).Description("Name");
             Field(x => x.Organization, true).Description("Company name");
@@ -30,6 +28,8 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             Field(x => x.MiddleName, true).Description("Middle name");
             Field(x => x.Phone, true).Description("Phone");
             Field(x => x.Email, true).Description("Email");
+            Field<IntGraphType>(nameof(Address.AddressType), resolve: context => (int)context.Source.AddressType);
+
         }
     }
 }
