@@ -38,6 +38,8 @@ namespace VirtoCommerce.XPurchase.Extensions
             services.AddSchemaType<InputChangeCartItemQuantityType>();
             services.AddSchemaType<InputChangeCommentType>();
             services.AddSchemaType<InputClearCartType>();
+            services.AddSchemaType<InputClearPaymentsType>();
+            services.AddSchemaType<InputClearShipmentsType>();
             services.AddSchemaType<InputMergeCartType>();
             services.AddSchemaType<InputPaymentType>();
             services.AddSchemaType<InputRemoveCartType>();
