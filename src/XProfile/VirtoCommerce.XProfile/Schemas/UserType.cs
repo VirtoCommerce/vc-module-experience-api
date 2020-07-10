@@ -18,7 +18,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             Field(x => x.LockoutEnd, true);
             //Field<DateTimeOffsetGraphType>("LockoutEnd", resolve: context => context.Source.LockoutEnd.GetValueOrDefault());
             //Field(x => x.Logins);
-            Field(x => x.MemberId, true);
+            Field("contactId", x => x.MemberId, true);
             Field(x => x.ModifiedBy, true);
             Field(x => x.ModifiedDate, true);
             Field(x => x.NormalizedEmail, true);
