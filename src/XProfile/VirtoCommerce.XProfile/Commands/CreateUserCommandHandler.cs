@@ -1,32 +1,26 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.DependencyInjection;
 using VirtoCommerce.Platform.Core.Security;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
 {
     public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, IdentityResult>
     {
-        private readonly IMapper _mapper;
-        private readonly IServiceProvider _services;
+        private readonly Func<UserManager<ApplicationUser>> _userManagerFactory;
 
-        public CreateUserCommandHandler(IMapper mapper, IServiceProvider services)
+        public CreateUserCommandHandler(Func<UserManager<ApplicationUser>> userManager)
         {
-            _mapper = mapper;
-            _services = services;
+            _userManagerFactory = userManager;
         }
 
         public async Task<IdentityResult> Handle(CreateUserCommand request, CancellationToken cancellationToken)
         {
-            // UserManager<ApplicationUser> requires scoped service
-            using (var scope = _services.CreateScope())
+            using (var userManager = _userManagerFactory())
             {
-                var _userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-                return await _userManager.CreateAsync(request, request.Password);
+                return await userManager.CreateAsync(request, request.Password);
             }
         }
     }

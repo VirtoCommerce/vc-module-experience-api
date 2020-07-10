@@ -28,6 +28,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             Field(x => x.Contact.OuterId, true);
             Field<StringGraphType>("organizationId", resolve: context => context.Source.Contact.Organizations?.FirstOrDefault());
             Field<ListGraphType<MemberAddressType>>("addresses", resolve: context => context.Source.Contact.Addresses);
+            Field<ListGraphType<UserType>>("securityAccounts", resolve: context => context.Source.Contact.SecurityAccounts);
             Field("organizationsIds", x => x.Contact.Organizations);
             //TODO: Security accounts
 

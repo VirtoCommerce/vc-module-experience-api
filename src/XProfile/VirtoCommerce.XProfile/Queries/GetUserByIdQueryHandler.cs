@@ -10,20 +10,18 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Queries
 {
     public class GetUserByIdQueryHandler : IQueryHandler<GetUserByIdQuery, ApplicationUser>
     {
-        private readonly IServiceProvider _services;
+        private readonly Func<UserManager<ApplicationUser>> _userManagerFactory;
 
-        public GetUserByIdQueryHandler(IServiceProvider services)
+        public GetUserByIdQueryHandler(Func<UserManager<ApplicationUser>> userManager)
         {
-            _services = services;
+            _userManagerFactory = userManager;
         }
 
         public async Task<ApplicationUser> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
         {
-            // UserManager<ApplicationUser> requires scoped service
-            using (var scope = _services.CreateScope())
+            using (var userManager = _userManagerFactory())
             {
-                var _userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-                return await _userManager.FindByIdAsync(request.Id);
+                return await userManager.FindByIdAsync(request.Id);
             }
         }
     }
