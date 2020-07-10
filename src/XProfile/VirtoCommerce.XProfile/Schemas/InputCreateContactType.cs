@@ -10,7 +10,6 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             Field<NonNullGraphType<StringGraphType>>(nameof(Contact.FullName));
             Field<NonNullGraphType<StringGraphType>>(nameof(Contact.FirstName));
             Field<NonNullGraphType<StringGraphType>>(nameof(Contact.LastName));
-            Field<NonNullGraphType<StringGraphType>>(nameof(Member.Name));
             Field<StringGraphType>(nameof(Contact.MiddleName));
             Field<StringGraphType>(nameof(Contact.Salutation));
             Field<StringGraphType>(nameof(Contact.PhotoUrl));
