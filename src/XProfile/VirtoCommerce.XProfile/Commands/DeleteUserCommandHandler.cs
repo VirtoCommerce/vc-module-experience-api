@@ -13,8 +13,8 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
 
     public class DeleteUserCommandHandler : UserCommandHandlerBase, IRequestHandler<DeleteUserCommand, IdentityResult>
     {
-        public DeleteUserCommandHandler(IServiceProvider services, IOptions<AuthorizationOptions> securityOptions)
-            : base(services, securityOptions)
+        public DeleteUserCommandHandler(Func<UserManager<ApplicationUser>> userManager, IOptions<AuthorizationOptions> securityOptions)
+            : base(userManager, securityOptions)
         {
         }
 
@@ -25,15 +25,13 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
                 return IdentityResult.Failed(new IdentityError() { Description = "It is forbidden to edit these users." });
             }
 
-            using var scope = _services.CreateScope();
-            var _userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-
+            using (var userManager = _userManagerFactory())
             foreach (var userName in request.UserNames)
             {
-                var user = await _userManager.FindByNameAsync(userName);
+                var user = await userManager.FindByNameAsync(userName);
                 if (user != null)
                 {
-                    var result = await _userManager.DeleteAsync(user);
+                    var result = await userManager.DeleteAsync(user);
                     if (!result.Succeeded)
                     {
                         return result;

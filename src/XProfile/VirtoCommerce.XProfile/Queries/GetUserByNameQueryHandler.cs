@@ -10,19 +10,18 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Queries
 {
     public class GetUserByNameQueryHandler : IQueryHandler<GetUserByNameQuery, ApplicationUser>
     {
-        private readonly IServiceProvider _services;
+        private readonly Func<UserManager<ApplicationUser>> _userManagerFactory;
 
-        public GetUserByNameQueryHandler(IServiceProvider services)
+        public GetUserByNameQueryHandler(Func<UserManager<ApplicationUser>> userManager)
         {
-            _services = services;
+            _userManagerFactory = userManager;
         }
 
         public async Task<ApplicationUser> Handle(GetUserByNameQuery request, CancellationToken cancellationToken)
         {
-            using (var scope = _services.CreateScope())
+            using (var userManager = _userManagerFactory())
             {
-                var _userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-                return await _userManager.FindByNameAsync(request.UserName);
+                return await userManager.FindByNameAsync(request.UserName);
             }
         }
     }

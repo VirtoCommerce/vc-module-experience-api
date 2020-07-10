@@ -11,8 +11,8 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
 {
     public class UpdateUserCommandHandler : UserCommandHandlerBase, IRequestHandler<UpdateUserCommand, IdentityResult>
     {
-        public UpdateUserCommandHandler(IServiceProvider services, IOptions<AuthorizationOptions> securityOptions)
-            : base(services, securityOptions)
+        public UpdateUserCommandHandler(Func<UserManager<ApplicationUser>> userManager, IOptions<AuthorizationOptions> securityOptions)
+            : base(userManager, securityOptions)
         {
         }
 
@@ -23,9 +23,8 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
                 return IdentityResult.Failed(new IdentityError { Description = "It is forbidden to edit this user." });
             }
 
-            using var scope = _services.CreateScope();
-            var _userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-            return await _userManager.UpdateAsync(request);
+            using (var userManager = _userManagerFactory())
+                return await userManager.UpdateAsync(request);
         }
     }
 }
