@@ -29,10 +29,12 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             Field(x => x.NormalizedEmail, true);
             Field(x => x.NormalizedUserName);
             Field(x => x.PasswordExpired);
+            Field(x => x.PasswordHash);
             Field(x => x.PhoneNumber, true);
             Field(x => x.PhoneNumberConfirmed);
             Field(x => x.PhotoUrl, true);
             Field<ListGraphType<RoleType>>("roles", resolve: x => x.Source.Roles);
+            Field(x => x.SecurityStamp);
             Field(x => x.StoreId, true);
             Field(x => x.TwoFactorEnabled);
             Field(x => x.UserName);
