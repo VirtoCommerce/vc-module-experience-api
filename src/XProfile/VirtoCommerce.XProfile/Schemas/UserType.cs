@@ -1,12 +1,18 @@
+using GraphQL.Resolvers;
 using GraphQL.Types;
+using VirtoCommerce.ExperienceApiModule.Core.Schema;
 using VirtoCommerce.Platform.Core.Security;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 {
     public class UserType : ObjectGraphType<ApplicationUser>
     {
-        public UserType()
+        private readonly IContactAggregateRepository _contactAggregateRepository;
+
+        public UserType(IContactAggregateRepository contactAggregateRepository)
         {
+            _contactAggregateRepository = contactAggregateRepository;
+
             Field(x => x.AccessFailedCount);
             Field(x => x.CreatedBy);
             Field(x => x.CreatedDate);
@@ -16,7 +22,6 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             Field(x => x.IsAdministrator);
             Field(x => x.LockoutEnabled);
             Field(x => x.LockoutEnd, true);
-            //Field<DateTimeOffsetGraphType>("LockoutEnd", resolve: context => context.Source.LockoutEnd.GetValueOrDefault());
             //Field(x => x.Logins);
             Field(x => x.MemberId, true);
             Field(x => x.ModifiedBy, true);
@@ -32,6 +37,17 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             Field(x => x.TwoFactorEnabled);
             Field(x => x.UserName);
             Field(x => x.UserType);
+
+            AddField(new FieldType
+            {
+                Name = "Contact",
+                Description = "The associated contact info",
+                Type = GraphTypeExtenstionHelper.GetActualType<ContactType>(),
+                Resolver = new AsyncFieldResolver<ApplicationUser, ContactAggregate>(context =>
+               {
+                   return _contactAggregateRepository.GetContactByIdAsync(context.Source.MemberId);
+               })
+            });
         }
     }
 }
