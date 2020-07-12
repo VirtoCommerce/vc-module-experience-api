@@ -13,10 +13,12 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             Field(x => x.LockoutEnabled, true);
             Field(x => x.LockoutEnd, true);
             Field(x => x.MemberId, true);
+            Field(x => x.PasswordHash);
             Field(x => x.PhoneNumber, true);
             Field(x => x.PhoneNumberConfirmed, true);
             Field(x => x.PhotoUrl, true);
             Field<ListGraphType<InputAssignRoleType>>(nameof(ApplicationUser.Roles));
+            Field(x => x.SecurityStamp);
             Field(x => x.TwoFactorEnabled, true);
             Field(x => x.UserName);
             Field(x => x.UserType); // Manager, Customer
