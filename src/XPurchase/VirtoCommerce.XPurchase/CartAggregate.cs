@@ -58,7 +58,8 @@ namespace VirtoCommerce.XPurchase
                 //TODO: refactor to be more performance
                 var allAppliedCoupons = Cart.GetFlatObjectsListWithInterface<IHasDiscounts>()
                                             .SelectMany(x => x.Discounts ?? Array.Empty<Discount>())
-                                            .Where(x => !string.IsNullOrEmpty(x.Coupon)).Select(x => x.Coupon)
+                                            .Where(x => !string.IsNullOrEmpty(x.Coupon))
+                                            .Select(x => x.Coupon)
                                             .Distinct()
                                             .ToList();
 
@@ -185,30 +186,21 @@ namespace VirtoCommerce.XPurchase
 
             await new ItemQtyAdjustmentValidator(this).ValidateAndThrowAsync(qtyAdjustment, ruleSet: ValidationRuleSet);
 
-            var lineItem = Cart.Items.FirstOrDefault(i => i.Id == qtyAdjustment.LineItemId);
+            var lineItem = Cart.Items.First(i => i.Id == qtyAdjustment.LineItemId);
 
-            if (lineItem != null)
+            var salePrice = qtyAdjustment.CartProduct.Price.GetTierPrice(qtyAdjustment.NewQuantity).Price;
+            if (salePrice != 0)
             {
-                var salePrice = qtyAdjustment.CartProduct.Price.GetTierPrice(qtyAdjustment.NewQuantity).Price;
-                if (salePrice != 0)
-                {
-                    lineItem.SalePrice = salePrice.Amount;
-                }
-                //List price should be always greater ot equals sale price because it may cause incorrect totals calculation
-                if (lineItem.ListPrice < lineItem.SalePrice)
-                {
-                    lineItem.ListPrice = lineItem.SalePrice;
-                }
-
-                if (qtyAdjustment.NewQuantity > 0)
-                {
-                    lineItem.Quantity = qtyAdjustment.NewQuantity;
-                }
-                else
-                {
-                    Cart.Items.Remove(lineItem);
-                }
+                lineItem.SalePrice = salePrice.Amount;
             }
+
+            //List price should be always greater or equals sale price because it may cause incorrect totals calculation
+            lineItem.ListPrice = lineItem.ListPrice < lineItem.SalePrice
+                ? lineItem.SalePrice
+                : lineItem.ListPrice;
+
+            lineItem.Quantity = qtyAdjustment.NewQuantity;
+
             return this;
         }
 
@@ -241,10 +233,12 @@ namespace VirtoCommerce.XPurchase
         public virtual Task<CartAggregate> AddCouponAsync(string couponCode)
         {
             EnsureCartExists();
+
             if (!Cart.Coupons.Any(c => c.EqualsInvariant(couponCode)))
             {
                 Cart.Coupons.Add(couponCode);
             }
+
             return Task.FromResult(this);
         }
 
@@ -267,6 +261,7 @@ namespace VirtoCommerce.XPurchase
             EnsureCartExists();
 
             Cart.Items.Clear();
+
             return Task.FromResult(this);
         }
 
