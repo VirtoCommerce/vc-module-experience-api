@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
@@ -6,16 +7,18 @@ using Microsoft.AspNetCore.Identity;
 using Moq;
 using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.CartModule.Core.Services;
+using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.CustomerModule.Core.Services;
 using VirtoCommerce.Platform.Core.Security;
 using VirtoCommerce.StoreModule.Core.Services;
+using VirtoCommerce.XPurchase.Tests.Helpers;
 using VirtoCommerce.XPurchase.Validators;
 using Xunit;
 
 namespace VirtoCommerce.XPurchase.Tests.Repositories
 {
-    public class CartAggregateRepositoryTests
+    public class CartAggregateRepositoryTests : MoqHelper
     {
         private readonly Fixture _fixture = new Fixture();
 
@@ -25,7 +28,6 @@ namespace VirtoCommerce.XPurchase.Tests.Repositories
         private readonly Mock<ICurrencyService> _currencyService;
         private readonly Mock<IMemberService> _memberService;
         private readonly Mock<IStoreService> _storeService;
-        private readonly Mock<UserManager<ApplicationUser>> _userManager;
 
         private readonly CartAggregateRepository repository;
 
@@ -37,7 +39,6 @@ namespace VirtoCommerce.XPurchase.Tests.Repositories
             _currencyService = new Mock<ICurrencyService>();
             _memberService = new Mock<IMemberService>();
             _storeService = new Mock<IStoreService>();
-            _userManager = new Mock<UserManager<ApplicationUser>>();
 
             repository = new CartAggregateRepository(
                 () => _fixture.Create<CartAggregate>(),
@@ -47,7 +48,7 @@ namespace VirtoCommerce.XPurchase.Tests.Repositories
                 _memberService.Object,
                 _storeService.Object,
                 _cartValidationContextFactory.Object,
-                () => _userManager.Object
+                () => TestUserManager<ApplicationUser>()
                 );
         }
 
@@ -69,11 +70,8 @@ namespace VirtoCommerce.XPurchase.Tests.Repositories
         [Fact]
         public async Task GetCartForShoppingCartAsync_ShouldSaveProductsToAggregate_IfCartContainsProductsAsync()
         {
-            //// Arrange
-            //var products = _fixture.Build<LineItem>()
-            //    .With(x => x.IsReadOnly, true)
-            //    .CreateMany()
-            //    .ToList();
+            // Arrange
+            //var products = _fixture.CreateMany<LineItem>().ToList();
 
             //var productIds = products.Select(x => x.ProductId).ToArray();
 
@@ -92,11 +90,11 @@ namespace VirtoCommerce.XPurchase.Tests.Repositories
             //shoppingCart.Items = products;
 
             //// Act
-            //await repository.GetCartForShoppingCartAsync(shoppingCart);
+            //var aggregate = await repository.GetCartForShoppingCartAsync(shoppingCart);
 
             //// Assert
-            //repository.CartProductsDict.Should().NotBeNull();
-            //repository.CartProductsDict.Select(x => x.Key).Should().BeSubsetOf(productIds);
+            //aggregate.CartProducts.Should().NotBeNull();
+            //aggregate.CartProducts.Select(x => x.Key).Should().BeSubsetOf(productIds);
         }
 
         [Fact]
