@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Security;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
@@ -20,7 +21,14 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
         {
             using (var userManager = _userManagerFactory())
             {
-                return await userManager.CreateAsync(request, request.Password);
+                if (request.Password.IsNullOrEmpty())
+                {
+                    return await userManager.CreateAsync(request);
+                }
+                else
+                {
+                    return await userManager.CreateAsync(request, request.Password);
+                }
             }
         }
     }

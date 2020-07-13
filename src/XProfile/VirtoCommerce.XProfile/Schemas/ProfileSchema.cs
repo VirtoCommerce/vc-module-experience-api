@@ -199,6 +199,25 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                 })
             });
 
+            _ = schema.Query.AddField(new FieldType
+            {
+                Name = "getUserByLogin",
+                Arguments = new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "loginProvider" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "providerKey" }
+                    ),
+                Type = GraphTypeExtenstionHelper.GetActualType<UserType>(),
+                Resolver = new AsyncFieldResolver<object>(async context =>
+                {
+                    var result = await _mediator.Send(new GetUserByLoginQuery(
+                        context.GetArgument<string>("loginProvider"),
+                        context.GetArgument<string>("providerKey")
+                        ));
+
+                    return result;
+                })
+            });
+
 #pragma warning disable S125 // Sections of code should not be commented out
             /*
                          {

@@ -16,7 +16,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             Field(x => x.AccessFailedCount);
             Field(x => x.CreatedBy);
             Field(x => x.CreatedDate);
-            Field(x => x.Email);
+            Field(x => x.Email, true);
             Field(x => x.EmailConfirmed);
             Field(x => x.Id);
             Field(x => x.IsAdministrator);
@@ -29,7 +29,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             Field(x => x.NormalizedEmail, true);
             Field(x => x.NormalizedUserName);
             Field(x => x.PasswordExpired);
-            Field(x => x.PasswordHash);
+            Field(x => x.PasswordHash, true);
             Field(x => x.PhoneNumber, true);
             Field(x => x.PhoneNumberConfirmed);
             Field(x => x.PhotoUrl, true);
