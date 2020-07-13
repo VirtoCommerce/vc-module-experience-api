@@ -23,7 +23,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             Field(x => x.LockoutEnabled);
             Field(x => x.LockoutEnd, true);
             //Field(x => x.Logins);
-            Field("contactId", x => x.MemberId, true);
+            Field(x => x.MemberId, true);
             Field(x => x.ModifiedBy, true);
             Field(x => x.ModifiedDate, true);
             Field(x => x.NormalizedEmail, true);
