@@ -1,13 +1,11 @@
-using System;
-using System.Linq;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
-using Microsoft.AspNetCore.Identity;
 using Moq;
 using VirtoCommerce.CartModule.Core.Model;
+using VirtoCommerce.CartModule.Core.Model.Search;
 using VirtoCommerce.CartModule.Core.Services;
-using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.CustomerModule.Core.Services;
 using VirtoCommerce.Platform.Core.Security;
@@ -20,8 +18,6 @@ namespace VirtoCommerce.XPurchase.Tests.Repositories
 {
     public class CartAggregateRepositoryTests : MoqHelper
     {
-        private readonly Fixture _fixture = new Fixture();
-
         private readonly Mock<ICartValidationContextFactory> _cartValidationContextFactory;
         private readonly Mock<IShoppingCartSearchService> _shoppingCartSearchService;
         private readonly Mock<IShoppingCartService> _shoppingCartService;
@@ -34,6 +30,10 @@ namespace VirtoCommerce.XPurchase.Tests.Repositories
         public CartAggregateRepositoryTests()
         {
             _cartValidationContextFactory = new Mock<ICartValidationContextFactory>();
+            _cartValidationContextFactory
+                .Setup(x => x.CreateValidationContextAsync(It.IsAny<CartAggregate>()))
+                .ReturnsAsync(new CartValidationContext());
+
             _shoppingCartSearchService = new Mock<IShoppingCartSearchService>();
             _shoppingCartService = new Mock<IShoppingCartService>();
             _currencyService = new Mock<ICurrencyService>();
@@ -52,91 +52,76 @@ namespace VirtoCommerce.XPurchase.Tests.Repositories
                 );
         }
 
-        #region GetCartForShoppingCartAsync
+        #region RemoveCartAsync
 
         [Fact]
-        public void GetCartForShoppingCartAsync_ShouldThrowArgumentNullException_IfCartIsNull()
+        public async Task RemoveCartAsync_ShouldCallShoppingCart()
         {
             // Arrange
-            ShoppingCart shoppingCart = null;
+            var cartId = _fixture.Create<string>();
 
             // Act
-            Action action = () => repository.GetCartForShoppingCartAsync(shoppingCart).GetAwaiter().GetResult();
+            await repository.RemoveCartAsync(cartId);
 
             // Assert
-            action.Should().ThrowExactly<ArgumentNullException>("Shopping cart is null");
+            _shoppingCartService.Verify(x => x.DeleteAsync(new[] { cartId }, It.IsAny<bool>()), Times.Once);
         }
 
+        #endregion RemoveCartAsync
+
+        #region SaveAsync
+
+        /// <summary>
+        /// If this test fails check GetValidCartAggregate() from MoqHelper
+        /// </summary>
         [Fact]
-        public async Task GetCartForShoppingCartAsync_ShouldSaveProductsToAggregate_IfCartContainsProductsAsync()
+        public async Task SaveAsync_ShouldCallShoppingCart()
         {
             // Arrange
-            //var products = _fixture.CreateMany<LineItem>().ToList();
+            var cartAggregate = GetValidCartAggregate();
 
-            //var productIds = products.Select(x => x.ProductId).ToArray();
+            // Act
+            await repository.SaveAsync(cartAggregate);
 
-            //var cartProducts = productIds
-            //    .Select(productId => new CartProduct(new CatalogProduct
-            //    {
-            //        Id = productId
-            //    }))
-            //    .ToList();
-
-            //_cartProductServiceMock
-            //    .Setup(x => x.GetCartProductsByIdsAsync(It.IsAny<CartAggregate>(), productIds))
-            //    .ReturnsAsync(cartProducts);
-
-            //var shoppingCart = _fixture.Create<ShoppingCart>();
-            //shoppingCart.Items = products;
-
-            //// Act
-            //var aggregate = await repository.GetCartForShoppingCartAsync(shoppingCart);
-
-            //// Assert
-            //aggregate.CartProducts.Should().NotBeNull();
-            //aggregate.CartProducts.Select(x => x.Key).Should().BeSubsetOf(productIds);
+            // Assert
+            _shoppingCartService.Verify(x => x.SaveChangesAsync(new ShoppingCart[] { cartAggregate.Cart }), Times.Once);
         }
+
+        #endregion SaveAsync
+
+        #region GetCartAsync
 
         [Fact]
-        public async Task GetCartForShoppingCartAsync_ShouldAlwaysCalculateTotals()
+        public async Task GetCartAsync_ShoppingCartNotFound_ReturnNull()
         {
-            //// Arrange
-            //var shoppingCart = _fixture.Create<ShoppingCart>();
+            // Arrange
+            _shoppingCartSearchService
+                .Setup(x => x.SearchCartAsync(It.IsAny<ShoppingCartSearchCriteria>()))
+                .ReturnsAsync(new ShoppingCartSearchResult
+                {
+                    Results = new List<ShoppingCart>()
+                });
 
-            //// Act
-            //await repository.GetCartForShoppingCartAsync(shoppingCart);
+            // Act
+            var result = await repository.GetCartAsync(
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<string>());
 
-            //// Assert
-            //_shoppingCartTotalsCalculatorMock.Verify(x => x.CalculateTotals(It.IsAny<ShoppingCart>()), Times.Once);
+            // Assert
+            result.Should().BeNull();
+            _shoppingCartSearchService.Verify(x => x.SearchCartAsync(It.IsAny<ShoppingCartSearchCriteria>()), Times.Once);
         }
 
-        [Fact]
-        public async Task GetCartForShoppingCartAsync_ShouldAlwaysSaveCartToAggregate()
-        {
-            //// Arrange
-            //var shoppingCart = _fixture.Create<ShoppingCart>();
+        #endregion GetCartAsync
 
-            //// Act
-            //await repository.GetCartForShoppingCartAsync(shoppingCart);
+        #region InnerGetCartAggregateFromCartAsync
 
-            //// Assert
-            //repository.Cart.Should().NotBeNull();
-            //repository.Cart.Should().BeEquivalentTo(shoppingCart);
-        }
+        // TODO: Write tests
 
-        [Fact]
-        public async Task GetCartForShoppingCartAsync_ShouldAlwaysSaveIdToAggregate()
-        {
-            //// Arrange
-            //var shoppingCart = _fixture.Create<ShoppingCart>();
-
-            //// Act
-            //await repository.GetCartForShoppingCartAsync(shoppingCart);
-
-            //// Assert
-            //repository.Id.Should().Be(shoppingCart.Id);
-        }
-
-        #endregion GetCartForShoppingCartAsync
+        #endregion InnerGetCartAggregateFromCartAsync
     }
 }
