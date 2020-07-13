@@ -9,13 +9,14 @@ using VirtoCommerce.ExperienceApiModule.DigitalCatalog.Index;
 using VirtoCommerce.SearchModule.Core.Model;
 using VirtoCommerce.SearchModule.Core.Services;
 
-namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Queries
+namespace VirtoCommerce.XDigitalCatalog.Queries
 {
     public class SearchProductCommandHandler : IQueryHandler<SearchProductQuery, SearchProductResponse>
     {
         private readonly IMapper _mapper;
         private readonly ISearchProvider _searchProvider;
         private readonly ISearchPhraseParser _searchPhraseParser;
+
         public SearchProductCommandHandler(ISearchProvider searchProvider, ISearchPhraseParser searchPhraseParser, IMapper mapper)
         {
             _searchProvider = searchProvider;

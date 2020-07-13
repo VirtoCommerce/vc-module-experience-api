@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 
-namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Queries
+namespace VirtoCommerce.XDigitalCatalog.Queries
 {
     public class SearchProductAssociationsCommandHandler : IRequestHandler<SearchProductAssociationsQuery, SearchProductAssociationsResponse>
     {
@@ -15,7 +15,7 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Queries
         {
             throw new NotImplementedException();
 
-           //var result = await _searchService.SearchProductAssociationsAsync(request.Criteria);
+            //var result = await _searchService.SearchProductAssociationsAsync(request.Criteria);
 
             //return new SearchProductAssociationsResponse {  Result = result };
         }

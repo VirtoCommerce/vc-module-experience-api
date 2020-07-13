@@ -1,6 +1,6 @@
 using GraphQL.Types;
 
-namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Schemas
+namespace VirtoCommerce.XDigitalCatalog.Schemas
 {
     public class PropertyTypeEnum : EnumerationGraphType<CatalogModule.Core.Model.PropertyType>
     {

@@ -1,8 +1,6 @@
-using System;
 using System.Collections.Generic;
-using System.Text;
 
-namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog
+namespace VirtoCommerce.XDigitalCatalog
 {
     public interface IHasIncludeFields
     {

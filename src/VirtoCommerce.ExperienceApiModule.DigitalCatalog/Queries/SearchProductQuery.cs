@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 
-namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Queries
+namespace VirtoCommerce.XDigitalCatalog.Queries
 {
     public class SearchProductQuery : IQuery<SearchProductResponse>, IHasIncludeFields
     {
@@ -20,6 +20,5 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Queries
         public int Skip { get; set; }
         public int Take { get; set; }
         public IEnumerable<string> IncludeFields { get; set; } = Array.Empty<string>();
-
     }
 }

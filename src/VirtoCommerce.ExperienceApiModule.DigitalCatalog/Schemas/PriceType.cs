@@ -1,7 +1,7 @@
 using GraphQL.Types;
 using VirtoCommerce.PricingModule.Core.Model;
 
-namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Schemas
+namespace VirtoCommerce.XDigitalCatalog.Schemas
 {
     public class PriceType : ObjectGraphType<Price>
     {
@@ -15,6 +15,5 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Schemas
             Field(d => d.EndDate, nullable: true).Description("The price end date");
             Field(d => d.Currency, nullable: true).Description("The product price currency");
         }
-     
     }
 }

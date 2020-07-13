@@ -1,4 +1,4 @@
-namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog
+namespace VirtoCommerce.XDigitalCatalog
 {
     public class XDigitalCatalogAnchor
     {

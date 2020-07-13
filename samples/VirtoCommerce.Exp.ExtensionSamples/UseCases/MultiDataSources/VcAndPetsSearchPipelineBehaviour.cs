@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using MediatR.Pipeline;
 using PetsStoreClient;
 using VirtoCommerce.CatalogModule.Core.Model;
-using VirtoCommerce.ExperienceApiModule.DigitalCatalog;
-using VirtoCommerce.ExperienceApiModule.DigitalCatalog.Queries;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.XDigitalCatalog;
+using VirtoCommerce.XDigitalCatalog.Queries;
 
 namespace VirtoCommerce.Exp.ExtensionSamples
 {

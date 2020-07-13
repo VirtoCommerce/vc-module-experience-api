@@ -1,15 +1,16 @@
 using System.Collections.Generic;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.Core.Binding;
-using VirtoCommerce.ExperienceApiModule.DigitalCatalog.Binding;
 using VirtoCommerce.InventoryModule.Core.Model;
 using VirtoCommerce.PricingModule.Core.Model;
+using VirtoCommerce.XDigitalCatalog.Binding;
 
-namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog
+namespace VirtoCommerce.XDigitalCatalog
 {
     public class ExpProduct
     {
         public string Id => CatalogProduct.Id;
+
         [BindIndexField(FieldName = "__object", BinderType = typeof(CatalogProductBinder))]
         public virtual CatalogProduct CatalogProduct { get; set; }
 

@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using GraphQL;
-using GraphQL.Authorization;
 using GraphQL.Builders;
 using GraphQL.DataLoader;
 using GraphQL.Types;
@@ -10,10 +9,10 @@ using GraphQL.Types.Relay.DataObjects;
 using MediatR;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
-using VirtoCommerce.ExperienceApiModule.DigitalCatalog.Queries;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.XDigitalCatalog.Queries;
 
-namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Schemas
+namespace VirtoCommerce.XDigitalCatalog.Schemas
 {
     public class ProductType : ObjectGraphType<ExpProduct>
     {
@@ -36,7 +35,7 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Schemas
 
             Field<ListGraphType<PriceType>>("prices", arguments: new QueryArguments(new QueryArgument<StringGraphType> { Name = "currency", Description = "currency" }), resolve: context =>
             {
-                var result = (context.Source).Prices;
+                var result = context.Source.Prices;
                 var currency = context.GetArgument<string>("currency");
                 if (currency != null)
                 {
@@ -85,7 +84,7 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Schemas
                     .ToList(),
                 PageInfo = new PageInfo()
                 {
-                    HasNextPage = response.Result.TotalCount > (skip + first),
+                    HasNextPage = response.Result.TotalCount > skip + first,
                     HasPreviousPage = skip > 0,
                     StartCursor = skip.ToString(),
                     EndCursor = Math.Min(response.Result.TotalCount, (int)(skip + first)).ToString()

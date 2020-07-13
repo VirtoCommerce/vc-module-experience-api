@@ -1,18 +1,15 @@
 using AutoMapper;
 using GraphQL.Server;
 using GraphQL.Types;
-using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using VirtoCommerce.ExperienceApiModule.Core.Schema;
-using VirtoCommerce.ExperienceApiModule.DigitalCatalog;
-using VirtoCommerce.ExperienceApiModule.DigitalCatalog.Extensions;
-using VirtoCommerce.ExperienceApiModule.DigitalCatalog.Mapping;
-using VirtoCommerce.ExperienceApiModule.DigitalCatalog.Schemas;
-using VirtoCommerce.ExperienceApiModule.XProfile;
 using VirtoCommerce.ExperienceApiModule.XProfile.Extensions;
 using VirtoCommerce.ExperienceApiModule.XProfile.Mapping;
 using VirtoCommerce.Platform.Core.Modularity;
+using VirtoCommerce.XDigitalCatalog;
+using VirtoCommerce.XDigitalCatalog.Extensions;
+using VirtoCommerce.XDigitalCatalog.Mapping;
 using VirtoCommerce.XPurchase;
 using VirtoCommerce.XPurchase.Extensions;
 using VirtoCommerce.XPurchase.Mapping;
@@ -34,7 +31,7 @@ namespace VirtoCommerce.ExperienceApiModule.Web
             services.AddAutoMapper(typeof(XPurchaseAnchor));
 
             //Register .NET GraphQL server
-            var graphQlBuilder =  services.AddGraphQL(_ =>
+            var graphQlBuilder = services.AddGraphQL(_ =>
             {
                 _.EnableMetrics = true;
                 _.ExposeExceptions = true;
@@ -59,7 +56,7 @@ namespace VirtoCommerce.ExperienceApiModule.Web
             //TODO: Not work for profiles defined in the different projects
             //services.AddAutoMapper(typeof(Module));
 
-            //TODO: Need to find proper way to register mapping profiles from the different projects 
+            //TODO: Need to find proper way to register mapping profiles from the different projects
             var mappingConfig = new MapperConfiguration(mc =>
             {
                 mc.AddProfile(new MappingProfile());

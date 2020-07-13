@@ -1,10 +1,9 @@
 using System.Reflection;
-using VirtoCommerce.ExperienceApiModule.Core;
 using VirtoCommerce.ExperienceApiModule.Core.Binding;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.SearchModule.Core.Model;
 
-namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Binding
+namespace VirtoCommerce.XDigitalCatalog.Binding
 {
     public class ExpProductBinder : IIndexModelBinder
     {
@@ -27,6 +26,5 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Binding
 
             return result;
         }
-
     }
 }

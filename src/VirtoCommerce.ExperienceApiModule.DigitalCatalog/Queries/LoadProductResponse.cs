@@ -1,6 +1,7 @@
 using System.Collections.Generic;
+using VirtoCommerce.XDigitalCatalog;
 
-namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Queries
+namespace VirtoCommerce.XDigitalCatalog.Queries
 {
     public class LoadProductResponse
     {

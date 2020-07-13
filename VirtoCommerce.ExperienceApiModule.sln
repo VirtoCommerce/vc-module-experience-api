@@ -23,7 +23,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RecommendationsGatewayModul
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RecommendationsGatewayModule.Web", "samples\RecommendationsGatewayModule\RecommendationsGatewayModule.Web\RecommendationsGatewayModule.Web.csproj", "{427861D7-094D-4625-A5DB-DF80323CED59}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtoCommerce.ExperienceApiModule.DigitalCatalog", "src\VirtoCommerce.ExperienceApiModule.DigitalCatalog\VirtoCommerce.ExperienceApiModule.DigitalCatalog.csproj", "{5AB283CC-DE40-4B66-B592-126BE70D5E36}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtoCommerce.XDigitalCatalog", "src\VirtoCommerce.ExperienceApiModule.DigitalCatalog\VirtoCommerce.XDigitalCatalog.csproj", "{5AB283CC-DE40-4B66-B592-126BE70D5E36}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ExtensionSample", "ExtensionSample", "{20D46AAF-F36D-4B0A-B072-A9673448BD12}"
 EndProject

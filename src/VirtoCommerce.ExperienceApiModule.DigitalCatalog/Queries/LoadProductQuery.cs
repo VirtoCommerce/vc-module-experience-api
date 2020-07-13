@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 
-namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Queries
+namespace VirtoCommerce.XDigitalCatalog.Queries
 {
     public class LoadProductQuery : IQuery<LoadProductResponse>, IHasIncludeFields
     {

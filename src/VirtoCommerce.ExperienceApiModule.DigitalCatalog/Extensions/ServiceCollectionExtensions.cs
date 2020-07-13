@@ -2,9 +2,9 @@ using GraphQL.Server;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using VirtoCommerce.ExperienceApiModule.Core.Schema;
-using VirtoCommerce.ExperienceApiModule.DigitalCatalog.Schemas;
+using VirtoCommerce.XDigitalCatalog.Schemas;
 
-namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Extensions
+namespace VirtoCommerce.XDigitalCatalog.Extensions
 {
     public static class ServiceCollectionExtensions
     {

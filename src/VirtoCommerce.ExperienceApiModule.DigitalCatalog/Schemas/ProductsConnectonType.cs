@@ -1,12 +1,10 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using GraphQL.Types;
 using GraphQL.Types.Relay;
 using GraphQL.Types.Relay.DataObjects;
 
-namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Schemas
+namespace VirtoCommerce.XDigitalCatalog.Schemas
 {
     public class ProductsConnectonType<TNodeType> : ConnectionType<TNodeType, EdgeType<TNodeType>>
         where TNodeType : IGraphType
@@ -30,9 +28,7 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Schemas
                 {
                     return ((ProductsConnection<ExpProduct>)context.Source).Facets.OfType<TermFacetResult>();
                 });
-
         }
-
     }
 
     public class ProductsConnection<TNode> : Connection<TNode>

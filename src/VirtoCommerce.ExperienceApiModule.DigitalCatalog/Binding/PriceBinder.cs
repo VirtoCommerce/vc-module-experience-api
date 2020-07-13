@@ -7,7 +7,7 @@ using VirtoCommerce.ExperienceApiModule.Core.Binding;
 using VirtoCommerce.PricingModule.Core.Model;
 using VirtoCommerce.SearchModule.Core.Model;
 
-namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Binding
+namespace VirtoCommerce.XDigitalCatalog.Binding
 {
     public class PriceBinder : IIndexModelBinder
     {
