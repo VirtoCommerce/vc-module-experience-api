@@ -71,13 +71,12 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field(x => x.Order.TaxPercentRate);
             Field(x => x.Order.LanguageCode, true);
 
+            Field<NonNullGraphType<ListGraphType<OrderAddressType>>>(nameof(CustomerOrder.Addresses), resolve: x => x.Source.Order.Addresses);
+            Field<NonNullGraphType<ListGraphType<LineItemType>>>(nameof(CustomerOrder.Items), resolve: x => x.Source.Order.Items);
             //TODO
-            //public ICollection<Address> Addresses { get; set; }
             //public ICollection<PaymentIn> InPayments { get; set; }
-
-            //public ICollection<LineItem> Items { get; set; }
             //public ICollection<Shipment> Shipments { get; set; }
             //public ICollection<TaxDetail> TaxDetails { get; set; }
-    }
+        }
     }
 }
