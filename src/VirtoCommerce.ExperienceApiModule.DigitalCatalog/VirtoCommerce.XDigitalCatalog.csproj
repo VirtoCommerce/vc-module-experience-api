@@ -15,9 +15,11 @@
         <PackageReference Include="VirtoCommerce.CoreModule.Core" Version="3.2.0-alpha.hashfb63c7d" />
         <PackageReference Include="VirtoCommerce.InventoryModule.Core" Version="3.2.0" />
         <PackageReference Include="VirtoCommerce.CatalogModule.Core" Version="3.2.0" />
+        <PackageReference Include="VirtoCommerce.MarketingModule.Core" Version="3.1.0" />
         <PackageReference Include="VirtoCommerce.PricingModule.Core" Version="3.2.0" />
         <PackageReference Include="VirtoCommerce.Platform.Core" Version="3.2.1" />
         <PackageReference Include="VirtoCommerce.SearchModule.Core" Version="3.2.0" />
+        <PackageReference Include="VirtoCommerce.TaxModule.Core" Version="3.1.0" />
     </ItemGroup>
 
     <ItemGroup>
