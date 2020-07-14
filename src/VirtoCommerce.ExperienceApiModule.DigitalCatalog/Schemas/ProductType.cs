@@ -14,17 +14,6 @@ using VirtoCommerce.XDigitalCatalog.Queries;
 
 namespace VirtoCommerce.XDigitalCatalog.Schemas
 {
-    public class VariationType : ObjectGraphType<VirtoCommerce.CatalogModule.Core.Model.Variation>
-    {
-        public VariationType(
-            IMediator mediator,
-            IDataLoaderContextAccessor dataLoader)
-        {
-            Field(x => x.Id, nullable: false).Description("Id of variation.");
-            Field(x => x.Code, nullable: false).Description("SKU of variation.");
-        }
-    }
-
     public class ProductType : ObjectGraphType<ExpProduct>
     {
         public ProductType(

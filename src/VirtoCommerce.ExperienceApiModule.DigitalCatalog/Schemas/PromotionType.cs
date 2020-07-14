@@ -7,8 +7,11 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
     {
         public PromotionType()
         {
-            Field(x => x.Id, nullable: false).Description("Promotion Id");
-            Field(x => x.Name, nullable: false).Description("Promotion name");
+            Name = "Promotion";
+            Description = "Represents promotion object";
+
+            Field(x => x.Id, nullable: false).Description("The unique ID of the promotion.");
+            Field(x => x.Name, nullable: false).Description("The name of the promotion");
             Field(x => x.Description, nullable: true).Description("Promotion description");
             Field(x => x.Type, nullable: true).Description("Promotion type");
         }
