@@ -7,14 +7,11 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Schemas
     {
         public TaxDetailType()
         {
-            Name = "Tax Detail";
+            Name = "TaxDetail";
             
             Field(d => d.Name);
-            Field(d => d.Amount);
-            Field(d => d.Rate);
-
-
-
+            Field<DecimalGraphType> ("Amount" , resolve: context => context.Source.Amount);
+            Field<DecimalGraphType> ("Rate", resolve: context => context.Source.Rate);
         }
     }
 }
