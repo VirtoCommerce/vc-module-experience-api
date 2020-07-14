@@ -17,14 +17,12 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field(x => x.Order.Currency);
             Field(x => x.Order.Sum);
             Field(x => x.Order.OuterId, true);
-            //TODO
-            //public IEnumerable<IOperation> ChildrenOperations);
+            
             Field(x => x.Order.IsCancelled);
             Field(x => x.Order.CancelledDate, true);
             Field(x => x.Order.CancelReason, true);
             Field(x => x.Order.ObjectType);
-            //TODO
-            //public ICollection<DynamicObjectProperty> DynamicProperties);
+            
 
             Field(x => x.Order.CustomerId);
             Field(x => x.Order.CustomerName, true);
@@ -73,10 +71,11 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 
             Field<NonNullGraphType<ListGraphType<OrderAddressType>>>(nameof(CustomerOrder.Addresses), resolve: x => x.Source.Order.Addresses);
             Field<NonNullGraphType<ListGraphType<LineItemType>>>(nameof(CustomerOrder.Items), resolve: x => x.Source.Order.Items);
+            Field<NonNullGraphType<ListGraphType<PaymentInType>>>(nameof(CustomerOrder.InPayments), resolve: x => x.Source.Order.InPayments);
+            Field<NonNullGraphType<ListGraphType<ShipmentType>>>(nameof(CustomerOrder.Shipments), resolve: x => x.Source.Order.Shipments);
+            Field<NonNullGraphType<ListGraphType<OrderTaxDetailType>>>(nameof(CustomerOrder.TaxDetails), resolve: x => x.Source.Order.TaxDetails);
             //TODO
-            //public ICollection<PaymentIn> InPayments { get; set; }
-            //public ICollection<Shipment> Shipments { get; set; }
-            //public ICollection<TaxDetail> TaxDetails { get; set; }
+            //public ICollection<DynamicObjectProperty> DynamicProperties);
         }
     }
 }

@@ -28,7 +28,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field<MoneyType>("taxTotal", resolve: context => context.Source.TaxTotal.ToMoney(context.GetCart().Currency));
             Field(x => x.TaxPercentRate, nullable: true).Description("Tax percent rate");
             Field(x => x.TaxType, nullable: true).Description("Tax type");
-            Field<ListGraphType<TaxDetailType>>("taxDetails", resolve: context => context.Source.TaxDetails);
+            Field<ListGraphType<OrderTaxDetailType>>("taxDetails", resolve: context => context.Source.TaxDetails);
             //TODO: Extend the paymentmethod domain model
             //Field<ListGraphType<DiscountType>>("discounts", resolve: context => context.Source.Discounts);
         }
