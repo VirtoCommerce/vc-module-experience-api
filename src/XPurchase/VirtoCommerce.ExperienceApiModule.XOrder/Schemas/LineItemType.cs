@@ -7,6 +7,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
     {
         public LineItemType()
         {
+            Field(x => x.Id);
             Field(x => x.ProductType);
             Field(x => x.Name);
             Field(x => x.Comment);

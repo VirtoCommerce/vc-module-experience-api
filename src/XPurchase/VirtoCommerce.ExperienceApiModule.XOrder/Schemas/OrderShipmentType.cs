@@ -3,10 +3,11 @@ using VirtoCommerce.OrdersModule.Core.Model;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 {
-    public class ShipmentType : ObjectGraphType<Shipment>
+    public class OrderShipmentType : ObjectGraphType<Shipment>
     {
-        public ShipmentType()
+        public OrderShipmentType()
         {
+            Field(x => x.Id);
             Field(x => x.OrganizationId);
             Field(x => x.OrganizationName);
             Field(x => x.FulfillmentCenterId);
@@ -15,20 +16,15 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field(x => x.EmployeeName);
             Field(x => x.ShipmentMethodCode);
             Field(x => x.ShipmentMethodOption);
-            //public ShippingMethod ShippingMethod);
+            Field<OrderShippingMethodType>(nameof(Shipment.ShippingMethod), resolve: x => x.Source.ShippingMethod);
             Field(x => x.CustomerOrderId);
-            //public CustomerOrder CustomerOrder);
-            //public ICollection<ShipmentItem> Items);
-            //public ICollection<ShipmentPackage> Packages);
-            //public ICollection<PaymentIn> InPayments);
             Field(x => x.WeightUnit);
             Field(x => x.Weight);
             Field(x => x.MeasureUnit);
             Field(x => x.Height);
             Field(x => x.Length);
             Field(x => x.Width);
-            //public ICollection<Discount> Discounts);
-            //public Address DeliveryAddress);
+            Field<OrderAddressType>(nameof(Shipment.DeliveryAddress), resolve: x => x.Source.DeliveryAddress);
             Field(x => x.Price);
             Field(x => x.PriceWithTax);
             Field(x => x.Total);
@@ -41,7 +37,15 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field(x => x.TaxType);
             Field(x => x.TaxTotal);
             Field(x => x.TaxPercentRate);
+
             Field<NonNullGraphType<ListGraphType<OrderTaxDetailType>>>(nameof(Shipment.TaxDetails), resolve: x => x.Source.TaxDetails);
+            Field<NonNullGraphType<ListGraphType<OrderShipmentItemType>>>(nameof(Shipment.Items), resolve: x => x.Source.Items);
+            Field<NonNullGraphType<ListGraphType<OrderShipmentPackageType>>>(nameof(Shipment.Packages), resolve: x => x.Source.Packages);
+            Field<NonNullGraphType<ListGraphType<PaymentInType>>>(nameof(Shipment.InPayments), resolve: x => x.Source.InPayments);
+
+            //TODO
+            //public ICollection<Discount> Discounts);
+            //public CustomerOrder CustomerOrder);
         }
     }
 }

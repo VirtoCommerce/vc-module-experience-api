@@ -72,7 +72,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field<NonNullGraphType<ListGraphType<OrderAddressType>>>(nameof(CustomerOrder.Addresses), resolve: x => x.Source.Order.Addresses);
             Field<NonNullGraphType<ListGraphType<LineItemType>>>(nameof(CustomerOrder.Items), resolve: x => x.Source.Order.Items);
             Field<NonNullGraphType<ListGraphType<PaymentInType>>>(nameof(CustomerOrder.InPayments), resolve: x => x.Source.Order.InPayments);
-            Field<NonNullGraphType<ListGraphType<ShipmentType>>>(nameof(CustomerOrder.Shipments), resolve: x => x.Source.Order.Shipments);
+            Field<NonNullGraphType<ListGraphType<OrderShipmentType>>>(nameof(CustomerOrder.Shipments), resolve: x => x.Source.Order.Shipments);
             Field<NonNullGraphType<ListGraphType<OrderTaxDetailType>>>(nameof(CustomerOrder.TaxDetails), resolve: x => x.Source.Order.TaxDetails);
             //TODO
             //public ICollection<DynamicObjectProperty> DynamicProperties);
