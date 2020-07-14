@@ -27,6 +27,8 @@ namespace VirtoCommerce.XPurchase.Services
 
         private readonly IMapper _mapper;
 
+        private readonly int _takeOnSearch = 20;
+
         public CartAvailMethodsService(
             IPaymentMethodsSearchService paymentMethodsSearchService
             , IShippingMethodsSearchService shippingMethodsSearchService
@@ -41,19 +43,25 @@ namespace VirtoCommerce.XPurchase.Services
 
         public async Task<IEnumerable<ShippingRate>> GetAvailableShippingRatesAsync(CartAggregate cartAggr)
         {
+            if (cartAggr == null)
+            {
+                return Enumerable.Empty<ShippingRate>();
+            }
+
             //Request available shipping rates
             var shippingEvaluationContext = new ShippingEvaluationContext(cartAggr.Cart);
 
             var criteria = new ShippingMethodsSearchCriteria
             {
                 IsActive = true,
-                Take = 20,
-                StoreId = cartAggr.Store.Id
+                Take = _takeOnSearch,
+                StoreId = cartAggr.Store?.Id
             };
 
             var activeAvailableShippingMethods = (await _shippingMethodsSearchService.SearchShippingMethodsAsync(criteria)).Results;
 
-            var availableShippingRates = activeAvailableShippingMethods.SelectMany(x => x.CalculateRates(shippingEvaluationContext))
+            var availableShippingRates = activeAvailableShippingMethods
+                .SelectMany(x => x.CalculateRates(shippingEvaluationContext))
                 .Where(x => x.ShippingMethod == null || x.ShippingMethod.IsActive)
                 .ToArray();
 
@@ -90,14 +98,14 @@ namespace VirtoCommerce.XPurchase.Services
         {
             if (cartAggr == null)
             {
-                throw new ArgumentNullException(nameof(cartAggr));
+                return Enumerable.Empty<PaymentMethod>();
             }
 
             var criteria = new PaymentMethodsSearchCriteria
             {
                 IsActive = true,
-                Take = 20,
-                StoreId = cartAggr.Store.Id,
+                Take = _takeOnSearch,
+                StoreId = cartAggr.Store?.Id,
             };
 
             var result = await _paymentMethodsSearchService.SearchPaymentMethodsAsync(criteria);

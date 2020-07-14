@@ -11,7 +11,6 @@ using VirtoCommerce.CustomerModule.Core.Services;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Security;
 using VirtoCommerce.StoreModule.Core.Services;
-using VirtoCommerce.XPurchase.Services;
 using VirtoCommerce.XPurchase.Validators;
 
 namespace VirtoCommerce.XPurchase
@@ -114,7 +113,7 @@ namespace VirtoCommerce.XPurchase
             {
                 cart.Currency = store.DefaultCurrency;
             }
-          
+
             var currency = allCurrencies.FirstOrDefault(x => x.Code.EqualsInvariant(cart.Currency));
             if (currency == null)
             {
