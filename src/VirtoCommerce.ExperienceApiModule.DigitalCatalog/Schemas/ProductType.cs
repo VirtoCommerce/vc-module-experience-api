@@ -1,47 +1,19 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Builders;
 using GraphQL.DataLoader;
-using GraphQL.Resolvers;
 using GraphQL.Types;
 using GraphQL.Types.Relay.DataObjects;
 using MediatR;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
-using VirtoCommerce.ExperienceApiModule.Core.Helpers;
-using VirtoCommerce.ExperienceApiModule.DigitalCatalog.Schemas;
-using VirtoCommerce.InventoryModule.Core.Model;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.XDigitalCatalog.Queries;
 
 namespace VirtoCommerce.XDigitalCatalog.Schemas
 {
-    public class VariationType : ObjectGraphType<VirtoCommerce.CatalogModule.Core.Model.Variation>
-    {
-        public VariationType(
-            IMediator mediator,
-            IDataLoaderContextAccessor dataLoader)
-        {
-            Field(x => x.Id, nullable: false).Description("Id of variation.");
-            Field(x => x.Code, nullable: false).Description("SKU of variation.");
-
-            var availabilityDataField = new FieldType
-            {
-                Name = "availabilityData",
-                Type = GraphTypeExtenstionHelper.GetActualType<AvailabilityDataType>(),
-                Resolver = new AsyncFieldResolver<AvailabilityDataType, object>(async context =>
-                {
-                    return null;
-                })
-            };
-
-            AddField(availabilityDataField);
-        }
-    }
-
     public class ProductType : ObjectGraphType<ExpProduct>
     {
         public ProductType(

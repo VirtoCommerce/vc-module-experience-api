@@ -1,27 +1,21 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using GraphQL.DataLoader;
 using GraphQL.Resolvers;
 using GraphQL.Types;
 using MediatR;
-using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.InventoryModule.Core.Model;
-using VirtoCommerce.XDigitalCatalog.Queries;
 
 namespace VirtoCommerce.XDigitalCatalog.Schemas
 {
     public class AvailabilityDataType : ObjectGraphType
     {
-        public AvailabilityDataType(IDataLoaderContextAccessor dataLoader, IMediator mediator)
+        public AvailabilityDataType(IDataLoaderContextAccessor dataLoader, IMediator mediator) // TODO: rewrite this
         {
             Name = "AvailabilityData";
 
             var quantity = 0;
             var isOnStock = false;
-
 
             var inventoriesField = new FieldType
             {
@@ -29,7 +23,6 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 Type = GraphTypeExtenstionHelper.GetActualType<ListGraphType<InventoryInfoType>>(),
                 Resolver = new AsyncFieldResolver<InventoryInfo, object>(async context =>
                 {
-
                     return new List<InventoryInfo>();
                 })
             };
@@ -39,7 +32,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             {
                 Name = "availableQuantity",
                 Type = GraphTypeExtenstionHelper.GetActualType<LongGraphType>(),
-                Resolver = new AsyncFieldResolver<long, object>(async context =>  quantity)
+                Resolver = new AsyncFieldResolver<long, object>(async context => quantity)
             };
             AddField(quantityField);
 
@@ -50,11 +43,6 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 Resolver = new AsyncFieldResolver<bool, object>(async context => isOnStock)
             };
             AddField(quantityField);
-
-
         }
-
-
-
     }
 }
