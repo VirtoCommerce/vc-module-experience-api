@@ -2,7 +2,7 @@ using System.Linq;
 using GraphQL.Types;
 using VirtoCommerce.CatalogModule.Core.Model;
 
-namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Schemas
+namespace VirtoCommerce.XDigitalCatalog.Schemas
 {
     public class PropertyType : ObjectGraphType<Property>
     {
@@ -16,8 +16,8 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Schemas
             Field<PropertyTypeEnum>("type", "Property type");
             Field<ListGraphType<StringGraphType>>(
                 "values",
-                resolve: context => context.Source.Values.Select(x=> x.ToString())
+                resolve: context => context.Source.Values.Select(x => x.ToString())
             );
-        }       
+        }
     }
 }

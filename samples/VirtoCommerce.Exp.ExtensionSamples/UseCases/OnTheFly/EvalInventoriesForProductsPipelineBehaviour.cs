@@ -3,8 +3,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR.Pipeline;
-using VirtoCommerce.ExperienceApiModule.DigitalCatalog.Queries;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.XDigitalCatalog.Queries;
 
 namespace VirtoCommerce.Exp.ExtensionSamples
 {

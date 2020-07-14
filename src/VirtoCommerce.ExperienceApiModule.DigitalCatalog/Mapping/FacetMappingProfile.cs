@@ -1,12 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using AutoMapper;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.SearchModule.Core.Model;
 
-namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Mapping
+namespace VirtoCommerce.XDigitalCatalog.Mapping
 {
     public class MappingProfile : Profile
     {
@@ -16,7 +15,7 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Mapping
 
             CreateMap<TermAggregationRequest, TermFacetResult>().ConvertUsing((request, facet, context) =>
             {
-                var aggregations =  context.Items["aggregations"] as IList<AggregationResponse>;
+                var aggregations = context.Items["aggregations"] as IList<AggregationResponse>;
                 var aggregation = aggregations.FirstOrDefault(x => x.Id.EqualsInvariant(request.Id));
                 if (aggregation != null)
                 {
@@ -55,8 +54,6 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Mapping
                 }
                 return result;
             });
-
-
         }
     }
 }

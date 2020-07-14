@@ -10,32 +10,35 @@ using GraphQL.Types;
 using GraphQL.Types.Relay;
 using GraphQL.Types.Relay.DataObjects;
 using MediatR;
-using VirtoCommerce.ExperienceApiModule.Core;
-using VirtoCommerce.ExperienceApiModule.Core.Schema;
-using VirtoCommerce.ExperienceApiModule.DigitalCatalog.Queries;
+using VirtoCommerce.ExperienceApiModule.Core.Extensions;
+using VirtoCommerce.ExperienceApiModule.Core.Helpers;
+using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
+using VirtoCommerce.XDigitalCatalog.Queries;
 
-namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Schemas
+namespace VirtoCommerce.XDigitalCatalog.Schemas
 {
     public class DigitalCatalogSchema : ISchemaBuilder
     {
         private readonly IMediator _mediator;
         private readonly IDataLoaderContextAccessor _dataLoader;
+
         public DigitalCatalogSchema(IMediator mediator, IDataLoaderContextAccessor dataLoader)
         {
             _mediator = mediator;
             _dataLoader = dataLoader;
         }
+
         public void Build(ISchema schema)
         {
             //We can't use the fluent syntax for new types registration provided by dotnet graphql here, because we have the strict requirement for underlying types extensions
-            //and must use GraphTypeExtenstionHelper to resolve the effective type on execution time 
+            //and must use GraphTypeExtenstionHelper to resolve the effective type on execution time
             var productField = new FieldType
             {
                 Name = "product",
                 Arguments = new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id", Description = "id of the product" }),
                 Type = GraphTypeExtenstionHelper.GetActualType<ProductType>(),
                 Resolver = new AsyncFieldResolver<object>(async context =>
-                {                    
+                {
                     var loader = _dataLoader.Context.GetOrAddBatchLoader<string, ExpProduct>("productsLoader", (ids) => LoadProductsAsync(_mediator, ids, context.SubFields.Values.GetAllNodesPaths()));
                     return await loader.LoadAsync(context.GetArgument<string>("id"));
                 })
@@ -63,9 +66,7 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Schemas
                     return await ResolveConnectionAsync(_mediator, context);
                 });
 
-
             schema.Query.AddField(productsConnectionBuilder.FieldType);
-
         }
 
         public static async Task<IDictionary<string, ExpProduct>> LoadProductsAsync(IMediator mediator, IEnumerable<string> ids, IEnumerable<string> includeFields)
@@ -74,13 +75,12 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Schemas
             return response.Products.ToDictionary(x => x.Id);
         }
 
-
         private static async Task<object> ResolveConnectionAsync(IMediator mediator, IResolveConnectionContext<object> context)
         {
             var first = context.First;
             var skip = Convert.ToInt32(context.After ?? 0.ToString());
             var includeFields = context.SubFields.Values.GetAllNodesPaths().Select(x => x.TrimStart("items.")).ToArray();
-            
+
             var request = new SearchProductQuery
             {
                 Skip = skip,
@@ -100,7 +100,6 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Schemas
 
             var response = await mediator.Send(request);
 
-
             return new ProductsConnection<ExpProduct>()
             {
                 Edges = response.Results
@@ -113,7 +112,7 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Schemas
                     .ToList(),
                 PageInfo = new PageInfo()
                 {
-                    HasNextPage = response.TotalCount > (skip + first),
+                    HasNextPage = response.TotalCount > skip + first,
                     HasPreviousPage = skip > 0,
                     StartCursor = skip.ToString(),
                     EndCursor = Math.Min(response.TotalCount, (int)(skip + first)).ToString()

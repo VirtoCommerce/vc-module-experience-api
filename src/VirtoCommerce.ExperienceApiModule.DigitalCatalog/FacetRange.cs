@@ -1,10 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog
+namespace VirtoCommerce.XDigitalCatalog
 {
-    public sealed class FacetRange 
+    public sealed class FacetRange
     {
         public long From { get; set; }
         public bool IncludeFrom { get; set; }

@@ -5,13 +5,12 @@ using GraphQL.Conversion;
 using GraphQL.Introspection;
 using GraphQL.Types;
 
-namespace VirtoCommerce.ExperienceApiModule.Core.Schema
+namespace VirtoCommerce.ExperienceApiModule.Core.Infrastructure
 {
     public class SchemaFactory : ISchemaFactory, ISchema
     {
         private readonly IEnumerable<ISchemaBuilder> _schemaBuilders;
         private readonly IServiceProvider _services;
-
 
         private readonly Lazy<ISchema> _schema;
 
@@ -36,7 +35,6 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schema
 
         public ISchemaFilter Filter { get => _schema.Value?.Filter; set => _schema.Value.Filter = value; }
 
-
         public void Dispose()
         {
             Dispose(true);
@@ -50,7 +48,6 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schema
                 _schema.Value.Dispose();
             }
         }
-
 
         public DirectiveGraphType FindDirective(string name)
         {
@@ -72,14 +69,13 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schema
             var schema = new GraphQL.Types.Schema(_services)
             {
                 Query = new ObjectGraphType { Name = "Query" },
-                Mutation = new ObjectGraphType { Name = "Mutations"}
+                Mutation = new ObjectGraphType { Name = "Mutations" }
             };
 
             foreach (var builder in _schemaBuilders)
             {
                 builder.Build(schema);
             }
-
 
             // Clean Query, Mutation and Subscription if they have no fields
             // to prevent GraphQL configuration errors.

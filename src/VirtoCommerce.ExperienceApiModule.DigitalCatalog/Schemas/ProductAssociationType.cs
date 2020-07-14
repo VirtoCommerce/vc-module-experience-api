@@ -6,10 +6,10 @@ using GraphQL.Resolvers;
 using GraphQL.Types;
 using MediatR;
 using VirtoCommerce.CatalogModule.Core.Model;
-using VirtoCommerce.ExperienceApiModule.Core.Schema;
-using VirtoCommerce.ExperienceApiModule.DigitalCatalog.Queries;
+using VirtoCommerce.ExperienceApiModule.Core.Helpers;
+using VirtoCommerce.XDigitalCatalog.Queries;
 
-namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Schemas
+namespace VirtoCommerce.XDigitalCatalog.Schemas
 {
     public class ProductAssociationType : ObjectGraphType<ProductAssociation>
     {
@@ -37,7 +37,7 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Schemas
                     return await loadHandle;
                 })
             };
-            AddField(productField);           
+            AddField(productField);
         }
 
         public static async Task<IDictionary<string, ExpProduct>> LoadProductsAsync(IMediator mediator, IEnumerable<string> ids)

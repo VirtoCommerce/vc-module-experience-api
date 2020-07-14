@@ -6,7 +6,7 @@ using VirtoCommerce.ExperienceApiModule.Core.Binding;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.SearchModule.Core.Model;
 
-namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Binding
+namespace VirtoCommerce.XDigitalCatalog.Binding
 {
     public class CatalogProductBinder : IIndexModelBinder
     {
@@ -34,7 +34,7 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Binding
                         var binder = property.GetIndexModelBinder();
 
                         if (binder != null)
-                        {                          
+                        {
                             property.SetValue(result, binder.BindModel(doc));
                         }
                     }
@@ -42,10 +42,9 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Binding
             }
             else
             {
-                throw new  InvalidOperationException($"{BindingInfo.FieldName} is missed in index data. Unable to load CatalogProduct object from index.");
+                throw new InvalidOperationException($"{BindingInfo.FieldName} is missed in index data. Unable to load CatalogProduct object from index.");
             }
             return result;
         }
-
     }
 }

@@ -5,11 +5,11 @@ using GraphQL.Types;
 using GraphQL.Types.Relay;
 using VirtoCommerce.Platform.Core.Common;
 
-namespace VirtoCommerce.ExperienceApiModule.Core.Schema
+namespace VirtoCommerce.ExperienceApiModule.Core.Helpers
 {
     public static class GraphTypeExtenstionHelper
     {
-        //Returns the actual (overridden) type for requested 
+        //Returns the actual (overridden) type for requested
         public static Type GetActualType<TGraphType>() where TGraphType : IGraphType
         {
             var graphType = typeof(TGraphType);
@@ -31,12 +31,11 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schema
             where TEdgeType : EdgeType<TNodeType>
             where TConnectionType : ConnectionType<TNodeType, TEdgeType>
         {
-
             //EdgeType<ProductType>, ProductsConnectonType<ProductType>
             //Try first find the actual TNodeType  in the  AbstractTypeFactory
             var actualNodeType = GetActualType<TNodeType>();
             var createMethodInfo = typeof(ConnectionBuilder<>).MakeGenericType(typeof(TSourceType)).GetMethods().FirstOrDefault(x => x.Name.EqualsInvariant(nameof(ConnectionBuilder.Create)) && x.GetGenericArguments().Count() == 3);
-            var genericEgdeType = typeof(TEdgeType).GetGenericTypeDefinition().MakeGenericType(new[] { actualNodeType }); 
+            var genericEgdeType = typeof(TEdgeType).GetGenericTypeDefinition().MakeGenericType(new[] { actualNodeType });
             var genericConnectionType = typeof(TConnectionType).GetGenericTypeDefinition().MakeGenericType(new[] { actualNodeType });
             var connectionBuilder = (ConnectionBuilder<TSourceType>)createMethodInfo.MakeGenericMethod(actualNodeType, genericEgdeType, genericConnectionType).Invoke(null, new[] { Type.Missing });
             return connectionBuilder;

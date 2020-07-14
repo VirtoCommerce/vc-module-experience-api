@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog
+namespace VirtoCommerce.XDigitalCatalog
 {
     public abstract class FacetResult
     {
@@ -10,6 +6,7 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog
         {
             FacetType = facetType;
         }
+
         public string Name { get; set; }
         public string DisplayStyle { get; set; }
         public FacetTypes FacetType { get; private set; }

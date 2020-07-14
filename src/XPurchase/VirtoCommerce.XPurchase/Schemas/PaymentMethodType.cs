@@ -1,4 +1,6 @@
 using GraphQL.Types;
+using VirtoCommerce.ExperienceApiModule.Core.Extensions;
+using VirtoCommerce.ExperienceApiModule.Core.Schemas;
 using VirtoCommerce.PaymentModule.Core.Model;
 using VirtoCommerce.XPurchase.Extensions;
 

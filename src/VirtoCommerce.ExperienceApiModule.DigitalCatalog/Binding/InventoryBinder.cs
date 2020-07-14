@@ -6,7 +6,7 @@ using VirtoCommerce.ExperienceApiModule.Core.Binding;
 using VirtoCommerce.InventoryModule.Core.Model;
 using VirtoCommerce.SearchModule.Core.Model;
 
-namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Binding
+namespace VirtoCommerce.XDigitalCatalog.Binding
 {
     public class InventoryBinder : IIndexModelBinder
     {
@@ -24,7 +24,7 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Binding
                     result.AddRange(inventories);
                 }
             }
-          
+
             return result;
         }
     }

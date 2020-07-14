@@ -6,7 +6,7 @@ using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.CoreModule.Core.Tax;
 using VirtoCommerce.Platform.Core.Common;
 
-namespace VirtoCommerce.XPurchase
+namespace VirtoCommerce.ExperienceApiModule.Core.Models
 {
     public partial class ProductPrice : ValueObject, ITaxable, IHasTaxDetalization, IHasDiscounts
     {
@@ -19,6 +19,7 @@ namespace VirtoCommerce.XPurchase
             TierPrices = new List<TierPrice>();
             Discounts = new List<Discount>();
         }
+
         /// <summary>
         /// Price list id
         /// </summary>
@@ -31,40 +32,25 @@ namespace VirtoCommerce.XPurchase
 
         /// <summary>
         /// Product id
+        /// </summary>
         public string ProductId { get; set; }
-
 
         public Money DiscountAmount { get; set; }
 
-        public Money DiscountAmountWithTax
-        {
-            get
-            {
-                return DiscountAmount + DiscountAmount * TaxPercentRate;
-            }
-        }
+        public Money DiscountAmountWithTax => DiscountAmount + (DiscountAmount * TaxPercentRate);
 
         /// <summary>
-        /// Relative benefit. 30% 
+        /// Relative benefit. 30%
         /// </summary>
-        public decimal DiscountPercent
-        {
-            get
-            {
-                if (ListPrice.Amount > 0)
-                {
-                    return Math.Round(DiscountAmount.Amount / ListPrice.Amount, 2);
-                }
-                return 0;
-            }
-        }
+        public decimal DiscountPercent => ListPrice.Amount > 0 ? Math.Round(DiscountAmount.Amount / ListPrice.Amount, 2) : 0;
 
         /// <summary>
         /// Original product price (old price)
         /// </summary>
         public Money ListPrice { get; set; }
+
         /// <summary>
-        /// Original product price (old price) including tax 
+        /// Original product price (old price) including tax
         /// </summary>
         public Money ListPriceWithTax
         {
@@ -80,39 +66,19 @@ namespace VirtoCommerce.XPurchase
         public Money SalePrice { get; set; }
 
         /// <summary>
-        /// Sale product price (new price) including tax 
+        /// Sale product price (new price) including tax
         /// </summary>
-        public Money SalePriceWithTax
-        {
-            get
-            {
-                return SalePrice + SalePrice * TaxPercentRate;
-            }
-        }
+        public Money SalePriceWithTax => SalePrice + (SalePrice * TaxPercentRate);
 
         /// <summary>
         /// Actual price includes all kind of discounts
         /// </summary>
-        public Money ActualPrice
-        {
-            get
-            {
-                return ListPrice - DiscountAmount;
-            }
-        }
+        public Money ActualPrice => ListPrice - DiscountAmount;
 
         /// <summary>
         /// Actual price includes all kind of discounts including tax
         /// </summary>
-        public Money ActualPriceWithTax
-        {
-            get
-            {
-                return ListPriceWithTax - DiscountAmountWithTax;
-            }
-        }
-
-       
+        public Money ActualPriceWithTax => ListPriceWithTax - DiscountAmountWithTax;
 
         /// <summary>
         /// It defines the minimum quantity of products
@@ -120,7 +86,7 @@ namespace VirtoCommerce.XPurchase
         public int? MinQuantity { get; set; }
 
         /// <summary>
-        /// Tier prices 
+        /// Tier prices
         /// </summary>
         public IList<TierPrice> TierPrices { get; set; }
 
@@ -136,11 +102,14 @@ namespace VirtoCommerce.XPurchase
             {
                 retVal = new TierPrice(SalePrice, 1);
             }
+
             return retVal;
         }
 
         #region ITaxable Members
+
         decimal ITaxable.TaxTotal => TaxTotal.Amount;
+
         /// <summary>
         /// Gets or sets the value of total shipping tax amount
         /// </summary>
@@ -166,9 +135,12 @@ namespace VirtoCommerce.XPurchase
         /// Collection of TaxDetail objects
         /// </value>
         public ICollection<TaxDetail> TaxDetails { get; set; }
-        #endregion
+
+        #endregion ITaxable Members
 
         public ICollection<Discount> Discounts { get; set; }
+        public DateTime ValidFrom { get; set; }
+        public DateTime ValidUntil { get; set; }
 
         protected override IEnumerable<object> GetEqualityComponents()
         {
@@ -188,7 +160,6 @@ namespace VirtoCommerce.XPurchase
                     yield return tierPrice;
                 }
             }
-
         }
     }
 }

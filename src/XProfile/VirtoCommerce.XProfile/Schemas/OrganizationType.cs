@@ -7,7 +7,7 @@ using GraphQL.Types;
 using GraphQL.Types.Relay.DataObjects;
 using MediatR;
 using VirtoCommerce.CustomerModule.Core.Model;
-using VirtoCommerce.ExperienceApiModule.Core.Schema;
+using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.XProfile.Queries;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas

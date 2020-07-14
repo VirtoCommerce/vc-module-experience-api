@@ -1,6 +1,7 @@
 using System.Linq;
 using GraphQL.Types;
-using VirtoCommerce.XPurchase.Extensions;
+using VirtoCommerce.ExperienceApiModule.Core.Extensions;
+using VirtoCommerce.ExperienceApiModule.Core.Schemas;
 using VirtoCommerce.XPurchase.Services;
 
 namespace VirtoCommerce.XPurchase.Schemas

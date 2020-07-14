@@ -1,10 +1,8 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace VirtoCommerce.ExperienceApiModule.Core.Schema
+namespace VirtoCommerce.ExperienceApiModule.Core.Infrastructure
 {
     /// <summary>
     /// GraphQL schema type  builder used for declaration of new type extension via fluent syntax and specific extension methods as 'this' argument.

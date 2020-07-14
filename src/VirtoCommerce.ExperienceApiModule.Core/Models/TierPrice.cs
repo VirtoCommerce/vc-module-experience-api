@@ -1,10 +1,9 @@
 using System.Collections.Generic;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.CoreModule.Core.Tax;
-using VirtoCommerce.ExperienceApiModule.Core;
 using VirtoCommerce.Platform.Core.Common;
 
-namespace VirtoCommerce.XPurchase
+namespace VirtoCommerce.ExperienceApiModule.Core.Models
 {
     public partial class TierPrice : ValueObject, ITaxable, IHasTaxDetalization
     {
@@ -12,6 +11,7 @@ namespace VirtoCommerce.XPurchase
             : this(new Money(currency), 0)
         {
         }
+
         public TierPrice(Money price, long quantity)
         {
             Currency = price.Currency;
@@ -25,6 +25,7 @@ namespace VirtoCommerce.XPurchase
         public Money Price { get; set; }
 
         private Money _price;
+
         public Money PriceWithTax
         {
             get
@@ -38,6 +39,7 @@ namespace VirtoCommerce.XPurchase
         }
 
         public Money DiscountAmount { get; set; }
+
         public Money DiscountAmountWithTax
         {
             get
@@ -67,21 +69,16 @@ namespace VirtoCommerce.XPurchase
 
         public long Quantity { get; set; }
 
-
         public Currency Currency { get; set; }
 
         #region ITaxable Members
+
         decimal ITaxable.TaxTotal => TaxTotal.Amount;
+
         /// <summary>
         /// Gets or sets the value of total shipping tax amount
         /// </summary>
-        public Money TaxTotal
-        {
-            get
-            {
-                return ActualPriceWithTax - ActualPrice;
-            }
-        }
+        public Money TaxTotal => ActualPriceWithTax - ActualPrice;
 
         public decimal TaxPercentRate { get; private set; }
 
@@ -98,8 +95,7 @@ namespace VirtoCommerce.XPurchase
         /// </value>
         public ICollection<TaxDetail> TaxDetails { get; set; }
 
-
-        #endregion
+        #endregion ITaxable Members
 
         protected override IEnumerable<object> GetEqualityComponents()
         {
@@ -107,7 +103,6 @@ namespace VirtoCommerce.XPurchase
             yield return DiscountAmount;
             yield return TaxPercentRate;
             yield return Quantity;
-
         }
     }
 }
