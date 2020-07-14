@@ -8,28 +8,20 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
     {
         public PriceType()
         {
-            Field<MoneyType>(
-                "list",
-                resolve: context => context.Source.ListPrice);
+            Field<MoneyType>("list", resolve: context => context.Source.ListPrice);
 
-            Field<MoneyType>(
-                "listWithTax",
-                resolve: context => context.Source.ListPriceWithTax);
+            Field<MoneyType>("listWithTax", resolve: context => context.Source.ListPriceWithTax);
 
-            Field<MoneyType>(
-                "sale",
-                resolve: context => context.Source.SalePrice);
+            Field<MoneyType>("sale", resolve: context => context.Source.SalePrice);
 
-            Field<MoneyType>(
-                "saleWithTax",
-                resolve: context => context.Source.SalePriceWithTax);
+            Field<MoneyType>("saleWithTax", resolve: context => context.Source.SalePriceWithTax);
 
             Field(d => d.Currency, nullable: true).Description("The product price currency");
 
             Field<DateGraphType>("validFrom", resolve: context => context.Source.ValidFrom);
             Field<DateGraphType>("validUntil", resolve: context => context.Source.ValidUntil);
             Field<ListGraphType<TierPriceType>>("tierPrices", resolve: context => context.Source.TierPrices);
-            Field<ListGraphType<DiscountType>>("discounts", resolve: context => context.Source.Discounts);
+            Field<ListGraphType<CatalogDiscountType>>("discounts", resolve: context => context.Source.Discounts);
 
             // TODO: remove this if not needed
             Field(d => d.PricelistId, nullable: true).Description("The product price list");

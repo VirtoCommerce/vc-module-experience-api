@@ -13,9 +13,13 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
             Field(x => x.Description, nullable: true).Description("Value of discount description");
             Field(x => x.PromotionId, nullable: true).Description("Value of promotion id");
             Field<MoneyType>(
-                "Amount",
+                "amount",
                 arguments: QueryArgumentPresets.ArgumentsForMoney(),
                 resolve: context => context.Source.DiscountAmount.ToMoney(context));
+            Field<MoneyType>(
+                "amountWithTax",
+                arguments: QueryArgumentPresets.ArgumentsForMoney(),
+                resolve: context => context.Source.DiscountAmountWithTax.ToMoney(context));
         }
     }
 }
