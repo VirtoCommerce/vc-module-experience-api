@@ -14,6 +14,17 @@ using VirtoCommerce.XDigitalCatalog.Queries;
 
 namespace VirtoCommerce.XDigitalCatalog.Schemas
 {
+    public class VariationType : ObjectGraphType<VirtoCommerce.CatalogModule.Core.Model.Variation>
+    {
+        public VariationType(
+            IMediator mediator,
+            IDataLoaderContextAccessor dataLoader)
+        {
+            Field(x => x.Id, nullable: false).Description("Id of variation.");
+            Field(x => x.Code, nullable: false).Description("SKU of variation.");
+        }
+    }
+
     public class ProductType : ObjectGraphType<ExpProduct>
     {
         public ProductType(
@@ -26,23 +37,34 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             //this.AuthorizeWith(CatalogModule.Core.ModuleConstants.Security.Permissions.Read);
 
             Field(d => d.CatalogProduct.Id).Description("The unique ID of the product.");
+            Field(d => d.CatalogProduct.Code, nullable: false).Description("The product SKU.");
+            Field<CategoryType>("category", resolve: context => context.Source.CatalogProduct.Category);
+
             Field(d => d.CatalogProduct.Name, nullable: false).Description("The name of the product.");
             Field(d => d.CatalogProduct.ProductType, nullable: true).Description("The type of product");
-            Field(d => d.CatalogProduct.Code, nullable: false).Description("The product SKU.");
             Field(d => d.CatalogProduct.ImgSrc).Description("The product main image URL.");
             Field(d => d.CatalogProduct.OuterId, nullable: true).Description("The outer identifier");
+
+            // TODO: resolve this correctly
+            Field<VariationType>("masterVariation", resolve: context => context.Source.CatalogProduct.Variations.FirstOrDefault());
+
+            Field<ListGraphType<VariationType>>("variations", resolve: context => context.Source.CatalogProduct.Variations);
+
             Field<ListGraphType<PropertyType>>("properties", resolve: context => context.Source.CatalogProduct.Properties);
 
-            Field<ListGraphType<PriceType>>("prices", arguments: new QueryArguments(new QueryArgument<StringGraphType> { Name = "currency", Description = "currency" }), resolve: context =>
-            {
-                var result = context.Source.Prices;
-                var currency = context.GetArgument<string>("currency");
-                if (currency != null)
+            Field<ListGraphType<PriceType>>(
+                "prices",
+                arguments: new QueryArguments(new QueryArgument<StringGraphType> { Name = "currency", Description = "currency" }),
+                resolve: context =>
                 {
-                    result = result.Where(x => x.Currency.EqualsInvariant(currency)).ToList();
-                }
-                return result;
-            });
+                    var result = context.Source.Prices;
+                    var currency = context.GetArgument<string>("currency");
+                    if (currency != null)
+                    {
+                        result = result.Where(x => x.Currency.EqualsInvariant(currency)).ToList();
+                    }
+                    return result;
+                });
 
             Connection<ProductAssociationType>()
               .Name("associations")
@@ -59,7 +81,9 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
         private static async Task<object> ResolveConnectionAsync(IMediator madiator, IResolveConnectionContext<ExpProduct> context)
         {
             var first = context.First;
-            var skip = Convert.ToInt32(context.After ?? 0.ToString());
+
+            int.TryParse(context.After, out var skip);
+
             var criteria = new ProductAssociationSearchCriteria
             {
                 Skip = skip,
@@ -71,7 +95,9 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 Group = context.GetArgument<string>("group"),
                 ObjectIds = new[] { context.Source.CatalogProduct.Id }
             };
+
             var response = await madiator.Send(new SearchProductAssociationsQuery { Criteria = criteria });
+
             return new Connection<ProductAssociation>()
             {
                 Edges = response.Result.Results

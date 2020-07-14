@@ -6,7 +6,7 @@ using GraphQL.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using VirtoCommerce.Platform.Security.Authorization;
 
-namespace VirtoCommerce.ExperienceApiModule.Core.Schema
+namespace VirtoCommerce.ExperienceApiModule.Core.Infrastructure.Authorization
 {
     public class PermissionAuthorizationEvaluator : GraphQL.Authorization.IAuthorizationEvaluator
     {
@@ -20,14 +20,14 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schema
         public async Task<GraphQL.Authorization.AuthorizationResult> Evaluate(
             ClaimsPrincipal principal,
             object userContext,
-            Dictionary<string, object> inputVariables,
+            Dictionary<string, object> arguments,
             IEnumerable<string> requiredPolicies)
         {
             var context = new AuthorizationContext
             {
                 User = principal ?? new ClaimsPrincipal(new ClaimsIdentity()),
                 UserContext = userContext,
-                InputVariables = inputVariables
+                InputVariables = arguments
             };
 
             foreach (var requiredPolicy in requiredPolicies?.ToList())

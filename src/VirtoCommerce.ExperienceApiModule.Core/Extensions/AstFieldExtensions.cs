@@ -2,15 +2,15 @@ using System.Collections.Generic;
 using System.Linq;
 using GraphQL.Language.AST;
 
-namespace VirtoCommerce.ExperienceApiModule.Core.Schema
+namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
 {
     public static class AstFieldExtensions
     {
         public static IEnumerable<string> GetAllNodesPaths(this IEnumerable<Field> fields)
         {
-            return fields.SelectMany(x => GetAllTreeNodesPaths(x)).Distinct();
-          
+            return fields.SelectMany(x => x.GetAllTreeNodesPaths()).Distinct();
         }
+
         private static IEnumerable<string> GetAllTreeNodesPaths(this INode node, string path = null)
         {
             if (node is Field field)
@@ -19,7 +19,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schema
             }
             if (node.Children != null)
             {
-                var childrenPaths = node.Children.SelectMany(n => GetAllTreeNodesPaths(n, path));
+                var childrenPaths = node.Children.SelectMany(n => n.GetAllTreeNodesPaths(path));
                 foreach (var childPath in childrenPaths.Any() ? childrenPaths : new[] { path })
                 {
                     yield return childPath;
@@ -30,6 +30,5 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schema
                 yield return path;
             }
         }
-
     }
 }

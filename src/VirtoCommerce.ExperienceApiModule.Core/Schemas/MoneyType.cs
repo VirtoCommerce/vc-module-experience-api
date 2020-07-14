@@ -1,7 +1,7 @@
 using GraphQL.Types;
 using VirtoCommerce.CoreModule.Core.Currency;
 
-namespace VirtoCommerce.XPurchase.Schemas
+namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
 {
     public class MoneyType : ObjectGraphType<Money>
     {

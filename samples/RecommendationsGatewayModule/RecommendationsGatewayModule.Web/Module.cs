@@ -10,7 +10,7 @@ using RecommendationsGatewayModule.Core.Configuration;
 using RecommendationsGatewayModule.Core.Requests;
 using RecommendationsGatewayModule.Core.Schemas;
 using RecommendationsGatewayModule.Data;
-using VirtoCommerce.ExperienceApiModule.Core.Schema;
+using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Modularity;
 

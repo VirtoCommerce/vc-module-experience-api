@@ -1,6 +1,6 @@
 using VirtoCommerce.CoreModule.Core.Currency;
 
-namespace VirtoCommerce.XPurchase.Extensions
+namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
 {
     //TODO: Remove later, only as temporary workaround, need to costruct money from proper store currency and given language
     public static class MoneyExtensions

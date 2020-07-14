@@ -1,4 +1,4 @@
-namespace VirtoCommerce.ExperienceApiModule.Core
+namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
 {
     public static class StringExtensions
     {

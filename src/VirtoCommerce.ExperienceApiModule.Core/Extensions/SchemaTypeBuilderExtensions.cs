@@ -1,7 +1,8 @@
 using GraphQL.Types;
+using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.Platform.Core.Common;
 
-namespace VirtoCommerce.ExperienceApiModule.Core.Schema
+namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
 {
     public static class SchemaTypeBuilderExtensions
     {

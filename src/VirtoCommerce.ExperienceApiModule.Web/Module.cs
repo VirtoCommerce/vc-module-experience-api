@@ -3,7 +3,9 @@ using GraphQL.Server;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
-using VirtoCommerce.ExperienceApiModule.Core.Schema;
+using VirtoCommerce.ExperienceApiModule.Core.Extensions;
+using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
+using VirtoCommerce.ExperienceApiModule.Core.Schemas;
 using VirtoCommerce.ExperienceApiModule.XProfile.Extensions;
 using VirtoCommerce.ExperienceApiModule.XProfile.Mapping;
 using VirtoCommerce.Platform.Core.Modularity;
@@ -44,6 +46,9 @@ namespace VirtoCommerce.ExperienceApiModule.Web
             services.AddPermissionAuthorization();
 
             services.AddSingleton<ISchema, SchemaFactory>();
+
+            // Register core schemas
+            services.AddSchemaType<MoneyType>();
 
             //Register all purchase dependencies
             services.AddXCatalog(graphQlBuilder);
