@@ -19,11 +19,11 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field<OrderShippingMethodType>(nameof(Shipment.ShippingMethod), resolve: x => x.Source.ShippingMethod);
             Field(x => x.CustomerOrderId);
             Field(x => x.WeightUnit);
-            Field(x => x.Weight);
+            Field(x => x.Weight, true);
             Field(x => x.MeasureUnit);
-            Field(x => x.Height);
-            Field(x => x.Length);
-            Field(x => x.Width);
+            Field(x => x.Height, true);
+            Field(x => x.Length, true);
+            Field(x => x.Width, true);
             Field<OrderAddressType>(nameof(Shipment.DeliveryAddress), resolve: x => x.Source.DeliveryAddress);
             Field(x => x.Price);
             Field(x => x.PriceWithTax);
@@ -42,10 +42,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field<NonNullGraphType<ListGraphType<OrderShipmentItemType>>>(nameof(Shipment.Items), resolve: x => x.Source.Items);
             Field<NonNullGraphType<ListGraphType<OrderShipmentPackageType>>>(nameof(Shipment.Packages), resolve: x => x.Source.Packages);
             Field<NonNullGraphType<ListGraphType<PaymentInType>>>(nameof(Shipment.InPayments), resolve: x => x.Source.InPayments);
-
-            //TODO
-            //public ICollection<Discount> Discounts);
-            //public CustomerOrder CustomerOrder);
+            Field<NonNullGraphType<ListGraphType<OrderDiscountType>>>(nameof(Shipment.Discounts), resolve: x => x.Source.Discounts);
         }
     }
 }

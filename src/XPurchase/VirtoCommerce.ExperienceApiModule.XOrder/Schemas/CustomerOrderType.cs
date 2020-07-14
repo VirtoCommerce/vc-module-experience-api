@@ -17,13 +17,10 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field(x => x.Order.Currency);
             Field(x => x.Order.Sum);
             Field(x => x.Order.OuterId, true);
-            
             Field(x => x.Order.IsCancelled);
             Field(x => x.Order.CancelledDate, true);
             Field(x => x.Order.CancelReason, true);
             Field(x => x.Order.ObjectType);
-            
-
             Field(x => x.Order.CustomerId);
             Field(x => x.Order.CustomerName, true);
             Field(x => x.Order.ChannelId, true);
@@ -70,7 +67,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field(x => x.Order.LanguageCode, true);
 
             Field<NonNullGraphType<ListGraphType<OrderAddressType>>>(nameof(CustomerOrder.Addresses), resolve: x => x.Source.Order.Addresses);
-            Field<NonNullGraphType<ListGraphType<LineItemType>>>(nameof(CustomerOrder.Items), resolve: x => x.Source.Order.Items);
+            Field<NonNullGraphType<ListGraphType<OrderLineItemType>>>(nameof(CustomerOrder.Items), resolve: x => x.Source.Order.Items);
             Field<NonNullGraphType<ListGraphType<PaymentInType>>>(nameof(CustomerOrder.InPayments), resolve: x => x.Source.Order.InPayments);
             Field<NonNullGraphType<ListGraphType<OrderShipmentType>>>(nameof(CustomerOrder.Shipments), resolve: x => x.Source.Order.Shipments);
             Field<NonNullGraphType<ListGraphType<OrderTaxDetailType>>>(nameof(CustomerOrder.TaxDetails), resolve: x => x.Source.Order.TaxDetails);

@@ -11,11 +11,11 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field(x => x.BarCode);
             Field(x => x.PackageType);
             Field(x => x.WeightUnit);
-            Field(x => x.Weight);
+            Field(x => x.Weight, true);
             Field(x => x.MeasureUnit);
-            Field(x => x.Height);
-            Field(x => x.Length);
-            Field(x => x.Width);
+            Field(x => x.Height, true);
+            Field(x => x.Length, true);
+            Field(x => x.Width, true);
             Field<NonNullGraphType<ListGraphType<OrderShipmentItemType>>>(nameof(ShipmentPackage.Items), resolve: x => x.Source.Items);
         }
     }

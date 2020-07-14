@@ -4,9 +4,9 @@ using VirtoCommerce.XPurchase.Extensions;
 
 namespace VirtoCommerce.XPurchase.Schemas
 {
-    public class OrderTaxDetailType : ObjectGraphType<TaxDetail>
+    public class TaxDetailType : ObjectGraphType<TaxDetail>
     {
-        public OrderTaxDetailType()
+        public TaxDetailType()
         {
             Field<MoneyType>("amount", resolve: context => context.Source.Amount.ToMoney(context.GetCart().Currency));
             Field<MoneyType>("price", resolve: context => context.Source.Rate.ToMoney(context.GetCart().Currency));

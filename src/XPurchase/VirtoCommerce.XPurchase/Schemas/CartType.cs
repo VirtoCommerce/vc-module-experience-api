@@ -41,7 +41,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field<MoneyType>("taxTotal", resolve: context => context.Source.Cart.TaxTotal.ToMoney(context.Source.Currency));
             Field(x => x.Cart.TaxPercentRate, nullable: true).Description("Tax percent rate");
             Field(x => x.Cart.TaxType, nullable: true).Description("Shipping tax type");
-            Field<ListGraphType<OrderTaxDetailType>>("taxDetails", resolve: context => context.Source.Cart.TaxDetails);
+            Field<ListGraphType<TaxDetailType>>("taxDetails", resolve: context => context.Source.Cart.TaxDetails);
 
             // Shipping
             Field<MoneyType>("shippingPrice", resolve: context => context.Source.Cart.ShippingTotal.ToMoney(context.Source.Currency));

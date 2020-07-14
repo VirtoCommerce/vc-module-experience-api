@@ -14,7 +14,6 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field(x => x.TaxPercentRate);
             Field(x => x.TaxTotal);
             Field(x => x.TaxType);
-            //public ICollection<ObjectSettingEntry> Settings);
             Field(x => x.TypeName);
             Field(x => x.StoreId);
             Field(x => x.DiscountAmountWithTax);
@@ -32,6 +31,9 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field(x => x.Code);
             Field<IntGraphType>(nameof(PaymentMethod.PaymentMethodType), resolve: context => (int)context.Source.PaymentMethodType);
             Field<IntGraphType>(nameof(PaymentMethod.PaymentMethodGroupType), resolve: context => (int)context.Source.PaymentMethodGroupType);
+
+            //TODO
+            //public ICollection<ObjectSettingEntry> Settings);
         }
     }
 }

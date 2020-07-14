@@ -29,7 +29,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field<MoneyType>("taxTotal", resolve: context => context.Source.TaxTotal.ToMoney(context.GetCart().Currency));
             Field(x => x.TaxPercentRate, nullable: true).Description("Tax percent rate");
             Field(x => x.TaxType, nullable: true).Description("Tax type");
-            Field<ListGraphType<OrderTaxDetailType>>("taxDetails", resolve: context => context.Source.TaxDetails);
+            Field<ListGraphType<TaxDetailType>>("taxDetails", resolve: context => context.Source.TaxDetails);
             //TODO: Need to load somehow from CartAggregate
             //Field(x => x.IsValid, nullable: true).Description("Is valid");
             //Field<ListGraphType<ValidationErrorType>>("validationErrors", resolve: context => context.Source.ValidationErrors);

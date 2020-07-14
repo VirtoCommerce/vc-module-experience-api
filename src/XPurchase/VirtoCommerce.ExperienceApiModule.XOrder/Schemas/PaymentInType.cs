@@ -13,7 +13,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field(x => x.CustomerId);
             Field(x => x.Purpose);
             Field(x => x.GatewayCode);
-            Field(x => x.IncomingDate);
+            Field(x => x.IncomingDate, true);
             Field(x => x.OuterId);
             Field(x => x.OperationType);
             Field(x => x.Number);
@@ -22,17 +22,17 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field(x => x.Comment);
             Field(x => x.Sum);
             Field(x => x.IsCancelled);
-            Field(x => x.CancelledDate);
+            Field(x => x.CancelledDate, true);
             Field(x => x.CancelReason);
             Field(x => x.ParentOperationId);
             Field(x => x.ObjectType);
             Field(x => x.CreatedDate);
-            Field(x => x.ModifiedDate);
+            Field(x => x.ModifiedDate, true);
             Field(x => x.CreatedBy);
             Field(x => x.ModifiedBy);
-            Field(x => x.AuthorizedDate);
-            Field(x => x.CapturedDate);
-            Field(x => x.VoidedDate);
+            Field(x => x.AuthorizedDate, true);
+            Field(x => x.CapturedDate, true);
+            Field(x => x.VoidedDate, true);
             Field(x => x.OrderId);
 
             Field<OrderPaymentMethodType>(nameof(PaymentIn.PaymentMethod), resolve: context => context.Source.PaymentMethod);
@@ -40,9 +40,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field<OrderAddressType>(nameof(PaymentIn.BillingAddress), resolve: context => context.Source.BillingAddress);
 
             //TODO
-            //Field(x => x.TaxIncluded);
             //public IList<Operation> ChildrenOperations);
-            //public BankCardInfo BankCardInfo);
             //public IList<DynamicProperty> DynamicProperties);
         }
     }
