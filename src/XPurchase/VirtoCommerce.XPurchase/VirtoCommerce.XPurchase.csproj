@@ -17,7 +17,7 @@
         <PackageReference Include="VirtoCommerce.MarketingModule.Data" Version="3.1.0" />
         <PackageReference Include="VirtoCommerce.PaymentModule.Core" Version="3.1.0" />
         <PackageReference Include="VirtoCommerce.ShippingModule.Core" Version="3.1.0" />
-        <PackageReference Include="VirtoCommerce.Tools" Version="3.0.0-rc.5" />
+        <PackageReference Include="VirtoCommerce.Tools" Version="3.1.0" />
         <PackageReference Include="VirtoCommerce.TaxModule.Core" Version="3.1.0" />
         <PackageReference Include="FluentValidation" Version="8.6.2" />
     </ItemGroup>
@@ -26,5 +26,4 @@
         <ProjectReference Include="..\..\VirtoCommerce.ExperienceApiModule.Core\VirtoCommerce.ExperienceApiModule.Core.csproj" />
         <ProjectReference Include="..\..\VirtoCommerce.ExperienceApiModule.DigitalCatalog\VirtoCommerce.XDigitalCatalog.csproj" />
     </ItemGroup>
-
 </Project>

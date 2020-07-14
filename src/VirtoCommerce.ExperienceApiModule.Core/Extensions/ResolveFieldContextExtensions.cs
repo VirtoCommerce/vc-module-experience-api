@@ -9,9 +9,32 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
 {
     public static class ResolveFieldContextExtensions
     {
-        public static Language GetLanguage<T>(this IResolveFieldContext<T> context)
+        public static string GetCultureName<T>(this IResolveFieldContext<T> context, bool nullable = true)
         {
             var cultureName = context.GetArgument<string>(Constants.CultureName);
+            if (cultureName != null)
+            {
+                context.SaveValue(cultureName);
+                return cultureName;
+            }
+
+            var cultureNameFromContext = context.GetValue<string>(Constants.CultureName);
+            if (cultureNameFromContext != null)
+            {
+                return cultureNameFromContext;
+            }
+
+            if (nullable)
+            {
+                return null;
+            }
+
+            throw new ArgumentException("CultureName not found in arguments or context");
+        }
+
+        public static Language GetLanguage<T>(this IResolveFieldContext<T> context, bool nullable = true)
+        {
+            var cultureName = context.GetCultureName(nullable: true);
             if (cultureName != null)
             {
                 var language = new Language(cultureName);
@@ -25,13 +48,18 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
                 return languageFromContext;
             }
 
+            if (nullable)
+            {
+                return null;
+            }
+
             throw new ArgumentException("Language not found in arguments or context");
         }
 
         /// <summary>
         /// Get saved currency from arguments or user context
         /// </summary>
-        public static Currency GetCurrency<T>(this IResolveFieldContext<T> context)
+        public static Currency GetCurrency<T>(this IResolveFieldContext<T> context, bool nullable = true)
         {
             var currencyCode = context.GetArgument<string>(Constants.CurrencyCode);
             if (currencyCode != null)
@@ -45,6 +73,11 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
             if (currencyFromContext != null)
             {
                 return currencyFromContext;
+            }
+
+            if (nullable)
+            {
+                return null;
             }
 
             throw new ArgumentException("Currency not found in arguments or context");
