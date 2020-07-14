@@ -49,6 +49,7 @@ namespace VirtoCommerce.ExperienceApiModule.Web
 
             // Register core schemas
             services.AddSchemaType<MoneyType>();
+            services.AddSchemaType<DiscountType>();
 
             //Register all purchase dependencies
             services.AddXCatalog(graphQlBuilder);

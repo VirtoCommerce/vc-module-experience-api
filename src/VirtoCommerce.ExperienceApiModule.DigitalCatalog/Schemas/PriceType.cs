@@ -1,25 +1,37 @@
 using GraphQL.Types;
-using VirtoCommerce.ExperienceApiModule.Core.Extensions;
+using VirtoCommerce.ExperienceApiModule.Core.Models;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
-using VirtoCommerce.PricingModule.Core.Model;
 
 namespace VirtoCommerce.XDigitalCatalog.Schemas
 {
-    public class PriceType : ObjectGraphType<Price>
+    public class PriceType : ObjectGraphType<ProductPrice>
     {
         public PriceType()
         {
-            Field<MoneyType>("list", resolve: context => context.Source.List.ToMoney(context.GetCurrency()));
-            // TODO: write resolver
-            Field<MoneyType>("listWithTax", resolve: context => context.Source.List.ToMoney(context.GetCurrency()));
-            Field<MoneyType>("sale", resolve: context => context.Source.List.ToMoney(context.GetCurrency()));
-            // TODO: write resolver
-            Field<MoneyType>("saleWithTax", resolve: context => context.Source.List.ToMoney(context.GetCurrency()));
+            Field<MoneyType>(
+                "list",
+                resolve: context => context.Source.ListPrice);
+
+            Field<MoneyType>(
+                "listWithTax",
+                resolve: context => context.Source.ListPriceWithTax);
+
+            Field<MoneyType>(
+                "sale",
+                resolve: context => context.Source.SalePrice);
+
+            Field<MoneyType>(
+                "saleWithTax",
+                resolve: context => context.Source.SalePriceWithTax);
+
             Field(d => d.Currency, nullable: true).Description("The product price currency");
 
-            Field<DateGraphType>("validFrom", resolve: context => context.Source.StartDate);
-            Field<DateGraphType>("validUntil", resolve: context => context.Source.EndDate);
+            Field<DateGraphType>("validFrom", resolve: context => context.Source.ValidFrom);
+            Field<DateGraphType>("validUntil", resolve: context => context.Source.ValidUntil);
+            Field<ListGraphType<TierPriceType>>("tierPrices", resolve: context => context.Source.TierPrices);
+            Field<ListGraphType<DiscountType>>("discounts", resolve: context => context.Source.Discounts);
 
+            // TODO: remove this if not needed
             Field(d => d.PricelistId, nullable: true).Description("The product price list");
             Field(d => d.MinQuantity, nullable: true).Description("The product min qty");
         }

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CoreModule.Core.Currency;
+using VirtoCommerce.ExperienceApiModule.Core.Models;
 using VirtoCommerce.InventoryModule.Core.Model;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.PricingModule.Core.Model;
 using VirtoCommerce.StoreModule.Core.Model;
 
 namespace VirtoCommerce.XPurchase
@@ -57,7 +57,7 @@ namespace VirtoCommerce.XPurchase
         /// <param name="prices"></param>
         /// <param name="currentCurrency"></param>
         /// <param name="allCurrencies"></param>
-        public virtual void ApplyPrices(IEnumerable<Price> prices, Currency currency)
+        public virtual void ApplyPrices(IEnumerable<PricingModule.Core.Model.Price> prices, Currency currency)
         {
             AllPrices.Clear();
             Price = null;

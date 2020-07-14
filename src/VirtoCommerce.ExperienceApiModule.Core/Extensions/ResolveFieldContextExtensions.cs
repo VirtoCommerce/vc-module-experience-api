@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using GraphQL;
 using GraphQL.Types;
 using VirtoCommerce.CoreModule.Core.Common;
@@ -49,5 +49,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
 
             throw new ArgumentException("Currency not found in arguments or context");
         }
+
+        public static Money ToMoney<T>(this decimal amount, IResolveFieldContext<T> context) => amount.ToMoney(context.GetCurrency());
     }
 }
