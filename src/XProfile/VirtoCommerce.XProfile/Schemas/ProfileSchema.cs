@@ -154,7 +154,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 #pragma warning disable S125 // Sections of code should not be commented out
             /*
                             {
-                                getUserById(id: "1eb2fa8ac6574541afdb525833dadb46"){
+                                user(id: "1eb2fa8ac6574541afdb525833dadb46"){
                                 userName isAdministrator roles { name } userType memberId storeId
                                 }
                             }
@@ -162,61 +162,27 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 #pragma warning restore S125 // Sections of code should not be commented out
             _ = schema.Query.AddField(new FieldType
             {
-                Name = "getUserById",
-                Arguments = new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id" }),
-                Type = GraphTypeExtenstionHelper.GetActualType<UserType>(),
-                Resolver = new AsyncFieldResolver<object>(async context =>
-                {
-                    var result = await _mediator.Send(new GetUserByIdQuery(context.GetArgument<string>("id")));
-
-                    return result;
-                })
-            });
-
-            _ = schema.Query.AddField(new FieldType
-            {
-                Name = "getUserByName",
-                Arguments = new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "userName" }),
-                Type = GraphTypeExtenstionHelper.GetActualType<UserType>(),
-                Resolver = new AsyncFieldResolver<object>(async context =>
-                {
-                    var result = await _mediator.Send(new GetUserByNameQuery(context.GetArgument<string>("userName")));
-
-                    return result;
-                })
-            });
-
-            _ = schema.Query.AddField(new FieldType
-            {
-                Name = "getUserByEmail",
-                Arguments = new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "email" }),
-                Type = GraphTypeExtenstionHelper.GetActualType<UserType>(),
-                Resolver = new AsyncFieldResolver<object>(async context =>
-                {
-                    var result = await _mediator.Send(new GetUserByEmailQuery(context.GetArgument<string>("email")));
-
-                    return result;
-                })
-            });
-
-            _ = schema.Query.AddField(new FieldType
-            {
-                Name = "getUserByLogin",
+                Name = "user",
                 Arguments = new QueryArguments(
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "loginProvider" },
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "providerKey" }
-                    ),
+                    new QueryArgument<StringGraphType> { Name = "id" },
+                    new QueryArgument<StringGraphType> { Name = "userName" },
+                    new QueryArgument<StringGraphType> { Name = "email" },
+                    new QueryArgument<StringGraphType> { Name = "loginProvider" },
+                    new QueryArgument<StringGraphType> { Name = "providerKey" }),
                 Type = GraphTypeExtenstionHelper.GetActualType<UserType>(),
                 Resolver = new AsyncFieldResolver<object>(async context =>
                 {
-                    var result = await _mediator.Send(new GetUserByLoginQuery(
-                        context.GetArgument<string>("loginProvider"),
-                        context.GetArgument<string>("providerKey")
-                        ));
+                    var result = await _mediator.Send(new GetUserQuery(
+                        id: context.GetArgument<string>("id"),
+                        userName: context.GetArgument<string>("userName"),
+                        email: context.GetArgument<string>("email"),
+                        loginProvider: context.GetArgument<string>("loginProvider"),
+                        providerKey: context.GetArgument<string>("providerKey")));
 
                     return result;
                 })
             });
+
 
 #pragma warning disable S125 // Sections of code should not be commented out
             /*
@@ -229,7 +195,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 #pragma warning restore S125 // Sections of code should not be commented out
             _ = schema.Query.AddField(new FieldType
             {
-                Name = "getRole",
+                Name = "role",
                 Arguments = new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "roleName" }),
                 Type = GraphTypeExtenstionHelper.GetActualType<RoleType>(),
                 Resolver = new AsyncFieldResolver<object>(async context =>
