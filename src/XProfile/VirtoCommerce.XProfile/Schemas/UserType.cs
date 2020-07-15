@@ -21,7 +21,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             Field(x => x.Id);
             Field(x => x.IsAdministrator);
             Field(x => x.LockoutEnabled);
-            Field(x => x.LockoutEnd, true);
+            Field<DateTimeGraphType>("lockoutEnd", resolve: x => x.Source.LockoutEnd);
             //Field(x => x.Logins);
             Field(x => x.MemberId, true);
             Field(x => x.ModifiedBy, true);

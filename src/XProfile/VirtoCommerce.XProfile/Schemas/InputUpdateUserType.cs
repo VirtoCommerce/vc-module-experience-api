@@ -7,6 +7,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
     {
         public InputUpdateUserType()
         {
+            Field(x => x.AccessFailedCount, true);
             Field(x => x.Email);
             Field(x => x.Id);
             Field(x => x.IsAdministrator, true);
@@ -17,6 +18,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             Field(x => x.PhoneNumberConfirmed, true);
             Field(x => x.PhotoUrl, true);
             Field<ListGraphType<InputAssignRoleType>>(nameof(ApplicationUser.Roles));
+            Field(x => x.StoreId, true);
             Field(x => x.TwoFactorEnabled, true);
             Field(x => x.UserName);
             Field(x => x.UserType); // Manager, Customer
