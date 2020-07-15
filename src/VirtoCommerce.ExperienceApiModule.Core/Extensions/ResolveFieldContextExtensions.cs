@@ -18,7 +18,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
                 return cultureName;
             }
 
-            var cultureNameFromContext = context.GetValue<string>(Constants.CultureName);
+            var cultureNameFromContext = context.GetValue<string>(Constants.CultureName, nullable);
             if (cultureNameFromContext != null)
             {
                 return cultureNameFromContext;
@@ -42,7 +42,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
                 return language;
             }
 
-            var languageFromContext = context.GetValue<Language>("language");
+            var languageFromContext = context.GetValue<Language>("language", nullable);
             if (languageFromContext != null)
             {
                 return languageFromContext;
@@ -69,7 +69,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
                 return currency;
             }
 
-            var currencyFromContext = context.GetValue<Currency>("currency");
+            var currencyFromContext = context.GetValue<Currency>("currency", nullable);
             if (currencyFromContext != null)
             {
                 return currencyFromContext;

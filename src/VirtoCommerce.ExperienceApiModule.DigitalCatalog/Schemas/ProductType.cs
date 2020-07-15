@@ -11,11 +11,18 @@ using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.XDigitalCatalog.Queries;
+using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 
 namespace VirtoCommerce.XDigitalCatalog.Schemas
 {
     public class ProductType : ObjectGraphType<ExpProduct>
     {
+        /// <summary>
+        ///
+        /// </summary>
+        /// <example>
+        ///
+        /// </example>
         public ProductType(
             IMediator mediator,
             IDataLoaderContextAccessor dataLoader)
@@ -27,7 +34,19 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             Field(d => d.CatalogProduct.Id).Description("The unique ID of the product.");
             Field(d => d.CatalogProduct.Code, nullable: false).Description("The product SKU.");
-            Field<CategoryType>("category", resolve: context => context.Source.CatalogProduct.Category);
+
+            FieldAsync<CategoryType>("category", resolve: async context =>
+            {
+                var categoryId = context.Source.CatalogProduct.CategoryId;
+                var responce = await mediator.Send(new LoadCategoryQuery
+                {
+                    Id = categoryId,
+                    IncludeFields = context.SubFields.Values.GetAllNodesPaths()
+                });
+
+                return responce.Category;
+            });
+
             Field(d => d.CatalogProduct.Name, nullable: false).Description("The name of the product.");
 
             Field(d => d.CatalogProduct.ProductType, nullable: true).Description("The type of product");

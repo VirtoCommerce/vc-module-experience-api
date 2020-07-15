@@ -6,7 +6,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
 {
     public static class ProvideUserContextExtensions
     {
-        public static T GetValue<T>(this IProvideUserContext userContext, string key)
+        public static T GetValue<T>(this IProvideUserContext userContext, string key, bool nullable = false)
         {
             if (userContext == null)
             {
@@ -16,6 +16,11 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
             if (userContext.UserContext.TryGetValue(key, out var value))
             {
                 return (T)value;
+            }
+
+            if (nullable)
+            {
+                return default;
             }
 
             throw new KeyNotFoundException(key);

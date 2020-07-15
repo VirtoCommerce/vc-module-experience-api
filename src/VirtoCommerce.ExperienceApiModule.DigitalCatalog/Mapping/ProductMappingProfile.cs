@@ -7,14 +7,14 @@ namespace VirtoCommerce.XDigitalCatalog.Mapping
 {
     public class ProductMappingProfile : Profile
     {
-        private static ExpProductBinder _productBinder = AbstractTypeFactory<ExpProductBinder>.TryCreateInstance();
+        private static readonly ExpProductBinder _productBinder = AbstractTypeFactory<ExpProductBinder>.TryCreateInstance();
+        private static readonly ExpCategoryBinder _categoryBinder = AbstractTypeFactory<ExpCategoryBinder>.TryCreateInstance();
 
         public ProductMappingProfile()
         {
-            CreateMap<SearchDocument, ExpProduct>().ConvertUsing((doc, facet, context) =>
-            {
-                return _productBinder.BindModel(doc) as ExpProduct;
-            });
+            CreateMap<SearchDocument, ExpProduct>().ConvertUsing((doc, facet, context) => _productBinder.BindModel(doc) as ExpProduct);
+
+            CreateMap<SearchDocument, ExpCategory>().ConvertUsing((doc, facet, context) => _categoryBinder.BindModel(doc) as ExpCategory);
         }
     }
 }

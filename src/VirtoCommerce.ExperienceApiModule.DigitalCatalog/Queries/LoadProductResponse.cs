@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using VirtoCommerce.XDigitalCatalog;
 
 namespace VirtoCommerce.XDigitalCatalog.Queries
 {
