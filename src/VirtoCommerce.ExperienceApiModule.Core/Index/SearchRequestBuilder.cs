@@ -12,11 +12,13 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Index
         private ISearchPhraseParser _phraseParser;
 
         private SearchRequest SearchRequest { get; set; }
+
         public SearchRequestBuilder(ISearchPhraseParser phraseParser)
             : this()
         {
             _phraseParser = phraseParser;
         }
+
         public SearchRequestBuilder()
         {
             SearchRequest = new SearchRequest
@@ -29,14 +31,13 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Index
                 Sorting = new List<SortingField> { new SortingField("__sort") },
                 Skip = 0,
                 Take = 20
-
             };
         }
 
         public virtual SearchRequest Build()
         {
             //Apply multi-select facet search policy by default
-            foreach (var aggr in SearchRequest.Aggregations)
+            foreach (var aggr in SearchRequest?.Aggregations ?? Enumerable.Empty<AggregationRequest>())
             {
                 var clonedFilter = SearchRequest.Filter.Clone() as AndFilter;
                 clonedFilter.ChildFilters = clonedFilter.ChildFilters.Where(x => !(x is INamedFilter namedFilter) || !namedFilter.FieldName.EqualsInvariant(aggr.FieldName)).ToList();
@@ -207,7 +208,6 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Index
             return this;
         }
 
-
         public SearchRequestBuilder AddObjectIds(IEnumerable<string> ids)
         {
             ((AndFilter)SearchRequest.Filter).ChildFilters.Add(new IdsFilter { Values = ids.ToArray() });
@@ -236,6 +236,7 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Index
                     case "title":
                         sortFields.Add(new SortingField("name", sortingField.IsDescending));
                         break;
+
                     default:
                         sortFields.Add(sortingField);
                         break;
@@ -249,8 +250,5 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Index
 
             return this;
         }
-
-
-
     }
 }

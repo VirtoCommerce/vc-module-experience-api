@@ -8,7 +8,6 @@ using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.DigitalCatalog.Index;
 using VirtoCommerce.SearchModule.Core.Model;
 using VirtoCommerce.SearchModule.Core.Services;
-using VirtoCommerce.XDigitalCatalog;
 
 namespace VirtoCommerce.XDigitalCatalog.Queries
 {
