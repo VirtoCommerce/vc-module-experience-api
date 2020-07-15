@@ -30,14 +30,15 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Index
                 SearchFields = new List<string> { "__content" },
                 Sorting = new List<SortingField> { new SortingField("__sort") },
                 Skip = 0,
-                Take = 20
+                Take = 20,
+                Aggregations = new List<AggregationRequest>(),
             };
         }
 
         public virtual SearchRequest Build()
         {
             //Apply multi-select facet search policy by default
-            foreach (var aggr in SearchRequest?.Aggregations ?? Enumerable.Empty<AggregationRequest>())
+            foreach (var aggr in SearchRequest.Aggregations)
             {
                 var clonedFilter = SearchRequest.Filter.Clone() as AndFilter;
                 clonedFilter.ChildFilters = clonedFilter.ChildFilters.Where(x => !(x is INamedFilter namedFilter) || !namedFilter.FieldName.EqualsInvariant(aggr.FieldName)).ToList();
