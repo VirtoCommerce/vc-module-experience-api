@@ -42,7 +42,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 Type = GraphTypeExtenstionHelper.GetActualType<BooleanGraphType>(),
                 Resolver = new AsyncFieldResolver<bool, object>(async context => isOnStock)
             };
-            AddField(quantityField);
+            AddField(inStockField);
         }
     }
 }
