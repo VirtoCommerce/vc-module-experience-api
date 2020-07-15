@@ -1,9 +1,18 @@
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 using GraphQL;
+using GraphQL.Builders;
 using GraphQL.Resolvers;
 using GraphQL.Types;
+using GraphQL.Types.Relay;
+using GraphQL.Types.Relay.DataObjects;
 using MediatR;
+using VirtoCommerce.ExperienceApiModule.Core;
 using VirtoCommerce.ExperienceApiModule.Core.Schema;
 using VirtoCommerce.ExperienceApiModule.XOrder.Queries;
+using VirtoCommerce.OrdersModule.Core.Model;
+using VirtoCommerce.OrdersModule.Core.Model.Search;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 {
@@ -22,19 +31,64 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
         {
             _ = schema.Query.AddField(new FieldType
             {
-                Name = "getOrderById",
-                Arguments = new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id" }),
+                Name = "order",
+                Arguments = new QueryArguments(new QueryArgument<StringGraphType> { Name = "id" }, new QueryArgument<StringGraphType> { Name = "number" }),
                 Type = GraphTypeExtenstionHelper.GetActualType<CustomerOrderType>(),
-                Resolver = new AsyncFieldResolver<object>(async context => await _mediator.Send(new GetOrderByIdQuery(context.GetArgument<string>("id"))))
+                Resolver = new AsyncFieldResolver<object>(async context => await _mediator.Send(new GetOrderQuery(context.GetArgument<string>("id"), context.GetArgument<string>("number"))))
             });
 
-            _ = schema.Query.AddField(new FieldType
+            var orderConnectionBuilder = GraphTypeExtenstionHelper.CreateConnection<CustomerOrderType, object>()
+                .Name("orders")
+                .Argument<StringGraphType>("filter", "This parameter applies a filter to the query results")
+                .Argument<StringGraphType>("sort", "The sort expression")
+                .Unidirectional()
+                .PageSize(20);
+
+            orderConnectionBuilder.ResolveAsync(async context =>
             {
-                Name = "getOrderByNumber",
-                Arguments = new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "number" }),
-                Type = GraphTypeExtenstionHelper.GetActualType<CustomerOrderType>(),
-                Resolver = new AsyncFieldResolver<object>(async context => await _mediator.Send(new GetOrderByNumberQuery(context.GetArgument<string>("number"))))
+                return await ResolveConnectionAsync(_mediator, context);
             });
+
+            schema.Query.AddField(orderConnectionBuilder.FieldType);
+        }
+
+
+        private static async Task<object> ResolveConnectionAsync(IMediator mediator, IResolveConnectionContext<object> context)
+        {
+            var first = context.First;
+            var skip = Convert.ToInt32(context.After ?? 0.ToString());
+
+            var request = new SearchOrderQuery
+            {
+                Skip = skip,
+                Take = first ?? context.PageSize ?? 10,
+                Filter = context.GetArgument<string>("filter"),
+                Sort = context.GetArgument<string>("sort"),
+            };
+
+            var response = await mediator.Send(request);
+
+            var result = new Connection<CustomerOrder>()
+            {
+                Edges = response.Results
+                    .Select((x, index) =>
+                        new Edge<CustomerOrder>()
+                        {
+                            Cursor = (skip + index).ToString(),
+                            Node = x,
+                        })
+                    .ToList(),
+                PageInfo = new PageInfo()
+                {
+                    HasNextPage = response.TotalCount > (skip + first),
+                    HasPreviousPage = skip > 0,
+                    StartCursor = skip.ToString(),
+                    EndCursor = Math.Min(response.TotalCount, (int)(skip + first)).ToString()
+                },
+                TotalCount = response.TotalCount,
+            };
+
+            return result;
         }
     }
 }

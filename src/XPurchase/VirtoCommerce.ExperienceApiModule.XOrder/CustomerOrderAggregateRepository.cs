@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Threading.Tasks;
+using VirtoCommerce.OrdersModule.Core.Model;
 using VirtoCommerce.OrdersModule.Core.Model.Search;
 using VirtoCommerce.OrdersModule.Core.Services;
 
@@ -16,28 +17,16 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder
             _customerOrderSearchService = customerOrderSearchService;
         }
 
-        public async Task<CustomerOrderAggregate> GetOrderByIdAsync(string orderId)
+        public Task<CustomerOrder> GetOrderByIdAsync(string orderId)
         {
-            var order = await _customerOrderService.GetByIdAsync(orderId);
-
-            if (order != null)
-            {
-                return new CustomerOrderAggregate(order);
-            }
-
-            return null;
+            return _customerOrderService.GetByIdAsync(orderId);
         }
 
-        public async Task<CustomerOrderAggregate> GetOrderByNumberAsync(string number)
+        public async Task<CustomerOrder> GetOrderByNumberAsync(string number)
         {
             var order = (await _customerOrderSearchService.SearchCustomerOrdersAsync(new CustomerOrderSearchCriteria { Number = number })).Results.FirstOrDefault();
 
-            if (order != null)
-            {
-                return new CustomerOrderAggregate(order);
-            }
-
-            return null;
+            return order;
         }
     }
 }

@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using VirtoCommerce.ExperienceApiModule.DigitalCatalog.Index;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.SearchModule.Core.Model;
 using VirtoCommerce.SearchModule.Core.Services;
 
-namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Index
+namespace VirtoCommerce.ExperienceApiModule.Core.Index
 {
     public class SearchRequestBuilder
     {
