@@ -6,7 +6,7 @@ using VirtoCommerce.OrdersModule.Core.Model;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Queries
 {
-    public class GetOrderQueryHandler : IQueryHandler<GetOrderQuery, CustomerOrder>
+    public class GetOrderQueryHandler : IQueryHandler<GetOrderQuery, CustomerOrderAggregate>
     {
         private readonly ICustomerOrderAggregateRepository _customerOrderAggregateRepository;
         public GetOrderQueryHandler(ICustomerOrderAggregateRepository customerOrderAggregateRepository)
@@ -14,7 +14,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Queries
             _customerOrderAggregateRepository = customerOrderAggregateRepository;
         }
 
-        public Task<CustomerOrder> Handle(GetOrderQuery request, CancellationToken cancellationToken)
+        public Task<CustomerOrderAggregate> Handle(GetOrderQuery request, CancellationToken cancellationToken)
         {
             if (!string.IsNullOrEmpty(request.OrderId))
             {

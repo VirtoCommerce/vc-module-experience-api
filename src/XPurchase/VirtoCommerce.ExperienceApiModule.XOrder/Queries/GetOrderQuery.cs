@@ -3,7 +3,7 @@ using VirtoCommerce.OrdersModule.Core.Model;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Queries
 {
-    public class GetOrderQuery : IQuery<CustomerOrder>
+    public class GetOrderQuery : IQuery<CustomerOrderAggregate>
     {
         public GetOrderQuery()
         {
