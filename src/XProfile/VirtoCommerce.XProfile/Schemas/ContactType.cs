@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using GraphQL;
 using GraphQL.Resolvers;
 using GraphQL.Types;
 using VirtoCommerce.ExperienceApiModule.Core.Schema;
@@ -35,6 +36,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             {
                 Name = "Organizations",
                 Description = "All contact's organizations",
+                Arguments = new QueryArguments(new QueryArgument<IntGraphType> { Name = "take", DefaultValue = 1 }),
                 Type = GraphTypeExtenstionHelper.GetActualType<ListGraphType<OrganizationType>>(),
                 Resolver = new AsyncFieldResolver<ContactAggregate, IEnumerable<OrganizationAggregate>>(async context =>
                 {
@@ -44,7 +46,9 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                     }
                     else
                     {
-                        return await _organizationAggregateRepository.GetOrganizationsByIdsAsync(context.Source.Contact.Organizations.ToArray());
+                        var countToTake = context.GetArgument<int>("take");
+                        var idsToTake = context.Source.Contact.Organizations.Take(countToTake).ToArray();
+                        return await _organizationAggregateRepository.GetOrganizationsByIdsAsync(idsToTake);
                     }
                 })
             });

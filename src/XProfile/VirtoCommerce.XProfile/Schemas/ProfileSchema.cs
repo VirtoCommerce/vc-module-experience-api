@@ -266,7 +266,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
              */
 #pragma warning restore S125 // Sections of code should not be commented out
             _ = schema.Mutation.AddField(FieldBuilder.Create<object, IdentityResult>(typeof(IdentityResultType))
-                        .Name("deleteUser")
+                        .Name("deleteUsers")
                         .Argument<NonNullGraphType<InputDeleteUserType>>(_commandName)
                         .ResolveAsync(async context => await _mediator.Send(context.GetArgument<DeleteUserCommand>(_commandName)))
                         .FieldType);
