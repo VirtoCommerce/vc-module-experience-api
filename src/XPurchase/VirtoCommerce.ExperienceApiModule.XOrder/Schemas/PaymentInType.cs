@@ -1,4 +1,7 @@
+using GraphQL;
 using GraphQL.Types;
+using VirtoCommerce.CoreModule.Core.Currency;
+using VirtoCommerce.ExperienceApiModule.XOrder.Extensions;
 using VirtoCommerce.OrdersModule.Core.Model;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
@@ -20,7 +23,6 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field(x => x.IsApproved);
             Field(x => x.Status);
             Field(x => x.Comment);
-            Field(x => x.Sum);
             Field(x => x.IsCancelled);
             Field(x => x.CancelledDate, true);
             Field(x => x.CancelReason);
@@ -35,8 +37,10 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field(x => x.VoidedDate, true);
             Field(x => x.OrderId);
 
-            Field<OrderPaymentMethodType>(nameof(PaymentIn.PaymentMethod), resolve: context => context.Source.PaymentMethod);
-            Field<OrderCurrencyType>(nameof(PaymentIn.Currency), resolve: context => context.Source.Currency);
+            Field<OrderMoneyType>(nameof(PaymentIn.Sum).ToCamelCase(), resolve: context => new Money(context.Source.Sum, context.GetOrder().Currency));
+            Field<OrderMoneyType>("tax", resolve: context => new Money(context.Source.TaxTotal, context.GetOrder().Currency));
+            Field<StringGraphType>(nameof(PaymentIn.PaymentMethod), resolve: context => context.Source.PaymentMethod.Code);
+            Field<OrderCurrencyType>(nameof(PaymentIn.Currency), resolve: context => context.GetOrder().Currency);
             Field<OrderAddressType>(nameof(PaymentIn.BillingAddress), resolve: context => context.Source.BillingAddress);
 
             //TODO

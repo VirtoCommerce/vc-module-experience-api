@@ -7,8 +7,8 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
     {
         public OrderCurrencyType()
         {
-            Field(x => x.Name);
-            Field(x => x.IsPrimary);
+            //Field(x => x.Name);
+            //Field(x => x.IsPrimary);
             Field(x => x.Code);
             Field(x => x.Symbol, true);
             Field(x => x.ExchangeRate, true);

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using GraphQL;
 using GraphQL.Execution;
 using VirtoCommerce.CoreModule.Core.Currency;
 
@@ -9,12 +10,12 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Extensions
     {
         public static CustomerOrderAggregate GetOrder(this IProvideUserContext userContext)
         {
-            return userContext.GetValue<CustomerOrderAggregate>("customerOrderAggregate");
+            return userContext.GetValue<CustomerOrderAggregate>(nameof(CustomerOrderAggregate).ToCamelCase());
         }
 
         public static Currency CartCurency(this IProvideUserContext userContext)
         {
-            return userContext.GetValue<CustomerOrderAggregate>("customerOrderAggregate").Currency;
+            return userContext.GetValue<CustomerOrderAggregate>(nameof(CustomerOrderAggregate).ToCamelCase()).Currency;
         }
 
         public static T GetValue<T>(this IProvideUserContext userContext, string key)

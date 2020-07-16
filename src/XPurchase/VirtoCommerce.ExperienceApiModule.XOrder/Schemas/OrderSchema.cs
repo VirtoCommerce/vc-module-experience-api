@@ -5,14 +5,11 @@ using GraphQL;
 using GraphQL.Builders;
 using GraphQL.Resolvers;
 using GraphQL.Types;
-using GraphQL.Types.Relay;
 using GraphQL.Types.Relay.DataObjects;
 using MediatR;
-using VirtoCommerce.ExperienceApiModule.Core;
 using VirtoCommerce.ExperienceApiModule.Core.Schema;
 using VirtoCommerce.ExperienceApiModule.XOrder.Queries;
 using VirtoCommerce.OrdersModule.Core.Model;
-using VirtoCommerce.OrdersModule.Core.Model.Search;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 {
@@ -34,7 +31,13 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                 Name = "order",
                 Arguments = new QueryArguments(new QueryArgument<StringGraphType> { Name = "id" }, new QueryArgument<StringGraphType> { Name = "number" }),
                 Type = GraphTypeExtenstionHelper.GetActualType<CustomerOrderType>(),
-                Resolver = new AsyncFieldResolver<object>(async context => await _mediator.Send(new GetOrderQuery(context.GetArgument<string>("id"), context.GetArgument<string>("number"))))
+                Resolver = new AsyncFieldResolver<object>(async context => {
+                    var orderAggregate = await _mediator.Send(new GetOrderQuery(context.GetArgument<string>("id"), context.GetArgument<string>("number")));
+                    //store cart aggregate in the user context for future usage in the graph types resolvers
+                    context.UserContext.Add(nameof(CustomerOrderAggregate).ToCamelCase(), orderAggregate);
+
+                    return orderAggregate;
+                })
             });
 
             var orderConnectionBuilder = GraphTypeExtenstionHelper.CreateConnection<CustomerOrderType, object>()
