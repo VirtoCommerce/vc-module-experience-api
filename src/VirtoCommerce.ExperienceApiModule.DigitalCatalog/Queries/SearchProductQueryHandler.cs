@@ -11,12 +11,12 @@ using VirtoCommerce.SearchModule.Core.Services;
 
 namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Queries
 {
-    public class SearchProductCommandHandler : IQueryHandler<SearchProductQuery, SearchProductResponse>
+    public class SearchProductQueryHandler : IQueryHandler<SearchProductQuery, SearchProductResponse>
     {
         private readonly IMapper _mapper;
         private readonly ISearchProvider _searchProvider;
         private readonly ISearchPhraseParser _searchPhraseParser;
-        public SearchProductCommandHandler(ISearchProvider searchProvider, ISearchPhraseParser searchPhraseParser, IMapper mapper)
+        public SearchProductQueryHandler(ISearchProvider searchProvider, ISearchPhraseParser searchPhraseParser, IMapper mapper)
         {
             _searchProvider = searchProvider;
             _searchPhraseParser = searchPhraseParser;
