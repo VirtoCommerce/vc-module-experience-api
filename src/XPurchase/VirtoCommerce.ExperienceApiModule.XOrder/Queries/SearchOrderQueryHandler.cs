@@ -2,22 +2,21 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
-using VirtoCommerce.OrdersModule.Core.Services;
 using VirtoCommerce.SearchModule.Core.Services;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Queries
 {
     public class SearchOrderQueryHandler : IQueryHandler<SearchOrderQuery, SearchOrderResponse>
     {
-        private readonly ICustomerOrderSearchService _customerOrderSearchService;
+        private readonly ICustomerOrderAggregateRepository _customerOrderAggregateRepository;
         private readonly IMapper _mapper;
         private readonly ISearchPhraseParser _searchPhraseParser;
 
-        public SearchOrderQueryHandler(ICustomerOrderSearchService customerOrderSearchService, IMapper mapper, ISearchPhraseParser searchPhraseParser)
+        public SearchOrderQueryHandler(IMapper mapper, ISearchPhraseParser searchPhraseParser, ICustomerOrderAggregateRepository customerOrderAggregateRepository)
         {
-            _customerOrderSearchService = customerOrderSearchService;
             _mapper = mapper;
             _searchPhraseParser = searchPhraseParser;
+            _customerOrderAggregateRepository = customerOrderAggregateRepository;
         }
 
         public async Task<SearchOrderResponse> Handle(SearchOrderQuery request, CancellationToken cancellationToken)
@@ -27,8 +26,8 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Queries
                                         .WithPaging(request.Skip, request.Take)
                                         .AddSorting(request.Sort)
                                         .Build();
-            var response = await _customerOrderSearchService.SearchCustomerOrdersAsync(searchCriteria);
-            return new SearchOrderResponse { TotalCount = response.TotalCount, Results = response.Results };
+            var response = await _customerOrderAggregateRepository.SearchCustomerOrdersAsync(searchCriteria);
+            return new SearchOrderResponse { TotalCount = response.Count, Results = response };
         }
     }
 }

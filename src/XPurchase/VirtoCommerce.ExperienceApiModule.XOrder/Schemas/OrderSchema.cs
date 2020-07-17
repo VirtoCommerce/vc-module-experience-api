@@ -71,11 +71,11 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 
             var response = await mediator.Send(request);
 
-            var result = new Connection<CustomerOrder>()
+            var result = new Connection<CustomerOrderAggregate>()
             {
                 Edges = response.Results
                     .Select((x, index) =>
-                        new Edge<CustomerOrder>()
+                        new Edge<CustomerOrderAggregate>()
                         {
                             Cursor = (skip + index).ToString(),
                             Node = x,

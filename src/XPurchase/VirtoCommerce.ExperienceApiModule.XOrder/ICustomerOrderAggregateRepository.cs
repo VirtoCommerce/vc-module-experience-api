@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using VirtoCommerce.OrdersModule.Core.Model.Search;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder
 {
@@ -6,5 +8,6 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder
     {
         Task<CustomerOrderAggregate> GetOrderByIdAsync(string orderId);
         Task<CustomerOrderAggregate> GetOrderByNumberAsync(string number);
+        Task<IList<CustomerOrderAggregate>> SearchCustomerOrdersAsync(CustomerOrderSearchCriteria searchCriteria);
     }
 }
