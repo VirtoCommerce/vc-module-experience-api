@@ -5,9 +5,9 @@ using MediatR;
 
 namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Queries
 {
-    public class SearchProductAssociationsCommandHandler : IRequestHandler<SearchProductAssociationsQuery, SearchProductAssociationsResponse>
+    public class SearchProductAssociationsQueryHandler : IRequestHandler<SearchProductAssociationsQuery, SearchProductAssociationsResponse>
     {
-        public SearchProductAssociationsCommandHandler()
+        public SearchProductAssociationsQueryHandler()
         {
         }
 

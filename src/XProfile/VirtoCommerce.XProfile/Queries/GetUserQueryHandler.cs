@@ -31,20 +31,20 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Queries
                 {
                     result = await userManager.FindByIdAsync(request.Id);
                 }
-
-                if (!request.Email.IsNullOrEmpty())
-                {
-                    result = await userManager.FindByEmailAsync(request.Email);
-                }
-
-                if (!request.UserName.IsNullOrEmpty())
-                {
-                    result = await userManager.FindByNameAsync(request.UserName);
-                }
-
-                if (!request.LoginProvider.IsNullOrEmpty() && !request.ProviderKey.IsNullOrEmpty())
+                else if (!request.LoginProvider.IsNullOrEmpty() && !request.ProviderKey.IsNullOrEmpty())
                 {
                     result = await userManager.FindByLoginAsync(request.LoginProvider, request.ProviderKey);
+                }
+                else
+                {
+                    if (!request.UserName.IsNullOrEmpty())
+                    {
+                        result = await userManager.FindByNameAsync(request.UserName);
+                    }
+                    if (result == null && !request.Email.IsNullOrEmpty())
+                    {
+                        result = await userManager.FindByEmailAsync(request.Email);
+                    }
                 }
             }
 

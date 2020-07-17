@@ -27,16 +27,17 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             Field(x => x.Contact.MiddleName, true);
             Field(x => x.Contact.Name, true);
             Field(x => x.Contact.OuterId, true);
-            Field<StringGraphType>("organizationId", resolve: context => context.Source.Contact.Organizations?.FirstOrDefault());
             Field<ListGraphType<MemberAddressType>>("addresses", resolve: context => context.Source.Contact.Addresses);
             Field<ListGraphType<UserType>>("securityAccounts", resolve: context => context.Source.Contact.SecurityAccounts);
+            //TODO: remove later
+            Field<StringGraphType>("organizationId", resolve: context => context.Source.Contact.Organizations?.FirstOrDefault());
             Field("organizationsIds", x => x.Contact.Organizations);
+
 
             AddField(new FieldType
             {
                 Name = "Organizations",
                 Description = "All contact's organizations",
-                Arguments = new QueryArguments(new QueryArgument<IntGraphType> { Name = "take", DefaultValue = 1 }),
                 Type = GraphTypeExtenstionHelper.GetActualType<ListGraphType<OrganizationType>>(),
                 Resolver = new AsyncFieldResolver<ContactAggregate, IEnumerable<OrganizationAggregate>>(async context =>
                 {
@@ -46,8 +47,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                     }
                     else
                     {
-                        var countToTake = context.GetArgument<int>("take");
-                        var idsToTake = context.Source.Contact.Organizations.Take(countToTake).ToArray();
+                        var idsToTake = context.Source.Contact.Organizations.ToArray();
                         return await _organizationAggregateRepository.GetOrganizationsByIdsAsync(idsToTake);
                     }
                 })
