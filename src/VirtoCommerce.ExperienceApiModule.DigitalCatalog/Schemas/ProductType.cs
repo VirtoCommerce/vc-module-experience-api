@@ -12,9 +12,28 @@ using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.XDigitalCatalog.Queries;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
+using GraphQL.Instrumentation;
+using GraphQL.Language.AST;
+using System.Collections.Generic;
+using System.Reflection;
 
 namespace VirtoCommerce.XDigitalCatalog.Schemas
 {
+    public class ExpDescription
+    {
+        public string Type { get; set; }
+        public string Text { get; set; }
+    }
+
+    public class DescriptionType : ObjectGraphType<ExpDescription>
+    {
+        public DescriptionType()
+        {
+            Field(x => x.Type).Description("Description type.");
+            Field(x => x.Text).Description("Description text.");
+        }
+    }
+
     public class ProductType : ObjectGraphType<ExpProduct>
     {
         /// <summary>
@@ -49,12 +68,79 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             Field(d => d.CatalogProduct.Name, nullable: false).Description("The name of the product.");
 
+            FieldAsync<ListGraphType<DescriptionType>>("descriptions", resolve: async context =>
+            {
+                var descriptions = await mediator.Send(new object());
+
+                return descriptions;
+            });
+
             Field(d => d.CatalogProduct.ProductType, nullable: true).Description("The type of product");
-            Field(d => d.CatalogProduct.ImgSrc).Description("The product main image URL.");
+
+            Field<StringGraphType>(
+                "slug",
+                description: "Get slug for product.",
+                resolve: context =>
+                {
+                    var semanticUrl = context.Source.CatalogProduct?.SeoInfos?.FirstOrDefault()?.SemanticUrl;
+                    return semanticUrl;
+                });
+
+            Field<StringGraphType>(
+                "metaDescription",
+                description: "Get metaDescription for product.",
+                resolve: context =>
+                {
+                    var metaDescription = context.Source.CatalogProduct?.SeoInfos?.FirstOrDefault()?.MetaDescription;
+                    return metaDescription;
+                });
+
+            Field<StringGraphType>(
+                "metaKeywords",
+                description: "Get metaKeywords for product.",
+                resolve: context =>
+                {
+                    var metaKeywords = context.Source.CatalogProduct?.SeoInfos?.FirstOrDefault()?.MetaKeywords;
+                    return metaKeywords;
+                });
+
+            Field<StringGraphType>(
+                "metaTitle",
+                description: "Get metaTitle for product.",
+                resolve: context =>
+                {
+                    var metaTitle = context.Source.CatalogProduct?.SeoInfos?.FirstOrDefault()?.PageTitle;
+                    return metaTitle;
+                });
+
+            Field<StringGraphType>(
+                "imgSrc",
+                description: "The product main image URL.",
+                resolve: context => context.Source.CatalogProduct.ImgSrc);
+
             Field(d => d.CatalogProduct.OuterId, nullable: true).Description("The outer identifier");
 
+            Field<StringGraphType>(
+                "brandName",
+                description: "Get brandName for product.",
+                resolve: context =>
+                {
+                    var brandName = context.Source.CatalogProduct.Properties
+                        ?.FirstOrDefault(x => x.Name == "Brand")
+                        ?.Values
+                        ?.FirstOrDefault(x => x.Value != null)
+                        ?.Value;
+
+                    return brandName;
+                });
+
             // TODO: resolve this correctly
-            Field<VariationType>("masterVariation", resolve: context => context.Source.CatalogProduct.Variations.FirstOrDefault());
+            Field<VariationType>("masterVariation", resolve: context =>
+            {
+                var variation = new Variation();
+                variation = Map(variation, context.Source.CatalogProduct);
+                return variation;
+            });
 
             Field<ListGraphType<VariationType>>("variations", resolve: context => context.Source.CatalogProduct.Variations);
 
@@ -125,6 +211,27 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 },
                 TotalCount = response.Result.TotalCount,
             };
+        }
+
+        // TODO: move this to extensions if this needed in future :p
+        private static T Map<T, TU>(T target, TU source)
+        {
+            typeof(T)
+                .GetTypeInfo()
+                .GetProperties()
+                .Where(x => x.CanWrite)
+                .ToList()
+                .ForEach(prop =>
+                {
+                    var sp = source.GetType().GetProperty(prop.Name);
+                    if (sp != null)
+                    {
+                        var value = sp.GetValue(source, null);
+                        target.GetType().GetProperty(prop.Name).SetValue(target, value, null);
+                    }
+                });
+
+            return target;
         }
     }
 }
