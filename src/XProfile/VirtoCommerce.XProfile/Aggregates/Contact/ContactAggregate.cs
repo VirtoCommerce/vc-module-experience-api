@@ -11,6 +11,10 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile
         public ContactAggregate(Contact contact)
         {
             Contact = contact;
+            if (string.IsNullOrEmpty(contact.FullName))
+            {
+                contact.FullName = string.Join(" ", contact.FirstName, contact.LastName);
+            }
         }
 
         public Contact Contact { get; protected set; }

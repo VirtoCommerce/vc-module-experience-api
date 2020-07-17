@@ -1,6 +1,5 @@
 using VirtoCommerce.CustomerModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.XProfile.Commands;
-using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Mapping
 {
@@ -8,18 +7,17 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Mapping
     {
         public ProfileMappingProfile()
         {
-            CreateMap<CreateOrganizationCommand, OrganizationAggregate>()
-                .ConvertUsing((command, aggregate, context) =>
+            CreateMap<CreateOrganizationCommand, Organization>()
+                .ConvertUsing((command, org, context) =>
                 {
-                    aggregate = new OrganizationAggregate(AbstractTypeFactory<Organization>.TryCreateInstance());
-                    aggregate.Organization.Name = command.Name;
-                    aggregate.Organization.Addresses = command.Addresses;
-
-                    return aggregate;
+                    org = new Organization
+                    {
+                        Name = command.Name,
+                        Addresses = command.Addresses
+                    };
+                    return org;
                 });
             CreateMap<UpdateOrganizationCommand, Organization>();
-            CreateMap<CreateContactCommand, Contact>();
-            CreateMap<UpdateContactCommand, Contact>();
         }
     }
 }
