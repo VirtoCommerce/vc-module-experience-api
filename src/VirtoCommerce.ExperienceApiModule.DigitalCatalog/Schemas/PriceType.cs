@@ -16,7 +16,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             Field<MoneyType>("saleWithTax", resolve: context => context.Source.SalePriceWithTax);
 
-            Field<StringGraphType>("currency", resolve: context => context.Source.Currency.CultureName);
+            Field<StringGraphType>("currency", resolve: context => context.Source.Currency.Code);
 
             Field<DateGraphType>("validFrom", resolve: context => context.Source.ValidFrom);
             Field<DateGraphType>("validUntil", resolve: context => context.Source.ValidUntil);

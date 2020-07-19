@@ -1,4 +1,5 @@
 using AutoMapper;
+using VirtoCommerce.ExperienceApiModule.Core.Models;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.SearchModule.Core.Model;
 using VirtoCommerce.XDigitalCatalog.Binding;

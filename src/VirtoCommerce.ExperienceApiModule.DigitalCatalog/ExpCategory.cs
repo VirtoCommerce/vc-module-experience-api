@@ -1,4 +1,4 @@
-﻿using VirtoCommerce.CatalogModule.Core.Model;
+using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.Core.Binding;
 using VirtoCommerce.XDigitalCatalog.Binding;
 

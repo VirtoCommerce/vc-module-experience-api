@@ -11,12 +11,19 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             Name = "Property";
             Description = "Products attributes.";
 
-            Field(d => d.Id).Description("The unique ID of the product.");
-            Field(d => d.Name, nullable: false).Description("The name of the property.");
-            Field<PropertyTypeEnum>("type", "Property type");
-            Field<ListGraphType<StringGraphType>>(
-                "values",
-                resolve: context => context.Source.Values.Select(x => x.ToString())
+            Field(x => x.Id).Description("The unique ID of the product.");
+            Field(x => x.Name, nullable: false).Description("The name of the property.");
+            Field<StringGraphType>(
+                "valueType",
+                resolve: context => context.Source.Values.Select(x => x.ValueType).FirstOrDefault()
+            );
+            Field<StringGraphType>(
+                "value",
+                resolve: context => context.Source.Values.Select(x => x.Value).FirstOrDefault()
+            );
+            Field<StringGraphType>(
+                "valueId",
+                resolve: context => context.Source.Values.Select(x => x.ValueId).FirstOrDefault()
             );
         }
     }

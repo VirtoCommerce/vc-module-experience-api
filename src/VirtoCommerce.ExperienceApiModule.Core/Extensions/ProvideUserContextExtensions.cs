@@ -26,14 +26,14 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
             throw new KeyNotFoundException(key);
         }
 
-        public static void SaveValue(this IProvideUserContext userContext, object objectForSave)
+        public static void SaveValue(this IProvideUserContext userContext, object objectForSave, string keyName = null)
         {
             if (userContext == null)
             {
                 throw new ArgumentNullException(nameof(userContext));
             }
 
-            var key = objectForSave.GetType().Name;
+            var key = keyName ?? objectForSave.GetType().Name;
 
             if (!userContext.UserContext.TryGetValue(key, out _))
             {
