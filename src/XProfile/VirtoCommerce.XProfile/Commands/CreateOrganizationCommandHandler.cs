@@ -2,6 +2,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
+using VirtoCommerce.CustomerModule.Core.Model;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
 {
@@ -18,10 +19,11 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
 
         public async Task<OrganizationAggregate> Handle(CreateOrganizationCommand request, CancellationToken cancellationToken)
         {
-            var organizationAggregate = _mapper.Map<OrganizationAggregate>(request);
-            await _organizationAggregateRepository.SaveAsync(organizationAggregate);
+            var org = _mapper.Map<Organization>(request);
+            var orgAggr = new OrganizationAggregate(org);
+            await _organizationAggregateRepository.SaveAsync(orgAggr);
 
-            return organizationAggregate;
+            return orgAggr;
         }
     }
 }

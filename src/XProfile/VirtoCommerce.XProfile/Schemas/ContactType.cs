@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using GraphQL;
 using GraphQL.Resolvers;
 using GraphQL.Types;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
@@ -26,10 +27,12 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             Field(x => x.Contact.MiddleName, true);
             Field(x => x.Contact.Name, true);
             Field(x => x.Contact.OuterId, true);
-            Field<StringGraphType>("organizationId", resolve: context => context.Source.Contact.Organizations?.FirstOrDefault());
             Field<ListGraphType<MemberAddressType>>("addresses", resolve: context => context.Source.Contact.Addresses);
+            Field<ListGraphType<UserType>>("securityAccounts", resolve: context => context.Source.Contact.SecurityAccounts);
+            //TODO: remove later
+            Field<StringGraphType>("organizationId", resolve: context => context.Source.Contact.Organizations?.FirstOrDefault());
             Field("organizationsIds", x => x.Contact.Organizations);
-            //TODO: Security accounts
+
 
             AddField(new FieldType
             {
@@ -44,7 +47,8 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                     }
                     else
                     {
-                        return await _organizationAggregateRepository.GetOrganizationsByIdsAsync(context.Source.Contact.Organizations.ToArray());
+                        var idsToTake = context.Source.Contact.Organizations.ToArray();
+                        return await _organizationAggregateRepository.GetOrganizationsByIdsAsync(idsToTake);
                     }
                 })
             });

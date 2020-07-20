@@ -9,7 +9,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
         public InputUpdateContactType()
         {
             Fields.FirstOrDefault(x => x.Name == nameof(Member.Id)).Type = typeof(NonNullGraphType<StringGraphType>);
-            Field<NonNullGraphType<StringGraphType>>(nameof(Contact.FullName));
+            Field<StringGraphType>(nameof(Contact.FullName));
             Field<NonNullGraphType<StringGraphType>>(nameof(Contact.FirstName));
             Field<NonNullGraphType<StringGraphType>>(nameof(Contact.LastName));
             Field<StringGraphType>(nameof(Contact.MiddleName));

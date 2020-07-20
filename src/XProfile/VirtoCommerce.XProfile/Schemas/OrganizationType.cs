@@ -44,10 +44,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                .Unidirectional()
                .PageSize(20);
 
-            connectionBuilder.ResolveAsync(async context =>
-            {
-                return await ResolveConnectionAsync(mediator, context);
-            });
+            connectionBuilder.ResolveAsync(async context => await ResolveConnectionAsync(mediator, context));
             AddField(connectionBuilder.FieldType);
         }
 
