@@ -8,14 +8,16 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Extensions
 {
     public static class ProvideUserContextExtensions
     {
-        public static CustomerOrderAggregate GetOrder(this IProvideUserContext userContext)
+        public static CustomerOrderAggregate GetOrder(this IProvideUserContext userContext, string id = null)
         {
-            return userContext.GetValue<CustomerOrderAggregate>(nameof(CustomerOrderAggregate).ToCamelCase());
+            return userContext.GetValue<CustomerOrderAggregate>(!string.IsNullOrEmpty(id) ? $"{nameof(CustomerOrderAggregate).ToCamelCase()}:{id}"
+                : nameof(CustomerOrderAggregate).ToCamelCase());
         }
 
-        public static Currency CartCurency(this IProvideUserContext userContext)
+        public static Currency OrderCurency(this IProvideUserContext userContext, string id = null)
         {
-            return userContext.GetValue<CustomerOrderAggregate>(nameof(CustomerOrderAggregate).ToCamelCase()).Currency;
+            return userContext.GetValue<CustomerOrderAggregate>(!string.IsNullOrEmpty(id) ? $"{nameof(CustomerOrderAggregate).ToCamelCase()}:{id}"
+                : nameof(CustomerOrderAggregate).ToCamelCase()).Currency;
         }
 
         public static T GetValue<T>(this IProvideUserContext userContext, string key)

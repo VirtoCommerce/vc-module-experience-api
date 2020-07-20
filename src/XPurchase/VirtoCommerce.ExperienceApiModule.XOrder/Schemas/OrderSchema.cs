@@ -49,6 +49,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 
             orderConnectionBuilder.ResolveAsync(async context =>
             {
+                context.UserContext.Add(nameof(CustomerOrderAggregate).ToCamelCase(), ((CustomerOrderAggregate)context.Source).Order.Id);
                 return await ResolveConnectionAsync(_mediator, context);
             });
 

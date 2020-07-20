@@ -1,5 +1,4 @@
 using GraphQL;
-using GraphQL.NewtonsoftJson;
 using GraphQL.Types;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.ExperienceApiModule.XOrder.Extensions;
