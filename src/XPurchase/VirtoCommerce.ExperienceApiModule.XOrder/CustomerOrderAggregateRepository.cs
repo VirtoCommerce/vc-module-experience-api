@@ -40,48 +40,47 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder
             return result;
         }
 
-        public async Task<IList<CustomerOrderAggregate>> SearchCustomerOrdersAsync(CustomerOrderSearchCriteria searchCriteria)
+        public async Task<IList<CustomerOrderAggregate>> SearchCustomerOrdersAsync(CustomerOrderSearchCriteria searchCriteria, string cultureName = null)
         {
             var response = await _customerOrderSearchService.SearchCustomerOrdersAsync(searchCriteria);
 
-            return await InnerGetCustomerOrdersAggregateFromCustomerOrderAsync(response.Results);
+            return await InnerGetCustomerOrdersAggregateFromCustomerOrderAsync(response.Results, cultureName);
         }
 
-        protected virtual async Task<CustomerOrderAggregate> InnerGetCustomerOrderAggregateFromCustomerOrderAsync(CustomerOrder order, string language = null)
+        protected virtual async Task<CustomerOrderAggregate> InnerGetCustomerOrderAggregateFromCustomerOrderAsync(CustomerOrder order, string cultureName = null)
         {
             if (order == null)
             {
                 throw new ArgumentNullException(nameof(order));
             }
 
-            var currency = (await GetCurrenciesAsync(new[] { order.Currency })).FirstOrDefault();
+            var currency = (await GetCurrenciesAsync(new[] { order.Currency }, cultureName)).FirstOrDefault();
 
             if (currency == null)
             {
                 throw new OperationCanceledException($"order currency {currency} is not registered in the system");
             }
-            //Clone  currency with cart language
-            currency = new Currency(language != null ? new Language(language) : Language.InvariantLanguage, currency.Code, currency.Name, currency.Symbol, currency.ExchangeRate)
-            {
-                CustomFormatting = currency.CustomFormatting
-            };
 
             var result = new CustomerOrderAggregate(order, currency);
 
             return result;
         }
 
-        protected virtual async Task<IList<CustomerOrderAggregate>> InnerGetCustomerOrdersAggregateFromCustomerOrderAsync(IList<CustomerOrder> orders, string language = null)
+        protected virtual async Task<IList<CustomerOrderAggregate>> InnerGetCustomerOrdersAggregateFromCustomerOrderAsync(IList<CustomerOrder> orders, string cultureName = null)
         {
-            var currencies = await GetCurrenciesAsync(orders.Select(x => x.Currency).Distinct().ToArray());
+            var currencies = await GetCurrenciesAsync(orders.Select(x => x.Currency).Distinct().ToArray(), cultureName);
 
             return orders.Select(x => new CustomerOrderAggregate(x, currencies.FirstOrDefault(c => c.Code.EqualsInvariant(x.Currency)))).ToList();
         }
 
-        private async Task<Currency[]> GetCurrenciesAsync(string[] currencyCodes)
+        private async Task<Currency[]> GetCurrenciesAsync(string[] currencyCodes, string cultureName = null)
         {
             var allCurrencies = await _currencyService.GetAllCurrenciesAsync();
-            return allCurrencies.Where(x => currencyCodes.Contains(x.Code)).ToArray();
+            return allCurrencies.Where(x => currencyCodes.Contains(x.Code))
+                .Select(x => new Currency(cultureName != null ? new Language(cultureName) : Language.InvariantLanguage, x.Code, x.Name, x.Symbol, x.ExchangeRate)
+                    {
+                        CustomFormatting = x.CustomFormatting
+                    }).ToArray();
         }
     }
 }

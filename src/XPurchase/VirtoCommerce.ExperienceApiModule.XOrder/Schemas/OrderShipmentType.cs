@@ -11,19 +11,19 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
         public OrderShipmentType()
         {
             Field(x => x.Id);
-            Field(x => x.OrganizationId);
-            Field(x => x.OrganizationName);
-            Field(x => x.FulfillmentCenterId);
-            Field(x => x.FulfillmentCenterName);
-            Field(x => x.EmployeeId);
-            Field(x => x.EmployeeName);
-            Field(x => x.ShipmentMethodCode);
-            Field(x => x.ShipmentMethodOption);
+            Field(x => x.OrganizationId, true);
+            Field(x => x.OrganizationName, true);
+            Field(x => x.FulfillmentCenterId, true);
+            Field(x => x.FulfillmentCenterName, true);
+            Field(x => x.EmployeeId, true);
+            Field(x => x.EmployeeName, true);
+            Field(x => x.ShipmentMethodCode, true);
+            Field(x => x.ShipmentMethodOption, true);
             Field<OrderShippingMethodType>(nameof(Shipment.ShippingMethod).ToCamelCase(), resolve: x => x.Source.ShippingMethod);
             Field(x => x.CustomerOrderId);
-            Field(x => x.WeightUnit);
+            Field(x => x.WeightUnit, true);
             Field(x => x.Weight, true);
-            Field(x => x.MeasureUnit);
+            Field(x => x.MeasureUnit, true);
             Field(x => x.Height, true);
             Field(x => x.Length, true);
             Field(x => x.Width, true);
@@ -32,7 +32,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field(x => x.Fee);
             Field(x => x.FeeWithTax);
             Field(x => x.ObjectType);
-            Field(x => x.TaxType);
+            Field(x => x.TaxType, true);
             Field(x => x.TaxPercentRate);
 
             Field<OrderMoneyType>(nameof(Shipment.Price).ToCamelCase(), resolve: context =>  new Money(context.Source.Price, context.OrderCurency(context.Source.CustomerOrderId)));

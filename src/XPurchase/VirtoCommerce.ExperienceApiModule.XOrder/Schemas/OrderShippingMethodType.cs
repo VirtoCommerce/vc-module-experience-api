@@ -12,7 +12,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field(x => x.LogoUrl);
             Field(x => x.IsActive);
             Field(x => x.Priority);
-            Field(x => x.TaxType);
+            Field(x => x.TaxType, true);
             Field(x => x.StoreId);
             Field(x => x.TypeName);
         }

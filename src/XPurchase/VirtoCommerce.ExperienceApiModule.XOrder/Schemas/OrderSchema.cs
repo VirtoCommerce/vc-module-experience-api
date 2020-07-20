@@ -7,6 +7,7 @@ using GraphQL.Resolvers;
 using GraphQL.Types;
 using GraphQL.Types.Relay.DataObjects;
 using MediatR;
+using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.ExperienceApiModule.Core.Schema;
 using VirtoCommerce.ExperienceApiModule.XOrder.Queries;
 using VirtoCommerce.OrdersModule.Core.Model;
@@ -33,8 +34,8 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                 Type = GraphTypeExtenstionHelper.GetActualType<CustomerOrderType>(),
                 Resolver = new AsyncFieldResolver<object>(async context => {
                     var orderAggregate = await _mediator.Send(new GetOrderQuery(context.GetArgument<string>("id"), context.GetArgument<string>("number")));
-                    //store cart aggregate in the user context for future usage in the graph types resolvers
-                    context.UserContext.Add(nameof(CustomerOrderAggregate).ToCamelCase(), orderAggregate);
+                    //store order aggregate in the user context for future usage in the graph types resolvers
+                    AddOrderToContext(context, orderAggregate);
 
                     return orderAggregate;
                 })
@@ -44,20 +45,17 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                 .Name("orders")
                 .Argument<StringGraphType>("filter", "This parameter applies a filter to the query results")
                 .Argument<StringGraphType>("sort", "The sort expression")
+                .Argument<StringGraphType>("language", "")
                 .Unidirectional()
                 .PageSize(20);
 
-            orderConnectionBuilder.ResolveAsync(async context =>
-            {
-                
-                return await ResolveConnectionAsync(_mediator, context);
-            });
+            orderConnectionBuilder.ResolveAsync(async context => await ResolveConnectionAsync(_mediator, context));
 
             schema.Query.AddField(orderConnectionBuilder.FieldType);
         }
 
 
-        private static async Task<object> ResolveConnectionAsync(IMediator mediator, IResolveConnectionContext<object> context)
+        private async Task<object> ResolveConnectionAsync(IMediator mediator, IResolveConnectionContext<object> context)
         {
             var first = context.First;
             var skip = Convert.ToInt32(context.After ?? 0.ToString());
@@ -68,18 +66,15 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                 Take = first ?? context.PageSize ?? 10,
                 Filter = context.GetArgument<string>("filter"),
                 Sort = context.GetArgument<string>("sort"),
+                CultureName = context.GetArgument<string>(nameof(Currency.CultureName).ToCamelCase())
             };
+
+            context.UserContext.Add(nameof(Currency.CultureName).ToCamelCase(), request.CultureName);
 
             var response = await mediator.Send(request);
             foreach (var customerOrderAggregate in response.Results)
             {
-                context.UserContext.Add($"{nameof(CustomerOrderAggregate).ToCamelCase()}:{customerOrderAggregate.Order.Id}", customerOrderAggregate);
-
-                //TODO need to add OrderId to LineItem then remove this code
-                foreach (var item in customerOrderAggregate.Order.Items)
-                {
-                    context.UserContext.Add($"{nameof(CustomerOrderAggregate).ToCamelCase()}:{item.Id}", customerOrderAggregate);
-                }
+                AddOrderToContext(context, customerOrderAggregate);
             }
 
             var result = new Connection<CustomerOrderAggregate>()
@@ -103,6 +98,38 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             };
 
             return result;
+        }
+
+
+        //TODO
+        private void AddOrderToContext(IResolveFieldContext context, CustomerOrderAggregate customerOrderAggregate)
+        {
+            context.UserContext.Add($"{nameof(CustomerOrderAggregate).ToCamelCase()}:{customerOrderAggregate.Order.Id}", customerOrderAggregate);
+
+            foreach (var discount in customerOrderAggregate.Order.Discounts)
+            {
+                context.UserContext.Add($"{nameof(CustomerOrderAggregate).ToCamelCase()}:{discount.Id}", customerOrderAggregate);
+            }
+
+            foreach (var discount in customerOrderAggregate.Order.Items.SelectMany(x => x.Discounts))
+            {
+                context.UserContext.Add($"{nameof(CustomerOrderAggregate).ToCamelCase()}:{discount.Id}", customerOrderAggregate);
+            }
+
+            foreach (var discount in customerOrderAggregate.Order.Shipments.SelectMany(x => x.Discounts))
+            {
+                context.UserContext.Add($"{nameof(CustomerOrderAggregate).ToCamelCase()}:{discount.Id}", customerOrderAggregate);
+            }
+
+            foreach (var taxDetail in customerOrderAggregate.Order.TaxDetails)
+            {
+                context.UserContext.Add($"{nameof(CustomerOrderAggregate).ToCamelCase()}:{string.Join(":", taxDetail.Name, taxDetail.Rate, taxDetail.Amount)}", customerOrderAggregate);
+            }
+
+            foreach (var taxDetail in customerOrderAggregate.Order.Items.SelectMany(x => x.TaxDetails))
+            {
+                context.UserContext.Add($"{nameof(CustomerOrderAggregate).ToCamelCase()}:{string.Join(":", taxDetail.Name, taxDetail.Rate, taxDetail.Amount)}", customerOrderAggregate);
+            }
         }
     }
 }

@@ -13,7 +13,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field<NonNullGraphType<ListGraphType<OrderTaxDetailType>>>(nameof(PaymentMethod.TaxDetails), resolve: x => x.Source.TaxDetails);
             Field(x => x.TaxPercentRate);
             Field(x => x.TaxTotal);
-            Field(x => x.TaxType);
+            Field(x => x.TaxType, true);
             Field(x => x.TypeName);
             Field(x => x.StoreId);
             Field(x => x.DiscountAmountWithTax);

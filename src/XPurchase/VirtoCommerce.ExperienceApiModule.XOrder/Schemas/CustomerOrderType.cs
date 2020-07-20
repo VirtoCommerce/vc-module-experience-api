@@ -43,6 +43,10 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             
             Field(x => x.Order.TaxPercentRate);
             Field(x => x.Order.LanguageCode, true);
+            Field(x => x.Order.CreatedDate);
+            Field(x => x.Order.CreatedBy, true);
+            Field(x => x.Order.ModifiedDate, true);
+            Field(x => x.Order.ModifiedBy, true);
 
             Field<OrderCurrencyType>(nameof(CustomerOrder.Currency).ToCamelCase(), resolve: context => context.Source.Currency);
             Field<OrderMoneyType>(nameof(CustomerOrder.Total).ToCamelCase(), resolve: context => new Money(context.Source.Order.Total, context.Source.Currency));

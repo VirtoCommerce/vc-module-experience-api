@@ -8,6 +8,6 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder
     {
         Task<CustomerOrderAggregate> GetOrderByIdAsync(string orderId);
         Task<CustomerOrderAggregate> GetOrderByNumberAsync(string number);
-        Task<IList<CustomerOrderAggregate>> SearchCustomerOrdersAsync(CustomerOrderSearchCriteria searchCriteria);
+        Task<IList<CustomerOrderAggregate>> SearchCustomerOrdersAsync(CustomerOrderSearchCriteria searchCriteria, string language = null);
     }
 }

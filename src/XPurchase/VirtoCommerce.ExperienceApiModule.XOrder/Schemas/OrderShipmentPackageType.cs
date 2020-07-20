@@ -8,8 +8,8 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
         public OrderShipmentPackageType()
         {
             Field(x => x.Id);
-            Field(x => x.BarCode);
-            Field(x => x.PackageType);
+            Field(x => x.BarCode, true);
+            Field(x => x.PackageType, true);
             Field(x => x.WeightUnit);
             Field(x => x.Weight, true);
             Field(x => x.MeasureUnit);
