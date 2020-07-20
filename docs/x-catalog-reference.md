@@ -210,3 +210,75 @@ use ? to replace a single character, and * to replace zero or more characters
 combine keywords and filters
 
 
+## Filter by category 
+Filter products that belong to exactly specified category path.
+`filter: "categories.path:{catalog id/category path}"`
+
+`filter: "categories.path:catalogId/cat1d1/cat2id"`
+
+> The search will be performed on `__path` index field of product document
+
+Filter by category subtrees, keep only the products that belong to the specified Category or any of its descendant categories.
+`filter: "categories.subtree:{catalog id/category path}"`
+
+`filter: "categories.subtree:catalogId/cat1d1/cat2id"`
+
+> The search will be performed on `__outline` index field of product document
+
+
+## Filter by price
+Keep only the products which Price match the specified value or [range]()
+
+`filter: "price.{currency}.{pricelist?}:{range expression}"`
+
+`filter: "price.usd:(TO 100]"`
+
+`filter: "price.usd.pricelist_1:(20 TO 100]"`
+
+Keep only products that  with at least one price set
+
+`filter: "is:priced`
+
+> The search will be performed on `price_{currency}` and `price_{currency}_{pricelist}` index fields of product document
+> Please note, that only the indexed prices were used for filtration. Scoped prices based on user groups or dynamic expressions temporary do not support filtration.
+
+## Filter by SKU
+Keep only the product which matches the specified SKU:
+`filter: "sku:DLL-65789352`
+
+## Filter products or variations 
+Keep only the products or variations in result. If not set will return both types.
+
+`filter: "is:product`
+
+`filter: "is:variation`
+
+## Filter by custom properties
+Keep only the products or variation with the custom attribute matching the specified value or range.
+
+`filter: "properties.{property name}: {value}`
+
+`filter: "properties.color:red`
+
+To use property name contains spaces need to use the following syntax with escaped double quotes
+`filter= "\"processor core (ghz)\":\"1.8 GHz Intel GTX Quad-Core\""`
+
+For numeric and date time properties you might use range filter
+
+`filter: "length:(10 TO 20)"`
+
+`filter: "publishDate:(TO \"2020-01-28\")"`
+
+> All product custom properties are stored in the index as fields with the same names as properties have.  `{property.name}:{property.value}`
+
+## Filter by product availability  
+Keep only the products or variations with the availability matching the specified value or range.
+
+`filter: "available_in:{warehouse}"`
+
+`filter: "available_in:my-warehouse"`
+
+## Facets
+Facets calculate statistical counts to aid in faceted navigation.
+
+## Muti-select faceting search
