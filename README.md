@@ -1,14 +1,15 @@
 The project "Experience API" it is primarily a intermediated layer between clients and enterprise  services powered by GraphQL protocol and is tightly coupled to a specific user/touchpoint  experience with fast and reliable access, it represents an implementation of Backend for Frontend design pattern (BFF).
 
-# The context diagramm
+# The context diagram
 ![image](https://user-images.githubusercontent.com/7566324/84039908-38258300-a9a2-11ea-9421-2c51462d69af.png)
 
 
 # Key features
 - “Experience API” project at beginning consists from these three functional blocks :
-	-  [Digital Catalog API](https://github.com/VirtoSolutions/vc-module-experience-api/tree/master/src/VirtoCommerce.ExperienceApiModule.DigitalCatalog)
+	-  [X-Catalog docs](./docs/x-catalog-reference.md)
+	-  [X-Purchase docs]()
+	-  [X-UserProfile docs]() 
 	-  [Recommendations Gateway API](https://github.com/VirtoSolutions/vc-module-experience-api/tree/master/samples/RecommendationsGatewayModule) (prototype)
-	-  Shopping experience API (scheduled)
 
 - Use GraphQL protocol to leverage more selective and flexible control of resulting data retrieving from API
 
@@ -19,7 +20,7 @@ The project "Experience API" it is primarily a intermediated layer between clien
 - Tracing and performance requests metrics 
 
 
-# Prerequisities 
+# Prerequisites 
 - VC platform 3.0 or later 
 - The platform is configured to use ElasticSearch engine 
 
