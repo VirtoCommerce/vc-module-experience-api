@@ -49,7 +49,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 
             orderConnectionBuilder.ResolveAsync(async context =>
             {
-                context.UserContext.Add(nameof(CustomerOrderAggregate).ToCamelCase(), ((CustomerOrderAggregate)context.Source).Order.Id);
+                
                 return await ResolveConnectionAsync(_mediator, context);
             });
 
@@ -71,6 +71,16 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             };
 
             var response = await mediator.Send(request);
+            foreach (var customerOrderAggregate in response.Results)
+            {
+                context.UserContext.Add($"{nameof(CustomerOrderAggregate).ToCamelCase()}:{customerOrderAggregate.Order.Id}", customerOrderAggregate);
+
+                //TODO need to add OrderId to LineItem then remove this code
+                foreach (var item in customerOrderAggregate.Order.Items)
+                {
+                    context.UserContext.Add($"{nameof(CustomerOrderAggregate).ToCamelCase()}:{item.Id}", customerOrderAggregate);
+                }
+            }
 
             var result = new Connection<CustomerOrderAggregate>()
             {
