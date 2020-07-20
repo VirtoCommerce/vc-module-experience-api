@@ -16,7 +16,7 @@ using Xunit;
 
 namespace VirtoCommerce.XPurchase.Tests.Repositories
 {
-    public class CartAggregateRepositoryTests : MoqHelper
+    public class CartAggregateRepositoryTests : XPurchaseMoqHelper
     {
         private readonly Mock<ICartValidationContextFactory> _cartValidationContextFactory;
         private readonly Mock<IShoppingCartSearchService> _shoppingCartSearchService;

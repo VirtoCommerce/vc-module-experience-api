@@ -8,7 +8,7 @@ using Xunit;
 
 namespace VirtoCommerce.XPurchase.Tests.Validators
 {
-    public class CartValidatorTests : MoqHelper
+    public class CartValidatorTests : XPurchaseMoqHelper
     {
         private readonly CartValidator _validator = new CartValidator(new CartValidationContext());
 

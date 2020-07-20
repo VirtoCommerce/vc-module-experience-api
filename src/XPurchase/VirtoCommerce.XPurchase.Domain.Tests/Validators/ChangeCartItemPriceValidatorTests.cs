@@ -11,7 +11,7 @@ using Xunit;
 
 namespace VirtoCommerce.XPurchase.Tests.Validators
 {
-    public class ChangeCartItemPriceValidatorTests : MoqHelper
+    public class ChangeCartItemPriceValidatorTests : XPurchaseMoqHelper
     {
         [Fact]
         public async Task ValidateChangePriceItem_RuleSetDefault_Valid()

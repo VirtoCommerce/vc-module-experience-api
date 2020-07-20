@@ -13,7 +13,7 @@ using Xunit;
 
 namespace VirtoCommerce.XPurchase.Tests.Aggregates
 {
-    public class CartAggregateTests : MoqHelper
+    public class CartAggregateTests : XPurchaseMoqHelper
     {
         private readonly CartAggregate aggregate;
 

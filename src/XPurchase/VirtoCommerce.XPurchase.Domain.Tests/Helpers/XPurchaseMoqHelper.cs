@@ -14,6 +14,7 @@ using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.CustomerModule.Core.Model;
+using VirtoCommerce.ExperienceApiModule.Tests.Helpers;
 using VirtoCommerce.InventoryModule.Core.Model;
 using VirtoCommerce.MarketingModule.Core.Model.Promotions;
 using VirtoCommerce.MarketingModule.Core.Services;
@@ -28,10 +29,8 @@ using VirtoCommerce.XPurchase.Services;
 
 namespace VirtoCommerce.XPurchase.Tests.Helpers
 {
-    public class MoqHelper
+    public class XPurchaseMoqHelper : MoqHelper
     {
-        protected readonly Fixture _fixture = new Fixture();
-
         protected readonly Mock<ICartProductService> _cartProductServiceMock;
         protected readonly Mock<ICurrencyService> _currencyServiceMock;
         protected readonly Mock<IMarketingPromoEvaluator> _marketingPromoEvaluatorMock;
@@ -45,16 +44,12 @@ namespace VirtoCommerce.XPurchase.Tests.Helpers
         protected readonly Randomizer Rand = new Randomizer();
 
         private const string CART_NAME = "default";
-        private const string CURRENCY_CODE = "USD";
-        private const string CULTURE_NAME = "en-US";
 
         protected const int InStockQuantity = 100;
         protected const int ItemCost = 50;
 
-        public MoqHelper()
+        public XPurchaseMoqHelper()
         {
-            _fixture.Register(() => new Language(CULTURE_NAME));
-            _fixture.Register(() => new Currency(_fixture.Create<Language>(), CURRENCY_CODE));
             _fixture.Register(() => _fixture
                 .Build<ShoppingCart>()
                 .With(x => x.Currency, CURRENCY_CODE)
@@ -142,8 +137,6 @@ namespace VirtoCommerce.XPurchase.Tests.Helpers
 
         protected ShoppingCart GetCart() => _fixture.Create<ShoppingCart>();
 
-        protected Currency GetCurrency() => _fixture.Create<Currency>();
-
         protected Member GetMember() => _fixture.Create<MockedMember>();
 
         protected Store GetStore() => _fixture.Create<Store>();
@@ -191,37 +184,6 @@ namespace VirtoCommerce.XPurchase.Tests.Helpers
             aggregate.GrabCartAsync(cart, new Store(), GetMember(), GetCurrency()).GetAwaiter().GetResult();
 
             return aggregate;
-        }
-
-        public static UserManager<TUser> TestUserManager<TUser>(IUserStore<TUser> store = null) where TUser : class
-        {
-            store ??= new Mock<IUserStore<TUser>>().Object;
-            var options = new Mock<IOptions<IdentityOptions>>();
-            var idOptions = new IdentityOptions();
-            idOptions.Lockout.AllowedForNewUsers = false;
-            options
-                .Setup(o => o.Value)
-                .Returns(idOptions);
-
-            var userValidators = new List<IUserValidator<TUser>>();
-            var validator = new Mock<IUserValidator<TUser>>();
-            userValidators.Add(validator.Object);
-            var pwdValidators = new List<PasswordValidator<TUser>>
-            {
-                new PasswordValidator<TUser>()
-            };
-
-            var userManager = new UserManager<TUser>(store, options.Object, new PasswordHasher<TUser>(),
-                userValidators, pwdValidators, new UpperInvariantLookupNormalizer(),
-                new IdentityErrorDescriber(), null,
-                new Mock<ILogger<UserManager<TUser>>>().Object);
-
-            validator
-                .Setup(v => v.ValidateAsync(userManager, It.IsAny<TUser>()))
-                .Returns(Task.FromResult(IdentityResult.Success))
-                .Verifiable();
-
-            return userManager;
         }
     }
 

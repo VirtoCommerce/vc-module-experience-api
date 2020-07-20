@@ -10,7 +10,7 @@ using Xunit;
 
 namespace VirtoCommerce.XPurchase.Tests.Services
 {
-    public class CartAvailMethodsServiceTests : MoqHelper
+    public class CartAvailMethodsServiceTests : XPurchaseMoqHelper
     {
         private readonly Mock<IPaymentMethodsSearchService> _paymentMethodsSearchServiceMock;
         private readonly Mock<ITaxProviderSearchService> _taxProviderSearchServiceMock;

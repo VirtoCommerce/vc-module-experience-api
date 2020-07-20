@@ -14,7 +14,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
             var cultureName = context.GetArgument<string>(Constants.CultureName);
             if (cultureName != null)
             {
-                context.SaveValue(cultureName);
+                context.SaveValue(cultureName, Constants.CultureName);
                 return cultureName;
             }
 
@@ -69,7 +69,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
                 return currency;
             }
 
-            var currencyFromContext = context.GetValue<Currency>("currency", nullable);
+            var currencyFromContext = context.GetValue<Currency>("currency", true);
             if (currencyFromContext != null)
             {
                 return currencyFromContext;
@@ -83,6 +83,6 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
             throw new ArgumentException("Currency not found in arguments or context");
         }
 
-        public static Money ToMoney<T>(this decimal amount, IResolveFieldContext<T> context) => amount.ToMoney(context.GetCurrency());
+        public static Money ToMoney<T>(this decimal amount, IResolveFieldContext<T> context) => amount.ToMoney(context.GetCurrency(nullable: false));
     }
 }

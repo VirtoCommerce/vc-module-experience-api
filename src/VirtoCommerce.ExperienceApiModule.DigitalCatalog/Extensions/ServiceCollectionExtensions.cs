@@ -12,10 +12,6 @@ namespace VirtoCommerce.XDigitalCatalog.Extensions
         {
             services.AddSchemaBuilder<DigitalCatalogSchema>();
 
-            // TODO: check if anchor loading is working, remove direct schema registration
-            services.AddSchemaType<CategoryType>();
-
-            // TODO: check if this work remove upper code
             graphQlbuilder.AddGraphTypes(typeof(XDigitalCatalogAnchor));
 
             services.AddMediatR(typeof(XDigitalCatalogAnchor));
