@@ -32,6 +32,9 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                                             .WithPaging(0, request.Ids.Count())
                                             .WithIncludeFields(request.IncludeFields.Concat(new[] { "id" }).Select(x => "__object." + x).ToArray())
                                             .WithIncludeFields(request.IncludeFields.Where(x => x.StartsWith("prices.")).Concat(new[] { "id" }).Select(x => "__prices." + x.TrimStart("prices.")).ToArray())
+                                            .WithIncludeFields((request.IncludeFields.Any(x => x.StartsWith("variations."))
+                                                ? new[] { "__variations" }
+                                                : Enumerable.Empty<string>()).ToArray())
                                             .WithIncludeFields((request.IncludeFields.Any(x => x.StartsWith("category."))
                                                 ? new[] { "__object.categoryId" }
                                                 : Enumerable.Empty<string>()).ToArray())

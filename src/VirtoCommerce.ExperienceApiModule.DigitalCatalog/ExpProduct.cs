@@ -14,6 +14,9 @@ namespace VirtoCommerce.XDigitalCatalog
         [BindIndexField(FieldName = "__object", BinderType = typeof(CatalogProductBinder))]
         public virtual CatalogProduct CatalogProduct { get; set; }
 
+        [BindIndexField(FieldName = "__variations", BinderType = typeof(VariationsBinder))]
+        public virtual IList<string> VariationIds { get; set; }
+
         [BindIndexField(FieldName = "__prices", BinderType = typeof(PriceBinder))]
         public virtual IList<Price> Prices { get; set; }
 

@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Builders;
@@ -9,38 +10,49 @@ using GraphQL.Types.Relay.DataObjects;
 using MediatR;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
+using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.XDigitalCatalog.Queries;
-using VirtoCommerce.ExperienceApiModule.Core.Extensions;
-using GraphQL.Instrumentation;
-using GraphQL.Language.AST;
-using System.Collections.Generic;
-using System.Reflection;
 
 namespace VirtoCommerce.XDigitalCatalog.Schemas
 {
-    public class ExpDescription
-    {
-        public string Type { get; set; }
-        public string Text { get; set; }
-    }
-
-    public class DescriptionType : ObjectGraphType<ExpDescription>
-    {
-        public DescriptionType()
-        {
-            Field(x => x.Type).Description("Description type.");
-            Field(x => x.Text).Description("Description text.");
-        }
-    }
-
     public class ProductType : ObjectGraphType<ExpProduct>
     {
-        /// <summary>
-        ///
-        /// </summary>
         /// <example>
-        ///
+        ///{
+        ///    product(id: "f1b26974b7634abaa0900e575a99476f")
+        ///    {
+        ///        id
+        ///        code
+        ///        category{ id code name hasParent slug }
+        ///        name
+        ///        metaTitle
+        ///        metaDescription
+        ///        metaKeywords
+        ///        brandName
+        ///        slug
+        ///        imgSrc
+        ///        productType
+        ///        masterVariation {
+        ///        images{ id url name }
+        ///        assets{ id size url }
+        ///        prices(cultureName: "en-us"){
+        ///            list { amount }
+        ///            currency
+        ///        }
+        ///        availabilityData{
+        ///            availableQuantity
+        ///            inventories{
+        ///                inStockQuantity
+        ///                fulfillmentCenterId
+        ///                fulfillmentCenterName
+        ///                allowPreorder
+        ///                allowBackorder
+        ///            }
+        ///        }
+        ///        properties{ id name valueType value valueId }
+        ///    }
+        ///}
         /// </example>
         public ProductType(
             IMediator mediator,
@@ -134,7 +146,6 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                     return brandName;
                 });
 
-            // TODO: resolve this correctly
             Field<VariationType>("masterVariation", resolve: context =>
             {
                 var variation = new Variation();
@@ -142,7 +153,22 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 return variation;
             });
 
-            Field<ListGraphType<VariationType>>("variations", resolve: context => context.Source.CatalogProduct.Variations);
+            FieldAsync<ListGraphType<VariationType>>("variations", resolve: async context =>
+            {
+                var variationsIds = context.Source.VariationIds;
+                var response = await mediator.Send(new LoadProductQuery
+                {
+                    Ids = variationsIds.ToArray(),
+                    IncludeFields = context.SubFields.Values.GetAllNodesPaths()
+                });
+
+                return response.Products.Select(product =>
+                {
+                    var variation = new Variation();
+                    variation = Map(variation, product.CatalogProduct);
+                    return variation;
+                });
+            });
 
             Field<ListGraphType<PropertyType>>("properties", resolve: context => context.Source.CatalogProduct.Properties);
 
