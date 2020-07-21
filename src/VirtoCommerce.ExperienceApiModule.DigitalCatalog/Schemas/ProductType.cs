@@ -146,11 +146,20 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                     return brandName;
                 });
 
-            Field<VariationType>("masterVariation", resolve: context =>
+            FieldAsync<VariationType>("masterVariation", resolve: async context =>
             {
-                var variation = new Variation();
-                variation = Map(variation, context.Source.CatalogProduct);
-                return variation;
+                if (context.Source.CatalogProduct.MainProductId == null)
+                {
+                    return Map(new Variation(), context.Source.CatalogProduct);
+                }
+
+                var response = await mediator.Send(new LoadProductQuery
+                {
+                    Ids = new[] { context.Source.CatalogProduct.MainProductId },
+                    IncludeFields = context.SubFields.Values.GetAllNodesPaths()
+                });
+
+                return response.Products.Select(product => Map(new Variation(), product.CatalogProduct)).FirstOrDefault();
             });
 
             FieldAsync<ListGraphType<VariationType>>("variations", resolve: async context =>
