@@ -211,7 +211,11 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Index
 
         public SearchRequestBuilder AddObjectIds(IEnumerable<string> ids)
         {
-            ((AndFilter)SearchRequest.Filter).ChildFilters.Add(new IdsFilter { Values = ids.ToArray() });
+            if (!ids.IsNullOrEmpty())
+            {
+                ((AndFilter)SearchRequest.Filter).ChildFilters.Add(new IdsFilter { Values = ids.ToArray() });
+            }
+
             return this;
         }
 

@@ -13,6 +13,7 @@ using MediatR;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
+using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.XDigitalCatalog.Queries;
 
 namespace VirtoCommerce.XDigitalCatalog.Schemas
@@ -58,13 +59,11 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 .Argument<IntGraphType>("fuzzyLevel", "The fuzziness level is quantified in terms of the Damerau-Levenshtein distance, this distance being the number of operations needed to transform one word into another.")
                 .Argument<StringGraphType>("facet", "Facets calculate statistical counts to aid in faceted navigation.")
                 .Argument<StringGraphType>("sort", "The sort expression")
+                .Argument<ListGraphType<StringGraphType>>("productIds", "Product Ids") // TODO: make something good with it, move productIds in filter for example
                 .Unidirectional()
                 .PageSize(20);
 
-            productsConnectionBuilder.ResolveAsync(async context =>
-                {
-                    return await ResolveConnectionAsync(_mediator, context);
-                });
+            productsConnectionBuilder.ResolveAsync(async context => await ResolveConnectionAsync(_mediator, context));
 
             schema.Query.AddField(productsConnectionBuilder.FieldType);
         }
@@ -81,22 +80,38 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             var skip = Convert.ToInt32(context.After ?? 0.ToString());
             var includeFields = context.SubFields.Values.GetAllNodesPaths().Select(x => x.TrimStart("items.")).ToArray();
 
+            // TODO: maybe we need to save it to UserContext?
+            var storeId = context.GetArgument<string>("storeId");
+            var customerId = context.GetArgument<string>("customerId");
+            var currency = context.GetArgument<string>("currency");
+            var lang = context.GetArgument<string>("lang");
+
+            var productIds = context.GetArgument<List<string>>("productIds");
+
             var request = new SearchProductQuery
             {
-                Skip = skip,
-                Take = first ?? context.PageSize ?? 10,
-                Lang = context.GetArgument<string>("lang"),
-                StoreId = context.GetArgument<string>("storeId"),
-                CustomerId = context.GetArgument<string>("customerId"),
-                Currency = context.GetArgument<string>("currency"),
-                Query = context.GetArgument<string>("query"),
-                Filter = context.GetArgument<string>("filter"),
-                Facet = context.GetArgument<string>("facet"),
-                Fuzzy = context.GetArgument<bool>("fuzzy"),
-                FuzzyLevel = context.GetArgument<int?>("fuzzyLevel"),
-                Sort = context.GetArgument<string>("sort"),
+                Lang = lang,
+                StoreId = storeId,
+                CustomerId = customerId,
+                Currency = currency,
                 IncludeFields = includeFields.ToArray(),
             };
+
+            if (productIds.IsNullOrEmpty())
+            {
+                request.Skip = skip;
+                request.Take = first ?? context.PageSize ?? 10;
+                request.Query = context.GetArgument<string>("query");
+                request.Filter = context.GetArgument<string>("filter");
+                request.Facet = context.GetArgument<string>("facet");
+                request.Fuzzy = context.GetArgument<bool>("fuzzy");
+                request.FuzzyLevel = context.GetArgument<int?>("fuzzyLevel");
+                request.Sort = context.GetArgument<string>("sort");
+            }
+            else
+            {
+                request.ProductIds = productIds;
+            }
 
             var response = await mediator.Send(request);
 

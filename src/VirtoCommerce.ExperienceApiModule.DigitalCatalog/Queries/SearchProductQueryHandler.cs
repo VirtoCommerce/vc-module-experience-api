@@ -26,25 +26,27 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
 
         public virtual async Task<SearchProductResponse> Handle(SearchProductQuery request, CancellationToken cancellationToken)
         {
-            var result = new SearchProductResponse();
             var searchRequest = new SearchRequestBuilder(_searchPhraseParser)
-                                            .WithFuzzy(request.Fuzzy, request.FuzzyLevel)
-                                            .ParseFilters(request.Filter)
-                                            .ParseFacets(request.Facet)
-                                            .WithSearchPhrase(request.Query)
-                                            .WithPaging(request.Skip, request.Take)
-                                            .AddSorting(request.Sort)
-                                            //TODO: Remove hardcoded field name  __object from here
-                                            .WithIncludeFields(request.IncludeFields.Concat(new[] { "id" }).Select(x => "__object." + x).ToArray())
-                                            .WithIncludeFields(request.IncludeFields.Where(x => x.StartsWith("prices.")).Concat(new[] { "id" }).Select(x => "__prices." + x.TrimStart("prices.")).ToArray())
-                                            .Build();
+                .WithFuzzy(request.Fuzzy, request.FuzzyLevel)
+                .ParseFilters(request.Filter)
+                .ParseFacets(request.Facet)
+                .WithSearchPhrase(request.Query)
+                .WithPaging(request.Skip, request.Take)
+                .AddSorting(request.Sort)
+                //TODO: Remove hardcoded field name  __object from here
+                .WithIncludeFields(request.IncludeFields.Concat(new[] { "id" }).Select(x => "__object." + x).ToArray())
+                .WithIncludeFields(request.IncludeFields.Where(x => x.StartsWith("prices.")).Concat(new[] { "id" }).Select(x => "__prices." + x.TrimStart("prices.")).ToArray())
+                .AddObjectIds(request.ProductIds)
+                .Build();
 
             var searchResult = await _searchProvider.SearchAsync(KnownDocumentTypes.Product, searchRequest);
-            result.Results = searchResult.Documents?.Select(x => _mapper.Map<ExpProduct>(x)).ToList();
-            result.Facets = searchRequest.Aggregations?.Select(x => _mapper.Map<FacetResult>(x, opts => opts.Items["aggregations"] = searchResult.Aggregations)).ToList();
 
-            result.TotalCount = (int)searchResult.TotalCount;
-            return result;
+            return new SearchProductResponse
+            {
+                Results = searchResult.Documents?.Select(x => _mapper.Map<ExpProduct>(x)).ToList(),
+                Facets = searchRequest.Aggregations?.Select(x => _mapper.Map<FacetResult>(x, opts => opts.Items["aggregations"] = searchResult.Aggregations)).ToList(),
+                TotalCount = (int)searchResult.TotalCount
+            };
         }
     }
 }
