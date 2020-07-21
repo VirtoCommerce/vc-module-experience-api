@@ -80,12 +80,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             Field(d => d.CatalogProduct.Name, nullable: false).Description("The name of the product.");
 
-            FieldAsync<ListGraphType<DescriptionType>>("descriptions", resolve: async context =>
-            {
-                var descriptions = await mediator.Send(new object());
-
-                return descriptions;
-            });
+            Field<ListGraphType<DescriptionType>>("descriptions", resolve: context => context.Source.CatalogProduct.Reviews);
 
             Field(d => d.CatalogProduct.ProductType, nullable: true).Description("The type of product");
 

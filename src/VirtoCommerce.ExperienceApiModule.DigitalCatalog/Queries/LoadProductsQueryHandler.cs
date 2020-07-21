@@ -41,6 +41,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                                             // Add master variation fields
                                             .WithIncludeFields(request.IncludeFields
                                                 .Where(x => x.StartsWith("masterVariation."))
+                                                .Concat(new[] { "mainProductId" })
                                                 .Select(x => "__object." + x.TrimStart("masterVariation."))
                                                 .ToArray())
                                             // Add seoInfos
@@ -53,6 +54,9 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                                                 : Array.Empty<string>())
                                             .WithIncludeFields(request.IncludeFields.Any(x => x.Contains("brandName", StringComparison.OrdinalIgnoreCase))
                                                 ? new[] { "__object.properties" }
+                                                : Array.Empty<string>())
+                                            .WithIncludeFields(request.IncludeFields.Any(x => x.Contains("descriptions", StringComparison.OrdinalIgnoreCase))
+                                                ? new[] { "__object.reviews" }
                                                 : Array.Empty<string>())
                                             .AddObjectIds(request.Ids)
                                             .Build();
