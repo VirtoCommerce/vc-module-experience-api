@@ -1,10 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
-using AutoMapper;
 using FluentValidation;
 using MediatR;
-using VirtoCommerce.CustomerModule.Core.Model;
-using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.XPurchase.Validators;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
@@ -12,17 +9,14 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
     public class CreateContactCommandHandler : IRequestHandler<CreateContactCommand, ContactAggregate>
     {
         private readonly IContactAggregateRepository _contactAggregateRepository;
-        private readonly IMapper _mapper;
 
-        public CreateContactCommandHandler(IContactAggregateRepository contactAggregateRepository, IMapper mapper)
+        public CreateContactCommandHandler(IContactAggregateRepository contactAggregateRepository)
         {
             _contactAggregateRepository = contactAggregateRepository;
-            _mapper = mapper;
         }
         public async Task<ContactAggregate> Handle(CreateContactCommand request, CancellationToken cancellationToken)
         {
-            var contactAggregate = new ContactAggregate(AbstractTypeFactory<Contact>.TryCreateInstance());
-            _mapper.Map(request, contactAggregate.Contact);
+            var contactAggregate = new ContactAggregate(request);
 
             await new NewContactValidator().ValidateAndThrowAsync(contactAggregate.Contact);
 

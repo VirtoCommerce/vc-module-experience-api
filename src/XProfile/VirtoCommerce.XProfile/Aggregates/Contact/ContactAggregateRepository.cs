@@ -1,7 +1,7 @@
-using System;
 using System.Threading.Tasks;
 using VirtoCommerce.CustomerModule.Core.Model;
 using VirtoCommerce.CustomerModule.Core.Services;
+using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile
 {
@@ -18,10 +18,13 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile
         {
             ContactAggregate result = null;
 
-            var contact = await _memberService.GetByIdAsync(contactId, null, nameof(Contact));
-            if (contact != null)
+            if (!contactId.IsNullOrEmpty())
             {
-                result = new ContactAggregate(contact as Contact);
+                var contact = await _memberService.GetByIdAsync(contactId, null, nameof(Contact));
+                if (contact != null)
+                {
+                    result = new ContactAggregate(contact as Contact);
+                }
             }
 
             return result;
@@ -32,7 +35,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile
             return _memberService.SaveChangesAsync(new[] { contactAggregate.Contact });
         }
 
-     
+
         public Task DeleteContactAsync(string contactId)
         {
             return _memberService.DeleteAsync(new[] { contactId });

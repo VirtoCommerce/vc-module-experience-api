@@ -4,6 +4,8 @@ using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
 {
+    //TODO: We mustn't use such general  commands that update entire contact on the xApi level. Need to use commands more close to real business scenarios instead.
+    //remove in the future
     public abstract class ContactCommand : Contact, ICommand<ContactAggregate>
     {
         protected ContactCommand()
@@ -11,49 +13,8 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
             MemberType = nameof(Contact);
         }
 
-        protected ContactCommand(string salutation,
-            string fullName = default,
-            string firstName = default,
-            string middleName = default,
-            string lastName = default,
-            string defaultLanguage = default,
-            string timeZone = default,
-            IList<string> organizations = default,
-            string photoUrl = default,
-            //IList<ApplicationUser> securityAccounts = default(IList<ApplicationUser>),
-            string name = default,
-            string memberType = nameof(Contact),
-            IList<Address> addresses = default,
-            IList<string> phones = default,
-            IList<string> emails = default,
-            IList<string> groups = default
-            //IList<DynamicObjectProperty> dynamicProperties = default(IList<DynamicObjectProperty>),
-            //string id = default
-            ) : this()
-        {
-            Salutation = salutation;
-            FullName = fullName;
-            FirstName = firstName;
-            MiddleName = middleName;
-            LastName = lastName;
-            DefaultLanguage = defaultLanguage;
-            TimeZone = timeZone;
-            Organizations = organizations;
-            PhotoUrl = photoUrl;
-            Name = name;
-            MemberType = memberType;
-            Addresses = addresses;
-            Phones = phones;
-            Emails = emails;
-            Groups = groups;
-        }
-
-
-
         public Address DefaultBillingAddress { get; set; }
         public Address DefaultShippingAddress { get; set; }
-
-        public IList<string> Organizations { get; set; } = new List<string>();
 
         /// <summary>
         /// Returns true if the customer accepts marketing, returns false if the customer does not.
@@ -65,17 +26,33 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
         /// </summary>
         public Address DefaultAddress { get; set; }
 
-        //TODO
-        /// <summary>
-        /// All contact security accounts
-        /// </summary>
-        //public IEnumerable<SecurityAccount> SecurityAccounts { get; set; }
 
-        public IList<string> PhoneNumbers { get; set; } = new List<string>();
+        public IList<string> PhoneNumbers
+        {
+            get
+            {
+                return Phones;
+            }
+            set
+            {
+                Phones = value;
+            }
+        }
+
 
         /// <summary>
         /// User groups such as VIP, Wholesaler etc
         /// </summary>
-        public IList<string> UserGroups { get; set; } = new List<string>();
+        public IList<string> UserGroups
+        {
+            get
+            {
+                return Groups;
+            }
+            set
+            {
+                Groups = value;
+            }
+        }
     }
 }
