@@ -9,6 +9,7 @@ using GraphQL.Types.Relay.DataObjects;
 using MediatR;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.ExperienceApiModule.Core.Schema;
+using VirtoCommerce.ExperienceApiModule.XOrder.Commands;
 using VirtoCommerce.ExperienceApiModule.XOrder.Queries;
 using VirtoCommerce.OrdersModule.Core.Model;
 
@@ -52,6 +53,16 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             orderConnectionBuilder.ResolveAsync(async context => await ResolveConnectionAsync(_mediator, context));
 
             schema.Query.AddField(orderConnectionBuilder.FieldType);
+
+
+            _ = schema.Mutation.AddField(FieldBuilder.Create<object, bool>(typeof(BooleanGraphType))
+                            .Name("updateOrder")
+                            .Argument<NonNullGraphType<InputUpdateOrderType>>(_commandName)
+                            .ResolveAsync(async context => {
+                                var arg = context.GetArgument<UpdateOrderCommand>(_commandName);
+                                return await _mediator.Send(arg);
+                                })
+                            .FieldType);
         }
 
 

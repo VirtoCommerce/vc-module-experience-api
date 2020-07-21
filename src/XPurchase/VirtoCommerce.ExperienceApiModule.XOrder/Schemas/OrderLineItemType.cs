@@ -48,10 +48,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field(x => x.ProductId);
             Field(x => x.OrderId, true);
 
-            Field<OrderCurrencyType>(nameof(LineItem.Currency).ToCamelCase(), resolve: context => {
-                return context.OrderCurency(context.Source.OrderId);
-                }
-                );
+            Field<OrderCurrencyType>(nameof(LineItem.Currency).ToCamelCase(), resolve: context => context.OrderCurency(context.Source.OrderId));
             Field<OrderMoneyType>(nameof(LineItem.DiscountAmount).ToCamelCase(), resolve: context => new Money(context.Source.DiscountAmount, context.OrderCurency(context.Source.OrderId)));
             Field<OrderMoneyType>(nameof(LineItem.DiscountAmountWithTax).ToCamelCase(), resolve: context => new Money(context.Source.DiscountAmountWithTax, context.OrderCurency(context.Source.OrderId)));
             Field<OrderMoneyType>(nameof(LineItem.DiscountTotal).ToCamelCase(), resolve: context => new Money(context.Source.DiscountTotal, context.OrderCurency(context.Source.OrderId)));
