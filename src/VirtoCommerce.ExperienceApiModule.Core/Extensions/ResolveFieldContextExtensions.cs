@@ -9,12 +9,11 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
 {
     public static class ResolveFieldContextExtensions
     {
-        public static string GetCultureName<T>(this IResolveFieldContext<T> context, bool nullable = true)
+        public static string GetCultureName<T>(this IResolveFieldContext<T> context, string defaultValue = default)
         {
             var cultureName = context.GetArgument<string>(Constants.CultureName);
             if (cultureName != null)
             {
-                context.SaveValue(cultureName, Constants.CultureName);
                 return cultureName;
             }
 
@@ -24,21 +23,15 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
                 return cultureNameFromContext;
             }
 
-            if (nullable)
-            {
-                return null;
-            }
-
-            throw new ArgumentException("CultureName not found in arguments or context");
+            return defaultValue;
         }
 
-        public static Language GetLanguage<T>(this IResolveFieldContext<T> context, bool nullable = true)
+        public static Language GetLanguage<T>(this IResolveFieldContext<T> context, Language defaultValue = default)
         {
-            var cultureName = context.GetCultureName(nullable: true);
+            var cultureName = context.GetCultureName();
             if (cultureName != null)
             {
                 var language = new Language(cultureName);
-                context.SaveValue(language);
                 return language;
             }
 
@@ -48,25 +41,18 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
                 return languageFromContext;
             }
 
-            if (nullable)
-            {
-                return null;
-            }
-
-            throw new ArgumentException("Language not found in arguments or context");
+            return defaultValue;
         }
 
         /// <summary>
         /// Get saved currency from arguments or user context
         /// </summary>
-        public static Currency GetCurrency<T>(this IResolveFieldContext<T> context, bool nullable = true)
+        public static Currency GetCurrency<T>(this IResolveFieldContext<T> context, Currency defaultValue = default)
         {
             var currencyCode = context.GetArgument<string>(Constants.CurrencyCode);
             if (currencyCode != null)
             {
-                var currency = new Currency(context.GetLanguage(), currencyCode);
-                context.SaveValue(currency);
-                return currency;
+                return new Currency(context.GetLanguage(), currencyCode);
             }
 
             var currencyFromContext = context.GetValue<Currency>("currency", null);
@@ -75,14 +61,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
                 return currencyFromContext;
             }
 
-            if (nullable)
-            {
-                return null;
-            }
-
-            throw new ArgumentException("Currency not found in arguments or context");
+            return defaultValue;
         }
-
-        public static Money ToMoney<T>(this decimal amount, IResolveFieldContext<T> context) => amount.ToMoney(context.GetCurrency(nullable: false));
     }
 }

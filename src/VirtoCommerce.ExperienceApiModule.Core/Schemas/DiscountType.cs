@@ -16,12 +16,20 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
             Field<MoneyType>(
                 "amount",
                 arguments: QueryArgumentPresets.ArgumentsForMoney(),
-                resolve: context => context.Source.DiscountAmount.ToMoney(context));
+                resolve: context =>
+                {
+                    var currency = context.GetCurrency();
+                    return currency != null ? context.Source.DiscountAmount.ToMoney(currency) : null;
+                });
 
             Field<MoneyType>(
                 "amountWithTax",
                 arguments: QueryArgumentPresets.ArgumentsForMoney(),
-                resolve: context => context.Source.DiscountAmountWithTax.ToMoney(context));
+                resolve: context =>
+                {
+                    var currency = context.GetCurrency();
+                    return currency != null ? context.Source.DiscountAmountWithTax.ToMoney(currency) : null;
+                });
         }
     }
 }

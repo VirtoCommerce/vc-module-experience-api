@@ -41,14 +41,14 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 "prices",
                 arguments: new QueryArguments
                 {
-                    new QueryArgument<StringGraphType> { Name = Constants.CultureName }
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = Constants.CultureName }
                 },
                 resolve: async context =>
                 {
                     var responce = await mediator.Send(new LoadProductPricesRequest
                     {
                         ProductId = context.Source.Id,
-                        Language = context.GetLanguage(nullable: false)
+                        Language = context.GetLanguage()
                     });
 
                     return responce.ProductPrices;
