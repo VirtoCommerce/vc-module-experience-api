@@ -25,7 +25,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             var result = new LoadCategoryResponce();
             var searchRequest = new SearchRequestBuilder()
                                             .WithPaging(0, 1)
-                                            .WithIncludeFields(request.IncludeFields.Concat(new[] { "id" }).Distinct().Select(x => "__object." + x).ToArray())
+                                            .WithIncludeFields(request.IncludeFields.Concat(new[] { "id" }).Distinct().Select(x => $"__object.{x}").ToArray())
                                             .WithIncludeFields((request.IncludeFields.Any(x => x.Contains("slug", System.StringComparison.OrdinalIgnoreCase))
                                                 ? new[] { "__object.seoInfos" }
                                                 : Enumerable.Empty<string>()).ToArray())

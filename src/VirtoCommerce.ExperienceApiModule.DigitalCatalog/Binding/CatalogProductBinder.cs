@@ -14,14 +14,14 @@ namespace VirtoCommerce.XDigitalCatalog.Binding
 
         public BindingInfo BindingInfo { get; set; } = new BindingInfo { FieldName = "__object" };
 
-        public virtual object BindModel(SearchDocument doc)
+        public virtual object BindModel(SearchDocument searchDocument)
         {
             var result = default(CatalogProduct);
 
             var fieldName = BindingInfo.FieldName;
-            if (doc.ContainsKey(fieldName))
+            if (searchDocument.ContainsKey(fieldName))
             {
-                var obj = doc[fieldName];
+                var obj = searchDocument[fieldName];
 
                 if (obj is JObject jobj)
                 {
@@ -35,7 +35,7 @@ namespace VirtoCommerce.XDigitalCatalog.Binding
 
                         if (binder != null)
                         {
-                            property.SetValue(result, binder.BindModel(doc));
+                            property.SetValue(result, binder.BindModel(searchDocument));
                         }
                     }
                 }

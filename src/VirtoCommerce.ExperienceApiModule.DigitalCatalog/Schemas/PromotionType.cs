@@ -1,4 +1,4 @@
-﻿using GraphQL.Types;
+using GraphQL.Types;
 using VirtoCommerce.MarketingModule.Core.Model.Promotions;
 
 namespace VirtoCommerce.XDigitalCatalog.Schemas

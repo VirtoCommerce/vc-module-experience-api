@@ -8,11 +8,11 @@ namespace VirtoCommerce.XDigitalCatalog.Binding
     {
         public BindingInfo BindingInfo { get; set; } = new BindingInfo { FieldName = "__variations" };
 
-        public virtual object BindModel(SearchDocument doc)
+        public virtual object BindModel(SearchDocument searchDocument)
         {
             var fieldName = BindingInfo.FieldName;
 
-            return doc.ContainsKey(fieldName) && doc[fieldName] is object[] objs
+            return searchDocument.ContainsKey(fieldName) && searchDocument[fieldName] is object[] objs
                 ? objs.Select(x => (string)x).ToList()
                 : Enumerable.Empty<string>().ToList();
         }

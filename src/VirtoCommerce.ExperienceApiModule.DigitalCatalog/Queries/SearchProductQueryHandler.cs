@@ -16,6 +16,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
         private readonly IMapper _mapper;
         private readonly ISearchProvider _searchProvider;
         private readonly ISearchPhraseParser _searchPhraseParser;
+
         public SearchProductQueryHandler(ISearchProvider searchProvider, ISearchPhraseParser searchPhraseParser, IMapper mapper)
         {
             _searchProvider = searchProvider;

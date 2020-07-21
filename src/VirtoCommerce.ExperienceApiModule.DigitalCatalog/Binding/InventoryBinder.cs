@@ -12,12 +12,12 @@ namespace VirtoCommerce.XDigitalCatalog.Binding
     {
         public BindingInfo BindingInfo { get; set; } = new BindingInfo { FieldName = "__inventories" };
 
-        public object BindModel(SearchDocument doc)
+        public object BindModel(SearchDocument searchDocument)
         {
             var result = new List<InventoryInfo>();
-            if (doc.ContainsKey(BindingInfo.FieldName))
+            if (searchDocument.ContainsKey(BindingInfo.FieldName))
             {
-                var obj = doc[BindingInfo.FieldName];
+                var obj = searchDocument[BindingInfo.FieldName];
                 if (obj is Array jobjArray)
                 {
                     var inventories = jobjArray.OfType<JObject>().Select(x => (InventoryInfo)x.ToObject(typeof(InventoryInfo)));

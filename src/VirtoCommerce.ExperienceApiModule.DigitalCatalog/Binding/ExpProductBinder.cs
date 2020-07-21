@@ -9,7 +9,7 @@ namespace VirtoCommerce.XDigitalCatalog.Binding
     {
         public BindingInfo BindingInfo { get; set; }
 
-        public virtual object BindModel(SearchDocument doc)
+        public virtual object BindModel(SearchDocument searchDocument)
         {
             var result = AbstractTypeFactory<ExpProduct>.TryCreateInstance();
             var productProperties = result.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
@@ -20,7 +20,7 @@ namespace VirtoCommerce.XDigitalCatalog.Binding
 
                 if (binder != null)
                 {
-                    property.SetValue(result, binder.BindModel(doc));
+                    property.SetValue(result, binder.BindModel(searchDocument));
                 }
             }
 
