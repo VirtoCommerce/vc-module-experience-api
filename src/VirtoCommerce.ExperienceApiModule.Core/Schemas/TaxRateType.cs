@@ -1,7 +1,7 @@
 using GraphQL.Types;
 using VirtoCommerce.TaxModule.Core.Model;
 
-namespace VirtoCommerce.XDigitalCatalog.Schemas
+namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
 {
     public class TaxRateType : ObjectGraphType<TaxRate>
     {
