@@ -239,7 +239,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             };
         }
 
-        // TODO: move this to extensions if this needed in future :p
+        // TODO: write normal mapper
         private static T Map<T, TU>(T target, TU source)
         {
             typeof(T)
