@@ -1,0 +1,20 @@
+# This is a basic workflow that is manually triggered
+
+name: Module CI
+
+# Controls when the action will run. Workflow runs when manually triggered using the UI
+# or API.
+on:
+  workflow_dispatch:
+    
+jobs:
+  # This workflow contains a single job called "greet"
+  build_package:
+    # The type of runner that the job will run on
+    runs-on: windows-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+    - uses: actions/checkout@v2
+       
+      
