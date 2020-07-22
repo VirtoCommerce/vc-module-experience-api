@@ -63,18 +63,38 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 .Unidirectional()
                 .PageSize(20);
 
-            productsConnectionBuilder.ResolveAsync(async context => await ResolveConnectionAsync(_mediator, context));
+            productsConnectionBuilder.ResolveAsync(async context => await ResolveProductsConnectionAsync(_mediator, context));
 
             schema.Query.AddField(productsConnectionBuilder.FieldType);
+
+            var categoriesConnectionBuilder = GraphTypeExtenstionHelper.CreateConnection<CategoryType, EdgeType<CategoryType>, CategoriesConnectonType<CategoryType>, object>()
+                .Name("categories")
+                .Argument<StringGraphType>("storeId", "The store id where category are searched")
+                .Argument<StringGraphType>("lang", "The language for which all localized category data will be returned")
+                .Argument<StringGraphType>("customerId", "The customer id for search result impersonalization")
+                .Argument<StringGraphType>("currency", "The currency for which all prices data will be returned")
+                .Argument<StringGraphType>("query", "The query parameter performs the full-text search")
+                .Argument<StringGraphType>("filter", "This parameter applies a filter to the query results")
+                .Argument<BooleanGraphType>("fuzzy", "When the fuzzy query parameter is set to true the search endpoint will also return Categorys that contain slight differences to the search text.")
+                .Argument<IntGraphType>("fuzzyLevel", "The fuzziness level is quantified in terms of the Damerau-Levenshtein distance, this distance being the number of operations needed to transform one word into another.")
+                .Argument<StringGraphType>("facet", "Facets calculate statistical counts to aid in faceted navigation.")
+                .Argument<StringGraphType>("sort", "The sort expression")
+                .Argument<ListGraphType<StringGraphType>>("categoryIds", "Category Ids") // TODO: make something good with it, move CategoryIds in filter for example
+                .Unidirectional()
+                .PageSize(20);
+
+            categoriesConnectionBuilder.ResolveAsync(async context => await ResolveCategoriesConnectionAsync(_mediator, context));
+
+            schema.Query.AddField(categoriesConnectionBuilder.FieldType);
         }
 
-        public static async Task<IDictionary<string, ExpProduct>> LoadProductsAsync(IMediator mediator, IEnumerable<string> ids, IEnumerable<string> includeFields)
+        private static async Task<IDictionary<string, ExpProduct>> LoadProductsAsync(IMediator mediator, IEnumerable<string> ids, IEnumerable<string> includeFields)
         {
             var response = await mediator.Send(new LoadProductQuery { Ids = ids.ToArray(), IncludeFields = includeFields });
             return response.Products.ToDictionary(x => x.Id);
         }
 
-        private static async Task<object> ResolveConnectionAsync(IMediator mediator, IResolveConnectionContext<object> context)
+        private static async Task<object> ResolveProductsConnectionAsync(IMediator mediator, IResolveConnectionContext<object> context)
         {
             var first = context.First;
             var skip = Convert.ToInt32(context.After ?? 0.ToString());
@@ -121,6 +141,70 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 Edges = response.Results
                     .Select((x, index) =>
                         new Edge<ExpProduct>()
+                        {
+                            Cursor = (skip + index).ToString(),
+                            Node = x,
+                        })
+                    .ToList(),
+                PageInfo = new PageInfo()
+                {
+                    HasNextPage = response.TotalCount > skip + first,
+                    HasPreviousPage = skip > 0,
+                    StartCursor = skip.ToString(),
+                    EndCursor = Math.Min(response.TotalCount, (int)(skip + first)).ToString()
+                },
+                TotalCount = response.TotalCount,
+                Facets = response.Facets
+            };
+        }
+
+        private static async Task<object> ResolveCategoriesConnectionAsync(IMediator mediator, IResolveConnectionContext<object> context)
+        {
+            var first = context.First;
+            var skip = Convert.ToInt32(context.After ?? 0.ToString());
+            var includeFields = context.SubFields.Values.GetAllNodesPaths().Select(x => x.TrimStart("items.")).ToArray();
+
+            // TODO: maybe we need to save it to UserContext?
+            var storeId = context.GetArgument<string>("storeId");
+            var customerId = context.GetArgument<string>("customerId");
+            var currency = context.GetArgument<string>("currency");
+            var lang = context.GetArgument<string>("lang");
+
+            var categoryIds = context.GetArgument<List<string>>("categoryIds");
+
+            var request = new SearchCategoryQuery
+            {
+                Lang = lang,
+                StoreId = storeId,
+                CustomerId = customerId,
+                Currency = currency,
+                IncludeFields = includeFields.ToArray(),
+            };
+
+            if (categoryIds.IsNullOrEmpty())
+            {
+                request.Skip = skip;
+                request.Take = first ?? context.PageSize ?? 10;
+                request.Query = context.GetArgument<string>("query");
+                request.Filter = context.GetArgument<string>("filter");
+                request.Facet = context.GetArgument<string>("facet");
+                request.Fuzzy = context.GetArgument<bool>("fuzzy");
+                request.FuzzyLevel = context.GetArgument<int?>("fuzzyLevel");
+                request.Sort = context.GetArgument<string>("sort");
+            }
+            else
+            {
+                request.CategoryIds = categoryIds;
+                request.Take = categoryIds.Count;
+            }
+
+            var response = await mediator.Send(request);
+
+            return new CategoriesConnection<ExpCategory>()
+            {
+                Edges = response.Results
+                    .Select((x, index) =>
+                        new Edge<ExpCategory>()
                         {
                             Cursor = (skip + index).ToString(),
                             Node = x,

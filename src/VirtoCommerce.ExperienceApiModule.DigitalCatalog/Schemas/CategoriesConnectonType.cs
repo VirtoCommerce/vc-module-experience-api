@@ -1,0 +1,38 @@
+using System.Collections.Generic;
+using System.Linq;
+using GraphQL.Types;
+using GraphQL.Types.Relay;
+using GraphQL.Types.Relay.DataObjects;
+
+namespace VirtoCommerce.XDigitalCatalog.Schemas
+{
+    public class CategoriesConnectonType<TNodeType> : ConnectionType<TNodeType, EdgeType<TNodeType>>
+        where TNodeType : IGraphType
+    {
+        public CategoriesConnectonType()
+        {
+            Field<ListGraphType<FilterFacetResultType>>("filter_facets",
+               resolve: context =>
+               {
+                   return ((CategoriesConnection<ExpCategory>)context.Source).Facets.OfType<FilterFacetResult>();
+               });
+
+            Field<ListGraphType<RangeFacetResultType>>("range_facets",
+               resolve: context =>
+               {
+                   return ((CategoriesConnection<ExpCategory>)context.Source).Facets.OfType<RangeFacetResult>();
+               });
+
+            Field<ListGraphType<TermFacetResultType>>("term_facets",
+                resolve: context =>
+                {
+                    return ((CategoriesConnection<ExpCategory>)context.Source).Facets.OfType<TermFacetResult>();
+                });
+        }
+    }
+
+    public class CategoriesConnection<TNode> : Connection<TNode>
+    {
+        public IList<FacetResult> Facets { get; set; }
+    }
+}
