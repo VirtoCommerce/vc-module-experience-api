@@ -36,7 +36,6 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                 //TODO: Remove hardcoded field name  __object from here
                 .WithIncludeFields(request.IncludeFields.Concat(new[] { "id" }).Select(x => "__object." + x).ToArray())
                 .WithIncludeFields(request.IncludeFields.Where(x => x.StartsWith("prices.")).Concat(new[] { "id" }).Select(x => "__prices." + x.TrimStart("prices.")).ToArray())
-                .AddObjectIds(request.ProductIds)
                 .Build();
 
             var searchResult = await _searchProvider.SearchAsync(KnownDocumentTypes.Product, searchRequest);

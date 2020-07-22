@@ -20,6 +20,5 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
         public int Skip { get; set; }
         public int Take { get; set; }
         public IEnumerable<string> IncludeFields { get; set; } = Array.Empty<string>();
-        public IEnumerable<string> ProductIds { get; set; }
     }
 }

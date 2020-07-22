@@ -4,6 +4,7 @@ using MediatR;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
+using VirtoCommerce.InventoryModule.Core.Model.Search;
 using VirtoCommerce.InventoryModule.Core.Services;
 using VirtoCommerce.XDigitalCatalog.Queries;
 
@@ -24,14 +25,17 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             FieldAsync<AvailabilityDataType>("availabilityData", resolve: async context =>
             {
                 var productId = context.Source.Id;
-                var invntorySearch = await productInventorySearchService.SearchProductInventoriesAsync(new InventoryModule.Core.Model.Search.ProductInventorySearchCriteria
+                var invntorySearch = await productInventorySearchService.SearchProductInventoriesAsync(new ProductInventorySearchCriteria
                 {
                     ProductId = productId
                 });
 
                 return new ExpAvailabilityData
                 {
-                    InventoryAll = invntorySearch.Results
+                    InventoryAll = invntorySearch.Results,
+                    IsActive = context.Source.IsActive ?? false,
+                    IsBuyable = context.Source.IsBuyable ?? false,
+                    TrackInventory = context.Source.TrackInventory ?? false,
                 };
             });
 
