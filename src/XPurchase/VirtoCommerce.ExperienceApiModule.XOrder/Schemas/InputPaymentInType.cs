@@ -18,7 +18,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field(x => x.CancelledDate, true);
             Field(x => x.CancelReason, true);
             Field(x => x.ParentOperationId, true);
-            Field(x => x.ObjectType);
+            Field(x => x.ObjectType, true);
 
             Field(x => x.OrganizationId, true);
             Field(x => x.OrganizationName, true);
@@ -42,6 +42,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field(x => x.DiscountAmount);
             Field(x => x.DiscountAmountWithTax);
             Field(x => x.TaxPercentRate);
+            Field(x => x.TaxType, true);
 
             Field<NonNullGraphType<ListGraphType<InputOrderTaxDetailType>>>(nameof(PaymentIn.TaxDetails));
             Field<NonNullGraphType<ListGraphType<InputOrderDiscountType>>>(nameof(PaymentIn.Discounts));

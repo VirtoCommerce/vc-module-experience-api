@@ -11,7 +11,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field(x => x.Coupon, true);
             Field(x => x.Description, true);
             Field(x => x.PromotionId, true);
-            Field(x => x.Id);
+            Field(x => x.Id, true);
             Field(x => x.Currency);
             Field(x => x.DiscountAmountWithTax);
         }

@@ -11,6 +11,19 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
         public OrderShipmentType()
         {
             Field(x => x.Id);
+            Field(x => x.OperationType);
+            Field(x => x.ParentOperationId, true);
+            Field(x => x.Number);
+            Field(x => x.IsApproved);
+            Field(x => x.Status, true);
+            Field(x => x.Comment, true);
+            Field(x => x.Sum);
+            Field(x => x.OuterId, true);
+            Field(x => x.IsCancelled);
+            Field(x => x.CancelledDate, true);
+            Field(x => x.CancelReason, true);
+            Field(x => x.ObjectType);
+
             Field(x => x.OrganizationId, true);
             Field(x => x.OrganizationName, true);
             Field(x => x.FulfillmentCenterId, true);
@@ -31,7 +44,6 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             
             Field(x => x.Fee);
             Field(x => x.FeeWithTax);
-            Field(x => x.ObjectType);
             Field(x => x.TaxType, true);
             Field(x => x.TaxPercentRate);
 
