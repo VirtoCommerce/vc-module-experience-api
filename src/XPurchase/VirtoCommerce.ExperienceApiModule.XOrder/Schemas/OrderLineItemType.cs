@@ -46,18 +46,17 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field(x => x.ReserveQuantity);
             Field(x => x.Quantity);
             Field(x => x.ProductId);
-            Field(x => x.OrderId, true);
 
-            Field<OrderCurrencyType>(nameof(LineItem.Currency).ToCamelCase(), resolve: context => context.OrderCurency(context.Source.OrderId));
-            Field<OrderMoneyType>(nameof(LineItem.DiscountAmount).ToCamelCase(), resolve: context => new Money(context.Source.DiscountAmount, context.OrderCurency(context.Source.OrderId)));
-            Field<OrderMoneyType>(nameof(LineItem.DiscountAmountWithTax).ToCamelCase(), resolve: context => new Money(context.Source.DiscountAmountWithTax, context.OrderCurency(context.Source.OrderId)));
-            Field<OrderMoneyType>(nameof(LineItem.DiscountTotal).ToCamelCase(), resolve: context => new Money(context.Source.DiscountTotal, context.OrderCurency(context.Source.OrderId)));
-            Field<OrderMoneyType>(nameof(LineItem.DiscountTotalWithTax).ToCamelCase(), resolve: context => new Money(context.Source.DiscountTotalWithTax, context.OrderCurency(context.Source.OrderId)));
-            Field<OrderMoneyType>(nameof(LineItem.ExtendedPrice).ToCamelCase(), resolve: context => new Money(context.Source.ExtendedPrice, context.OrderCurency(context.Source.OrderId)));
-            Field<OrderMoneyType>(nameof(LineItem.ExtendedPriceWithTax).ToCamelCase(), resolve: context => new Money(context.Source.ExtendedPriceWithTax, context.OrderCurency(context.Source.OrderId)));
-            Field<OrderMoneyType>(nameof(LineItem.PlacedPrice).ToCamelCase(), resolve: context => new Money(context.Source.PlacedPrice, context.OrderCurency(context.Source.OrderId)));
-            Field<OrderMoneyType>(nameof(LineItem.PlacedPriceWithTax).ToCamelCase(), resolve: context => new Money(context.Source.PlacedPriceWithTax, context.OrderCurency(context.Source.OrderId)));
-            Field<OrderMoneyType>(nameof(LineItem.TaxTotal).ToCamelCase(), resolve: context => new Money(context.Source.TaxTotal, context.OrderCurency(context.Source.OrderId)));
+            Field<OrderCurrencyType>(nameof(LineItem.Currency).ToCamelCase(), resolve: context => context.OrderCurrency());
+            Field<OrderMoneyType>(nameof(LineItem.DiscountAmount).ToCamelCase(), resolve: context => new Money(context.Source.DiscountAmount, context.OrderCurrency()));
+            Field<OrderMoneyType>(nameof(LineItem.DiscountAmountWithTax).ToCamelCase(), resolve: context => new Money(context.Source.DiscountAmountWithTax, context.OrderCurrency()));
+            Field<OrderMoneyType>(nameof(LineItem.DiscountTotal).ToCamelCase(), resolve: context => new Money(context.Source.DiscountTotal, context.OrderCurrency()));
+            Field<OrderMoneyType>(nameof(LineItem.DiscountTotalWithTax).ToCamelCase(), resolve: context => new Money(context.Source.DiscountTotalWithTax, context.OrderCurrency()));
+            Field<OrderMoneyType>(nameof(LineItem.ExtendedPrice).ToCamelCase(), resolve: context => new Money(context.Source.ExtendedPrice, context.OrderCurrency()));
+            Field<OrderMoneyType>(nameof(LineItem.ExtendedPriceWithTax).ToCamelCase(), resolve: context => new Money(context.Source.ExtendedPriceWithTax, context.OrderCurrency()));
+            Field<OrderMoneyType>(nameof(LineItem.PlacedPrice).ToCamelCase(), resolve: context => new Money(context.Source.PlacedPrice, context.OrderCurrency()));
+            Field<OrderMoneyType>(nameof(LineItem.PlacedPriceWithTax).ToCamelCase(), resolve: context => new Money(context.Source.PlacedPriceWithTax, context.OrderCurrency()));
+            Field<OrderMoneyType>(nameof(LineItem.TaxTotal).ToCamelCase(), resolve: context => new Money(context.Source.TaxTotal, context.OrderCurrency()));
             Field<NonNullGraphType<ListGraphType<OrderTaxDetailType>>>(nameof(LineItem.TaxDetails), resolve: x => x.Source.TaxDetails);
             Field<NonNullGraphType<ListGraphType<OrderDiscountType>>>(nameof(LineItem.Discounts), resolve: x => x.Source.Discounts);
 

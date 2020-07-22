@@ -43,7 +43,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field(x => x.FeeTotalWithTax, true);
             Field(x => x.TaxType, true);
             Field(x => x.TaxPercentRate, true);
-            Field(x => x.LanguageCode, true);
+            Field(x => x.LanguageCode);
             Field(x => x.Total);
             Field(x => x.TaxTotal);
             Field(x => x.DiscountAmount);

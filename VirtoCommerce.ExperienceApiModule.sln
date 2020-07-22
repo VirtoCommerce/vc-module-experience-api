@@ -49,7 +49,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtoCommerce.ExperienceApi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtoCommerce.ExperienceApiModule.XOrder", "src\XPurchase\VirtoCommerce.ExperienceApiModule.XOrder\VirtoCommerce.ExperienceApiModule.XOrder.csproj", "{55587F1C-B83C-46CB-A89E-E7D062144F9B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtoCommerce.ExperienceApiModule.XOrder.Tests", "src\XPurchase\VirtoCommerce.ExperienceApiModule.XOrder.Tests\VirtoCommerce.ExperienceApiModule.XOrder.Tests.csproj", "{E2E45B13-D240-4300-8333-94C6C616CD00}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtoCommerce.ExperienceApiModule.XOrder.Tests", "tests\VirtoCommerce.ExperienceApiModule.XOrder.Tests\VirtoCommerce.ExperienceApiModule.XOrder.Tests.csproj", "{E2E45B13-D240-4300-8333-94C6C616CD00}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

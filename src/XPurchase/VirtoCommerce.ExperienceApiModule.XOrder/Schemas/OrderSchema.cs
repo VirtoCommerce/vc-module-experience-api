@@ -10,8 +10,8 @@ using MediatR;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.ExperienceApiModule.Core.Schema;
 using VirtoCommerce.ExperienceApiModule.XOrder.Commands;
+using VirtoCommerce.ExperienceApiModule.XOrder.Extensions;
 using VirtoCommerce.ExperienceApiModule.XOrder.Queries;
-using VirtoCommerce.OrdersModule.Core.Model;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 {
@@ -36,7 +36,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                 Resolver = new AsyncFieldResolver<object>(async context => {
                     var orderAggregate = await _mediator.Send(new GetOrderQuery(context.GetArgument<string>("id"), context.GetArgument<string>("number")));
                     //store order aggregate in the user context for future usage in the graph types resolvers
-                    AddOrderToContext(context, orderAggregate);
+                    context.SetValue(orderAggregate);
 
                     return orderAggregate;
                 })
@@ -58,10 +58,18 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             _ = schema.Mutation.AddField(FieldBuilder.Create<object, bool>(typeof(BooleanGraphType))
                             .Name("updateOrder")
                             .Argument<NonNullGraphType<InputUpdateOrderType>>(_commandName)
+                            .ResolveAsync(async context => await _mediator.Send(context.GetArgument<UpdateOrderCommand>(_commandName)))
+                            .FieldType);
+
+            _ = schema.Mutation.AddField(FieldBuilder.Create<object, CustomerOrderAggregate>(typeof(CustomerOrderType))
+                            .Name("createOrderFromCart")
+                            .Argument<NonNullGraphType<InputCreateOrderFromCartType>>(_commandName)
                             .ResolveAsync(async context => {
-                                var arg = context.GetArgument<UpdateOrderCommand>(_commandName);
-                                return await _mediator.Send(arg);
-                                })
+                                var response = await _mediator.Send(context.GetArgument<CreateOrderFromCartCommand>(_commandName));
+                                context.SetValue(response);
+                                return response;
+                            }
+                                )
                             .FieldType);
         }
 
@@ -85,7 +93,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             var response = await mediator.Send(request);
             foreach (var customerOrderAggregate in response.Results)
             {
-                AddOrderToContext(context, customerOrderAggregate);
+                context.SetValue(customerOrderAggregate);
             }
 
             var result = new Connection<CustomerOrderAggregate>()
@@ -109,38 +117,6 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             };
 
             return result;
-        }
-
-
-        //TODO
-        private void AddOrderToContext(IResolveFieldContext context, CustomerOrderAggregate customerOrderAggregate)
-        {
-            context.UserContext.Add($"{nameof(CustomerOrderAggregate).ToCamelCase()}:{customerOrderAggregate.Order.Id}", customerOrderAggregate);
-
-            foreach (var discount in customerOrderAggregate.Order.Discounts)
-            {
-                context.UserContext.Add($"{nameof(CustomerOrderAggregate).ToCamelCase()}:{discount.Id}", customerOrderAggregate);
-            }
-
-            foreach (var discount in customerOrderAggregate.Order.Items.SelectMany(x => x.Discounts))
-            {
-                context.UserContext.Add($"{nameof(CustomerOrderAggregate).ToCamelCase()}:{discount.Id}", customerOrderAggregate);
-            }
-
-            foreach (var discount in customerOrderAggregate.Order.Shipments.SelectMany(x => x.Discounts))
-            {
-                context.UserContext.Add($"{nameof(CustomerOrderAggregate).ToCamelCase()}:{discount.Id}", customerOrderAggregate);
-            }
-
-            foreach (var taxDetail in customerOrderAggregate.Order.TaxDetails)
-            {
-                context.UserContext.Add($"{nameof(CustomerOrderAggregate).ToCamelCase()}:{string.Join(":", taxDetail.Name, taxDetail.Rate, taxDetail.Amount)}", customerOrderAggregate);
-            }
-
-            foreach (var taxDetail in customerOrderAggregate.Order.Items.SelectMany(x => x.TaxDetails))
-            {
-                context.UserContext.Add($"{nameof(CustomerOrderAggregate).ToCamelCase()}:{string.Join(":", taxDetail.Name, taxDetail.Rate, taxDetail.Amount)}", customerOrderAggregate);
-            }
         }
     }
 }

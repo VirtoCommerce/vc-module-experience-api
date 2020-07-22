@@ -2,6 +2,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
+using VirtoCommerce.OrdersModule.Core.Model;
+using VirtoCommerce.OrdersModule.Core.Services;
 using VirtoCommerce.SearchModule.Core.Services;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Queries
@@ -11,12 +13,17 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Queries
         private readonly ICustomerOrderAggregateRepository _customerOrderAggregateRepository;
         private readonly IMapper _mapper;
         private readonly ISearchPhraseParser _searchPhraseParser;
+        private readonly ICustomerOrderSearchService _customerOrderSearchService;
 
-        public SearchOrderQueryHandler(IMapper mapper, ISearchPhraseParser searchPhraseParser, ICustomerOrderAggregateRepository customerOrderAggregateRepository)
+        public SearchOrderQueryHandler(IMapper mapper,
+            ISearchPhraseParser searchPhraseParser,
+            ICustomerOrderAggregateRepository customerOrderAggregateRepository,
+            ICustomerOrderSearchService customerOrderSearchService)
         {
             _mapper = mapper;
             _searchPhraseParser = searchPhraseParser;
             _customerOrderAggregateRepository = customerOrderAggregateRepository;
+            _customerOrderSearchService = customerOrderSearchService;
         }
 
         public async Task<SearchOrderResponse> Handle(SearchOrderQuery request, CancellationToken cancellationToken)
@@ -26,8 +33,9 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Queries
                                         .WithPaging(request.Skip, request.Take)
                                         .AddSorting(request.Sort)
                                         .Build();
-            var response = await _customerOrderAggregateRepository.SearchCustomerOrdersAsync(searchCriteria, request.CultureName);
-            return new SearchOrderResponse { TotalCount = response.Count, Results = response };
+            var searchResult = await _customerOrderSearchService.SearchCustomerOrdersAsync(searchCriteria);
+            var aggregates = await _customerOrderAggregateRepository.GetAggregatesFromOrdersAsync(searchResult.Results);
+            return new SearchOrderResponse { TotalCount = searchResult.TotalCount, Results = aggregates };
         }
     }
 }

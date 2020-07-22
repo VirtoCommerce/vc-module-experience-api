@@ -10,8 +10,8 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
     {
         public OrderTaxDetailType()
         {
-            Field<OrderMoneyType>(nameof(TaxDetail.Rate).ToCamelCase(), resolve: context => new Money(context.Source.Rate, context.OrderCurency(string.Join(":", context.Source.Name, context.Source.Rate, context.Source.Amount))));
-            Field<OrderMoneyType>(nameof(TaxDetail.Amount).ToCamelCase(), resolve: context => new Money(context.Source.Amount, context.OrderCurency(string.Join(":", context.Source.Name, context.Source.Rate, context.Source.Amount))));
+            Field<OrderMoneyType>(nameof(TaxDetail.Rate).ToCamelCase(), resolve: context => new Money(context.Source.Rate, context.OrderCurrency()));
+            Field<OrderMoneyType>(nameof(TaxDetail.Amount).ToCamelCase(), resolve: context => new Money(context.Source.Amount, context.OrderCurrency()));
             Field(x => x.Name);
         }
     }

@@ -2,12 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.CoreModule.Core.Currency;
-using VirtoCommerce.ExperienceApiModule.XOrder.Queries;
 using VirtoCommerce.OrdersModule.Core.Model;
 using VirtoCommerce.OrdersModule.Core.Model.Search;
 using VirtoCommerce.OrdersModule.Core.Services;
+using VirtoCommerce.OrdersModule.Data.Services;
 using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder
@@ -17,34 +18,44 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder
         private readonly ICustomerOrderService _customerOrderService;
         private readonly ICustomerOrderSearchService _customerOrderSearchService;
         private readonly ICurrencyService _currencyService;
+        private readonly ICustomerOrderBuilder _customerOrderBuilder;
 
-        public CustomerOrderAggregateRepository(ICustomerOrderService customerOrderService, ICustomerOrderSearchService customerOrderSearchService, ICurrencyService currencyService)
+        public CustomerOrderAggregateRepository(ICustomerOrderService customerOrderService,
+            ICustomerOrderSearchService customerOrderSearchService,
+            ICurrencyService currencyService,
+            ICustomerOrderBuilder customerOrderBuilder)
         {
             _customerOrderService = customerOrderService;
             _customerOrderSearchService = customerOrderSearchService;
             _currencyService = currencyService;
+            _customerOrderBuilder = customerOrderBuilder;
         }
 
         public async Task<CustomerOrderAggregate> GetOrderByIdAsync(string orderId)
         {
             var order = await _customerOrderService.GetByIdAsync(orderId);
-            var result = await InnerGetCustomerOrderAggregateFromCustomerOrderAsync(order, order.LanguageCode);
+            var result = await InnerGetCustomerOrderAggregateFromCustomerOrderAsync(order);
             return result;
         }
 
-        public async Task<CustomerOrderAggregate> GetOrderByNumberAsync(string number)
+        public async Task<CustomerOrderAggregate> CreateOrderFromCart(ShoppingCart cart)
         {
-            var order = (await _customerOrderSearchService.SearchCustomerOrdersAsync(new CustomerOrderSearchCriteria { Number = number })).Results.FirstOrDefault();
+            var response = await _customerOrderBuilder.PlaceCustomerOrderFromCartAsync(cart);
+            //TODO need to add pk to FromModel of discount entity
+            var order = await _customerOrderService.GetByIdAsync(response.Id);
             var result = await InnerGetCustomerOrderAggregateFromCustomerOrderAsync(order, order.LanguageCode);
 
             return result;
         }
 
-        public async Task<IList<CustomerOrderAggregate>> SearchCustomerOrdersAsync(CustomerOrderSearchCriteria searchCriteria, string cultureName = null)
+        public Task<CustomerOrderAggregate> GetAggregateFromOrderAsync(CustomerOrder orders)
         {
-            var response = await _customerOrderSearchService.SearchCustomerOrdersAsync(searchCriteria);
+            return InnerGetCustomerOrderAggregateFromCustomerOrderAsync(orders);
+        }
 
-            return await InnerGetCustomerOrdersAggregateFromCustomerOrderAsync(response.Results, cultureName);
+        public Task<IList<CustomerOrderAggregate>> GetAggregatesFromOrdersAsync(IList<CustomerOrder> orders, string cultureName = null)
+        {
+            return InnerGetCustomerOrderAggregatesFromCustomerOrdersAsync(orders, cultureName);
         }
 
         protected virtual async Task<CustomerOrderAggregate> InnerGetCustomerOrderAggregateFromCustomerOrderAsync(CustomerOrder order, string cultureName = null)
@@ -54,7 +65,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder
                 throw new ArgumentNullException(nameof(order));
             }
 
-            var currency = (await GetCurrenciesAsync(new[] { order.Currency }, cultureName)).FirstOrDefault();
+            var currency = (await GetCurrenciesAsync(new[] { order.Currency }, cultureName ?? order.LanguageCode)).FirstOrDefault();
 
             if (currency == null)
             {
@@ -66,7 +77,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder
             return result;
         }
 
-        protected virtual async Task<IList<CustomerOrderAggregate>> InnerGetCustomerOrdersAggregateFromCustomerOrderAsync(IList<CustomerOrder> orders, string cultureName = null)
+        protected virtual async Task<IList<CustomerOrderAggregate>> InnerGetCustomerOrderAggregatesFromCustomerOrdersAsync(IList<CustomerOrder> orders, string cultureName = null)
         {
             var currencies = await GetCurrenciesAsync(orders.Select(x => x.Currency).Distinct().ToArray(), cultureName);
 

@@ -42,7 +42,6 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field(x => x.ReserveQuantity);
             Field(x => x.Quantity);
             Field(x => x.ProductId);
-            Field(x => x.OrderId, true);
 
             Field(x => x.Currency);
             Field(x => x.DiscountAmount);

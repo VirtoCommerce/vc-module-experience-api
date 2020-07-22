@@ -1,5 +1,6 @@
 using System;
 using AutoMapper;
+using VirtoCommerce.OrdersModule.Core.Model;
 using VirtoCommerce.OrdersModule.Core.Model.Search;
 using VirtoCommerce.SearchModule.Core.Services;
 
@@ -54,6 +55,13 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder
         public CustomerOrderSearchCriteriaBuilder AddSorting(string sort)
         {
             searchCriteria.Sort = sort;
+
+            return this;
+        }
+
+        public CustomerOrderSearchCriteriaBuilder AddResponseGroup(CustomerOrderResponseGroup responseGroup)
+        {
+            searchCriteria.ResponseGroup = responseGroup.ToString();
 
             return this;
         }
