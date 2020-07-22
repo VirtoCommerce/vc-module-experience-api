@@ -66,6 +66,8 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             Field(d => d.CatalogProduct.Id).Description("The unique ID of the product.");
             Field(d => d.CatalogProduct.Code, nullable: false).Description("The product SKU.");
 
+            Field<StringGraphType>("catalogId", resolve: context => context.Source.CatalogProduct.CatalogId);
+
             FieldAsync<CategoryType>("category", resolve: async context =>
             {
                 var categoryId = context.Source.CatalogProduct.CategoryId;
