@@ -59,6 +59,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 .Argument<IntGraphType>("fuzzyLevel", "The fuzziness level is quantified in terms of the Damerau-Levenshtein distance, this distance being the number of operations needed to transform one word into another.")
                 .Argument<StringGraphType>("facet", "Facets calculate statistical counts to aid in faceted navigation.")
                 .Argument<StringGraphType>("sort", "The sort expression")
+                .Argument<ListGraphType<StringGraphType>>("productIds", "Product Ids") // TODO: make something good with it, move productIds in filter for example
                 .Unidirectional()
                 .PageSize(20);
 
@@ -85,6 +86,8 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             var currency = context.GetArgument<string>("currency");
             var lang = context.GetArgument<string>("lang");
 
+            var productIds = context.GetArgument<List<string>>("productIds");
+
             var request = new SearchProductQuery
             {
                 Lang = lang,
@@ -92,15 +95,24 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 CustomerId = customerId,
                 Currency = currency,
                 IncludeFields = includeFields.ToArray(),
-                Skip = skip,
-                Take = first ?? context.PageSize ?? 10,
-                Query = context.GetArgument<string>("query"),
-                Filter = context.GetArgument<string>("filter"),
-                Facet = context.GetArgument<string>("facet"),
-                Fuzzy = context.GetArgument<bool>("fuzzy"),
-                FuzzyLevel = context.GetArgument<int?>("fuzzyLevel"),
-                Sort = context.GetArgument<string>("sort")
             };
+
+            if (productIds.IsNullOrEmpty())
+            {
+                request.Skip = skip;
+                request.Take = first ?? context.PageSize ?? 10;
+                request.Query = context.GetArgument<string>("query");
+                request.Filter = context.GetArgument<string>("filter");
+                request.Facet = context.GetArgument<string>("facet");
+                request.Fuzzy = context.GetArgument<bool>("fuzzy");
+                request.FuzzyLevel = context.GetArgument<int?>("fuzzyLevel");
+                request.Sort = context.GetArgument<string>("sort");
+            }
+            else
+            {
+                request.ProductIds = productIds;
+                request.Take = productIds.Count;
+            }
 
             var response = await mediator.Send(request);
 
