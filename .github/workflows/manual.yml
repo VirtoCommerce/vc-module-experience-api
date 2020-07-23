@@ -8,15 +8,22 @@ on:
   workflow_dispatch:
     
 jobs:
-  # This workflow contains a single job called "greet"
+# The type of runner that the job will run on
   build_package:
+        
     # The type of runner that the job will run on
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     - uses: actions/checkout@v2
     
+    - name: Install VirtoCommerce.GlobalTool
+      run: dotnet tool install --global VirtoCommerce.GlobalTool --version 1.0.0
+    
+    - name: Install dotnet-sonarscanner
+      run: dotnet tool install --global dotnet-sonarscanner
+    
     - uses: mvktsk/github-actions/vc-module-ci@master
-       
-      
+      with: 
+        token: ${{ secrets.SONAR_TOKEN }}
