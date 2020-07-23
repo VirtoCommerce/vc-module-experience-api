@@ -65,7 +65,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder
                 throw new ArgumentNullException(nameof(order));
             }
 
-            var currency = (await GetCurrenciesAsync(new[] { order.Currency }, cultureName ?? order.LanguageCode)).FirstOrDefault();
+            var currency = (await GetCurrenciesAsync(new[] { order.Currency }, order.LanguageCode ?? cultureName)).FirstOrDefault();
 
             if (currency == null)
             {
