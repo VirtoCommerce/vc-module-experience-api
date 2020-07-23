@@ -16,22 +16,24 @@ using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.SearchModule.Core.Model;
 using VirtoCommerce.SearchModule.Core.Services;
 using VirtoCommerce.XDigitalCatalog.Extensions;
+using VirtoCommerce.XPurchase;
 using VirtoCommerce.XPurchase.Commands;
-using VirtoCommerce.XPurchase.Extensions;
 
 namespace VirtoCommerce.XDigitalCatalog.Queries
 {
     public class LoadProductsQueryHandler : IQueryHandler<LoadProductQuery, LoadProductResponse>
     {
         private readonly IMediator _mediator;
+        private readonly ICartAggregateRepository _cartAggregateRepository;
         private readonly IMapper _mapper;
         private readonly ISearchProvider _searchProvider;
 
-        public LoadProductsQueryHandler(ISearchProvider searchProvider, IMapper mapper, IMediator mediator)
+        public LoadProductsQueryHandler(ISearchProvider searchProvider, IMapper mapper, IMediator mediator, ICartAggregateRepository cartAggregateRepository)
         {
             _searchProvider = searchProvider;
             _mapper = mapper;
             _mediator = mediator;
+            _cartAggregateRepository = cartAggregateRepository;
         }
 
         public virtual async Task<LoadProductResponse> Handle(LoadProductQuery request, CancellationToken cancellationToken)
@@ -89,23 +91,23 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                                                                                 x.Contains("tier", StringComparison.OrdinalIgnoreCase) ||
                                                                                 x.Contains("discount", StringComparison.OrdinalIgnoreCase)))
             {
-                var createCartCommand = new CreateCartCommand(
+                var createCartCommand = new CreateDefaultCartCommand(
                     storeId: request.StoreId,
-                    type: "cart",
-                    cartName: "default",
                     userId: request.UserId,
                     currency: request.CurrencyCode,
-                    language: request.Language);
+                    lang: request.Language);
 
-                var cartAggregate = await _mediator.Send(createCartCommand);
+                var cart = _cartAggregateRepository.CreateDefaultShoppingCart(createCartCommand);
+
+                var cartAggregate = await _cartAggregateRepository.GetCartForShoppingCartAsync(cart);
 
                 var addLineItemTasks = expProducts.Select(x =>
                 {
                     var catalogProduct = x.CatalogProduct;
 
-                    return cartAggregate.AddItemAsync(new XPurchase.NewCartItem(catalogProduct.Id, 1)
+                    return cartAggregate.AddItemAsync(new NewCartItem(catalogProduct.Id, 1)
                     {
-                        CartProduct = new XPurchase.CartProduct(catalogProduct)
+                        CartProduct = new CartProduct(catalogProduct)
                     });
                 }).ToArray();
 
@@ -194,6 +196,14 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             }
 
             return result;
+        }
+
+        public class CreateDefaultCartCommand : CartCommand
+        {
+            public CreateDefaultCartCommand(string storeId, string userId, string currency, string lang)
+            : base(storeId, "cart", "default", userId, currency, lang)
+            {
+            }
         }
     }
 }

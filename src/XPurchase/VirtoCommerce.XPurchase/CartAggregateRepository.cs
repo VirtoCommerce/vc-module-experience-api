@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
@@ -6,11 +7,13 @@ using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.CartModule.Core.Services;
 using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.CoreModule.Core.Currency;
+using VirtoCommerce.CoreModule.Core.Tax;
 using VirtoCommerce.CustomerModule.Core.Model;
 using VirtoCommerce.CustomerModule.Core.Services;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Security;
 using VirtoCommerce.StoreModule.Core.Services;
+using VirtoCommerce.XPurchase.Commands;
 using VirtoCommerce.XPurchase.Validators;
 
 namespace VirtoCommerce.XPurchase
@@ -62,6 +65,26 @@ namespace VirtoCommerce.XPurchase
             }
 
             return null;
+        }
+
+        public ShoppingCart CreateDefaultShoppingCart<TCartCommand>(TCartCommand request) where TCartCommand : CartCommand
+        {
+            var cart = AbstractTypeFactory<ShoppingCart>.TryCreateInstance();
+
+            cart.CustomerId = request.UserId;
+            cart.Name = request.CartName ?? "default";
+            cart.StoreId = request.StoreId;
+            cart.LanguageCode = request.Language;
+            cart.Type = request.CartType;
+            cart.Currency = request.Currency;
+            cart.Items = new List<LineItem>();
+            cart.Shipments = new List<Shipment>();
+            cart.Payments = new List<Payment>();
+            cart.Addresses = new List<CartModule.Core.Model.Address>();
+            cart.TaxDetails = new List<TaxDetail>();
+            cart.Coupons = new List<string>();
+
+            return cart;
         }
 
         public async Task<CartAggregate> GetCartForShoppingCartAsync(ShoppingCart cart, string language = null)

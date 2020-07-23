@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using VirtoCommerce.CartModule.Core.Model;
+using VirtoCommerce.XPurchase.Commands;
 
 namespace VirtoCommerce.XPurchase
 {
@@ -14,5 +15,6 @@ namespace VirtoCommerce.XPurchase
         Task<CartAggregate> GetCartByIdAsync(string cartId, string language = null);
 
         Task<CartAggregate> GetCartForShoppingCartAsync(ShoppingCart cart, string language = null);
+        ShoppingCart CreateDefaultShoppingCart<TCartCommand>(TCartCommand request) where TCartCommand : CartCommand;
     }
 }
