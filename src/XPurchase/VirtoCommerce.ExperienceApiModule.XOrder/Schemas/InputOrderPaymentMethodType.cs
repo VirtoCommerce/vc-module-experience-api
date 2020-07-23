@@ -9,9 +9,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
         {
             Field(x => x.Id);
             Field<ListGraphType<InputOrderTaxDetailType>>(nameof(PaymentMethod.TaxDetails));
-            Field(x => x.TaxPercentRate);
             Field(x => x.TaxTotal);
-            Field(x => x.TaxType, true);
             Field(x => x.TypeName, true);
             Field(x => x.StoreId, true);
             Field(x => x.DiscountAmountWithTax);

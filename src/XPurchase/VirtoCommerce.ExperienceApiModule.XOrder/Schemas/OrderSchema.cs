@@ -67,9 +67,25 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                             .ResolveAsync(async context => {
                                 var response = await _mediator.Send(context.GetArgument<CreateOrderFromCartCommand>(_commandName));
                                 context.SetValue(response);
-                                return response;
-                            }
-                                )
+                                return response;})
+                            .FieldType);
+
+            _ = schema.Mutation.AddField(FieldBuilder.Create<object, bool>(typeof(BooleanGraphType))
+                            .Name("changeOrderStatus")
+                            .Argument<NonNullGraphType<InputChangeOrderStatusType>>(_commandName)
+                            .ResolveAsync(async context => await _mediator.Send(context.GetArgument<ChangeOrderStatusCommand>(_commandName)))
+                            .FieldType);
+
+            _ = schema.Mutation.AddField(FieldBuilder.Create<object, bool>(typeof(BooleanGraphType))
+                            .Name("confirmOrderPayment")
+                            .Argument<NonNullGraphType<InputConfirmOrderPaymentType>>(_commandName)
+                            .ResolveAsync(async context => await _mediator.Send(context.GetArgument<ConfirmOrderPaymentCommand>(_commandName)))
+                            .FieldType);
+
+            _ = schema.Mutation.AddField(FieldBuilder.Create<object, bool>(typeof(BooleanGraphType))
+                            .Name("cancelOrderPayment")
+                            .Argument<NonNullGraphType<InputCancelOrderPaymentType>>(_commandName)
+                            .ResolveAsync(async context => await _mediator.Send(context.GetArgument<CancelOrderPaymentCommand>(_commandName)))
                             .FieldType);
         }
 
