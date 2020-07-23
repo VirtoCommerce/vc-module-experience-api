@@ -6,14 +6,11 @@ using GraphQL.Execution;
 using GraphQL.Types;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.Platform.Core.Extensions;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Extensions
 {
     public static class ProvideUserContextExtensions
     {
-        private static string _keyPart = $".{nameof(IEntity.Id)}";
-
         public static CustomerOrderAggregate GetOrder(this IProvideUserContext userContext, string id = null)
         {
             return userContext.GetValue<CustomerOrderAggregate>(!string.IsNullOrEmpty(id) ? $"{nameof(CustomerOrderAggregate).ToCamelCase()}:{id}"
@@ -22,7 +19,15 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Extensions
 
         public static Currency OrderCurrency<T>(this IResolveFieldContext<T> userContext)
         {
-            return userContext.GetValue<CustomerOrderAggregate>(((IEntity)userContext.Source).Id).Currency;
+            if (userContext.Source is IEntity entity)
+            {
+                return userContext.GetValue<CustomerOrderAggregate>(entity.Id).Currency;
+            }
+            else if (userContext.Source is IValueObject valueObject)
+            {
+                return userContext.GetValue<CustomerOrderAggregate>(((ValueObject)valueObject).GetCacheKey()).Currency;
+            }
+            return null;
         }
 
         public static T GetValue<T>(this IProvideUserContext userContext, string key)
@@ -40,11 +45,17 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Extensions
 
         public static void SetValue<T>(this IProvideUserContext userContext, T value)
         {
-            var values = value.TraverseObjectGraph();
-
-            foreach (var keyValue in values.Where(x => x.Key.Contains($".{nameof(IEntity.Id)}") && x.Value != null))
+            var entities = value.GetFlatObjectsListWithInterface<IEntity>();
+            
+            foreach (var key in entities.Where(x => !string.IsNullOrEmpty(x.Id)))
             {
-                userContext.UserContext.TryAdd(keyValue.Value.ToString(), value);
+                userContext.UserContext.TryAdd(key.Id, value);
+            }
+
+            var valueObjects = value.GetFlatObjectsListWithInterface<IValueObject>();
+            foreach (var valueObject in valueObjects)
+            {
+                userContext.UserContext.TryAdd(((ValueObject)valueObject).GetCacheKey(), value);
             }
         }
     }
