@@ -6,6 +6,7 @@ using GraphQL.Resolvers;
 using GraphQL.Types;
 using MediatR;
 using VirtoCommerce.CatalogModule.Core.Model;
+using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.XDigitalCatalog.Queries;
 
@@ -30,7 +31,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 Type = GraphTypeExtenstionHelper.GetActualType<ProductType>(),
                 Resolver = new AsyncFieldResolver<ProductAssociation, object>(async context =>
                 {
-                    var loader = dataLoader.Context.GetOrAddBatchLoader<string, ExpProduct>("associatedProductLoader", (ids) => LoadProductsAsync(mediator, ids));
+                    var loader = dataLoader.Context.GetOrAddBatchLoader<string, ExpProduct>("associatedProductLoader", (ids) => LoadProductsAsync(mediator, ids, context.SubFields.Values.GetAllNodesPaths()));
 
                     // IMPORTANT: In order to avoid deadlocking on the loader we use the following construct (next 2 lines):
                     var loadHandle = loader.LoadAsync(context.Source.AssociatedObjectId);
@@ -40,9 +41,9 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             AddField(productField);
         }
 
-        public static async Task<IDictionary<string, ExpProduct>> LoadProductsAsync(IMediator mediator, IEnumerable<string> ids)
+        public static async Task<IDictionary<string, ExpProduct>> LoadProductsAsync(IMediator mediator, IEnumerable<string> ids, IEnumerable<string> includeFields)
         {
-            var response = await mediator.Send(new LoadProductQuery { Ids = ids.ToArray() });
+            var response = await mediator.Send(new LoadProductQuery { Ids = ids.ToArray(), IncludeFields = includeFields });
             return response.Products.ToDictionary(x => x.Id);
         }
     }
