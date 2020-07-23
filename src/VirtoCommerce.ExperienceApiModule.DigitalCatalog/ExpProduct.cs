@@ -2,8 +2,10 @@ using System.Collections.Generic;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.Core.Binding;
 using VirtoCommerce.InventoryModule.Core.Model;
-using VirtoCommerce.PricingModule.Core.Model;
+using VirtoCommerce.ExperienceApiModule.Core.Models;
 using VirtoCommerce.XDigitalCatalog.Binding;
+using VirtoCommerce.PricingModule.Core.Model;
+using ProductPrice = VirtoCommerce.ExperienceApiModule.Core.Models.ProductPrice;
 
 namespace VirtoCommerce.XDigitalCatalog
 {
@@ -19,6 +21,8 @@ namespace VirtoCommerce.XDigitalCatalog
 
         [BindIndexField(FieldName = "__prices", BinderType = typeof(PriceBinder))]
         public virtual IList<Price> Prices { get; set; }
+
+        public virtual List<ProductPrice> ProductPrices { get; set; } = new List<ProductPrice>();
 
         [BindIndexField(FieldName = "__inventories", BinderType = typeof(InventoryBinder))]
         public IList<InventoryInfo> Inventories { get; set; }

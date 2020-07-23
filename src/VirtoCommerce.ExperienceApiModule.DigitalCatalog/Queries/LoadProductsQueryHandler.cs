@@ -4,23 +4,34 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
+using MediatR;
+using VirtoCommerce.CoreModule.Core.Common;
+using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
+using VirtoCommerce.ExperienceApiModule.Core.Models;
 using VirtoCommerce.ExperienceApiModule.DigitalCatalog.Index;
+using VirtoCommerce.MarketingModule.Core.Model.Promotions;
+using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.SearchModule.Core.Model;
 using VirtoCommerce.SearchModule.Core.Services;
+using VirtoCommerce.XDigitalCatalog.Extensions;
+using VirtoCommerce.XPurchase.Commands;
+using VirtoCommerce.XPurchase.Extensions;
 
 namespace VirtoCommerce.XDigitalCatalog.Queries
 {
     public class LoadProductsQueryHandler : IQueryHandler<LoadProductQuery, LoadProductResponse>
     {
+        private readonly IMediator _mediator;
         private readonly IMapper _mapper;
         private readonly ISearchProvider _searchProvider;
 
-        public LoadProductsQueryHandler(ISearchProvider searchProvider, IMapper mapper)
+        public LoadProductsQueryHandler(ISearchProvider searchProvider, IMapper mapper, IMediator mediator)
         {
             _searchProvider = searchProvider;
             _mapper = mapper;
+            _mediator = mediator;
         }
 
         public virtual async Task<LoadProductResponse> Handle(LoadProductQuery request, CancellationToken cancellationToken)
@@ -65,7 +76,122 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                 .Build();
 
             var searchResult = await _searchProvider.SearchAsync(KnownDocumentTypes.Product, searchRequest);
-            result.Products = searchResult.Documents.Select(x => _mapper.Map<ExpProduct>(x)).ToList();
+            var expProducts = searchResult.Documents.Select(x => _mapper.Map<ExpProduct>(x)).ToList();
+            result.Products = expProducts;
+
+            if (expProducts.All(x => x.Prices.IsNullOrEmpty()))
+            {
+                return result;
+            }
+
+            // If tax evaluation requested
+            if (request.IncludeFields.Where(x => x.Contains("prices")).Any(x => x.Contains("tax", StringComparison.OrdinalIgnoreCase) ||
+                                                                                x.Contains("tier", StringComparison.OrdinalIgnoreCase) ||
+                                                                                x.Contains("discount", StringComparison.OrdinalIgnoreCase)))
+            {
+                var createCartCommand = new CreateCartCommand(
+                    storeId: request.StoreId,
+                    type: "cart",
+                    cartName: "default",
+                    userId: request.UserId,
+                    currency: request.CurrencyCode,
+                    language: request.Language);
+
+                var cartAggregate = await _mediator.Send(createCartCommand);
+
+                var addLineItemTasks = expProducts.Select(x =>
+                {
+                    var catalogProduct = x.CatalogProduct;
+
+                    return cartAggregate.AddItemAsync(new XPurchase.NewCartItem(catalogProduct.Id, 1)
+                    {
+                        CartProduct = new XPurchase.CartProduct(catalogProduct)
+                    });
+                }).ToArray();
+
+                Task.WaitAll(addLineItemTasks);
+
+                var context = _mapper.Map<PromotionEvaluationContext>(cartAggregate);
+
+                context.PromoEntries = expProducts
+                    .Select(x => x.CatalogProduct)
+                    .Select(x => new ProductPromoEntry
+                    {
+                        ProductId = x.Id,
+                        CatalogId = x.CatalogId,
+                        CategoryId = x.CategoryId,
+                        Quantity = 1,
+                        Code = x.Code,
+                        InStockQuantity = 0, //TODO: check this
+                        Outline = x.Outline,
+                        Variations = x.Variations?.Select(x => new ProductPromoEntry
+                        {
+                            ProductId = x.Id,
+                            CatalogId = x.CatalogId,
+                            CategoryId = x.CategoryId,
+                            Quantity = 1,
+                            Code = x.Code,
+                            InStockQuantity = 0, //TODO: and this
+                            Outline = x.Outline
+                        }).ToList()
+                    })
+                    .ToList();
+
+                var promotionResults = await cartAggregate.EvaluatePromotionsAsync(context);
+                var promoRewards = promotionResults.Rewards.OfType<CatalogItemAmountReward>().ToArray();
+
+                var language = new Language(request.Language);
+
+                //var currency = new Currency(language, request.CurrencyCode);
+
+                foreach (var expProduct in expProducts)
+                {
+                    var productId = expProduct.Id;
+
+                    var prices = expProduct.Prices;
+                    var productPrices = prices
+                        .Where(price => price.ProductId == productId)
+                        // Apply Prices
+                        .Select(price =>
+                        {
+                            var currency = new Currency(language, price.Currency);
+
+                            return new ProductPrice(currency)
+                            {
+                                ProductId = productId,
+                                PricelistId = price.PricelistId,
+                                Currency = currency,
+                                ListPrice = new Money(price.List, currency),
+                                SalePrice = price.Sale == null
+                                     ? new Money(price.List, currency)
+                                     : new Money((decimal)price.Sale, currency),
+                                MinQuantity = price.MinQuantity
+                            };
+                        })
+                        .GroupBy(x => x.Currency)
+                        .Where(x => x.Any())
+                        // Apply TierPrices
+                        .Select(currencyGroup =>
+                        {
+                            var orderedPrices = currencyGroup
+                                .OrderBy(x => x.MinQuantity ?? 0)
+                                .ThenBy(x => x.ListPrice);
+
+                            var nominalPrice = orderedPrices.First();
+
+                            var tierPrices = orderedPrices.Select(x => new TierPrice(x.SalePrice, x.MinQuantity ?? 1));
+
+                            nominalPrice.TierPrices.AddRange(tierPrices);
+
+                            return nominalPrice;
+                        })
+                        .ToList();
+
+                    productPrices.ApplyRewards(promoRewards);
+
+                    expProduct.ProductPrices = productPrices;
+                }
+            }
 
             return result;
         }

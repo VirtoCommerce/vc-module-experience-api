@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -24,7 +24,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
 
         public virtual async Task<SearchCategoryResponse> Handle(SearchCategoryQuery request, CancellationToken cancellationToken)
         {
-            var searchRequest = new SearchRequestBuilder(_searchPhraseParser)
+            var searchRequest = new SearchRequestBuilder(_searchPhraseParser, null)
                 .WithFuzzy(request.Fuzzy, request.FuzzyLevel)
                 .ParseFilters(request.Filter)
                 .ParseFacets(request.Facet)

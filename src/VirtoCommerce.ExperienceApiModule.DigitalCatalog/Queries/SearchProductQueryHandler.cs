@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
+using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.DigitalCatalog.Index;
@@ -16,20 +17,22 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
         private readonly IMapper _mapper;
         private readonly ISearchProvider _searchProvider;
         private readonly ISearchPhraseParser _searchPhraseParser;
+        private readonly IAggregationConverter _aggregationConverter;
 
-        public SearchProductQueryHandler(ISearchProvider searchProvider, ISearchPhraseParser searchPhraseParser, IMapper mapper)
+        public SearchProductQueryHandler(ISearchProvider searchProvider, ISearchPhraseParser searchPhraseParser, IMapper mapper, IAggregationConverter aggregationConverter)
         {
             _searchProvider = searchProvider;
             _searchPhraseParser = searchPhraseParser;
             _mapper = mapper;
+            _aggregationConverter = aggregationConverter;
         }
 
         public virtual async Task<SearchProductResponse> Handle(SearchProductQuery request, CancellationToken cancellationToken)
         {
-            var searchRequest = new SearchRequestBuilder(_searchPhraseParser)
+            var searchRequest = new SearchRequestBuilder(_searchPhraseParser, _aggregationConverter)
                 .WithFuzzy(request.Fuzzy, request.FuzzyLevel)
                 .ParseFilters(request.Filter)
-                .ParseFacets(request.Facet)
+                .ParseFacets(request.Facet, request.StoreId)
                 .WithSearchPhrase(request.Query)
                 .WithPaging(request.Skip, request.Take)
                 .AddSorting(request.Sort)

@@ -1,6 +1,6 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Builders;
@@ -11,7 +11,6 @@ using MediatR;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
-using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.XDigitalCatalog.Queries;
 
 namespace VirtoCommerce.XDigitalCatalog.Schemas
@@ -147,7 +146,13 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             {
                 if (context.Source.CatalogProduct.MainProductId == null)
                 {
-                    return Map(new Variation(), context.Source.CatalogProduct);
+                    var product = context.Source.CatalogProduct;
+
+                    return new ExpVariation
+                    {
+                        Product = product,
+                        Prices = context.Source.ProductPrices
+                    };
                 }
 
                 var response = await mediator.Send(new LoadProductQuery
@@ -156,7 +161,11 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                     IncludeFields = context.SubFields.Values.GetAllNodesPaths()
                 });
 
-                return response.Products.Select(product => Map(new Variation(), product.CatalogProduct)).FirstOrDefault();
+                return response.Products.Select(expProduct => new ExpVariation
+                {
+                    Product = expProduct.CatalogProduct,
+                    Prices = expProduct.ProductPrices
+                }).FirstOrDefault();
             });
 
             FieldAsync<ListGraphType<VariationType>>("variations", resolve: async context =>
@@ -168,29 +177,30 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                     IncludeFields = context.SubFields.Values.GetAllNodesPaths()
                 });
 
-                return response.Products.Select(product =>
+                return response.Products.Select(expProduct => new ExpVariation
                 {
-                    var variation = new Variation();
-                    variation = Map(variation, product.CatalogProduct);
-                    return variation;
+                    Product = expProduct.CatalogProduct,
+                    Prices = expProduct.ProductPrices
                 });
             });
 
             Field<ListGraphType<PropertyType>>("properties", resolve: context => context.Source.CatalogProduct.Properties);
 
-            Field<ListGraphType<PriceType>>(
-                "prices",
-                arguments: new QueryArguments(new QueryArgument<StringGraphType> { Name = "currency", Description = "currency" }),
-                resolve: context =>
-                {
-                    var result = context.Source.Prices;
-                    var currency = context.GetArgument<string>("currency");
-                    if (currency != null)
-                    {
-                        result = result.Where(x => x.Currency.EqualsInvariant(currency)).ToList();
-                    }
-                    return result;
-                });
+            Field<TaxCategoryType>("tax", resolve: context => null); // TODO: RESOLVE THIS
+
+            //Field<ListGraphType<PriceType>>(
+            //    "prices",
+            //    arguments: new QueryArguments(new QueryArgument<StringGraphType> { Name = "currency", Description = "currency" }),
+            //    resolve: context =>
+            //    {
+            //        var result = context.Source.Prices;
+            //        var currency = context.GetArgument<string>("currency");
+            //        if (currency != null)
+            //        {
+            //            result = result.Where(x => x.Currency.EqualsInvariant(currency)).ToList();
+            //        }
+            //        return result;
+            //    });
 
             Connection<ProductAssociationType>()
               .Name("associations")
@@ -243,27 +253,6 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 },
                 TotalCount = response.Result.TotalCount,
             };
-        }
-
-        // TODO: write normal mapper
-        private static T Map<T, TU>(T target, TU source)
-        {
-            typeof(T)
-                .GetTypeInfo()
-                .GetProperties()
-                .Where(x => x.CanWrite)
-                .ToList()
-                .ForEach(prop =>
-                {
-                    var sp = source.GetType().GetProperty(prop.Name);
-                    if (sp != null)
-                    {
-                        var value = sp.GetValue(source, null);
-                        target.GetType().GetProperty(prop.Name).SetValue(target, value, null);
-                    }
-                });
-
-            return target;
         }
     }
 }

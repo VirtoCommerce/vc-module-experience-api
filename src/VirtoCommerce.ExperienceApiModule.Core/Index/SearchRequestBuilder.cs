@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using VirtoCommerce.CatalogModule.Core.Model.Search;
+using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.SearchModule.Core.Model;
 using VirtoCommerce.SearchModule.Core.Services;
@@ -10,13 +12,15 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Index
     public class SearchRequestBuilder
     {
         private ISearchPhraseParser _phraseParser;
+        private readonly IAggregationConverter _aggregationConverter;
 
         private SearchRequest SearchRequest { get; set; }
 
-        public SearchRequestBuilder(ISearchPhraseParser phraseParser)
+        public SearchRequestBuilder(ISearchPhraseParser phraseParser, IAggregationConverter aggregationConverter)
             : this()
         {
             _phraseParser = phraseParser;
+            _aggregationConverter = aggregationConverter;
         }
 
         public SearchRequestBuilder()
@@ -154,10 +158,20 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Index
             return this;
         }
 
-        public SearchRequestBuilder ParseFacets(string facetPhrase)
+        public SearchRequestBuilder ParseFacets(string facetPhrase, string storeId = null)
         {
-            if (facetPhrase == null)
+            if (string.IsNullOrWhiteSpace(facetPhrase))
             {
+                if (!string.IsNullOrEmpty(storeId) && _aggregationConverter != null)
+                {
+                    // TODO: Add izolation from store
+                    // Maybe we need to implement ProductSearchRequestBuilder.BuildRequestAsync to fill FilterContainer correctly?
+                    SearchRequest.Aggregations = _aggregationConverter.GetAggregationRequestsAsync(new ProductIndexedSearchCriteria
+                    {
+                        StoreId = storeId
+                    }, new FiltersContainer()).GetAwaiter().GetResult();
+                }
+
                 return this;
             }
 

@@ -390,7 +390,7 @@ namespace VirtoCommerce.XPurchase
             return validCoupon != null;
         }
 
-        protected virtual async Task<PromotionResult> EvaluatePromotionsAsync()
+        public virtual async Task<PromotionResult> EvaluatePromotionsAsync()
         {
             EnsureCartExists();
 

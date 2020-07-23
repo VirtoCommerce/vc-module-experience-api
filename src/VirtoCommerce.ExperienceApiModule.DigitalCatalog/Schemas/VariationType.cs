@@ -1,16 +1,12 @@
 using GraphQL.DataLoader;
 using GraphQL.Types;
 using MediatR;
-using VirtoCommerce.CatalogModule.Core.Model;
-using VirtoCommerce.ExperienceApiModule.Core.Extensions;
-using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.InventoryModule.Core.Model.Search;
 using VirtoCommerce.InventoryModule.Core.Services;
-using VirtoCommerce.XDigitalCatalog.Queries;
 
 namespace VirtoCommerce.XDigitalCatalog.Schemas
 {
-    public class VariationType : ObjectGraphType<Variation>
+    public class VariationType : ObjectGraphType<ExpVariation>
     {
         public VariationType(
             IMediator mediator,
@@ -18,49 +14,44 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             IProductInventorySearchService productInventorySearchService
             )
         {
-            Field(x => x.Id, nullable: false).Description("Id of variation.");
+            Field<StringGraphType>(
+                "id",
+                description: "Id of variation.",
+                resolve: context => context.Source.Product.Id
+            );
 
-            Field(x => x.Code, nullable: true).Description("SKU of variation.");
+            Field<StringGraphType>(
+                "code",
+                description: "SKU of variation.",
+                resolve: context => context.Source.Product.Code
+            );
 
+            // TODO: change to connection
             FieldAsync<AvailabilityDataType>("availabilityData", resolve: async context =>
             {
-                var productId = context.Source.Id;
+                var product = context.Source.Product;
+
                 var invntorySearch = await productInventorySearchService.SearchProductInventoriesAsync(new ProductInventorySearchCriteria
                 {
-                    ProductId = productId
+                    ProductId = product.Id
                 });
 
                 return new ExpAvailabilityData
                 {
                     InventoryAll = invntorySearch.Results,
-                    IsActive = context.Source.IsActive ?? false,
-                    IsBuyable = context.Source.IsBuyable ?? false,
-                    TrackInventory = context.Source.TrackInventory ?? false,
+                    IsActive = product.IsActive ?? false,
+                    IsBuyable = product.IsBuyable ?? false,
+                    TrackInventory = product.TrackInventory ?? false,
                 };
             });
 
-            Field<ListGraphType<ImageType>>("images", resolve: context => context.Source.Images);
+            Field<ListGraphType<ImageType>>("images", resolve: context => context.Source.Product.Images);
 
-            FieldAsync<ListGraphType<PriceType>>(
-                "prices",
-                arguments: new QueryArguments
-                {
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = Constants.CultureName }
-                },
-                resolve: async context =>
-                {
-                    var responce = await mediator.Send(new LoadProductPricesRequest
-                    {
-                        ProductId = context.Source.Id,
-                        Language = context.GetLanguage()
-                    });
+            Field<ListGraphType<PriceType>>("prices", resolve: context => context.Source.Prices);
 
-                    return responce.ProductPrices;
-                });
+            Field<ListGraphType<PropertyType>>("properties", resolve: context => context.Source.Product.Properties);
 
-            Field<ListGraphType<PropertyType>>("properties", resolve: context => context.Source.Properties);
-
-            Field<ListGraphType<AssetType>>("assets", resolve: context => context.Source.Assets);
+            Field<ListGraphType<AssetType>>("assets", resolve: context => context.Source.Product.Assets);
         }
     }
 }

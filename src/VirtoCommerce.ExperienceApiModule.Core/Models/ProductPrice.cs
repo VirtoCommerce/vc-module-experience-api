@@ -52,13 +52,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Models
         /// <summary>
         /// Original product price (old price) including tax
         /// </summary>
-        public Money ListPriceWithTax
-        {
-            get
-            {
-                return ListPrice + ListPrice * TaxPercentRate;
-            }
-        }
+        public Money ListPriceWithTax => ListPrice + (ListPrice * TaxPercentRate);
 
         /// <summary>
         /// Sale product price (new price)
@@ -113,15 +107,9 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Models
         /// <summary>
         /// Gets or sets the value of total shipping tax amount
         /// </summary>
-        public Money TaxTotal
-        {
-            get
-            {
-                return ActualPriceWithTax - ActualPrice;
-            }
-        }
+        public Money TaxTotal => ActualPriceWithTax - ActualPrice;
 
-        public decimal TaxPercentRate { get; private set; }
+        public decimal TaxPercentRate { get; set; }
 
         /// <summary>
         /// Gets or sets the value of shipping tax type
