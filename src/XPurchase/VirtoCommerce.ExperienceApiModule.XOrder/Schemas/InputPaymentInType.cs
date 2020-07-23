@@ -35,13 +35,13 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field(x => x.TaxTotal);
             Field(x => x.Currency);
             Field<IntGraphType>(nameof(PaymentIn.PaymentStatus));
-            Field(x => x.Price);
-            Field(x => x.PriceWithTax);
-            Field(x => x.Total);
-            Field(x => x.TotalWithTax);
-            Field(x => x.DiscountAmount);
-            Field(x => x.DiscountAmountWithTax);
-            Field(x => x.TaxPercentRate);
+            //Field(x => x.Price);
+            //Field(x => x.PriceWithTax);
+            //Field(x => x.Total);
+            //Field(x => x.TotalWithTax);
+            //Field(x => x.DiscountAmount);
+            //Field(x => x.DiscountAmountWithTax);
+            //Field(x => x.TaxPercentRate);
             Field(x => x.TaxType, true);
 
             Field<NonNullGraphType<ListGraphType<InputOrderTaxDetailType>>>(nameof(PaymentIn.TaxDetails));

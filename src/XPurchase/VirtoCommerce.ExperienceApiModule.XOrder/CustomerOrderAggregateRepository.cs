@@ -41,7 +41,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder
         public async Task<CustomerOrderAggregate> CreateOrderFromCart(ShoppingCart cart)
         {
             var response = await _customerOrderBuilder.PlaceCustomerOrderFromCartAsync(cart);
-            //TODO need to add pk to FromModel of discount entity
+            //TODO need to add pkMap to FromModel of discount entity
             var order = await _customerOrderService.GetByIdAsync(response.Id);
             var result = await InnerGetCustomerOrderAggregateFromCustomerOrderAsync(order, order.LanguageCode);
 

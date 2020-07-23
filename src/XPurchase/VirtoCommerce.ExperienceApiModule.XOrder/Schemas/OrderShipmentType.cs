@@ -17,7 +17,6 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field(x => x.IsApproved);
             Field(x => x.Status, true);
             Field(x => x.Comment, true);
-            Field(x => x.Sum);
             Field(x => x.OuterId, true);
             Field(x => x.IsCancelled);
             Field(x => x.CancelledDate, true);
@@ -42,8 +41,6 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field(x => x.Width, true);
             Field<OrderAddressType>(nameof(Shipment.DeliveryAddress).ToCamelCase(), resolve: x => x.Source.DeliveryAddress);
             
-            Field(x => x.Fee);
-            Field(x => x.FeeWithTax);
             Field(x => x.TaxType, true);
             Field(x => x.TaxPercentRate);
 

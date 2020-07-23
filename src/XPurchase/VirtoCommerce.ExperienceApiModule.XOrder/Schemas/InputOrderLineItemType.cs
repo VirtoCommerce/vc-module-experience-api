@@ -35,8 +35,6 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field(x => x.PriceId, true);
             Field(x => x.Price);
             Field(x => x.PriceWithTax);
-            Field(x => x.Fee);
-            Field(x => x.FeeWithTax);
             Field(x => x.TaxType, true);
             Field(x => x.TaxPercentRate);
             Field(x => x.ReserveQuantity);

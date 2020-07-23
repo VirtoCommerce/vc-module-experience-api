@@ -13,7 +13,6 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field(x => x.CancelledDate, true);
             Field(x => x.IsCancelled);
             Field(x => x.OuterId, true);
-            Field(x => x.Sum);
             Field(x => x.Currency);
             Field(x => x.Comment, true);
             Field(x => x.Status, true);
@@ -40,8 +39,6 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field(x => x.Width, true);
             Field<InputOrderAddressType>(nameof(Shipment.DeliveryAddress));
 
-            Field(x => x.Fee);
-            Field(x => x.FeeWithTax);
             Field(x => x.TaxType, true);
             Field(x => x.TaxPercentRate);
 

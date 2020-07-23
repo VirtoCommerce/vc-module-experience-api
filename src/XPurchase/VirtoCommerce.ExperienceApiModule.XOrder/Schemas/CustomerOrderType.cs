@@ -16,7 +16,6 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field(x => x.Order.IsApproved);
             Field(x => x.Order.Status, true);
             Field(x => x.Order.Comment, true);
-            Field(x => x.Order.Sum);
             Field(x => x.Order.OuterId, true);
             Field(x => x.Order.IsCancelled);
             Field(x => x.Order.CancelledDate, true);

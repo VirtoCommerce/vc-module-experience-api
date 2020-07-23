@@ -14,7 +14,6 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field(x => x.CancelledDate, true);
             Field(x => x.IsCancelled);
             Field(x => x.OuterId, true);
-            Field(x => x.Sum);
             Field(x => x.Currency);
             Field(x => x.Comment, true);
             Field(x => x.Status, true);
