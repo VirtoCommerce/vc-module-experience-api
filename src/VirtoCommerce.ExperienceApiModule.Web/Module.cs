@@ -9,6 +9,8 @@ using VirtoCommerce.ExperienceApiModule.DigitalCatalog;
 using VirtoCommerce.ExperienceApiModule.DigitalCatalog.Extensions;
 using VirtoCommerce.ExperienceApiModule.DigitalCatalog.Mapping;
 using VirtoCommerce.ExperienceApiModule.DigitalCatalog.Schemas;
+using VirtoCommerce.ExperienceApiModule.XOrder.Extensions;
+using VirtoCommerce.ExperienceApiModule.XOrder.Mapping;
 using VirtoCommerce.ExperienceApiModule.XProfile;
 using VirtoCommerce.ExperienceApiModule.XProfile.Extensions;
 using VirtoCommerce.ExperienceApiModule.XProfile.Mapping;
@@ -52,6 +54,7 @@ namespace VirtoCommerce.ExperienceApiModule.Web
             services.AddXCatalog(graphQlBuilder);
             services.AddXProfile(graphQlBuilder);
             services.AddXPurchase(graphQlBuilder);
+            services.AddXOrder(graphQlBuilder);
             //TODO: need to fix extension, it's register only types from the last schema
             //services.AddGraphShemaBuilders(typeof(Anchor));
 
@@ -66,6 +69,7 @@ namespace VirtoCommerce.ExperienceApiModule.Web
                 mc.AddProfile(new ProductMappingProfile());
                 mc.AddProfile(new CartMappingProfile());
                 mc.AddProfile(new ProfileMappingProfile());
+                mc.AddProfile(new OrderMappingProfile());
             });
             var mapper = mappingConfig.CreateMapper();
             services.AddSingleton(mapper);
