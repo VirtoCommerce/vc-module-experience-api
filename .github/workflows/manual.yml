@@ -33,8 +33,8 @@ jobs:
     env:
       SONAR_TOKEN: ${{secrets.SONAR_TOKEN}}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      NUGET_KEY: ${{ secret.NUGET_KEY }}
-      BLOB_SAS: ${{ secret.BLOB_SAS }}
+      NUGET_KEY: "" #${{ secret.NUGET_KEY }}
+      BLOB_SAS: "" #${{ secret.BLOB_SAS }}
 
     steps:
       - uses: actions/checkout@v2
