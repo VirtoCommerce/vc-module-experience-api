@@ -54,7 +54,7 @@ jobs:
         env:
           PULL_REQUEST_TITLE: ${{ github.event.pull_request.title }}
         run: |
-          $REPO_NAME = '${{ GITHUB_REPOSITORY }}'.Replace('VirtoCommerce', '')
+          $REPO_NAME = $env:GITHUB_REPOSITORY.Replace('VirtoCommerce', '')
           $BRANCH='${{ github.ref }}'.Replace('refs/heads', '')
           $CMD="dotnet sonarscanner begin /k:'VirtoCommerce_$($REPO_NAME)'"
           $CMD="$($CMD) /o:'virto-commerce'"
