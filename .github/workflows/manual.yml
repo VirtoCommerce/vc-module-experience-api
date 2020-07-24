@@ -56,8 +56,9 @@ jobs:
         run: |
           $REPO_NAME = $env:GITHUB_REPOSITORY.Replace('VirtoCommerce', '')
           $BRANCH='${{ github.ref }}'.Replace('refs/heads', '')
-          $PROJECT_KEY="VirtoCommerce_$REPO_NAME"
-          $CMD="dotnet sonarscanner begin /k:$PROJECT_KEY"
+          $PROJECT_KEY="VirtoCommerce_$($REPO_NAME)"
+          Write-Output "$PROJECT_KEY"
+          $CMD="dotnet sonarscanner begin /k:$($PROJECT_KEY)"
           $CMD="$($CMD) /o:'virto-commerce'"
           $CMD="$($CMD) /d:sonar.cs.opencover.reportsPaths='$PWD/.tmp/coverage.xml'"
           $CMD="$($CMD) /d:sonar.host.url='https://sonarcloud.io'"
