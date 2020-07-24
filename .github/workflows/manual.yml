@@ -34,6 +34,7 @@ jobs:
       SONAR_TOKEN: ${{secrets.SONAR_TOKEN}}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       NUGET_KEY: ${{ secret.NUGET_KEY }}
+      BLOB_SAS: ${{ secrret.BLOB_SAS }}
 
     steps:
       - uses: actions/checkout@v2
@@ -85,7 +86,7 @@ jobs:
 
       - name: Packaging
         run: vc-build Compress -skip Clean+Restore+Compile+Test
-
+      
       - name: Publish Nuget
         if: ${{ github.ref=='refs/heads/dev' || github.ref=='refs/heads/master'}}
         shell: pwsh
@@ -96,8 +97,25 @@ jobs:
               exit 1
           }
       
+      - name: Publish Github PreRelease and Update modules.json
+        if: ${{ github.ref=='refs/heads/dev'}}
+        shell: pwsh
+        run: |
+          $orgName = $env:GITHUB_REPOSITORY.split("/")[0]
+          $BRANCH='${{ github.ref }}'.Replace('refs/heads', ')'
+          $blobUrl = "https://vc3prerelease.blob.core.windows.net/packages$($env:BLOB_SAS)"
+          $artifactFileName =  Get-ChildItem artifacts/*.zip -Name
+          $artifactRelativePath = "artifacts/$($artifactFileName)"
+          $downloadUrl = "https://vc3prerelease.blob.core.windows.net/packages/$($artifactFileName)"
+          azcopy10 copy $artifactRelativePath $blobUrl
+          & vc-build PublishModuleManifest -CustomModulePackageUri "$($downloadUrl)"
+          if($LASTEXITCODE -ne 0 -or $LASTEXITCODE -ne 423)
+          {
+              exit 1
+          }
+      
       - name: Publish Github Release and Update modules.json
-        if: ${{ github.ref=='refs/heads/dev' || github.ref=='refs/heads/master'}}
+        if: ${{ github.ref=='refs/heads/master'}}
         shell: pwsh
         run: |
           $orgName = $env:GITHUB_REPOSITORY.split("/")[0]
