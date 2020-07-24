@@ -50,8 +50,11 @@ namespace VirtoCommerce.ExperienceApiModule.Web
             services.AddSingleton<ISchema, SchemaFactory>();
 
             // Register core schemas
-            services.AddSchemaType<MoneyType>();
+            services.AddSchemaType<MoneyType>(); // TODO: move to extension
             services.AddSchemaType<DiscountType>();
+            services.AddSchemaType<TaxDetailType>();
+            services.AddSchemaType<TaxLineType>();
+            services.AddSchemaType<TaxRateType>();
 
             //Register all purchase dependencies
             services.AddXCatalog(graphQlBuilder);

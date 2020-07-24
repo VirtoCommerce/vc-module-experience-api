@@ -101,15 +101,9 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
 
                 var cartAggregate = await _cartAggregateRepository.GetCartForShoppingCartAsync(cart);
 
-                var addLineItemTasks = expProducts.Select(x =>
-                {
-                    var catalogProduct = x.CatalogProduct;
-
-                    return cartAggregate.AddItemAsync(new NewCartItem(catalogProduct.Id, 1)
-                    {
-                        CartProduct = new CartProduct(catalogProduct)
-                    });
-                }).ToArray();
+                var addLineItemTasks = expProducts
+                    .Select(x => cartAggregate.AddItemAsync(new NewCartItem(x.CatalogProduct.Id, 1) { CartProduct = new CartProduct(x.CatalogProduct) }))
+                    .ToArray();
 
                 Task.WaitAll(addLineItemTasks);
 
@@ -143,8 +137,6 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                 var promoRewards = promotionResults.Rewards.OfType<CatalogItemAmountReward>().ToArray();
 
                 var language = new Language(request.Language);
-
-                //var currency = new Currency(language, request.CurrencyCode);
 
                 foreach (var expProduct in expProducts)
                 {

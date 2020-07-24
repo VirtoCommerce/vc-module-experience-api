@@ -9,7 +9,6 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
         {
             Name = "TaxRate";
 
-            Field<ObjectGraphType<TaxLineType>>("line", resolve: context => context.Source.Line);
             Field<DecimalGraphType>("rate", resolve: context => context.Source.Rate);
             Field<DecimalGraphType>("percentRate", resolve: context => context.Source.PercentRate);
             Field<TaxLineType>("line", resolve: context => context.Source.Line);
