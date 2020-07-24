@@ -54,7 +54,7 @@ jobs:
         env:
           PULL_REQUEST_TITLE: ${{ github.event.pull_request.title }}
         run: |
-          $REPO_NAME = $env:GITHUB_REPOSITORY.Replace('VirtoCommerce', '')
+          $REPO_NAME = $env:GITHUB_REPOSITORY.Replace('VirtoCommerce/', '')
           $BRANCH='${{ github.ref }}'.Replace('refs/heads', '')
           $PROJECT_KEY="VirtoCommerce_$($REPO_NAME)"
           Write-Output "$PROJECT_KEY"
