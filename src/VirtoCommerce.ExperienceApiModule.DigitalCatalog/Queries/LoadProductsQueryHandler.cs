@@ -41,12 +41,21 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             var result = new LoadProductResponse();
             var requestFields = new List<string>();
 
+            var pricesCalled = request.IncludeFields.Any(x => x.Contains("prices"))
+                //.Any(x => x.Contains("tax", StringComparison.OrdinalIgnoreCase) ||
+                //          x.Contains("tier", StringComparison.OrdinalIgnoreCase) ||
+                //          x.Contains("discount", StringComparison.OrdinalIgnoreCase))
+                ;
+
             var searchRequest = new SearchRequestBuilder()
                 .WithPaging(0, request.Ids.Count())
                 .WithIncludeFields(request.IncludeFields.Concat(new[] { "id" }).Select(x => "__object." + x).ToArray())
                 .WithIncludeFields(request.IncludeFields.Where(x => x.StartsWith("prices.")).Concat(new[] { "id" }).Select(x => "__prices." + x.TrimStart("prices.")).ToArray())
                 .WithIncludeFields(request.IncludeFields.Any(x => x.StartsWith("variations."))
                     ? new[] { "__variations" }
+                    : Array.Empty<string>())
+                .WithIncludeFields(pricesCalled
+                    ? new[] { "__prices" }
                     : Array.Empty<string>())
                 .WithIncludeFields(request.IncludeFields.Any(x => x.StartsWith("category."))
                     ? new[] { "__object.categoryId" }
@@ -87,25 +96,22 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             }
 
             // If tax evaluation requested
-            if (request.IncludeFields.Where(x => x.Contains("prices")).Any(x => x.Contains("tax", StringComparison.OrdinalIgnoreCase) ||
-                                                                                x.Contains("tier", StringComparison.OrdinalIgnoreCase) ||
-                                                                                x.Contains("discount", StringComparison.OrdinalIgnoreCase)))
+            if (pricesCalled)
             {
-                var createCartCommand = new CreateDefaultCartCommand(
-                    storeId: request.StoreId,
-                    userId: request.UserId,
-                    currency: request.CurrencyCode,
-                    lang: request.Language);
+                var cartName = request.CartName;
+                var storeId = request.StoreId;
+                var userId = request.UserId;
+                var lang = request.Language;
+                var currency = request.CurrencyCode;
+                var type = request.Type;
 
-                var cart = _cartAggregateRepository.CreateDefaultShoppingCart(createCartCommand);
-
-                var cartAggregate = await _cartAggregateRepository.GetCartForShoppingCartAsync(cart);
-
-                var addLineItemTasks = expProducts
-                    .Select(x => cartAggregate.AddItemAsync(new NewCartItem(x.CatalogProduct.Id, 1) { CartProduct = new CartProduct(x.CatalogProduct) }))
-                    .ToArray();
-
-                Task.WaitAll(addLineItemTasks);
+                var cartAggregate = await _cartAggregateRepository.GetCartAsync(cartName, storeId, userId, lang, currency, type);
+                if (cartAggregate == null)
+                {
+                    var createCartCommand = new CreateDefaultCartCommand(storeId, userId, currency, lang);
+                    var cart = _cartAggregateRepository.CreateDefaultShoppingCart(createCartCommand);
+                    cartAggregate = await _cartAggregateRepository.GetCartForShoppingCartAsync(cart);
+                }
 
                 var context = _mapper.Map<PromotionEvaluationContext>(cartAggregate);
 

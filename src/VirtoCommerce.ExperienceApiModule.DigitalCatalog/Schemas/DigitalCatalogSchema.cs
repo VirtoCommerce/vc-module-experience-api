@@ -36,11 +36,19 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             var productField = new FieldType
             {
                 Name = "product",
-                Arguments = new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id", Description = "id of the product" }),
+                Arguments = new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id", Description = "id of the product" },
+                    new QueryArgument<StringGraphType> { Name = "cartName", Description = "Cart name" },
+                    new QueryArgument<StringGraphType> { Name = "type", Description = "Cart type" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "storeId", Description = "Store Id" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "userId", Description = "User Id" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "currencyCode", Description = "Currency code (\"USD\")" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "cultureName", Description = "Culture name (\"en-Us\")" }
+                ),
                 Type = GraphTypeExtenstionHelper.GetActualType<ProductType>(),
                 Resolver = new AsyncFieldResolver<object>(async context =>
                 {
-                    var loader = _dataLoader.Context.GetOrAddBatchLoader<string, ExpProduct>("productsLoader", (ids) => LoadProductsAsync(_mediator, ids, context.SubFields.Values.GetAllNodesPaths()));
+                    var loader = _dataLoader.Context.GetOrAddBatchLoader<string, ExpProduct>("productsLoader", (ids) => LoadProductsAsync(_mediator, ids, context));
                     return await loader.LoadAsync(context.GetArgument<string>("id"));
                 })
             };
@@ -88,9 +96,20 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             schema.Query.AddField(categoriesConnectionBuilder.FieldType);
         }
 
-        private static async Task<IDictionary<string, ExpProduct>> LoadProductsAsync(IMediator mediator, IEnumerable<string> ids, IEnumerable<string> includeFields)
+        private static async Task<IDictionary<string, ExpProduct>> LoadProductsAsync(IMediator mediator, IEnumerable<string> ids, IResolveFieldContext context)
         {
-            var response = await mediator.Send(new LoadProductQuery { Ids = ids.ToArray(), IncludeFields = includeFields });
+            var response = await mediator.Send(new LoadProductQuery
+            {
+                Ids = ids.ToArray(),
+                IncludeFields = context.SubFields.Values.GetAllNodesPaths(),
+                StoreId = context.GetArgument<string>("storeId"),
+                UserId = context.GetArgument<string>("userId"),
+                CurrencyCode = context.GetArgument<string>("currencyCode"),
+                Language = context.GetArgument<string>("cultureName"),
+                CartName = context.GetArgument("cartName", "default"),
+                Type = context.GetArgument<string>("type")
+            });
+
             return response.Products.ToDictionary(x => x.Id);
         }
 
