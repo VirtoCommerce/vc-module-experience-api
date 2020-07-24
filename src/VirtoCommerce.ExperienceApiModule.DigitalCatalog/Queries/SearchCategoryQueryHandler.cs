@@ -32,7 +32,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                 .WithPaging(request.Skip, request.Take)
                 .AddSorting(request.Sort)
                 //TODO: Remove hardcoded field name  __object from here
-                .WithIncludeFields(request.IncludeFields.Concat(new[] { "id" }).Select(x => "__object." + x).ToArray())
+                .WithIncludeFields(request.IncludeFields.Concat(new[] { "id", "parentId" }).Select(x => "__object." + x).ToArray())
                 .AddObjectIds(request.CategoryIds)
                 .Build();
 
