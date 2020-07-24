@@ -33,6 +33,7 @@ jobs:
     env:
       SONAR_TOKEN: ${{secrets.SONAR_TOKEN}}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      NUGET_KEY: ${{ secret.NUGET_KEY }}
 
     steps:
       - uses: actions/checkout@v2
@@ -58,8 +59,7 @@ jobs:
         run: |
           $REPO_NAME = $env:GITHUB_REPOSITORY.Replace('VirtoCommerce/', '')
           $BRANCH='${{ github.ref }}'.Replace('refs/heads', '')
-          $PROJECT_KEY="VirtoCommerce_$($REPO_NAME)"
-          Write-Output "$PROJECT_KEY"
+          $PROJECT_KEY=$env:GITHUB_REPOSITORY.Replace('/', '_')
           $CMD="dotnet sonarscanner begin /k:$($PROJECT_KEY)"
           $CMD="$($CMD) /o:'virto-commerce'"
           $CMD="$($CMD) /d:sonar.cs.opencover.reportsPaths='$PWD/.tmp/coverage.xml'"
@@ -85,3 +85,32 @@ jobs:
 
       - name: Packaging
         run: vc-build Compress -skip Clean+Restore+Compile+Test
+
+      - name: Publish Nuget
+        if: ${{ github.ref=='refs/heads/dev' || github.ref=='refs/heads/master'}}
+        shell: pwsh
+        run: |
+          & vc-build PublishPackages -ApiKey $env:NUGET_KEY -skip Clean+Restore+Compile+Test
+          if($LASTEXITCODE -ne 0 -or $LASTEXITCODE -ne 409)
+          {
+              exit 1
+          }
+      
+      - name: Publish Github Release and Update modules.json
+        if: ${{ github.ref=='refs/heads/dev' || github.ref=='refs/heads/master'}}
+        shell: pwsh
+        run: |
+          $orgName = $env:GITHUB_REPOSITORY.split("/")[0]
+          $BRANCH='${{ github.ref }}'.Replace('refs/heads', '')
+          $releaseBranchArg = "-ReleaseBranch $BRANCH"
+          $releaseNotesArg = ""
+          & vc-build Release -GitHubUser $orgName -GitHubToken $env:GITHUB_TOKEN $releaseBranchArg $releaseNotesArg -skip Clean+Restore+Compile+Test
+          if($LASTEXITCODE -ne 0 -or $LASTEXITCODE -ne 422)
+          {
+              exit 1
+          }
+          & vc-build PublishModuleManifest
+          if($LASTEXITCODE -ne 0 -or $LASTEXITCODE -ne 423)
+          {
+              exit 1
+          }
