@@ -172,7 +172,7 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Index
             if (!string.IsNullOrEmpty(parseResult.Keyword))
             {
                 var termFacetExpressions = parseResult.Keyword.Split(" ");
-                aggrs.AddRange(termFacetExpressions.Select(x => new TermAggregationRequest { FieldName = x, Id = x }));
+                parseResult.Filters.AddRange(termFacetExpressions.Select(x => new TermFilter { FieldName = x, Values = new List<string>() }));
             }
 
             foreach (var filter in parseResult.Filters)
@@ -181,24 +181,25 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Index
                 //Range facets
                 if (filter is RangeFilter rangeFilter)
                 {
-                    aggrs.Add(new RangeAggregationRequest
+                    var rangeAggrRequest = new RangeAggregationRequest
                     {
-                        Id = rangeFilter.FieldName + "range",
+                        Id = filter.Stringify(),
                         FieldName = rangeFilter.FieldName,
                         Values = rangeFilter.Values.Select(x => new RangeAggregationRequestValue
                         {
-                            Id = (x.Lower ?? "*") + "-" + (x.Upper ?? "*"),
+                            Id = x.Stringify(),
                             Lower = x.Lower,
                             Upper = x.Upper,
                             IncludeLower = x.IncludeLower,
                             IncludeUpper = x.IncludeUpper
                         }).ToList()
-                    });
+                    };
+                    aggrs.Add(rangeAggrRequest);
                 }
                 //Filter facets
                 if (filter is TermFilter termFilter)
                 {
-                    aggrs.Add(new TermAggregationRequest { FieldName = termFilter.FieldName, Id = termFilter.ToString(), Filter = termFilter });
+                    aggrs.Add(new TermAggregationRequest { FieldName = termFilter.FieldName, Id = filter.Stringify(), Filter = termFilter });
                 }
             }
 
@@ -216,6 +217,8 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Index
 
         public SearchRequestBuilder AddSorting(string sort)
         {
+            //TODO: How to sort by scoring relevance???
+            //TODO: Alias replacement for sort fields as well as for filter and facet expressions
             var sortFields = new List<SortingField>();
             foreach (var sortInfo in SortInfo.Parse(sort))
             {
