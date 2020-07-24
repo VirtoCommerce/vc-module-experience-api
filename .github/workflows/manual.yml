@@ -45,6 +45,16 @@ jobs:
       - name: Install dotnet-sonarscanner
         run: dotnet tool install --global dotnet-sonarscanner
 
+      - name: changelog
+        uses: scottbrenner/generate-changelog-action@master
+        id: Changelog
+        env:
+          REPO: ${{ github.repository }}
+      
+      - name: print changelog
+        shell: pwsh
+        run: Write-Output ${{ steps.Changelog.outputs.changelog }}
+
       - name: Add version suffix
         if: ${{ github.ref=='refs/heads/dev' }}
         shell: pwsh
