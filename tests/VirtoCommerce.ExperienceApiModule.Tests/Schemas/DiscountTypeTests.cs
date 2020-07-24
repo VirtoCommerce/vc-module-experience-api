@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
 using GraphQL.Types;
@@ -108,7 +108,7 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Schemas
         }
 
         [Fact]
-        public void DiscountType_Amount_ArgumentsNotPassed_ShouldThrowException()
+        public void DiscountType_Amount_ArgumentsNotPassed_ShouldBeNull()
         {
             // Arrange
             var discount = GetDiscount();
@@ -120,10 +120,10 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Schemas
             };
 
             // Act
-            Action action = () => _discountType.Fields.FirstOrDefault(x => x.Name.EqualsInvariant("Amount")).Resolver.Resolve(resolveContext);
+            var result = _discountType.Fields.FirstOrDefault(x => x.Name.EqualsInvariant("Amount")).Resolver.Resolve(resolveContext);
 
             // Assert
-            action.Should().ThrowExactly<ArgumentException>();
+            result.Should().BeNull();
         }
 
         [Fact]
@@ -151,7 +151,7 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Schemas
         }
 
         [Fact]
-        public void DiscountType_AmountWithTax_ArgumentsNotPassed_ShouldThrowException()
+        public void DiscountType_AmountWithTax_ArgumentsNotPassed_ShouldBeNull()
         {
             // Arrange
             var discount = GetDiscount();
@@ -163,10 +163,10 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Schemas
             };
 
             // Act
-            Action action = () => _discountType.Fields.FirstOrDefault(x => x.Name.EqualsInvariant("AmountWithTax")).Resolver.Resolve(resolveContext);
+            var result = _discountType.Fields.FirstOrDefault(x => x.Name.EqualsInvariant("AmountWithTax")).Resolver.Resolve(resolveContext);
 
             // Assert
-            action.Should().ThrowExactly<ArgumentException>();
+            result.Should().BeNull();
         }
     }
 }

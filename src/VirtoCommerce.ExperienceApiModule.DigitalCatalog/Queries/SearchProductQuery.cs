@@ -10,7 +10,6 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
         public string StoreId { get; set; }
         public string Lang { get; set; }
         public string Currency { get; set; }
-
         public string Query { get; set; }
         public bool Fuzzy { get; set; }
         public int? FuzzyLevel { get; set; }

@@ -13,5 +13,7 @@ namespace VirtoCommerce.XDigitalCatalog
         public long Total { get; set; }
         public long Min { get; set; }
         public long Max { get; set; }
+
+        public bool IsSelected { get; set; }
     }
 }

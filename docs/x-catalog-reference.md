@@ -11,7 +11,17 @@
 -	Facets
 -	Multi-select faceting search
 
-## Query GraphQL
+## Query GraphQL 
+
+### Playground IDE
+
+To explore the GraphQL API, you can use an interactive  [graphql-playground](https://github.com/prisma-labs/graphql-playground) environment.
+To open playground console open  `ui/playground` in the platform manager application.
+```
+http://localhost:10645/ui/playground
+```
+
+### Curl
 
 ```curl
 POST https://{platform-url}/graphql
@@ -210,3 +220,174 @@ use ? to replace a single character, and * to replace zero or more characters
 combine keywords and filters
 
 
+## Filter by category 
+Filter products that belong to exactly specified category path.
+`filter: "categories.path:{catalog id/category path}"`
+
+`filter: "categories.path:catalogId/cat1d1/cat2id"`
+
+> The search will be performed on `__path` index field of product document
+
+Filter by category subtrees, keep only the products that belong to the specified Category or any of its descendant categories.
+`filter: "categories.subtree:{catalog id/category path}"`
+
+`filter: "categories.subtree:catalogId/cat1d1/cat2id"`
+
+> The search will be performed on `__outline` index field of product document
+
+
+## Filter by price
+Keep only the products which Price match the specified value or [range]()
+
+`filter: "price.{currency}.{pricelist?}:{range expression}"`
+
+`filter: "price.usd:(TO 100]"`
+
+`filter: "price.usd.pricelist_1:(20 TO 100]"`
+
+Keep only products that  with at least one price set
+
+`filter: "is:priced`
+
+> The search will be performed on `price_{currency}` and `price_{currency}_{pricelist}` index fields of product document
+> Please note, that only the indexed prices were used for filtration. Scoped prices based on user groups or dynamic expressions temporary do not support filtration.
+
+## Filter by SKU
+Keep only the product which matches the specified SKU:
+`filter: "sku:DLL-65789352`
+
+## Filter products or variations 
+Keep only the products or variations in result. If not set will return both types.
+
+`filter: "is:product`
+
+`filter: "is:variation`
+
+## Filter by custom properties
+Keep only the products or variation with the custom attribute matching the specified value or range.
+
+`filter: "properties.{property name}: {value}`
+
+`filter: "properties.color:red`
+
+To use property name contains spaces need to use the following syntax with escaped double quotes
+`filter= "\"processor core (ghz)\":\"1.8 GHz Intel GTX Quad-Core\""`
+
+For numeric and date time properties you might use range filter
+
+`filter: "length:(10 TO 20)"`
+
+`filter: "publishDate:(TO \"2020-01-28\")"`
+
+> All product custom properties are stored in the index as fields with the same names as properties have.  `{property.name}:{property.value}`
+
+## Filter by product availability  
+Keep only the products or variations with the availability matching the specified value or range.
+
+`filter: "available_in:{warehouse}"`
+
+`filter: "available_in:my-warehouse"`
+
+## Facets
+Faceted search (sometimes also called faceted navigation) allows users to navigate through a web site by applying filters for categories, attributes, price ranges and so on. The main idea behind faceted search is to present the attributes of the documents of the previous search result as filters, which can be used by the user to narrow down search results along with calculate statistical counts to aid.
+
+Facet calculation is requested by providing facet expression via the facet query parameter. Consider for example the following two facets:
+
+`facet: "color price:[TO 100),[100 TO 200])"`
+
+The resulting json would be like seen here:
+
+```json
+"data": {
+    "products": {
+      "totalCount": 182,
+      "items": [...],
+      "range_facets": [
+        {
+          "name": "price_*-100_100-200",
+          "ranges": [
+            {
+              "from": 0,
+              "to": 100,
+              "count": 5959,
+              "includeTo": false,
+              "includeFrom": true
+            },
+            {
+              "from": 100,
+              "to": 200,
+              "count": 2143,
+              "includeTo": true,
+              "includeFrom": true
+            }
+          ]
+        }
+      ],
+      "term_facets": [
+        {
+          "name": "color",
+          "terms": [
+            {
+              "term": "EXPRESSO",
+              "count": 2343
+            },
+            {
+              "term": "Sierra Brown",
+              "count": 362
+            },
+            ...
+        }]
+    }
+}
+```
+
+### TermFacet expression
+To retrieve facet counts for all occurring values of a product document field the following notations can be applied:
+
+`facet: "category.path"`
+Counts the products of all categories.
+
+`facet: "{propertyName}"`
+`facet: "properties.{propertyName}"`
+Counts the product documents for all occurring values of custom  properties.
+
+### TermFacet result
+The term type facets provide the counts for each of the different values the query parameter happens to have.
+`name` - represents the key of requested facet taken from facet expression.
+`terms.term` - one of the values for the field specified in facet expression for which at least one product could be found
+`terms.count` - amount of products  for which the term applies
+`terms.isSelected` - flag indicates that requested facet term is used in `filter` expression, in order to simplify displaying the already selected facet terms on the frontend.
+
+### RangeFacet expression
+To aggregate facet counts across ranges of values, the range qualifier can be applied analogous to the filter parameters. The `range` notation is applicable to the date, time, datetime, number and money type fields. 
+
+`facet: "price.{currency}:[TO 100),[100 TO 200])"`
+Counts the products whose price falls in one of the specified ranges
+
+`facet: "properties.{propertyName}[1 TO 100)"`
+Counts the products whose values of the custom property fall in one of the specified ranges
+
+### RangeFacet result
+The range facet type counts the products for which the query value is a range specified in the range expression. Range facets are typically used to determine the minimum and maximum value for example product prices to filter products by price with a range slider.
+
+`name` - represents the key of requested facet taken from facet expression and build from range parameters concatenated by `_`. e.g `price_*-100_100-200`
+`ranges.from` - the range’s lower endpoint in number format
+`ranges.to` - the range’s upper endpoint in string format
+`ranges.count` - amount of products fall into the specified range
+`ranges.includeTo` - flag indicates that lower bound is included
+`ranges.includeFrom` - flag indicates that upper bound is included
+`ranges.isSelected` - flag indicates that requested facet term is used in `filter` expression, in order to simplify displaying the already selected facet terms on the frontend.
+
+## Muti-select faceting search
+The policy let select multiple values of the same facet (e.g using checkbox).
+You can read more for how the muti-select faceting search work on this great article [How to implement multi-select faceting for nested documents in Solr](https://blog.griddynamics.com/multi-select-faceting-for-nested-documents-in-solr/) and [Elastic search post filter](https://www.elastic.co/guide/en/elasticsearch/reference/7.6/search-request-body.html#request-body-search-post-filter)
+
+The muti-select faceting search policy is enabled by default and you do not need any extra parameters or setting to activate it.
+```json
+```
+
+
+## Sorting
+By default, search results are sorted descending by their relevancy with respect to the provided text (that is their “score”). An alternative sorting can be specified  via the sort query parameter which has the structure `{field}:{asc|desc}` you can combine multiple sort expression  by semicolon  `;`
+
+`sort: "priority:desc;price.usd;score"`
