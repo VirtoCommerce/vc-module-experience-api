@@ -42,7 +42,7 @@ jobs:
         run: dotnet tool install --global dotnet-sonarscanner
 
       - name: Add version suffix
-        if: ${{ github.ref='refs/heads/dev' }}
+        if: ${{ github.ref=='refs/heads/dev' }}
         shell: pwsh
         run: |
           $commitNumber = git rev-list --count '${{ github.ref }}'.Replace('refs/heads', '')
