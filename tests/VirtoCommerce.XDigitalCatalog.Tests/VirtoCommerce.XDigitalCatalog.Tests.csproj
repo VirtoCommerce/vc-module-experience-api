@@ -18,4 +18,8 @@
         <ProjectReference Include="..\..\src\VirtoCommerce.ExperienceApiModule.DigitalCatalog\VirtoCommerce.XDigitalCatalog.csproj" />
         <ProjectReference Include="..\VirtoCommerce.ExperienceApiModule.Tests\VirtoCommerce.ExperienceApiModule.Tests.csproj" />
     </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Schemas\" />
+    </ItemGroup>
 </Project>
