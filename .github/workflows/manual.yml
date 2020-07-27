@@ -111,7 +111,7 @@ jobs:
         shell: pwsh
         run: |
           $orgName = $env:GITHUB_REPOSITORY.split("/")[0]
-          $BRANCH='${{ github.ref }}'.Replace('refs/heads', ')'
+          $BRANCH="${{ github.ref }}".Replace('refs/heads', '')
           $blobUrl = "https://vc3prerelease.blob.core.windows.net/packages$($env:BLOB_SAS)"
           $artifactFileName =  Get-ChildItem artifacts/*.zip -Name
           $artifactRelativePath = "artifacts/$($artifactFileName)"
