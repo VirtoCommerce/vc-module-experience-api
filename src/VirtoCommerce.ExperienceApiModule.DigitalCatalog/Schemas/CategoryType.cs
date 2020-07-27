@@ -1,11 +1,8 @@
 using System.Linq;
-using GraphQL;
 using GraphQL.DataLoader;
 using GraphQL.Types;
 using MediatR;
-using Newtonsoft.Json.Linq;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
-using VirtoCommerce.Tools;
 using VirtoCommerce.XDigitalCatalog.Queries;
 
 namespace VirtoCommerce.XDigitalCatalog.Schemas
@@ -34,13 +31,13 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                     return null;
                 }
 
-                var responce = await mediator.Send(new LoadCategoryQuery
+                var response = await mediator.Send(new LoadCategoryQuery
                 {
                     Id = categoryId,
                     IncludeFields = context.SubFields.Values.GetAllNodesPaths()
                 });
 
-                return responce.Category;
+                return response.Category;
             });
 
             Field<BooleanGraphType>("hasParent", resolve: context => TryGetParentId(context, out _));
