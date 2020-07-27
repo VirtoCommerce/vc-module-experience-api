@@ -34,7 +34,7 @@ jobs:
       SONAR_TOKEN: ${{secrets.SONAR_TOKEN}}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       NUGET_KEY: "" #${{ secret.NUGET_KEY }}
-      BLOB_SAS: "" #${{ secret.BLOB_SAS }}
+      BLOB_SAS: ${{ secrets.BLOB_CONNECTION_STRING }}
 
     steps:
       - uses: actions/checkout@v2
@@ -45,25 +45,25 @@ jobs:
       - name: Install dotnet-sonarscanner
         run: dotnet tool install --global dotnet-sonarscanner
 
-      - name: changelog
-        uses: scottbrenner/generate-changelog-action@master
-        id: Changelog
-        env:
-          REPO: ${{ github.repository }}
+      # - name: changelog
+      #   uses: scottbrenner/generate-changelog-action@master
+      #   id: Changelog
+      #   env:
+      #     REPO: ${{ github.repository }}
       
-      - name: print changelog
-        shell: pwsh
-        run: Write-Output ${{ steps.Changelog.outputs.changelog }}
+      # - name: print changelog
+      #   shell: pwsh
+      #   run: Write-Output ${{ steps.Changelog.outputs.changelog }}
 
       - name: Add version suffix
-        if: ${{ github.ref=='refs/heads/dev' }}
+        # if: ${{ github.ref=='refs/heads/dev' }}
         shell: pwsh
         run: |
-          $commitNumber = git rev-list --count '${{ github.ref }}'.Replace('refs/heads', '')
-          vc-build ChangeVersion -CustomVersionSuffix $commitNumber
+          $commitNumber = git rev-list --count '${{ github.ref }}'.Replace('refs/heads/', '')
+          Write-Output "alpha.$($commitNumber)"
+          # vc-build ChangeVersion -CustomVersionSuffix "alpha.$($commitNumber)"
 
       - name: SonarCloud Begin
-        if: ${{ env.SONAR_TOKEN != 0 }}
         shell: pwsh
         env:
           PULL_REQUEST_TITLE: ${{ github.event.pull_request.title }}
@@ -91,14 +91,13 @@ jobs:
         run: vc-build Test -skip
 
       - name: SonarCloud End
-        if: ${{ env.SONAR_TOKEN != 0 }}
         run: dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
 
       - name: Packaging
         run: vc-build Compress -skip Clean+Restore+Compile+Test
       
       - name: Publish Nuget
-        if: ${{ github.ref=='refs/heads/dev' || github.ref=='refs/heads/master'}}
+        if: ${{ github.ref=='refs/heads/dev' || github.ref=='refs/heads/master' }}
         shell: pwsh
         run: |
           & vc-build PublishPackages -ApiKey $env:NUGET_KEY -skip Clean+Restore+Compile+Test
@@ -108,7 +107,7 @@ jobs:
           }
       
       - name: Publish Github PreRelease and Update modules.json
-        if: ${{ github.ref=='refs/heads/dev'}}
+        # if: ${{ github.ref=='refs/heads/dev' }}
         shell: pwsh
         run: |
           $orgName = $env:GITHUB_REPOSITORY.split("/")[0]
@@ -116,29 +115,65 @@ jobs:
           $blobUrl = "https://vc3prerelease.blob.core.windows.net/packages$($env:BLOB_SAS)"
           $artifactFileName =  Get-ChildItem artifacts/*.zip -Name
           $artifactRelativePath = "artifacts/$($artifactFileName)"
+          Write-Output $artifactFileName
           $downloadUrl = "https://vc3prerelease.blob.core.windows.net/packages/$($artifactFileName)"
-          azcopy10 copy $artifactRelativePath $blobUrl
-          & vc-build PublishModuleManifest -CustomModulePackageUri "$($downloadUrl)"
-          if($LASTEXITCODE -ne 0 -or $LASTEXITCODE -ne 423)
-          {
-              exit 1
-          }
+          # azcopy10 copy $artifactRelativePath $blobUrl
+          Write-Output $downloadUrl
+          # & vc-build PublishModuleManifest -CustomModulePackageUri "$($downloadUrl)"
+          # if($LASTEXITCODE -ne 0 -or $LASTEXITCODE -ne 423)
+          # {
+          #     exit 1
+          # }
       
       - name: Publish Github Release and Update modules.json
-        if: ${{ github.ref=='refs/heads/master'}}
+        #if: ${{ github.ref=='refs/heads/master'}}
         shell: pwsh
         run: |
           $orgName = $env:GITHUB_REPOSITORY.split("/")[0]
           $BRANCH='${{ github.ref }}'.Replace('refs/heads', '')
           $releaseBranchArg = "-ReleaseBranch $BRANCH"
           $releaseNotesArg = ""
-          & vc-build Release -GitHubUser $orgName -GitHubToken $env:GITHUB_TOKEN $releaseBranchArg $releaseNotesArg -skip Clean+Restore+Compile+Test
-          if($LASTEXITCODE -ne 0 -or $LASTEXITCODE -ne 422)
-          {
-              exit 1
-          }
-          & vc-build PublishModuleManifest
-          if($LASTEXITCODE -ne 0 -or $LASTEXITCODE -ne 423)
-          {
-              exit 1
-          }
+          Write-Output "vc-build Release -GitHubUser $orgName -GitHubToken $($env:GITHUB_TOKEN) $releaseBranchArg $releaseNotesArg -skip Clean+Restore+Compile+Test"
+          # if($LASTEXITCODE -ne 0 -or $LASTEXITCODE -ne 422)
+          # {
+          #     exit 1
+          # }
+          # & vc-build PublishModuleManifest
+          # if($LASTEXITCODE -ne 0 -or $LASTEXITCODE -ne 423)
+          # {
+          #     exit 1
+          # }
+
+      - name: Parse Jira Keys from Commit
+        id: jira_keys
+        if: always()
+        uses: HighwayThree/jira-extract-issue-keys@master
+        with:
+          is-pull-request: ${{ github.event_name == 'pull_request' }}
+          parse-all-commits: ${{ github.event_name == 'push' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  
+      - name: Push Build Info to Jira
+        if: ${{ env.CLOUD_INSTANCE_BASE_URL != 0 && env.CLIENT_ID != 0 && env.CLIENT_SECRET != 0 && env.BUILD_STATE != 0 && steps.jira_keys.outputs.jira-keys != '' && always() }}
+        id: push_build_info_to_jira
+        uses: HighwayThree/jira-upload-build-info@master
+        env:
+          CLOUD_INSTANCE_BASE_URL: ${{secrets.CLOUD_INSTANCE_BASE_URL}}
+          CLIENT_ID: ${{secrets.CLIENT_ID}}
+          CLIENT_SECRET: ${{secrets.CLIENT_SECRET}}
+        with:
+          cloud-instance-base-url: '${{ secrets.CLOUD_INSTANCE_BASE_URL }}'
+          client-id: '${{ secrets.CLIENT_ID }}'
+          client-secret: '${{ secrets.CLIENT_SECRET }}'
+          pipeline-id: '${{ github.repository }} ${{ github.workflow }}'
+          build-number: ${{ github.run_number }}
+          build-display-name: 'Workflow: ${{ github.workflow }} (#${{ github.run_number }})'
+          build-state: "${{ env.BUILD_STATE }}"
+          build-url: '${{github.event.repository.html_url}}/actions/runs/${{github.run_id}}'
+          update-sequence-number: '${{ github.run_id }}'
+          last-updated: '${{github.event.head_commit.timestamp}}'
+          issue-keys: "${{ steps.jira_keys.outputs.jira-keys }}"
+          commit-id: '${{ github.sha }}'
+          repo-url: '${{ github.event.repository.html_url }}'
+          build-ref-url: '${{ github.event.repository.html_url }}/actions/runs/${{ github.run_id }}'
