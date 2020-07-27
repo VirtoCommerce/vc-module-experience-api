@@ -54,13 +54,6 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 
             schema.Query.AddField(orderConnectionBuilder.FieldType);
 
-
-            _ = schema.Mutation.AddField(FieldBuilder.Create<object, bool>(typeof(BooleanGraphType))
-                            .Name("updateOrder")
-                            .Argument<NonNullGraphType<InputUpdateOrderType>>(_commandName)
-                            .ResolveAsync(async context => await _mediator.Send(context.GetArgument<UpdateOrderCommand>(_commandName)))
-                            .FieldType);
-
             _ = schema.Mutation.AddField(FieldBuilder.Create<object, CustomerOrderAggregate>(typeof(CustomerOrderType))
                             .Name("createOrderFromCart")
                             .Argument<NonNullGraphType<InputCreateOrderFromCartType>>(_commandName)
