@@ -179,7 +179,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 });
             });
 
-            Field<ListGraphType<PropertyType>>("properties", resolve: context => context.Source.CatalogProduct.Properties);
+            //Field<ListGraphType<PropertyType>>("properties", resolve: context => context.Source.CatalogProduct.Properties);
 
             Field<TaxCategoryType>("tax", resolve: context => null); // TODO: We need this?
 

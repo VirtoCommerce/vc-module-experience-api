@@ -17,6 +17,8 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             Field(x => x.Hidden, nullable: false).Description("Is property hidden.");
 
+            Field(x => x.Multivalue, nullable: false).Description("Is property has multiple values.");
+
             Field<StringGraphType>(
                 "valueType",
                 resolve: context => context.Source.Values.Select(x => x.ValueType).FirstOrDefault()
