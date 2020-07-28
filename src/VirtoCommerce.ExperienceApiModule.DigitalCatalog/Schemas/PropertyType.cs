@@ -1,6 +1,7 @@
 using System.Linq;
 using GraphQL.Types;
 using VirtoCommerce.CatalogModule.Core.Model;
+using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 
 namespace VirtoCommerce.XDigitalCatalog.Schemas
 {
@@ -18,6 +19,21 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             Field(x => x.Hidden, nullable: false).Description("Is property hidden.");
 
             Field(x => x.Multivalue, nullable: false).Description("Is property has multiple values.");
+
+            Field<StringGraphType>(
+                "label",
+                resolve: context =>
+                {
+                    var displayNames = context.Source.DisplayNames.AsQueryable();
+
+                    var cultureName = context.GetCultureName();
+                    if (cultureName != null)
+                    {
+                        displayNames = displayNames.Where(x => x.LanguageCode == cultureName);
+                    }
+
+                    return displayNames.Select(x => x.Name).FirstOrDefault();
+                });
 
             Field<StringGraphType>(
                 "valueType",

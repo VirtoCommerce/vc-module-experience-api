@@ -62,6 +62,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                     {
                         Id = property.Id,
                         Name = property.Name,
+                        DisplayNames = property.DisplayNames,
                         Hidden = property.Hidden,
                         Multivalue = property.Values.Count > 1,
                         Values = new List<PropertyValue> { propValue }
