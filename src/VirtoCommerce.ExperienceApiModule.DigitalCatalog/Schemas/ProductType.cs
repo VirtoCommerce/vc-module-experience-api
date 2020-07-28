@@ -9,6 +9,7 @@ using MediatR;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
+using VirtoCommerce.XDigitalCatalog.Extensions;
 using VirtoCommerce.XDigitalCatalog.Queries;
 
 namespace VirtoCommerce.XDigitalCatalog.Schemas
@@ -141,13 +142,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             {
                 if (context.Source.CatalogProduct.MainProductId == null)
                 {
-                    var product = context.Source.CatalogProduct;
-
-                    return new ExpVariation
-                    {
-                        Product = product,
-                        Prices = context.Source.ProductPrices
-                    };
+                    return new ExpVariation(context.Source);
                 }
 
                 var response = await mediator.Send(new LoadProductQuery
@@ -156,30 +151,23 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                     IncludeFields = context.SubFields.Values.GetAllNodesPaths()
                 });
 
-                return response.Products.Select(expProduct => new ExpVariation
-                {
-                    Product = expProduct.CatalogProduct,
-                    Prices = expProduct.ProductPrices
-                }).FirstOrDefault();
+                return response.Products
+                    .Select(expProduct => new ExpVariation(expProduct))
+                    .FirstOrDefault();
             });
 
             FieldAsync<ListGraphType<VariationType>>("variations", resolve: async context =>
             {
-                var variationsIds = context.Source.VariationIds;
                 var response = await mediator.Send(new LoadProductQuery
                 {
-                    Ids = variationsIds.ToArray(),
+                    Ids = context.Source.VariationIds.ToArray(),
                     IncludeFields = context.SubFields.Values.GetAllNodesPaths()
                 });
 
-                return response.Products.Select(expProduct => new ExpVariation
-                {
-                    Product = expProduct.CatalogProduct,
-                    Prices = expProduct.ProductPrices
-                });
+                return response.Products.Select(expProduct => new ExpVariation(expProduct));
             });
 
-            //Field<ListGraphType<PropertyType>>("properties", resolve: context => context.Source.CatalogProduct.Properties);
+            Field<ListGraphType<PropertyType>>("properties", resolve: context => context.Source.CatalogProduct.Properties.ConvertToFlatModel());
 
             Field<TaxCategoryType>("tax", resolve: context => null); // TODO: We need this?
 

@@ -1,4 +1,4 @@
-namespace VirtoCommerce.XDigitalCatalog
+namespace VirtoCommerce.XDigitalCatalog.Facets
 {
     public sealed class FacetFilter
     {

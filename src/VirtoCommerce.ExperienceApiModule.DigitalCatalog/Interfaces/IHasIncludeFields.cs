@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace VirtoCommerce.XDigitalCatalog
+namespace VirtoCommerce.XDigitalCatalog.Interfaces
 {
     public interface IHasIncludeFields
     {

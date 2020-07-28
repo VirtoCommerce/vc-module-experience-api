@@ -10,7 +10,7 @@ using VirtoCommerce.PricingModule.Core.Services;
 
 namespace VirtoCommerce.XDigitalCatalog.Queries
 {
-    public class LoadProductPricesQueryHandler : IQueryHandler<LoadProductPricesRequest, LoadProductPricesResponce>
+    public class LoadProductPricesQueryHandler : IQueryHandler<LoadProductPricesQuery, LoadProductPricesResponce>
     {
         private readonly IPricingSearchService _pricingSearchService;
 
@@ -19,7 +19,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             _pricingSearchService = pricingSearchService;
         }
 
-        public virtual async Task<LoadProductPricesResponce> Handle(LoadProductPricesRequest request, CancellationToken cancellationToken)
+        public virtual async Task<LoadProductPricesResponce> Handle(LoadProductPricesQuery request, CancellationToken cancellationToken)
         {
             var priceSearchResult = await _pricingSearchService.SearchPricesAsync(new PricesSearchCriteria
             {

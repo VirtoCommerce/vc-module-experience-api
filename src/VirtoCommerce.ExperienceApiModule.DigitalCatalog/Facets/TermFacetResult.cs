@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace VirtoCommerce.XDigitalCatalog
+namespace VirtoCommerce.XDigitalCatalog.Facets
 {
     public sealed class TermFacetResult : FacetResult
     {

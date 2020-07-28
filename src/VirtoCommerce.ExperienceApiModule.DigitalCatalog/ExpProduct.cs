@@ -2,9 +2,8 @@ using System.Collections.Generic;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.Core.Binding;
 using VirtoCommerce.InventoryModule.Core.Model;
-using VirtoCommerce.ExperienceApiModule.Core.Models;
-using VirtoCommerce.XDigitalCatalog.Binding;
 using VirtoCommerce.PricingModule.Core.Model;
+using VirtoCommerce.XDigitalCatalog.Binding;
 using ProductPrice = VirtoCommerce.ExperienceApiModule.Core.Models.ProductPrice;
 
 namespace VirtoCommerce.XDigitalCatalog

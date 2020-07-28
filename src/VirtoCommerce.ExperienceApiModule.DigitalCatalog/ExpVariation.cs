@@ -4,9 +4,18 @@ using VirtoCommerce.ExperienceApiModule.Core.Models;
 
 namespace VirtoCommerce.XDigitalCatalog
 {
-    public class ExpVariation
+    public class ExpVariation : ExpProduct
     {
-        public CatalogProduct Product { get; set; }
-        public List<ProductPrice> Prices { get; set; }
+        public ExpVariation(CatalogProduct product, List<ProductPrice> productPrices)
+        {
+            CatalogProduct = product;
+            ProductPrices = productPrices;
+        }
+
+        public ExpVariation(ExpProduct expProduct)
+        {
+            CatalogProduct = expProduct.CatalogProduct;
+            ProductPrices = expProduct.ProductPrices;
+        }
     }
 }

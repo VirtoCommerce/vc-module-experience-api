@@ -59,8 +59,11 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 .Name("products")
                 .Argument<StringGraphType>("storeId", "The store id where products are searched")
                 .Argument<StringGraphType>("lang", "The language for which all localized product data will be returned")
-                .Argument<StringGraphType>("customerId", "The customer id for search result impersonalization")
-                .Argument<StringGraphType>("currency", "The currency for which all prices data will be returned")
+                .Argument<StringGraphType>("userId", "The customer id for search result impersonalization")
+                .Argument<StringGraphType>("currencyCode", "The currency for which all prices data will be returned")
+                .Argument<StringGraphType>("cultureName", "The culture name for cart context product")
+                .Argument<StringGraphType>("cartName", "The cart name for cart context product")
+                .Argument<StringGraphType>("type", "Type of cart for context product")
                 .Argument<StringGraphType>("query", "The query parameter performs the full-text search")
                 .Argument<StringGraphType>("filter", "This parameter applies a filter to the query results")
                 .Argument<BooleanGraphType>("fuzzy", "When the fuzzy query parameter is set to true the search endpoint will also return products that contain slight differences to the search text.")
@@ -121,19 +124,23 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             // TODO: maybe we need to save it to UserContext?
             var storeId = context.GetArgument<string>("storeId");
-            var customerId = context.GetArgument<string>("customerId");
-            var currency = context.GetArgument<string>("currency");
-            var lang = context.GetArgument<string>("lang");
+            var userId = context.GetArgument<string>("userId");
+            var currencyCode = context.GetArgument<string>("currencyCode");
+            var cultureName = context.GetArgument<string>("cultureName");
+            var cartName = context.GetArgument("cartName", "default");
+            var cartType = context.GetArgument<string>("type");
 
             var productIds = context.GetArgument<List<string>>("productIds");
 
             var request = new SearchProductQuery
             {
-                Lang = lang,
+                CultureName = cultureName,
                 StoreId = storeId,
-                CustomerId = customerId,
-                Currency = currency,
+                UserId = userId,
+                CurrencyCode = currencyCode,
                 IncludeFields = includeFields.ToArray(),
+                CartName = cartName,
+                CartType = cartType
             };
 
             if (productIds.IsNullOrEmpty())

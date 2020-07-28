@@ -1,6 +1,6 @@
 using VirtoCommerce.Platform.Core.Common;
 
-namespace VirtoCommerce.XDigitalCatalog
+namespace VirtoCommerce.XDigitalCatalog.Facets
 {
     public sealed class FacetTerm : ValueObject
     {
