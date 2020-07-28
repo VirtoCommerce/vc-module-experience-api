@@ -6,7 +6,6 @@ using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.OrdersModule.Core.Model;
-using VirtoCommerce.OrdersModule.Core.Model.Search;
 using VirtoCommerce.OrdersModule.Core.Services;
 using VirtoCommerce.OrdersModule.Data.Services;
 using VirtoCommerce.Platform.Core.Common;
@@ -16,17 +15,14 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder
     public class CustomerOrderAggregateRepository : ICustomerOrderAggregateRepository
     {
         private readonly ICustomerOrderService _customerOrderService;
-        private readonly ICustomerOrderSearchService _customerOrderSearchService;
         private readonly ICurrencyService _currencyService;
         private readonly ICustomerOrderBuilder _customerOrderBuilder;
 
         public CustomerOrderAggregateRepository(ICustomerOrderService customerOrderService,
-            ICustomerOrderSearchService customerOrderSearchService,
             ICurrencyService currencyService,
             ICustomerOrderBuilder customerOrderBuilder)
         {
             _customerOrderService = customerOrderService;
-            _customerOrderSearchService = customerOrderSearchService;
             _currencyService = currencyService;
             _customerOrderBuilder = customerOrderBuilder;
         }
