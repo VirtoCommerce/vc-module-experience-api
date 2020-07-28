@@ -7,16 +7,18 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Commands
 {
     public class ChangeOrderStatusCommandHandler : IRequestHandler<ChangeOrderStatusCommand, bool>
     {
+        private readonly ICustomerOrderAggregateRepository _customerOrderAggregateRepository;
         private readonly ICustomerOrderService _customerOrderService;
-        public ChangeOrderStatusCommandHandler(ICustomerOrderService customerOrderService)
+        public ChangeOrderStatusCommandHandler(ICustomerOrderService customerOrderService, ICustomerOrderAggregateRepository customerOrderAggregateRepository)
         {
             _customerOrderService = customerOrderService;
+            _customerOrderAggregateRepository = customerOrderAggregateRepository;
         }
         public async Task<bool> Handle(ChangeOrderStatusCommand request, CancellationToken cancellationToken)
         {
-            var order = await _customerOrderService.GetByIdAsync(request.OrderId);
-            order.Status = request.Status;
-            await _customerOrderService.SaveChangesAsync(new[] { order });
+            var orderAggregate = await _customerOrderAggregateRepository.GetOrderByIdAsync(request.OrderId);
+            orderAggregate.ChangeOrderStatus(request.Status);
+            await _customerOrderService.SaveChangesAsync(new[] { orderAggregate.Order });
             return true;
         }
     }

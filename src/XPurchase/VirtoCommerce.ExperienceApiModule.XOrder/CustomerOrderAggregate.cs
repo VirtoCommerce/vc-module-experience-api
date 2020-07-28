@@ -1,3 +1,4 @@
+using System.Linq;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.OrdersModule.Core.Model;
 using VirtoCommerce.Platform.Core.Common;
@@ -15,6 +16,37 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder
         }
 
         public CustomerOrder Order { get; protected set; }
-        public Currency Currency { get; protected set; }                
+        public Currency Currency { get; protected set; }
+
+        public void ChangeOrderStatus(string status)
+        {
+            Order.Status = status;
+        }
+
+        public void CancelOrderPayment(PaymentIn payment)
+        {
+            var paymentOrder = Order.InPayments.FirstOrDefault(x => x.Number.EqualsInvariant(payment.Number));
+            if (paymentOrder != null)
+            {
+                paymentOrder.IsCancelled = payment.IsCancelled;
+                paymentOrder.CancelReason = payment.CancelReason;
+                paymentOrder.CancelledDate = payment.CancelledDate;
+                paymentOrder.Status = payment.Status;
+            }
+        }
+
+        public void ConfirmOrderPayment(PaymentIn payment)
+        {
+            var paymentOrder = Order.InPayments.FirstOrDefault(x => x.Number.EqualsInvariant(payment.Number));
+            if (paymentOrder == null)
+            {
+                paymentOrder = payment;
+                Order.InPayments.Add(paymentOrder);
+            }
+            else
+            {
+                paymentOrder.BillingAddress = payment.BillingAddress;
+            }
+        }
     }
 }
