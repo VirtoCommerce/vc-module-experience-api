@@ -16,12 +16,12 @@ namespace VirtoCommerce.XDigitalCatalog.Mapping
             CreateMap<TermAggregationRequest, TermFacetResult>().ConvertUsing((request, facet, context) =>
             {
                 var aggregations = context.Items["aggregations"] as IList<AggregationResponse>;
-                var aggregation = aggregations.FirstOrDefault(x => x.Id.EqualsInvariant(request.Id));
+                var aggregation = aggregations.FirstOrDefault(x => x.Id.EqualsInvariant(request.Id) || x.Id.EqualsInvariant(request.FieldName));
                 if (aggregation != null)
                 {
                     return new TermFacetResult
                     {
-                        Name = request.Id,
+                        Name = request.Id ?? request.FieldName,
                         Terms = aggregation.Values.Select(x => new FacetTerm { Count = x.Count, Term = x.Id }).ToList()
                     };
                 }
@@ -30,10 +30,10 @@ namespace VirtoCommerce.XDigitalCatalog.Mapping
             CreateMap<RangeAggregationRequest, RangeFacetResult>().ConvertUsing((request, facet, context) =>
             {
                 var aggregations = context.Items["aggregations"] as IList<AggregationResponse>;
-                var aggregation = aggregations.FirstOrDefault(x => x.Id.EqualsInvariant(request.Id));
+                var aggregation = aggregations.FirstOrDefault(x => x.Id.EqualsInvariant(request.Id) || x.Id.EqualsInvariant(request.FieldName));
                 var result = new RangeFacetResult
                 {
-                    Name = request.Id
+                    Name = request.Id ?? request.FieldName
                 };
                 foreach (var aggrValue in aggregation.Values)
                 {
