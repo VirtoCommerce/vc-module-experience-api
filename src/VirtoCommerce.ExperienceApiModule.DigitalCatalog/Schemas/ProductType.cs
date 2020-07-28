@@ -1,10 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Builders;
-using GraphQL.DataLoader;
 using GraphQL.Types;
 using GraphQL.Types.Relay.DataObjects;
 using MediatR;
@@ -53,16 +51,13 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
         ///    }
         ///}
         /// </example>
-        public ProductType(
-            IMediator mediator,
-            IDataLoaderContextAccessor dataLoader)
+        public ProductType(IMediator mediator)
         {
             Name = "Product";
             Description = "Products are the sellable goods in an e-commerce project.";
 
-            //this.AuthorizeWith(CatalogModule.Core.ModuleConstants.Security.Permissions.Read);
-
             Field(d => d.CatalogProduct.Id).Description("The unique ID of the product.");
+
             Field(d => d.CatalogProduct.Code, nullable: false).Description("The product SKU.");
 
             Field<StringGraphType>("catalogId", resolve: context => context.Source.CatalogProduct.CatalogId);
@@ -186,21 +181,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             Field<ListGraphType<PropertyType>>("properties", resolve: context => context.Source.CatalogProduct.Properties);
 
-            Field<TaxCategoryType>("tax", resolve: context => null); // TODO: RESOLVE THIS
-
-            //Field<ListGraphType<PriceType>>(
-            //    "prices",
-            //    arguments: new QueryArguments(new QueryArgument<StringGraphType> { Name = "currency", Description = "currency" }),
-            //    resolve: context =>
-            //    {
-            //        var result = context.Source.Prices;
-            //        var currency = context.GetArgument<string>("currency");
-            //        if (currency != null)
-            //        {
-            //            result = result.Where(x => x.Currency.EqualsInvariant(currency)).ToList();
-            //        }
-            //        return result;
-            //    });
+            Field<TaxCategoryType>("tax", resolve: context => null); // TODO: We need this?
 
             Connection<ProductAssociationType>()
               .Name("associations")

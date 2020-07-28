@@ -1,18 +1,13 @@
-using GraphQL.DataLoader;
 using GraphQL.Types;
-using MediatR;
 using VirtoCommerce.InventoryModule.Core.Model.Search;
 using VirtoCommerce.InventoryModule.Core.Services;
+using VirtoCommerce.XDigitalCatalog.Specifications;
 
 namespace VirtoCommerce.XDigitalCatalog.Schemas
 {
     public class VariationType : ObjectGraphType<ExpVariation>
     {
-        public VariationType(
-            IMediator mediator,
-            IDataLoaderContextAccessor dataLoader,
-            IProductInventorySearchService productInventorySearchService
-            )
+        public VariationType(IProductInventorySearchService productInventorySearchService)
         {
             Field<StringGraphType>(
                 "id",
@@ -39,9 +34,9 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 return new ExpAvailabilityData
                 {
                     InventoryAll = invntorySearch.Results,
-                    IsActive = product.IsActive ?? false,
-                    IsBuyable = product.IsBuyable ?? false,
-                    TrackInventory = product.TrackInventory ?? false,
+                    IsBuyable = new CatalogProductIsBuyableSpecification().IsSatisfiedBy(product),
+                    IsAvailable = new CatalogProductIsAvailableSpecification().IsSatisfiedBy(product, invntorySearch.Results),
+                    IsInStock = new CatalogProductIsInStockSpecification().IsSatisfiedBy(product, invntorySearch.Results),
                 };
             });
 
@@ -52,6 +47,8 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             Field<ListGraphType<PropertyType>>("properties", resolve: context => context.Source.Product.Properties);
 
             Field<ListGraphType<AssetType>>("assets", resolve: context => context.Source.Product.Assets);
+
+            Field<ListGraphType<OutlineType>>("outlines", resolve: context => context.Source.Product.Outlines);
         }
     }
 }

@@ -12,7 +12,11 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             Description = "Products attributes.";
 
             Field(x => x.Id).Description("The unique ID of the product.");
+
             Field(x => x.Name, nullable: false).Description("The name of the property.");
+
+            Field(x => x.Hidden, nullable: false).Description("Is property hidden.");
+
             Field<StringGraphType>(
                 "valueType",
                 resolve: context => context.Source.Values.Select(x => x.ValueType).FirstOrDefault()

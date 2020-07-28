@@ -1,5 +1,4 @@
 using System.Linq;
-using GraphQL.DataLoader;
 using GraphQL.Types;
 using MediatR;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
@@ -9,9 +8,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 {
     public class CategoryType : ObjectGraphType<ExpCategory>
     {
-        public CategoryType(
-            IMediator mediator,
-            IDataLoaderContextAccessor dataLoader)
+        public CategoryType(IMediator mediator)
         {
             Name = "Category";
 
@@ -41,6 +38,8 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             });
 
             Field<BooleanGraphType>("hasParent", resolve: context => TryGetParentId(context, out _));
+
+            Field<ListGraphType<OutlineType>>("outlines", resolve: context => context.Source.Category.Outlines);
         }
 
         private static bool TryGetParentId(IResolveFieldContext<ExpCategory> context, out string parentId)

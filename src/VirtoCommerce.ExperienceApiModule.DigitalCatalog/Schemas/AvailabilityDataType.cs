@@ -1,5 +1,4 @@
 using GraphQL.Types;
-using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.XDigitalCatalog.Schemas
 {
@@ -13,35 +12,9 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             Field<BooleanGraphType>("IsBuyable", resolve: context => context.Source.IsBuyable);
 
-            Field<BooleanGraphType>("IsAvailable", resolve: context =>
-            {
-                var data = context.Source;
+            Field<BooleanGraphType>("IsAvailable", resolve: context => context.Source.IsAvailable);
 
-                var isAvailable = data.IsBuyable;
-
-                if (isAvailable && data.TrackInventory && !data.InventoryAll.IsNullOrEmpty())
-                {
-                    return data.AllowBackorder
-                        || data.AllowPreorder
-                        || data.AvailableQuantity >= 1;
-                }
-
-                return isAvailable;
-            });
-
-            Field<BooleanGraphType>("IsInStock", resolve: context =>
-            {
-                var data = context.Source;
-
-                if (!data.TrackInventory || data.InventoryAll.IsNullOrEmpty())
-                {
-                    return true;
-                }
-
-                return data.AllowBackorder
-                    || data.AllowPreorder
-                    || data.AvailableQuantity > 0;
-            });
+            Field<BooleanGraphType>("IsInStock", resolve: context => context.Source.IsInStock);
 
             Field<ListGraphType<InventoryInfoType>>("inventories", resolve: context => context.Source.InventoryAll);
         }

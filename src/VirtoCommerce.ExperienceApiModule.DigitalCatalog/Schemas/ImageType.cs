@@ -1,4 +1,4 @@
-﻿using GraphQL.Types;
+using GraphQL.Types;
 using VirtoCommerce.CatalogModule.Core.Model;
 
 namespace VirtoCommerce.XDigitalCatalog.Schemas
@@ -27,6 +27,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
         {
             Field<StringGraphType>("id", resolve: context => context.Source.Id);
             Field<StringGraphType>("name", resolve: context => context.Source.Name);
+            Field<StringGraphType>("group", resolve: context => context.Source.Group);
             Field<StringGraphType>("url", resolve: context => context.Source.Url);
             Field<StringGraphType>("relativeUrl", resolve: context => context.Source.RelativeUrl);
             Field<IntGraphType>("sortOrder", resolve: context => context.Source.SortOrder);
