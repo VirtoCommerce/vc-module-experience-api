@@ -125,7 +125,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
 
         protected virtual async Task LoadInventoriesAsync(List<ExpProduct> expProducts)
         {
-            Parallel.ForEach(expProducts, async (expProduct, _) =>
+            foreach (var expProduct in expProducts)
             {
                 var invntorySearch = await _productInventorySearchService.SearchProductInventoriesAsync(new ProductInventorySearchCriteria
                 {
@@ -133,17 +133,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                 });
 
                 expProduct.Inventories = invntorySearch.Results;
-            });
-
-            //foreach (var expProduct in expProducts)
-            //{
-            //    var invntorySearch = await _productInventorySearchService.SearchProductInventoriesAsync(new ProductInventorySearchCriteria
-            //    {
-            //        ProductId = expProduct.Id,
-            //    });
-
-            //    expProduct.Inventories = invntorySearch.Results;
-            //}
+            }
         }
 
         protected virtual async Task LoadPricesAsync(List<ExpProduct> expProducts, string cartName, string storeId, string userId, string cultureName, string currencyCode, string type)
