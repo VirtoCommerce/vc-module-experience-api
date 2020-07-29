@@ -25,7 +25,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             Field(x => x.Organization.BusinessCategory, true).Description("Business category");
             Field(x => x.Organization.OwnerId, true).Description("Owner id");
             Field(x => x.Organization.ParentId, true).Description("Parent id");
-            Field(x => x.Organization.Name).Description("Name");
+            Field(x => x.Organization.Name, true).Description("Name");
             Field(x => x.Organization.MemberType).Description("Member type");
             Field(x => x.Organization.OuterId, true).Description("Outer id");
             Field<NonNullGraphType<ListGraphType<MemberAddressType>>>("addresses", resolve: x => x.Source.Organization.Addresses);
