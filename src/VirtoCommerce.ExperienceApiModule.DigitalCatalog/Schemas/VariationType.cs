@@ -1,6 +1,5 @@
 using GraphQL.Types;
 using VirtoCommerce.XDigitalCatalog.Extensions;
-using VirtoCommerce.XDigitalCatalog.Specifications;
 
 namespace VirtoCommerce.XDigitalCatalog.Schemas
 {
@@ -11,34 +10,34 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             Field<StringGraphType>(
                 "id",
                 description: "Id of variation.",
-                resolve: context => context.Source.CatalogProduct.Id
+                resolve: context => context.Source.IndexedProduct.Id
             );
 
             Field<StringGraphType>(
                 "code",
                 description: "SKU of variation.",
-                resolve: context => context.Source.CatalogProduct.Code
+                resolve: context => context.Source.IndexedProduct.Code
             );
 
             Field<AvailabilityDataType>(
                 "availabilityData",
                 resolve: context => new ExpAvailabilityData
                 {
-                    InventoryAll = context.Source.Inventories,
-                    IsBuyable = new CatalogProductIsBuyableSpecification().IsSatisfiedBy(context.Source),
-                    IsAvailable = new CatalogProductIsAvailableSpecification().IsSatisfiedBy(context.Source),
-                    IsInStock = new CatalogProductIsInStockSpecification().IsSatisfiedBy(context.Source),
+                    InventoryAll = context.Source.AllInventories,
+                    IsBuyable = context.Source.IsBuyable,
+                    IsAvailable = context.Source.IsAvailable,
+                    IsInStock = context.Source.IsInStock
                 });
 
-            Field<ListGraphType<ImageType>>("images", resolve: context => context.Source.CatalogProduct.Images);
+            Field<ListGraphType<ImageType>>("images", resolve: context => context.Source.IndexedProduct.Images);
 
-            Field<ListGraphType<PriceType>>("prices", resolve: context => context.Source.ProductPrices);
+            Field<ListGraphType<PriceType>>("prices", resolve: context => context.Source.AllPrices);
 
-            Field<ListGraphType<PropertyType>>("properties", resolve: context => context.Source.CatalogProduct.Properties.ConvertToFlatModel());
+            Field<ListGraphType<PropertyType>>("properties", resolve: context => context.Source.IndexedProduct.Properties.ConvertToFlatModel());
 
-            Field<ListGraphType<AssetType>>("assets", resolve: context => context.Source.CatalogProduct.Assets);
+            Field<ListGraphType<AssetType>>("assets", resolve: context => context.Source.IndexedProduct.Assets);
 
-            Field<ListGraphType<OutlineType>>("outlines", resolve: context => context.Source.CatalogProduct.Outlines);
+            Field<ListGraphType<OutlineType>>("outlines", resolve: context => context.Source.IndexedProduct.Outlines);
         }
     }
 }

@@ -1,17 +1,16 @@
 using System.Reflection;
-using VirtoCommerce.ExperienceApiModule.Core.Binding;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.SearchModule.Core.Model;
 
-namespace VirtoCommerce.XDigitalCatalog.Binding
+namespace VirtoCommerce.ExperienceApiModule.Core.Binding
 {
-    public class ExpProductBinder : IIndexModelBinder
+    public class GenericModelBinder<TResult> : IIndexModelBinder
     {
         public BindingInfo BindingInfo { get; set; }
 
         public virtual object BindModel(SearchDocument searchDocument)
         {
-            var result = AbstractTypeFactory<ExpProduct>.TryCreateInstance();
+            var result = AbstractTypeFactory<TResult>.TryCreateInstance();
             var productProperties = result.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
 
             foreach (var property in productProperties)

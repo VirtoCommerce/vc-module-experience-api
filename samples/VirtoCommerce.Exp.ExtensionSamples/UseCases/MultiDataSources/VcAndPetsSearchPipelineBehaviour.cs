@@ -64,7 +64,7 @@ namespace VirtoCommerce.Exp.ExtensionSamples
         private static ExpProduct PetToProduct(Pet pet)
         {
             var petProduct = AbstractTypeFactory<ExpProduct>.TryCreateInstance();
-            petProduct.CatalogProduct = new CatalogProduct
+            petProduct.IndexedProduct = new CatalogProduct
             {
                 Id = pet.Id.ToString(),
                 Name = pet.Name,

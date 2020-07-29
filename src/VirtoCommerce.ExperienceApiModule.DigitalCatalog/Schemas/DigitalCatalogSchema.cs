@@ -45,12 +45,10 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 Name = "product",
                 Arguments = new QueryArguments(
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id", Description = "id of the product" },
-                    new QueryArgument<StringGraphType> { Name = "cartName", Description = "Cart name" },
-                    new QueryArgument<StringGraphType> { Name = "type", Description = "Cart type" },
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "storeId", Description = "Store Id" },
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "userId", Description = "User Id" },
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "currencyCode", Description = "Currency code (\"USD\")" },
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "cultureName", Description = "Culture name (\"en-Us\")" }
+                    new QueryArgument<StringGraphType> { Name = "currencyCode", Description = "Currency code (\"USD\")" },
+                    new QueryArgument<StringGraphType> { Name = "cultureName", Description = "Culture name (\"en-US\")" }
                 ),
                 Type = GraphTypeExtenstionHelper.GetActualType<ProductType>(),
                 Resolver = new AsyncFieldResolver<object>(async context =>
@@ -63,12 +61,10 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             var productsConnectionBuilder = GraphTypeExtenstionHelper.CreateConnection<ProductType, EdgeType<ProductType>, ProductsConnectonType<ProductType>, object>()
                 .Name("products")
-                .Argument<StringGraphType>("storeId", "The store id where products are searched")
-                .Argument<StringGraphType>("userId", "The customer id for search result impersonalization")
+                .Argument<NonNullGraphType<StringGraphType>>("storeId", "The store id where products are searched")
+                .Argument<NonNullGraphType<StringGraphType>>("userId", "The customer id for search result impersonalization")
                 .Argument<StringGraphType>("currencyCode", "The currency for which all prices data will be returned")
                 .Argument<StringGraphType>("cultureName", "The culture name for cart context product")
-                .Argument<StringGraphType>("cartName", "The cart name for cart context product")
-                .Argument<StringGraphType>("type", "Type of cart for context product")
                 .Argument<StringGraphType>("query", "The query parameter performs the full-text search")
                 .Argument<StringGraphType>("filter", "This parameter applies a filter to the query results")
                 .Argument<BooleanGraphType>("fuzzy", "When the fuzzy query parameter is set to true the search endpoint will also return products that contain slight differences to the search text.")
@@ -85,9 +81,9 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             var categoriesConnectionBuilder = GraphTypeExtenstionHelper.CreateConnection<CategoryType, EdgeType<CategoryType>, CategoriesConnectonType<CategoryType>, object>()
                 .Name("categories")
-                .Argument<StringGraphType>("storeId", "The store id where category are searched")
+                .Argument<NonNullGraphType<StringGraphType>>("storeId", "The store id where category are searched")
                 .Argument<StringGraphType>("cultureName", "The language for which all localized category data will be returned")
-                .Argument<StringGraphType>("userId", "The customer id for search result impersonalization")
+                .Argument<NonNullGraphType<StringGraphType>>("userId", "The customer id for search result impersonalization")
                 .Argument<StringGraphType>("currencyCode", "The currency for which all prices data will be returned")
                 .Argument<StringGraphType>("query", "The query parameter performs the full-text search")
                 .Argument<StringGraphType>("filter", "This parameter applies a filter to the query results")
@@ -119,9 +115,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 StoreId = storeId,
                 UserId = context.GetArgument<string>("userId"),
                 CurrencyCode = context.GetArgument<string>("currencyCode"),
-                CultureName = cultureName,
-                CartName = context.GetArgument("cartName", "default"),
-                Type = context.GetArgument<string>("type")
+                CultureName = cultureName
             });
 
             return response.Products.ToDictionary(x => x.Id);
@@ -138,8 +132,6 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             var userId = context.GetArgument<string>("userId");
             var currencyCode = context.GetArgument<string>("currencyCode");
             var cultureName = context.GetArgument<string>("cultureName");
-            var cartName = context.GetArgument("cartName", "default");
-            var cartType = context.GetArgument<string>("type");
 
             context.SetValue(cultureName, "cultureName");
             context.SetValue(storeId, "storeId");
@@ -152,9 +144,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 StoreId = storeId,
                 UserId = userId,
                 CurrencyCode = currencyCode,
-                IncludeFields = includeFields.ToArray(),
-                CartName = cartName,
-                CartType = cartType
+                IncludeFields = includeFields.ToArray()
             };
 
             if (productIds.IsNullOrEmpty())

@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 
 namespace VirtoCommerce.XDigitalCatalog.Specifications
 {
@@ -8,8 +9,8 @@ namespace VirtoCommerce.XDigitalCatalog.Specifications
         {
             if (product == null)
                 throw new ArgumentNullException(nameof(product));
-
-            return product.CatalogProduct.IsActive.GetValueOrDefault(false) && product.CatalogProduct.IsBuyable.GetValueOrDefault(false);
+            //TODO: Need to check if product has a price for requested currency
+            return product.IndexedProduct.IsActive.GetValueOrDefault(false) && product.IndexedProduct.IsBuyable.GetValueOrDefault(false) && product.AllPrices.Any();
         }
     }
 }

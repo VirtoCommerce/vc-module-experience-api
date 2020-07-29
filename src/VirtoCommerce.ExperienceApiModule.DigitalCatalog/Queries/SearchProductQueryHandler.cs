@@ -4,22 +4,24 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
-using MediatR;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.CoreModule.Core.Currency;
-using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Index;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
-using VirtoCommerce.ExperienceApiModule.Core.Models;
 using VirtoCommerce.InventoryModule.Core.Model.Search;
 using VirtoCommerce.InventoryModule.Core.Services;
 using VirtoCommerce.MarketingModule.Core.Model.Promotions;
+using VirtoCommerce.MarketingModule.Core.Services;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.SearchModule.Core.Model;
 using VirtoCommerce.SearchModule.Core.Services;
-using VirtoCommerce.XDigitalCatalog.Extensions;
+using VirtoCommerce.StoreModule.Core.Services;
+using VirtoCommerce.TaxModule.Core.Model;
+using VirtoCommerce.TaxModule.Core.Model.Search;
+using VirtoCommerce.TaxModule.Core.Services;
 using VirtoCommerce.XDigitalCatalog.Facets;
+using VirtoCommerce.XDigitalCatalog.Index;
 using VirtoCommerce.XPurchase;
 using VirtoCommerce.XPurchase.Commands;
 
@@ -34,7 +36,11 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
         private readonly ISearchProvider _searchProvider;
         private readonly ISearchPhraseParser _searchPhraseParser;
         private readonly IAggregationConverter _aggregationConverter;
-        private readonly IProductInventorySearchService _productInventorySearchService; // TODO: maybe we have __inventories in index
+        private readonly IInventorySearchService _inventorySearchService; // TODO: maybe we have __inventories in index
+        private readonly ITaxProviderSearchService _taxProviderSearchService;
+        private readonly IMarketingPromoEvaluator _marketingEvaluator;
+        private readonly ICurrencyService _currencyService;
+        private readonly IStoreService _storeService;
 
         public SearchProductQueryHandler(
             ISearchProvider searchProvider
@@ -42,21 +48,27 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             , IMapper mapper
             , IAggregationConverter aggregationConverter
             , ICartAggregateRepository cartAggregateRepository
-            , IProductInventorySearchService productInventorySearchService)
+            , IInventorySearchService inventorySearchService
+            , IMarketingPromoEvaluator marketingEvaluator
+            , ICurrencyService currencyService
+            , IStoreService storeService
+            , ITaxProviderSearchService taxProviderSearchService)
         {
             _searchProvider = searchProvider;
             _searchPhraseParser = searchPhraseParser;
             _mapper = mapper;
             _aggregationConverter = aggregationConverter;
             _cartAggregateRepository = cartAggregateRepository;
-            _productInventorySearchService = productInventorySearchService;
+            _inventorySearchService = inventorySearchService;
+            _marketingEvaluator = marketingEvaluator;
+            _currencyService = currencyService;
+            _taxProviderSearchService = taxProviderSearchService;
+            _storeService = storeService;
         }
 
         public virtual async Task<SearchProductResponse> Handle(SearchProductQuery request, CancellationToken cancellationToken)
         {
-            var requestFields = BuildFields(request.IncludeFields.ToArray(),
-                                            out var loadPrices,
-                                            out var loadInventories);
+            var indexIncludeFields = request.MapToIndexFields();
 
             var searchRequest = new SearchRequestBuilder(_searchPhraseParser, _aggregationConverter)
                 .WithFuzzy(request.Fuzzy, request.FuzzyLevel)
@@ -65,231 +77,130 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                 .WithSearchPhrase(request.Query)
                 .WithPaging(request.Skip, request.Take)
                 .AddSorting(request.Sort)
-                .WithIncludeFields(requestFields)
+                .WithIncludeFields(indexIncludeFields)
                 .AddObjectIds(request.ProductIds)
                 .Build();
 
             var searchResult = await _searchProvider.SearchAsync(KnownDocumentTypes.Product, searchRequest);
 
-            var expProducts = searchResult.Documents?.Select(x => _mapper.Map<ExpProduct>(x)).ToList();
-
-            // If promotion evaluation requested
-            if (loadPrices && !expProducts.All(x => x.Prices.IsNullOrEmpty()))
-            {
-                await LoadPricesAsync(expProducts, request.CartName, request.StoreId, request.UserId, request.CultureName, request.CurrencyCode, request.CartType);
-            }
-
-            // If products availabilities requested
-            if (loadInventories)
-            {
-                await LoadInventoriesAsync(expProducts);
-            }
+            var expProducts = await ConvertIndexDocsToProductsWithLoadDependenciesAsync(searchResult.Documents, request);
 
             return new SearchProductResponse
             {
-                Results = expProducts,
+                Results = expProducts.ToList(),
                 Facets = searchRequest.Aggregations?.Select(x => _mapper.Map<FacetResult>(x, opts => opts.Items["aggregations"] = searchResult.Aggregations)).ToList(),
                 TotalCount = (int)searchResult.TotalCount
             };
         }
 
+        
         public virtual async Task<LoadProductResponse> Handle(LoadProductQuery request, CancellationToken cancellationToken)
         {
-            var requestFields = BuildFields(request.IncludeFields.ToArray(),
-                                            out var loadPrices,
-                                            out var loadInventories);
+            var indexIncludeFields = request.MapToIndexFields();
 
             var searchRequest = new SearchRequestBuilder()
                 .WithPaging(0, request.Ids.Count())
-                .WithIncludeFields(requestFields)
+                .WithIncludeFields(indexIncludeFields)
                 .AddObjectIds(request.Ids)
                 .Build();
 
             var searchResult = await _searchProvider.SearchAsync(KnownDocumentTypes.Product, searchRequest);
-            var expProducts = searchResult.Documents.Select(x => _mapper.Map<ExpProduct>(x)).ToList();
+            var expProducts = await ConvertIndexDocsToProductsWithLoadDependenciesAsync(searchResult.Documents, request);
+
+            return new LoadProductResponse(expProducts.ToList());
+        }
+
+
+        protected virtual async Task<IEnumerable<ExpProduct>> ConvertIndexDocsToProductsWithLoadDependenciesAsync(IEnumerable<SearchDocument> docs, ICatalogQuery query)
+        {
+            //TODO: DRY with the same code in CartAggrRepository need to refactor in future
+            var store = await _storeService.GetByIdAsync(query.StoreId);          
+            var defaultCultureName = store.DefaultLanguage ?? Language.InvariantLanguage.CultureName;
+            //Clone currencies
+            //TODO: Add caching  to prevent cloning each time
+            var allCurrencies = (await _currencyService.GetAllCurrenciesAsync()).Select(x => x.Clone()).OfType<Currency>().ToArray();
+            //Change culture name for all system currencies to requested 
+            allCurrencies.Apply(x => x.CultureName = query.CultureName ?? defaultCultureName);
+
+            //Clone and change culture name for system currencies
+            var currency = allCurrencies.FirstOrDefault(x => x.Code.EqualsInvariant(query.CurrencyCode ?? store.DefaultCurrency));
+            if (currency == null)
+            {
+                throw new OperationCanceledException($"requested currency {query.CurrencyCode} is not registered in the system");
+            }
+
+            var result = docs?.Select(x => _mapper.Map<ExpProduct>(x, options =>
+            {
+                options.Items["all_currencies"] = allCurrencies;
+                options.Items["store"] = store;
+                options.Items["currency"] = currency;
+            })).ToList() ?? new List<ExpProduct>();
+
+            var productIds = result.Select(x => x.Id).ToArray();
 
             // If promotion evaluation requested
-            if (loadPrices && !expProducts.All(x => x.Prices.IsNullOrEmpty()))
+            if (query.HasPricingFields())
             {
-                await LoadPricesAsync(expProducts, request.CartName, request.StoreId, request.UserId, request.CultureName, request.CurrencyCode, request.Type);
-            }
-
-            // If product availability requested
-            if (loadInventories)
-            {
-                await LoadInventoriesAsync(expProducts);
-            }
-
-            return new LoadProductResponse(expProducts);
-        }
-
-        protected virtual async Task LoadInventoriesAsync(List<ExpProduct> expProducts)
-        {
-            foreach (var expProduct in expProducts)
-            {
-                var invntorySearch = await _productInventorySearchService.SearchProductInventoriesAsync(new ProductInventorySearchCriteria
+                //TODO: !!!URGENT!!! Need to remove from here becasue we introduce by this cycling dependency with x-purchase project
+                //Need to  replace to some loosely coupled solution based on Chain-Of-Responsibility pattern and special abstraction for build promotions evaluation  context independently
+                var cartAggregate = await _cartAggregateRepository.GetCartAsync("default", query.StoreId, query.UserId, query.CultureName, query.CurrencyCode);
+                if (cartAggregate == null)
                 {
-                    ProductId = expProduct.Id,
+                    var createCartCommand = new CreateDefaultCartCommand(query.StoreId, query.UserId, query.CultureName, query.CurrencyCode);
+                    var cart = _cartAggregateRepository.CreateDefaultShoppingCart(createCartCommand);
+                    cartAggregate = await _cartAggregateRepository.GetCartForShoppingCartAsync(cart);
+                }
+                //Evaluate promotions
+                var promoEvalContext = _mapper.Map<PromotionEvaluationContext>(cartAggregate);
+                promoEvalContext.PromoEntries =  result.Select(x=> _mapper.Map<ProductPromoEntry>(x, options =>
+                {
+                    options.Items["all_currencies"] = allCurrencies;
+                    options.Items["store"] = store;
+                    options.Items["currency"] = currency;
+                })).ToList();
+
+                var promotionResults = await _marketingEvaluator.EvaluatePromotionAsync(promoEvalContext);
+                var promoRewards = promotionResults.Rewards.OfType<CatalogItemAmountReward>().ToArray();
+                if (promoRewards.Any())
+                {
+                    result.Apply(x => x.ApplyRewards(promoRewards));
+                }
+                //Evaluate taxes
+                var storeTaxProviders = await _taxProviderSearchService.SearchTaxProvidersAsync(new TaxProviderSearchCriteria
+                {
+                    StoreIds = new[] { store.Id }
                 });
-
-                expProduct.Inventories = invntorySearch.Results;
-            }
-        }
-
-        protected virtual async Task LoadPricesAsync(List<ExpProduct> expProducts, string cartName, string storeId, string userId, string cultureName, string currencyCode, string type)
-        {
-            var cartAggregate = await _cartAggregateRepository.GetCartAsync(cartName, storeId, userId, cultureName, currencyCode, type);
-            if (cartAggregate == null)
-            {
-                var createCartCommand = new CreateDefaultCartCommand(storeId, userId, currencyCode, cultureName);
-                var cart = _cartAggregateRepository.CreateDefaultShoppingCart(createCartCommand);
-                cartAggregate = await _cartAggregateRepository.GetCartForShoppingCartAsync(cart);
-            }
-
-            var context = _mapper.Map<PromotionEvaluationContext>(cartAggregate);
-
-            context.PromoEntries = expProducts
-                .Select(x => x.CatalogProduct)
-                .Select(x => new ProductPromoEntry
+                var activeTaxProvider = storeTaxProviders.Results.FirstOrDefault();
+                if (activeTaxProvider != null)
                 {
-                    ProductId = x.Id,
-                    CatalogId = x.CatalogId,
-                    CategoryId = x.CategoryId,
-                    Quantity = 1,
-                    Code = x.Code,
-                    InStockQuantity = 0, //TODO: check this
-                    Outline = x.Outline,
-                    Variations = x.Variations?.Select(x => new ProductPromoEntry
+                    var taxEvalContext = _mapper.Map<TaxEvaluationContext>(cartAggregate);
+                    taxEvalContext.Lines = result.SelectMany(x => _mapper.Map<IEnumerable<TaxLine>>(x)).ToList();
+                    var taxRates = activeTaxProvider.CalculateRates(taxEvalContext);
+                    if (taxRates.Any())
                     {
-                        ProductId = x.Id,
-                        CatalogId = x.CatalogId,
-                        CategoryId = x.CategoryId,
-                        Quantity = 1,
-                        Code = x.Code,
-                        InStockQuantity = 0, //TODO: and this
-                        Outline = x.Outline
-                    }).ToList()
-                })
-                .ToList();
-
-            var promotionResults = await cartAggregate.EvaluatePromotionsAsync(context);
-            var promoRewards = promotionResults.Rewards.OfType<CatalogItemAmountReward>().ToArray();
-
-            var language = new Language(cultureName);
-
-            foreach (var expProduct in expProducts)
-            {
-                var productId = expProduct.Id;
-
-                var prices = expProduct.Prices;
-                var productPrices = prices
-                    .Where(price => price.ProductId == productId)
-                    // Apply Prices
-                    .Select(price =>
-                    {
-                        var currency = new Currency(language, price.Currency);
-
-                        return new ProductPrice(currency)
-                        {
-                            ProductId = productId,
-                            PricelistId = price.PricelistId,
-                            Currency = currency,
-                            ListPrice = new Money(price.List, currency),
-                            SalePrice = price.Sale == null
-                                 ? new Money(price.List, currency)
-                                 : new Money((decimal)price.Sale, currency),
-                            MinQuantity = price.MinQuantity
-                        };
-                    })
-                    .GroupBy(x => x.Currency)
-                    .Where(x => x.Any())
-                    // Apply TierPrices
-                    .Select(currencyGroup =>
-                    {
-                        var orderedPrices = currencyGroup
-                            .OrderBy(x => x.MinQuantity ?? 0)
-                            .ThenBy(x => x.ListPrice);
-
-                        var nominalPrice = orderedPrices.First();
-
-                        var tierPrices = orderedPrices.Select(x => new TierPrice(x.SalePrice, x.MinQuantity ?? 1));
-
-                        nominalPrice.TierPrices.AddRange(tierPrices);
-
-                        return nominalPrice;
-                    })
-                    .ToList();
-
-                productPrices.ApplyRewards(promoRewards);
-
-                expProduct.ProductPrices = productPrices;
+                        result.Apply(x => x.AllPrices.Apply(p => p.ApplyTaxRates(taxRates)));
+                    }
+                }
             }
+
+            // If products availabilities requested
+            if (query.HasInventoryFields())
+            {
+                var inventories = await _inventorySearchService.SearchInventoriesAsync(new InventorySearchCriteria
+                {
+                    ProductIds = productIds,
+                    //Do not use int.MaxValue use only 10 items per requested product
+                    //TODO: Replace to pagination load
+                    Take = Math.Min(productIds.Length * 10, 500)
+                });
+                if (inventories.Results.Any())
+                {
+                    result.Apply(x => x.ApplyStoreInventories(inventories.Results, store));
+                }
+            }
+            return result;
         }
-
-        private string[] BuildFields(IReadOnlyCollection<string> includeFields, out bool loadPrices, out bool loadInventories)
-        {
-            /*
-             * TODO: refactor this to implement "context" building which contains different result for different search engines and
-             * all conditional filelds like LoadPrices and LoadInventories
-             */
-
-            var result = new List<string>();
-
-            // Add filds for __object
-            result.AddRange(includeFields.Concat(new[] { "id" }).Select(x => "__object." + x));
-
-            loadPrices = includeFields.Any(x => x.Contains("prices", StringComparison.OrdinalIgnoreCase));
-            if (loadPrices)
-            {
-                result.Add("__prices");
-            }
-
-            if (includeFields.Any(x => x.Contains("variations", StringComparison.OrdinalIgnoreCase)))
-            {
-                result.Add("__variations");
-            }
-
-            if (includeFields.Any(x => x.StartsWith("category", StringComparison.OrdinalIgnoreCase)))
-            {
-                result.Add("__object.categoryId");
-            }
-
-            // Add master variation fields
-            result.AddRange(includeFields.Where(x => x.StartsWith("masterVariation."))
-                                         .Concat(new[] { "mainProductId" })
-                                         .Select(x => "__object." + x.TrimStart("masterVariation.")));
-
-            // Add metaKeywords, metaTitle and metaDescription
-            if (includeFields.Any(x => x.Contains("slug", StringComparison.OrdinalIgnoreCase) || x.Contains("meta", StringComparison.OrdinalIgnoreCase)))
-            {
-                result.Add("__object.seoInfos");
-            }
-
-            if (includeFields.Any(x => x.Contains("imgSrc", StringComparison.OrdinalIgnoreCase)))
-            {
-                result.Add("__object.images");
-            }
-
-            if (includeFields.Any(x => x.Contains("brandName", StringComparison.OrdinalIgnoreCase)))
-            {
-                result.Add("__object.properties");
-            }
-
-            if (includeFields.Any(x => x.Contains("descriptions", StringComparison.OrdinalIgnoreCase)))
-            {
-                result.Add("__object.reviews");
-            }
-
-            loadInventories = includeFields.Any(x => x.Contains("availabilityData", StringComparison.OrdinalIgnoreCase));
-            if (loadInventories)
-            {
-                result.Add("__object.isActive");
-                result.Add("__object.isBuyable");
-                result.Add("__object.trackInventory");
-            }
-
-            return result.Distinct().ToArray();
-        }
+             
 
         public class CreateDefaultCartCommand : CartCommand
         {

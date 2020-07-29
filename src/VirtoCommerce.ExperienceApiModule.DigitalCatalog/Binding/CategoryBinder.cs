@@ -1,5 +1,4 @@
 using System;
-using System.Reflection;
 using Newtonsoft.Json.Linq;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.Core.Binding;
@@ -29,24 +28,6 @@ namespace VirtoCommerce.XDigitalCatalog.Binding
             }
 
             var result = (Category)jobj.ToObject(_productType);
-
-            if (result == null)
-            {
-                return null;
-            }
-
-            var productProperties = result.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
-
-            foreach (var property in productProperties)
-            {
-                var binder = property.GetIndexModelBinder();
-
-                if (binder != null)
-                {
-                    property.SetValue(result, binder.BindModel(searchDocument));
-                }
-            }
-
             return result;
         }
     }

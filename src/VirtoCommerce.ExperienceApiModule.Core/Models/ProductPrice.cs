@@ -5,6 +5,7 @@ using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.CoreModule.Core.Tax;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.TaxModule.Core.Model;
 
 namespace VirtoCommerce.ExperienceApiModule.Core.Models
 {
@@ -123,6 +124,34 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Models
         /// Collection of TaxDetail objects
         /// </value>
         public ICollection<TaxDetail> TaxDetails { get; set; }
+
+        public void ApplyTaxRates(IEnumerable<TaxRate> taxRates)
+        {
+            var productTaxRates = taxRates.Where(x => x.Line.Id.EqualsInvariant(ProductId));
+            var taxRate = productTaxRates.FirstOrDefault(x => x.Line.Quantity == 0);
+            if (taxRate != null)
+            {
+                if (taxRate.PercentRate > 0)
+                {
+                    TaxPercentRate = taxRate.PercentRate;
+                }
+                else
+                {
+                    var amount = ActualPrice.Amount > 0 ? ActualPrice.Amount : SalePrice.Amount;
+                    if (amount > 0)
+                    {
+                        TaxPercentRate = Math.Round(taxRate.Rate / amount, 4, MidpointRounding.AwayFromZero);
+                    }
+                }
+
+                TaxDetails = taxRate.TaxDetails;
+            }
+            if (productTaxRates.Any())
+            {
+                TierPrices.Apply(x => x.ApplyTaxRates(productTaxRates));
+            }
+
+        }
 
         #endregion ITaxable Members
 

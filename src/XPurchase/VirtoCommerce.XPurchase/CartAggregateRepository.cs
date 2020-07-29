@@ -142,8 +142,9 @@ namespace VirtoCommerce.XPurchase
             {
                 throw new OperationCanceledException($"cart currency {cart.Currency} is not registered in the system");
             }
+            var defaultLanguage = store.DefaultLanguage != null ? new Language(store.DefaultLanguage) : Language.InvariantLanguage;
             //Clone  currency with cart language
-            currency = new Currency(language != null ? new Language(language) : Language.InvariantLanguage, currency.Code, currency.Name, currency.Symbol, currency.ExchangeRate)
+            currency = new Currency(language != null ? new Language(language) : defaultLanguage, currency.Code, currency.Name, currency.Symbol, currency.ExchangeRate)
             {
                 CustomFormatting = currency.CustomFormatting
             };

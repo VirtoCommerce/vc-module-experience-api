@@ -4,9 +4,9 @@ namespace VirtoCommerce.XDigitalCatalog
     {
         public ExpVariation(ExpProduct expProduct)
         {
-            CatalogProduct = expProduct.CatalogProduct;
-            ProductPrices = expProduct.ProductPrices;
-            Inventories = expProduct.Inventories;
+            IndexedProduct = expProduct.IndexedProduct;
+            AllPrices = expProduct.AllPrices;
+            AllInventories = expProduct.AllInventories;
         }
     }
 }

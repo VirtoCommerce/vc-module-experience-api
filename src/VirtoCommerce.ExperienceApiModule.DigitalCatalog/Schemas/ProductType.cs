@@ -60,15 +60,15 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             Name = "Product";
             Description = "Products are the sellable goods in an e-commerce project.";
 
-            Field(d => d.CatalogProduct.Id).Description("The unique ID of the product.");
+            Field(d => d.IndexedProduct.Id).Description("The unique ID of the product.");
 
-            Field(d => d.CatalogProduct.Code, nullable: false).Description("The product SKU.");
+            Field(d => d.IndexedProduct.Code, nullable: false).Description("The product SKU.");
 
-            Field<StringGraphType>("catalogId", resolve: context => context.Source.CatalogProduct.CatalogId);
+            Field<StringGraphType>("catalogId", resolve: context => context.Source.IndexedProduct.CatalogId);
 
             FieldAsync<CategoryType>("category", resolve: async context =>
             {
-                var categoryId = context.Source.CatalogProduct.CategoryId;
+                var categoryId = context.Source.IndexedProduct.CategoryId;
                 var responce = await mediator.Send(new LoadCategoryQuery
                 {
                     Id = categoryId,
@@ -78,11 +78,11 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 return responce.Category;
             });
 
-            Field(d => d.CatalogProduct.Name, nullable: false).Description("The name of the product.");
+            Field(d => d.IndexedProduct.Name, nullable: false).Description("The name of the product.");
 
-            Field<ListGraphType<DescriptionType>>("descriptions", resolve: context => context.Source.CatalogProduct.Reviews);
+            Field<ListGraphType<DescriptionType>>("descriptions", resolve: context => context.Source.IndexedProduct.Reviews);
 
-            Field(d => d.CatalogProduct.ProductType, nullable: true).Description("The type of product");
+            Field(d => d.IndexedProduct.ProductType, nullable: true).Description("The type of product");
 
             Field<StringGraphType>(
                 "slug",
@@ -92,7 +92,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                     var storeId = context.GetValue<string>("storeId");
                     var cultureName = context.GetCultureName();
 
-                    return context.Source.CatalogProduct.SeoInfos.GetBestMatchingSeoInfo(storeId, cultureName)?.SemanticUrl;
+                    return context.Source.IndexedProduct.SeoInfos.GetBestMatchingSeoInfo(storeId, cultureName)?.SemanticUrl;
                 });
 
             Field<StringGraphType>(
@@ -103,7 +103,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                     var storeId = context.GetValue<string>("storeId");
                     var cultureName = context.GetCultureName();
 
-                    return context.Source.CatalogProduct.SeoInfos.GetBestMatchingSeoInfo(storeId, cultureName)?.MetaDescription;
+                    return context.Source.IndexedProduct.SeoInfos.GetBestMatchingSeoInfo(storeId, cultureName)?.MetaDescription;
                 });
 
             Field<StringGraphType>(
@@ -114,7 +114,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                     var storeId = context.GetValue<string>("storeId");
                     var cultureName = context.GetCultureName();
 
-                    return context.Source.CatalogProduct.SeoInfos.GetBestMatchingSeoInfo(storeId, cultureName)?.MetaKeywords;
+                    return context.Source.IndexedProduct.SeoInfos.GetBestMatchingSeoInfo(storeId, cultureName)?.MetaKeywords;
                 });
 
             Field<StringGraphType>(
@@ -125,22 +125,22 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                     var storeId = context.GetValue<string>("storeId");
                     var cultureName = context.GetCultureName();
 
-                    return context.Source.CatalogProduct.SeoInfos.GetBestMatchingSeoInfo(storeId, cultureName)?.PageTitle;
+                    return context.Source.IndexedProduct.SeoInfos.GetBestMatchingSeoInfo(storeId, cultureName)?.PageTitle;
                 });
 
             Field<StringGraphType>(
                 "imgSrc",
                 description: "The product main image URL.",
-                resolve: context => context.Source.CatalogProduct.ImgSrc);
+                resolve: context => context.Source.IndexedProduct.ImgSrc);
 
-            Field(d => d.CatalogProduct.OuterId, nullable: true).Description("The outer identifier");
+            Field(d => d.IndexedProduct.OuterId, nullable: true).Description("The outer identifier");
 
             Field<StringGraphType>(
                 "brandName",
                 description: "Get brandName for product.",
                 resolve: context =>
                 {
-                    var brandName = context.Source.CatalogProduct.Properties
+                    var brandName = context.Source.IndexedProduct.Properties
                         ?.FirstOrDefault(x => x.Name == "Brand")
                         ?.Values
                         ?.FirstOrDefault(x => x.Value != null)
@@ -151,14 +151,14 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             FieldAsync<VariationType>("masterVariation", resolve: async context =>
             {
-                if (context.Source.CatalogProduct.MainProductId == null)
+                if (context.Source.IndexedProduct.MainProductId == null)
                 {
                     return new ExpVariation(context.Source);
                 }
 
                 var response = await mediator.Send(new LoadProductQuery
                 {
-                    Ids = new[] { context.Source.CatalogProduct.MainProductId },
+                    Ids = new[] { context.Source.IndexedProduct.MainProductId },
                     IncludeFields = context.SubFields.Values.GetAllNodesPaths()
                 });
 
@@ -171,14 +171,14 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             {
                 var response = await mediator.Send(new LoadProductQuery
                 {
-                    Ids = context.Source.VariationIds.ToArray(),
+                    Ids = context.Source.IndexedVariationIds.ToArray(),
                     IncludeFields = context.SubFields.Values.GetAllNodesPaths()
                 });
 
                 return response.Products.Select(expProduct => new ExpVariation(expProduct));
             });
 
-            Field<ListGraphType<PropertyType>>("properties", resolve: context => context.Source.CatalogProduct.Properties.ConvertToFlatModel());
+            Field<ListGraphType<PropertyType>>("properties", resolve: context => context.Source.IndexedProduct.Properties.ConvertToFlatModel());
 
             Field<TaxCategoryType>("tax", resolve: context => null); // TODO: We need this?
 
@@ -200,19 +200,17 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             int.TryParse(context.After, out var skip);
 
-            var criteria = new ProductAssociationSearchCriteria
+            var query = new SearchProductAssociationsQuery
             {
                 Skip = skip,
                 Take = first ?? context.PageSize ?? 10,
-                // We control the resulting product structure  by passing IncludeFields, and to prevent forced reduction of already loaded fields, you need to pass ItemResponseGroup.Full
-                // in any case, the object will be loaded from the index, and the response group will not affect overall performance
-                ResponseGroup = ItemResponseGroup.Full.ToString(),
+               
                 Keyword = context.GetArgument<string>("query"),
                 Group = context.GetArgument<string>("group"),
-                ObjectIds = new[] { context.Source.CatalogProduct.Id }
+                ObjectIds = new[] { context.Source.IndexedProduct.Id }
             };
 
-            var response = await madiator.Send(new SearchProductAssociationsQuery { Criteria = criteria });
+            var response = await madiator.Send(query);
 
             return new Connection<ProductAssociation>()
             {
