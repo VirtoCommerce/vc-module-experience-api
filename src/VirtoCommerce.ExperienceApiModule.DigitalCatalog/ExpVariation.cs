@@ -6,6 +6,7 @@ namespace VirtoCommerce.XDigitalCatalog
         {
             CatalogProduct = expProduct.CatalogProduct;
             ProductPrices = expProduct.ProductPrices;
+            Inventories = expProduct.Inventories;
         }
     }
 }

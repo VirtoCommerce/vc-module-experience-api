@@ -12,6 +12,8 @@ using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Index;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.Core.Models;
+using VirtoCommerce.InventoryModule.Core.Model.Search;
+using VirtoCommerce.InventoryModule.Core.Services;
 using VirtoCommerce.MarketingModule.Core.Model.Promotions;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.SearchModule.Core.Model;
@@ -32,20 +34,29 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
         private readonly ISearchProvider _searchProvider;
         private readonly ISearchPhraseParser _searchPhraseParser;
         private readonly IAggregationConverter _aggregationConverter;
+        private readonly IProductInventorySearchService _productInventorySearchService;
 
         // TODO: we have __inventories
-        public SearchProductQueryHandler(ISearchProvider searchProvider, ISearchPhraseParser searchPhraseParser, IMapper mapper, IAggregationConverter aggregationConverter, ICartAggregateRepository cartAggregateRepository)
+        public SearchProductQueryHandler(
+            ISearchProvider searchProvider
+            , ISearchPhraseParser searchPhraseParser
+            , IMapper mapper, IAggregationConverter aggregationConverter
+            , ICartAggregateRepository cartAggregateRepository
+            , IProductInventorySearchService productInventorySearchService)
         {
             _searchProvider = searchProvider;
             _searchPhraseParser = searchPhraseParser;
             _mapper = mapper;
             _aggregationConverter = aggregationConverter;
             _cartAggregateRepository = cartAggregateRepository;
+            _productInventorySearchService = productInventorySearchService;
         }
 
         public virtual async Task<SearchProductResponse> Handle(SearchProductQuery request, CancellationToken cancellationToken)
         {
-            var requestFields = BuildFields(request.IncludeFields.ToArray(), out var loadPrices);
+            var requestFields = BuildFields(request.IncludeFields.ToArray(),
+                                            out var loadPrices,
+                                            out var loadInventories);
 
             var searchRequest = new SearchRequestBuilder(_searchPhraseParser, _aggregationConverter)
                 .WithFuzzy(request.Fuzzy, request.FuzzyLevel)
@@ -68,6 +79,12 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                 await LoadPricesAsync(expProducts, request.CartName, request.StoreId, request.UserId, request.CultureName, request.CurrencyCode, request.CartType);
             }
 
+            // If products availabilities requested
+            if (loadInventories)
+            {
+                await LoadInventoriesAsync(expProducts);
+            }
+
             return new SearchProductResponse
             {
                 Results = expProducts,
@@ -78,7 +95,9 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
 
         public virtual async Task<LoadProductResponse> Handle(LoadProductQuery request, CancellationToken cancellationToken)
         {
-            var requestFields = BuildFields(request.IncludeFields.ToArray(), out var loadPrices);
+            var requestFields = BuildFields(request.IncludeFields.ToArray(),
+                                            out var loadPrices,
+                                            out var loadInventories);
 
             var searchRequest = new SearchRequestBuilder()
                 .WithPaging(0, request.Ids.Count())
@@ -95,7 +114,36 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                 await LoadPricesAsync(expProducts, request.CartName, request.StoreId, request.UserId, request.Language, request.CurrencyCode, request.Type);
             }
 
+            // If product availability requested
+            if (loadInventories)
+            {
+                await LoadInventoriesAsync(expProducts);
+            }
+
             return new LoadProductResponse(expProducts);
+        }
+
+        protected virtual async Task LoadInventoriesAsync(List<ExpProduct> expProducts)
+        {
+            Parallel.ForEach(expProducts, async (expProduct, _) =>
+            {
+                var invntorySearch = await _productInventorySearchService.SearchProductInventoriesAsync(new ProductInventorySearchCriteria
+                {
+                    ProductId = expProduct.Id,
+                });
+
+                expProduct.Inventories = invntorySearch.Results;
+            });
+
+            //foreach (var expProduct in expProducts)
+            //{
+            //    var invntorySearch = await _productInventorySearchService.SearchProductInventoriesAsync(new ProductInventorySearchCriteria
+            //    {
+            //        ProductId = expProduct.Id,
+            //    });
+
+            //    expProduct.Inventories = invntorySearch.Results;
+            //}
         }
 
         protected virtual async Task LoadPricesAsync(List<ExpProduct> expProducts, string cartName, string storeId, string userId, string cultureName, string currencyCode, string type)
@@ -188,7 +236,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             }
         }
 
-        private string[] BuildFields(IReadOnlyCollection<string> includeFields, out bool loadPrices)
+        private string[] BuildFields(IReadOnlyCollection<string> includeFields, out bool loadPrices, out bool loadInventories)
         {
             var result = new List<string>();
 
@@ -237,7 +285,8 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                 result.Add("__object.reviews");
             }
 
-            if (includeFields.Any(x => x.Contains("availabilityData", StringComparison.OrdinalIgnoreCase)))
+            loadInventories = includeFields.Any(x => x.Contains("availabilityData", StringComparison.OrdinalIgnoreCase));
+            if (loadInventories)
             {
                 result.Add("__object.isActive");
                 result.Add("__object.isBuyable");

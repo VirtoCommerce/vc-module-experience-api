@@ -1,26 +1,23 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using VirtoCommerce.CatalogModule.Core.Model;
-using VirtoCommerce.InventoryModule.Core.Model;
 using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.XDigitalCatalog.Specifications
 {
     public class CatalogProductIsInStockSpecification
     {
-        public virtual bool IsSatisfiedBy(CatalogProduct catalogProduct, IEnumerable<InventoryInfo> InventoryAll)
+        public virtual bool IsSatisfiedBy(ExpProduct expProduct)
         {
-            var result = new CatalogProductIsBuyableSpecification().IsSatisfiedBy(catalogProduct);
+            var result = new CatalogProductIsBuyableSpecification().IsSatisfiedBy(expProduct);
 
-            if (!catalogProduct.TrackInventory.GetValueOrDefault(false) || InventoryAll.IsNullOrEmpty())
+            if (!expProduct.CatalogProduct.TrackInventory.GetValueOrDefault(false) || expProduct.Inventories.IsNullOrEmpty())
             {
                 return result;
             }
 
-            return InventoryAll.Any(x => x.AllowBackorder)
-                || InventoryAll.Any(x => x.AllowPreorder)
-                || InventoryAll.Sum(inventory => Math.Max(0, inventory.InStockQuantity - inventory.ReservedQuantity)) > 0;
+            return expProduct.Inventories.Any(x => x.AllowBackorder)
+                || expProduct.Inventories.Any(x => x.AllowPreorder)
+                || expProduct.Inventories.Sum(inventory => Math.Max(0, inventory.InStockQuantity - inventory.ReservedQuantity)) > 0;
         }
     }
 }

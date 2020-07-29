@@ -23,7 +23,6 @@ namespace VirtoCommerce.XDigitalCatalog
 
         public virtual List<ProductPrice> ProductPrices { get; set; } = new List<ProductPrice>();
 
-        [BindIndexField(FieldName = "__inventories", BinderType = typeof(InventoryBinder))]
         public IList<InventoryInfo> Inventories { get; set; }
 
         public string DataSource { get; set; }

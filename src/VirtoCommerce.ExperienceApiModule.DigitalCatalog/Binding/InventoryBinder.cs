@@ -8,6 +8,7 @@ using VirtoCommerce.SearchModule.Core.Model;
 
 namespace VirtoCommerce.XDigitalCatalog.Binding
 {
+    [Obsolete("We dont need this binder because we dont get __inventories from index")]
     public class InventoryBinder : IIndexModelBinder
     {
         public BindingInfo BindingInfo { get; set; } = new BindingInfo { FieldName = "__inventories" };
