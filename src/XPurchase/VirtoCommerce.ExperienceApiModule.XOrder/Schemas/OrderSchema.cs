@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Builders;
@@ -7,11 +9,16 @@ using GraphQL.Resolvers;
 using GraphQL.Types;
 using GraphQL.Types.Relay.DataObjects;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.ExperienceApiModule.Core.Schema;
+using VirtoCommerce.ExperienceApiModule.XOrder.Authorization;
 using VirtoCommerce.ExperienceApiModule.XOrder.Commands;
 using VirtoCommerce.ExperienceApiModule.XOrder.Extensions;
 using VirtoCommerce.ExperienceApiModule.XOrder.Queries;
+using VirtoCommerce.OrdersModule.Core.Model;
+using VirtoCommerce.Platform.Core.Security;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 {
@@ -20,10 +27,15 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
         public const string _commandName = "command";
 
         public readonly IMediator _mediator;
+        private readonly IAuthorizationService _authorizationService;
+        private readonly Func<SignInManager<ApplicationUser>> _signInManagerFactory;
 
-        public OrderSchema(IMediator mediator)
+
+        public OrderSchema(IMediator mediator, IAuthorizationService authorizationService, Func<SignInManager<ApplicationUser>> signInManagerFactory)
         {
             _mediator = mediator;
+            _authorizationService = authorizationService;
+            _signInManagerFactory = signInManagerFactory;
         }
 
         public void Build(ISchema schema)
@@ -31,10 +43,15 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             _ = schema.Query.AddField(new FieldType
             {
                 Name = "order",
-                Arguments = new QueryArguments(new QueryArgument<StringGraphType> { Name = "id" }, new QueryArgument<StringGraphType> { Name = "number" }),
+                Arguments = new QueryArguments(
+                    new QueryArgument<StringGraphType> { Name = "id" },
+                    new QueryArgument<StringGraphType> { Name = "number" },
+                    new QueryArgument<StringGraphType> { Name = "userId" }
+                    ),
                 Type = GraphTypeExtenstionHelper.GetActualType<CustomerOrderType>(),
                 Resolver = new AsyncFieldResolver<object>(async context => {
                     var orderAggregate = await _mediator.Send(new GetOrderQuery(context.GetArgument<string>("id"), context.GetArgument<string>("number")));
+                    await CheckAuthAsync(context, new[] { orderAggregate.Order });
                     //store order aggregate in the user context for future usage in the graph types resolvers
                     context.SetValue(orderAggregate);
 
@@ -47,6 +64,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                 .Argument<StringGraphType>("filter", "This parameter applies a filter to the query results")
                 .Argument<StringGraphType>("sort", "The sort expression")
                 .Argument<StringGraphType>("language", "")
+                .Argument<StringGraphType>("userId", "")
                 .Unidirectional()
                 .PageSize(20);
 
@@ -100,6 +118,9 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             context.UserContext.Add(nameof(Currency.CultureName).ToCamelCase(), request.CultureName);
 
             var response = await mediator.Send(request);
+
+            await CheckAuthAsync(context, response.Results.Select(x => x.Order).ToArray());
+
             foreach (var customerOrderAggregate in response.Results)
             {
                 context.SetValue(customerOrderAggregate);
@@ -126,6 +147,31 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             };
 
             return result;
+        }
+
+        private async Task CheckAuthAsync(IResolveFieldContext context, CustomerOrder[] orders)
+        {
+            var userId = context.GetArgument<string>("userId");
+
+            if (userId == null)
+            {
+                throw new ExecutionError($"argument {nameof(userId)} is null");
+            }
+
+            var signInManager = _signInManagerFactory();
+            var user = await signInManager.UserManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                throw new ExecutionError($"can't find user with id:{userId}");
+            }
+
+            var userPrincipal = await signInManager.CreateUserPrincipalAsync(user);
+            var authorizationResult = await _authorizationService.AuthorizeAsync(userPrincipal, orders, new CanAccessOrderAuthorizationRequirement());
+
+            if (!authorizationResult.Succeeded)
+            {
+                throw new ExecutionError($"access denied by userId:{userId}");
+            }
         }
     }
 }
