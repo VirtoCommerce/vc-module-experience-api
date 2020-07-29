@@ -106,14 +106,20 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
         private static async Task<IDictionary<string, ExpProduct>> LoadProductsAsync(IMediator mediator, IEnumerable<string> ids, IResolveFieldContext context)
         {
+            var cultureName = context.GetArgument<string>("cultureName");
+            var storeId = context.GetArgument<string>("storeId");
+
+            context.SetValue(cultureName, "cultureName");
+            context.SetValue(storeId, "storeId");
+
             var response = await mediator.Send(new LoadProductQuery
             {
                 Ids = ids.ToArray(),
                 IncludeFields = context.SubFields.Values.GetAllNodesPaths(),
-                StoreId = context.GetArgument<string>("storeId"),
+                StoreId = storeId,
                 UserId = context.GetArgument<string>("userId"),
                 CurrencyCode = context.GetArgument<string>("currencyCode"),
-                Language = context.GetArgument<string>("cultureName"),
+                CultureName = cultureName,
                 CartName = context.GetArgument("cartName", "default"),
                 Type = context.GetArgument<string>("type")
             });
@@ -134,6 +140,9 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             var cultureName = context.GetArgument<string>("cultureName");
             var cartName = context.GetArgument("cartName", "default");
             var cartType = context.GetArgument<string>("type");
+
+            context.SetValue(cultureName, "cultureName");
+            context.SetValue(storeId, "storeId");
 
             var productIds = context.GetArgument<List<string>>("productIds");
 
@@ -200,6 +209,9 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             var userId = context.GetArgument<string>("userId");
             var currencyCode = context.GetArgument<string>("currencyCode");
             var cultureName = context.GetArgument<string>("cultureName");
+
+            context.SetValue(cultureName, "cultureName");
+            context.SetValue(storeId, "storeId");
 
             var categoryIds = context.GetArgument<List<string>>("categoryIds");
 

@@ -7,9 +7,11 @@ using GraphQL.DataLoader;
 using GraphQL.Types;
 using GraphQL.Types.Relay.DataObjects;
 using MediatR;
+using Newtonsoft.Json.Linq;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
+using VirtoCommerce.Tools;
 using VirtoCommerce.XDigitalCatalog.Extensions;
 using VirtoCommerce.XDigitalCatalog.Queries;
 
@@ -87,8 +89,10 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 description: "Get slug for product.",
                 resolve: context =>
                 {
-                    var semanticUrl = context.Source.CatalogProduct?.SeoInfos?.FirstOrDefault()?.SemanticUrl;
-                    return semanticUrl;
+                    var storeId = context.GetValue<string>("storeId");
+                    var cultureName = context.GetCultureName();
+
+                    return context.Source.CatalogProduct.SeoInfos.GetBestMatchingSeoInfo(storeId, cultureName)?.SemanticUrl;
                 });
 
             Field<StringGraphType>(
@@ -96,8 +100,10 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 description: "Get metaDescription for product.",
                 resolve: context =>
                 {
-                    var metaDescription = context.Source.CatalogProduct?.SeoInfos?.FirstOrDefault()?.MetaDescription;
-                    return metaDescription;
+                    var storeId = context.GetValue<string>("storeId");
+                    var cultureName = context.GetCultureName();
+
+                    return context.Source.CatalogProduct.SeoInfos.GetBestMatchingSeoInfo(storeId, cultureName)?.MetaDescription;
                 });
 
             Field<StringGraphType>(
@@ -105,8 +111,10 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 description: "Get metaKeywords for product.",
                 resolve: context =>
                 {
-                    var metaKeywords = context.Source.CatalogProduct?.SeoInfos?.FirstOrDefault()?.MetaKeywords;
-                    return metaKeywords;
+                    var storeId = context.GetValue<string>("storeId");
+                    var cultureName = context.GetCultureName();
+
+                    return context.Source.CatalogProduct.SeoInfos.GetBestMatchingSeoInfo(storeId, cultureName)?.MetaKeywords;
                 });
 
             Field<StringGraphType>(
@@ -114,8 +122,10 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 description: "Get metaTitle for product.",
                 resolve: context =>
                 {
-                    var metaTitle = context.Source.CatalogProduct?.SeoInfos?.FirstOrDefault()?.PageTitle;
-                    return metaTitle;
+                    var storeId = context.GetValue<string>("storeId");
+                    var cultureName = context.GetCultureName();
+
+                    return context.Source.CatalogProduct.SeoInfos.GetBestMatchingSeoInfo(storeId, cultureName)?.PageTitle;
                 });
 
             Field<StringGraphType>(

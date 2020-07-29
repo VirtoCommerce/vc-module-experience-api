@@ -111,7 +111,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             // If promotion evaluation requested
             if (loadPrices && !expProducts.All(x => x.Prices.IsNullOrEmpty()))
             {
-                await LoadPricesAsync(expProducts, request.CartName, request.StoreId, request.UserId, request.Language, request.CurrencyCode, request.Type);
+                await LoadPricesAsync(expProducts, request.CartName, request.StoreId, request.UserId, request.CultureName, request.CurrencyCode, request.Type);
             }
 
             // If product availability requested

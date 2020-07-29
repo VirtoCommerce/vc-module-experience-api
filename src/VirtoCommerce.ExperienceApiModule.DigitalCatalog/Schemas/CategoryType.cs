@@ -2,6 +2,7 @@ using System.Linq;
 using GraphQL.Types;
 using MediatR;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
+using VirtoCommerce.XDigitalCatalog.Extensions;
 using VirtoCommerce.XDigitalCatalog.Queries;
 
 namespace VirtoCommerce.XDigitalCatalog.Schemas
@@ -19,7 +20,13 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             Field<StringGraphType>(
                 "slug",
                 description: "Get slug for category. You can pass storeId and cultureName for better accuracy",
-                resolve: context => context.Source.Category?.SeoInfos?.FirstOrDefault()?.SemanticUrl);
+                resolve: context =>
+                {
+                    var storeId = context.GetValue<string>("storeId");
+                    var cultureName = context.GetCultureName();
+
+                    return context.Source.Category.SeoInfos.GetBestMatchingSeoInfo(storeId, cultureName)?.SemanticUrl;
+                });
 
             FieldAsync<CategoryType>("parent", resolve: async context =>
             {
