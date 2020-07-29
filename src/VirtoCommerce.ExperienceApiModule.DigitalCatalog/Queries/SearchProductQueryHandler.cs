@@ -27,21 +27,20 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
         IQueryHandler<SearchProductQuery, SearchProductResponse>,
         IQueryHandler<LoadProductQuery, LoadProductResponse>
     {
-        private readonly IMediator _mediator;
         private readonly ICartAggregateRepository _cartAggregateRepository;
         private readonly IMapper _mapper;
         private readonly ISearchProvider _searchProvider;
         private readonly ISearchPhraseParser _searchPhraseParser;
         private readonly IAggregationConverter _aggregationConverter;
 
-        public SearchProductQueryHandler(ISearchProvider searchProvider, ISearchPhraseParser searchPhraseParser, IMapper mapper, IAggregationConverter aggregationConverter, ICartAggregateRepository cartAggregateRepository, IMediator mediator)
+        // TODO: we have __inventories
+        public SearchProductQueryHandler(ISearchProvider searchProvider, ISearchPhraseParser searchPhraseParser, IMapper mapper, IAggregationConverter aggregationConverter, ICartAggregateRepository cartAggregateRepository)
         {
             _searchProvider = searchProvider;
             _searchPhraseParser = searchPhraseParser;
             _mapper = mapper;
             _aggregationConverter = aggregationConverter;
             _cartAggregateRepository = cartAggregateRepository;
-            _mediator = mediator;
         }
 
         public virtual async Task<SearchProductResponse> Handle(SearchProductQuery request, CancellationToken cancellationToken)
@@ -250,7 +249,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
 
         public class CreateDefaultCartCommand : CartCommand
         {
-            public CreateDefaultCartCommand(string storeId, string userId, string currency, string lang)
+            public CreateDefaultCartCommand(string storeId, string userId, string currency, string lang)//todo: change this to normal cartcommand
             : base(storeId, "cart", "default", userId, currency, lang)
             {
             }

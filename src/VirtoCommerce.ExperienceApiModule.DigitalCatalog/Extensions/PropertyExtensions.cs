@@ -4,7 +4,7 @@ using VirtoCommerce.CatalogModule.Core.Model;
 
 namespace VirtoCommerce.XDigitalCatalog.Extensions
 {
-    public static class PropertyExtansions
+    public static class PropertyExtensions
     {
         public static IList<Property> ConvertToFlatModel(this IList<Property> properties)
         {
