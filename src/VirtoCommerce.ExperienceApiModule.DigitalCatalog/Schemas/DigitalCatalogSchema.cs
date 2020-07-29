@@ -64,7 +64,6 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             var productsConnectionBuilder = GraphTypeExtenstionHelper.CreateConnection<ProductType, EdgeType<ProductType>, ProductsConnectonType<ProductType>, object>()
                 .Name("products")
                 .Argument<StringGraphType>("storeId", "The store id where products are searched")
-                .Argument<StringGraphType>("lang", "The language for which all localized product data will be returned")
                 .Argument<StringGraphType>("userId", "The customer id for search result impersonalization")
                 .Argument<StringGraphType>("currencyCode", "The currency for which all prices data will be returned")
                 .Argument<StringGraphType>("cultureName", "The culture name for cart context product")
