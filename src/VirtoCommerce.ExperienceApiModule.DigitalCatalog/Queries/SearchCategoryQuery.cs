@@ -7,7 +7,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
 {
     public class SearchCategoryQuery : IQuery<SearchCategoryResponse>, IHasIncludeFields
     {
-        public string CustomerId { get; set; }
+        public string UserId { get; set; }
         public string StoreId { get; set; }
         public string CultureName { get; set; }
         public string CurrencyCode { get; set; }

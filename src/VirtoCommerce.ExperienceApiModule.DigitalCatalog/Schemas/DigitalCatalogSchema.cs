@@ -48,7 +48,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                     new QueryArgument<StringGraphType> { Name = "cartName", Description = "Cart name" },
                     new QueryArgument<StringGraphType> { Name = "type", Description = "Cart type" },
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "storeId", Description = "Store Id" },
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "customerId", Description = "User Id" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "userId", Description = "User Id" },
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "currencyCode", Description = "Currency code (\"USD\")" },
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "cultureName", Description = "Culture name (\"en-Us\")" }
                 ),
@@ -88,7 +88,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 .Name("categories")
                 .Argument<StringGraphType>("storeId", "The store id where category are searched")
                 .Argument<StringGraphType>("cultureName", "The language for which all localized category data will be returned")
-                .Argument<StringGraphType>("customerId", "The customer id for search result impersonalization")
+                .Argument<StringGraphType>("userId", "The customer id for search result impersonalization")
                 .Argument<StringGraphType>("currencyCode", "The currency for which all prices data will be returned")
                 .Argument<StringGraphType>("query", "The query parameter performs the full-text search")
                 .Argument<StringGraphType>("filter", "This parameter applies a filter to the query results")
@@ -112,7 +112,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 Ids = ids.ToArray(),
                 IncludeFields = context.SubFields.Values.GetAllNodesPaths(),
                 StoreId = context.GetArgument<string>("storeId"),
-                UserId = context.GetArgument<string>("customerId"),
+                UserId = context.GetArgument<string>("userId"),
                 CurrencyCode = context.GetArgument<string>("currencyCode"),
                 Language = context.GetArgument<string>("cultureName"),
                 CartName = context.GetArgument("cartName", "default"),
@@ -198,7 +198,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             // TODO: maybe we need to save it to UserContext?
             var storeId = context.GetArgument<string>("storeId");
-            var customerId = context.GetArgument<string>("customerId");
+            var userId = context.GetArgument<string>("userId");
             var currencyCode = context.GetArgument<string>("currencyCode");
             var cultureName = context.GetArgument<string>("cultureName");
 
@@ -208,7 +208,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             {
                 CultureName = cultureName,
                 StoreId = storeId,
-                CustomerId = customerId,
+                UserId = userId,
                 CurrencyCode = currencyCode,
                 IncludeFields = includeFields.ToArray(),
             };
