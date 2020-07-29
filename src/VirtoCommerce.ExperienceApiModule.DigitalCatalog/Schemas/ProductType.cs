@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Builders;
+using GraphQL.DataLoader;
 using GraphQL.Types;
 using GraphQL.Types.Relay.DataObjects;
 using MediatR;
@@ -52,7 +53,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
         ///    }
         ///}
         /// </example>
-        public ProductType(IMediator mediator)
+        public ProductType(IMediator mediator, IDataLoaderContextAccessor dataLoader)
         {
             Name = "Product";
             Description = "Products are the sellable goods in an e-commerce project.";

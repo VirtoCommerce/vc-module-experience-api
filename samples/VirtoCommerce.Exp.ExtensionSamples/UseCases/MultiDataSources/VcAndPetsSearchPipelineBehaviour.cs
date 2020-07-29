@@ -15,6 +15,7 @@ namespace VirtoCommerce.Exp.ExtensionSamples
     public class VcAndPetsSearchPipelineBehaviour<TRequest, TResponse> : IRequestPostProcessor<TRequest, TResponse>
     {
         private readonly IPetsSearchService _petsSearchService;
+
         public VcAndPetsSearchPipelineBehaviour(IPetsSearchService petsSearchService)
         {
             _petsSearchService = petsSearchService;
@@ -36,9 +37,8 @@ namespace VirtoCommerce.Exp.ExtensionSamples
                             petProducts.Add(PetToProduct(pet));
                         }
                     }
-                    loadProductResponse.Products = loadProductResponse.Products.Concat(petProducts).ToArray();
+                    loadProductResponse = new LoadProductResponse(loadProductResponse.Products.Concat(petProducts).ToArray());
                 }
-
             }
             else if (request is SearchProductQuery searchProductRequest && response is SearchProductResponse searchProductResponse)
             {
@@ -61,7 +61,6 @@ namespace VirtoCommerce.Exp.ExtensionSamples
             }
         }
 
-
         private static ExpProduct PetToProduct(Pet pet)
         {
             var petProduct = AbstractTypeFactory<ExpProduct>.TryCreateInstance();
@@ -75,5 +74,4 @@ namespace VirtoCommerce.Exp.ExtensionSamples
             return petProduct;
         }
     }
-
 }
