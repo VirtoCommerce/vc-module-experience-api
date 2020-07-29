@@ -1,4 +1,3 @@
-using System.Linq;
 using GraphQL.Types;
 using MediatR;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
