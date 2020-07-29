@@ -29,10 +29,17 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             _dataLoader = dataLoader;
         }
 
+        /// <summary>
+        /// XDigitalCatalog schema builder
+        /// </summary>
+        /// <remarks>
+        /// IMPORTANT!
+        /// We can't use the fluent syntax for new types registration provided by dotnet graphql here,
+        /// because we have the strict requirement for underlying types extensions and must use
+        /// GraphTypeExtenstionHelper to resolve the effective type on execution time
+        /// </remarks>
         public void Build(ISchema schema)
         {
-            //We can't use the fluent syntax for new types registration provided by dotnet graphql here, because we have the strict requirement for underlying types extensions
-            //and must use GraphTypeExtenstionHelper to resolve the effective type on execution time
             var productField = new FieldType
             {
                 Name = "product",
@@ -41,7 +48,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                     new QueryArgument<StringGraphType> { Name = "cartName", Description = "Cart name" },
                     new QueryArgument<StringGraphType> { Name = "type", Description = "Cart type" },
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "storeId", Description = "Store Id" },
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "userId", Description = "User Id" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "customerId", Description = "User Id" },
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "currencyCode", Description = "Currency code (\"USD\")" },
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "cultureName", Description = "Culture name (\"en-Us\")" }
                 ),
@@ -54,7 +61,6 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             };
             schema.Query.AddField(productField);
 
-            //var productsConnectionBuilder = ConnectionBuilder.Create<ProductType, EdgeType<ProductType>, ProductsConnectonType<ProductType>, object>()
             var productsConnectionBuilder = GraphTypeExtenstionHelper.CreateConnection<ProductType, EdgeType<ProductType>, ProductsConnectonType<ProductType>, object>()
                 .Name("products")
                 .Argument<StringGraphType>("storeId", "The store id where products are searched")
@@ -81,9 +87,9 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             var categoriesConnectionBuilder = GraphTypeExtenstionHelper.CreateConnection<CategoryType, EdgeType<CategoryType>, CategoriesConnectonType<CategoryType>, object>()
                 .Name("categories")
                 .Argument<StringGraphType>("storeId", "The store id where category are searched")
-                .Argument<StringGraphType>("lang", "The language for which all localized category data will be returned")
+                .Argument<StringGraphType>("cultureName", "The language for which all localized category data will be returned")
                 .Argument<StringGraphType>("customerId", "The customer id for search result impersonalization")
-                .Argument<StringGraphType>("currency", "The currency for which all prices data will be returned")
+                .Argument<StringGraphType>("currencyCode", "The currency for which all prices data will be returned")
                 .Argument<StringGraphType>("query", "The query parameter performs the full-text search")
                 .Argument<StringGraphType>("filter", "This parameter applies a filter to the query results")
                 .Argument<BooleanGraphType>("fuzzy", "When the fuzzy query parameter is set to true the search endpoint will also return Categorys that contain slight differences to the search text.")
@@ -106,7 +112,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 Ids = ids.ToArray(),
                 IncludeFields = context.SubFields.Values.GetAllNodesPaths(),
                 StoreId = context.GetArgument<string>("storeId"),
-                UserId = context.GetArgument<string>("userId"),
+                UserId = context.GetArgument<string>("customerId"),
                 CurrencyCode = context.GetArgument<string>("currencyCode"),
                 Language = context.GetArgument<string>("cultureName"),
                 CartName = context.GetArgument("cartName", "default"),
@@ -193,17 +199,17 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             // TODO: maybe we need to save it to UserContext?
             var storeId = context.GetArgument<string>("storeId");
             var customerId = context.GetArgument<string>("customerId");
-            var currency = context.GetArgument<string>("currency");
-            var lang = context.GetArgument<string>("lang");
+            var currencyCode = context.GetArgument<string>("currencyCode");
+            var cultureName = context.GetArgument<string>("cultureName");
 
             var categoryIds = context.GetArgument<List<string>>("categoryIds");
 
             var request = new SearchCategoryQuery
             {
-                Lang = lang,
+                CultureName = cultureName,
                 StoreId = storeId,
                 CustomerId = customerId,
-                Currency = currency,
+                CurrencyCode = currencyCode,
                 IncludeFields = includeFields.ToArray(),
             };
 
