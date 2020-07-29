@@ -34,13 +34,13 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
         private readonly ISearchProvider _searchProvider;
         private readonly ISearchPhraseParser _searchPhraseParser;
         private readonly IAggregationConverter _aggregationConverter;
-        private readonly IProductInventorySearchService _productInventorySearchService;
+        private readonly IProductInventorySearchService _productInventorySearchService; // TODO: maybe we have __inventories in index
 
-        // TODO: we have __inventories
         public SearchProductQueryHandler(
             ISearchProvider searchProvider
             , ISearchPhraseParser searchPhraseParser
-            , IMapper mapper, IAggregationConverter aggregationConverter
+            , IMapper mapper
+            , IAggregationConverter aggregationConverter
             , ICartAggregateRepository cartAggregateRepository
             , IProductInventorySearchService productInventorySearchService)
         {
@@ -228,6 +228,11 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
 
         private string[] BuildFields(IReadOnlyCollection<string> includeFields, out bool loadPrices, out bool loadInventories)
         {
+            /*
+             * TODO: refactor this to implement "context" building which contains different result for different search engines and
+             * all conditional filelds like LoadPrices and LoadInventories
+             */
+
             var result = new List<string>();
 
             // Add filds for __object
