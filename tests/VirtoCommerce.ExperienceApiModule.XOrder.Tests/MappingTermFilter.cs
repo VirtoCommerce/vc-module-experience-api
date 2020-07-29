@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using AutoMapper;
 using VirtoCommerce.ExperienceApiModule.XOrder.Mapping;
 using VirtoCommerce.OrdersModule.Core.Model.Search;
@@ -18,14 +19,15 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Tests
             });
 
             var mapper = mapperCfg.CreateMapper();
-            var terms = new TermFilter[]
+            var terms = new List<IFilter>
             {
                 new TermFilter { FieldName = "CustomerId", Values = new[] { Guid.NewGuid().ToString() } },
                 new TermFilter { FieldName = "CustomerIds", Values = new[] { Guid.NewGuid().ToString() } }
             };
 
             //action
-            var criteria = mapper.Map<CustomerOrderSearchCriteria>(terms);
+            var criteria = new CustomerOrderSearchCriteria();
+            mapper.Map(terms, criteria);
 
             //Assert
             Assert.NotNull(criteria);
