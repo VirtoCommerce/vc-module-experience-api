@@ -10,6 +10,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             Name = "InventoryInfo";
             Description = "";
             Field<LongGraphType>("inStockQuantity", resolve: context => context.Source.InStockQuantity);
+            Field<LongGraphType>("reservedQuantity", resolve: context => context.Source.ReservedQuantity);
             Field(d => d.FulfillmentCenterId);
             Field(d => d.FulfillmentCenterName);
             Field<BooleanGraphType>("allowPreorder", resolve: context => context.Source.AllowPreorder);

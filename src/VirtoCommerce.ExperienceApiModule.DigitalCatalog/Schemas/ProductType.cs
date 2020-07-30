@@ -195,7 +195,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
               });
         }
 
-        private static async Task<object> ResolveConnectionAsync(IMediator madiator, IResolveConnectionContext<ExpProduct> context)
+        private static async Task<object> ResolveConnectionAsync(IMediator mediator, IResolveConnectionContext<ExpProduct> context)
         {
             var first = context.First;
 
@@ -205,13 +205,13 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             {
                 Skip = skip,
                 Take = first ?? context.PageSize ?? 10,
-               
+
                 Keyword = context.GetArgument<string>("query"),
                 Group = context.GetArgument<string>("group"),
                 ObjectIds = new[] { context.Source.IndexedProduct.Id }
             };
 
-            var response = await madiator.Send(query);
+            var response = await mediator.Send(query);
 
             return new Connection<ProductAssociation>()
             {

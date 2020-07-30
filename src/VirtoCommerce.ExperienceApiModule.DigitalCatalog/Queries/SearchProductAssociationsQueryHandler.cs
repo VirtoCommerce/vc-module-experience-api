@@ -11,6 +11,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
     {
         private readonly IProductAssociationSearchService _productAssociationSearchService;
         private readonly IMapper _mapper;
+
         public SearchProductAssociationsQueryHandler(IProductAssociationSearchService productAssociationSearchService, IMapper mapper)
         {
             _mapper = mapper;
