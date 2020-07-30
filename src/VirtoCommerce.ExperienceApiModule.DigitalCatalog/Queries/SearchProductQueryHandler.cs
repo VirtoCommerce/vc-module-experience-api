@@ -146,7 +146,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                 var cartAggregate = await _cartAggregateRepository.GetCartAsync("default", query.StoreId, query.UserId, query.CultureName, query.CurrencyCode);
                 if (cartAggregate == null)
                 {
-                    var createCartCommand = new CreateDefaultCartCommand(query.StoreId, query.UserId, query.CultureName, query.CurrencyCode);
+                    var createCartCommand = new CreateDefaultCartCommand(query.StoreId, query.UserId, query.CurrencyCode, query.CultureName);
                     var cart = _cartAggregateRepository.CreateDefaultShoppingCart(createCartCommand);
                     cartAggregate = await _cartAggregateRepository.GetCartForShoppingCartAsync(cart);
                 }
