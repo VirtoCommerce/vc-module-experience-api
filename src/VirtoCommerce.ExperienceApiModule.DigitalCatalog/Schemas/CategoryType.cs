@@ -46,6 +46,8 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             Field<BooleanGraphType>("hasParent", resolve: context => TryGetParentId(context, out _));
 
             Field<ListGraphType<OutlineType>>("outlines", resolve: context => context.Source.Category.Outlines);
+
+            Field<ListGraphType<ImageType>>("images", resolve: context => context.Source.Category.Images);
         }
 
         private static bool TryGetParentId(IResolveFieldContext<ExpCategory> context, out string parentId)
