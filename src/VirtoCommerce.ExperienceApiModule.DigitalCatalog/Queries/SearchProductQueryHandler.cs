@@ -86,6 +86,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                 .AddSorting(request.Sort)
                 .WithIncludeFields(indexIncludeFields)
                 .AddObjectIds(request.ProductIds)
+                .AddTerms(new[] { "status:visible" })//Only visible, exclude variations from search result
                 .Build();
 
             var searchResult = await _searchProvider.SearchAsync(KnownDocumentTypes.Product, searchRequest);

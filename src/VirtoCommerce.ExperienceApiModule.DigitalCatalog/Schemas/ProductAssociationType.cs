@@ -25,7 +25,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             Field("Quantity", x => x.Quantity, nullable: true, type: typeof(IntGraphType));
             Field(d => d.AssociatedObjectId, nullable: true);
             Field(d => d.AssociatedObjectType, nullable: true);
-            Field<ListGraphType<StringGraphType>>("tags", resolve: context => context.Source.Tags.ToList());
+            Field<ListGraphType<StringGraphType>>("tags", resolve: context => context.Source.Tags?.ToList());
 
             var productField = new FieldType
             {
