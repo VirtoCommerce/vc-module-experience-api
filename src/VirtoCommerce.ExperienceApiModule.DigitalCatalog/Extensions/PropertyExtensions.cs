@@ -6,7 +6,7 @@ namespace VirtoCommerce.XDigitalCatalog.Extensions
 {
     public static class PropertyExtensions
     {
-        public static IList<Property> ConvertToFlatModel(this IList<Property> properties)
+        public static IList<Property> ConvertToFlatModel(this IEnumerable<Property> properties)
         {
             return properties
                 .SelectMany(property => property.Values

@@ -23,6 +23,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 "availabilityData",
                 resolve: context => new ExpAvailabilityData
                 {
+                    AvailableQuantity = context.Source.AvailableQuantity,
                     InventoryAll = context.Source.AllInventories,
                     IsBuyable = context.Source.IsBuyable,
                     IsAvailable = context.Source.IsAvailable,

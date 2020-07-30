@@ -229,7 +229,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             return result;
         }
              
-
+        //TODO: Need to remove at all!!
         public class CreateDefaultCartCommand : CartCommand
         {
             public CreateDefaultCartCommand(string storeId, string userId, string currency, string lang)//todo: change this to normal cartcommand

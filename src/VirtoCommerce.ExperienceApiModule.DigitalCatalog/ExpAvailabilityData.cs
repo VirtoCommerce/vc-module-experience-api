@@ -13,8 +13,6 @@ namespace VirtoCommerce.XDigitalCatalog
 
         public IEnumerable<InventoryInfo> InventoryAll { get; set; } = Enumerable.Empty<InventoryInfo>();
 
-        public virtual long AvailableQuantity
-            => InventoryAll.Sum(inventory
-                => Math.Max(0, inventory.InStockQuantity - inventory.ReservedQuantity));
+        public long AvailableQuantity { get; set; }
     }
 }
