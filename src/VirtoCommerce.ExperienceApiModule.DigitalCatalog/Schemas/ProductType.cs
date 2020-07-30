@@ -11,6 +11,7 @@ using Newtonsoft.Json.Linq;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
+using VirtoCommerce.ExperienceApiModule.Core.Schemas;
 using VirtoCommerce.Tools;
 using VirtoCommerce.XDigitalCatalog.Extensions;
 using VirtoCommerce.XDigitalCatalog.Queries;
@@ -89,7 +90,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 description: "Get slug for product.",
                 resolve: context =>
                 {
-                    //TODO: Need to refactor in future 
+                    //TODO: Need to refactor in future
                     var storeId = context.GetValue<string>("storeId");
                     var cultureName = context.GetValue<string>("cultureName");
 
@@ -200,6 +201,8 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             Field<ListGraphType<AssetType>>("assets", resolve: context => context.Source.IndexedProduct.Assets);
 
             Field<ListGraphType<OutlineType>>("outlines", resolve: context => context.Source.IndexedProduct.Outlines);
+
+            Field<ListGraphType<SeoInfoType>>("seoInfos", resolve: context => context.Source.IndexedProduct.SeoInfos);
 
             Field<TaxCategoryType>("tax", resolve: context => null); // TODO: We need this?
 
