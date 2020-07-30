@@ -25,6 +25,14 @@ jobs:
         id: VersionInfo
         uses: VirtoCommerce/vc-github-actions/get-image-version@dev
 
+      - name: Get changelog
+        id: changelog
+        uses: VirtoCommerce/vc-github-actions/changelog-generator@dev
+
+      - name: Test output
+        shell: pwsh
+        run: Write-Output "${{ steps.changelog.outputs.changelog }}"
+
       - name: Add version suffix
         if: ${{ github.ref=='refs/heads/dev' }}
         run: vc-build ChangeVersion -CustomVersionSuffix ${{ steps.VersionInfo.outputs.suffix }}
