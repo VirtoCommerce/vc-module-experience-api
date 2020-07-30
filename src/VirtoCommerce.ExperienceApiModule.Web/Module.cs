@@ -55,6 +55,7 @@ namespace VirtoCommerce.ExperienceApiModule.Web
             services.AddSchemaType<TaxDetailType>();
             services.AddSchemaType<TaxLineType>();
             services.AddSchemaType<TaxRateType>();
+            services.AddSchemaType<SeoInfoType>();
 
             //Register all purchase dependencies
             services.AddXCatalog(graphQlBuilder);
