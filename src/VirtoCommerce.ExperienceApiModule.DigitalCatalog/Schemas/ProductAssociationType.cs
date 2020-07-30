@@ -19,11 +19,11 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             Name = "ProductAssociation";
             Description = "product association.";
 
-            Field(d => d.Type);
-            Field(d => d.Priority);
+            Field(d => d.Type, nullable: true);
+            Field(d => d.Priority, nullable: true);
             Field("Quantity", x => x.Quantity, nullable: true, type: typeof(IntGraphType));
-            Field(d => d.AssociatedObjectId);
-            Field(d => d.AssociatedObjectType);
+            Field(d => d.AssociatedObjectId, nullable: true);
+            Field(d => d.AssociatedObjectType, nullable: true);
             Field<ListGraphType<StringGraphType>>("tags", resolve: context => context.Source.Tags.ToList());
 
             var productField = new FieldType
