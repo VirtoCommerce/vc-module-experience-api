@@ -21,7 +21,6 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
             Field(x => x.ObjectType, nullable: true);
             Field(x => x.IsActive, nullable: true);
             Field(x => x.LanguageCode, nullable: true);
-            Field(x => x.LanguageCode, nullable: true);
         }
     }
 }

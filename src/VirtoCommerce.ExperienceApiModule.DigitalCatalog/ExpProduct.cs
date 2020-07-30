@@ -24,10 +24,10 @@ namespace VirtoCommerce.XDigitalCatalog
         public virtual CatalogProduct IndexedProduct { get; set; }
 
         [BindIndexField(FieldName = "__variations", BinderType = typeof(VariationsBinder))]
-        public virtual IList<string> IndexedVariationIds { get; set; }
+        public virtual IList<string> IndexedVariationIds { get; set; } = new List<string>();
 
         [BindIndexField(FieldName = "__prices", BinderType = typeof(PriceBinder))]
-        public virtual IList<Price> IndexedPrices { get; set; }
+        public virtual IList<Price> IndexedPrices { get; set; } = new List<Price>();
 
         public bool IsBuyable
         {

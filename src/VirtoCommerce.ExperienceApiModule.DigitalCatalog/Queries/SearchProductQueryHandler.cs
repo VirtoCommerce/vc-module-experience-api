@@ -9,11 +9,14 @@ using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.ExperienceApiModule.Core.Index;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
+using VirtoCommerce.ExperienceApiModule.Core.Models;
 using VirtoCommerce.InventoryModule.Core.Model.Search;
 using VirtoCommerce.InventoryModule.Core.Services;
 using VirtoCommerce.MarketingModule.Core.Model.Promotions;
 using VirtoCommerce.MarketingModule.Core.Services;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.PricingModule.Core.Model;
+using VirtoCommerce.PricingModule.Core.Services;
 using VirtoCommerce.SearchModule.Core.Model;
 using VirtoCommerce.SearchModule.Core.Services;
 using VirtoCommerce.StoreModule.Core.Services;
@@ -24,6 +27,7 @@ using VirtoCommerce.XDigitalCatalog.Facets;
 using VirtoCommerce.XDigitalCatalog.Index;
 using VirtoCommerce.XPurchase;
 using VirtoCommerce.XPurchase.Commands;
+using ProductPrice = VirtoCommerce.ExperienceApiModule.Core.Models.ProductPrice;
 
 namespace VirtoCommerce.XDigitalCatalog.Queries
 {
@@ -41,6 +45,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
         private readonly IMarketingPromoEvaluator _marketingEvaluator;
         private readonly ICurrencyService _currencyService;
         private readonly IStoreService _storeService;
+        private readonly IPricingService _pricingService;
 
         public SearchProductQueryHandler(
             ISearchProvider searchProvider
@@ -52,7 +57,8 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             , IMarketingPromoEvaluator marketingEvaluator
             , ICurrencyService currencyService
             , IStoreService storeService
-            , ITaxProviderSearchService taxProviderSearchService)
+            , ITaxProviderSearchService taxProviderSearchService
+            , IPricingService pricingService)
         {
             _searchProvider = searchProvider;
             _searchPhraseParser = searchPhraseParser;
@@ -64,6 +70,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             _currencyService = currencyService;
             _taxProviderSearchService = taxProviderSearchService;
             _storeService = storeService;
+            _pricingService = pricingService;
         }
 
         public virtual async Task<SearchProductResponse> Handle(SearchProductQuery request, CancellationToken cancellationToken)
@@ -131,6 +138,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
 
             var result = docs?.Select(x => _mapper.Map<ExpProduct>(x, options =>
             {
+                //TODO: Code duplication
                 options.Items["all_currencies"] = allCurrencies;
                 options.Items["store"] = store;
                 options.Items["currency"] = currency;
@@ -141,7 +149,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             // If promotion evaluation requested
             if (query.HasPricingFields())
             {
-                //TODO: !!!URGENT!!! Need to remove from here becasue we introduce by this cycling dependency with x-purchase project
+                //TODO: !!!URGENT!!! Need to remove from here because we have introduced cycling dependency  with x-purchase project by these changes
                 //Need to  replace to some loosely coupled solution based on Chain-Of-Responsibility pattern and special abstraction for build promotions evaluation  context independently
                 var cartAggregate = await _cartAggregateRepository.GetCartAsync("default", query.StoreId, query.UserId, query.CultureName, query.CurrencyCode);
                 if (cartAggregate == null)
@@ -150,10 +158,30 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                     var cart = _cartAggregateRepository.CreateDefaultShoppingCart(createCartCommand);
                     cartAggregate = await _cartAggregateRepository.GetCartForShoppingCartAsync(cart);
                 }
+                //evaluate prices only if product missed prices in the index storage
+                var productsWithoutPrices = result.Where(x => !x.IndexedPrices.Any()).ToArray();
+                if(productsWithoutPrices.Any())
+                {
+                    var pricesEvalContext = _mapper.Map<PriceEvaluationContext>(cartAggregate);
+                    pricesEvalContext.ProductIds = productsWithoutPrices.Select(x=>x.Id).ToArray();
+                    var prices = await _pricingService.EvaluateProductPricesAsync(pricesEvalContext);
+                    foreach(var product in productsWithoutPrices)
+                    {
+                        product.AllPrices = _mapper.Map<IEnumerable<ProductPrice>>(prices.Where(x => x.ProductId == product.Id), options =>
+                        {
+                            //TODO: Code duplication
+                            options.Items["all_currencies"] = allCurrencies;
+                            options.Items["store"] = store;
+                            options.Items["currency"] = currency;
+                        }).ToList();
+                    }
+                }
+
                 //Evaluate promotions
                 var promoEvalContext = _mapper.Map<PromotionEvaluationContext>(cartAggregate);
                 promoEvalContext.PromoEntries =  result.Select(x=> _mapper.Map<ProductPromoEntry>(x, options =>
                 {
+                    //TODO: Code duplication
                     options.Items["all_currencies"] = allCurrencies;
                     options.Items["store"] = store;
                     options.Items["currency"] = currency;
