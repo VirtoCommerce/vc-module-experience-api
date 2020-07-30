@@ -10,6 +10,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             Field(x => x.ConcurrencyStamp, true);
             Field(x => x.Id);
             Field(x => x.Name);
+            Field<NonNullGraphType<ListGraphType<InputAssignPermissionType>>>(nameof(Role.Permissions));
         }
     }
 }
