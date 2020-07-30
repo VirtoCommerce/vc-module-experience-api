@@ -26,7 +26,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 {
                     var displayNames = context.Source.DisplayNames.AsQueryable();
 
-                    var cultureName = context.GetCultureName();
+                    var cultureName = context.GetValue<string>("cultureName");
                     if (cultureName != null)
                     {
                         displayNames = displayNames.Where(x => x.LanguageCode == cultureName);

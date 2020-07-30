@@ -1,7 +1,6 @@
 using GraphQL.Types;
 using VirtoCommerce.CoreModule.Core.Common;
-using VirtoCommerce.ExperienceApiModule.Core.Extensions;
-using VirtoCommerce.ExperienceApiModule.Core.Helpers;
+using VirtoCommerce.CoreModule.Core.Currency;
 
 namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
 {
@@ -15,20 +14,18 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
 
             Field<MoneyType>(
                 "amount",
-                arguments: QueryArgumentPresets.ArgumentsForMoney(),
                 resolve: context =>
                 {
-                    var currency = context.GetCurrency();
-                    return currency != null ? context.Source.DiscountAmount.ToMoney(currency) : null;
+                    //TODO: We can't get currency here. Need to change amount to decimal type
+                    return new Money(context.Source.DiscountAmount, new Currency());
                 });
 
             Field<MoneyType>(
                 "amountWithTax",
-                arguments: QueryArgumentPresets.ArgumentsForMoney(),
                 resolve: context =>
                 {
-                    var currency = context.GetCurrency();
-                    return currency != null ? context.Source.DiscountAmountWithTax.ToMoney(currency) : null;
+                    //TODO: We can't get currency here. Need to change amount to decimal type
+                    return new Money(context.Source.DiscountAmountWithTax, new Currency());
                 });
         }
     }

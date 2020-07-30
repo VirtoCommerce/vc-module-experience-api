@@ -89,8 +89,9 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 description: "Get slug for product.",
                 resolve: context =>
                 {
+                    //TODO: Need to refactor in future 
                     var storeId = context.GetValue<string>("storeId");
-                    var cultureName = context.GetCultureName();
+                    var cultureName = context.GetValue<string>("cultureName");
 
                     return context.Source.IndexedProduct.SeoInfos.GetBestMatchingSeoInfo(storeId, cultureName)?.SemanticUrl;
                 });
@@ -101,7 +102,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 resolve: context =>
                 {
                     var storeId = context.GetValue<string>("storeId");
-                    var cultureName = context.GetCultureName();
+                    var cultureName = context.GetValue<string>("cultureName");
 
                     return context.Source.IndexedProduct.SeoInfos.GetBestMatchingSeoInfo(storeId, cultureName)?.MetaDescription;
                 });
@@ -112,7 +113,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 resolve: context =>
                 {
                     var storeId = context.GetValue<string>("storeId");
-                    var cultureName = context.GetCultureName();
+                    var cultureName = context.GetValue<string>("cultureName");
 
                     return context.Source.IndexedProduct.SeoInfos.GetBestMatchingSeoInfo(storeId, cultureName)?.MetaKeywords;
                 });
@@ -123,7 +124,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 resolve: context =>
                 {
                     var storeId = context.GetValue<string>("storeId");
-                    var cultureName = context.GetCultureName();
+                    var cultureName = context.GetValue<string>("cultureName");
 
                     return context.Source.IndexedProduct.SeoInfos.GetBestMatchingSeoInfo(storeId, cultureName)?.PageTitle;
                 });
@@ -156,11 +157,11 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                     return new ExpVariation(context.Source);
                 }
 
-                var response = await mediator.Send(new LoadProductQuery
-                {
-                    Ids = new[] { context.Source.IndexedProduct.MainProductId },
-                    IncludeFields = context.SubFields.Values.GetAllNodesPaths()
-                });
+                var query = context.GetCatalogQuery<LoadProductQuery>();
+                query.Ids = new[] { context.Source.IndexedProduct.MainProductId };
+                query.IncludeFields = context.SubFields.Values.GetAllNodesPaths();
+
+                var response = await mediator.Send(query);
 
                 return response.Products
                     .Select(expProduct => new ExpVariation(expProduct))
@@ -169,11 +170,11 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             FieldAsync<ListGraphType<VariationType>>("variations", resolve: async context =>
             {
-                var response = await mediator.Send(new LoadProductQuery
-                {
-                    Ids = context.Source.IndexedVariationIds.ToArray(),
-                    IncludeFields = context.SubFields.Values.GetAllNodesPaths()
-                });
+                var query = context.GetCatalogQuery<LoadProductQuery>();
+                query.Ids = context.Source.IndexedVariationIds.ToArray();
+                query.IncludeFields = context.SubFields.Values.GetAllNodesPaths();
+
+                var response = await mediator.Send(query);
 
                 return response.Products.Select(expProduct => new ExpVariation(expProduct));
             });

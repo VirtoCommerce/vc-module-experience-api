@@ -7,10 +7,10 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
 {
     public interface ICatalogQuery : IHasIncludeFields
     {
-        string StoreId { get; }
-        string UserId { get; }
-        string CultureName { get; }
-        string CurrencyCode { get; }
+        string StoreId { get; set; }
+        string UserId { get; set; }
+        string CultureName { get; set; }
+        string CurrencyCode { get; set; }
     }
 
     public class CatalogQueryBase<TResponse> : ICatalogQuery, IQuery<TResponse>

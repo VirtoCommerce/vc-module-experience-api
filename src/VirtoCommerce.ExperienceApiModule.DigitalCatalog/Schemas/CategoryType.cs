@@ -22,7 +22,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 resolve: context =>
                 {
                     var storeId = context.GetValue<string>("storeId");
-                    var cultureName = context.GetCultureName();
+                    var cultureName = context.GetValue<string>("cultureName");
 
                     return context.Source.Category.SeoInfos.GetBestMatchingSeoInfo(storeId, cultureName)?.SemanticUrl;
                 });

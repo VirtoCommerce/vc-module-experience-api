@@ -1,99 +1,81 @@
 using System;
-using System.Text;
-using GraphQL;
+using System.Collections.Generic;
+using System.Linq;
+using GraphQL.Execution;
 using GraphQL.Types;
-using VirtoCommerce.CoreModule.Core.Common;
-using VirtoCommerce.CoreModule.Core.Currency;
-using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
 {
     public static class ResolveFieldContextExtensions
     {
-        public static string GetCultureName<T>(this IResolveFieldContext<T> context, string defaultValue = default)
-        {
-            var cultureName = context.GetArgument<string>(Constants.CultureName);
-            if (cultureName != null)
-            {
-                return cultureName;
-            }
-
-            var cultureNameFromContext = context.GetValue<string>(Constants.CultureName, null);
-            if (cultureNameFromContext != null)
-            {
-                return cultureNameFromContext;
-            }
-
-            return defaultValue;
-        }
-
-        public static Language GetLanguage<T>(this IResolveFieldContext<T> context, Language defaultValue = default)
-        {
-            var cultureName = context.GetCultureName();
-            if (cultureName != null)
-            {
-                var language = new Language(cultureName);
-                return language;
-            }
-
-            var languageFromContext = context.GetValue<Language>("language", null);
-            if (languageFromContext != null)
-            {
-                return languageFromContext;
-            }
-
-            return defaultValue;
-        }
-
         /// <summary>
-        /// Get saved currency from arguments or user context
+        /// Get value from user context
         /// </summary>
-        public static Currency GetCurrency<T>(this IResolveFieldContext<T> context, Currency defaultValue = default)
+        /// <typeparam name="T">Type of T</typeparam>
+        /// <param name="resolveContext">GraphQL UserContext</param>
+        /// <param name="key">Search key</param>
+        /// <param name="defaultValue">Default return if value not founded in UserContext</param>
+        /// <returns>Return value of type <typeparamref name="T"/> from UserContext or <paramref name="defaultValue"/></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static T GetValue<T>(this IResolveFieldContext resolveContext, string key, T defaultValue)
         {
-            var currencyCode = context.GetArgument<string>(Constants.CurrencyCode);
-            if (currencyCode != null)
-            {
-                return new Currency(context.GetLanguage(), currencyCode);
-            }
+            if (resolveContext == null) throw new ArgumentNullException(nameof(resolveContext));
 
-            var currencyFromContext = context.GetValue<Currency>("currency", null);
-            if (currencyFromContext != null)
-            {
-                return currencyFromContext;
-            }
-
-            return defaultValue;
+            return resolveContext.UserContext.TryGetValue(key, out var value)
+                ? (T)value
+                : defaultValue;
         }
 
-        /// <summary>
-        /// Get value of type <typeparamref name="U"/> from UserContext by building key from <typeparamref name="T"/> type
-        /// </summary>
-        /// <typeparam name="T">User context type</typeparam>
-        /// <typeparam name="U">Returned type</typeparam>
-        /// <param name="resolveFieldContext">GraphQL filed context (contains user context)</param>
-        /// <returns>Value from user context of <typeparamref name="U"/> type</returns>
-        public static U GetValue<T, U>(this IResolveFieldContext<T> resolveFieldContext)
+        public static T GetValue<T>(this IResolveFieldContext resolveContext, string key)
         {
-            if (resolveFieldContext == null) throw new ArgumentNullException(nameof(resolveFieldContext));
+            return resolveContext.GetValue(key, default(T));
+        }     
 
-            var keyBuilder = new StringBuilder();
-
-            if (resolveFieldContext.Source is IEntity entity)
+        //TODO:  Need to check what there is no any alternative way to access to the original request arguments in sub selection
+        public static void CopyArgumentsToUserContext(this IResolveFieldContext resolveContext)
+        {
+            foreach(var pair in resolveContext.Arguments)
             {
-                keyBuilder.Append(typeof(T).Name.ToCamelCase());
-
-                if (!string.IsNullOrEmpty(entity.Id))
-                {
-                    keyBuilder.Append($":{entity.Id}");
-                }
+                resolveContext.UserContext[pair.Key] = pair.Value;
             }
-            else if (resolveFieldContext.Source is IValueObject valueObject)
-            {
-                keyBuilder.Append(((ValueObject)valueObject).GetCacheKey());
-            }
-
-            return resolveFieldContext.GetValue<U>(keyBuilder.ToString());
         }
+        public static void SetExpandedObjectGraph<T>(this IResolveFieldContext resolveContext, T value)
+        {
+            var entities = value.GetFlatObjectsListWithInterface<IEntity>();
+
+            foreach (var key in entities.Where(x => !string.IsNullOrEmpty(x.Id)))
+            {
+                resolveContext.UserContext.TryAdd(key.Id, value);
+            }
+
+            var valueObjects = value.GetFlatObjectsListWithInterface<IValueObject>();
+            foreach (var valueObject in valueObjects)
+            {
+                resolveContext.UserContext.TryAdd(((ValueObject)valueObject).GetCacheKey(), value);
+            }
+        }
+
+        public static TResult GetValueForSource<TResult>(this IResolveFieldContext resolveContext)
+        {
+            if (resolveContext == null)
+            {
+                throw new ArgumentNullException(nameof(resolveContext));
+            }
+            TResult result = default;
+
+            if (resolveContext.Source is IEntity entity)
+            {
+                result = resolveContext.GetValue<TResult>(entity.Id);
+            }
+            else if (resolveContext.Source is IValueObject valueObject)
+            {
+                result = resolveContext.GetValue<TResult>(((ValueObject)valueObject).GetCacheKey());
+            }
+
+            return result;
+        }
+
+
     }
 }

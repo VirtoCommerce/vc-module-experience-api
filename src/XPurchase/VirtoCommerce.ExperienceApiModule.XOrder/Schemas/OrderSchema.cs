@@ -38,7 +38,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                 {
                     var orderAggregate = await _mediator.Send(new GetOrderQuery(context.GetArgument<string>("id"), context.GetArgument<string>("number")));
                     //store order aggregate in the user context for future usage in the graph types resolvers
-                    context.SetValue(orderAggregate);
+                    context.SetExpandedObjectGraph(orderAggregate);
 
                     return orderAggregate;
                 })
@@ -62,7 +62,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                             .ResolveAsync(async context =>
                             {
                                 var response = await _mediator.Send(context.GetArgument<CreateOrderFromCartCommand>(_commandName));
-                                context.SetValue(response);
+                                context.SetExpandedObjectGraph(response);
                                 return response;
                             })
                             .FieldType);
@@ -105,7 +105,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             var response = await mediator.Send(request);
             foreach (var customerOrderAggregate in response.Results)
             {
-                context.SetValue(customerOrderAggregate);
+                context.SetExpandedObjectGraph(customerOrderAggregate);
             }
 
             var result = new Connection<CustomerOrderAggregate>()

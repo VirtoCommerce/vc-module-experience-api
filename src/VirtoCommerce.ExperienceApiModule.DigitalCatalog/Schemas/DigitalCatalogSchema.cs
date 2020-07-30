@@ -14,6 +14,7 @@ using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.XDigitalCatalog.Extensions;
 using VirtoCommerce.XDigitalCatalog.Queries;
 
 namespace VirtoCommerce.XDigitalCatalog.Schemas
@@ -53,6 +54,8 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 Type = GraphTypeExtenstionHelper.GetActualType<ProductType>(),
                 Resolver = new AsyncFieldResolver<object>(async context =>
                 {
+                    //TODO:  Need to check what there is no any alternative way to access to the original request arguments in sub selection
+                    context.CopyArgumentsToUserContext();
                     var loader = _dataLoader.Context.GetOrAddBatchLoader<string, ExpProduct>("productsLoader", (ids) => LoadProductsAsync(_mediator, ids, context));
                     return await loader.LoadAsync(context.GetArgument<string>("id"));
                 })
@@ -75,7 +78,12 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 .Unidirectional()
                 .PageSize(20);
 
-            productsConnectionBuilder.ResolveAsync(async context => await ResolveProductsConnectionAsync(_mediator, context));
+            productsConnectionBuilder.ResolveAsync(async context =>
+            {
+                //TODO:  Need to check what there is no any alternative way to access to the original request arguments in sub selection
+                context.CopyArgumentsToUserContext();
+                return await ResolveProductsConnectionAsync(_mediator, context);
+            });
 
             schema.Query.AddField(productsConnectionBuilder.FieldType);
 
@@ -95,27 +103,26 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 .Unidirectional()
                 .PageSize(20);
 
-            categoriesConnectionBuilder.ResolveAsync(async context => await ResolveCategoriesConnectionAsync(_mediator, context));
+            categoriesConnectionBuilder.ResolveAsync(async context =>
+            {
+                //TODO:  Need to check what there is no any alternative way to access to the original request arguments in sub selection
+                context.CopyArgumentsToUserContext();
+                return await ResolveCategoriesConnectionAsync(_mediator, context);
+            });
 
             schema.Query.AddField(categoriesConnectionBuilder.FieldType);
         }
 
         private static async Task<IDictionary<string, ExpProduct>> LoadProductsAsync(IMediator mediator, IEnumerable<string> ids, IResolveFieldContext context)
         {
-            var cultureName = context.GetArgument<string>("cultureName");
-            var storeId = context.GetArgument<string>("storeId");
-
-            context.SetValue(cultureName, "cultureName");
-            context.SetValue(storeId, "storeId");
-
             var response = await mediator.Send(new LoadProductQuery
             {
                 Ids = ids.ToArray(),
                 IncludeFields = context.SubFields.Values.GetAllNodesPaths(),
-                StoreId = storeId,
+                StoreId = context.GetArgument<string>("storeId"),
                 UserId = context.GetArgument<string>("userId"),
                 CurrencyCode = context.GetArgument<string>("currencyCode"),
-                CultureName = cultureName
+                CultureName = context.GetArgument<string>("cultureName")
             });
 
             return response.Products.ToDictionary(x => x.Id);
@@ -127,44 +134,29 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             var skip = Convert.ToInt32(context.After ?? 0.ToString());
             var includeFields = context.SubFields.Values.GetAllNodesPaths().Select(x => x.TrimStart("items.")).ToArray();
 
-            // TODO: maybe we need to save it to UserContext?
-            var storeId = context.GetArgument<string>("storeId");
-            var userId = context.GetArgument<string>("userId");
-            var currencyCode = context.GetArgument<string>("currencyCode");
-            var cultureName = context.GetArgument<string>("cultureName");
-
-            context.SetValue(cultureName, "cultureName");
-            context.SetValue(storeId, "storeId");
+            //TODO: Need to be able get entire query from context and read all arguments to the query properties
+            var query = context.GetCatalogQuery<SearchProductQuery>();
+            query.IncludeFields = includeFields.ToArray();
 
             var productIds = context.GetArgument<List<string>>("productIds");
-
-            var request = new SearchProductQuery
-            {
-                CultureName = cultureName,
-                StoreId = storeId,
-                UserId = userId,
-                CurrencyCode = currencyCode,
-                IncludeFields = includeFields.ToArray()
-            };
-
             if (productIds.IsNullOrEmpty())
             {
-                request.Skip = skip;
-                request.Take = first ?? context.PageSize ?? 10;
-                request.Query = context.GetArgument<string>("query");
-                request.Filter = context.GetArgument<string>("filter");
-                request.Facet = context.GetArgument<string>("facet");
-                request.Fuzzy = context.GetArgument<bool>("fuzzy");
-                request.FuzzyLevel = context.GetArgument<int?>("fuzzyLevel");
-                request.Sort = context.GetArgument<string>("sort");
+                query.Skip = skip;
+                query.Take = first ?? context.PageSize ?? 10;
+                query.Query = context.GetArgument<string>("query");
+                query.Filter = context.GetArgument<string>("filter");
+                query.Facet = context.GetArgument<string>("facet");
+                query.Fuzzy = context.GetArgument<bool>("fuzzy");
+                query.FuzzyLevel = context.GetArgument<int?>("fuzzyLevel");
+                query.Sort = context.GetArgument<string>("sort");
             }
             else
             {
-                request.ProductIds = productIds;
-                request.Take = productIds.Count;
+                query.ProductIds = productIds;
+                query.Take = productIds.Count;
             }
 
-            var response = await mediator.Send(request);
+            var response = await mediator.Send(query);
 
             return new ProductsConnection<ExpProduct>()
             {
@@ -194,44 +186,29 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             var skip = Convert.ToInt32(context.After ?? 0.ToString());
             var includeFields = context.SubFields.Values.GetAllNodesPaths().Select(x => x.TrimStart("items.")).ToArray();
 
-            // TODO: maybe we need to save it to UserContext?
-            var storeId = context.GetArgument<string>("storeId");
-            var userId = context.GetArgument<string>("userId");
-            var currencyCode = context.GetArgument<string>("currencyCode");
-            var cultureName = context.GetArgument<string>("cultureName");
-
-            context.SetValue(cultureName, "cultureName");
-            context.SetValue(storeId, "storeId");
+            var query = context.GetCatalogQuery<SearchCategoryQuery>();
 
             var categoryIds = context.GetArgument<List<string>>("categoryIds");
-
-            var request = new SearchCategoryQuery
-            {
-                CultureName = cultureName,
-                StoreId = storeId,
-                UserId = userId,
-                CurrencyCode = currencyCode,
-                IncludeFields = includeFields.ToArray(),
-            };
-
+            query.IncludeFields = includeFields;
+          
             if (categoryIds.IsNullOrEmpty())
             {
-                request.Skip = skip;
-                request.Take = first ?? context.PageSize ?? 10;
-                request.Query = context.GetArgument<string>("query");
-                request.Filter = context.GetArgument<string>("filter");
-                request.Facet = context.GetArgument<string>("facet");
-                request.Fuzzy = context.GetArgument<bool>("fuzzy");
-                request.FuzzyLevel = context.GetArgument<int?>("fuzzyLevel");
-                request.Sort = context.GetArgument<string>("sort");
+                query.Skip = skip;
+                query.Take = first ?? context.PageSize ?? 10;
+                query.Query = context.GetArgument<string>("query");
+                query.Filter = context.GetArgument<string>("filter");
+                query.Facet = context.GetArgument<string>("facet");
+                query.Fuzzy = context.GetArgument<bool>("fuzzy");
+                query.FuzzyLevel = context.GetArgument<int?>("fuzzyLevel");
+                query.Sort = context.GetArgument<string>("sort");
             }
             else
             {
-                request.CategoryIds = categoryIds;
-                request.Take = categoryIds.Count;
+                query.CategoryIds = categoryIds;
+                query.Take = categoryIds.Count;
             }
 
-            var response = await mediator.Send(request);
+            var response = await mediator.Send(query);
 
             return new CategoriesConnection<ExpCategory>()
             {
