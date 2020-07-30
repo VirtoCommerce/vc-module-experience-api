@@ -46,9 +46,9 @@ appsettings.json
 
 # Digital catalog experience API - Getting started.
 
-- Deploy `vc-module-experience-api`  module into the platform of 3.0 version or latest, guided by this article https://github.com/VirtoCommerce/vc-platform/blob/dev-3.0.0/docs/deploy-module-from-source-code.md 
+- Deploy `vc-module-experience-api`  module into the platform of 3.0 version or latest, guided by this article https://github.com/VirtoCommerce/vc-platform/blob/master/docs/developer-guide/deploy-module-from-source-code.md
 - Restart the platform instance
-- Open GraphQL UI playgoround in the browser `http://{platform url}/ui/playground`
+- Open GraphQL UI playground in the browser `http://{platform url}/ui/playground`
 
 The sample requests:
 ```js
