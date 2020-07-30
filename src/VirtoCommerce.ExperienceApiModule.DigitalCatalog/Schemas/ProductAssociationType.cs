@@ -8,6 +8,7 @@ using MediatR;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
+using VirtoCommerce.XDigitalCatalog.Extensions;
 using VirtoCommerce.XDigitalCatalog.Queries;
 
 namespace VirtoCommerce.XDigitalCatalog.Schemas
@@ -32,7 +33,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 Type = GraphTypeExtenstionHelper.GetActualType<ProductType>(),
                 Resolver = new AsyncFieldResolver<ProductAssociation, object>(async context =>
                 {
-                    var loader = dataLoader.Context.GetOrAddBatchLoader<string, ExpProduct>("associatedProductLoader", (ids) => LoadProductsAsync(mediator, ids, context.SubFields.Values.GetAllNodesPaths()));
+                    var loader = dataLoader.Context.GetOrAddBatchLoader<string, ExpProduct>("associatedProductLoader", (ids) => LoadProductsAsync(mediator, ids, context));
 
                     // IMPORTANT: In order to avoid deadlocking on the loader we use the following construct (next 2 lines):
                     var loadHandle = loader.LoadAsync(context.Source.AssociatedObjectId);
@@ -42,9 +43,13 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             AddField(productField);
         }
 
-        public static async Task<IDictionary<string, ExpProduct>> LoadProductsAsync(IMediator mediator, IEnumerable<string> ids, IEnumerable<string> includeFields)
+        public static async Task<IDictionary<string, ExpProduct>> LoadProductsAsync(IMediator mediator, IEnumerable<string> ids, IResolveFieldContext context)
         {
-            var response = await mediator.Send(new LoadProductQuery { Ids = ids.ToArray(), IncludeFields = includeFields });
+            var query = context.GetCatalogQuery<LoadProductQuery>();
+            query.Ids = ids.ToArray();
+            query.IncludeFields = context.SubFields.Values.GetAllNodesPaths();
+
+            var response = await mediator.Send(query);
             return response.Products.ToDictionary(x => x.Id);
         }
     }
