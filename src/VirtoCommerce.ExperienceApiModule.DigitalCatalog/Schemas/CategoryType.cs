@@ -1,6 +1,7 @@
 using GraphQL.Types;
 using MediatR;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
+using VirtoCommerce.ExperienceApiModule.Core.Schemas;
 using VirtoCommerce.XDigitalCatalog.Extensions;
 using VirtoCommerce.XDigitalCatalog.Queries;
 
@@ -48,6 +49,8 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             Field<ListGraphType<OutlineType>>("outlines", resolve: context => context.Source.Category.Outlines);
 
             Field<ListGraphType<ImageType>>("images", resolve: context => context.Source.Category.Images);
+
+            Field<ListGraphType<SeoInfoType>>("seoInfos", resolve: context => context.Source.Category.SeoInfos);
         }
 
         private static bool TryGetParentId(IResolveFieldContext<ExpCategory> context, out string parentId)
