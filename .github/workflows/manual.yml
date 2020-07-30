@@ -8,8 +8,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       SONAR_TOKEN: ${{secrets.SONAR_TOKEN}}
-      GITHUB_TOKEN: "" #${{ secrets.GITHUB_TOKEN }}
-      NUGET_KEY: "" #${{ secret.NUGET_KEY }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      NUGET_KEY: ${{ secret.NUGET_KEY }}
       BLOB_SAS: ${{ secrets.BLOB_CONNECTION_STRING }}
 
     steps:
