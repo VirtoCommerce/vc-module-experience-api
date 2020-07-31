@@ -2,7 +2,7 @@ using System.Linq;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.SearchModule.Core.Model;
 
-namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Index
+namespace VirtoCommerce.ExperienceApiModule.Core.Index
 {
     public static class IFilterExtensions
     {

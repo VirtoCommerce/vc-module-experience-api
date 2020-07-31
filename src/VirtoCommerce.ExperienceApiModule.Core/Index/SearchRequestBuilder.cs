@@ -3,19 +3,80 @@ using System.Collections.Generic;
 using System.Linq;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
-using VirtoCommerce.ExperienceApiModule.DigitalCatalog.Index;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.SearchModule.Core.Model;
 using VirtoCommerce.SearchModule.Core.Services;
 
 namespace VirtoCommerce.ExperienceApiModule.Core.Index
 {
-    public class SearchRequestBuilder
+    public interface ISearchRequestBuilder
     {
-        private ISearchPhraseParser _phraseParser;
+        SearchRequest Build();
+    }
+
+    public class SearchRequestBuilder : ISearchRequestBuilder
+    {
+        private readonly ISearchPhraseParser _phraseParser;
         private readonly IAggregationConverter _aggregationConverter;
 
         private SearchRequest SearchRequest { get; set; }
+
+        public static ISearchRequestBuilder Create()
+        {
+            return new SearchRequestBuilder();
+        }
+
+        public static ISearchRequestBuilder Create(ISearchPhraseParser phraseParser, IAggregationConverter aggregationConverter)
+        {
+            return new SearchRequestBuilder(phraseParser, aggregationConverter);
+        }
+
+        public SearchRequestBuilder FromQuery<T>(T searchQuery)
+            where T : ISearchQuery => searchQuery switch
+            {
+                ISearchDocumentsQuery searchDocumentsQuery => FromQuery(searchDocumentsQuery),
+                IGetAllDocumentsByIdsQuery getAllDocumentsByIdsQuery => FromQuery(getAllDocumentsByIdsQuery),
+                IGetSingleDocumentQuery getSingleDocumentQuery => FromQuery(getSingleDocumentQuery),
+                _ => throw new NotImplementedException()
+            };
+
+        protected virtual SearchRequestBuilder FromQuery(ISearchDocumentsQuery searchDocumentsQuery)
+        {
+            SearchRequest.IsFuzzySearch = searchDocumentsQuery.Fuzzy;
+            SearchRequest.Fuzziness = searchDocumentsQuery.FuzzyLevel;
+            SearchRequest.Skip = searchDocumentsQuery.Skip;
+            SearchRequest.Take = searchDocumentsQuery.Take;
+            SearchRequest.SearchKeywords = searchDocumentsQuery.Query;
+
+            if (!searchDocumentsQuery.ObjectIds.IsNullOrEmpty())
+            {
+                ((AndFilter)SearchRequest.Filter).ChildFilters.Add(new IdsFilter { Values = searchDocumentsQuery.ObjectIds });
+            }
+
+            return this;
+        }
+
+        protected virtual SearchRequestBuilder FromQuery(IGetAllDocumentsByIdsQuery getAllDocumentsByIdsQuery)
+        {
+            if (!getAllDocumentsByIdsQuery.ObjectIds.IsNullOrEmpty())
+            {
+                ((AndFilter)SearchRequest.Filter).ChildFilters.Add(new IdsFilter { Values = getAllDocumentsByIdsQuery.ObjectIds });
+                SearchRequest.Take = getAllDocumentsByIdsQuery.ObjectIds.Count();
+            }
+
+            return this;
+        }
+
+        protected virtual SearchRequestBuilder FromQuery(IGetSingleDocumentQuery getSingleDocumentQuery)
+        {
+            if (!string.IsNullOrWhiteSpace(getSingleDocumentQuery.ObjectId))
+            {
+                ((AndFilter)SearchRequest.Filter).ChildFilters.Add(new IdsFilter { Values = new[] { getSingleDocumentQuery.ObjectId } });
+                SearchRequest.Take = 1;
+            }
+
+            return this;
+        }
 
         public SearchRequestBuilder(ISearchPhraseParser phraseParser, IAggregationConverter aggregationConverter)
             : this()
@@ -50,34 +111,6 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Index
                 aggr.Filter = clonedFilter;
             }
             return SearchRequest;
-        }
-
-
-        public SearchRequestBuilder WithFuzzy(bool fuzzy, int? fuzzyLevel)
-        {
-            SearchRequest.IsFuzzySearch = fuzzy;
-            SearchRequest.Fuzziness = fuzzyLevel;
-            return this;
-        }
-
-        public SearchRequestBuilder WithPaging(int skip, int take)
-        {
-            SearchRequest.Skip = skip;
-            SearchRequest.Take = take;
-            return this;
-        }
-
-        public SearchRequestBuilder WithSearchPhrase(string searchPhrase)
-        {
-            SearchRequest.SearchKeywords = searchPhrase;
-            return this;
-        }
-
-
-        public SearchRequestBuilder WithPhraseParser(ISearchPhraseParser phraseParser)
-        {
-            _phraseParser = phraseParser;
-            return this;
         }
 
         public SearchRequestBuilder WithIncludeFields(params string[] includeFields)
@@ -223,16 +256,6 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Index
             }
 
             SearchRequest.Aggregations = aggrs;
-
-            return this;
-        }
-
-        public SearchRequestBuilder AddObjectIds(IEnumerable<string> ids)
-        {
-            if (!ids.IsNullOrEmpty())
-            {
-                ((AndFilter)SearchRequest.Filter).ChildFilters.Add(new IdsFilter { Values = ids.ToArray() });
-            }
 
             return this;
         }

@@ -37,7 +37,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
                 var response = await mediator.Send(new LoadCategoryQuery
                 {
-                    Id = categoryId,
+                    ObjectId = categoryId,
                     IncludeFields = context.SubFields.Values.GetAllNodesPaths()
                 });
 

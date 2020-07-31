@@ -72,7 +72,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 var categoryId = context.Source.IndexedProduct.CategoryId;
                 var responce = await mediator.Send(new LoadCategoryQuery
                 {
-                    Id = categoryId,
+                    ObjectId = categoryId,
                     IncludeFields = context.SubFields.Values.GetAllNodesPaths()
                 });
 
@@ -159,7 +159,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 }
 
                 var query = context.GetCatalogQuery<LoadProductQuery>();
-                query.Ids = new[] { context.Source.IndexedProduct.MainProductId };
+                query.ObjectId = context.Source.IndexedProduct.MainProductId;
                 query.IncludeFields = context.SubFields.Values.GetAllNodesPaths();
 
                 var response = await mediator.Send(query);
@@ -171,15 +171,14 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             FieldAsync<ListGraphType<VariationType>>("variations", resolve: async context =>
             {
-                var query = context.GetCatalogQuery<LoadProductQuery>();
-                query.Ids = context.Source.IndexedVariationIds.ToArray();
+                var query = context.GetCatalogQuery<LoadProductsQuery>();
+                query.ObjectIds = context.Source.IndexedVariationIds.ToArray();
                 query.IncludeFields = context.SubFields.Values.GetAllNodesPaths();
 
                 var response = await mediator.Send(query);
 
                 return response.Products.Select(expProduct => new ExpVariation(expProduct));
             });
-
 
             Field<AvailabilityDataType>(
                 "availabilityData",

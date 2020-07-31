@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using VirtoCommerce.SearchModule.Core.Model;
 
-namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Index
+namespace VirtoCommerce.ExperienceApiModule.Core.Index
 {
     public static class FilterSyntaxMapper
     {
@@ -13,10 +13,12 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Index
             protected FilterToIndexMapper()
             {
             }
+
             public virtual bool CanMap(IFilter filter)
             {
                 return false;
             }
+
             public virtual IFilter Map(IFilter filter)
             {
                 return filter;
@@ -35,6 +37,7 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Index
                 }
                 return result;
             }
+
             protected IFilter SetFilterName(IFilter filter, string filterName)
             {
                 if (filter is TermFilter termFilter)
@@ -55,7 +58,6 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Index
                     return termFilter.Values.FirstOrDefault();
                 }
                 throw new NotSupportedException();
-
             }
 
             protected IFilter SetFilterValue(IFilter filter, string filterValue)
@@ -79,6 +81,7 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Index
                 FilterPattern = filterPattern;
                 NamePattern = namePattren;
             }
+
             protected Regex FilterPattern { get; private set; }
             protected string NamePattern { get; private set; }
 
@@ -92,6 +95,7 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Index
                 }
                 return result;
             }
+
             public override IFilter Map(IFilter filter)
             {
                 var newFilterName = FilterPattern.Replace(GetFilterName(filter), NamePattern);
@@ -102,12 +106,13 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Index
         private class RegexpNameAndValueMapper : RegexpNameMapper
         {
             public RegexpNameAndValueMapper(Regex filterPattern, string indexPattern, string valuePattern)
-                :base(filterPattern, indexPattern)
+                : base(filterPattern, indexPattern)
             {
                 ValuePattern = valuePattern;
             }
+
             private string ValuePattern { get; set; }
-          
+
             public override IFilter Map(IFilter filter)
             {
                 filter = base.Map(filter);
@@ -138,6 +143,5 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Index
             }
             return filter;
         }
-
     }
 }

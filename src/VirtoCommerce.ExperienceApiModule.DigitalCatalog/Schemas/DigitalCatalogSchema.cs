@@ -115,8 +115,8 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
         private static async Task<IDictionary<string, ExpProduct>> LoadProductsAsync(IMediator mediator, IEnumerable<string> ids, IResolveFieldContext context)
         {
-            var query = context.GetCatalogQuery<LoadProductQuery>();
-            query.Ids = ids.ToArray();
+            var query = context.GetCatalogQuery<LoadProductsQuery>();
+            query.ObjectIds = ids.ToArray();
             query.IncludeFields = context.SubFields.Values.GetAllNodesPaths();
 
             var response = await mediator.Send(query);
@@ -148,7 +148,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             }
             else
             {
-                query.ProductIds = productIds;
+                query.ObjectIds = productIds.ToArray();
                 query.Take = productIds.Count;
             }
 
@@ -186,7 +186,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             var categoryIds = context.GetArgument<List<string>>("categoryIds");
             query.IncludeFields = includeFields;
-          
+
             if (categoryIds.IsNullOrEmpty())
             {
                 query.Skip = skip;
@@ -200,7 +200,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             }
             else
             {
-                query.CategoryIds = categoryIds;
+                query.ObjectIds = categoryIds.ToArray();
                 query.Take = categoryIds.Count;
             }
 

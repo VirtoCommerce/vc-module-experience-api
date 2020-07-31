@@ -1,7 +1,9 @@
+using VirtoCommerce.ExperienceApiModule.Core.Index;
+
 namespace VirtoCommerce.XDigitalCatalog.Queries
 {
-    public class LoadProductQuery : CatalogQueryBase<LoadProductResponse>
+    public class LoadProductQuery : CatalogQueryBase<LoadProductResponse>, IGetSingleDocumentQuery
     {
-        public string[] Ids { get; set; }
+        public string ObjectId { get; set; }
     }
 }
