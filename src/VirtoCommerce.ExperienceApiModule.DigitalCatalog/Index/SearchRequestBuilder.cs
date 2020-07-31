@@ -161,7 +161,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Index
             return this;
         }
 
-        public SearchRequestBuilder ParseFacets(string facetPhrase, string storeId = null)
+        public SearchRequestBuilder ParseFacets(string facetPhrase, string storeId = null, string currency = null)
         {
             if (string.IsNullOrWhiteSpace(facetPhrase))
             {
@@ -171,7 +171,8 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Index
                     // Maybe we need to implement ProductSearchRequestBuilder.BuildRequestAsync to fill FilterContainer correctly?
                     SearchRequest.Aggregations = _aggregationConverter.GetAggregationRequestsAsync(new ProductIndexedSearchCriteria
                     {
-                        StoreId = storeId
+                        StoreId = storeId,
+                        Currency = currency
                     }, new FiltersContainer()).GetAwaiter().GetResult();
                 }
 

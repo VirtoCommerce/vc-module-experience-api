@@ -34,7 +34,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             Field<ListGraphType<PriceType>>("prices", resolve: context => context.Source.AllPrices);
 
-            Field<ListGraphType<PropertyType>>("properties", resolve: context => context.Source.IndexedProduct.Properties.ConvertToFlatModel());
+            Field<ListGraphType<PropertyType>>("properties", resolve: context => context.Source.IndexedProduct.Properties.ExpandByValues());
 
             Field<ListGraphType<AssetType>>("assets", resolve: context => context.Source.IndexedProduct.Assets);
 
