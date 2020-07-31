@@ -9,7 +9,6 @@ using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.ExperienceApiModule.Core.Index;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
-using VirtoCommerce.ExperienceApiModule.Core.Models;
 using VirtoCommerce.InventoryModule.Core.Model.Search;
 using VirtoCommerce.InventoryModule.Core.Services;
 using VirtoCommerce.MarketingModule.Core.Model.Promotions;

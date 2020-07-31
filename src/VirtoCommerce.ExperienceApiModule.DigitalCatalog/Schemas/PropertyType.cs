@@ -34,7 +34,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                             displayNames = displayNames.Where(x => x.LanguageCode == cultureName);
                         }
                     }
-                    return displayNames?.Select(x => x.Name).FirstOrDefault(); 
+                    return displayNames?.Select(x => x.Name).FirstOrDefault() ?? context.Source.Name; 
                 });
 
             Field<StringGraphType>(

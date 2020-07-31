@@ -8,6 +8,7 @@ using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 namespace VirtoCommerce.XDigitalCatalog.Index
 {
     //TODO: Need to think about extensibility becasue static class do not extensible
+    //TODO: URGENT!!! Need to use a declarative syntax map/adapter instead of this ugly code !!!
     public static class IndexFieldMapper
     {
         public static bool HasPricingFields(this IHasIncludeFields hasIncludeFields)
@@ -21,6 +22,8 @@ namespace VirtoCommerce.XDigitalCatalog.Index
         public static string[] MapToIndexFields(this IHasIncludeFields hasIncludeFields)
         {
             var includeFields = hasIncludeFields.IncludeFields;
+
+
             /*
              * TODO: refactor this to implement "context" building which contains different result for different search engines and
              * all conditional filelds like LoadPrices and LoadInventories
@@ -29,7 +32,7 @@ namespace VirtoCommerce.XDigitalCatalog.Index
             var result = new List<string>();
 
             // Add filds for __object
-            result.AddRange(includeFields.Concat(new[] { "id" }).Select(x => "__object." + x));
+            result.AddRange(includeFields.Concat(new[] { "id" }).Select(x => "__object." + x).Select(x => x.EndsWith("properties.value") ? (x.TrimEnd(".value") + ".values") : x));
 
             if (hasIncludeFields.HasPricingFields())
             {
@@ -40,7 +43,7 @@ namespace VirtoCommerce.XDigitalCatalog.Index
             {
                 result.Add("__variations");
             }
-
+            
             if (includeFields.Any(x => x.StartsWith("category", StringComparison.OrdinalIgnoreCase)))
             {
                 result.Add("__object.categoryId");
