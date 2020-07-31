@@ -16,6 +16,8 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             Field<BooleanGraphType>("IsInStock", resolve: context => context.Source.IsInStock);
 
+            Field<BooleanGraphType>("IsActive", resolve: context => context.Source.IsActive);
+
             Field<ListGraphType<InventoryInfoType>>("inventories", resolve: context => context.Source.InventoryAll);
         }
     }

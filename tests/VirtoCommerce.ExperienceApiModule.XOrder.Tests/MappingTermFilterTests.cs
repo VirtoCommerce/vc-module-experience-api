@@ -8,7 +8,7 @@ using Xunit;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Tests
 {
-    public class MappingTermFilter
+    public class MappingTermFilterTests
     {
         [Fact]
         public void Map_TermFilter()

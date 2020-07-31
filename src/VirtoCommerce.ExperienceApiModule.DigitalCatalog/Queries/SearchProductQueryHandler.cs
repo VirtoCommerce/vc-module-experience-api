@@ -80,7 +80,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             var searchRequest = new SearchRequestBuilder(_searchPhraseParser, _aggregationConverter)
                 .FromQuery(request)
                 .ParseFilters(request.Filter)
-                .ParseFacets(request.Facet, request.StoreId)
+                .ParseFacets(request.Facet, request.StoreId, request.CurrencyCode)
                 .AddSorting(request.Sort)
                 .WithIncludeFields(indexIncludeFields)
                 .AddTerms(new[] { "status:visible" })//Only visible, exclude variations from search result
