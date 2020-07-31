@@ -122,6 +122,7 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Index
             new RegexpNameMapper(new Regex(@"catalog.id", RegexOptions.Compiled | RegexOptions.IgnoreCase), "catalog"),
             new RegexpNameMapper(new Regex(@"category.path", RegexOptions.Compiled | RegexOptions.IgnoreCase), "__path"),
             new RegexpNameMapper(new Regex(@"category.subtree", RegexOptions.Compiled | RegexOptions.IgnoreCase), "__outline"),
+            new RegexpNameMapper(new Regex(@"categories.subtree", RegexOptions.Compiled | RegexOptions.IgnoreCase), "__outline"),
             new RegexpNameMapper(new Regex(@"sku", RegexOptions.Compiled | RegexOptions.IgnoreCase), "code"),
             new RegexpNameMapper(new Regex(@"properties.([A-Za-z0-9_\s+])", RegexOptions.Compiled | RegexOptions.IgnoreCase), "$1")
         };

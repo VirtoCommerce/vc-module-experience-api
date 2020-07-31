@@ -12,7 +12,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             Name = "Property";
             Description = "Products attributes.";
 
-            Field(x => x.Id).Description("The unique ID of the product.");
+            Field(x => x.Id, nullable: true).Description("The unique ID of the product.");
 
             Field(x => x.Name, nullable: false).Description("The name of the property.");
 
@@ -24,15 +24,17 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 "label",
                 resolve: context =>
                 {
-                    var displayNames = context.Source.DisplayNames.AsQueryable();
+                    var displayNames = context.Source.DisplayNames?.AsQueryable();
 
-                    var cultureName = context.GetValue<string>("cultureName");
-                    if (cultureName != null)
+                    if(displayNames != null)
                     {
-                        displayNames = displayNames.Where(x => x.LanguageCode == cultureName);
+                        var cultureName = context.GetValue<string>("cultureName");
+                        if (cultureName != null)
+                        {
+                            displayNames = displayNames.Where(x => x.LanguageCode == cultureName);
+                        }
                     }
-
-                    return displayNames.Select(x => x.Name).FirstOrDefault();
+                    return displayNames?.Select(x => x.Name).FirstOrDefault(); 
                 });
 
             Field<StringGraphType>(

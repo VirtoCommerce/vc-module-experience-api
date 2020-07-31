@@ -52,6 +52,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Index
             return SearchRequest;
         }
 
+
         public SearchRequestBuilder WithFuzzy(bool fuzzy, int? fuzzyLevel)
         {
             SearchRequest.IsFuzzySearch = fuzzy;
@@ -71,6 +72,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Index
             SearchRequest.SearchKeywords = searchPhrase;
             return this;
         }
+
 
         public SearchRequestBuilder WithPhraseParser(ISearchPhraseParser phraseParser)
         {

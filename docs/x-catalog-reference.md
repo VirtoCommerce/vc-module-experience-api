@@ -229,9 +229,9 @@ Filter products that belong to exactly specified category path.
 > The search will be performed on `__path` index field of product document
 
 Filter by category subtrees, keep only the products that belong to the specified Category or any of its descendant categories.
-`filter: "categories.subtree:{catalog id/category path}"`
+`filter: "category.subtree:{catalog id/category path}"`
 
-`filter: "categories.subtree:catalogId/cat1d1/cat2id"`
+`filter: "category.subtree:catalogId/cat1d1/cat2id"`
 
 > The search will be performed on `__outline` index field of product document
 
