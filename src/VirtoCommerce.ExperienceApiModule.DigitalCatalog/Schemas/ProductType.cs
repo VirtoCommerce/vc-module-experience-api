@@ -7,12 +7,9 @@ using GraphQL.DataLoader;
 using GraphQL.Types;
 using GraphQL.Types.Relay.DataObjects;
 using MediatR;
-using Newtonsoft.Json.Linq;
 using VirtoCommerce.CatalogModule.Core.Model;
-using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
-using VirtoCommerce.Tools;
 using VirtoCommerce.XDigitalCatalog.Extensions;
 using VirtoCommerce.XDigitalCatalog.Queries;
 
@@ -189,7 +186,8 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                     InventoryAll = context.Source.AllInventories,
                     IsBuyable = context.Source.IsBuyable,
                     IsAvailable = context.Source.IsAvailable,
-                    IsInStock = context.Source.IsInStock
+                    IsInStock = context.Source.IsInStock,
+                    IsActive = context.Source.IndexedProduct.IsActive ?? false,
                 });
 
             Field<ListGraphType<ImageType>>("images", resolve: context => context.Source.IndexedProduct.Images);
