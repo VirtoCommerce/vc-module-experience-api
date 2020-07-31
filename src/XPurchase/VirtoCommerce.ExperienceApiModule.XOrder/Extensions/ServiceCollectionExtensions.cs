@@ -1,7 +1,7 @@
 using GraphQL.Server;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
-using VirtoCommerce.ExperienceApiModule.Core.Schema;
+using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.XOrder.Schemas;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Extensions
@@ -17,7 +17,6 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Extensions
             services.AddMediatR(typeof(XOrderAnchor));
 
             services.AddTransient<ICustomerOrderAggregateRepository, CustomerOrderAggregateRepository>();
-
 
             return services;
         }

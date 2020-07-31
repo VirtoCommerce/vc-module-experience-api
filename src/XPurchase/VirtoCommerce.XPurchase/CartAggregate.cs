@@ -94,18 +94,11 @@ namespace VirtoCommerce.XPurchase
 
         public virtual async Task<CartAggregate> GrabCartAsync(ShoppingCart cart, Store store, Member member, Currency currency)
         {
-            if (cart == null)
-            {
-                throw new ArgumentNullException(nameof(cart));
-            }
-
             Id = cart.Id;
-
             Cart = cart;
             Member = member;
             Currency = currency;
             Store = store;
-
             Cart.IsAnonymous = member == null;
             //TODO: Need to check what member.Name contains name for all derived member types such as contact etc.
             Cart.CustomerName = member?.Name ?? "Anonymous";
@@ -390,7 +383,7 @@ namespace VirtoCommerce.XPurchase
             return validCoupon != null;
         }
 
-        protected virtual async Task<PromotionResult> EvaluatePromotionsAsync()
+        public virtual async Task<PromotionResult> EvaluatePromotionsAsync()
         {
             EnsureCartExists();
 

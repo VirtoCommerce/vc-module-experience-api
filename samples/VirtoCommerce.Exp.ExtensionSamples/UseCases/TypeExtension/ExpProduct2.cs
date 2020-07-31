@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using VirtoCommerce.ExperienceApiModule.Core.Binding;
-using VirtoCommerce.ExperienceApiModule.DigitalCatalog;
+using VirtoCommerce.XDigitalCatalog;
 
 namespace VirtoCommerce.Exp.ExtensionSamples
 {

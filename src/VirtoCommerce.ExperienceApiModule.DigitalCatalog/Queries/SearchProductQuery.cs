@@ -1,15 +1,9 @@
-using System;
 using System.Collections.Generic;
-using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 
-namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Queries
+namespace VirtoCommerce.XDigitalCatalog.Queries
 {
-    public class SearchProductQuery : IQuery<SearchProductResponse>, IHasIncludeFields
+    public class SearchProductQuery : CatalogQueryBase<SearchProductResponse>
     {
-        public string CustomerId { get; set; }
-        public string StoreId { get; set; }
-        public string Lang { get; set; }
-        public string Currency { get; set; }
         public string Query { get; set; }
         public bool Fuzzy { get; set; }
         public int? FuzzyLevel { get; set; }
@@ -18,7 +12,6 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Queries
         public string Sort { get; set; }
         public int Skip { get; set; }
         public int Take { get; set; }
-        public IEnumerable<string> IncludeFields { get; set; } = Array.Empty<string>();
-
+        public IEnumerable<string> ProductIds { get; set; }
     }
 }

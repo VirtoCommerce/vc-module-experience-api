@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
-using FluentAssertions;
 using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.CoreModule.Core.Outlines;
 using VirtoCommerce.CoreModule.Core.Seo;

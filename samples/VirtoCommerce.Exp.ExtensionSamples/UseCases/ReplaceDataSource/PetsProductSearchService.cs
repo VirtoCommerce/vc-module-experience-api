@@ -1,12 +1,3 @@
-using System.Linq;
-using System.Threading.Tasks;
-using PetsStoreClient;
-using VirtoCommerce.CatalogModule.Core.Model;
-using VirtoCommerce.CatalogModule.Core.Model.Search;
-using VirtoCommerce.CatalogModule.Core.Search;
-using VirtoCommerce.ExperienceApiModule.DigitalCatalog;
-using VirtoCommerce.Platform.Core.Common;
-
 namespace VirtoCommerce.Exp.ExtensionSamples
 {
     //public class PetsProductSearchService : IProductSearchService
@@ -16,7 +7,7 @@ namespace VirtoCommerce.Exp.ExtensionSamples
     //    {
     //        _petsSearchService = petsSearchService;
     //    }
-        
+
     //    public async Task<ProductSearchResult> SearchProductsAsync(ProductSearchCriteria criteria)
     //    {
     //        var petsQuery = new SearchPetsQuery

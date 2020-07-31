@@ -5,11 +5,11 @@ using GraphQL.DataLoader;
 using GraphQL.Resolvers;
 using GraphQL.Types;
 using MediatR;
-using VirtoCommerce.ExperienceApiModule.Core;
-using VirtoCommerce.ExperienceApiModule.Core.Schema;
-using VirtoCommerce.ExperienceApiModule.DigitalCatalog;
-using VirtoCommerce.ExperienceApiModule.DigitalCatalog.Queries;
-using VirtoCommerce.ExperienceApiModule.DigitalCatalog.Schemas;
+using VirtoCommerce.ExperienceApiModule.Core.Extensions;
+using VirtoCommerce.ExperienceApiModule.Core.Helpers;
+using VirtoCommerce.XDigitalCatalog;
+using VirtoCommerce.XDigitalCatalog.Queries;
+using VirtoCommerce.XDigitalCatalog.Schemas;
 
 namespace RecommendationsGatewayModule.Core.Schemas
 {

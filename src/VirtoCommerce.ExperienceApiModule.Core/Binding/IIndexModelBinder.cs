@@ -5,6 +5,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Binding
     public interface IIndexModelBinder
     {
         BindingInfo BindingInfo { get; set; }
-        object BindModel(SearchDocument doc);
+
+        object BindModel(SearchDocument searchDocument);
     }
 }

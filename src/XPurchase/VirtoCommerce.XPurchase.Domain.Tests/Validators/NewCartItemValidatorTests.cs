@@ -9,7 +9,7 @@ using Xunit;
 
 namespace VirtoCommerce.XPurchase.Tests.Validators
 {
-    public class NewCartItemValidatorTests : MoqHelper
+    public class NewCartItemValidatorTests : XPurchaseMoqHelper
     {
         [Fact]
         public async Task ValidateAddItem_RuleSetDefault_Valid()

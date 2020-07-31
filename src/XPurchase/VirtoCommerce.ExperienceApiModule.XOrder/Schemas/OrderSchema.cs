@@ -8,9 +8,10 @@ using GraphQL.Types;
 using GraphQL.Types.Relay.DataObjects;
 using MediatR;
 using VirtoCommerce.CoreModule.Core.Currency;
-using VirtoCommerce.ExperienceApiModule.Core.Schema;
+using VirtoCommerce.ExperienceApiModule.Core.Extensions;
+using VirtoCommerce.ExperienceApiModule.Core.Helpers;
+using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.XOrder.Commands;
-using VirtoCommerce.ExperienceApiModule.XOrder.Extensions;
 using VirtoCommerce.ExperienceApiModule.XOrder.Queries;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
@@ -33,10 +34,11 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                 Name = "order",
                 Arguments = new QueryArguments(new QueryArgument<StringGraphType> { Name = "id" }, new QueryArgument<StringGraphType> { Name = "number" }),
                 Type = GraphTypeExtenstionHelper.GetActualType<CustomerOrderType>(),
-                Resolver = new AsyncFieldResolver<object>(async context => {
+                Resolver = new AsyncFieldResolver<object>(async context =>
+                {
                     var orderAggregate = await _mediator.Send(new GetOrderQuery(context.GetArgument<string>("id"), context.GetArgument<string>("number")));
                     //store order aggregate in the user context for future usage in the graph types resolvers
-                    context.SetValue(orderAggregate);
+                    context.SetExpandedObjectGraph(orderAggregate);
 
                     return orderAggregate;
                 })
@@ -57,10 +59,12 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             _ = schema.Mutation.AddField(FieldBuilder.Create<object, CustomerOrderAggregate>(typeof(CustomerOrderType))
                             .Name("createOrderFromCart")
                             .Argument<NonNullGraphType<InputCreateOrderFromCartType>>(_commandName)
-                            .ResolveAsync(async context => {
+                            .ResolveAsync(async context =>
+                            {
                                 var response = await _mediator.Send(context.GetArgument<CreateOrderFromCartCommand>(_commandName));
-                                context.SetValue(response);
-                                return response;})
+                                context.SetExpandedObjectGraph(response);
+                                return response;
+                            })
                             .FieldType);
 
             _ = schema.Mutation.AddField(FieldBuilder.Create<object, bool>(typeof(BooleanGraphType))
@@ -82,7 +86,6 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                             .FieldType);
         }
 
-
         private async Task<object> ResolveConnectionAsync(IMediator mediator, IResolveConnectionContext<object> context)
         {
             var first = context.First;
@@ -102,7 +105,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             var response = await mediator.Send(request);
             foreach (var customerOrderAggregate in response.Results)
             {
-                context.SetValue(customerOrderAggregate);
+                context.SetExpandedObjectGraph(customerOrderAggregate);
             }
 
             var result = new Connection<CustomerOrderAggregate>()

@@ -50,7 +50,9 @@ namespace VirtoCommerce.XPurchase.Services
                 var loadInventoriesTask = _inventorySearchService.SearchInventoriesAsync(new InventorySearchCriteria
                 {
                     ProductIds = ids,
-                    Take = int.MaxValue
+                    //Do not use int.MaxValue use only 10 items per requested product
+                    //TODO: Replace to pagination load
+                    Take = Math.Min(ids.Length * 10, 500)
                 });
 
                 var pricesEvalContext = _mapper.Map<PriceEvaluationContext>(cartAggr);

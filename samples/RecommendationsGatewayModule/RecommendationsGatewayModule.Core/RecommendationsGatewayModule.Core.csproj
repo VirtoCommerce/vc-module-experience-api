@@ -3,7 +3,7 @@
     <PropertyGroup>
         <Description>Experiene API functionality</Description>
         <TargetFramework>netcoreapp3.1</TargetFramework>
-        <GenerateDocumentationFile>true</GenerateDocumentationFile>     
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <noWarn>1591</noWarn>
         <IsPackable>True</IsPackable>
     </PropertyGroup>
@@ -13,11 +13,10 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="VirtoCommerce.CatalogModule.Core" Version="3.2.0" />
+        <PackageReference Include="VirtoCommerce.CatalogModule.Core" Version="3.4.0" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\..\src\VirtoCommerce.ExperienceApiModule.DigitalCatalog\VirtoCommerce.ExperienceApiModule.DigitalCatalog.csproj" />
+        <ProjectReference Include="..\..\..\src\VirtoCommerce.ExperienceApiModule.DigitalCatalog\VirtoCommerce.XDigitalCatalog.csproj" />
     </ItemGroup>
-
 </Project>

@@ -6,10 +6,12 @@ using GraphQL.Resolvers;
 using GraphQL.Types;
 using MediatR;
 using VirtoCommerce.CatalogModule.Core.Model;
-using VirtoCommerce.ExperienceApiModule.Core.Schema;
-using VirtoCommerce.ExperienceApiModule.DigitalCatalog.Queries;
+using VirtoCommerce.ExperienceApiModule.Core.Extensions;
+using VirtoCommerce.ExperienceApiModule.Core.Helpers;
+using VirtoCommerce.XDigitalCatalog.Extensions;
+using VirtoCommerce.XDigitalCatalog.Queries;
 
-namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Schemas
+namespace VirtoCommerce.XDigitalCatalog.Schemas
 {
     public class ProductAssociationType : ObjectGraphType<ProductAssociation>
     {
@@ -18,11 +20,12 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Schemas
             Name = "ProductAssociation";
             Description = "product association.";
 
-            Field(d => d.Type);
-            Field(d => d.Priority);
+            Field(d => d.Type, nullable: true);
+            Field(d => d.Priority, nullable: true);
             Field("Quantity", x => x.Quantity, nullable: true, type: typeof(IntGraphType));
-            Field(d => d.AssociatedObjectId);
-            Field(d => d.AssociatedObjectType);
+            Field(d => d.AssociatedObjectId, nullable: true);
+            Field(d => d.AssociatedObjectType, nullable: true);
+            Field<ListGraphType<StringGraphType>>("tags", resolve: context => context.Source.Tags?.ToList() ?? new List<string>());
 
             var productField = new FieldType
             {
@@ -30,19 +33,23 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Schemas
                 Type = GraphTypeExtenstionHelper.GetActualType<ProductType>(),
                 Resolver = new AsyncFieldResolver<ProductAssociation, object>(async context =>
                 {
-                    var loader = dataLoader.Context.GetOrAddBatchLoader<string, ExpProduct>("associatedProductLoader", (ids) => LoadProductsAsync(mediator, ids));
+                    var loader = dataLoader.Context.GetOrAddBatchLoader<string, ExpProduct>("associatedProductLoader", (ids) => LoadProductsAsync(mediator, ids, context));
 
                     // IMPORTANT: In order to avoid deadlocking on the loader we use the following construct (next 2 lines):
                     var loadHandle = loader.LoadAsync(context.Source.AssociatedObjectId);
                     return await loadHandle;
                 })
             };
-            AddField(productField);           
+            AddField(productField);
         }
 
-        public static async Task<IDictionary<string, ExpProduct>> LoadProductsAsync(IMediator mediator, IEnumerable<string> ids)
+        public static async Task<IDictionary<string, ExpProduct>> LoadProductsAsync(IMediator mediator, IEnumerable<string> ids, IResolveFieldContext context)
         {
-            var response = await mediator.Send(new LoadProductQuery { Ids = ids.ToArray() });
+            var query = context.GetCatalogQuery<LoadProductQuery>();
+            query.Ids = ids.ToArray();
+            query.IncludeFields = context.SubFields.Values.GetAllNodesPaths();
+
+            var response = await mediator.Send(query);
             return response.Products.ToDictionary(x => x.Id);
         }
     }

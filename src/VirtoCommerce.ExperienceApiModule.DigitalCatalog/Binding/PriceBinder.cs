@@ -7,7 +7,7 @@ using VirtoCommerce.ExperienceApiModule.Core.Binding;
 using VirtoCommerce.PricingModule.Core.Model;
 using VirtoCommerce.SearchModule.Core.Model;
 
-namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Binding
+namespace VirtoCommerce.XDigitalCatalog.Binding
 {
     public class PriceBinder : IIndexModelBinder
     {
@@ -15,12 +15,12 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Binding
 
         public BindingInfo BindingInfo { get; set; } = new BindingInfo { FieldName = "__prices" };
 
-        public virtual object BindModel(SearchDocument doc)
+        public virtual object BindModel(SearchDocument searchDocument)
         {
             var result = new List<Price>();
-            if (doc.ContainsKey(BindingInfo.FieldName))
+            if (searchDocument.ContainsKey(BindingInfo.FieldName))
             {
-                var obj = doc[BindingInfo.FieldName];
+                var obj = searchDocument[BindingInfo.FieldName];
                 if (obj is Array jobjArray)
                 {
                     var prices = jobjArray.OfType<JObject>().Select(x => (Price)x.ToObject(typeof(Price)));
@@ -29,7 +29,7 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Binding
             }
             else
             {
-                foreach (var pair in doc)
+                foreach (var pair in searchDocument)
                 {
                     var match = _priceFieldRegExp.Match(pair.Key);
                     if (match.Success)

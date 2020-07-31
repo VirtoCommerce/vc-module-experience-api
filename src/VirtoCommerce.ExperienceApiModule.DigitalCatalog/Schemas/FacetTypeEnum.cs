@@ -1,12 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
 using GraphQL.Types;
+using VirtoCommerce.XDigitalCatalog.Facets;
 
-namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Schemas
+namespace VirtoCommerce.XDigitalCatalog.Schemas
 {
     public class FacetTypeEnum : EnumerationGraphType<FacetTypes>
     {
-      
     }
 }

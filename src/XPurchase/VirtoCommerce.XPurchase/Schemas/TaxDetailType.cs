@@ -1,5 +1,7 @@
 using GraphQL.Types;
 using VirtoCommerce.CoreModule.Core.Tax;
+using VirtoCommerce.ExperienceApiModule.Core.Extensions;
+using VirtoCommerce.ExperienceApiModule.Core.Schemas;
 using VirtoCommerce.XPurchase.Extensions;
 
 namespace VirtoCommerce.XPurchase.Schemas

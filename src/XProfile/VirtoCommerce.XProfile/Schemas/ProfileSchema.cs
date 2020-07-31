@@ -4,8 +4,9 @@ using GraphQL.DataLoader;
 using GraphQL.Resolvers;
 using GraphQL.Types;
 using MediatR;
+using VirtoCommerce.ExperienceApiModule.Core.Helpers;
+using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using Microsoft.AspNetCore.Identity;
-using VirtoCommerce.ExperienceApiModule.Core.Schema;
 using VirtoCommerce.ExperienceApiModule.XProfile.Commands;
 using VirtoCommerce.ExperienceApiModule.XProfile.Queries;
 
@@ -96,7 +97,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                           }
                         }
                         query variables:
-                        { 
+                        {
                             "command": {
                               "contactId": "acc3b262-a21e-45f9-a612-b4b1530d27ef",
                               "addresses": [{"addressType": "Shipping", "name": "string", "countryCode": "string", "countryName": "string", "city": "string", "postalCode": "string", "line1": "string", "regionId": "string", "regionName": "string", "firstName": "string", "lastName": "string", "phone": "string", "email": "string", "regionId": "string"
@@ -123,7 +124,6 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                             .Argument<NonNullGraphType<InputUpdateOrganizationType>>(_commandName)
                             .ResolveAsync(async context => await _mediator.Send(context.GetArgument<UpdateOrganizationCommand>(_commandName)))
                             .FieldType);
-
 
             _ = schema.Mutation.AddField(FieldBuilder.Create<OrganizationAggregate, OrganizationAggregate>(typeof(OrganizationType))
                             .Name("createOrganization")
@@ -183,7 +183,6 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                 })
             });
 
-
 #pragma warning disable S125 // Sections of code should not be commented out
             /*
                          {
@@ -206,7 +205,6 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                 })
             });
 
-
 #pragma warning disable S125 // Sections of code should not be commented out
             /*
             mutation ($command: InputCreateUserType!){
@@ -225,7 +223,6 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                         .Argument<NonNullGraphType<InputCreateUserType>>(_commandName)
                         .ResolveAsync(async context => await _mediator.Send(context.GetArgument<CreateUserCommand>(_commandName)))
                         .FieldType);
-
 
 #pragma warning disable S125 // Sections of code should not be commented out
             /*
@@ -251,7 +248,6 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                         .ResolveAsync(async context => await _mediator.Send(context.GetArgument<UpdateUserCommand>(_commandName)))
                         .FieldType);
 
-
 #pragma warning disable S125 // Sections of code should not be commented out
             /*
              mutation ($command: InputDeleteUserType!){
@@ -271,8 +267,6 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                         .ResolveAsync(async context => await _mediator.Send(context.GetArgument<DeleteUserCommand>(_commandName)))
                         .FieldType);
 
-
-
 #pragma warning disable S125 // Sections of code should not be commented out
             /*
                          mutation ($command: InputUpdateRoleType!){
@@ -281,7 +275,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                         Query variables:
                         {
                          "command":{
-                         "id": "graphtest",  "name": "graphtest", "permissions": [ 
+                         "id": "graphtest",  "name": "graphtest", "permissions": [
                             { "name": "security:call_api", "assignedScopes": [] },
                             { "name": "order:read", "assignedScopes": [{"scope": "{{userId}}", "type": "OnlyOrderResponsibleScope" }] }
                           ]
