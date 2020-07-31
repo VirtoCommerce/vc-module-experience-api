@@ -79,7 +79,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             var searchRequest = new SearchRequestBuilder(_searchPhraseParser, _aggregationConverter)
                 .WithFuzzy(request.Fuzzy, request.FuzzyLevel)
                 .ParseFilters(request.Filter)
-                .ParseFacets(request.Facet, request.StoreId)
+                .ParseFacets(request.Facet, request.StoreId, request.CurrencyCode)
                 .WithSearchPhrase(request.Query)
                 .WithPaging(request.Skip, request.Take)
                 .AddSorting(request.Sort)
