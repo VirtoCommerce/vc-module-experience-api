@@ -36,8 +36,6 @@ jobs:
 
       - name: Get changelog
         id: changelog
-        with:
-          releases_list: ${{ steps.get_releases_list.outputs.data }}
         uses: VirtoCommerce/vc-github-actions/changelog-generator@dev
 
       - name: Test output
