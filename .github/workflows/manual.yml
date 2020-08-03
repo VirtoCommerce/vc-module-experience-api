@@ -25,8 +25,19 @@ jobs:
         id: VersionInfo
         uses: VirtoCommerce/vc-github-actions/get-image-version@dev
 
+      - name: Get Releases List
+        uses: octokit/request-action@v2.x
+        id: get_releases_list
+        with:
+          route: GET /repos/:repository/releases
+          repository: ${{ github.repository }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Get changelog
         id: changelog
+        with:
+          releases_list: ${{ steps.get_releases_list.outputs.data }}
         uses: VirtoCommerce/vc-github-actions/changelog-generator@dev
 
       - name: Test output
