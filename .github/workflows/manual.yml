@@ -34,17 +34,12 @@ jobs:
       - name: Install dotnet-sonarscanner
         run: dotnet tool install --global dotnet-sonarscanner
 
-      - name: Get Version Info
-        id: VersionInfo
-        uses: VirtoCommerce/vc-github-actions/get-image-version@dev
-
       - name: Get changelog
         id: changelog
         uses: VirtoCommerce/vc-github-actions/changelog-generator@dev
 
       - name: Add version suffix
-        if: ${{ github.ref=='refs/heads/dev' }}
-        run: vc-build ChangeVersion -CustomVersionSuffix ${{ steps.VersionInfo.outputs.suffix }}
+        uses: VirtoCommerce/vc-github-actions/add-version-suffix@dev
 
       - name: SonarCloud Begin
         uses: VirtoCommerce/vc-github-actions/sonar-scanner-begin@dev
