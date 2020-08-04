@@ -14,6 +14,7 @@ using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Security;
 using VirtoCommerce.StoreModule.Core.Services;
 using VirtoCommerce.XPurchase.Commands;
+using VirtoCommerce.XPurchase.Schemas;
 using VirtoCommerce.XPurchase.Validators;
 
 namespace VirtoCommerce.XPurchase
@@ -111,6 +112,32 @@ namespace VirtoCommerce.XPurchase
             }
 
             return null;
+        }
+
+        public async Task<IList<WishList>> GetWishesListAsync(string storeId, string userId, string cultureName, string currencyCode, string type = null)
+        {
+            var criteria = new CartModule.Core.Model.Search.ShoppingCartSearchCriteria
+            {
+                StoreId = storeId,
+                CustomerId = userId,
+                Currency = currencyCode,
+                Type = type
+            };
+
+            var searchResult = await _shoppingCartSearchService.SearchCartAsync(criteria);
+            var wishlists = searchResult.Results.Select(x=> new WishList()
+            {
+                Id = x.Id,
+                StoreId = x.StoreId,
+                Currency = x.Currency,
+                CustomerId = x.CustomerId,
+                LanguageCode = x.LanguageCode,
+                Name = x.Name,
+                Status = x.Status,
+                Type = x.Type
+            });
+
+            return wishlists.ToList();
         }
 
         protected virtual async Task<CartAggregate> InnerGetCartAggregateFromCartAsync(ShoppingCart cart, string language)

@@ -64,6 +64,32 @@ namespace VirtoCommerce.XPurchase.Schemas
             };
             schema.Query.AddField(cartField);
 
+            var wishListsField = new FieldType()
+            {
+                Name = "wishLists",
+                Arguments = new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "storeId" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "userId" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "currencyCode" },
+                    new QueryArgument<StringGraphType> { Name = "cultureName" },
+                    new QueryArgument<StringGraphType> { Name = "type" }),
+                Type = GraphTypeExtenstionHelper.GetActualType<ListGraphType<WishListType>>(),
+                Resolver = new AsyncFieldResolver<object>(async context =>
+                {
+                    var type = context.GetArgument<string>("type");
+                    var storeId = context.GetArgument<string>("storeId");
+                    var userId = context.GetArgument<string>("userId");
+                    var cultureName = context.GetArgument<string>("cultureName");
+                    var currencyCode = context.GetArgument<string>("currencyCode");
+
+                    var getWishListQuery = new GetWishListQuery(storeId, type, userId, currencyCode, cultureName);
+                    var wishesLists = await _mediator.Send(getWishListQuery);
+
+                    return wishesLists;
+                })
+            };
+            schema.Query.AddField(wishListsField);
+
             //Mutations
             /// <example>
             /// This is an example JSON request for a mutation
