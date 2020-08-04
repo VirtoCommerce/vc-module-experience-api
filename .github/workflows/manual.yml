@@ -62,4 +62,6 @@ jobs:
         uses: VirtoCommerce/vc-github-actions/publish-nuget@dev
         
       - name: Publish Github Release
+        with:
+          changelog: ${{ steps.changelog.outputs.changelog }}
         uses: VirtoCommerce/vc-github-actions/publish-github-release@dev
