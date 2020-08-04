@@ -12,8 +12,8 @@ namespace VirtoCommerce.XDigitalCatalog.Extensions
                 .SelectMany(property => property.Values
                     .Select(propValue =>
                     {
-                        var result = property.Clone() as Property;
-                        property.Values = new List<PropertyValue> { propValue };
+                        var result = (Property) property.Clone();
+                        result.Values = new List<PropertyValue> { propValue };
                         return result;
                     }))
                 .ToList();
