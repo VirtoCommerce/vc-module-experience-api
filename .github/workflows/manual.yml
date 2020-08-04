@@ -1,3 +1,4 @@
+# v1
 name: Module CI
 
 on:
@@ -10,8 +11,10 @@ on:
       - 'README.md'
       - 'LICENSE'
     branches:
-      - master
-      - dev
+      [master, dev]
+  pull_request:
+    branches:
+      [master, dev]
     
 jobs:
   ci:
