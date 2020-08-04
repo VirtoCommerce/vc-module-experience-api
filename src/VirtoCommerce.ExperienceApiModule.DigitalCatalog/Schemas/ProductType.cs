@@ -188,6 +188,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                     IsAvailable = context.Source.IsAvailable,
                     IsInStock = context.Source.IsInStock,
                     IsActive = context.Source.IndexedProduct.IsActive ?? false,
+                    IsTrackInventory = context.Source.IndexedProduct.TrackInventory ?? false,
                 });
 
             Field<ListGraphType<ImageType>>("images", resolve: context => context.Source.IndexedProduct.Images);
