@@ -2,6 +2,16 @@ name: Module CI
 
 on:
   workflow_dispatch:
+  push:
+    paths-ignore:
+      - '.github/**'
+      - 'docs/**'
+      - 'build/**'
+      - 'README.md'
+      - 'LICENSE'
+    branches:
+      - master
+      - dev
     
 jobs:
   ci:
@@ -9,14 +19,14 @@ jobs:
     env:
       SONAR_TOKEN: ${{secrets.SONAR_TOKEN}}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      NUGET_KEY: "" #${{ secrets.NUGET_KEY }}
+      NUGET_KEY: ${{ secrets.NUGET_KEY }}
       BLOB_SAS: ${{ secrets.BLOB_CONNECTION_STRING }}
 
     steps:
       - uses: actions/checkout@v2
 
       - name: Install VirtoCommerce.GlobalTool
-        run: dotnet tool install --global VirtoCommerce.GlobalTool --version 1.3.1-beta.3 --add-source http://40.71.25.88:5000/v3/index.json
+        run: dotnet tool install --global VirtoCommerce.GlobalTool
 
       - name: Install dotnet-sonarscanner
         run: dotnet tool install --global dotnet-sonarscanner
@@ -25,22 +35,9 @@ jobs:
         id: VersionInfo
         uses: VirtoCommerce/vc-github-actions/get-image-version@dev
 
-      - name: Get Releases List
-        uses: octokit/request-action@v2.x
-        id: get_releases_list
-        with:
-          route: GET /repos/:repository/releases
-          repository: ${{ github.repository }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Get changelog
         id: changelog
         uses: VirtoCommerce/vc-github-actions/changelog-generator@dev
-
-      - name: Test output
-        shell: pwsh
-        run: Write-Output "${{ steps.changelog.outputs.changelog }}"
 
       - name: Add version suffix
         if: ${{ github.ref=='refs/heads/dev' }}
@@ -65,5 +62,4 @@ jobs:
         uses: VirtoCommerce/vc-github-actions/publish-nuget@dev
         
       - name: Publish Github Release
-        if: ${{ github.ref=='refs/heads/dev' || github.ref=='refs/heads/master' }} #
         uses: VirtoCommerce/vc-github-actions/publish-github-release@dev
