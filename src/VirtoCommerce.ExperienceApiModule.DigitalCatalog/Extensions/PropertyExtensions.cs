@@ -20,7 +20,7 @@ namespace VirtoCommerce.XDigitalCatalog.Extensions
 
                 if (propertyValues.IsNullOrEmpty())
                 {
-                    propertyValues = new List<Property> { property };
+                    propertyValues = new List<Property> { (Property) property.Clone() };
                 }
 
                 return propertyValues;
