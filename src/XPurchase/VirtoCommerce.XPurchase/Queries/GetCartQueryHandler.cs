@@ -6,7 +6,7 @@ using VirtoCommerce.XPurchase.Schemas;
 
 namespace VirtoCommerce.XPurchase.Queries
 {
-    public class GetCartQueryHandler : IQueryHandler<GetCartQuery, CartAggregate>, IQueryHandler<GetCartByIdQuery, CartAggregate>, IQueryHandler<GetWishListQuery, IList<WishList>>
+    public class GetCartQueryHandler : IQueryHandler<GetCartQuery, CartAggregate>, IQueryHandler<GetCartByIdQuery, CartAggregate>, IQueryHandler<SearchCartDescriptionQuery, SearchCartDescriptionResponse>
     {
         private readonly ICartAggregateRepository _cartAggrRepository;
 
@@ -27,9 +27,9 @@ namespace VirtoCommerce.XPurchase.Queries
 
         }
 
-        public Task<IList<WishList>> Handle(GetWishListQuery request, CancellationToken cancellationToken)
+        public Task<SearchCartDescriptionResponse> Handle(SearchCartDescriptionQuery request, CancellationToken cancellationToken)
         {
-            return _cartAggrRepository.GetWishesListAsync(request.StoreId, request.UserId, request.CultureName, request.CurrencyCode, request.CartType);
+            return _cartAggrRepository.SearchCartDescriptionAsync(request.StoreId, request.UserId, request.CultureName, request.CurrencyCode, request.CartType, request.Sort, request.Skip, request.Take);
         }
     }
 }

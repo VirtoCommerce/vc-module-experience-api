@@ -1,6 +1,6 @@
 namespace VirtoCommerce.XPurchase.Schemas
 {
-    public class WishList
+    public class CartDescription
     {
         public string Id { get; set; }
 

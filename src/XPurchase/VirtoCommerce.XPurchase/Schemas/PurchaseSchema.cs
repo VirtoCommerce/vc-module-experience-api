@@ -66,14 +66,18 @@ namespace VirtoCommerce.XPurchase.Schemas
 
             var wishListsField = new FieldType()
             {
-                Name = "wishLists",
+                Name = "carts",
                 Arguments = new QueryArguments(
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "storeId" },
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "userId" },
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "currencyCode" },
                     new QueryArgument<StringGraphType> { Name = "cultureName" },
-                    new QueryArgument<StringGraphType> { Name = "type" }),
-                Type = GraphTypeExtenstionHelper.GetActualType<ListGraphType<WishListType>>(),
+                    new QueryArgument<StringGraphType> { Name = "type" },
+                    new QueryArgument<StringGraphType> { Name = "sort" },
+                    new QueryArgument<IntGraphType> { Name = "skip" },
+                    new QueryArgument<IntGraphType> { Name = "take" }),
+                    
+                Type = GraphTypeExtenstionHelper.GetActualType<ListGraphType<CartDescriptionType>>(),
                 Resolver = new AsyncFieldResolver<object>(async context =>
                 {
                     var type = context.GetArgument<string>("type");
@@ -81,11 +85,14 @@ namespace VirtoCommerce.XPurchase.Schemas
                     var userId = context.GetArgument<string>("userId");
                     var cultureName = context.GetArgument<string>("cultureName");
                     var currencyCode = context.GetArgument<string>("currencyCode");
+                    var sort = context.GetArgument<string>("sort");
+                    var skip = context.GetArgument<int>("skip");
+                    var take = context.GetArgument<int>("take");
 
-                    var getWishListQuery = new GetWishListQuery(storeId, type, userId, currencyCode, cultureName);
-                    var wishesLists = await _mediator.Send(getWishListQuery);
+                    var cartsQuery = new SearchCartDescriptionQuery(storeId, type, userId, currencyCode, cultureName, sort, skip, take);
+                    var carts = await _mediator.Send(cartsQuery);
 
-                    return wishesLists;
+                    return carts.Results;
                 })
             };
             schema.Query.AddField(wishListsField);

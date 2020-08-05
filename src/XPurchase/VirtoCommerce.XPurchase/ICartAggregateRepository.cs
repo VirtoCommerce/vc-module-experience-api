@@ -1,8 +1,7 @@
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.XPurchase.Commands;
-using VirtoCommerce.XPurchase.Schemas;
+using VirtoCommerce.XPurchase.Queries;
 
 namespace VirtoCommerce.XPurchase
 {
@@ -20,6 +19,6 @@ namespace VirtoCommerce.XPurchase
 
         ShoppingCart CreateDefaultShoppingCart<TCartCommand>(TCartCommand request) where TCartCommand : CartCommand;
 
-        Task<IList<WishList>> GetWishesListAsync(string storeId, string userId, string cultureName, string currencyCode, string type = null);
+        Task<SearchCartDescriptionResponse> SearchCartDescriptionAsync(string storeId, string userId, string cultureName, string currencyCode, string type, string sort, int skip, int take);
     }
 }

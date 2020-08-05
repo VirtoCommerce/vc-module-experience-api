@@ -1,22 +1,23 @@
-using System.Collections.Generic;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
-using VirtoCommerce.XPurchase.Schemas;
 
 namespace VirtoCommerce.XPurchase.Queries
 {
-    public class GetWishListQuery: IQuery<IList<WishList>>
+    public class SearchCartDescriptionQuery: IQuery<SearchCartDescriptionResponse>
     {
-        public GetWishListQuery()
+        public SearchCartDescriptionQuery()
         {
         }
 
-        public GetWishListQuery(string storeId, string type, string userId, string currencyCode, string cultureName)
+        public SearchCartDescriptionQuery(string storeId, string type, string userId, string currencyCode, string cultureName, string sort, int skip, int take)
         {
             StoreId = storeId;
             CartType = type;
             UserId = userId;
             CurrencyCode = currencyCode;
             CultureName = cultureName;
+            Sort = sort;
+            Skip = skip;
+            Take = take;
         }
 
         public string StoreId { get; set; }
@@ -24,5 +25,8 @@ namespace VirtoCommerce.XPurchase.Queries
         public string UserId { get; set; }
         public string CurrencyCode { get; set; }
         public string CultureName { get; set; }
+        public string Sort { get; set; }
+        public int Skip { get; set; }
+        public int Take { get; set; }
     }
 }

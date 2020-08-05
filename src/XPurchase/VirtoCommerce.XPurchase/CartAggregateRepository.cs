@@ -14,6 +14,7 @@ using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Security;
 using VirtoCommerce.StoreModule.Core.Services;
 using VirtoCommerce.XPurchase.Commands;
+using VirtoCommerce.XPurchase.Queries;
 using VirtoCommerce.XPurchase.Schemas;
 using VirtoCommerce.XPurchase.Validators;
 
@@ -114,18 +115,26 @@ namespace VirtoCommerce.XPurchase
             return null;
         }
 
-        public async Task<IList<WishList>> GetWishesListAsync(string storeId, string userId, string cultureName, string currencyCode, string type = null)
+        public async Task<SearchCartDescriptionResponse> SearchCartDescriptionAsync(string storeId, string userId, string cultureName, string currencyCode, string type, string sort, int skip, int take)
         {
+            var result = new SearchCartDescriptionResponse()
+            {
+                Results = new List<CartDescription>()
+            };
             var criteria = new CartModule.Core.Model.Search.ShoppingCartSearchCriteria
             {
                 StoreId = storeId,
                 CustomerId = userId,
                 Currency = currencyCode,
-                Type = type
+                Type = type,
+                Skip = skip,
+                Take = take,
+                Sort = sort,
+                LanguageCode = cultureName,
             };
 
             var searchResult = await _shoppingCartSearchService.SearchCartAsync(criteria);
-            var wishlists = searchResult.Results.Select(x=> new WishList()
+            var cartDescriptions = searchResult.Results.Select(x=> new CartDescription()
             {
                 Id = x.Id,
                 StoreId = x.StoreId,
@@ -135,9 +144,12 @@ namespace VirtoCommerce.XPurchase
                 Name = x.Name,
                 Status = x.Status,
                 Type = x.Type
-            });
+            }).ToList();
 
-            return wishlists.ToList();
+            result.Results = cartDescriptions;
+            result.TotalCount = searchResult.TotalCount;
+
+            return result;
         }
 
         protected virtual async Task<CartAggregate> InnerGetCartAggregateFromCartAsync(ShoppingCart cart, string language)
