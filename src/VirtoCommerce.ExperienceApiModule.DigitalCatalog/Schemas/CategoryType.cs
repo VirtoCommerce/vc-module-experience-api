@@ -26,7 +26,8 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                     var cultureName = context.GetValue<string>("cultureName");
 
                     return context.Source.Category.SeoInfos.GetBestMatchingSeoInfo(storeId, cultureName)?.SemanticUrl;
-                });
+                })
+            .RootAlias("__object.seoInfos");
 
             FieldAsync<CategoryType>("parent", resolve: async context =>
             {
@@ -37,14 +38,19 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
                 var response = await mediator.Send(new LoadCategoryQuery
                 {
-                    Id = categoryId,
-                    IncludeFields = context.SubFields.Values.GetAllNodesPaths()
+                    ObjectIds = new[] { categoryId },
+                    IncludeFields = context.GetAllNodesPaths()
                 });
 
                 return response.Category;
-            });
+            })
+            .RootAlias("__object.parentId");
 
-            Field<BooleanGraphType>("hasParent", resolve: context => TryGetParentId(context, out _));
+            Field<BooleanGraphType>(
+                "hasParent",
+                resolve: context => TryGetParentId(context, out _)
+            )
+            .RootAlias("__object.parentId");
 
             Field<ListGraphType<OutlineType>>("outlines", resolve: context => context.Source.Category.Outlines);
 

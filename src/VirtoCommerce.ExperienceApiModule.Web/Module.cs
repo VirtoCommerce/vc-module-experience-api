@@ -4,6 +4,7 @@ using GraphQL.Types;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
+using VirtoCommerce.ExperienceApiModule.Core.Index;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
 using VirtoCommerce.ExperienceApiModule.XOrder.Extensions;
@@ -48,6 +49,8 @@ namespace VirtoCommerce.ExperienceApiModule.Web
             services.AddPermissionAuthorization();
 
             services.AddSingleton<ISchema, SchemaFactory>();
+
+            services.AddTransient<IRequestBuilder, ElasticSearchRequestBuilder>();
 
             // Register core schemas
             services.AddSchemaType<MoneyType>(); // TODO: move to extension

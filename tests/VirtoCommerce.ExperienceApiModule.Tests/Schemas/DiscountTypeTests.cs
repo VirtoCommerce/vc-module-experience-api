@@ -2,9 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
 using GraphQL.Types;
-using VirtoCommerce.CoreModule.Core.Currency;
-using VirtoCommerce.ExperienceApiModule.Core.Extensions;
-using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
 using VirtoCommerce.ExperienceApiModule.Tests.Helpers;
 using VirtoCommerce.Platform.Core.Common;
@@ -16,10 +13,7 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Schemas
     {
         private readonly DiscountType _discountType;
 
-        public DiscountTypeTests()
-        {
-            _discountType = new DiscountType();
-        }
+        public DiscountTypeTests() => _discountType = new DiscountType();
 
         [Fact]
         public void DiscountType_ShouldHavePropperFieldAmount()
@@ -33,7 +27,7 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Schemas
         {
             // Arrange
             var discount = GetDiscount();
-            var resolveContext = new ResolveFieldContext()
+            var resolveContext = new ResolveFieldContext
             {
                 Source = discount
             };
@@ -51,7 +45,7 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Schemas
         {
             // Arrange
             var discount = GetDiscount();
-            var resolveContext = new ResolveFieldContext()
+            var resolveContext = new ResolveFieldContext
             {
                 Source = discount
             };
@@ -69,7 +63,7 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Schemas
         {
             // Arrange
             var discount = GetDiscount();
-            var resolveContext = new ResolveFieldContext()
+            var resolveContext = new ResolveFieldContext
             {
                 Source = discount
             };
@@ -87,42 +81,17 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Schemas
         {
             // Arrange
             var discount = GetDiscount();
-            var resolveContext = new ResolveFieldContext()
+            var resolveContext = new ResolveFieldContext
             {
-                Source = discount,
-                Arguments = new Dictionary<string, object>
-                {
-                    { Constants.CurrencyCode, CURRENCY_CODE },
-                    { Constants.CultureName, CULTURE_NAME }
-                },
-                UserContext = new Dictionary<string, object>()
+                Source = discount
             };
 
             // Act
             var result = _discountType.Fields.FirstOrDefault(x => x.Name.EqualsInvariant("Amount")).Resolver.Resolve(resolveContext);
 
             // Assert
-            result.Should().BeOfType<Money>();
-            ((Money)result).Should().Be(discount.DiscountAmount.ToMoney(GetCurrency()));
-        }
-
-        [Fact(Skip = "Need to fix")]
-        public void DiscountType_Amount_ArgumentsNotPassed_ShouldBeNull()
-        {
-            // Arrange
-            var discount = GetDiscount();
-            var resolveContext = new ResolveFieldContext()
-            {
-                Source = discount,
-                Arguments = new Dictionary<string, object>(),
-                UserContext = new Dictionary<string, object>()
-            };
-
-            // Act
-            var result = _discountType.Fields.FirstOrDefault(x => x.Name.EqualsInvariant("Amount")).Resolver.Resolve(resolveContext);
-
-            // Assert
-            result.Should().BeNull();
+            result.Should().BeOfType<decimal>();
+            ((decimal)result).Should().Be(discount.DiscountAmount);
         }
 
         [Fact]
@@ -130,42 +99,17 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Schemas
         {
             // Arrange
             var discount = GetDiscount();
-            var resolveContext = new ResolveFieldContext()
+            var resolveContext = new ResolveFieldContext
             {
-                Source = discount,
-                Arguments = new Dictionary<string, object>
-                {
-                    { Constants.CurrencyCode, CURRENCY_CODE },
-                    { Constants.CultureName, CULTURE_NAME }
-                },
-                UserContext = new Dictionary<string, object>()
+                Source = discount
             };
 
             // Act
             var result = _discountType.Fields.FirstOrDefault(x => x.Name.EqualsInvariant("AmountWithTax")).Resolver.Resolve(resolveContext);
 
             // Assert
-            result.Should().BeOfType<Money>();
-            ((Money)result).Should().Be(discount.DiscountAmountWithTax.ToMoney(GetCurrency()));
-        }
-
-        [Fact(Skip = "Need to fix")]
-        public void DiscountType_AmountWithTax_ArgumentsNotPassed_ShouldBeNull()
-        {
-            // Arrange
-            var discount = GetDiscount();
-            var resolveContext = new ResolveFieldContext()
-            {
-                Source = discount,
-                Arguments = new Dictionary<string, object>(),
-                UserContext = new Dictionary<string, object>()
-            };
-
-            // Act
-            var result = _discountType.Fields.FirstOrDefault(x => x.Name.EqualsInvariant("AmountWithTax")).Resolver.Resolve(resolveContext);
-
-            // Assert
-            result.Should().BeNull();
+            result.Should().BeOfType<decimal>();
+            ((decimal)result).Should().Be(discount.DiscountAmountWithTax);
         }
     }
 }

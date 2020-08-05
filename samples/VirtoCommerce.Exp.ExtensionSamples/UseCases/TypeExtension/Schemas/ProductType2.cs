@@ -15,7 +15,6 @@ namespace VirtoCommerce.Exp.ExtensionSamples
             IDataLoaderContextAccessor dataLoader)
             : base(mediator, dataLoader)
         {
-  
             Field<ListGraphType<InventoryType>>("inventories", arguments: new QueryArguments(new QueryArgument<StringGraphType> { Name = "warehouse", Description = "warehouse id" }), resolve: context =>
             {
                 var result = ((ExpProduct2)context.Source).Inventories;

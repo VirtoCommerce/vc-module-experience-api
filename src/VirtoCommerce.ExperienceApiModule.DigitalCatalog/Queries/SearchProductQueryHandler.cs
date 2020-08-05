@@ -7,6 +7,7 @@ using AutoMapper;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.CoreModule.Core.Currency;
+using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Index;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.InventoryModule.Core.Model.Search;
@@ -23,7 +24,6 @@ using VirtoCommerce.TaxModule.Core.Model;
 using VirtoCommerce.TaxModule.Core.Model.Search;
 using VirtoCommerce.TaxModule.Core.Services;
 using VirtoCommerce.XDigitalCatalog.Facets;
-using VirtoCommerce.XDigitalCatalog.Index;
 using VirtoCommerce.XPurchase;
 using VirtoCommerce.XPurchase.Commands;
 using ProductPrice = VirtoCommerce.ExperienceApiModule.Core.Models.ProductPrice;
@@ -31,15 +31,14 @@ using ProductPrice = VirtoCommerce.ExperienceApiModule.Core.Models.ProductPrice;
 namespace VirtoCommerce.XDigitalCatalog.Queries
 {
     public class SearchProductQueryHandler :
-        IQueryHandler<SearchProductQuery, SearchProductResponse>,
-        IQueryHandler<LoadProductQuery, LoadProductResponse>
+        IQueryHandler<SearchProductQuery, SearchProductResponse>
+        , IQueryHandler<LoadProductsQuery, LoadProductResponse>
     {
         private readonly ICartAggregateRepository _cartAggregateRepository;
         private readonly IMapper _mapper;
         private readonly ISearchProvider _searchProvider;
-        private readonly ISearchPhraseParser _searchPhraseParser;
-        private readonly IAggregationConverter _aggregationConverter;
-        private readonly IInventorySearchService _inventorySearchService; // TODO: maybe we have __inventories in index
+        private readonly IRequestBuilder _requestBuilder;
+        private readonly IInventorySearchService _inventorySearchService;
         private readonly ITaxProviderSearchService _taxProviderSearchService;
         private readonly IMarketingPromoEvaluator _marketingEvaluator;
         private readonly ICurrencyService _currencyService;
@@ -48,9 +47,8 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
 
         public SearchProductQueryHandler(
             ISearchProvider searchProvider
-            , ISearchPhraseParser searchPhraseParser
+            , IRequestBuilder requestBuilder
             , IMapper mapper
-            , IAggregationConverter aggregationConverter
             , ICartAggregateRepository cartAggregateRepository
             , IInventorySearchService inventorySearchService
             , IMarketingPromoEvaluator marketingEvaluator
@@ -60,9 +58,8 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             , IPricingService pricingService)
         {
             _searchProvider = searchProvider;
-            _searchPhraseParser = searchPhraseParser;
+            _requestBuilder = requestBuilder;
             _mapper = mapper;
-            _aggregationConverter = aggregationConverter;
             _cartAggregateRepository = cartAggregateRepository;
             _inventorySearchService = inventorySearchService;
             _marketingEvaluator = marketingEvaluator;
@@ -74,17 +71,9 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
 
         public virtual async Task<SearchProductResponse> Handle(SearchProductQuery request, CancellationToken cancellationToken)
         {
-            var indexIncludeFields = request.MapToIndexFields();
-
-            var searchRequest = new SearchRequestBuilder(_searchPhraseParser, _aggregationConverter)
-                .WithFuzzy(request.Fuzzy, request.FuzzyLevel)
-                .ParseFilters(request.Filter)
+            var searchRequest = _requestBuilder
+                .FromQuery(request)
                 .ParseFacets(request.Facet, request.StoreId, request.CurrencyCode)
-                .WithSearchPhrase(request.Query)
-                .WithPaging(request.Skip, request.Take)
-                .AddSorting(request.Sort)
-                .WithIncludeFields(indexIncludeFields)
-                .AddObjectIds(request.ProductIds)
                 .AddTerms(new[] { "status:visible" })//Only visible, exclude variations from search result
                 .Build();
 
@@ -100,33 +89,26 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             };
         }
 
-        
-        public virtual async Task<LoadProductResponse> Handle(LoadProductQuery request, CancellationToken cancellationToken)
+        public virtual async Task<LoadProductResponse> Handle(LoadProductsQuery request, CancellationToken cancellationToken)
         {
-            var indexIncludeFields = request.MapToIndexFields();
-
-            var searchRequest = new SearchRequestBuilder()
-                .WithPaging(0, request.Ids.Count())
-                .WithIncludeFields(indexIncludeFields)
-                .AddObjectIds(request.Ids)
-                .Build();
+            var searchRequest = _requestBuilder.FromQuery(request).Build();
 
             var searchResult = await _searchProvider.SearchAsync(KnownDocumentTypes.Product, searchRequest);
+
             var expProducts = await ConvertIndexDocsToProductsWithLoadDependenciesAsync(searchResult.Documents, request);
 
             return new LoadProductResponse(expProducts.ToList());
         }
 
-
         protected virtual async Task<IEnumerable<ExpProduct>> ConvertIndexDocsToProductsWithLoadDependenciesAsync(IEnumerable<SearchDocument> docs, ICatalogQuery query)
         {
             //TODO: DRY with the same code in CartAggrRepository need to refactor in future
-            var store = await _storeService.GetByIdAsync(query.StoreId);          
+            var store = await _storeService.GetByIdAsync(query.StoreId);
             var defaultCultureName = store.DefaultLanguage ?? Language.InvariantLanguage.CultureName;
             //Clone currencies
             //TODO: Add caching  to prevent cloning each time
             var allCurrencies = (await _currencyService.GetAllCurrenciesAsync()).Select(x => x.Clone()).OfType<Currency>().ToArray();
-            //Change culture name for all system currencies to requested 
+            //Change culture name for all system currencies to requested
             allCurrencies.Apply(x => x.CultureName = query.CultureName ?? defaultCultureName);
 
             //Clone and change culture name for system currencies
@@ -160,12 +142,12 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                 }
                 //evaluate prices only if product missed prices in the index storage
                 var productsWithoutPrices = result.Where(x => !x.IndexedPrices.Any()).ToArray();
-                if(productsWithoutPrices.Any())
+                if (productsWithoutPrices.Any())
                 {
                     var pricesEvalContext = _mapper.Map<PriceEvaluationContext>(cartAggregate);
-                    pricesEvalContext.ProductIds = productsWithoutPrices.Select(x=>x.Id).ToArray();
+                    pricesEvalContext.ProductIds = productsWithoutPrices.Select(x => x.Id).ToArray();
                     var prices = await _pricingService.EvaluateProductPricesAsync(pricesEvalContext);
-                    foreach(var product in productsWithoutPrices)
+                    foreach (var product in productsWithoutPrices)
                     {
                         product.AllPrices = _mapper.Map<IEnumerable<ProductPrice>>(prices.Where(x => x.ProductId == product.Id), options =>
                         {
@@ -179,7 +161,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
 
                 //Evaluate promotions
                 var promoEvalContext = _mapper.Map<PromotionEvaluationContext>(cartAggregate);
-                promoEvalContext.PromoEntries =  result.Select(x=> _mapper.Map<ProductPromoEntry>(x, options =>
+                promoEvalContext.PromoEntries = result.Select(x => _mapper.Map<ProductPromoEntry>(x, options =>
                 {
                     //TODO: Code duplication
                     options.Items["all_currencies"] = allCurrencies;
@@ -228,7 +210,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             }
             return result;
         }
-             
+
         //TODO: Need to remove at all!!
         public class CreateDefaultCartCommand : CartCommand
         {

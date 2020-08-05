@@ -23,9 +23,9 @@ namespace VirtoCommerce.Exp.ExtensionSamples
 
         public async Task Process(TRequest request, TResponse response, CancellationToken cancellationToken)
         {
-            if (request is LoadProductQuery loadProductRequest && response is LoadProductResponse loadProductResponse)
+            if (request is LoadProductsQuery loadProductRequest && response is LoadProductResponse loadProductResponse)
             {
-                var notLoadedProductIds = loadProductRequest.Ids.Except(loadProductResponse.Products.Select(x => x.Id)).Where(x => long.TryParse(x, out var _));
+                var notLoadedProductIds = loadProductRequest.ObjectIds.Except(loadProductResponse.Products.Select(x => x.Id)).Where(x => long.TryParse(x, out var _));
                 if (notLoadedProductIds.Any())
                 {
                     var petProducts = new List<ExpProduct>();

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GraphQL;
@@ -10,6 +11,7 @@ using MediatR;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
+using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.XDigitalCatalog.Extensions;
 using VirtoCommerce.XDigitalCatalog.Queries;
 
@@ -64,21 +66,27 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             Field<StringGraphType>("catalogId", resolve: context => context.Source.IndexedProduct.CatalogId);
 
-            FieldAsync<CategoryType>("category", resolve: async context =>
-            {
-                var categoryId = context.Source.IndexedProduct.CategoryId;
-                var responce = await mediator.Send(new LoadCategoryQuery
+            FieldAsync<CategoryType>(
+                "category",
+                resolve: async context =>
                 {
-                    Id = categoryId,
-                    IncludeFields = context.SubFields.Values.GetAllNodesPaths()
-                });
+                    var categoryId = context.Source.IndexedProduct.CategoryId;
+                    var responce = await mediator.Send(new LoadCategoryQuery
+                    {
+                        ObjectIds = new[] { categoryId },
+                        IncludeFields = context.GetAllNodesPaths()
+                    });
 
-                return responce.Category;
-            });
+                    return responce.Category;
+                })
+            .RootAlias("__object.categoryId");
 
             Field(d => d.IndexedProduct.Name, nullable: false).Description("The name of the product.");
 
-            Field<ListGraphType<DescriptionType>>("descriptions", resolve: context => context.Source.IndexedProduct.Reviews);
+            Field<ListGraphType<DescriptionType>>(
+                "descriptions",
+                resolve: context => context.Source.IndexedProduct.Reviews)
+            .RootAlias("__object.reviews");
 
             Field(d => d.IndexedProduct.ProductType, nullable: true).Description("The type of product");
 
@@ -92,7 +100,8 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                     var cultureName = context.GetValue<string>("cultureName");
 
                     return context.Source.IndexedProduct.SeoInfos.GetBestMatchingSeoInfo(storeId, cultureName)?.SemanticUrl;
-                });
+                })
+            .RootAlias("__object.seoInfos");
 
             Field<StringGraphType>(
                 "metaDescription",
@@ -103,7 +112,8 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                     var cultureName = context.GetValue<string>("cultureName");
 
                     return context.Source.IndexedProduct.SeoInfos.GetBestMatchingSeoInfo(storeId, cultureName)?.MetaDescription;
-                });
+                })
+            .RootAlias("__object.seoInfos");
 
             Field<StringGraphType>(
                 "metaKeywords",
@@ -114,7 +124,8 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                     var cultureName = context.GetValue<string>("cultureName");
 
                     return context.Source.IndexedProduct.SeoInfos.GetBestMatchingSeoInfo(storeId, cultureName)?.MetaKeywords;
-                });
+                })
+            .RootAlias("__object.seoInfos");
 
             Field<StringGraphType>(
                 "metaTitle",
@@ -125,12 +136,14 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                     var cultureName = context.GetValue<string>("cultureName");
 
                     return context.Source.IndexedProduct.SeoInfos.GetBestMatchingSeoInfo(storeId, cultureName)?.PageTitle;
-                });
+                })
+            .RootAlias("__object.seoInfos");
 
             Field<StringGraphType>(
                 "imgSrc",
                 description: "The product main image URL.",
-                resolve: context => context.Source.IndexedProduct.ImgSrc);
+                resolve: context => context.Source.IndexedProduct.ImgSrc)
+            .InnerAlias("images");
 
             Field(d => d.IndexedProduct.OuterId, nullable: true).Description("The outer identifier");
 
@@ -146,37 +159,49 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                         ?.Value;
 
                     return brandName;
-                });
+                })
+            .RootAlias("__object.properties");
 
-            FieldAsync<VariationType>("masterVariation", resolve: async context =>
-            {
-                if (context.Source.IndexedProduct.MainProductId == null)
+            FieldAsync<VariationType>(
+                "masterVariation",
+                resolve: async context =>
                 {
-                    return new ExpVariation(context.Source);
-                }
+                    if (context.Source.IndexedProduct.MainProductId == null)
+                    {
+                        return new ExpVariation(context.Source);
+                    }
 
-                var query = context.GetCatalogQuery<LoadProductQuery>();
-                query.Ids = new[] { context.Source.IndexedProduct.MainProductId };
-                query.IncludeFields = context.SubFields.Values.GetAllNodesPaths();
+                    var query = context.GetCatalogQuery<LoadProductsQuery>();
+                    query.ObjectIds = new[] { context.Source.IndexedProduct.MainProductId };
+                    query.IncludeFields = context.GetAllNodesPaths();
 
-                var response = await mediator.Send(query);
+                    var response = await mediator.Send(query);
 
-                return response.Products
-                    .Select(expProduct => new ExpVariation(expProduct))
-                    .FirstOrDefault();
-            });
+                    return response.Products
+                        .Select(expProduct => new ExpVariation(expProduct))
+                        .FirstOrDefault();
+                })
+            .RootAlias("__object.masterVariation", "__object.mainProductId", "__variations");
 
-            FieldAsync<ListGraphType<VariationType>>("variations", resolve: async context =>
-            {
-                var query = context.GetCatalogQuery<LoadProductQuery>();
-                query.Ids = context.Source.IndexedVariationIds.ToArray();
-                query.IncludeFields = context.SubFields.Values.GetAllNodesPaths();
+            FieldAsync<ListGraphType<VariationType>>(
+                "variations",
+                resolve: async context =>
+                {
+                    var productIds = context.Source.IndexedVariationIds.ToArray();
+                    if (productIds.IsNullOrEmpty())
+                    {
+                        return new List<ExpVariation>();
+                    }
 
-                var response = await mediator.Send(query);
+                    var query = context.GetCatalogQuery<LoadProductsQuery>();
+                    query.ObjectIds = context.Source.IndexedVariationIds.ToArray();
+                    query.IncludeFields = context.GetAllNodesPaths();
 
-                return response.Products.Select(expProduct => new ExpVariation(expProduct));
-            });
+                    var response = await mediator.Send(query);
 
+                    return response.Products.Select(expProduct => new ExpVariation(expProduct));
+                })
+            .RootAlias("__variations");
 
             Field<AvailabilityDataType>(
                 "availabilityData",
@@ -189,17 +214,21 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                     IsInStock = context.Source.IsInStock,
                     IsActive = context.Source.IndexedProduct.IsActive ?? false,
                     IsTrackInventory = context.Source.IndexedProduct.TrackInventory ?? false,
-                });
+                })
+            .RootAlias("__object.isActive", "__object.isBuyable", "__object.trackInventory");
 
             Field<ListGraphType<ImageType>>("images", resolve: context => context.Source.IndexedProduct.Images);
 
-            Field<ListGraphType<PriceType>>("prices", resolve: context => context.Source.AllPrices);
+            Field<ListGraphType<PriceType>>(
+                "prices",
+                resolve: context => context.Source.AllPrices)
+            .RootAlias("__prices");
 
             Field<ListGraphType<PropertyType>>("properties", resolve: context => context.Source.IndexedProduct.Properties.ExpandByValues());
 
             Field<ListGraphType<AssetType>>("assets", resolve: context => context.Source.IndexedProduct.Assets);
 
-            Field<ListGraphType<OutlineType>>("outlines", resolve: context => context.Source.IndexedProduct.Outlines);
+            Field<ListGraphType<OutlineType>>("outlines", resolve: context => context.Source.IndexedProduct.Outlines).RootAlias("__object.outlines");
 
             Field<ListGraphType<SeoInfoType>>("seoInfos", resolve: context => context.Source.IndexedProduct.SeoInfos);
 

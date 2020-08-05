@@ -10,31 +10,29 @@ using VirtoCommerce.XDigitalCatalog.Facets;
 
 namespace VirtoCommerce.XDigitalCatalog.Queries
 {
-    public class SearchCategoryQueryHandler : IQueryHandler<SearchCategoryQuery, SearchCategoryResponse>
+    public class SearchCategoryQueryHandler :
+        IQueryHandler<SearchCategoryQuery, SearchCategoryResponse>
+        , IQueryHandler<LoadCategoryQuery, LoadCategoryResponse>
     {
         private readonly IMapper _mapper;
         private readonly ISearchProvider _searchProvider;
-        private readonly ISearchPhraseParser _searchPhraseParser;
+        private readonly IRequestBuilder _requestBuilder;
 
-        public SearchCategoryQueryHandler(ISearchProvider searchProvider, ISearchPhraseParser searchPhraseParser, IMapper mapper)
+        public SearchCategoryQueryHandler(
+            ISearchProvider searchProvider
+            , IMapper mapper
+            , IRequestBuilder requestBuilder)
         {
             _searchProvider = searchProvider;
-            _searchPhraseParser = searchPhraseParser;
             _mapper = mapper;
+            _requestBuilder = requestBuilder;
         }
 
         public virtual async Task<SearchCategoryResponse> Handle(SearchCategoryQuery request, CancellationToken cancellationToken)
         {
-            var searchRequest = new SearchRequestBuilder(_searchPhraseParser, null)
-                .WithFuzzy(request.Fuzzy, request.FuzzyLevel)
-                .ParseFilters(request.Filter)
+            var searchRequest = _requestBuilder
+                .FromQuery(request)
                 .ParseFacets(request.Facet)
-                .WithSearchPhrase(request.Query)
-                .WithPaging(request.Skip, request.Take)
-                .AddSorting(request.Sort)
-                //TODO: Remove hardcoded field name  __object from here
-                .WithIncludeFields(request.IncludeFields.Concat(new[] { "id", "parentId" }).Select(x => "__object." + x).ToArray())
-                .AddObjectIds(request.CategoryIds)
                 .Build();
 
             var searchResult = await _searchProvider.SearchAsync(KnownDocumentTypes.Category, searchRequest);
@@ -45,6 +43,17 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                 Facets = searchRequest.Aggregations?.Select(x => _mapper.Map<FacetResult>(x, opts => opts.Items["aggregations"] = searchResult.Aggregations)).ToList(),
                 TotalCount = (int)searchResult.TotalCount
             };
+        }
+
+        public virtual async Task<LoadCategoryResponse> Handle(LoadCategoryQuery request, CancellationToken cancellationToken)
+        {
+            var result = new LoadCategoryResponse();
+            var searchRequest = _requestBuilder.FromQuery(request).Build();
+
+            var searchResult = await _searchProvider.SearchAsync(KnownDocumentTypes.Category, searchRequest);
+            result.Category = searchResult.Documents.Select(x => _mapper.Map<ExpCategory>(x)).FirstOrDefault();
+
+            return result;
         }
     }
 }
