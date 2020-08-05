@@ -26,7 +26,7 @@ namespace VirtoCommerce.XDigitalCatalog.Extensions
                 return propertyValues;
             });
 
-            return result.ToArray();
+            return result.ToList();
         }
     }
 }
