@@ -180,7 +180,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
         {
             var first = context.First;
             var skip = Convert.ToInt32(context.After ?? 0.ToString());
-            var includeFields = context.SubFields.Values.GetAllNodesPaths().Select(x => x.TrimStart("items.")).ToArray();
+            var includeFields = context.GetAllNodesPaths().Select(x => x.Replace("items.", "")).ToArray();
 
             var query = context.GetCatalogQuery<SearchCategoryQuery>();
 

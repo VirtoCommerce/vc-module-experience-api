@@ -47,7 +47,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
         {
             var query = context.GetCatalogQuery<LoadProductsQuery>();
             query.ObjectIds = ids.ToArray();
-            query.IncludeFields = context.SubFields.Values.GetAllNodesPaths();
+            query.IncludeFields = context.GetAllNodesPaths();
 
             var response = await mediator.Send(query);
             return response.Products.ToDictionary(x => x.Id);
