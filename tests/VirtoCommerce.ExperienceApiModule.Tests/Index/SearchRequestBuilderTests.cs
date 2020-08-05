@@ -10,7 +10,7 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Index
 {
     public class SearchRequestBuilderTests
     {
-        private readonly SearchRequestBuilder builder;
+        private readonly ElasticSearchRequestBuilder builder;
         private readonly Mock<ISearchPhraseParser> phraseParserMock;
         private readonly Mock<IAggregationConverter> aggregationConverterMock;
 
@@ -21,7 +21,7 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Index
             //    .Setup(x => x.Parse(It.IsAny<string>()))
             //    .Returns(null);
 
-            builder = new SearchRequestBuilder(phraseParserMock.Object, aggregationConverterMock.Object);
+            //builder = new ElasticSearchRequestBuilder(phraseParserMock.Object, aggregationConverterMock.Object);
         }
     }
 }

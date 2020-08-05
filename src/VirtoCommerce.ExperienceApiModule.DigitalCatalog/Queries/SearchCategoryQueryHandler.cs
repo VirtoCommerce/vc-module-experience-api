@@ -10,24 +10,27 @@ using VirtoCommerce.XDigitalCatalog.Facets;
 
 namespace VirtoCommerce.XDigitalCatalog.Queries
 {
-    public class SearchCategoryQueryHandler
-        : IQueryHandler<SearchCategoryQuery, SearchCategoryResponse>
+    public class SearchCategoryQueryHandler :
+        IQueryHandler<SearchCategoryQuery, SearchCategoryResponse>
         , IQueryHandler<LoadCategoryQuery, LoadCategoryResponce>
     {
         private readonly IMapper _mapper;
         private readonly ISearchProvider _searchProvider;
-        private readonly ISearchPhraseParser _searchPhraseParser;
+        private readonly IRequestBuilder _requestBuilder;
 
-        public SearchCategoryQueryHandler(ISearchProvider searchProvider, ISearchPhraseParser searchPhraseParser, IMapper mapper)
+        public SearchCategoryQueryHandler(
+            ISearchProvider searchProvider
+            , IMapper mapper
+            , IRequestBuilder requestBuilder)
         {
             _searchProvider = searchProvider;
-            _searchPhraseParser = searchPhraseParser;
             _mapper = mapper;
+            _requestBuilder = requestBuilder;
         }
 
         public virtual async Task<SearchCategoryResponse> Handle(SearchCategoryQuery request, CancellationToken cancellationToken)
         {
-            var searchRequest = new SearchRequestBuilder(_searchPhraseParser, null)
+            var searchRequest = _requestBuilder
                 .FromQuery(request)
                 .ParseFilters(request.Filter)
                 .ParseFacets(request.Facet)
@@ -49,7 +52,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
         public virtual async Task<LoadCategoryResponce> Handle(LoadCategoryQuery request, CancellationToken cancellationToken)
         {
             var result = new LoadCategoryResponce();
-            var searchRequest = new SearchRequestBuilder()
+            var searchRequest = _requestBuilder
                 .FromQuery(request)
                 .WithIncludeFields(request.IncludeFields.Concat(new[] { "id" }).Distinct().Select(x => $"__object.{x}").ToArray())
                 .WithIncludeFields((request.IncludeFields.Any(x => x.Contains("slug", System.StringComparison.OrdinalIgnoreCase))

@@ -7,6 +7,7 @@ using AutoMapper;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.CoreModule.Core.Currency;
+using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Index;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.InventoryModule.Core.Model.Search;
@@ -23,7 +24,6 @@ using VirtoCommerce.TaxModule.Core.Model;
 using VirtoCommerce.TaxModule.Core.Model.Search;
 using VirtoCommerce.TaxModule.Core.Services;
 using VirtoCommerce.XDigitalCatalog.Facets;
-using VirtoCommerce.XDigitalCatalog.Index;
 using VirtoCommerce.XPurchase;
 using VirtoCommerce.XPurchase.Commands;
 using ProductPrice = VirtoCommerce.ExperienceApiModule.Core.Models.ProductPrice;
@@ -38,9 +38,8 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
         private readonly ICartAggregateRepository _cartAggregateRepository;
         private readonly IMapper _mapper;
         private readonly ISearchProvider _searchProvider;
-        private readonly ISearchPhraseParser _searchPhraseParser;
-        private readonly IAggregationConverter _aggregationConverter;
-        private readonly IInventorySearchService _inventorySearchService; // TODO: maybe we have __inventories in index
+        private readonly IRequestBuilder _requestBuilder;
+        private readonly IInventorySearchService _inventorySearchService;
         private readonly ITaxProviderSearchService _taxProviderSearchService;
         private readonly IMarketingPromoEvaluator _marketingEvaluator;
         private readonly ICurrencyService _currencyService;
@@ -49,9 +48,8 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
 
         public SearchProductQueryHandler(
             ISearchProvider searchProvider
-            , ISearchPhraseParser searchPhraseParser
+            , IRequestBuilder requestBuilder
             , IMapper mapper
-            , IAggregationConverter aggregationConverter
             , ICartAggregateRepository cartAggregateRepository
             , IInventorySearchService inventorySearchService
             , IMarketingPromoEvaluator marketingEvaluator
@@ -61,9 +59,8 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             , IPricingService pricingService)
         {
             _searchProvider = searchProvider;
-            _searchPhraseParser = searchPhraseParser;
+            _requestBuilder = requestBuilder;
             _mapper = mapper;
-            _aggregationConverter = aggregationConverter;
             _cartAggregateRepository = cartAggregateRepository;
             _inventorySearchService = inventorySearchService;
             _marketingEvaluator = marketingEvaluator;
@@ -75,14 +72,11 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
 
         public virtual async Task<SearchProductResponse> Handle(SearchProductQuery request, CancellationToken cancellationToken)
         {
-            var indexIncludeFields = request.MapToIndexFields();
-
-            var searchRequest = new SearchRequestBuilder(_searchPhraseParser, _aggregationConverter)
+            var searchRequest = _requestBuilder
                 .FromQuery(request)
                 .ParseFilters(request.Filter)
                 .ParseFacets(request.Facet, request.StoreId, request.CurrencyCode)
                 .AddSorting(request.Sort)
-                .WithIncludeFields(indexIncludeFields)
                 .AddTerms(new[] { "status:visible" })//Only visible, exclude variations from search result
                 .Build();
 
@@ -100,12 +94,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
 
         public virtual async Task<LoadProductResponse> Handle(LoadProductQuery request, CancellationToken cancellationToken)
         {
-            var indexIncludeFields = request.MapToIndexFields();
-
-            var searchRequest = new SearchRequestBuilder()
-                .FromQuery(request)
-                .WithIncludeFields(indexIncludeFields)
-                .Build();
+            var searchRequest = _requestBuilder.FromQuery(request).Build();
 
             var searchResult = await _searchProvider.SearchAsync(KnownDocumentTypes.Product, searchRequest);
 
@@ -116,12 +105,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
 
         public virtual async Task<LoadProductResponse> Handle(LoadProductsQuery request, CancellationToken cancellationToken)
         {
-            var indexIncludeFields = request.MapToIndexFields();
-
-            var searchRequest = new SearchRequestBuilder()
-                .FromQuery(request)
-                .WithIncludeFields(indexIncludeFields)
-                .Build();
+            var searchRequest = _requestBuilder.FromQuery(request).Build();
 
             var searchResult = await _searchProvider.SearchAsync(KnownDocumentTypes.Product, searchRequest);
 
