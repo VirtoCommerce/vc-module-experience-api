@@ -13,9 +13,9 @@ namespace VirtoCommerce.XDigitalCatalog.Extensions
             {
                 var propertyValues = property.Values.Select(v =>
                 {
-                    var result1 = (Property) property.Clone();
-                    result1.Values = new List<PropertyValue> { v };
-                    return result1;
+                    var clonedProperty = (Property) property.Clone();
+                    clonedProperty.Values = new List<PropertyValue> { v };
+                    return clonedProperty;
                 }).ToList();
 
                 if (propertyValues.IsNullOrEmpty())
