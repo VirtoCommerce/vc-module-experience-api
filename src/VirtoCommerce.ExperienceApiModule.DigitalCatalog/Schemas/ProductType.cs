@@ -205,6 +205,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                     IsAvailable = context.Source.IsAvailable,
                     IsInStock = context.Source.IsInStock,
                     IsActive = context.Source.IndexedProduct.IsActive ?? false,
+                    IsTrackInventory = context.Source.IndexedProduct.TrackInventory ?? false,
                 })
             .RootAliases("__object.isActive", "__object.isBuyable", "__object.trackInventory");
 
