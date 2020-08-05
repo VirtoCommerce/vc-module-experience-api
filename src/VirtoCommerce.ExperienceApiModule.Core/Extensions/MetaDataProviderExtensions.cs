@@ -5,7 +5,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
 {
     public static class MetaDataProviderExtensions
     {
-        public static IProvideMetadata RootAliases(this IProvideMetadata provider, params string[] values)
+        public static IProvideMetadata RootAlias(this IProvideMetadata provider, params string[] values)
         {
             if (!provider.TryGetAliasContainer(out var aliasContainer))
             {
@@ -18,7 +18,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
             return provider;
         }
 
-        public static IProvideMetadata InnerAliase(this IProvideMetadata provider, string value)
+        public static IProvideMetadata InnerAlias(this IProvideMetadata provider, string value)
         {
             if (!provider.TryGetAliasContainer(out var aliasContainer))
             {
@@ -26,7 +26,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
                 provider.Metadata.Add("aliases", aliasContainer);
             }
 
-            aliasContainer.SetInnerAliase(value);
+            aliasContainer.SetInnerAlias(value);
 
             return provider;
         }

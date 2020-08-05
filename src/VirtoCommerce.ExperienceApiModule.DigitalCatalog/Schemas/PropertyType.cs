@@ -50,7 +50,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             Field<StringGraphType>(
                 "value",
                 resolve: context => context.Source.Values.Select(x => x.Value).FirstOrDefault()
-            ).RootAliases("values");
+            ).RootAlias("values");
 
             Field<StringGraphType>(
                 "valueId",

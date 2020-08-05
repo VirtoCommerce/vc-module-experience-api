@@ -9,23 +9,6 @@ using VirtoCommerce.SearchModule.Core.Services;
 
 namespace VirtoCommerce.ExperienceApiModule.Core.Index
 {
-    public interface IRequestBuilder
-    {
-        IRequestBuilder FromQuery<T>(T searchQuery) where T : ISearchQuery;
-
-        IRequestBuilder WithIncludeFields(params string[] includeFields);
-
-        IRequestBuilder ParseFilters(string filterPhrase);
-
-        IRequestBuilder AddTerms(IEnumerable<string> terms);
-
-        IRequestBuilder ParseFacets(string facetPhrase, string storeId = null, string currency = null);
-
-        IRequestBuilder AddSorting(string sort);
-
-        SearchRequest Build();
-    }
-
     public class ElasticSearchRequestBuilder : IRequestBuilder
     {
         private readonly ISearchPhraseParser _phraseParser;
@@ -60,8 +43,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Index
             where T : ISearchQuery => searchQuery switch
             {
                 ISearchDocumentsQuery query => FromQuery(query),
-                IGetAllDocumentsByIdsQuery query => FromQuery(query),
-                IGetSingleDocumentQuery query => FromQuery(query),
+                IGetDocumentsByIdsQuery query => FromQuery(query),
                 _ => throw new NotImplementedException()
             };
 
@@ -74,6 +56,10 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Index
             SearchRequest.SearchKeywords = query.Query;
             SearchRequest.IncludeFields = query.IncludeFields.ToList();
 
+            ParseFilters(query.Filter);
+
+            AddSorting(query.Sort);
+
             if (!query.ObjectIds.IsNullOrEmpty())
             {
                 ((AndFilter)SearchRequest.Filter).ChildFilters.Add(new IdsFilter { Values = query.ObjectIds });
@@ -82,25 +68,12 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Index
             return this;
         }
 
-        protected virtual IRequestBuilder FromQuery(IGetAllDocumentsByIdsQuery query)
+        protected virtual IRequestBuilder FromQuery(IGetDocumentsByIdsQuery query)
         {
             if (!query.ObjectIds.IsNullOrEmpty())
             {
                 ((AndFilter)SearchRequest.Filter).ChildFilters.Add(new IdsFilter { Values = query.ObjectIds });
                 SearchRequest.Take = query.ObjectIds.Count();
-            }
-
-            SearchRequest.IncludeFields = query.IncludeFields.ToList();
-
-            return this;
-        }
-
-        protected virtual IRequestBuilder FromQuery(IGetSingleDocumentQuery query)
-        {
-            if (!string.IsNullOrWhiteSpace(query.ObjectId))
-            {
-                ((AndFilter)SearchRequest.Filter).ChildFilters.Add(new IdsFilter { Values = new[] { query.ObjectId } });
-                SearchRequest.Take = 1;
             }
 
             SearchRequest.IncludeFields = query.IncludeFields.ToList();
@@ -118,16 +91,6 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Index
                 aggr.Filter = clonedFilter;
             }
             return SearchRequest;
-        }
-
-        public IRequestBuilder WithIncludeFields(params string[] includeFields)
-        {
-            if (SearchRequest.IncludeFields == null)
-            {
-                SearchRequest.IncludeFields = new List<string>() { };
-            }
-            SearchRequest.IncludeFields.AddRange(includeFields);
-            return this;
         }
 
         public IRequestBuilder AddTerms(IEnumerable<string> terms)
@@ -153,11 +116,11 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Index
             return this;
         }
 
-        public IRequestBuilder ParseFilters(string filterPhrase)
+        public void ParseFilters(string filterPhrase)
         {
             if (filterPhrase == null)
             {
-                return this;
+                return;
             }
 
             var parseResult = _phraseParser.Parse(filterPhrase);
@@ -200,8 +163,6 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Index
                 }
             }
             ((AndFilter)SearchRequest.Filter).ChildFilters.AddRange(filters);
-
-            return this;
         }
 
         public IRequestBuilder ParseFacets(string facetPhrase, string storeId = null, string currency = null)
@@ -266,7 +227,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Index
             return this;
         }
 
-        public IRequestBuilder AddSorting(string sort)
+        protected virtual void AddSorting(string sort)
         {
             //TODO: How to sort by scoring relevance???
             //TODO: Alias replacement for sort fields as well as for filter and facet expressions
@@ -301,8 +262,6 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Index
             {
                 SearchRequest.Sorting = sortFields;
             }
-
-            return this;
         }
     }
 }

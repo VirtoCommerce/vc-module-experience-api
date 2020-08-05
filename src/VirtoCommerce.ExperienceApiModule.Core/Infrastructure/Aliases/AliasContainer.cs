@@ -24,7 +24,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Infrastructure.Aliases
             }
         }
 
-        public void SetInnerAliase(string value)
+        public void SetInnerAlias(string value)
         {
             _innerAliases.Clear();
             _innerAliases.Add(new InnerAlias(value));

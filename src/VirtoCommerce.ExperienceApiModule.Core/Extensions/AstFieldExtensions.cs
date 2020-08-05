@@ -10,7 +10,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
     {
         public static string[] GetAllNodesPaths(this IResolveFieldContext context)
         {
-            var currentRootType = context.ReturnType as IComplexGraphType;
+            var currentRootType = GetNestedGraphType(context.ReturnType);
 
             return context.SubFields.Values.SelectMany(x => x.GetAllTreeNodesPaths(currentRootType)).ToArray();
         }
@@ -72,12 +72,18 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
         private static IComplexGraphType GetNestedGraphType(this IComplexGraphType type, string name)
         {
             var fieldType = type.Fields.FirstOrDefault(field => field.Name == name);
-            if (fieldType.ResolvedType is ListGraphType listGraphType)
+
+            return GetNestedGraphType(fieldType.ResolvedType);
+        }
+
+        private static IComplexGraphType GetNestedGraphType(this IGraphType type)
+        {
+            if (type is ListGraphType listGraphType)
             {
                 return listGraphType.ResolvedType as IComplexGraphType;
             }
 
-            return fieldType.ResolvedType as IComplexGraphType;
+            return type as IComplexGraphType;
         }
 
         public static IEnumerable<string> GetAllNodesPaths(this IEnumerable<Field> fields)

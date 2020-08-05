@@ -1,6 +1,6 @@
 namespace VirtoCommerce.XDigitalCatalog.Queries
 {
-    public class LoadCategoryResponce
+    public class LoadCategoryResponse
     {
         public ExpCategory Category { get; set; }
     }

@@ -31,9 +31,8 @@ using ProductPrice = VirtoCommerce.ExperienceApiModule.Core.Models.ProductPrice;
 namespace VirtoCommerce.XDigitalCatalog.Queries
 {
     public class SearchProductQueryHandler :
-        IQueryHandler<SearchProductQuery, SearchProductResponse>,
-        IQueryHandler<LoadProductQuery, LoadProductResponse>,
-        IQueryHandler<LoadProductsQuery, LoadProductResponse>
+        IQueryHandler<SearchProductQuery, SearchProductResponse>
+        , IQueryHandler<LoadProductsQuery, LoadProductResponse>
     {
         private readonly ICartAggregateRepository _cartAggregateRepository;
         private readonly IMapper _mapper;
@@ -74,9 +73,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
         {
             var searchRequest = _requestBuilder
                 .FromQuery(request)
-                .ParseFilters(request.Filter)
                 .ParseFacets(request.Facet, request.StoreId, request.CurrencyCode)
-                .AddSorting(request.Sort)
                 .AddTerms(new[] { "status:visible" })//Only visible, exclude variations from search result
                 .Build();
 
@@ -90,17 +87,6 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                 Facets = searchRequest.Aggregations?.Select(x => _mapper.Map<FacetResult>(x, opts => opts.Items["aggregations"] = searchResult.Aggregations)).ToList(),
                 TotalCount = (int)searchResult.TotalCount
             };
-        }
-
-        public virtual async Task<LoadProductResponse> Handle(LoadProductQuery request, CancellationToken cancellationToken)
-        {
-            var searchRequest = _requestBuilder.FromQuery(request).Build();
-
-            var searchResult = await _searchProvider.SearchAsync(KnownDocumentTypes.Product, searchRequest);
-
-            var expProducts = await ConvertIndexDocsToProductsWithLoadDependenciesAsync(searchResult.Documents, request);
-
-            return new LoadProductResponse(expProducts.ToList());
         }
 
         public virtual async Task<LoadProductResponse> Handle(LoadProductsQuery request, CancellationToken cancellationToken)

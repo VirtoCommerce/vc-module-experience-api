@@ -128,7 +128,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
         {
             var first = context.First;
             var skip = Convert.ToInt32(context.After ?? 0.ToString());
-            var includeFields = context.GetAllNodesPaths().Select(x => x.TrimStart("items.")).ToArray();
+            var includeFields = context.GetAllNodesPaths().Select(x => x.Replace("items.", "")).ToArray();
 
             //TODO: Need to be able get entire query from context and read all arguments to the query properties
             var query = context.GetCatalogQuery<SearchProductQuery>();
