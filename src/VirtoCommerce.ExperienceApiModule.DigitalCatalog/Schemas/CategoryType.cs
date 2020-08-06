@@ -46,13 +46,9 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             })
             .RootAlias("__object.parentId");
 
-            Field<BooleanGraphType>(
-                "hasParent",
-                resolve: context => TryGetParentId(context, out _)
-            )
-            .RootAlias("__object.parentId");
+            Field<BooleanGraphType>("hasParent", resolve: context => TryGetParentId(context, out _)).RootAlias("__object.parentId");
 
-            Field<ListGraphType<OutlineType>>("outlines", resolve: context => context.Source.Category.Outlines);
+            Field<ListGraphType<OutlineType>>("outlines", resolve: context => context.Source.Category.Outlines).RootAlias("__object.outlines");
 
             Field<ListGraphType<ImageType>>("images", resolve: context => context.Source.Category.Images);
 
