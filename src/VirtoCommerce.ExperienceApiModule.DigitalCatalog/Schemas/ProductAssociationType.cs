@@ -45,9 +45,9 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
         public static async Task<IDictionary<string, ExpProduct>> LoadProductsAsync(IMediator mediator, IEnumerable<string> ids, IResolveFieldContext context)
         {
-            var query = context.GetCatalogQuery<LoadProductQuery>();
-            query.Ids = ids.ToArray();
-            query.IncludeFields = context.SubFields.Values.GetAllNodesPaths();
+            var query = context.GetCatalogQuery<LoadProductsQuery>();
+            query.ObjectIds = ids.ToArray();
+            query.IncludeFields = context.GetAllNodesPaths();
 
             var response = await mediator.Send(query);
             return response.Products.ToDictionary(x => x.Id);

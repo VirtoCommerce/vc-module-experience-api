@@ -1,8 +1,8 @@
-using System.Collections.Generic;
+using VirtoCommerce.ExperienceApiModule.Core.Index;
 
 namespace VirtoCommerce.XDigitalCatalog.Queries
 {
-    public class SearchProductQuery : CatalogQueryBase<SearchProductResponse>
+    public class SearchProductQuery : CatalogQueryBase<SearchProductResponse>, ISearchDocumentsQuery
     {
         public string Query { get; set; }
         public bool Fuzzy { get; set; }
@@ -12,6 +12,6 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
         public string Sort { get; set; }
         public int Skip { get; set; }
         public int Take { get; set; }
-        public IEnumerable<string> ProductIds { get; set; }
+        public string[] ObjectIds { get; set; }
     }
 }

@@ -115,9 +115,9 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
         private static async Task<IDictionary<string, ExpProduct>> LoadProductsAsync(IMediator mediator, IEnumerable<string> ids, IResolveFieldContext context)
         {
-            var query = context.GetCatalogQuery<LoadProductQuery>();
-            query.Ids = ids.ToArray();
-            query.IncludeFields = context.SubFields.Values.GetAllNodesPaths();
+            var query = context.GetCatalogQuery<LoadProductsQuery>();
+            query.ObjectIds = ids.ToArray();
+            query.IncludeFields = context.GetAllNodesPaths();
 
             var response = await mediator.Send(query);
 
@@ -128,7 +128,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
         {
             var first = context.First;
             var skip = Convert.ToInt32(context.After ?? 0.ToString());
-            var includeFields = context.SubFields.Values.GetAllNodesPaths().Select(x => x.TrimStart("items.")).ToArray();
+            var includeFields = context.GetAllNodesPaths().Select(x => x.Replace("items.", "")).ToArray();
 
             //TODO: Need to be able get entire query from context and read all arguments to the query properties
             var query = context.GetCatalogQuery<SearchProductQuery>();
@@ -148,7 +148,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             }
             else
             {
-                query.ProductIds = productIds;
+                query.ObjectIds = productIds.ToArray();
                 query.Take = productIds.Count;
             }
 
@@ -180,13 +180,13 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
         {
             var first = context.First;
             var skip = Convert.ToInt32(context.After ?? 0.ToString());
-            var includeFields = context.SubFields.Values.GetAllNodesPaths().Select(x => x.TrimStart("items.")).ToArray();
+            var includeFields = context.GetAllNodesPaths().Select(x => x.Replace("items.", "")).ToArray();
 
             var query = context.GetCatalogQuery<SearchCategoryQuery>();
 
             var categoryIds = context.GetArgument<List<string>>("categoryIds");
             query.IncludeFields = includeFields;
-          
+
             if (categoryIds.IsNullOrEmpty())
             {
                 query.Skip = skip;
@@ -200,7 +200,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             }
             else
             {
-                query.CategoryIds = categoryIds;
+                query.ObjectIds = categoryIds.ToArray();
                 query.Take = categoryIds.Count;
             }
 

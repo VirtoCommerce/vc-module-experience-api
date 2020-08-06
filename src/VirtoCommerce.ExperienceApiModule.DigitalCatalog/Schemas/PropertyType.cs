@@ -26,7 +26,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 {
                     var displayNames = context.Source.DisplayNames?.AsQueryable();
 
-                    if(displayNames != null)
+                    if (displayNames != null)
                     {
                         var cultureName = context.GetValue<string>("cultureName");
                         if (cultureName != null)
@@ -34,7 +34,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                             displayNames = displayNames.Where(x => x.LanguageCode == cultureName);
                         }
                     }
-                    return displayNames?.Select(x => x.Name).FirstOrDefault() ?? context.Source.Name; 
+                    return displayNames?.Select(x => x.Name).FirstOrDefault() ?? context.Source.Name;
                 });
 
             Field<StringGraphType>(
@@ -46,10 +46,12 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 "valueType",
                 resolve: context => context.Source.Values.Select(x => x.ValueType).FirstOrDefault()
             );
+
             Field<StringGraphType>(
                 "value",
                 resolve: context => context.Source.Values.Select(x => x.Value).FirstOrDefault()
-            );
+            ).RootAlias("values");
+
             Field<StringGraphType>(
                 "valueId",
                 resolve: context => context.Source.Values.Select(x => x.ValueId).FirstOrDefault()
