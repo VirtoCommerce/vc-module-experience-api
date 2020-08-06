@@ -1,11 +1,13 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using VirtoCommerce.SearchModule.Core.Model;
 
 namespace VirtoCommerce.ExperienceApiModule.Core.Index
 {
     public interface IRequestBuilder
     {
-        IRequestBuilder FromQuery<T>(T searchQuery) where T : ISearchQuery;
+        IRequestBuilder FromQuery(ISearchDocumentsQuery query);
+
+        IRequestBuilder FromQuery(IGetDocumentsByIdsQuery query);
 
         IRequestBuilder AddTerms(IEnumerable<string> terms);
 
