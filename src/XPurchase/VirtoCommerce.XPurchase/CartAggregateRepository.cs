@@ -14,6 +14,8 @@ using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Security;
 using VirtoCommerce.StoreModule.Core.Services;
 using VirtoCommerce.XPurchase.Commands;
+using VirtoCommerce.XPurchase.Queries;
+using VirtoCommerce.XPurchase.Schemas;
 using VirtoCommerce.XPurchase.Validators;
 
 namespace VirtoCommerce.XPurchase
@@ -113,6 +115,28 @@ namespace VirtoCommerce.XPurchase
             return null;
         }
 
+        public async Task<SearchCartResponse> SearchCartAsync(string storeId, string userId, string cultureName, string currencyCode, string type, string sort, int skip, int take)
+        {
+            var criteria = new CartModule.Core.Model.Search.ShoppingCartSearchCriteria
+            {
+                StoreId = storeId,
+                CustomerId = userId,
+                Currency = currencyCode,
+                Type = type,
+                Skip = skip,
+                Take = take,
+                Sort = sort,
+                LanguageCode = cultureName,
+            };
+
+            var searchResult = await _shoppingCartSearchService.SearchCartAsync(criteria);
+            var cartAggregates = await GetCartsForShoppingCartsAsync(searchResult.Results);
+
+            return new SearchCartResponse() { Results = cartAggregates, TotalCount = searchResult.TotalCount};
+        }
+
+        public virtual async Task RemoveCartAsync(string cartId) => await _shoppingCartService.DeleteAsync(new[] { cartId });
+
         protected virtual async Task<CartAggregate> InnerGetCartAggregateFromCartAsync(ShoppingCart cart, string language)
         {
             if (cart == null)
@@ -182,6 +206,17 @@ namespace VirtoCommerce.XPurchase
             return result;
         }
 
-        public virtual async Task RemoveCartAsync(string cartId) => await _shoppingCartService.DeleteAsync(new[] { cartId });
+        protected virtual async Task<IList<CartAggregate>> GetCartsForShoppingCartsAsync(IList<ShoppingCart> carts, string cultureName = null)
+        {
+            var result = new List<CartAggregate>();
+
+            foreach (var shoppingCart in carts)
+            {
+                result.Add(await InnerGetCartAggregateFromCartAsync(shoppingCart, cultureName ?? Language.InvariantLanguage.CultureName));
+            }
+
+            return result;
+        }
+
     }
 }
