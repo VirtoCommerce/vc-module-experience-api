@@ -69,6 +69,18 @@ namespace VirtoCommerce.XPurchase
             return null;
         }
 
+        public async Task<IList<CartAggregate>> GetCartsForShoppingCartsAsync(IList<ShoppingCart> carts, string cultureName = null)
+        {
+            var result = new List<CartAggregate>();
+
+            foreach (var shoppingCart in carts)
+            {
+                result.Add(await InnerGetCartAggregateFromCartAsync(shoppingCart, cultureName ?? Language.InvariantLanguage.CultureName));
+            }
+
+            return result;
+        }
+
         public ShoppingCart CreateDefaultShoppingCart<TCartCommand>(TCartCommand request) where TCartCommand : CartCommand
         {
             var cart = AbstractTypeFactory<ShoppingCart>.TryCreateInstance();
@@ -115,12 +127,8 @@ namespace VirtoCommerce.XPurchase
             return null;
         }
 
-        public async Task<SearchCartDescriptionResponse> SearchCartDescriptionAsync(string storeId, string userId, string cultureName, string currencyCode, string type, string sort, int skip, int take)
+        public async Task<SearchCartResponse> SearchCartAsync(string storeId, string userId, string cultureName, string currencyCode, string type, string sort, int skip, int take)
         {
-            var result = new SearchCartDescriptionResponse()
-            {
-                Results = new List<CartDescription>()
-            };
             var criteria = new CartModule.Core.Model.Search.ShoppingCartSearchCriteria
             {
                 StoreId = storeId,
@@ -134,22 +142,9 @@ namespace VirtoCommerce.XPurchase
             };
 
             var searchResult = await _shoppingCartSearchService.SearchCartAsync(criteria);
-            var cartDescriptions = searchResult.Results.Select(x=> new CartDescription()
-            {
-                Id = x.Id,
-                StoreId = x.StoreId,
-                Currency = x.Currency,
-                CustomerId = x.CustomerId,
-                LanguageCode = x.LanguageCode,
-                Name = x.Name,
-                Status = x.Status,
-                Type = x.Type
-            }).ToList();
+            var cartAggregates = await GetCartsForShoppingCartsAsync(searchResult.Results);
 
-            result.Results = cartDescriptions;
-            result.TotalCount = searchResult.TotalCount;
-
-            return result;
+            return new SearchCartResponse() { Results = cartAggregates, TotalCount = searchResult.TotalCount};
         }
 
         protected virtual async Task<CartAggregate> InnerGetCartAggregateFromCartAsync(ShoppingCart cart, string language)

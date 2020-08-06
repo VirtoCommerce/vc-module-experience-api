@@ -1,8 +1,14 @@
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Builders;
 using GraphQL.Resolvers;
 using GraphQL.Types;
+using GraphQL.Types.Relay.DataObjects;
 using MediatR;
+using VirtoCommerce.CoreModule.Core.Currency;
+using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.XPurchase.Commands;
@@ -64,38 +70,28 @@ namespace VirtoCommerce.XPurchase.Schemas
             };
             schema.Query.AddField(cartField);
 
-            var wishListsField = new FieldType()
-            {
-                Name = "carts",
-                Arguments = new QueryArguments(
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "storeId" },
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "userId" },
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "currencyCode" },
-                    new QueryArgument<StringGraphType> { Name = "cultureName" },
-                    new QueryArgument<StringGraphType> { Name = "type" },
-                    new QueryArgument<StringGraphType> { Name = "sort" },
-                    new QueryArgument<IntGraphType> { Name = "skip" },
-                    new QueryArgument<IntGraphType> { Name = "take" }),
-                    
-                Type = GraphTypeExtenstionHelper.GetActualType<ListGraphType<CartDescriptionType>>(),
-                Resolver = new AsyncFieldResolver<object>(async context =>
-                {
-                    var type = context.GetArgument<string>("type");
-                    var storeId = context.GetArgument<string>("storeId");
-                    var userId = context.GetArgument<string>("userId");
-                    var cultureName = context.GetArgument<string>("cultureName");
-                    var currencyCode = context.GetArgument<string>("currencyCode");
-                    var sort = context.GetArgument<string>("sort");
-                    var skip = context.GetArgument<int>("skip");
-                    var take = context.GetArgument<int>("take");
 
-                    var cartsQuery = new SearchCartDescriptionQuery(storeId, type, userId, currencyCode, cultureName, sort, skip, take);
-                    var carts = await _mediator.Send(cartsQuery);
+            var orderConnectionBuilder = GraphTypeExtenstionHelper.CreateConnection<CartType, object>()
+                .Name("carts")
+                .Argument<StringGraphType>("storeId", "")
+                .Argument<StringGraphType>("userId", "")
+                .Argument<StringGraphType>("currencyCode", "")
+                .Argument<StringGraphType>("cultureName", "")
+                .Argument<StringGraphType>("type", "")
+                .Argument<StringGraphType>("sort", "The sort expression")
+                .Argument<IntGraphType>("skip", "")
+                .Argument<IntGraphType>("take", "")
+                
+                .Unidirectional()
+                .PageSize(20);
 
-                    return carts.Results;
-                })
-            };
-            schema.Query.AddField(wishListsField);
+            orderConnectionBuilder.ResolveAsync(async context => await ResolveConnectionAsync(_mediator, context));
+
+            schema.Query.AddField(orderConnectionBuilder.FieldType);
+
+
+
+
 
             //Mutations
             /// <example>
@@ -606,6 +602,54 @@ namespace VirtoCommerce.XPurchase.Schemas
                                                  .FieldType;
 
             schema.Mutation.AddField(clearPaymentsField);
+        }
+
+        private async Task<object> ResolveConnectionAsync(IMediator mediator, IResolveConnectionContext<object> context)
+        {
+            var first = context.First;
+            var skip = Convert.ToInt32(context.After ?? 0.ToString());
+
+            var request = new SearchCartQuery()
+            {
+                StoreId = context.GetArgument<string>("storeId"),
+                UserId = context.GetArgument<string>("userId"),
+                CurrencyCode = context.GetArgument<string>("currencyCode"),
+                CartType = context.GetArgument<string>("type"),
+                Skip = skip,
+                Take = first ?? context.PageSize ?? 10,
+                Sort = context.GetArgument<string>("sort"),
+                CultureName = context.GetArgument<string>(nameof(Currency.CultureName).ToCamelCase())
+            };
+
+            context.UserContext.Add(nameof(Currency.CultureName).ToCamelCase(), request.CultureName);
+
+            var response = await mediator.Send(request);
+            foreach (var cartAggregate in response.Results)
+            {
+                context.SetExpandedObjectGraph(cartAggregate);
+            }
+
+            var result = new Connection<CartAggregate>()
+            {
+                Edges = response.Results
+                    .Select((x, index) =>
+                        new Edge<CartAggregate>()
+                        {
+                            Cursor = (skip + index).ToString(),
+                            Node = x,
+                        })
+                    .ToList(),
+                PageInfo = new PageInfo()
+                {
+                    HasNextPage = response.TotalCount > (skip + first),
+                    HasPreviousPage = skip > 0,
+                    StartCursor = skip.ToString(),
+                    EndCursor = Math.Min(response.TotalCount, (int)(skip + first)).ToString()
+                },
+                TotalCount = response.TotalCount,
+            };
+
+            return result;
         }
     }
 }

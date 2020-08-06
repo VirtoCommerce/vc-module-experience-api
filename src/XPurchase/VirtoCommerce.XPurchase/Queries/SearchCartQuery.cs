@@ -2,13 +2,13 @@ using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 
 namespace VirtoCommerce.XPurchase.Queries
 {
-    public class SearchCartDescriptionQuery: IQuery<SearchCartDescriptionResponse>
+    public class SearchCartQuery: IQuery<SearchCartResponse>
     {
-        public SearchCartDescriptionQuery()
+        public SearchCartQuery()
         {
         }
 
-        public SearchCartDescriptionQuery(string storeId, string type, string userId, string currencyCode, string cultureName, string sort, int skip, int take)
+        public SearchCartQuery(string storeId, string type, string userId, string currencyCode, string cultureName, string sort, int skip, int take)
         {
             StoreId = storeId;
             CartType = type;

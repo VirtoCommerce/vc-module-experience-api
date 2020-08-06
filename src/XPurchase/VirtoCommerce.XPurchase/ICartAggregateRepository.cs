@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.XPurchase.Commands;
@@ -19,6 +21,6 @@ namespace VirtoCommerce.XPurchase
 
         ShoppingCart CreateDefaultShoppingCart<TCartCommand>(TCartCommand request) where TCartCommand : CartCommand;
 
-        Task<SearchCartDescriptionResponse> SearchCartDescriptionAsync(string storeId, string userId, string cultureName, string currencyCode, string type, string sort, int skip, int take);
+        Task<SearchCartResponse> SearchCartAsync(string storeId, string userId, string cultureName, string currencyCode, string type, string sort, int skip, int take);
     }
 }

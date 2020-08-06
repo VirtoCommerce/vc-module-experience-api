@@ -6,7 +6,7 @@ using VirtoCommerce.XPurchase.Schemas;
 
 namespace VirtoCommerce.XPurchase.Queries
 {
-    public class GetCartQueryHandler : IQueryHandler<GetCartQuery, CartAggregate>, IQueryHandler<GetCartByIdQuery, CartAggregate>, IQueryHandler<SearchCartDescriptionQuery, SearchCartDescriptionResponse>
+    public class GetCartQueryHandler : IQueryHandler<GetCartQuery, CartAggregate>, IQueryHandler<GetCartByIdQuery, CartAggregate>
     {
         private readonly ICartAggregateRepository _cartAggrRepository;
 
@@ -25,11 +25,6 @@ namespace VirtoCommerce.XPurchase.Queries
         {
             return _cartAggrRepository.GetCartByIdAsync(request.CartId);
 
-        }
-
-        public Task<SearchCartDescriptionResponse> Handle(SearchCartDescriptionQuery request, CancellationToken cancellationToken)
-        {
-            return _cartAggrRepository.SearchCartDescriptionAsync(request.StoreId, request.UserId, request.CultureName, request.CurrencyCode, request.CartType, request.Sort, request.Skip, request.Take);
         }
     }
 }
