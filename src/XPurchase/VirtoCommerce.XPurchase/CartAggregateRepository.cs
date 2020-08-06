@@ -69,18 +69,6 @@ namespace VirtoCommerce.XPurchase
             return null;
         }
 
-        public async Task<IList<CartAggregate>> GetCartsForShoppingCartsAsync(IList<ShoppingCart> carts, string cultureName = null)
-        {
-            var result = new List<CartAggregate>();
-
-            foreach (var shoppingCart in carts)
-            {
-                result.Add(await InnerGetCartAggregateFromCartAsync(shoppingCart, cultureName ?? Language.InvariantLanguage.CultureName));
-            }
-
-            return result;
-        }
-
         public ShoppingCart CreateDefaultShoppingCart<TCartCommand>(TCartCommand request) where TCartCommand : CartCommand
         {
             var cart = AbstractTypeFactory<ShoppingCart>.TryCreateInstance();
@@ -146,6 +134,8 @@ namespace VirtoCommerce.XPurchase
 
             return new SearchCartResponse() { Results = cartAggregates, TotalCount = searchResult.TotalCount};
         }
+
+        public virtual async Task RemoveCartAsync(string cartId) => await _shoppingCartService.DeleteAsync(new[] { cartId });
 
         protected virtual async Task<CartAggregate> InnerGetCartAggregateFromCartAsync(ShoppingCart cart, string language)
         {
@@ -216,6 +206,17 @@ namespace VirtoCommerce.XPurchase
             return result;
         }
 
-        public virtual async Task RemoveCartAsync(string cartId) => await _shoppingCartService.DeleteAsync(new[] { cartId });
+        protected virtual async Task<IList<CartAggregate>> GetCartsForShoppingCartsAsync(IList<ShoppingCart> carts, string cultureName = null)
+        {
+            var result = new List<CartAggregate>();
+
+            foreach (var shoppingCart in carts)
+            {
+                result.Add(await InnerGetCartAggregateFromCartAsync(shoppingCart, cultureName ?? Language.InvariantLanguage.CultureName));
+            }
+
+            return result;
+        }
+
     }
 }

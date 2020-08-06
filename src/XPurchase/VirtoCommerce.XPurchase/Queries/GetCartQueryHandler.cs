@@ -17,8 +17,7 @@ namespace VirtoCommerce.XPurchase.Queries
 
         public Task<CartAggregate> Handle(GetCartQuery request, CancellationToken cancellationToken)
         {
-           return  _cartAggrRepository.GetCartAsync(request.CartName, request.StoreId, request.UserId, request.CultureName, request.CurrencyCode, request.CartType);
-
+            return _cartAggrRepository.GetCartAsync(request.CartName, request.StoreId, request.UserId, request.CultureName, request.CurrencyCode, request.CartType);
         }
 
         public Task<CartAggregate> Handle(GetCartByIdQuery request, CancellationToken cancellationToken)

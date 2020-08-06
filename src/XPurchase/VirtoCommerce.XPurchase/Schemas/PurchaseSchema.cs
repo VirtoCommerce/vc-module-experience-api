@@ -77,7 +77,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                 .Argument<StringGraphType>("userId", "")
                 .Argument<StringGraphType>("currencyCode", "")
                 .Argument<StringGraphType>("cultureName", "")
-                .Argument<StringGraphType>("type", "")
+                .Argument<StringGraphType>("cartType", "")
                 .Argument<StringGraphType>("sort", "The sort expression")
                 .Argument<IntGraphType>("skip", "")
                 .Argument<IntGraphType>("take", "")
@@ -609,21 +609,14 @@ namespace VirtoCommerce.XPurchase.Schemas
             var first = context.First;
             var skip = Convert.ToInt32(context.After ?? 0.ToString());
 
-            var request = new SearchCartQuery()
-            {
-                StoreId = context.GetArgument<string>("storeId"),
-                UserId = context.GetArgument<string>("userId"),
-                CurrencyCode = context.GetArgument<string>("currencyCode"),
-                CartType = context.GetArgument<string>("type"),
-                Skip = skip,
-                Take = first ?? context.PageSize ?? 10,
-                Sort = context.GetArgument<string>("sort"),
-                CultureName = context.GetArgument<string>(nameof(Currency.CultureName).ToCamelCase())
-            };
+            var query = context.GetSearchCartQuery<SearchCartQuery>();
+            query.Skip = skip;
+            query.Take = first ?? context.PageSize ?? 10;
+            query.Sort = context.GetArgument<string>("sort");
 
-            context.UserContext.Add(nameof(Currency.CultureName).ToCamelCase(), request.CultureName);
+            context.UserContext.Add(nameof(Currency.CultureName).ToCamelCase(), query.CultureName);
 
-            var response = await mediator.Send(request);
+            var response = await mediator.Send(query);
             foreach (var cartAggregate in response.Results)
             {
                 context.SetExpandedObjectGraph(cartAggregate);
