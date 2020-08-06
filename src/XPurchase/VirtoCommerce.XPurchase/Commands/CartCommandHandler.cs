@@ -19,7 +19,7 @@ namespace VirtoCommerce.XPurchase.Commands
 
         public abstract Task<CartAggregate> Handle(TCartCommand request, CancellationToken cancellationToken);
 
-        protected async virtual Task<CartAggregate> GetOrCreateCartFromCommandAsync(TCartCommand request)
+        protected virtual async Task<CartAggregate> GetOrCreateCartFromCommandAsync(TCartCommand request)
         {
             var result = await CartRepository.GetCartAsync(request.CartName, request.StoreId, request.UserId, request.Language, request.Currency, request.CartType);
             if (result == null)
@@ -29,7 +29,7 @@ namespace VirtoCommerce.XPurchase.Commands
             return result;
         }
 
-        protected async virtual Task<CartAggregate> GetCartById(string cartId, string language) => await CartRepository.GetCartByIdAsync(cartId, language);
+        protected virtual async Task<CartAggregate> GetCartById(string cartId, string language) => await CartRepository.GetCartByIdAsync(cartId, language);
 
         protected virtual Task<CartAggregate> CreateNewCartAggregateAsync(TCartCommand request)
         {
