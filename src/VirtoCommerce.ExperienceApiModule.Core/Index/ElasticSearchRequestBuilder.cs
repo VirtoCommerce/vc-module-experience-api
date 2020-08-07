@@ -39,15 +39,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Index
             };
         }
 
-        public IRequestBuilder FromQuery<T>(T searchQuery)
-            where T : ISearchQuery => searchQuery switch
-            {
-                ISearchDocumentsQuery query => FromQuery(query),
-                IGetDocumentsByIdsQuery query => FromQuery(query),
-                _ => throw new NotImplementedException()
-            };
-
-        protected virtual IRequestBuilder FromQuery(ISearchDocumentsQuery query)
+        public virtual IRequestBuilder FromQuery(ISearchDocumentsQuery query)
         {
             SearchRequest.IsFuzzySearch = query.Fuzzy;
             SearchRequest.Fuzziness = query.FuzzyLevel;
@@ -68,7 +60,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Index
             return this;
         }
 
-        protected virtual IRequestBuilder FromQuery(IGetDocumentsByIdsQuery query)
+        public virtual IRequestBuilder FromQuery(IGetDocumentsByIdsQuery query)
         {
             if (!query.ObjectIds.IsNullOrEmpty())
             {
@@ -87,9 +79,13 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Index
             foreach (var aggr in SearchRequest.Aggregations)
             {
                 var clonedFilter = SearchRequest.Filter.Clone() as AndFilter;
-                clonedFilter.ChildFilters = clonedFilter.ChildFilters.Where(x => !(x is INamedFilter namedFilter) || !namedFilter.FieldName.EqualsInvariant(aggr.FieldName)).ToList();
+                clonedFilter.ChildFilters = clonedFilter.ChildFilters
+                    .Where(x => !(x is INamedFilter namedFilter) || !namedFilter.FieldName.EqualsInvariant(aggr.FieldName))
+                    .ToList();
+
                 aggr.Filter = clonedFilter;
             }
+
             return SearchRequest;
         }
 
@@ -113,10 +109,11 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Index
                         }).ToArray();
                 ((AndFilter)SearchRequest.Filter).ChildFilters.AddRange(termsFields);
             }
+
             return this;
         }
 
-        public void ParseFilters(string filterPhrase)
+        private void ParseFilters(string filterPhrase)
         {
             if (filterPhrase == null)
             {
@@ -143,13 +140,22 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Index
                         {
                             ChildFilters = new List<IFilter>()
                         };
-                        var wildcardTermFilters = wildcardValues.Select(x => new WildCardTermFilter { FieldName = termFilter.FieldName, Value = x }).ToList();
+
+                        var wildcardTermFilters = wildcardValues.Select(x => new WildCardTermFilter
+                        {
+                            FieldName = termFilter.FieldName,
+                            Value = x
+                        }).ToList();
+
                         orFilter.ChildFilters.AddRange(wildcardTermFilters);
+
                         termFilter.Values = termFilter.Values.Except(wildcardValues).ToList();
+
                         if (termFilter.Values.Any())
                         {
                             orFilter.ChildFilters.Add(termFilter);
                         }
+
                         filters.Add(orFilter);
                     }
                     else
@@ -186,43 +192,49 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Index
             //TODO: Support aliases for Facet expressions e.g price.usd[TO 200) as price_below_200
             //TODO: Need to create a new  Antlr file with g4-lexer rules and generate parser especially for facets expression that will return proper AggregationRequests objects
             var parseResult = _phraseParser.Parse(facetPhrase);
-            var aggrs = new List<AggregationRequest>();
+
             //Term facets
             if (!string.IsNullOrEmpty(parseResult.Keyword))
             {
                 var termFacetExpressions = parseResult.Keyword.Split(" ");
-                parseResult.Filters.AddRange(termFacetExpressions.Select(x => new TermFilter { FieldName = x, Values = new List<string>() }));
+                parseResult.Filters.AddRange(termFacetExpressions.Select(x => new TermFilter
+                {
+                    FieldName = x,
+                    Values = new List<string>()
+                }));
             }
 
-            foreach (var filter in parseResult.Filters)
-            {
-                FilterSyntaxMapper.MapFilterAdditionalSyntax(filter);
-                //Range facets
-                if (filter is RangeFilter rangeFilter)
+            SearchRequest.Aggregations = parseResult.Filters
+                .Select<IFilter, AggregationRequest>(filter =>
                 {
-                    var rangeAggrRequest = new RangeAggregationRequest
+                    FilterSyntaxMapper.MapFilterAdditionalSyntax(filter);
+
+                    return filter switch
                     {
-                        Id = filter.Stringify(),
-                        FieldName = rangeFilter.FieldName,
-                        Values = rangeFilter.Values.Select(x => new RangeAggregationRequestValue
+                        RangeFilter rangeFilter => new RangeAggregationRequest
                         {
-                            Id = x.Stringify(),
-                            Lower = x.Lower,
-                            Upper = x.Upper,
-                            IncludeLower = x.IncludeLower,
-                            IncludeUpper = x.IncludeUpper
-                        }).ToList()
+                            Id = filter.Stringify(),
+                            FieldName = rangeFilter.FieldName,
+                            Values = rangeFilter.Values.Select(x => new RangeAggregationRequestValue
+                            {
+                                Id = x.Stringify(),
+                                Lower = x.Lower,
+                                Upper = x.Upper,
+                                IncludeLower = x.IncludeLower,
+                                IncludeUpper = x.IncludeUpper
+                            }).ToList()
+                        },
+                        TermFilter termFilter => new TermAggregationRequest
+                        {
+                            FieldName = termFilter.FieldName,
+                            Id = filter.Stringify(),
+                            Filter = termFilter
+                        },
+                        _ => null,
                     };
-                    aggrs.Add(rangeAggrRequest);
-                }
-                //Filter facets
-                if (filter is TermFilter termFilter)
-                {
-                    aggrs.Add(new TermAggregationRequest { FieldName = termFilter.FieldName, Id = filter.Stringify(), Filter = termFilter });
-                }
-            }
-
-            SearchRequest.Aggregations = aggrs;
+                })
+                .Where(x => x != null)
+                .ToList();
 
             return this;
         }

@@ -1,12 +1,15 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoFixture;
+using FluentAssertions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.CoreModule.Core.Currency;
+using VirtoCommerce.SearchModule.Core.Model;
 
 namespace VirtoCommerce.ExperienceApiModule.Tests.Helpers
 {
@@ -16,11 +19,25 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Helpers
 
         protected const string CURRENCY_CODE = "USD";
         protected const string CULTURE_NAME = "en-US";
+        protected const string DEFAULT_STORE_ID = "default";
 
         public MoqHelper()
         {
             _fixture.Register(() => new Language(CULTURE_NAME));
             _fixture.Register(() => new Currency(_fixture.Create<Language>(), CURRENCY_CODE));
+            _fixture.Register(() => new SearchRequest
+            {
+                Filter = new AndFilter()
+                {
+                    ChildFilters = new List<IFilter>(),
+                },
+                SearchFields = new List<string> { "__content" },
+                Sorting = new List<SortingField> { new SortingField("__sort") },
+                Skip = 0,
+                Take = 20,
+                Aggregations = new List<AggregationRequest>(),
+                IncludeFields = new List<string>(),
+            });
         }
 
         protected Discount GetDiscount() => _fixture.Create<Discount>();
@@ -58,6 +75,53 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Helpers
                 .Verifiable();
 
             return userManager;
+        }
+
+        internal IFilter GetFilterByName(string filterName)
+        {
+            var rangeFilter = _fixture.Create<RangeFilter>();
+            var geoDistanceFilter = _fixture.Create<GeoDistanceFilter>();
+            var idsFilter = _fixture.Create<IdsFilter>();
+            var wildCardTermFilter = _fixture.Create<WildCardTermFilter>();
+
+            return filterName switch
+            {
+                "rangeFilter" => rangeFilter,
+                "geoDistanceFilter" => geoDistanceFilter,
+                "idsFilter" => idsFilter,
+                "wildCardTermFilter" => wildCardTermFilter,
+                _ => throw new NotImplementedException("Add more cases")
+            };
+        }
+
+        internal void AssertFiltersContainFilterByTypeName(IList<IFilter> filters, string filterName)
+        {
+            switch (filterName)
+            {
+                case "rangeFilter":
+                    filters.Should().ContainItemsAssignableTo<RangeFilter>();
+                    break;
+
+                case "geoDistanceFilter":
+                    filters.Should().ContainItemsAssignableTo<GeoDistanceFilter>();
+                    break;
+
+                case "idsFilter":
+                    filters.Should().ContainItemsAssignableTo<IdsFilter>();
+                    break;
+
+                case "wildCardTermFilter":
+                    filters.Should().ContainItemsAssignableTo<WildCardTermFilter>();
+                    break;
+
+                case "termFilter":
+                    filters.Should().ContainItemsAssignableTo<TermFilter>();
+                    break;
+
+                default:
+                    true.Should().BeFalse("Unknown filterName");
+                    break;
+            }
         }
     }
 }
