@@ -4,6 +4,7 @@ using System.Linq;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.SearchModule.Core.Extenstions;
 using VirtoCommerce.SearchModule.Core.Model;
 using VirtoCommerce.SearchModule.Core.Services;
 
@@ -76,14 +77,13 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Index
         public virtual SearchRequest Build()
         {
             //Apply multi-select facet search policy by default
+
             foreach (var aggr in SearchRequest.Aggregations)
             {
                 var clonedFilter = SearchRequest.Filter.Clone() as AndFilter;
-                clonedFilter.ChildFilters = clonedFilter.ChildFilters
-                    .Where(x => !(x is INamedFilter namedFilter) || !namedFilter.FieldName.EqualsInvariant(aggr.FieldName))
-                    .ToList();
+                clonedFilter.ChildFilters = clonedFilter.ChildFilters.Where(x => !(x is INamedFilter namedFilter) || !namedFilter.FieldName.EqualsInvariant(aggr.FieldName)).ToList();
 
-                aggr.Filter = clonedFilter;
+                aggr.Filter = aggr.Filter == null ? clonedFilter : aggr.Filter.And(clonedFilter);
             }
 
             return SearchRequest;
@@ -171,7 +171,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Index
             ((AndFilter)SearchRequest.Filter).ChildFilters.AddRange(filters);
         }
 
-        public IRequestBuilder ParseFacets(string facetPhrase, string storeId = null, string currency = null)
+        public IRequestBuilder ParseFacets(string facetPhrase, string[] pricelistIds = null, string storeId = null, string currency = null)
         {
             if (string.IsNullOrWhiteSpace(facetPhrase))
             {
@@ -182,7 +182,8 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Index
                     SearchRequest.Aggregations = _aggregationConverter.GetAggregationRequestsAsync(new ProductIndexedSearchCriteria
                     {
                         StoreId = storeId,
-                        Currency = currency
+                        Currency = currency,
+                        Pricelists = pricelistIds,
                     }, new FiltersContainer()).GetAwaiter().GetResult();
                 }
 

@@ -13,5 +13,6 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
         public int Skip { get; set; }
         public int Take { get; set; }
         public string[] ObjectIds { get; set; }
+        public string[] PricelistIds { get; set; }
     }
 }

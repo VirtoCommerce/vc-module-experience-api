@@ -11,7 +11,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Index
 
         IRequestBuilder AddTerms(IEnumerable<string> terms);
 
-        IRequestBuilder ParseFacets(string facetPhrase, string storeId = null, string currency = null);
+        IRequestBuilder ParseFacets(string facetPhrase, string[] pricelistIds = null, string storeId = null, string currency = null);
 
         SearchRequest Build();
     }

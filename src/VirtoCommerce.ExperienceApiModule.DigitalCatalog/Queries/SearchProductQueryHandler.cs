@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
-using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
@@ -73,7 +72,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
         {
             var searchRequest = _requestBuilder
                 .FromQuery(request)
-                .ParseFacets(request.Facet, request.StoreId, request.CurrencyCode)
+                .ParseFacets(request.Facet, request.PricelistIds, request.StoreId, request.CurrencyCode)
                 .AddTerms(new[] { "status:visible" })//Only visible, exclude variations from search result
                 .Build();
 
