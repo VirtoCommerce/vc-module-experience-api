@@ -10,7 +10,7 @@ namespace VirtoCommerce.XPurchase.Schemas
     {
         public CartType(ICartAvailMethodsService cartAvailMethods)
         {
-            Field(x => x.Id, nullable: true).Description("Shopping cart Id");
+            Field<StringGraphType>("id", resolve: context => context.Source.Id ?? context.Source.Cart.Id, description: "Shopping cart Id");
             Field(x => x.Cart.Name, nullable: false).Description("Shopping cart name");
             Field(x => x.Cart.Status, nullable: true).Description("Shopping cart status");
             Field(x => x.Cart.StoreId, nullable: true).Description("Shopping cart store id");
