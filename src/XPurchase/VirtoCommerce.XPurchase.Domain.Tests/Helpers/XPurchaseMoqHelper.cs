@@ -1,12 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using AutoFixture;
 using AutoMapper;
 using Bogus;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Moq;
 using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.CartModule.Core.Services;
@@ -181,7 +177,7 @@ namespace VirtoCommerce.XPurchase.Tests.Helpers
                 _taxProviderSearchServiceMock.Object,
                 _mapperMock.Object);
 
-            aggregate.GrabCartAsync(cart, new Store(), GetMember(), GetCurrency()).GetAwaiter().GetResult();
+            aggregate.GrabCart(cart, new Store(), GetMember(), GetCurrency());
 
             return aggregate;
         }
@@ -189,7 +185,7 @@ namespace VirtoCommerce.XPurchase.Tests.Helpers
 
     public class MockedPromotionResult : PromotionResult
     {
-        public new ICollection<PromotionReward> Rewards { get => Enumerable.Empty<PromotionReward>().ToList(); }
+        public new ICollection<PromotionReward> Rewards => Enumerable.Empty<PromotionReward>().ToList();
     }
 
     public class MockedMember : Member

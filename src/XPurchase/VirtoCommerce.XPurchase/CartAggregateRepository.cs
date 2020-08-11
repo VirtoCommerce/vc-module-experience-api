@@ -175,7 +175,9 @@ namespace VirtoCommerce.XPurchase
 
             var member = await GetCustomerAsync(cart.CustomerId);
             var aggregate = _cartAggregateFactory();
-            await aggregate.GrabCartAsync(cart, store, member, currency);
+
+            aggregate.GrabCart(cart, store, member, currency);
+
             var validationContext = await _cartValidationContextFactory.CreateValidationContextAsync(aggregate);
             //Populate aggregate.CartProducts with the  products data for all cart  line items
             foreach (var cartProduct in validationContext.AllCartProducts)
