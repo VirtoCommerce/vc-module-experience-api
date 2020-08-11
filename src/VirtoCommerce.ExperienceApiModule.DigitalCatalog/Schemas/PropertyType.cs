@@ -2,6 +2,7 @@ using System.Linq;
 using GraphQL.Types;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
+using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.XDigitalCatalog.Schemas
 {
@@ -24,18 +25,14 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 "label",
                 resolve: context =>
                 {
-                    var displayNames = context.Source.DisplayNames?.AsQueryable();
-
-                    if (displayNames != null)
-                    {
-                        var cultureName = context.GetValue<string>("cultureName");
-                        if (cultureName != null)
-                        {
-                            displayNames = displayNames.Where(x => x.LanguageCode == cultureName);
-                        }
-                    }
-                    return displayNames?.Select(x => x.Name).FirstOrDefault() ?? context.Source.Name;
-                });
+                    var cultureName = context.GetValue<string>("cultureName");
+                    return context.Source.DisplayNames
+                        ?.Where(x => x.LanguageCode.EqualsInvariant(cultureName))
+                        .Select(x => x.Name)
+                        .FirstOrDefault()
+                    ?? context.Source.Name;
+                })
+            .RootAlias("__object.properties.displayNames");
 
             Field<StringGraphType>(
                 "type",
@@ -50,7 +47,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             Field<StringGraphType>(
                 "value",
                 resolve: context => context.Source.Values.Select(x => x.Value).FirstOrDefault()
-            ).RootAlias("values");
+            ).RootAlias("__object.properties.values");
 
             Field<StringGraphType>(
                 "valueId",

@@ -1,4 +1,5 @@
 using GraphQL.Types;
+using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.XDigitalCatalog.Extensions;
 
 namespace VirtoCommerce.XDigitalCatalog.Schemas
@@ -34,7 +35,11 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             Field<ListGraphType<PriceType>>("prices", resolve: context => context.Source.AllPrices);
 
-            Field<ListGraphType<PropertyType>>("properties", resolve: context => context.Source.IndexedProduct.Properties.ExpandByValues());
+            Field<ListGraphType<PropertyType>>("properties", resolve: context =>
+            {
+                var cultureName = context.GetValue<string>("cultureName");
+                return context.Source.IndexedProduct.Properties.ExpandByValues(cultureName);
+            });
 
             Field<ListGraphType<AssetType>>("assets", resolve: context => context.Source.IndexedProduct.Assets);
 
