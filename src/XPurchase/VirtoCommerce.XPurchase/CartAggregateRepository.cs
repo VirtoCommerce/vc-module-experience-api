@@ -132,7 +132,7 @@ namespace VirtoCommerce.XPurchase
             var searchResult = await _shoppingCartSearchService.SearchCartAsync(criteria);
             var cartAggregates = await GetCartsForShoppingCartsAsync(searchResult.Results);
 
-            return new SearchCartResponse() { Results = cartAggregates, TotalCount = searchResult.TotalCount};
+            return new SearchCartResponse() { Results = cartAggregates, TotalCount = searchResult.TotalCount };
         }
 
         public virtual async Task RemoveCartAsync(string cartId) => await _shoppingCartService.DeleteAsync(new[] { cartId });
@@ -175,13 +175,18 @@ namespace VirtoCommerce.XPurchase
 
             var member = await GetCustomerAsync(cart.CustomerId);
             var aggregate = _cartAggregateFactory();
-            await aggregate.GrabCartAsync(cart, store, member, currency);
+
+            aggregate.GrabCart(cart, store, member, currency);
+
             var validationContext = await _cartValidationContextFactory.CreateValidationContextAsync(aggregate);
             //Populate aggregate.CartProducts with the  products data for all cart  line items
             foreach (var cartProduct in validationContext.AllCartProducts)
             {
                 aggregate.CartProducts[cartProduct.Id] = cartProduct;
             }
+
+            await aggregate.RecalculateAsync();
+
             //Run validation
             await aggregate.ValidateAsync(validationContext);
 
@@ -217,6 +222,5 @@ namespace VirtoCommerce.XPurchase
 
             return result;
         }
-
     }
 }

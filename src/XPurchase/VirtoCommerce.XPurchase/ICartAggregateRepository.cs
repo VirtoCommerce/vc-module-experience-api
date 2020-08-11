@@ -15,7 +15,7 @@ namespace VirtoCommerce.XPurchase
 
         Task<CartAggregate> GetCartAsync(string cartName, string storeId, string userId, string cultureName, string currencyCode, string type = null);
 
-        Task<CartAggregate> GetCartByIdAsync(string cartId, string cultureName = null);
+        Task<CartAggregate> GetCartByIdAsync(string cartId, string language = null);
 
         Task<CartAggregate> GetCartForShoppingCartAsync(ShoppingCart cart, string cultureName = null);
 
