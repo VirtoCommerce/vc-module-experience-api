@@ -12,7 +12,8 @@ namespace VirtoCommerce.XDigitalCatalog.Extensions
             var result = properties.SelectMany(property =>
             {
                 var propertyValues = property.Values
-                    .Where(propertyValue => propertyValue.LanguageCode.EqualsInvariant(cultureName))
+                    // Filter properties if cultureName passed
+                    .Where(propertyValue => cultureName == null || propertyValue.LanguageCode.EqualsInvariant(cultureName))
                     .Select(propertyValue =>
                     {
                         var clonedProperty = (Property)property.Clone();
