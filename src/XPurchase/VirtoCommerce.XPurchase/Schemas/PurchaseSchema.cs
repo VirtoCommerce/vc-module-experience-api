@@ -81,7 +81,6 @@ namespace VirtoCommerce.XPurchase.Schemas
                 .Argument<StringGraphType>("sort", "The sort expression")
                 .Argument<IntGraphType>("skip", "")
                 .Argument<IntGraphType>("take", "")
-                
                 .Unidirectional()
                 .PageSize(20);
 

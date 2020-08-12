@@ -26,11 +26,16 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 resolve: context =>
                 {
                     var cultureName = context.GetValue<string>("cultureName");
-                    return context.Source.DisplayNames
-                        ?.Where(x => x.LanguageCode.EqualsInvariant(cultureName))
-                        .Select(x => x.Name)
-                        .FirstOrDefault()
-                    ?? context.Source.Name;
+
+                    var label = cultureName != null
+                        ? context.Source.DisplayNames
+                            ?.FirstOrDefault(x => x.LanguageCode.EqualsInvariant(cultureName))
+                            ?.Name
+                        : default;
+
+                    return string.IsNullOrWhiteSpace(label)
+                        ? context.Source.Name
+                        : label;
                 })
             .RootAlias("__object.properties.displayNames");
 
