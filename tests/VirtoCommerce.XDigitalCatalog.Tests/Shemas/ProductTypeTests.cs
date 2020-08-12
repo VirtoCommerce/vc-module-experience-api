@@ -71,7 +71,7 @@ namespace VirtoCommerce.XDigitalCatalog.Tests.Shemas
         }
 
         [Fact]
-        public void ProductType_Properties_ShouldFilterPropertiesByCultureName()
+        public void ProductType_Properties_ShouldReturnPropertyWithCurrentCultureName()
         {
             // Arrange
             var propValues = _fixture
@@ -79,7 +79,7 @@ namespace VirtoCommerce.XDigitalCatalog.Tests.Shemas
                 .With(x => x.LanguageCode, CULTURE_NAME)
                 .With(x => x.Property, default(Property))
                 .With(x => x.Alias, "i_grouped")
-                .CreateMany()
+                .CreateMany(2)
                 .ToList();
 
             propValues.First().LanguageCode = "de-De";
