@@ -172,7 +172,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
 
             string result = null;
 
-            if (filterString.Contains(catalogLabel))
+            if (filterString?.Contains(catalogLabel) ?? false)
             {
                 var catalogIdStartIndex = filterString.IndexOf(catalogLabel, StringComparison.InvariantCulture);
 
