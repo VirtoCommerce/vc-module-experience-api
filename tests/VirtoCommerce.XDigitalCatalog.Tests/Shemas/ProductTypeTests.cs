@@ -111,7 +111,7 @@ namespace VirtoCommerce.XDigitalCatalog.Tests.Shemas
 
             // Assert
             result.Should().BeOfType<List<Property>>();
-            ((List<Property>)result).Count.Should().Be(propValues.Count - 1);
+            ((List<Property>)result).Count.Should().Be(1);
         }
 
         [Fact]

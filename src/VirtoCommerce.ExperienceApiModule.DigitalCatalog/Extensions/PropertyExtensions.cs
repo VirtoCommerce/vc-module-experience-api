@@ -10,23 +10,19 @@ namespace VirtoCommerce.XDigitalCatalog.Extensions
         public static IList<Property> ExpandByValues(this IEnumerable<Property> properties, string cultureName)
             => properties.SelectMany(property => property.Values
                 .GroupBy(propertyValue => propertyValue.Alias)
-                .SelectMany(aliasGroup => cultureName switch
+                .Select(aliasGroup => cultureName switch
                 {
                     string languageCode when languageCode != null
                                         && aliasGroup.Any(x => x.LanguageCode.EqualsInvariant(languageCode))
-                        => aliasGroup.Where(x => x.LanguageCode.EqualsInvariant(languageCode)),
+                        => aliasGroup.First(x => x.LanguageCode.EqualsInvariant(languageCode)),
 
-                    string languageCode when languageCode != null
-                        => aliasGroup
-                            .Take(1)
-                            .Select(propertyValue =>
-                            {
-                                var clonedValue = (PropertyValue)propertyValue.Clone();
-                                clonedValue.Value = aliasGroup.Key;
-                                return clonedValue;
-                            }),
-
-                    _ => aliasGroup.AsEnumerable()
+                    _ => aliasGroup.Select(propertyValue =>
+                        {
+                            var clonedValue = (PropertyValue)propertyValue.Clone();
+                            clonedValue.Value = aliasGroup.Key;
+                            return clonedValue;
+                        })
+                        .First()
                 })
                 .Select(propertyValue =>
                 {
