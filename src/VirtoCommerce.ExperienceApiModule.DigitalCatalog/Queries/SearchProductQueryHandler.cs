@@ -4,8 +4,11 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.CoreModule.Core.Currency;
+using VirtoCommerce.CustomerModule.Core.Model;
+using VirtoCommerce.CustomerModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Index;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
@@ -14,6 +17,7 @@ using VirtoCommerce.InventoryModule.Core.Services;
 using VirtoCommerce.MarketingModule.Core.Model.Promotions;
 using VirtoCommerce.MarketingModule.Core.Services;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.Security;
 using VirtoCommerce.PricingModule.Core.Model;
 using VirtoCommerce.PricingModule.Core.Services;
 using VirtoCommerce.SearchModule.Core.Model;
@@ -43,6 +47,8 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
         private readonly ICurrencyService _currencyService;
         private readonly IStoreService _storeService;
         private readonly IPricingService _pricingService;
+        private readonly IMemberService _memberService;
+        private readonly Func<UserManager<ApplicationUser>> _userManagerFactory;
 
         public SearchProductQueryHandler(
             ISearchProvider searchProvider
@@ -54,7 +60,10 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             , ICurrencyService currencyService
             , IStoreService storeService
             , ITaxProviderSearchService taxProviderSearchService
-            , IPricingService pricingService)
+            , IPricingService pricingService
+            , Func<UserManager<ApplicationUser>> userManagerFactory
+            , IMemberService memberService
+            )
         {
             _searchProvider = searchProvider;
             _requestBuilder = requestBuilder;
@@ -66,10 +75,66 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             _taxProviderSearchService = taxProviderSearchService;
             _storeService = storeService;
             _pricingService = pricingService;
+            _memberService = memberService;
+            _userManagerFactory = userManagerFactory;
         }
 
         public virtual async Task<SearchProductResponse> Handle(SearchProductQuery request, CancellationToken cancellationToken)
         {
+            
+            var context = new PriceEvaluationContext
+            {
+                CatalogId = GetCatalogIdFromFilter(request.Filter),
+                Currency = request.CurrencyCode,
+                CustomerId = request.UserId,
+                Language = request.CultureName,
+                StoreId = request.StoreId,
+                CertainDate = DateTime.UtcNow,
+            };
+
+            using (var userManager = _userManagerFactory())
+            {
+                var appUser = await userManager.FindByIdAsync(request.UserId);
+
+                if (appUser != null)
+                {
+
+                    context.CustomerId = appUser.Id;
+
+                    if (appUser.MemberId != null)
+                    {
+                        var member = await _memberService.GetByIdAsync(appUser.MemberId, memberType: nameof(Contact));
+
+                        if (member is Contact contact)
+                        {
+                            context.GeoTimeZone = contact.TimeZone;
+
+                            var defaultShippingAddress = contact.Addresses.FirstOrDefault(x => (x.AddressType & AddressType.Shipping) == AddressType.Shipping);
+                            var defaultBillingAddress = contact.Addresses.FirstOrDefault(x => (x.AddressType & AddressType.Billing) == AddressType.Billing);
+
+                            var address = defaultShippingAddress ?? defaultBillingAddress;
+
+                            if (address != null)
+                            {
+                                context.GeoCity = address.City;
+                                context.GeoCountry = address.CountryCode;
+                                context.GeoState = address.RegionName;
+                                context.GeoZipCode = address.PostalCode;
+                            }
+
+                            if (!contact.Groups.IsNullOrEmpty())
+                            {
+                                context.UserGroups = contact.Groups.ToArray();
+                            }
+                        }
+                    }
+                }
+            }
+            
+            var pricelists = await _pricingService.EvaluatePriceListsAsync(context);
+
+            request.PricelistIds = pricelists.Select(x => x.Id).ToArray();
+
             var searchRequest = _requestBuilder
                 .FromQuery(request)
                 .ParseFacets(request.Facet, request.PricelistIds, request.StoreId, request.CurrencyCode)
@@ -97,6 +162,24 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             var expProducts = await ConvertIndexDocsToProductsWithLoadDependenciesAsync(searchResult.Documents, request);
 
             return new LoadProductResponse(expProducts.ToList());
+        }
+
+
+        protected virtual string GetCatalogIdFromFilter(string filterString)
+        {
+            const string catalogLabel = "catalog:";
+            const int catalogIdLength = 32;
+
+            string result = null;
+
+            if (filterString.Contains(catalogLabel))
+            {
+                var catalogIdStartIndex = filterString.IndexOf(catalogLabel, StringComparison.InvariantCulture);
+
+                result = filterString.Substring(catalogIdStartIndex + catalogLabel.Length, catalogIdLength);
+            }
+
+            return result;
         }
 
         protected virtual async Task<IEnumerable<ExpProduct>> ConvertIndexDocsToProductsWithLoadDependenciesAsync(IEnumerable<SearchDocument> docs, ICatalogQuery query)

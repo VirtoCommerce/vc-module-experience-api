@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Builders;
 using GraphQL.DataLoader;
-using GraphQL.Language.AST;
 using GraphQL.Resolvers;
 using GraphQL.Types;
 using GraphQL.Types.Relay;
@@ -134,21 +133,6 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             //TODO: Need to be able get entire query from context and read all arguments to the query properties
             var query = context.GetCatalogQuery<SearchProductQuery>();
             query.IncludeFields = includeFields;
-
-            if (context.SubFields.TryGetValue("term_facets", out var field))
-            {
-                var pricelistIdsArgument = field.Arguments.FirstOrDefault(x => x.Name.EqualsInvariant("pricelistIds"));
-
-                if (pricelistIdsArgument != null)
-                {
-                    var pricelistIds = ((ListValue) pricelistIdsArgument.Value)
-                        .Values
-                        .Select(x => x.Value.ToString())
-                        .ToArray();
-
-                    query.PricelistIds = pricelistIds;
-                }
-            }
 
             var productIds = context.GetArgument<List<string>>("productIds");
             if (productIds.IsNullOrEmpty())

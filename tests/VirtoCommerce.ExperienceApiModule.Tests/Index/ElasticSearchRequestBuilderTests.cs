@@ -258,7 +258,7 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Index
             var expected = _fixture.Create<SearchRequest>();
 
             // Act
-            var actual = _builder.ParseFacets(facetPhrase, storeId, currency).Build();
+            var actual = _builder.ParseFacets(facetPhrase, null, storeId, currency).Build();
 
             // Assert
             actual.Should().BeEquivalentTo(expected);
@@ -284,7 +284,7 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Index
                 .ReturnsAsync(aggregations);
 
             // Act
-            var actual = _builder.ParseFacets(facetPhrase, DEFAULT_STORE_ID, CURRENCY_CODE).Build();
+            var actual = _builder.ParseFacets(facetPhrase, null, DEFAULT_STORE_ID, CURRENCY_CODE).Build();
 
             // Assert
             actual.Aggregations.Should().BeEquivalentTo(aggregations);
@@ -320,7 +320,7 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Index
             // Act
             var actual = _builder
                 .FromQuery(_searchDocumentsQueryMock.Object)
-                .ParseFacets(_fixture.Create<string>(), DEFAULT_STORE_ID, CURRENCY_CODE)
+                .ParseFacets(_fixture.Create<string>(), null, DEFAULT_STORE_ID, CURRENCY_CODE)
                 .Build();
 
             // Assert
@@ -422,7 +422,7 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Index
             // Act
             var actual = _builder
                 .FromQuery(_searchDocumentsQueryMock.Object)
-                .ParseFacets(null, DEFAULT_STORE_ID, CURRENCY_CODE)
+                .ParseFacets(null, null, DEFAULT_STORE_ID, CURRENCY_CODE)
                 .Build();
 
             // Assert

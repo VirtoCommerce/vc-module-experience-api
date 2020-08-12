@@ -19,11 +19,6 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                resolve: context => ((ProductsConnection<ExpProduct>)context.Source).Facets.OfType<RangeFacetResult>());
 
             Field<ListGraphType<TermFacetResultType>>("term_facets",
-                arguments: new QueryArguments(new QueryArgument<ListGraphType<NonNullGraphType<StringGraphType>>>
-                {
-                    Name = "pricelistIds",
-                    Description = "Pricelist ids"
-                }),
                 resolve: context => ((ProductsConnection<ExpProduct>)context.Source).Facets.OfType<TermFacetResult>());
         }
     }
