@@ -78,6 +78,7 @@ namespace VirtoCommerce.XDigitalCatalog.Tests.Shemas
                 .Build<PropertyValue>()
                 .With(x => x.LanguageCode, CULTURE_NAME)
                 .With(x => x.Property, default(Property))
+                .With(x => x.Alias, "i_grouped")
                 .CreateMany()
                 .ToList();
 
@@ -155,6 +156,50 @@ namespace VirtoCommerce.XDigitalCatalog.Tests.Shemas
             result.Should().BeOfType<List<Property>>();
             ((List<Property>)result).Count.Should().Be(1);
             ((List<Property>)result).First().Values.First().Should().BeEquivalentTo(propValue);
+        }
+
+        [Fact]
+        public void ProductType_Properties_NoLocalization_ShouldGetDefaultValue()
+        {
+            // Arrange
+            var alias = "i_grouped";
+            var propValues = _fixture
+                .Build<PropertyValue>()
+                .With(x => x.LanguageCode, "de-De")
+                .With(x => x.Property, default(Property))
+                .With(x => x.Alias, alias)
+                .CreateMany()
+                .ToList();
+
+            var product = new ExpProduct
+            {
+                IndexedProduct = new CatalogProduct
+                {
+                    Properties = new List<Property>
+                    {
+                        new Property
+                        {
+                            Values = propValues
+                        }
+                    }
+                }
+            };
+            var resolveContext = new ResolveFieldContext()
+            {
+                Source = product,
+                UserContext = new Dictionary<string, object>
+                {
+                    { "cultureName", CULTURE_NAME }
+                }
+            };
+
+            // Act
+            var result = _productType.Fields.FirstOrDefault(x => x.Name.EqualsInvariant("properties")).Resolver.Resolve(resolveContext);
+
+            // Assert
+            result.Should().BeOfType<List<Property>>();
+            ((List<Property>)result).Count.Should().Be(1);
+            ((List<Property>)result).Any(p => p.Values.Any(pv => pv.Value.ToString().EqualsInvariant(alias))).Should().BeTrue();
         }
 
         #endregion Properties
