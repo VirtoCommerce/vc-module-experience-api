@@ -1,7 +1,5 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Builders;
@@ -17,7 +15,6 @@ using VirtoCommerce.ExperienceApiModule.XOrder.Authorization;
 using VirtoCommerce.ExperienceApiModule.XOrder.Commands;
 using VirtoCommerce.ExperienceApiModule.XOrder.Extensions;
 using VirtoCommerce.ExperienceApiModule.XOrder.Queries;
-using VirtoCommerce.OrdersModule.Core.Model;
 using VirtoCommerce.Platform.Core.Security;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
@@ -49,9 +46,10 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                     new QueryArgument<StringGraphType> { Name = "userId" }
                     ),
                 Type = GraphTypeExtenstionHelper.GetActualType<CustomerOrderType>(),
-                Resolver = new AsyncFieldResolver<object>(async context => {
+                Resolver = new AsyncFieldResolver<object>(async context =>
+                {
                     var orderAggregate = await _mediator.Send(new GetOrderQuery(context.GetArgument<string>("id"), context.GetArgument<string>("number")));
-                    await CheckAuthAsync(context, new[] { orderAggregate.Order });
+                    await CheckAuthAsync(context, orderAggregate.Order);
                     //store order aggregate in the user context for future usage in the graph types resolvers
                     context.SetValue(orderAggregate);
 
@@ -75,10 +73,12 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             _ = schema.Mutation.AddField(FieldBuilder.Create<object, CustomerOrderAggregate>(typeof(CustomerOrderType))
                             .Name("createOrderFromCart")
                             .Argument<NonNullGraphType<InputCreateOrderFromCartType>>(_commandName)
-                            .ResolveAsync(async context => {
+                            .ResolveAsync(async context =>
+                            {
                                 var response = await _mediator.Send(context.GetArgument<CreateOrderFromCartCommand>(_commandName));
                                 context.SetValue(response);
-                                return response;})
+                                return response;
+                            })
                             .FieldType);
 
             _ = schema.Mutation.AddField(FieldBuilder.Create<object, bool>(typeof(BooleanGraphType))
@@ -117,9 +117,10 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 
             context.UserContext.Add(nameof(Currency.CultureName).ToCamelCase(), request.CultureName);
 
+            await CheckAuthAsync(context, request);
+
             var response = await mediator.Send(request);
 
-            await CheckAuthAsync(context, response.Results.Select(x => x.Order).ToArray());
 
             foreach (var customerOrderAggregate in response.Results)
             {
@@ -149,7 +150,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             return result;
         }
 
-        private async Task CheckAuthAsync(IResolveFieldContext context, CustomerOrder[] orders)
+        private async Task CheckAuthAsync(IResolveFieldContext context, object resource)
         {
             var userId = context.GetArgument<string>("userId");
 
@@ -166,7 +167,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             }
 
             var userPrincipal = await signInManager.CreateUserPrincipalAsync(user);
-            var authorizationResult = await _authorizationService.AuthorizeAsync(userPrincipal, orders, new CanAccessOrderAuthorizationRequirement());
+            var authorizationResult = await _authorizationService.AuthorizeAsync(userPrincipal, resource, new CanAccessOrderAuthorizationRequirement());
 
             if (!authorizationResult.Succeeded)
             {

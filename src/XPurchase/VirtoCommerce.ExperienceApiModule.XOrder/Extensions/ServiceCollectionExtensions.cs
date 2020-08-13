@@ -1,3 +1,4 @@
+using System;
 using GraphQL.Server;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -14,13 +15,8 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Extensions
     {
         public static IServiceCollection AddXOrder(this IServiceCollection services, IGraphQLBuilder graphQlbuilder)
         {
-            services.AddSingleton<ISchemaBuilder>(provider => {
-                return new OrderSchema(
-                    provider.GetService<IMediator>(),
-                    provider.GetService<IAuthorizationService>(),
-                    () => provider.CreateScope().ServiceProvider.GetService<SignInManager<ApplicationUser>>()
-                    );
-            });
+            services.AddSingleton<Func<SignInManager<ApplicationUser>>>(provider => () => provider.GetService<SignInManager<ApplicationUser>>());
+            services.AddSingleton<ISchemaBuilder, OrderSchema>();
 
             graphQlbuilder.AddGraphTypes(typeof(XOrderAnchor));
 

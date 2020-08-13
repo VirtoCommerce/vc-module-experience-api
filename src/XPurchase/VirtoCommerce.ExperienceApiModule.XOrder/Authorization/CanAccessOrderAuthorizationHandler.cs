@@ -1,7 +1,7 @@
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using VirtoCommerce.ExperienceApiModule.XOrder.Queries;
 using VirtoCommerce.OrdersModule.Core.Model;
 using VirtoCommerce.Platform.Security.Authorization;
 
@@ -19,10 +19,14 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Authorization
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, CanAccessOrderAuthorizationRequirement requirement)
         {
             var result = false;
-            if (context.Resource is CustomerOrder[] orders)
+            if (context.Resource is CustomerOrder order)
             {
-                //TODO use ClaimTypes instead of "name"
-                result = orders.All(x => x.CustomerId == context.User.FindFirstValue("name"));
+                result = order.CustomerId == GetUserId(context);
+            }
+            else if (context.Resource is SearchOrderQuery query)
+            {
+                query.CustomerId = GetUserId(context);
+                result = true;
             }
 
             if (result)
@@ -35,6 +39,12 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Authorization
             }
 
             return Task.CompletedTask;
+        }
+
+        private static string GetUserId(AuthorizationHandlerContext context)
+        {
+            //TODO use ClaimTypes instead of "name"
+            return context.User.FindFirstValue("name");
         }
     }
 }
