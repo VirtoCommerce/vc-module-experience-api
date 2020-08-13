@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using VirtoCommerce.CatalogModule.Core.Model;
@@ -8,29 +9,41 @@ namespace VirtoCommerce.XDigitalCatalog.Extensions
     public static class PropertyExtensions
     {
         public static IList<Property> ExpandByValues(this IEnumerable<Property> properties, string cultureName)
-            => properties.SelectMany(property => property.Values
-                .GroupBy(propertyValue => propertyValue.Alias)
-                .Select(aliasGroup => cultureName switch
-                {
-                    string languageCode when languageCode != null
-                                        && aliasGroup.Any(x => x.LanguageCode.EqualsInvariant(languageCode))
-                        => aliasGroup.First(x => x.LanguageCode.EqualsInvariant(languageCode)),
+        {
+            if (string.IsNullOrWhiteSpace(cultureName))
+            {
+                throw new ArgumentNullException($"Culture name is null");
+            }
 
-                    _ => aliasGroup.Select(propertyValue =>
-                        {
-                            var clonedValue = (PropertyValue)propertyValue.Clone();
-                            clonedValue.Value = aliasGroup.Key;
-                            return clonedValue;
-                        })
-                        .First()
-                })
-                .Select(propertyValue =>
-                {
-                    var clonedProperty = (Property)property.Clone();
-                    clonedProperty.Values = new List<PropertyValue> { propertyValue };
-                    return clonedProperty;
-                })
-                .DefaultIfEmpty((Property)property.Clone())
-            ).ToList();
+            return properties.SelectMany(property =>
+            {
+                var propertyValues = property.Dictionary
+                    // Group by Alias for dictionary properties
+                    ? property.Values
+                        .GroupBy(propertyValue => propertyValue.Alias)
+                        .Select(aliasGroup
+                            => aliasGroup.FirstOrDefault(propertyValue => propertyValue.LanguageCode.EqualsInvariant(cultureName))
+                            // If localization not found build default value
+                            ?? aliasGroup.Select(propertyValue =>
+                            {
+                                var clonedValue = (PropertyValue)propertyValue.Clone();
+                                clonedValue.Value = aliasGroup.Key;
+                                return clonedValue;
+                            }).First()
+                        )
+                    : property.Values.Where(x => x.LanguageCode.EqualsInvariant(cultureName));
+
+                return propertyValues
+                    .Select(propertyValue => propertyValue.CopyPropertyWithValue(property))
+                    .DefaultIfEmpty((Property)property.Clone());
+            }).ToList();
+        }
+
+        public static Property CopyPropertyWithValue(this PropertyValue propertyValue, Property property)
+        {
+            var clonedProperty = (Property)property.Clone();
+            clonedProperty.Values = new List<PropertyValue> { propertyValue };
+            return clonedProperty;
+        }
     }
 }
