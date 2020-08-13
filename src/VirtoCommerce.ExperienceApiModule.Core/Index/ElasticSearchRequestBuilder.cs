@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.Platform.Core.Common;
@@ -14,16 +15,19 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Index
     {
         private readonly ISearchPhraseParser _phraseParser;
         private readonly IAggregationConverter _aggregationConverter;
+        private readonly ITermFilterBuilder _termFilterBuilder;
 
         private SearchRequest SearchRequest { get; set; }
 
         public ElasticSearchRequestBuilder(
             ISearchPhraseParser phraseParser
             , IAggregationConverter aggregationConverter
+            , ITermFilterBuilder termFilterBuilder
             )
         {
             _phraseParser = phraseParser;
             _aggregationConverter = aggregationConverter;
+            _termFilterBuilder = termFilterBuilder;
 
             SearchRequest = new SearchRequest
             {
@@ -49,8 +53,8 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Index
             SearchRequest.SearchKeywords = query.Query;
             SearchRequest.IncludeFields = query.IncludeFields.ToList();
 
-            ParseFilters(query.Filter);
-
+            ParseFilters(query.Filter).GetAwaiter().GetResult();
+            
             AddSorting(query.Sort);
 
             if (!query.ObjectIds.IsNullOrEmpty())
@@ -113,7 +117,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Index
             return this;
         }
 
-        private void ParseFilters(string filterPhrase)
+        private async Task ParseFilters(string filterPhrase)
         {
             if (filterPhrase == null)
             {
@@ -124,7 +128,18 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Index
             var filters = new List<IFilter>();
             const string spaceEscapeString = "%x20";
 
-            foreach (var filter in parseResult.Filters)
+            var terms = await _termFilterBuilder.GetTermFiltersAsync(new ProductIndexedSearchCriteria
+            {
+                Currency = "USD",
+                StoreId = "Electronics",
+                Terms = parseResult.Filters.OfType<TermFilter>().Select(x => x.ToString()).ToList(),
+            });
+            var resultFilters = new List<IFilter>();
+
+            resultFilters.AddRange(terms.PermanentFilters);
+            resultFilters.AddRange(terms.RemovableFilters.Select(x => x.Value));
+
+            foreach (var filter in resultFilters)
             {
                 FilterSyntaxMapper.MapFilterAdditionalSyntax(filter);
                 if (filter is TermFilter termFilter)
