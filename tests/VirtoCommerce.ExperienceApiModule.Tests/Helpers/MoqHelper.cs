@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
+using GraphQL.DataLoader;
+using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -20,6 +22,9 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Helpers
         protected const string CURRENCY_CODE = "USD";
         protected const string CULTURE_NAME = "en-US";
         protected const string DEFAULT_STORE_ID = "default";
+
+        protected readonly Mock<IMediator> _mediatorMock = new Mock<IMediator>();
+        protected readonly Mock<IDataLoaderContextAccessor> _dataLoaderContextAccessorMock = new Mock<IDataLoaderContextAccessor>();
 
         public MoqHelper()
         {

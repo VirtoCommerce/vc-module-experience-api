@@ -7,26 +7,30 @@ namespace VirtoCommerce.XDigitalCatalog.Extensions
 {
     public static class PropertyExtensions
     {
-        public static IList<Property> ExpandByValues(this IEnumerable<Property> properties)
-        {
-            var result = properties.SelectMany(property =>
-            {
-                var propertyValues = property.Values.Select(v =>
+        public static IList<Property> ExpandByValues(this IEnumerable<Property> properties, string cultureName)
+            => properties.SelectMany(property => property.Values
+                .GroupBy(propertyValue => propertyValue.Alias)
+                .Select(aliasGroup => cultureName switch
+                {
+                    string languageCode when languageCode != null
+                                        && aliasGroup.Any(x => x.LanguageCode.EqualsInvariant(languageCode))
+                        => aliasGroup.First(x => x.LanguageCode.EqualsInvariant(languageCode)),
+
+                    _ => aliasGroup.Select(propertyValue =>
+                        {
+                            var clonedValue = (PropertyValue)propertyValue.Clone();
+                            clonedValue.Value = aliasGroup.Key;
+                            return clonedValue;
+                        })
+                        .First()
+                })
+                .Select(propertyValue =>
                 {
                     var clonedProperty = (Property)property.Clone();
-                    clonedProperty.Values = new List<PropertyValue> { v };
+                    clonedProperty.Values = new List<PropertyValue> { propertyValue };
                     return clonedProperty;
-                }).ToList();
-
-                if (propertyValues.IsNullOrEmpty())
-                {
-                    propertyValues = new List<Property> { (Property) property.Clone() };
-                }
-
-                return propertyValues;
-            });
-
-            return result.ToList();
-        }
+                })
+                .DefaultIfEmpty((Property)property.Clone())
+            ).ToList();
     }
 }

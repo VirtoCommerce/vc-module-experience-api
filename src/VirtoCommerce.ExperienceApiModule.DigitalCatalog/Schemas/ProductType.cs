@@ -224,7 +224,11 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 resolve: context => context.Source.AllPrices)
             .RootAlias("__prices");
 
-            Field<ListGraphType<PropertyType>>("properties", resolve: context => context.Source.IndexedProduct.Properties.ExpandByValues());
+            Field<ListGraphType<PropertyType>>("properties", resolve: context =>
+            {
+                var cultureName = context.GetValue<string>("cultureName");
+                return context.Source.IndexedProduct.Properties.ExpandByValues(cultureName);
+            });
 
             Field<ListGraphType<AssetType>>("assets", resolve: context => context.Source.IndexedProduct.Assets);
 
