@@ -13,7 +13,7 @@ using Xunit;
 
 namespace VirtoCommerce.XPurchase.Tests.Aggregates
 {
-    public class CartAggregateTests : MoqHelper
+    public class CartAggregateTests : XPurchaseMoqHelper
     {
         private readonly CartAggregate aggregate;
 
@@ -30,7 +30,9 @@ namespace VirtoCommerce.XPurchase.Tests.Aggregates
             var store = GetStore();
             var currency = GetCurrency();
 
-            aggregate.GrabCartAsync(cart, store, member, currency).GetAwaiter().GetResult();
+            aggregate.GrabCart(cart, store, member, currency);
+
+            aggregate.RecalculateAsync().GetAwaiter().GetResult();
         }
 
         #region UpdateCartComment

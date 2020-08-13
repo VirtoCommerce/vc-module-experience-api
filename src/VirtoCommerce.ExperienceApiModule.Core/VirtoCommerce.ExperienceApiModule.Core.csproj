@@ -13,6 +13,17 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Compile Remove="Commands\**" />
+      <Compile Remove="Constants\**" />
+      <EmbeddedResource Remove="Commands\**" />
+      <EmbeddedResource Remove="Constants\**" />
+      <None Remove="Commands\**" />
+      <None Remove="Constants\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="VirtoCommerce.CatalogModule.Core" Version="3.4.0" />
+        <PackageReference Include="VirtoCommerce.CoreModule.Core" Version="3.2.0-alpha.hashfb63c7d" />
         <PackageReference Include="VirtoCommerce.Platform.Core" Version="3.2.1" />
         <PackageReference Include="VirtoCommerce.Platform.Security" Version="3.2.1" />
         <PackageReference Include="VirtoCommerce.SearchModule.Core" Version="3.2.0" />
@@ -23,11 +34,8 @@
         <PackageReference Include="GraphQL.Relay" Version="0.5.0" />
         <PackageReference Include="GraphQL.Server.Transports.AspNetCore" Version="3.5.0-alpha0046" />
         <PackageReference Include="GraphQL.Server.Transports.AspNetCore.NewtonsoftJson" Version="3.5.0-alpha0046" />
+        <PackageReference Include="VirtoCommerce.TaxModule.Core" Version="3.2.0" />
         
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Commands\" />
     </ItemGroup>
 
 </Project>

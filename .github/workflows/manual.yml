@@ -1,0 +1,65 @@
+# v1
+name: Module CI
+
+on:
+  workflow_dispatch:
+  push:
+    paths-ignore:
+      - '.github/**'
+      - 'docs/**'
+      - 'build/**'
+      - 'README.md'
+      - 'LICENSE'
+    branches:
+      [master, dev]
+  pull_request:
+    branches:
+      [master, dev]
+    
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    env:
+      SONAR_TOKEN: ${{secrets.SONAR_TOKEN}}
+      GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
+      NUGET_KEY: ${{ secrets.NUGET_KEY }}
+      BLOB_SAS: ${{ secrets.BLOB_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install VirtoCommerce.GlobalTool
+        run: dotnet tool install --global VirtoCommerce.GlobalTool
+
+      - name: Install dotnet-sonarscanner
+        run: dotnet tool install --global dotnet-sonarscanner
+
+      - name: Get changelog
+        id: changelog
+        uses: VirtoCommerce/vc-github-actions/changelog-generator@dev
+
+      - name: Add version suffix
+        uses: VirtoCommerce/vc-github-actions/add-version-suffix@dev
+
+      - name: SonarCloud Begin
+        uses: VirtoCommerce/vc-github-actions/sonar-scanner-begin@dev
+
+      - name: Build
+        run: vc-build Compile
+
+      - name: Unit Tests
+        run: vc-build Test -skip
+
+      - name: SonarCloud End
+        run: vc-build SonarQubeEnd -SonarAuthToken ${{ secrets.SONAR_TOKEN }}
+
+      - name: Packaging
+        run: vc-build Compress -skip Clean+Restore+Compile+Test
+      
+      - name: Publish Nuget
+        uses: VirtoCommerce/vc-github-actions/publish-nuget@dev
+        
+      - name: Publish Github Release
+        with:
+          changelog: ${{ steps.changelog.outputs.changelog }}
+        uses: VirtoCommerce/vc-github-actions/publish-github-release@dev

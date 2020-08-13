@@ -1,6 +1,6 @@
 using GraphQL.Resolvers;
 using GraphQL.Types;
-using VirtoCommerce.ExperienceApiModule.Core.Schema;
+using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.Platform.Core.Security;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas

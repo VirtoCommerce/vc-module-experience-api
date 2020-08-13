@@ -1,8 +1,10 @@
 using System.Linq;
 using GraphQL.Types;
 using VirtoCommerce.CatalogModule.Core.Model;
+using VirtoCommerce.ExperienceApiModule.Core.Extensions;
+using VirtoCommerce.Platform.Core.Common;
 
-namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Schemas
+namespace VirtoCommerce.XDigitalCatalog.Schemas
 {
     public class PropertyType : ObjectGraphType<Property>
     {
@@ -11,13 +13,51 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Schemas
             Name = "Property";
             Description = "Products attributes.";
 
-            Field(d => d.Id).Description("The unique ID of the product.");
-            Field(d => d.Name, nullable: false).Description("The name of the property.");
-            Field<PropertyTypeEnum>("type", "Property type");
-            Field<ListGraphType<StringGraphType>>(
-                "values",
-                resolve: context => context.Source.Values.Select(x=> x.ToString())
+            Field(x => x.Id, nullable: true).Description("The unique ID of the product.");
+
+            Field(x => x.Name, nullable: false).Description("The name of the property.");
+
+            Field(x => x.Hidden, nullable: false).Description("Is property hidden.");
+
+            Field(x => x.Multivalue, nullable: false).Description("Is property has multiple values.");
+
+            Field<StringGraphType>(
+                "label",
+                resolve: context =>
+                {
+                    var cultureName = context.GetValue<string>("cultureName");
+
+                    var label = cultureName != null
+                        ? context.Source.DisplayNames
+                            ?.FirstOrDefault(x => x.LanguageCode.EqualsInvariant(cultureName))
+                            ?.Name
+                        : default;
+
+                    return string.IsNullOrWhiteSpace(label)
+                        ? context.Source.Name
+                        : label;
+                })
+            .RootAlias("__object.properties.displayNames");
+
+            Field<StringGraphType>(
+                "type",
+                resolve: context => context.Source.Type.ToString()
             );
-        }       
+
+            Field<StringGraphType>(
+                "valueType",
+                resolve: context => context.Source.Values.Select(x => x.ValueType).FirstOrDefault()
+            );
+
+            Field<StringGraphType>(
+                "value",
+                resolve: context => context.Source.Values.Select(x => x.Value).FirstOrDefault()
+            ).RootAlias("__object.properties.values");
+
+            Field<StringGraphType>(
+                "valueId",
+                resolve: context => context.Source.Values.Select(x => x.ValueId).FirstOrDefault()
+            );
+        }
     }
 }

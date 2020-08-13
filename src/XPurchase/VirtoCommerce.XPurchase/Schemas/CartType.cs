@@ -1,6 +1,7 @@
 using System.Linq;
 using GraphQL.Types;
-using VirtoCommerce.XPurchase.Extensions;
+using VirtoCommerce.ExperienceApiModule.Core.Extensions;
+using VirtoCommerce.ExperienceApiModule.Core.Schemas;
 using VirtoCommerce.XPurchase.Services;
 
 namespace VirtoCommerce.XPurchase.Schemas
@@ -9,7 +10,7 @@ namespace VirtoCommerce.XPurchase.Schemas
     {
         public CartType(ICartAvailMethodsService cartAvailMethods)
         {
-            Field(x => x.Id, nullable: true).Description("Shopping cart Id");
+            Field(x => x.Cart.Id, nullable: true).Description("Shopping cart Id");
             Field(x => x.Cart.Name, nullable: false).Description("Shopping cart name");
             Field(x => x.Cart.Status, nullable: true).Description("Shopping cart status");
             Field(x => x.Cart.StoreId, nullable: true).Description("Shopping cart store id");

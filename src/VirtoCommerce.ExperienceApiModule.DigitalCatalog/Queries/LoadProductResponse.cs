@@ -1,9 +1,14 @@
 using System.Collections.Generic;
 
-namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Queries
+namespace VirtoCommerce.XDigitalCatalog.Queries
 {
     public class LoadProductResponse
     {
-        public ICollection<ExpProduct> Products { get; set; } = new List<ExpProduct>();
+        public LoadProductResponse(ICollection<ExpProduct> expProducts)
+        {
+            Products = expProducts;
+        }
+
+        public ICollection<ExpProduct> Products { get; private set; }
     }
 }

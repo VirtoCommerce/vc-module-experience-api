@@ -92,25 +92,16 @@ namespace VirtoCommerce.XPurchase
         public bool IsValid => !ValidationErrors.Any();
         public IList<ValidationFailure> ValidationErrors { get; protected set; } = new List<ValidationFailure>();
 
-        public virtual async Task<CartAggregate> GrabCartAsync(ShoppingCart cart, Store store, Member member, Currency currency)
+        public virtual CartAggregate GrabCart(ShoppingCart cart, Store store, Member member, Currency currency)
         {
-            if (cart == null)
-            {
-                throw new ArgumentNullException(nameof(cart));
-            }
-
             Id = cart.Id;
-
             Cart = cart;
             Member = member;
             Currency = currency;
             Store = store;
-
             Cart.IsAnonymous = member == null;
             //TODO: Need to check what member.Name contains name for all derived member types such as contact etc.
             Cart.CustomerName = member?.Name ?? "Anonymous";
-
-            await RecalculateAsync();
 
             return this;
         }
@@ -390,7 +381,7 @@ namespace VirtoCommerce.XPurchase
             return validCoupon != null;
         }
 
-        protected virtual async Task<PromotionResult> EvaluatePromotionsAsync()
+        public virtual async Task<PromotionResult> EvaluatePromotionsAsync()
         {
             EnsureCartExists();
 

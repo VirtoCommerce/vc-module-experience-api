@@ -11,7 +11,7 @@ using Xunit;
 
 namespace VirtoCommerce.XPurchase.Tests.Validators
 {
-    public class CartShipmentValidatorTests : MoqHelper
+    public class CartShipmentValidatorTests : XPurchaseMoqHelper
     {
         private readonly CartValidationContext _context = new CartValidationContext();
         private readonly ShippingRate _shippingRate;

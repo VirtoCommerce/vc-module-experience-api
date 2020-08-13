@@ -44,14 +44,14 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field(x => x.TaxType, true);
             Field(x => x.TaxPercentRate);
 
-            Field<OrderMoneyType>(nameof(Shipment.Price).ToCamelCase(), resolve: context =>  new Money(context.Source.Price, context.OrderCurrency()));
-            Field<OrderMoneyType>(nameof(Shipment.PriceWithTax).ToCamelCase(), resolve: context => new Money(context.Source.PriceWithTax, context.OrderCurrency()));
-            Field<OrderMoneyType>(nameof(Shipment.Total).ToCamelCase(), resolve: context => new Money(context.Source.Total, context.OrderCurrency()));
-            Field<OrderMoneyType>(nameof(Shipment.TotalWithTax).ToCamelCase(), resolve: context => new Money(context.Source.TotalWithTax, context.OrderCurrency()));
-            Field<OrderMoneyType>(nameof(Shipment.DiscountAmount).ToCamelCase(), resolve: context => new Money(context.Source.DiscountAmount, context.OrderCurrency()));
-            Field<OrderMoneyType>(nameof(Shipment.DiscountAmountWithTax).ToCamelCase(), resolve: context => new Money(context.Source.DiscountAmountWithTax, context.OrderCurrency()));
-            Field<OrderMoneyType>(nameof(Shipment.TaxTotal).ToCamelCase(), resolve: context => new Money(context.Source.TaxTotal, context.OrderCurrency()));
-            Field<OrderCurrencyType>(nameof(Shipment.Currency).ToCamelCase(), resolve: context => context.OrderCurrency());
+            Field<OrderMoneyType>(nameof(Shipment.Price).ToCamelCase(), resolve: context =>  new Money(context.Source.Price, context.GetOrderCurrency()));
+            Field<OrderMoneyType>(nameof(Shipment.PriceWithTax).ToCamelCase(), resolve: context => new Money(context.Source.PriceWithTax, context.GetOrderCurrency()));
+            Field<OrderMoneyType>(nameof(Shipment.Total).ToCamelCase(), resolve: context => new Money(context.Source.Total, context.GetOrderCurrency()));
+            Field<OrderMoneyType>(nameof(Shipment.TotalWithTax).ToCamelCase(), resolve: context => new Money(context.Source.TotalWithTax, context.GetOrderCurrency()));
+            Field<OrderMoneyType>(nameof(Shipment.DiscountAmount).ToCamelCase(), resolve: context => new Money(context.Source.DiscountAmount, context.GetOrderCurrency()));
+            Field<OrderMoneyType>(nameof(Shipment.DiscountAmountWithTax).ToCamelCase(), resolve: context => new Money(context.Source.DiscountAmountWithTax, context.GetOrderCurrency()));
+            Field<OrderMoneyType>(nameof(Shipment.TaxTotal).ToCamelCase(), resolve: context => new Money(context.Source.TaxTotal, context.GetOrderCurrency()));
+            Field<OrderCurrencyType>(nameof(Shipment.Currency).ToCamelCase(), resolve: context => context.GetOrderCurrency());
 
             Field<NonNullGraphType<ListGraphType<OrderTaxDetailType>>>(nameof(Shipment.TaxDetails), resolve: x => x.Source.TaxDetails);
             Field<NonNullGraphType<ListGraphType<OrderShipmentItemType>>>(nameof(Shipment.Items), resolve: x => x.Source.Items);

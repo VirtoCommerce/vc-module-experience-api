@@ -13,8 +13,9 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Tests
         [Fact]
         public void Map_TermFilter()
         {
-            //Arrange
-            var mapperCfg = new MapperConfiguration(cfg => {
+            // Arrange
+            var mapperCfg = new MapperConfiguration(cfg =>
+            {
                 cfg.AddProfile(new OrderMappingProfile());
             });
 
@@ -25,11 +26,11 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Tests
                 new TermFilter { FieldName = "CustomerIds", Values = new[] { Guid.NewGuid().ToString() } }
             };
 
-            //action
+            // Action
             var criteria = new CustomerOrderSearchCriteria();
             mapper.Map(terms, criteria);
 
-            //Assert
+            // Assert
             Assert.NotNull(criteria);
             Assert.NotNull(criteria.CustomerId);
             Assert.NotNull(criteria.CustomerIds);

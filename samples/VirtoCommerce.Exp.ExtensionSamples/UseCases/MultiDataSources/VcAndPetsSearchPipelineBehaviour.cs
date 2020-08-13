@@ -6,15 +6,16 @@ using System.Threading.Tasks;
 using MediatR.Pipeline;
 using PetsStoreClient;
 using VirtoCommerce.CatalogModule.Core.Model;
-using VirtoCommerce.ExperienceApiModule.DigitalCatalog;
-using VirtoCommerce.ExperienceApiModule.DigitalCatalog.Queries;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.XDigitalCatalog;
+using VirtoCommerce.XDigitalCatalog.Queries;
 
 namespace VirtoCommerce.Exp.ExtensionSamples
 {
     public class VcAndPetsSearchPipelineBehaviour<TRequest, TResponse> : IRequestPostProcessor<TRequest, TResponse>
     {
         private readonly IPetsSearchService _petsSearchService;
+
         public VcAndPetsSearchPipelineBehaviour(IPetsSearchService petsSearchService)
         {
             _petsSearchService = petsSearchService;
@@ -22,9 +23,9 @@ namespace VirtoCommerce.Exp.ExtensionSamples
 
         public async Task Process(TRequest request, TResponse response, CancellationToken cancellationToken)
         {
-            if (request is LoadProductQuery loadProductRequest && response is LoadProductResponse loadProductResponse)
+            if (request is LoadProductsQuery loadProductRequest && response is LoadProductResponse loadProductResponse)
             {
-                var notLoadedProductIds = loadProductRequest.Ids.Except(loadProductResponse.Products.Select(x => x.Id)).Where(x => long.TryParse(x, out var _));
+                var notLoadedProductIds = loadProductRequest.ObjectIds.Except(loadProductResponse.Products.Select(x => x.Id)).Where(x => long.TryParse(x, out var _));
                 if (notLoadedProductIds.Any())
                 {
                     var petProducts = new List<ExpProduct>();
@@ -36,9 +37,8 @@ namespace VirtoCommerce.Exp.ExtensionSamples
                             petProducts.Add(PetToProduct(pet));
                         }
                     }
-                    loadProductResponse.Products = loadProductResponse.Products.Concat(petProducts).ToArray();
+                    loadProductResponse = new LoadProductResponse(loadProductResponse.Products.Concat(petProducts).ToArray());
                 }
-
             }
             else if (request is SearchProductQuery searchProductRequest && response is SearchProductResponse searchProductResponse)
             {
@@ -61,11 +61,10 @@ namespace VirtoCommerce.Exp.ExtensionSamples
             }
         }
 
-
         private static ExpProduct PetToProduct(Pet pet)
         {
             var petProduct = AbstractTypeFactory<ExpProduct>.TryCreateInstance();
-            petProduct.CatalogProduct = new CatalogProduct
+            petProduct.IndexedProduct = new CatalogProduct
             {
                 Id = pet.Id.ToString(),
                 Name = pet.Name,
@@ -75,5 +74,4 @@ namespace VirtoCommerce.Exp.ExtensionSamples
             return petProduct;
         }
     }
-
 }

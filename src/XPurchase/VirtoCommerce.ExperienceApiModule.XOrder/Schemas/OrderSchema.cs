@@ -12,8 +12,10 @@ using Microsoft.AspNetCore.Identity;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.ExperienceApiModule.Core.Schema;
 using VirtoCommerce.ExperienceApiModule.XOrder.Authorization;
+using VirtoCommerce.ExperienceApiModule.Core.Extensions;
+using VirtoCommerce.ExperienceApiModule.Core.Helpers;
+using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.XOrder.Commands;
-using VirtoCommerce.ExperienceApiModule.XOrder.Extensions;
 using VirtoCommerce.ExperienceApiModule.XOrder.Queries;
 using VirtoCommerce.Platform.Core.Security;
 
@@ -51,7 +53,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                     var orderAggregate = await _mediator.Send(new GetOrderQuery(context.GetArgument<string>("id"), context.GetArgument<string>("number")));
                     await CheckAuthAsync(context, orderAggregate.Order);
                     //store order aggregate in the user context for future usage in the graph types resolvers
-                    context.SetValue(orderAggregate);
+                    context.SetExpandedObjectGraph(orderAggregate);
 
                     return orderAggregate;
                 })
@@ -76,7 +78,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                             .ResolveAsync(async context =>
                             {
                                 var response = await _mediator.Send(context.GetArgument<CreateOrderFromCartCommand>(_commandName));
-                                context.SetValue(response);
+                                context.SetExpandedObjectGraph(response);
                                 return response;
                             })
                             .FieldType);
@@ -99,7 +101,6 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                             .ResolveAsync(async context => await _mediator.Send(context.GetArgument<CancelOrderPaymentCommand>(_commandName)))
                             .FieldType);
         }
-
 
         private async Task<object> ResolveConnectionAsync(IMediator mediator, IResolveConnectionContext<object> context)
         {
@@ -124,7 +125,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 
             foreach (var customerOrderAggregate in response.Results)
             {
-                context.SetValue(customerOrderAggregate);
+                context.SetExpandedObjectGraph(customerOrderAggregate);
             }
 
             var result = new Connection<CustomerOrderAggregate>()

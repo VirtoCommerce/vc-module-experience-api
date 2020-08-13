@@ -3,8 +3,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR.Pipeline;
-using VirtoCommerce.ExperienceApiModule.DigitalCatalog.Queries;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.XDigitalCatalog.Queries;
 
 namespace VirtoCommerce.Exp.ExtensionSamples
 {
@@ -13,7 +13,7 @@ namespace VirtoCommerce.Exp.ExtensionSamples
         public Task Process(TRequest request, TResponse response, CancellationToken cancellationToken)
         {
             var expProducts = new List<ExpProduct2>();
-            if (request is LoadProductQuery && response is LoadProductResponse loadProductResponse)
+            if (request is LoadProductsQuery && response is LoadProductResponse loadProductResponse)
             {
                 expProducts = loadProductResponse.Products.OfType<ExpProduct2>().ToList();
             }
@@ -31,5 +31,4 @@ namespace VirtoCommerce.Exp.ExtensionSamples
             return Task.CompletedTask;
         }
     }
-
 }

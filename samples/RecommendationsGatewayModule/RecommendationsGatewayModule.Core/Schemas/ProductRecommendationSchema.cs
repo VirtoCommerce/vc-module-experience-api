@@ -7,7 +7,8 @@ using GraphQL.Types;
 using GraphQL.Types.Relay.DataObjects;
 using MediatR;
 using RecommendationsGatewayModule.Core.Requests;
-using VirtoCommerce.ExperienceApiModule.Core.Schema;
+using VirtoCommerce.ExperienceApiModule.Core.Helpers;
+using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 
 namespace RecommendationsGatewayModule.Core.Schemas
 {

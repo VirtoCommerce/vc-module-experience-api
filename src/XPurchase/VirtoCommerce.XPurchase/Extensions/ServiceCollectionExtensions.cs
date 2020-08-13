@@ -3,7 +3,7 @@ using AutoMapper;
 using GraphQL.Server;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
-using VirtoCommerce.ExperienceApiModule.Core.Schema;
+using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.XPurchase.Schemas;
 using VirtoCommerce.XPurchase.Services;
 using VirtoCommerce.XPurchase.Validators;

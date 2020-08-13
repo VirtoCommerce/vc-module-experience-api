@@ -1,6 +1,7 @@
 using GraphQL.Types;
+using VirtoCommerce.XDigitalCatalog.Facets;
 
-namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Schemas
+namespace VirtoCommerce.XDigitalCatalog.Schemas
 {
     public class FacetTermType : ObjectGraphType<FacetTerm>
     {
@@ -8,8 +9,7 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Schemas
         {
             Field(d => d.Term, nullable: true).Description("term");
             Field(d => d.Count, nullable: true).Description("count");
-            Field(d => d.IsSelected, nullable: true).Description("is selected state");           
+            Field(d => d.IsSelected, nullable: true).Description("is selected state");
         }
-
     }
 }

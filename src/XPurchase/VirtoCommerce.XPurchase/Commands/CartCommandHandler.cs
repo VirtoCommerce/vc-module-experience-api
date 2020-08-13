@@ -19,7 +19,7 @@ namespace VirtoCommerce.XPurchase.Commands
 
         public abstract Task<CartAggregate> Handle(TCartCommand request, CancellationToken cancellationToken);
 
-        protected async virtual Task<CartAggregate> GetOrCreateCartFromCommandAsync(TCartCommand request)
+        protected virtual async Task<CartAggregate> GetOrCreateCartFromCommandAsync(TCartCommand request)
         {
             var result = await CartRepository.GetCartAsync(request.CartName, request.StoreId, request.UserId, request.Language, request.Currency, request.CartType);
             if (result == null)
@@ -29,24 +29,11 @@ namespace VirtoCommerce.XPurchase.Commands
             return result;
         }
 
-        protected async virtual Task<CartAggregate> GetCartById(string cartId, string language) => await CartRepository.GetCartByIdAsync(cartId, language);
+        protected virtual async Task<CartAggregate> GetCartById(string cartId, string language) => await CartRepository.GetCartByIdAsync(cartId, language);
 
         protected virtual Task<CartAggregate> CreateNewCartAggregateAsync(TCartCommand request)
         {
-            var cart = AbstractTypeFactory<ShoppingCart>.TryCreateInstance();
-
-            cart.CustomerId = request.UserId;
-            cart.Name = request.CartName ?? "default";
-            cart.StoreId = request.StoreId;
-            cart.LanguageCode = request.Language;
-            cart.Type = request.CartType;
-            cart.Currency = request.Currency;
-            cart.Items = new List<LineItem>();
-            cart.Shipments = new List<Shipment>();
-            cart.Payments = new List<Payment>();
-            cart.Addresses = new List<CartModule.Core.Model.Address>();
-            cart.TaxDetails = new List<TaxDetail>();
-            cart.Coupons = new List<string>();
+            var cart = CartRepository.CreateDefaultShoppingCart(request);
 
             return CartRepository.GetCartForShoppingCartAsync(cart);
         }

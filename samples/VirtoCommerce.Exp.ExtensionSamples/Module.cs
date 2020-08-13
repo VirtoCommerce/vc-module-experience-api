@@ -4,11 +4,11 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using PetsStoreClient;
 using PetsStoreClient.Nswag;
-using VirtoCommerce.ExperienceApiModule.Core.Schema;
-using VirtoCommerce.ExperienceApiModule.DigitalCatalog;
-using VirtoCommerce.ExperienceApiModule.DigitalCatalog.Schemas;
+using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Modularity;
+using VirtoCommerce.XDigitalCatalog;
+using VirtoCommerce.XDigitalCatalog.Schemas;
 
 namespace VirtoCommerce.Exp.ExtensionSamples
 {

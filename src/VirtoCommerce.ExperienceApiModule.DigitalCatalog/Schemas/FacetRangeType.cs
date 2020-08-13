@@ -1,6 +1,7 @@
 using GraphQL.Types;
+using VirtoCommerce.XDigitalCatalog.Facets;
 
-namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Schemas
+namespace VirtoCommerce.XDigitalCatalog.Schemas
 {
     public class FacetRangeType : ObjectGraphType<FacetRange>
     {
@@ -17,6 +18,5 @@ namespace VirtoCommerce.ExperienceApiModule.DigitalCatalog.Schemas
             Field(d => d.ToStr, nullable: true).Description("The range’s upper endpoint in string format, empty string represents infinity");
             Field(d => d.Total, nullable: true).Description("Sum of all values contained in the range");
         }
-
     }
 }

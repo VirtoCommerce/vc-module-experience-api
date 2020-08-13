@@ -3,8 +3,8 @@ using GraphQL;
 using GraphQL.DataLoader;
 using GraphQL.Types;
 using MediatR;
-using VirtoCommerce.ExperienceApiModule.DigitalCatalog.Schemas;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.XDigitalCatalog.Schemas;
 
 namespace VirtoCommerce.Exp.ExtensionSamples
 {
@@ -15,7 +15,6 @@ namespace VirtoCommerce.Exp.ExtensionSamples
             IDataLoaderContextAccessor dataLoader)
             : base(mediator, dataLoader)
         {
-  
             Field<ListGraphType<InventoryType>>("inventories", arguments: new QueryArguments(new QueryArgument<StringGraphType> { Name = "warehouse", Description = "warehouse id" }), resolve: context =>
             {
                 var result = ((ExpProduct2)context.Source).Inventories;

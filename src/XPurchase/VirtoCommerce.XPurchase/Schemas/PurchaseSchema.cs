@@ -1,9 +1,16 @@
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Builders;
 using GraphQL.Resolvers;
 using GraphQL.Types;
+using GraphQL.Types.Relay.DataObjects;
 using MediatR;
-using VirtoCommerce.ExperienceApiModule.Core.Schema;
+using VirtoCommerce.CoreModule.Core.Currency;
+using VirtoCommerce.ExperienceApiModule.Core.Extensions;
+using VirtoCommerce.ExperienceApiModule.Core.Helpers;
+using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.XPurchase.Commands;
 using VirtoCommerce.XPurchase.Extensions;
 using VirtoCommerce.XPurchase.Queries;
@@ -29,12 +36,12 @@ namespace VirtoCommerce.XPurchase.Schemas
             {
                 Name = "cart",
                 Arguments = new QueryArguments(
-                        new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "storeId" },
-                        new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "userId" },
-                        new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "currencyCode" },
-                        new QueryArgument<StringGraphType> { Name = "cultureName" },
-                        new QueryArgument<StringGraphType> { Name = "cartName" },
-                        new QueryArgument<StringGraphType> { Name = "type" }),
+                        new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "storeId", Description = "Store Id" },
+                        new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "userId", Description = "User Id" },
+                        new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "currencyCode", Description = "Currency code (\"USD\")" },
+                        new QueryArgument<StringGraphType> { Name = "cultureName", Description = "Culture name (\"en-Us\")" },
+                        new QueryArgument<StringGraphType> { Name = "cartName", Description = "Cart name" },
+                        new QueryArgument<StringGraphType> { Name = "type", Description = "Cart type" }),
                 Type = GraphTypeExtenstionHelper.GetActualType<CartType>(),
                 Resolver = new AsyncFieldResolver<object>(async context =>
                 {
@@ -62,6 +69,28 @@ namespace VirtoCommerce.XPurchase.Schemas
                 })
             };
             schema.Query.AddField(cartField);
+
+
+            var orderConnectionBuilder = GraphTypeExtenstionHelper.CreateConnection<CartType, object>()
+                .Name("carts")
+                .Argument<StringGraphType>("storeId", "")
+                .Argument<StringGraphType>("userId", "")
+                .Argument<StringGraphType>("currencyCode", "")
+                .Argument<StringGraphType>("cultureName", "")
+                .Argument<StringGraphType>("cartType", "")
+                .Argument<StringGraphType>("sort", "The sort expression")
+                .Argument<IntGraphType>("skip", "")
+                .Argument<IntGraphType>("take", "")
+                .Unidirectional()
+                .PageSize(20);
+
+            orderConnectionBuilder.ResolveAsync(async context => await ResolveConnectionAsync(_mediator, context));
+
+            schema.Query.AddField(orderConnectionBuilder.FieldType);
+
+
+
+
 
             //Mutations
             /// <example>
@@ -572,6 +601,47 @@ namespace VirtoCommerce.XPurchase.Schemas
                                                  .FieldType;
 
             schema.Mutation.AddField(clearPaymentsField);
+        }
+
+        private async Task<object> ResolveConnectionAsync(IMediator mediator, IResolveConnectionContext<object> context)
+        {
+            var first = context.First;
+            var skip = Convert.ToInt32(context.After ?? 0.ToString());
+
+            var query = context.GetSearchCartQuery<SearchCartQuery>();
+            query.Skip = skip;
+            query.Take = first ?? context.PageSize ?? 10;
+            query.Sort = context.GetArgument<string>("sort");
+
+            context.UserContext.Add(nameof(Currency.CultureName).ToCamelCase(), query.CultureName);
+
+            var response = await mediator.Send(query);
+            foreach (var cartAggregate in response.Results)
+            {
+                context.SetExpandedObjectGraph(cartAggregate);
+            }
+
+            var result = new Connection<CartAggregate>()
+            {
+                Edges = response.Results
+                    .Select((x, index) =>
+                        new Edge<CartAggregate>()
+                        {
+                            Cursor = (skip + index).ToString(),
+                            Node = x,
+                        })
+                    .ToList(),
+                PageInfo = new PageInfo()
+                {
+                    HasNextPage = response.TotalCount > (skip + first),
+                    HasPreviousPage = skip > 0,
+                    StartCursor = skip.ToString(),
+                    EndCursor = Math.Min(response.TotalCount, (int)(skip + first)).ToString()
+                },
+                TotalCount = response.TotalCount,
+            };
+
+            return result;
         }
     }
 }

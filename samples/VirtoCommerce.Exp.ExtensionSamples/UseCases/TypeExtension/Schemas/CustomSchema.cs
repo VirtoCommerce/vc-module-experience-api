@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Builders;
 using GraphQL.Types;
-using VirtoCommerce.ExperienceApiModule.Core.Schema;
+using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 
 namespace VirtoCommerce.Exp.ExtensionSamples
 {

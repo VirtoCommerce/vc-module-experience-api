@@ -4,6 +4,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
+using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Schema;
 using VirtoCommerce.ExperienceApiModule.XOrder.Authorization;
 using VirtoCommerce.ExperienceApiModule.XOrder.Schemas;
