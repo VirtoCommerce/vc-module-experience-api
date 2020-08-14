@@ -39,12 +39,12 @@ namespace VirtoCommerce.XPurchase
             return result;
         }
 
-        public static CartValidationError ProductQtyChangedError(IEntity entity, long newQty)
+        public static CartValidationError ProductQtyChangedError(IEntity entity, long availQty)
         {
             var result = new CartValidationError(entity, "The product available qty is changed", "PRODUCT_QTY_CHANGED");
             result.FormattedMessagePlaceholderValues = new Dictionary<string, object>
             {
-                ["new_qty"] = newQty
+                ["availQty"] = availQty
             };
             return result;
         }
