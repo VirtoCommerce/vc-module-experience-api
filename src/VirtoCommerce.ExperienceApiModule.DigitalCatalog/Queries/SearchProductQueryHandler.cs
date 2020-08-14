@@ -86,7 +86,51 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
 
         public virtual async Task<SearchProductResponse> Handle(SearchProductQuery request, CancellationToken cancellationToken)
         {
-            
+            request.PricelistIds = await GetPricelistIdsAsync(request);
+
+            var searchRequest = _requestBuilder
+                .AddTerms(new[] { "status:visible" })//Only visible, exclude variations from search result
+                .FromQuery(request)
+                .ParseFacets(request.Facet, request.PricelistIds, request.StoreId, request.CurrencyCode)
+                .Build();
+
+            var searchResult = await _searchProvider.SearchAsync(KnownDocumentTypes.Product, searchRequest);
+
+            var expProducts = await ConvertIndexDocsToProductsWithLoadDependenciesAsync(searchResult.Documents, request);
+
+            var criteria = new ProductIndexedSearchCriteria
+            {
+                StoreId = request.StoreId,
+                Currency = request.CurrencyCode,
+                Pricelists = request.PricelistIds,
+            };
+
+            var aggregations = await _aggregationConverter.ConvertAggregationsAsync(searchResult.Aggregations, criteria);
+
+            var result = new SearchProductResponse
+            {
+                Results = expProducts.ToList(),
+                Facets = aggregations.Select(x => _mapper.Map<FacetResult>(x)).ToList(),
+                TotalCount = (int)searchResult.TotalCount
+            };
+
+            return result;
+        }
+
+        public virtual async Task<LoadProductResponse> Handle(LoadProductsQuery request, CancellationToken cancellationToken)
+        {
+            var searchRequest = _requestBuilder.FromQuery(request).Build();
+
+            var searchResult = await _searchProvider.SearchAsync(KnownDocumentTypes.Product, searchRequest);
+
+            var expProducts = await ConvertIndexDocsToProductsWithLoadDependenciesAsync(searchResult.Documents, request);
+
+            return new LoadProductResponse(expProducts.ToList());
+        }
+
+
+        protected virtual async Task<string[]> GetPricelistIdsAsync(SearchProductQuery request)
+        {
             var context = new PriceEvaluationContext
             {
                 CatalogId = GetCatalogIdFromFilter(request.Filter),
@@ -135,49 +179,10 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                     }
                 }
             }
-            
+
             var pricelists = await _pricingService.EvaluatePriceListsAsync(context);
 
-            request.PricelistIds = pricelists.Select(x => x.Id).ToArray();
-
-            var searchRequest = _requestBuilder
-                .AddTerms(new[] { "status:visible" })//Only visible, exclude variations from search result
-                .FromQuery(request)
-                .ParseFacets(request.Facet, request.PricelistIds, request.StoreId, request.CurrencyCode)
-                .Build();
-
-            var searchResult = await _searchProvider.SearchAsync(KnownDocumentTypes.Product, searchRequest);
-
-            var expProducts = await ConvertIndexDocsToProductsWithLoadDependenciesAsync(searchResult.Documents, request);
-
-            var criteria = new ProductIndexedSearchCriteria
-            {
-                StoreId = request.StoreId,
-                Currency = request.CurrencyCode,
-                Pricelists = request.PricelistIds,
-            };
-
-            var aggregations = await _aggregationConverter.ConvertAggregationsAsync(searchResult.Aggregations, criteria);
-
-            var result = new SearchProductResponse
-            {
-                Results = expProducts.ToList(),
-                Facets = aggregations.Select(x => _mapper.Map<FacetResult>(x)).ToList(),
-                TotalCount = (int)searchResult.TotalCount
-            };
-
-            return result;
-        }
-
-        public virtual async Task<LoadProductResponse> Handle(LoadProductsQuery request, CancellationToken cancellationToken)
-        {
-            var searchRequest = _requestBuilder.FromQuery(request).Build();
-
-            var searchResult = await _searchProvider.SearchAsync(KnownDocumentTypes.Product, searchRequest);
-
-            var expProducts = await ConvertIndexDocsToProductsWithLoadDependenciesAsync(searchResult.Documents, request);
-
-            return new LoadProductResponse(expProducts.ToList());
+            return pricelists.Select(x => x.Id).ToArray();
         }
 
         protected virtual string GetCatalogIdFromFilter(string filterString)
