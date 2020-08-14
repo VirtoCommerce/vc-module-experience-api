@@ -7,10 +7,15 @@ using GraphQL.Resolvers;
 using GraphQL.Types;
 using GraphQL.Types.Relay.DataObjects;
 using MediatR;
+using Microsoft.ApplicationInsights;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
+using VirtoCommerce.Platform.Core.Security;
+using VirtoCommerce.XPurchase.Authorization;
 using VirtoCommerce.XPurchase.Commands;
 using VirtoCommerce.XPurchase.Extensions;
 using VirtoCommerce.XPurchase.Queries;
@@ -20,11 +25,15 @@ namespace VirtoCommerce.XPurchase.Schemas
     public class PurchaseSchema : ISchemaBuilder
     {
         private readonly IMediator _mediator;
+        private readonly IAuthorizationService _authorizationService;
+        private readonly Func<SignInManager<ApplicationUser>> _signInManagerFactory;
         public const string _commandName = "command";
 
-        public PurchaseSchema(IMediator mediator)
+        public PurchaseSchema(IMediator mediator, IAuthorizationService authorizationService, Func<SignInManager<ApplicationUser>> signInManagerFactory)
         {
             _mediator = mediator;
+            _authorizationService = authorizationService;
+            _signInManagerFactory = signInManagerFactory;
         }
 
         public void Build(ISchema schema)
@@ -61,7 +70,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                         var createCartCommand = new CreateCartCommand(storeId, type, cartName, userId, currencyCode, cultureName);
                         cartAggregate = await _mediator.Send(createCartCommand);
                     }
-
+                    await CheckAuthAsync(context, cartAggregate.Cart);
                     //store cart aggregate in the user context for future usage in the graph types resolvers
                     context.UserContext.Add("cartAggregate", cartAggregate);
 
@@ -615,6 +624,8 @@ namespace VirtoCommerce.XPurchase.Schemas
 
             context.UserContext.Add(nameof(Currency.CultureName).ToCamelCase(), query.CultureName);
 
+            await CheckAuthAsync(context, query);
+
             var response = await mediator.Send(query);
             foreach (var cartAggregate in response.Results)
             {
@@ -642,6 +653,38 @@ namespace VirtoCommerce.XPurchase.Schemas
             };
 
             return result;
+        }
+
+        private async Task CheckAuthAsync(IResolveFieldContext context, object resource)
+        {
+            var userId = context.GetArgument<string>("userId");
+
+            if (userId == null)
+            {
+                throw new ExecutionError($"argument {nameof(userId)} is null");
+            }
+
+            var signInManager = _signInManagerFactory();
+            var user = await signInManager.UserManager.FindByIdAsync(userId);
+
+            if (user == null)
+            {
+                user = new ApplicationUser()
+                {
+                    Id = userId,
+                    UserName = "Anonymous",
+                };
+                
+                await signInManager.ClaimsFactory.CreateAsync(user);
+            }
+
+            var userPrincipal = await signInManager.CreateUserPrincipalAsync(user);
+            var authorizationResult = await _authorizationService.AuthorizeAsync(userPrincipal, resource, new CanAccessCartAuthorizationRequirement());
+
+            if (!authorizationResult.Succeeded)
+            {
+                throw new ExecutionError($"access denied by userId:{userId}");
+            }
         }
     }
 }
