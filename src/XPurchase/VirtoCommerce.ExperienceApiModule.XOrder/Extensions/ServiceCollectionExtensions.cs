@@ -1,13 +1,10 @@
-using System;
 using GraphQL.Server;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.XOrder.Authorization;
 using VirtoCommerce.ExperienceApiModule.XOrder.Schemas;
-using VirtoCommerce.Platform.Core.Security;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Extensions
 {
@@ -15,7 +12,6 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Extensions
     {
         public static IServiceCollection AddXOrder(this IServiceCollection services, IGraphQLBuilder graphQlbuilder)
         {
-            services.AddSingleton<Func<SignInManager<ApplicationUser>>>(provider => () => provider.GetService<SignInManager<ApplicationUser>>());
             services.AddSingleton<ISchemaBuilder, OrderSchema>();
 
             graphQlbuilder.AddGraphTypes(typeof(XOrderAnchor));
