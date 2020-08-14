@@ -47,7 +47,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder
 
         public CustomerOrderSearchCriteriaBuilder AddCustomerId(string customerId)
         {
-            searchCriteria.EmployeeId = customerId;
+            searchCriteria.CustomerId = customerId;
             return this;
         }
 
