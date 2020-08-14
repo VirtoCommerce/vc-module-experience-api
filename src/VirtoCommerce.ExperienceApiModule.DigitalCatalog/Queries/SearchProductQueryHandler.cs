@@ -5,6 +5,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
+using VirtoCommerce.CatalogModule.Core.Model.Search;
+using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.CustomerModule.Core.Model;
@@ -49,6 +51,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
         private readonly IPricingService _pricingService;
         private readonly IMemberService _memberService;
         private readonly Func<UserManager<ApplicationUser>> _userManagerFactory;
+        private readonly IAggregationConverter _aggregationConverter;
 
         public SearchProductQueryHandler(
             ISearchProvider searchProvider
@@ -63,6 +66,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             , IPricingService pricingService
             , Func<UserManager<ApplicationUser>> userManagerFactory
             , IMemberService memberService
+            , IAggregationConverter aggregationConverter
             )
         {
             _searchProvider = searchProvider;
@@ -77,6 +81,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             _pricingService = pricingService;
             _memberService = memberService;
             _userManagerFactory = userManagerFactory;
+            _aggregationConverter = aggregationConverter;
         }
 
         public virtual async Task<SearchProductResponse> Handle(SearchProductQuery request, CancellationToken cancellationToken)
@@ -136,21 +141,32 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             request.PricelistIds = pricelists.Select(x => x.Id).ToArray();
 
             var searchRequest = _requestBuilder
+                .AddTerms(new[] { "status:visible" })//Only visible, exclude variations from search result
                 .FromQuery(request)
                 .ParseFacets(request.Facet, request.PricelistIds, request.StoreId, request.CurrencyCode)
-                .AddTerms(new[] { "status:visible" })//Only visible, exclude variations from search result
                 .Build();
 
             var searchResult = await _searchProvider.SearchAsync(KnownDocumentTypes.Product, searchRequest);
 
             var expProducts = await ConvertIndexDocsToProductsWithLoadDependenciesAsync(searchResult.Documents, request);
 
-            return new SearchProductResponse
+            var criteria = new ProductIndexedSearchCriteria
+            {
+                StoreId = request.StoreId,
+                Currency = request.CurrencyCode,
+                Pricelists = request.PricelistIds,
+            };
+
+            var aggregations = await _aggregationConverter.ConvertAggregationsAsync(searchResult.Aggregations, criteria);
+
+            var result = new SearchProductResponse
             {
                 Results = expProducts.ToList(),
-                Facets = searchRequest.Aggregations?.Select(x => _mapper.Map<FacetResult>(x, opts => opts.Items["aggregations"] = searchResult.Aggregations)).ToList(),
+                Facets = aggregations.Select(x => _mapper.Map<FacetResult>(x)).ToList(),
                 TotalCount = (int)searchResult.TotalCount
             };
+
+            return result;
         }
 
         public virtual async Task<LoadProductResponse> Handle(LoadProductsQuery request, CancellationToken cancellationToken)
@@ -163,7 +179,6 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
 
             return new LoadProductResponse(expProducts.ToList());
         }
-
 
         protected virtual string GetCatalogIdFromFilter(string filterString)
         {
