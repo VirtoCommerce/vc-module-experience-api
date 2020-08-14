@@ -124,7 +124,11 @@ namespace VirtoCommerce.XPurchase
                 throw new ArgumentNullException(nameof(newCartItem));
             }
 
-            await new NewCartItemValidator().ValidateAndThrowAsync(newCartItem, ruleSet: ValidationRuleSet);
+            var validationResult = await new NewCartItemValidator().ValidateAsync(newCartItem, ruleSet: ValidationRuleSet);
+            if (!validationResult.IsValid)
+            {
+                ValidationErrors.AddRange(validationResult.Errors);
+            }
 
             var lineItem = _mapper.Map<LineItem>(newCartItem.CartProduct);
             lineItem.Quantity = newCartItem.Quantity;
@@ -175,7 +179,11 @@ namespace VirtoCommerce.XPurchase
         {
             EnsureCartExists();
 
-            await new ItemQtyAdjustmentValidator(this).ValidateAndThrowAsync(qtyAdjustment, ruleSet: ValidationRuleSet);
+            var validationResult = await new ItemQtyAdjustmentValidator(this).ValidateAsync(qtyAdjustment, ruleSet: ValidationRuleSet);
+            if (!validationResult.IsValid)
+            {
+                ValidationErrors.AddRange(validationResult.Errors);
+            }
 
             var lineItem = Cart.Items.First(i => i.Id == qtyAdjustment.LineItemId);
 

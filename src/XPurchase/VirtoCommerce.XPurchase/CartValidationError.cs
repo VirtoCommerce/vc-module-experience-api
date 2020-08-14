@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using System.Linq;
 using FluentValidation.Results;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.XPurchase.Schemas;
 
 namespace VirtoCommerce.XPurchase
 {
@@ -13,9 +15,11 @@ namespace VirtoCommerce.XPurchase
             ObjectId = entity.Id;
             ErrorMessage = error;
             ErrorCode = errorCode;
-            FormattedMessagePlaceholderValues = new Dictionary<string, object>();
         }
+
         public string ObjectType { get; set; }
         public string ObjectId { get; set; }
+        public List<ErrorParameter> ErrorParameters =>
+            FormattedMessagePlaceholderValues.Select(kvp => new ErrorParameter {Key = kvp.Key, Value = kvp.Value.ToString()}).ToList();
     }
 }
