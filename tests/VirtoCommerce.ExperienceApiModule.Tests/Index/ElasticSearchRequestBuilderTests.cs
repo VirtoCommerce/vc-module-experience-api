@@ -17,6 +17,7 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Index
     {
         private readonly Mock<ISearchPhraseParser> _phraseParserMock;
         private readonly Mock<IAggregationConverter> _aggregationConverterMock;
+        private readonly Mock<ITermFilterBuilder> _termFilterBuilderMock;
 
         // Queries
         private readonly Mock<IGetDocumentsByIdsQuery> _getDocumentsByIdsQueryMock;
@@ -29,13 +30,15 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Index
         {
             _phraseParserMock = new Mock<ISearchPhraseParser>();
             _aggregationConverterMock = new Mock<IAggregationConverter>();
+            _termFilterBuilderMock = new Mock<ITermFilterBuilder>();
 
             _getDocumentsByIdsQueryMock = new Mock<IGetDocumentsByIdsQuery>();
             _searchDocumentsQueryMock = new Mock<ISearchDocumentsQuery>();
 
             _builder = new ElasticSearchRequestBuilder(
                 _phraseParserMock.Object,
-                _aggregationConverterMock.Object);
+                _aggregationConverterMock.Object,
+                _termFilterBuilderMock.Object);
         }
 
         #region FromQuery(IGetDocumentsByIdsQuery)
@@ -312,6 +315,19 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Index
             _searchDocumentsQueryMock
                 .SetupGet(x => x.Filter)
                 .Returns(_fixture.Create<string>());
+            _searchDocumentsQueryMock
+                .SetupGet(x => x.CurrencyCode)
+                .Returns(_fixture.Create<string>());
+            _searchDocumentsQueryMock
+                .SetupGet(x => x.StoreId)
+                .Returns(_fixture.Create<string>());
+
+            _termFilterBuilderMock
+                .Setup(x => x.GetTermFiltersAsync(It.IsAny<ProductIndexedSearchCriteria>()))
+                .ReturnsAsync(new FiltersContainer
+                {
+                    RemovableFilters = searchPhraseParseResult.Filters.Select(x => new KeyValuePair<string, IFilter>(string.Empty, x)).ToList()
+                });
 
             _phraseParserMock
                 .Setup(x => x.Parse(It.IsAny<string>()))
@@ -399,6 +415,22 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Index
             _searchDocumentsQueryMock
                 .SetupGet(x => x.Filter)
                 .Returns(_fixture.Create<string>());
+            _searchDocumentsQueryMock
+                .SetupGet(x => x.StoreId)
+                .Returns(_fixture.Create<string>());
+            _searchDocumentsQueryMock
+                .SetupGet(x => x.CurrencyCode)
+                .Returns(_fixture.Create<string>());
+
+            _termFilterBuilderMock
+                .Setup(x => x.GetTermFiltersAsync(It.IsAny<ProductIndexedSearchCriteria>()))
+                .ReturnsAsync(new FiltersContainer
+                {
+                    RemovableFilters = new List<KeyValuePair<string, IFilter>>
+                    {
+                        new KeyValuePair<string, IFilter>(string.Empty, idsFilter),
+                    }
+                });
 
             _phraseParserMock
                 .Setup(x => x.Parse(It.IsAny<string>()))
