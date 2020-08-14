@@ -3,7 +3,7 @@
     <id>VirtoCommerce.ExperienceApi</id>
     <version>3.0.0</version>
     <version-tag>beta001</version-tag>
-    <platformVersion>3.0.0</platformVersion>
+    <platformVersion>3.11.0</platformVersion>
     <title>Commerce experience API module</title>
     <description></description>
     <dependencies>
