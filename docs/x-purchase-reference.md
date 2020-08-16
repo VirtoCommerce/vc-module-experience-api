@@ -8,7 +8,7 @@
 - Lazy resolving;
 
 ## Structure
-:::image type="content" source="CartType.jpeg" alt-text="CartType schema structure":::
+![CartType schema structure](CartType.jpeg)
 ## Endpoints
 ### Queries
 |№|Endpoint|Arguments|Return|
