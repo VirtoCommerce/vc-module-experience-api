@@ -25,24 +25,11 @@ namespace VirtoCommerce.XPurchase.Authorization
             {
                 result = cart.CustomerId == GetUserId(context);
             }
-            else if (context.Resource is GetCartQuery query)
-            {
-                query.UserId = GetUserId(context);
-                result = true;
-            }
-
             else if (context.Resource is SearchCartQuery searchQuery)
             {
                 searchQuery.UserId = GetUserId(context);
                 result = true;
             }
-
-            else if (context.Resource is ShoppingCartSearchCriteria searchCriteria &&  string.IsNullOrWhiteSpace(searchCriteria.CustomerId) )
-            {
-                searchCriteria.CustomerId = GetUserId(context);
-                result = true;
-            }
-
             if (result)
             {
                 context.Succeed(requirement);
