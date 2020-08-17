@@ -18,7 +18,6 @@ namespace VirtoCommerce.XPurchase.Extensions
     {
         public static IServiceCollection AddXPurchase(this IServiceCollection services, IGraphQLBuilder graphQlbuilder)
         {
-            services.AddSingleton<Func<SignInManager<ApplicationUser>>>(provider => () => provider.GetService<SignInManager<ApplicationUser>>());
             //TODO:
             //services.AddSchemaType<PaymentPlanType>();
             //services.AddSchemaType<SettingType>();
