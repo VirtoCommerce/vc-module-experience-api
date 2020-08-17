@@ -7,8 +7,8 @@ The project "Experience API" it is primarily a intermediated layer between clien
 # Key features
 - “Experience API” project at beginning consists from these three functional blocks :
 	-  [X-Catalog docs](./docs/x-catalog-reference.md)
-	-  [X-Purchase docs]()
-	-  [X-UserProfile docs]() 
+	-  [X-Purchase docs](./docs/x-purchase-reference.md)
+	-  [X-UserProfile docs]()
 	-  [Recommendations Gateway API](https://github.com/VirtoSolutions/vc-module-experience-api/tree/master/samples/RecommendationsGatewayModule) (prototype)
 
 - Use GraphQL protocol to leverage more selective and flexible control of resulting data retrieving from API
@@ -17,19 +17,19 @@ The project "Experience API" it is primarily a intermediated layer between clien
 
 - Autonomy. Shared nothing with rest VC data infrastructure except index data source.
 
-- Tracing and performance requests metrics 
+- Tracing and performance requests metrics
 
 
-# Prerequisites 
-- VC platform 3.0 or later 
-- The platform is configured to use ElasticSearch engine 
+# Prerequisites
+- VC platform 3.0 or later
+- The platform is configured to use ElasticSearch engine
 
 appsettings.json
 
 ```Json
 "Search": {
         "Provider": "ElasticSearch",
-        "Scope": "default",       
+        "Scope": "default",
         "ElasticSearch": {
             "Server": "localhost:9200",
             "User": "elastic",
@@ -64,7 +64,7 @@ The sample requests:
       values
     }
   }
-  
+
   products(query: "sony" fuzzy: true filter: "price.USD:(400 TO 1000]")
   {
     totalCount
@@ -76,7 +76,7 @@ The sample requests:
         currency
       }
     }
-  } 
+  }
 }
 ```
 
@@ -88,15 +88,15 @@ this settings add vc product association APIs as downstream for  product recomme
 - Open GraphQL UI playgoround in the browser `http://{platform url}/ui/playground` to start consume API.
 The recommendations example GrapQL request:
 ```Js
-  recommendations(scenario:"vc-recommendations" after: "10" first: 5 itemId: "8b7b07c165924a879392f4f51a6f7ce0") 
+  recommendations(scenario:"vc-recommendations" after: "10" first: 5 itemId: "8b7b07c165924a879392f4f51a6f7ce0")
   {
     items
     {
-      scenario      
+      scenario
       product
       {
         id
-        name       
+        name
       }
     }
   }
