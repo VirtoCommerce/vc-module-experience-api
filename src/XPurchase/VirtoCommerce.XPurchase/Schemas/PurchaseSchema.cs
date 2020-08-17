@@ -79,9 +79,8 @@ namespace VirtoCommerce.XPurchase.Schemas
                 .Argument<StringGraphType>("cultureName", "")
                 .Argument<StringGraphType>("cartType", "")
                 .Argument<StringGraphType>("sort", "The sort expression")
-                .Argument<IntGraphType>("skip", "")
-                .Argument<IntGraphType>("take", "")
                 .Unidirectional();
+                
 
             orderConnectionBuilder.ResolveAsync(async context => await ResolveConnectionAsync(_mediator, context));
 
@@ -604,9 +603,12 @@ namespace VirtoCommerce.XPurchase.Schemas
 
         private async Task<object> ResolveConnectionAsync(IMediator mediator, IResolveConnectionContext<object> context)
         {
+            var first = context.First;
+            var skip = Convert.ToInt32(context.After ?? 0.ToString());
+
             var query = context.GetSearchCartQuery<SearchCartQuery>();
-            var skip = query.Skip = context.GetArgument<int>("skip");
-            var take = query.Take = context.GetArgument<int>("take");
+            query.Skip = skip;
+            query.Take = first ?? context.PageSize ?? 10;
             query.Sort = context.GetArgument<string>("sort");
 
             context.UserContext.Add(nameof(Currency.CultureName).ToCamelCase(), query.CultureName);
@@ -627,14 +629,14 @@ namespace VirtoCommerce.XPurchase.Schemas
                             Node = x,
                         })
                     .ToList(),
-                PageInfo = new PageInfo
+                PageInfo = new PageInfo()
                 {
-                    HasNextPage = response.TotalCount > skip + take,
+                    HasNextPage = response.TotalCount > (skip + first),
                     HasPreviousPage = skip > 0,
                     StartCursor = skip.ToString(),
-                    EndCursor = Math.Min(response.TotalCount, skip + take).ToString()
+                    EndCursor = Math.Min(response.TotalCount, (int)(skip + first)).ToString()
                 },
-                TotalCount = response.TotalCount
+                TotalCount = response.TotalCount,
             };
 
             return result;
