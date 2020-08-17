@@ -45,6 +45,12 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder
             return this;
         }
 
+        public CustomerOrderSearchCriteriaBuilder AddCustomerId(string customerId)
+        {
+            searchCriteria.CustomerId = customerId;
+            return this;
+        }
+
         public CustomerOrderSearchCriteriaBuilder WithPaging(int skip, int take)
         {
             searchCriteria.Skip = skip;

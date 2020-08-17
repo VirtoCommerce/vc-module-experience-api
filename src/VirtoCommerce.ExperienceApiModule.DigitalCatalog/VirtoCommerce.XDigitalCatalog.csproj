@@ -12,14 +12,13 @@
         <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="8.0.0" />
         <PackageReference Include="NEST" Version="7.6.1" />
         <PackageReference Include="Serialize.Linq" Version="1.8.1" />
-        <PackageReference Include="VirtoCommerce.CoreModule.Core" Version="3.2.0-alpha.hashfb63c7d" />
-        <PackageReference Include="VirtoCommerce.CustomerModule.Core" Version="3.1.0" />
+        <PackageReference Include="VirtoCommerce.CoreModule.Core" Version="3.2.0" />
         <PackageReference Include="VirtoCommerce.InventoryModule.Core" Version="3.3.0" />
         <PackageReference Include="VirtoCommerce.TaxModule.Core" Version="3.2.0" />
         <PackageReference Include="VirtoCommerce.CatalogModule.Core" Version="3.4.0" />
         <PackageReference Include="VirtoCommerce.MarketingModule.Core" Version="3.4.0" />
         <PackageReference Include="VirtoCommerce.PricingModule.Core" Version="3.2.0" />
-        <PackageReference Include="VirtoCommerce.Platform.Core" Version="3.2.1" />
+        <PackageReference Include="VirtoCommerce.Platform.Core" Version="3.11.0" />
         <PackageReference Include="VirtoCommerce.SearchModule.Core" Version="3.2.0" />
         <PackageReference Include="VirtoCommerce.Tools" Version="3.0.0-rc.5" />
     </ItemGroup>

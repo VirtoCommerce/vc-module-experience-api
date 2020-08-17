@@ -1,7 +1,9 @@
 using GraphQL.Server;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
-using VirtoCommerce.ExperienceApiModule.Core.Extensions;
+using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
+using VirtoCommerce.ExperienceApiModule.XOrder.Authorization;
 using VirtoCommerce.ExperienceApiModule.XOrder.Schemas;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Extensions
@@ -10,13 +12,14 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Extensions
     {
         public static IServiceCollection AddXOrder(this IServiceCollection services, IGraphQLBuilder graphQlbuilder)
         {
-            services.AddSchemaBuilder<OrderSchema>();
+            services.AddSingleton<ISchemaBuilder, OrderSchema>();
 
             graphQlbuilder.AddGraphTypes(typeof(XOrderAnchor));
 
             services.AddMediatR(typeof(XOrderAnchor));
 
             services.AddTransient<ICustomerOrderAggregateRepository, CustomerOrderAggregateRepository>();
+            services.AddSingleton<IAuthorizationHandler, CanAccessOrderAuthorizationHandler>();
 
             return services;
         }

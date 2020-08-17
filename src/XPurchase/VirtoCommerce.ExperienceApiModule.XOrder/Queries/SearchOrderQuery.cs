@@ -9,5 +9,6 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Queries
         public int Take { get; set; }
         public string Filter { get; set; }
         public string CultureName { get; set; }
+        public string CustomerId { get; set; }
     }
 }

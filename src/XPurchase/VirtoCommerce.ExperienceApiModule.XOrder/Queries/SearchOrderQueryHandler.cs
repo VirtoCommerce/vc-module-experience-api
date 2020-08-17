@@ -2,7 +2,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
-using VirtoCommerce.OrdersModule.Core.Model;
 using VirtoCommerce.OrdersModule.Core.Services;
 using VirtoCommerce.SearchModule.Core.Services;
 
@@ -30,6 +29,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Queries
         {
             var searchCriteria = new CustomerOrderSearchCriteriaBuilder(_searchPhraseParser, _mapper)
                                         .ParseFilters(request.Filter)
+                                        .AddCustomerId(request.CustomerId)
                                         .WithPaging(request.Skip, request.Take)
                                         .AddSorting(request.Sort)
                                         .Build();
