@@ -79,11 +79,9 @@ namespace VirtoCommerce.XPurchase.Schemas
                 .Argument<StringGraphType>("cultureName", "")
                 .Argument<StringGraphType>("cartType", "")
                 .Argument<StringGraphType>("sort", "The sort expression")
-                .Argument<IntGraphType>("skip", "")
-                .Argument<IntGraphType>("take", "")
                 .Unidirectional()
                 .PageSize(20);
-
+                
             orderConnectionBuilder.ResolveAsync(async context => await ResolveConnectionAsync(_mediator, context));
 
             schema.Query.AddField(orderConnectionBuilder.FieldType);

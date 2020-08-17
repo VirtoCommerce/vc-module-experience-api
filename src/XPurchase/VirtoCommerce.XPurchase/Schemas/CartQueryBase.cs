@@ -15,7 +15,7 @@ namespace VirtoCommerce.XPurchase.Schemas
         string CultureName { get; set; }
     }
 
-    public class CatalogQueryBase<TResponse> : ICartQuery, IQuery<TResponse>
+    public class CartQueryBase<TResponse> : ICartQuery, IQuery<TResponse>
     {
         public IEnumerable<string> IncludeFields { get; set; } = Array.Empty<string>();
         public string StoreId { get; set; }
