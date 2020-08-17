@@ -86,7 +86,7 @@ In this block you can find some examples of queries and mutations.
 > [!TIP]
 > See also CartType schema for better understanding of possible fields in request.
 ### Carts connection
-With this connection you can get all carts/whishlists of user.
+With this connection you can get all user's carts/whishlists.
 ```
 {
     carts (storeId: "Electronics"
@@ -117,7 +117,7 @@ With this connection you can get all carts/whishlists of user.
 }
 ```
 ### AddItem mutation
-This mutation validate item and add this to cart, recalculate promotion rewards and taxes then save cart.
+This mutation validates item and add it to cart, recalculate promotion rewards and taxes then save cart.
 #### Query:
 ```
 mutation ($command:InputAddItemType!)
@@ -149,7 +149,7 @@ mutation ($command:InputAddItemType!)
 }
 ```
 ### ClearCart mutation
-This mutation remove all items from cart, reset promotion rewards based on amount of items and save cart.
+This mutation removes all items from cart, reset promotion rewards based on amount of items and save cart.
 #### Query:
 ```
 mutation ($command:InputClearCartType!)
@@ -337,7 +337,7 @@ mutation ($command:InputRemoveItemType!)
 }
 ```
 ### AddCoupon mutation
-This mutation cheks and adds coupon to cart.
+This mutation checks and adds coupon to cart.
 #### Query:
 ```
 mutation ($command:InputAddCouponType!)
