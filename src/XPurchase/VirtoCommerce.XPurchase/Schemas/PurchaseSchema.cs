@@ -665,20 +665,13 @@ namespace VirtoCommerce.XPurchase.Schemas
             }
 
             var signInManager = _signInManagerFactory();
-            var user = await signInManager.UserManager.FindByIdAsync(userId);
-
-            if (user == null)
+            var user = await signInManager.UserManager.FindByIdAsync(userId) ?? new ApplicationUser
             {
-                user = new ApplicationUser()
-                {
-                    Id = userId,
-                    UserName = "Anonymous",
-                };
-                
-                await signInManager.ClaimsFactory.CreateAsync(user);
-            }
+                Id = userId,
+                UserName = "Anonymous",
+            };
 
-            var userPrincipal = await signInManager.CreateUserPrincipalAsync(user);
+            var userPrincipal = await signInManager.ClaimsFactory.CreateAsync(user);
             var authorizationResult = await _authorizationService.AuthorizeAsync(userPrincipal, resource, new CanAccessCartAuthorizationRequirement());
 
             if (!authorizationResult.Succeeded)
