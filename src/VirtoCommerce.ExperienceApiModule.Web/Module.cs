@@ -3,21 +3,31 @@ using GraphQL.Server;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using PipelineNet.MiddlewareResolver;
+using VirtoCommerce.ExperienceApiModule.Core;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Index;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
+using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
 using VirtoCommerce.ExperienceApiModule.XOrder.Extensions;
 using VirtoCommerce.ExperienceApiModule.XOrder.Mapping;
 using VirtoCommerce.ExperienceApiModule.XProfile.Extensions;
 using VirtoCommerce.ExperienceApiModule.XProfile.Mapping;
+using VirtoCommerce.MarketingModule.Core.Model.Promotions;
 using VirtoCommerce.Platform.Core.Modularity;
+using VirtoCommerce.PricingModule.Core.Model;
+using VirtoCommerce.TaxModule.Core.Model;
 using VirtoCommerce.XDigitalCatalog;
 using VirtoCommerce.XDigitalCatalog.Extensions;
 using VirtoCommerce.XDigitalCatalog.Mapping;
+using VirtoCommerce.XDigitalCatalog.Middlewares;
+using VirtoCommerce.XDigitalCatalog.Queries;
+using VirtoCommerce.XProfile.Middlewares;
 using VirtoCommerce.XPurchase;
 using VirtoCommerce.XPurchase.Extensions;
 using VirtoCommerce.XPurchase.Mapping;
+using VirtoCommerce.XPurchase.Middlewares;
 
 namespace VirtoCommerce.ExperienceApiModule.Web
 {
@@ -27,6 +37,8 @@ namespace VirtoCommerce.ExperienceApiModule.Web
 
         public void Initialize(IServiceCollection services)
         {
+         
+
             //services.AddSingleton(typeof(IPipelineBehavior<,>), typeof(RequestExceptionProcessorBehavior<,>));
             //serviceCollection.AddSingleton(typeof(IRequestPreProcessor<>), typeof(GenericRequestPreProcessor<>));
 
@@ -83,10 +95,39 @@ namespace VirtoCommerce.ExperienceApiModule.Web
             });
             var mapper = mappingConfig.CreateMapper();
             services.AddSingleton(mapper);
+
+
+            services.AddSingleton<IStoreCurrencyResolver, StoreCurrencyResolver>();
+
+            services.AddSingleton<IMiddlewareResolver, ServiceProviderMiddlewareResolver>();
+            services.AddSingleton<IGenericPipelineLauncher, GenericPipelineLauncher>();
+            services.AddPipeline<SearchProductResponse>(builder =>
+            {
+                builder.AddMiddleware(typeof(ProductsPricesEvalMiddleware));
+                builder.AddMiddleware(typeof(ProductsDiscountsEvalMiddleware));
+                builder.AddMiddleware(typeof(ProductsTaxEvalMiddleware));
+                builder.AddMiddleware(typeof(ProductsInventoryEvalMiddleware));
+            });
+            services.AddPipeline<PromotionEvaluationContext>(builder =>
+            {
+                builder.AddMiddleware(typeof(ProfileEvalContextBuildMiddleware));
+                builder.AddMiddleware(typeof(PurchaseEvalContextBuildMiddleware));
+            });
+            services.AddPipeline<TaxEvaluationContext>(builder =>
+            {
+                builder.AddMiddleware(typeof(ProfileEvalContextBuildMiddleware));
+                builder.AddMiddleware(typeof(PurchaseEvalContextBuildMiddleware));
+            });
+            services.AddPipeline<PriceEvaluationContext>(builder =>
+            {
+                builder.AddMiddleware(typeof(ProfileEvalContextBuildMiddleware));
+                builder.AddMiddleware(typeof(PurchaseEvalContextBuildMiddleware));
+            });
+
         }
 
         public void PostInitialize(IApplicationBuilder appBuilder)
-        {
+        {          
             // add http for Schema at default url /graphql
             appBuilder.UseGraphQL<ISchema>();
 

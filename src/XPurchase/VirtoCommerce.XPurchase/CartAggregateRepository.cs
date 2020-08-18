@@ -65,29 +65,8 @@ namespace VirtoCommerce.XPurchase
             {
                 return await InnerGetCartAggregateFromCartAsync(cart, language ?? Language.InvariantLanguage.CultureName);
             }
-
             return null;
-        }
-
-        public ShoppingCart CreateDefaultShoppingCart<TCartCommand>(TCartCommand request) where TCartCommand : CartCommand
-        {
-            var cart = AbstractTypeFactory<ShoppingCart>.TryCreateInstance();
-
-            cart.CustomerId = request.UserId;
-            cart.Name = request.CartName ?? "default";
-            cart.StoreId = request.StoreId;
-            cart.LanguageCode = request.Language;
-            cart.Type = request.CartType;
-            cart.Currency = request.Currency;
-            cart.Items = new List<LineItem>();
-            cart.Shipments = new List<Shipment>();
-            cart.Payments = new List<Payment>();
-            cart.Addresses = new List<CartModule.Core.Model.Address>();
-            cart.TaxDetails = new List<TaxDetail>();
-            cart.Coupons = new List<string>();
-
-            return cart;
-        }
+        }        
 
         public async Task<CartAggregate> GetCartForShoppingCartAsync(ShoppingCart cart, string language = null)
         {
@@ -192,7 +171,7 @@ namespace VirtoCommerce.XPurchase
 
             return aggregate;
         }
-
+        //TODO: DRY violation in many places in this solution. Move to abstraction to from multiple boundaries
         protected virtual async Task<Member> GetCustomerAsync(string customerId)
         {
             // Try to find contact
