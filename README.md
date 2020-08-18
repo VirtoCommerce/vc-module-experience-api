@@ -6,10 +6,10 @@ The project "Experience API" it is primarily a intermediated layer between clien
 
 # Key features
 - “Experience API” project at beginning consists from these three functional blocks :
-	-  [X-Catalog docs](./docs/x-catalog-reference.md)
-	-  [X-Purchase docs](./docs/x-purchase-reference.md)
-	-  [X-UserProfile docs]()
-	-  [Recommendations Gateway API](https://github.com/VirtoSolutions/vc-module-experience-api/tree/master/samples/RecommendationsGatewayModule) (prototype)
+    -  [X-Catalog docs](./docs/x-catalog-reference.md)
+    -  [X-Purchase docs](./docs/x-purchase-reference.md)
+    -  [X-UserProfile docs](./docs/x-profile-reference.md)
+    -  [Recommendations Gateway API](https://github.com/VirtoSolutions/vc-module-experience-api/tree/master/samples/RecommendationsGatewayModule) (prototype)
 
 - Use GraphQL protocol to leverage more selective and flexible control of resulting data retrieving from API
 
@@ -68,7 +68,7 @@ The sample requests:
   products(query: "sony" fuzzy: true filter: "price.USD:(400 TO 1000]")
   {
     totalCount
-   	items {
+    items {
        name
        id
        prices (currency: "USD") {
