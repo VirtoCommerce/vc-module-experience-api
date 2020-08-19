@@ -8,7 +8,6 @@ using VirtoCommerce.CartModule.Core.Model.Search;
 using VirtoCommerce.CartModule.Core.Services;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.CustomerModule.Core.Services;
-using VirtoCommerce.ExperienceApiModule.Core;
 using VirtoCommerce.Platform.Core.Security;
 using VirtoCommerce.StoreModule.Core.Services;
 using VirtoCommerce.XPurchase.Tests.Helpers;
@@ -25,7 +24,6 @@ namespace VirtoCommerce.XPurchase.Tests.Repositories
         private readonly Mock<ICurrencyService> _currencyService;
         private readonly Mock<IMemberService> _memberService;
         private readonly Mock<IStoreService> _storeService;
-        private readonly Mock<IMemberResolver> _memberResolver;
 
         private readonly CartAggregateRepository repository;
 
@@ -39,19 +37,18 @@ namespace VirtoCommerce.XPurchase.Tests.Repositories
             _shoppingCartSearchService = new Mock<IShoppingCartSearchService>();
             _shoppingCartService = new Mock<IShoppingCartService>();
             _currencyService = new Mock<ICurrencyService>();
-            _currencyService = new Mock<ICurrencyService>();
             _memberService = new Mock<IMemberService>();
             _storeService = new Mock<IStoreService>();
-            _memberResolver = new Mock<IMemberResolver>();
 
             repository = new CartAggregateRepository(
                 () => _fixture.Create<CartAggregate>(),
                 _shoppingCartSearchService.Object,
                 _shoppingCartService.Object,
                 _currencyService.Object,
-                _memberResolver.Object,
+                _memberService.Object,
                 _storeService.Object,
-                _cartValidationContextFactory.Object
+                _cartValidationContextFactory.Object,
+                () => TestUserManager<ApplicationUser>()
                 );
         }
 

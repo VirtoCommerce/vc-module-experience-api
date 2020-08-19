@@ -2,14 +2,20 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.CartModule.Core.Services;
 using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.CoreModule.Core.Currency;
-using VirtoCommerce.ExperienceApiModule.Core;
+using VirtoCommerce.CoreModule.Core.Tax;
+using VirtoCommerce.CustomerModule.Core.Model;
+using VirtoCommerce.CustomerModule.Core.Services;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.Security;
 using VirtoCommerce.StoreModule.Core.Services;
+using VirtoCommerce.XPurchase.Commands;
 using VirtoCommerce.XPurchase.Queries;
+using VirtoCommerce.XPurchase.Schemas;
 using VirtoCommerce.XPurchase.Validators;
 
 namespace VirtoCommerce.XPurchase
@@ -21,26 +27,28 @@ namespace VirtoCommerce.XPurchase
         private readonly IShoppingCartSearchService _shoppingCartSearchService;
         private readonly IShoppingCartService _shoppingCartService;
         private readonly ICurrencyService _currencyService;
-        private readonly IMemberResolver _memberResolver;
+        private readonly IMemberService _memberService;
         private readonly IStoreService _storeService;
+        private readonly UserManager<ApplicationUser> _userManager;
 
         public CartAggregateRepository(
             Func<CartAggregate> cartAggregateFactory
             , IShoppingCartSearchService shoppingCartSearchService
             , IShoppingCartService shoppingCartService
             , ICurrencyService currencyService
-            , IMemberResolver memberResolver
+            , IMemberService memberService
             , IStoreService storeService
             , ICartValidationContextFactory cartValidationContextFactory
-            )
+            , Func<UserManager<ApplicationUser>> userManager)
         {
             _cartAggregateFactory = cartAggregateFactory;
             _shoppingCartSearchService = shoppingCartSearchService;
             _shoppingCartService = shoppingCartService;
             _currencyService = currencyService;
-            _memberResolver = memberResolver;
+            _memberService = memberService;
             _storeService = storeService;
             _cartValidationContextFactory = cartValidationContextFactory;
+            _userManager = userManager();
         }
 
         public async Task SaveAsync(CartAggregate cartAggregate)
@@ -57,8 +65,29 @@ namespace VirtoCommerce.XPurchase
             {
                 return await InnerGetCartAggregateFromCartAsync(cart, language ?? Language.InvariantLanguage.CultureName);
             }
+
             return null;
-        }        
+        }
+
+        public ShoppingCart CreateDefaultShoppingCart<TCartCommand>(TCartCommand request) where TCartCommand : CartCommand
+        {
+            var cart = AbstractTypeFactory<ShoppingCart>.TryCreateInstance();
+
+            cart.CustomerId = request.UserId;
+            cart.Name = request.CartName ?? "default";
+            cart.StoreId = request.StoreId;
+            cart.LanguageCode = request.Language;
+            cart.Type = request.CartType;
+            cart.Currency = request.Currency;
+            cart.Items = new List<LineItem>();
+            cart.Shipments = new List<Shipment>();
+            cart.Payments = new List<Payment>();
+            cart.Addresses = new List<CartModule.Core.Model.Address>();
+            cart.TaxDetails = new List<TaxDetail>();
+            cart.Coupons = new List<string>();
+
+            return cart;
+        }
 
         public async Task<CartAggregate> GetCartForShoppingCartAsync(ShoppingCart cart, string language = null)
         {
@@ -144,7 +173,7 @@ namespace VirtoCommerce.XPurchase
                 CustomFormatting = currency.CustomFormatting
             };
 
-            var member = await _memberResolver.ResolveMemberByIdAsync(cart.CustomerId);
+            var member = await GetCustomerAsync(cart.CustomerId);
             var aggregate = _cartAggregateFactory();
 
             aggregate.GrabCart(cart, store, member, currency);
@@ -163,7 +192,25 @@ namespace VirtoCommerce.XPurchase
 
             return aggregate;
         }
-      
+
+        protected virtual async Task<Member> GetCustomerAsync(string customerId)
+        {
+            // Try to find contact
+            var result = await _memberService.GetByIdAsync(customerId);
+
+            if (result == null)
+            {
+                var user = await _userManager.FindByIdAsync(customerId);
+
+                if (user != null && user.MemberId != null)
+                {
+                    result = await _memberService.GetByIdAsync(user.MemberId);
+                }
+            }
+
+            return result;
+        }
+
         protected virtual async Task<IList<CartAggregate>> GetCartsForShoppingCartsAsync(IList<ShoppingCart> carts, string cultureName = null)
         {
             var result = new List<CartAggregate>();
