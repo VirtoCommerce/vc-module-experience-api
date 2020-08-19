@@ -130,32 +130,34 @@ namespace VirtoCommerce.XPurchase
                 ValidationErrors.AddRange(validationResult.Errors);
             }
 
-            var lineItem = _mapper.Map<LineItem>(newCartItem.CartProduct);
-            lineItem.Quantity = newCartItem.Quantity;
-
-            if (newCartItem.Price != null)
+            if (newCartItem.CartProduct != null)
             {
-                lineItem.ListPrice = newCartItem.Price.Value;
-                lineItem.SalePrice = newCartItem.Price.Value;
-            }
+                var lineItem = _mapper.Map<LineItem>(newCartItem.CartProduct);
+                lineItem.Quantity = newCartItem.Quantity;
 
-            if (!string.IsNullOrEmpty(newCartItem.Comment))
-            {
-                lineItem.Note = newCartItem.Comment;
-            }
-
-            if (!newCartItem.DynamicProperties.IsNullOrEmpty())
-            {
-                lineItem.DynamicProperties = newCartItem.DynamicProperties.Select(x => new DynamicObjectProperty
+                if (newCartItem.Price != null)
                 {
-                    Name = x.Key,
-                    Values = new[] { new DynamicPropertyObjectValue { Value = x.Value } }
-                }).ToList();
+                    lineItem.ListPrice = newCartItem.Price.Value;
+                    lineItem.SalePrice = newCartItem.Price.Value;
+                }
+
+                if (!string.IsNullOrEmpty(newCartItem.Comment))
+                {
+                    lineItem.Note = newCartItem.Comment;
+                }
+
+                if (!newCartItem.DynamicProperties.IsNullOrEmpty())
+                {
+                    lineItem.DynamicProperties = newCartItem.DynamicProperties.Select(x => new DynamicObjectProperty
+                    {
+                        Name = x.Key,
+                        Values = new[] { new DynamicPropertyObjectValue { Value = x.Value } }
+                    }).ToList();
+                }
+
+                CartProducts[newCartItem.CartProduct.Id] = newCartItem.CartProduct;
+                await InnerAddLineItemAsync(lineItem, newCartItem.CartProduct);
             }
-
-            CartProducts[newCartItem.CartProduct.Id] = newCartItem.CartProduct;
-
-            await InnerAddLineItemAsync(lineItem, newCartItem.CartProduct);
 
             return this;
         }
@@ -185,20 +187,23 @@ namespace VirtoCommerce.XPurchase
                 ValidationErrors.AddRange(validationResult.Errors);
             }
 
-            var lineItem = Cart.Items.First(i => i.Id == qtyAdjustment.LineItemId);
+            var lineItem = Cart.Items.FirstOrDefault(i => i.Id == qtyAdjustment.LineItemId);
 
-            var salePrice = qtyAdjustment.CartProduct.Price.GetTierPrice(qtyAdjustment.NewQuantity).Price;
-            if (salePrice != 0)
+            if (lineItem != null)
             {
-                lineItem.SalePrice = salePrice.Amount;
+                var salePrice = qtyAdjustment.CartProduct.Price.GetTierPrice(qtyAdjustment.NewQuantity).Price;
+                if (salePrice != 0)
+                {
+                    lineItem.SalePrice = salePrice.Amount;
+                }
+
+                //List price should be always greater or equals sale price because it may cause incorrect totals calculation
+                lineItem.ListPrice = lineItem.ListPrice < lineItem.SalePrice
+                    ? lineItem.SalePrice
+                    : lineItem.ListPrice;
+
+                lineItem.Quantity = qtyAdjustment.NewQuantity;
             }
-
-            //List price should be always greater or equals sale price because it may cause incorrect totals calculation
-            lineItem.ListPrice = lineItem.ListPrice < lineItem.SalePrice
-                ? lineItem.SalePrice
-                : lineItem.ListPrice;
-
-            lineItem.Quantity = qtyAdjustment.NewQuantity;
 
             return this;
         }
