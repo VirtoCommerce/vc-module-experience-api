@@ -187,20 +187,23 @@ namespace VirtoCommerce.XPurchase
                 ValidationErrors.AddRange(validationResult.Errors);
             }
 
-            var lineItem = Cart.Items.First(i => i.Id == qtyAdjustment.LineItemId);
+            var lineItem = Cart.Items.FirstOrDefault(i => i.Id == qtyAdjustment.LineItemId);
 
-            var salePrice = qtyAdjustment.CartProduct.Price.GetTierPrice(qtyAdjustment.NewQuantity).Price;
-            if (salePrice != 0)
+            if (lineItem != null)
             {
-                lineItem.SalePrice = salePrice.Amount;
+                var salePrice = qtyAdjustment.CartProduct.Price.GetTierPrice(qtyAdjustment.NewQuantity).Price;
+                if (salePrice != 0)
+                {
+                    lineItem.SalePrice = salePrice.Amount;
+                }
+
+                //List price should be always greater or equals sale price because it may cause incorrect totals calculation
+                lineItem.ListPrice = lineItem.ListPrice < lineItem.SalePrice
+                    ? lineItem.SalePrice
+                    : lineItem.ListPrice;
+
+                lineItem.Quantity = qtyAdjustment.NewQuantity;
             }
-
-            //List price should be always greater or equals sale price because it may cause incorrect totals calculation
-            lineItem.ListPrice = lineItem.ListPrice < lineItem.SalePrice
-                ? lineItem.SalePrice
-                : lineItem.ListPrice;
-
-            lineItem.Quantity = qtyAdjustment.NewQuantity;
 
             return this;
         }

@@ -136,7 +136,24 @@ namespace VirtoCommerce.XPurchase.Tests.Aggregates
 
         #region ChangeItemQuantityAsync
 
-        // TODO: Write tests
+        [Fact]
+        public void ChangeItemQuantityAsync_LineItemNotFound_ShouldThrowValidationException()
+        {
+            // Arrange
+            var cartAggregate = GetValidCartAggregate();
+            var lineItem = _fixture.Create<LineItem>();
+            cartAggregate.Cart.Items = new List<LineItem> { lineItem };
+
+            // Act
+            var cartAggregateAfterChangeItemQty = cartAggregate.ChangeItemQuantityAsync(new ItemQtyAdjustment(
+                _fixture.Create<string>(),
+                5,
+                _fixture.Create<CartProduct>())).GetAwaiter().GetResult();
+
+            // Assert
+            cartAggregateAfterChangeItemQty.ValidationErrors.Should().NotBeEmpty();
+            cartAggregateAfterChangeItemQty.ValidationErrors.Should().Contain(x => x.ErrorCode == "LINE_ITEM_NOT_FOUND");
+        }
 
         #endregion ChangeItemQuantityAsync
 
