@@ -1,5 +1,6 @@
 using VirtoCommerce.CustomerModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.XProfile.Commands;
+using VirtoCommerce.TaxModule.Core.Model;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Mapping
 {
@@ -7,6 +8,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Mapping
     {
         public ProfileMappingProfile()
         {
+            CreateMap<Contact, Customer>();
             CreateMap<CreateOrganizationCommand, Organization>()
                 .ConvertUsing((command, org, context) =>
                 {

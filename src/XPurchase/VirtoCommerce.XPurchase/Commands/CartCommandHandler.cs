@@ -33,7 +33,20 @@ namespace VirtoCommerce.XPurchase.Commands
 
         protected virtual Task<CartAggregate> CreateNewCartAggregateAsync(TCartCommand request)
         {
-            var cart = CartRepository.CreateDefaultShoppingCart(request);
+            var cart = AbstractTypeFactory<ShoppingCart>.TryCreateInstance();
+
+            cart.CustomerId = request.UserId;
+            cart.Name = request.CartName ?? "default";
+            cart.StoreId = request.StoreId;
+            cart.LanguageCode = request.Language;
+            cart.Type = request.CartType;
+            cart.Currency = request.Currency;
+            cart.Items = new List<LineItem>();
+            cart.Shipments = new List<Shipment>();
+            cart.Payments = new List<Payment>();
+            cart.Addresses = new List<CartModule.Core.Model.Address>();
+            cart.TaxDetails = new List<TaxDetail>();
+            cart.Coupons = new List<string>();
 
             return CartRepository.GetCartForShoppingCartAsync(cart);
         }

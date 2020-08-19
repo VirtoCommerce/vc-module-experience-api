@@ -19,8 +19,6 @@ namespace VirtoCommerce.XPurchase
 
         Task<CartAggregate> GetCartForShoppingCartAsync(ShoppingCart cart, string cultureName = null);
 
-        ShoppingCart CreateDefaultShoppingCart<TCartCommand>(TCartCommand request) where TCartCommand : CartCommand;
-
         Task<SearchCartResponse> SearchCartAsync(string storeId, string userId, string cultureName, string currencyCode, string type, string sort, int skip, int take);
     }
 }

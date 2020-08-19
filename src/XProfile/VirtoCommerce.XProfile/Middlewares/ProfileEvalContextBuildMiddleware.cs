@@ -1,0 +1,67 @@
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using AutoMapper;
+using PipelineNet.Middleware;
+using VirtoCommerce.CoreModule.Core.Common;
+using VirtoCommerce.CustomerModule.Core.Model;
+using VirtoCommerce.ExperienceApiModule.Core;
+using VirtoCommerce.MarketingModule.Core.Model.Promotions;
+using VirtoCommerce.Platform.Core.DynamicProperties;
+using VirtoCommerce.PricingModule.Core.Model;
+using VirtoCommerce.TaxModule.Core.Model;
+
+namespace VirtoCommerce.XProfile.Middlewares
+{
+    public class ProfileEvalContextBuildMiddleware : IAsyncMiddleware<PromotionEvaluationContext>, IAsyncMiddleware<PriceEvaluationContext>, IAsyncMiddleware<TaxEvaluationContext>
+    {
+        private readonly IMapper _mapper;
+        private readonly IMemberResolver _memberIdResolver;
+        public ProfileEvalContextBuildMiddleware(IMapper mapper, IMemberResolver memberIdResolver)
+        {
+            _mapper = mapper;
+            _memberIdResolver = memberIdResolver;
+        }
+
+        public async Task Run(PromotionEvaluationContext parameter, Func<PromotionEvaluationContext, Task> next)
+        {
+            await InnerSetShopperDataFromMember(parameter, parameter.CustomerId);
+            await next(parameter);
+        }
+
+        public async Task Run(PriceEvaluationContext parameter, Func<PriceEvaluationContext, Task> next)
+        {
+            await InnerSetShopperDataFromMember(parameter, parameter.CustomerId);
+            await next(parameter);
+        }
+
+        public async Task Run(TaxEvaluationContext parameter, Func<TaxEvaluationContext, Task> next)
+        {
+            var member = await _memberIdResolver.ResolveMemberByIdAsync(parameter.CustomerId);
+            if (member != null && member is Contact contact)
+            {
+                parameter.Customer = _mapper.Map<Customer>(contact);
+            }
+
+            await next(parameter);
+        }
+
+        private async Task InnerSetShopperDataFromMember(EvaluationContextBase evalContextBase, string customerId)
+        {
+            var member = await _memberIdResolver.ResolveMemberByIdAsync(customerId);
+            if (member != null && member is Contact contact)
+            {
+                evalContextBase.ShopperGender = contact.GetDynamicPropertyValue("gender", string.Empty);
+                if (contact.BirthDate != null)
+                {
+                    var zeroTime = new DateTime(1, 1, 1);
+                    var span = DateTime.UtcNow - contact.BirthDate.Value;
+                    evalContextBase.ShopperAge = (zeroTime + span).Year - 1;
+                }
+                evalContextBase.UserGroups = contact.Groups?.ToArray();
+                evalContextBase.GeoTimeZone = contact.TimeZone;
+                //TODO: Set other fields from customer 
+            }
+        }
+    }
+}
