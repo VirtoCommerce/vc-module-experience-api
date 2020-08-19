@@ -142,9 +142,10 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Index
             {
                 return;
             }
+            const string spaceEscapeString = "%x20";
+            filterPhrase = filterPhrase.Replace(spaceEscapeString, " ");
 
             var parseResult = _phraseParser.Parse(filterPhrase);
-            const string spaceEscapeString = "%x20";
 
             foreach (var filter in parseResult.Filters)
             {
