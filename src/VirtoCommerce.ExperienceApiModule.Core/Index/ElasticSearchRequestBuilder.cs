@@ -49,7 +49,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Index
             SearchRequest.SearchKeywords = query.Query;
             SearchRequest.IncludeFields = query.IncludeFields.ToList();
 
-            ParseFilters(query.Filter, query.CurrencyCode, query.StoreId);
+            ParseFilters(query.Filter);
 
             AddSorting(query.Sort);
 
@@ -134,18 +134,17 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Index
             ((AndFilter)SearchRequest.Filter).ChildFilters.AddRange(filters);
         }
 
-        private void ParseFilters(string filterPhrase, string currencyCode, string storeId)
+        private void ParseFilters(string filterPhrase)
         {
             var filters = new List<IFilter>();
 
-            if (filterPhrase == null || currencyCode == null || storeId == null)
+            if (filterPhrase == null)
             {
                 return;
             }
-            const string spaceEscapeString = "%x20";
-            filterPhrase = filterPhrase.Replace(spaceEscapeString, " ");
 
             var parseResult = _phraseParser.Parse(filterPhrase);
+            const string spaceEscapeString = "%x20";
 
             foreach (var filter in parseResult.Filters)
             {
