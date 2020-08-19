@@ -1,9 +1,10 @@
 # Experience API module
 ## Functional blocks
 “Experience API” project at beginning consists from these three functional blocks :
-- [X-Catalog docs](./docs/x-catalog-reference.md)
-- [X-Purchase docs](./docs/x-purchase-reference.md)
-- [X-UserProfile docs](./docs/x-profile-reference.md)
+- [X-Catalog docs](x-catalog-reference.md)
+- [X-Purchase cart docs](x-purchase-cart-reference.md)
+- [X-Purchase order docs](x-purchase-order-reference.md)
+- [X-UserProfile docs](x-profile-reference.md)
 - [Recommendations Gateway API](https://github.com/VirtoSolutions/vc-module-experience-api/tree/master/samples/RecommendationsGatewayModule) (prototype)
 
 ## Prerequisites
