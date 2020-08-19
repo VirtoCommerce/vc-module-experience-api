@@ -1,6 +1,6 @@
 # Experience API module
 ## Functional blocks
-“Experience API” project at beginning consists from these three functional blocks :
+“Experience API” project at beginning consists from these functional blocks :
 - [X-Catalog docs](x-catalog-reference.md)
 - [X-Purchase cart docs](x-purchase-cart-reference.md)
 - [X-Purchase order docs](x-purchase-order-reference.md)
