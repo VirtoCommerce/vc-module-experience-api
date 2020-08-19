@@ -7,6 +7,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
     {
         public InputCreateContactType()
         {
+            Field<NonNullGraphType<StringGraphType>>("userId");
             Field<StringGraphType>(nameof(Contact.FullName));
             Field<NonNullGraphType<StringGraphType>>(nameof(Contact.FirstName));
             Field<NonNullGraphType<StringGraphType>>(nameof(Contact.LastName));
