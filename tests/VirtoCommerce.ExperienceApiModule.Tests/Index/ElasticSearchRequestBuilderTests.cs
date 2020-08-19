@@ -180,12 +180,6 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Index
             _searchDocumentsQueryMock
                 .SetupGet(x => x.Filter)
                 .Returns(_fixture.Create<string>());
-            _searchDocumentsQueryMock
-                .SetupGet(x => x.CurrencyCode)
-                .Returns(_fixture.Create<string>());
-            _searchDocumentsQueryMock
-                .SetupGet(x => x.StoreId)
-                .Returns(_fixture.Create<string>());
 
             _phraseParserMock
                 .Setup(x => x.Parse(It.IsAny<string>()))
@@ -217,12 +211,6 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Index
 
             _searchDocumentsQueryMock
                 .SetupGet(x => x.Filter)
-                .Returns(_fixture.Create<string>());
-            _searchDocumentsQueryMock
-                .SetupGet(x => x.CurrencyCode)
-                .Returns(_fixture.Create<string>());
-            _searchDocumentsQueryMock
-                .SetupGet(x => x.StoreId)
                 .Returns(_fixture.Create<string>());
 
             _phraseParserMock
@@ -324,12 +312,6 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Index
             _searchDocumentsQueryMock
                 .SetupGet(x => x.Filter)
                 .Returns(_fixture.Create<string>());
-            _searchDocumentsQueryMock
-                .SetupGet(x => x.CurrencyCode)
-                .Returns(_fixture.Create<string>());
-            _searchDocumentsQueryMock
-                .SetupGet(x => x.StoreId)
-                .Returns(_fixture.Create<string>());
 
             _phraseParserMock
                 .Setup(x => x.Parse(It.IsAny<string>()))
@@ -417,12 +399,6 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Index
             _searchDocumentsQueryMock
                 .SetupGet(x => x.Filter)
                 .Returns(_fixture.Create<string>());
-            _searchDocumentsQueryMock
-                .SetupGet(x => x.StoreId)
-                .Returns(_fixture.Create<string>());
-            _searchDocumentsQueryMock
-                .SetupGet(x => x.CurrencyCode)
-                .Returns(_fixture.Create<string>());
 
             _phraseParserMock
                 .Setup(x => x.Parse(It.IsAny<string>()))
@@ -484,12 +460,6 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Index
 
             _searchDocumentsQueryMock
                 .SetupGet(x => x.Filter)
-                .Returns(_fixture.Create<string>());
-            _searchDocumentsQueryMock
-                .SetupGet(x => x.StoreId)
-                .Returns(_fixture.Create<string>());
-            _searchDocumentsQueryMock
-                .SetupGet(x => x.CurrencyCode)
                 .Returns(_fixture.Create<string>());
 
             _phraseParserMock
