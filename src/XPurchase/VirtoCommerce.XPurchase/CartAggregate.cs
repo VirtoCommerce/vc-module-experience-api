@@ -130,32 +130,34 @@ namespace VirtoCommerce.XPurchase
                 ValidationErrors.AddRange(validationResult.Errors);
             }
 
-            var lineItem = _mapper.Map<LineItem>(newCartItem.CartProduct);
-            lineItem.Quantity = newCartItem.Quantity;
-
-            if (newCartItem.Price != null)
+            if (newCartItem.CartProduct != null)
             {
-                lineItem.ListPrice = newCartItem.Price.Value;
-                lineItem.SalePrice = newCartItem.Price.Value;
-            }
+                var lineItem = _mapper.Map<LineItem>(newCartItem.CartProduct);
+                lineItem.Quantity = newCartItem.Quantity;
 
-            if (!string.IsNullOrEmpty(newCartItem.Comment))
-            {
-                lineItem.Note = newCartItem.Comment;
-            }
-
-            if (!newCartItem.DynamicProperties.IsNullOrEmpty())
-            {
-                lineItem.DynamicProperties = newCartItem.DynamicProperties.Select(x => new DynamicObjectProperty
+                if (newCartItem.Price != null)
                 {
-                    Name = x.Key,
-                    Values = new[] { new DynamicPropertyObjectValue { Value = x.Value } }
-                }).ToList();
+                    lineItem.ListPrice = newCartItem.Price.Value;
+                    lineItem.SalePrice = newCartItem.Price.Value;
+                }
+
+                if (!string.IsNullOrEmpty(newCartItem.Comment))
+                {
+                    lineItem.Note = newCartItem.Comment;
+                }
+
+                if (!newCartItem.DynamicProperties.IsNullOrEmpty())
+                {
+                    lineItem.DynamicProperties = newCartItem.DynamicProperties.Select(x => new DynamicObjectProperty
+                    {
+                        Name = x.Key,
+                        Values = new[] { new DynamicPropertyObjectValue { Value = x.Value } }
+                    }).ToList();
+                }
+
+                CartProducts[newCartItem.CartProduct.Id] = newCartItem.CartProduct;
+                await InnerAddLineItemAsync(lineItem, newCartItem.CartProduct);
             }
-
-            CartProducts[newCartItem.CartProduct.Id] = newCartItem.CartProduct;
-
-            await InnerAddLineItemAsync(lineItem, newCartItem.CartProduct);
 
             return this;
         }

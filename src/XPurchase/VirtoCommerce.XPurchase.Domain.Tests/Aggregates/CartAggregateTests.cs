@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
-using FluentValidation;
 using Moq;
 using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model;
@@ -68,7 +67,7 @@ namespace VirtoCommerce.XPurchase.Tests.Aggregates
             action.Should().ThrowExactly<ArgumentNullException>("NewCartItem is null");
         }
 
-        [Theory(Skip = "Fix test after fixing NRE")]// TODO: Fix NRE
+        [Theory]
         [InlineData(-1)]
         [InlineData(0)]
         public void AddItemAsync_ShouldThrow_IfQuantityLessOrEqualZero(int quantity)
@@ -85,10 +84,14 @@ namespace VirtoCommerce.XPurchase.Tests.Aggregates
                 .ReturnsAsync(new List<CartProduct>() { new CartProduct(new CatalogProduct()) });
 
             // Act
-            Action action = () => aggregate.AddItemAsync(newCartItem).GetAwaiter().GetResult();
+            var aggregateAfterAddItem = aggregate.AddItemAsync(newCartItem).GetAwaiter().GetResult();
 
             // Assert
-            action.Should().ThrowExactly<ValidationException>($"Quantity is {quantity}");
+            aggregateAfterAddItem.ValidationErrors.Should().NotBeEmpty();
+            aggregateAfterAddItem.ValidationErrors.Should().Contain(x => x.ErrorCode == "GreaterThanValidator");
+            aggregateAfterAddItem.ValidationErrors.Should().Contain(x => x.ErrorCode == "NotNullValidator");
+
+
         }
 
         #endregion AddItemAsync
