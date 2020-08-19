@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.Platform.Core.Common;
@@ -15,19 +14,16 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Index
     {
         private readonly ISearchPhraseParser _phraseParser;
         private readonly IAggregationConverter _aggregationConverter;
-        private readonly ITermFilterBuilder _termFilterBuilder;
 
         private SearchRequest SearchRequest { get; set; }
 
         public ElasticSearchRequestBuilder(
             ISearchPhraseParser phraseParser
             , IAggregationConverter aggregationConverter
-            , ITermFilterBuilder termFilterBuilder
             )
         {
             _phraseParser = phraseParser;
             _aggregationConverter = aggregationConverter;
-            _termFilterBuilder = termFilterBuilder;
 
             SearchRequest = new SearchRequest
             {
@@ -53,9 +49,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Index
             SearchRequest.SearchKeywords = query.Query;
             SearchRequest.IncludeFields = query.IncludeFields.ToList();
 
-            var filters = ParseFilters(query.Filter, query.CurrencyCode, query.StoreId);
-
-            AddFiltersToSearchRequest(filters.ToArray());
+            ParseFilters(query.Filter, query.CurrencyCode, query.StoreId);
 
             AddSorting(query.Sort);
 
@@ -82,15 +76,31 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Index
 
         public virtual SearchRequest Build()
         {
-            // //Apply multi-select facet search policy by default
-            //
-            // foreach (var aggr in SearchRequest.Aggregations)
-            // {
-            //     var clonedFilter = SearchRequest.Filter.Clone() as AndFilter;
-            //     clonedFilter.ChildFilters = clonedFilter.ChildFilters.Where(x => !(x is INamedFilter namedFilter) || !namedFilter.FieldName.EqualsInvariant(aggr.FieldName)).ToList();
-            //
-            //     aggr.Filter = aggr.Filter == null ? clonedFilter : aggr.Filter.And(clonedFilter);
-            // }
+            //Apply multi-select facet search policy by default
+
+            foreach (var aggr in SearchRequest.Aggregations)
+            {
+                var aggregationFilterFieldName = (aggr.Filter as INamedFilter)?.FieldName;
+
+                var clonedFilter = SearchRequest.Filter.Clone() as AndFilter;
+
+                clonedFilter.ChildFilters = clonedFilter
+                    .ChildFilters
+                    .Where(x =>
+                    {
+                        var result = true;
+                    
+                        if (x is INamedFilter namedFilter)
+                        {
+                            result = !(aggregationFilterFieldName?.StartsWith(namedFilter.FieldName) ?? false);
+                        }
+                    
+                        return result;
+                    })
+                    .ToList();
+            
+                aggr.Filter = aggr.Filter == null ? clonedFilter : aggr.Filter.And(clonedFilter);
+            }
             return SearchRequest;
         }
 
@@ -124,30 +134,19 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Index
             ((AndFilter)SearchRequest.Filter).ChildFilters.AddRange(filters);
         }
 
-        private async Task<IList<IFilter>> ParseFiltersAsync(string filterPhrase, string currencyCode, string storeId)
+        private void ParseFilters(string filterPhrase, string currencyCode, string storeId)
         {
             var filters = new List<IFilter>();
 
             if (filterPhrase == null || currencyCode == null || storeId == null)
             {
-                return filters;
+                return;
             }
 
             var parseResult = _phraseParser.Parse(filterPhrase);
             const string spaceEscapeString = "%x20";
-            var terms = await _termFilterBuilder.GetTermFiltersAsync(new ProductIndexedSearchCriteria
-            {
-                Currency = currencyCode,
-                StoreId = storeId,
-                Terms = parseResult.Filters.OfType<TermFilter>().Select(x => x.ToString()).ToList(),
-            });
 
-            var resultFilters = new List<IFilter>();
-
-            resultFilters.AddRange(terms.PermanentFilters);
-            resultFilters.AddRange(terms.RemovableFilters.Select(x => x.Value));
-
-            foreach (var filter in resultFilters)
+            foreach (var filter in parseResult.Filters)
             {
                 FilterSyntaxMapper.MapFilterAdditionalSyntax(filter);
                 if (filter is TermFilter termFilter)
@@ -192,127 +191,74 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Index
                 }
             }
 
-            return filters;
+            AddFiltersToSearchRequest(filters.ToArray());
         }
 
-        private IList<IFilter> ParseFilters(string filterPhrase, string currencyCode, string storeId)
+        public IRequestBuilder ParseFacets(string facetPhrase, string storeId = null, string currency = null)
         {
-            return ParseFiltersAsync(filterPhrase, currencyCode, storeId).GetAwaiter().GetResult();
-        }
-
-        public IRequestBuilder ParseFacets(string facetPhrase, string[] pricelistIds = null, string storeId = null, string currency = null)
-        {
-
-            // if (string.IsNullOrWhiteSpace(facetPhrase))
-            // {
-            //     if (!string.IsNullOrEmpty(storeId) && !string.IsNullOrEmpty(currency))
-            //     {
-            //         // TODO: Add izolation from store
-            //         // Maybe we need to implement ProductSearchRequestBuilder.BuildRequestAsync to fill FilterContainer correctly?
-            //         SearchRequest.Aggregations = _aggregationConverter.GetAggregationRequestsAsync(new ProductIndexedSearchCriteria
-            //         {
-            //             StoreId = storeId,
-            //             Currency = currency,
-            //             Pricelists = pricelistIds,
-            //         }, new FiltersContainer()).GetAwaiter().GetResult();
-            //     }
-            //
-            //     return this;
-            // }
-            //
-            // //TODO: Support aliases for Facet expressions e.g price.usd[TO 200) as price_below_200
-            // //TODO: Need to create a new  Antlr file with g4-lexer rules and generate parser especially for facets expression that will return proper AggregationRequests objects
-            // var parseResult = _phraseParser.Parse(facetPhrase);
-            //
-            // //Term facets
-            // if (!string.IsNullOrEmpty(parseResult.Keyword))
-            // {
-            //     var termFacetExpressions = parseResult.Keyword.Split(" ");
-            //     parseResult.Filters.AddRange(termFacetExpressions.Select(x => new TermFilter
-            //     {
-            //         FieldName = x,
-            //         Values = new List<string>()
-            //     }));
-            // }
-            //
-            // SearchRequest.Aggregations = parseResult.Filters
-            //     .Select<IFilter, AggregationRequest>(filter =>
-            //     {
-            //         FilterSyntaxMapper.MapFilterAdditionalSyntax(filter);
-            //
-            //         return filter switch
-            //         {
-            //             RangeFilter rangeFilter => new RangeAggregationRequest
-            //             {
-            //                 Id = filter.Stringify(),
-            //                 FieldName = rangeFilter.FieldName,
-            //                 Values = rangeFilter.Values.Select(x => new RangeAggregationRequestValue
-            //                 {
-            //                     Id = x.Stringify(),
-            //                     Lower = x.Lower,
-            //                     Upper = x.Upper,
-            //                     IncludeLower = x.IncludeLower,
-            //                     IncludeUpper = x.IncludeUpper
-            //                 }).ToList()
-            //             },
-            //             TermFilter termFilter => new TermAggregationRequest
-            //             {
-            //                 FieldName = termFilter.FieldName,
-            //                 Id = filter.Stringify(),
-            //                 Filter = termFilter
-            //             },
-            //             _ => null,
-            //         };
-            //     })
-            //     .Where(x => x != null)
-            //     .ToList();
-            //
-            // return this;
-
-            if (!string.IsNullOrEmpty(storeId) && !string.IsNullOrEmpty(currency))
+            if (string.IsNullOrWhiteSpace(facetPhrase))
             {
-                // TODO: Add izolation from store
-                // Maybe we need to implement ProductSearchRequestBuilder.BuildRequestAsync to fill FilterContainer correctly?
-                SearchRequest.Aggregations = _aggregationConverter.GetAggregationRequestsAsync(new ProductIndexedSearchCriteria
+                if (!string.IsNullOrEmpty(storeId) && !string.IsNullOrEmpty(currency))
                 {
-                    StoreId = storeId,
-                    Currency = currency,
-                    Pricelists = pricelistIds,
-                }, new FiltersContainer()).GetAwaiter().GetResult();
-
-                //Apply multi-select facet search policy by default
-
-                foreach (var aggr in SearchRequest.Aggregations)
-                {
-                    var clonedFilter = (AndFilter) SearchRequest.Filter.Clone();
-                    clonedFilter.ChildFilters = clonedFilter.ChildFilters.Where(x => !(x is INamedFilter namedFilter) || !namedFilter.FieldName.EqualsInvariant(aggr.FieldName)).ToList();
-
-                    aggr.Filter = aggr.Filter == null ? clonedFilter : aggr.Filter.And(clonedFilter);
-                }
-            }
-
-            if (!string.IsNullOrEmpty(facetPhrase))
-            {
-                //TODO: Support aliases for Facet expressions e.g price.usd[TO 200) as price_below_200
-                //TODO: Need to create a new  Antlr file with g4-lexer rules and generate parser especially for facets expression that will return proper AggregationRequests objects
-                var parseResult = _phraseParser.Parse(facetPhrase);
-
-                //Term facets
-                if (!string.IsNullOrEmpty(parseResult.Keyword))
-                {
-                    var termFacetExpressions = parseResult.Keyword.Split(" ");
-                    parseResult.Filters.AddRange(termFacetExpressions.Select(x => new TermFilter
+                    // TODO: Add izolation from store
+                    // Maybe we need to implement ProductSearchRequestBuilder.BuildRequestAsync to fill FilterContainer correctly?
+                    SearchRequest.Aggregations = _aggregationConverter.GetAggregationRequestsAsync(new ProductIndexedSearchCriteria
                     {
-                        FieldName = x,
-                        Values = new List<string>()
-                    }));
+                        StoreId = storeId,
+                        Currency = currency,
+                    }, new FiltersContainer()).GetAwaiter().GetResult();
                 }
-
-                var filters = ParseFilters(facetPhrase, currency, storeId);
-
-                AddFiltersToSearchRequest(filters.ToArray());
+            
+                return this;
             }
-
+            
+            //TODO: Support aliases for Facet expressions e.g price.usd[TO 200) as price_below_200
+            //TODO: Need to create a new  Antlr file with g4-lexer rules and generate parser especially for facets expression that will return proper AggregationRequests objects
+            var parseResult = _phraseParser.Parse(facetPhrase);
+            
+            //Term facets
+            if (!string.IsNullOrEmpty(parseResult.Keyword))
+            {
+                var termFacetExpressions = parseResult.Keyword.Split(" ");
+                parseResult.Filters.AddRange(termFacetExpressions.Select(x => new TermFilter
+                {
+                    FieldName = x,
+                    Values = new List<string>()
+                }));
+            }
+            
+            SearchRequest.Aggregations = parseResult.Filters
+                .Select<IFilter, AggregationRequest>(filter =>
+                {
+                    FilterSyntaxMapper.MapFilterAdditionalSyntax(filter);
+            
+                    return filter switch
+                    {
+                        RangeFilter rangeFilter => new RangeAggregationRequest
+                        {
+                            Id = filter.Stringify(),
+                            FieldName = rangeFilter.FieldName,
+                            Values = rangeFilter.Values.Select(x => new RangeAggregationRequestValue
+                            {
+                                Id = x.Stringify(),
+                                Lower = x.Lower,
+                                Upper = x.Upper,
+                                IncludeLower = x.IncludeLower,
+                                IncludeUpper = x.IncludeUpper
+                            }).ToList()
+                        },
+                        TermFilter termFilter => new TermAggregationRequest
+                        {
+                            FieldName = termFilter.FieldName,
+                            Id = filter.Stringify(),
+                            Filter = termFilter
+                        },
+                        _ => null,
+                    };
+                })
+                .Where(x => x != null)
+                .ToList();
+            
             return this;
         }
 

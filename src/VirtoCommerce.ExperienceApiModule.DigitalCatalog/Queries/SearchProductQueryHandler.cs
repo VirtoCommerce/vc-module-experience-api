@@ -9,7 +9,6 @@ using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.CoreModule.Core.Currency;
-using VirtoCommerce.CustomerModule.Core.Model;
 using VirtoCommerce.CustomerModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Index;
@@ -86,12 +85,10 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
 
         public virtual async Task<SearchProductResponse> Handle(SearchProductQuery request, CancellationToken cancellationToken)
         {
-            request.PricelistIds = await GetPricelistIdsAsync(request);
-
             var searchRequest = _requestBuilder
                 .AddTerms(new[] { "status:visible" })//Only visible, exclude variations from search result
                 .FromQuery(request)
-                .ParseFacets(request.Facet, request.PricelistIds, request.StoreId, request.CurrencyCode)
+                .ParseFacets(request.Facet, request.StoreId, request.CurrencyCode)
                 .Build();
 
             var searchResult = await _searchProvider.SearchAsync(KnownDocumentTypes.Product, searchRequest);
@@ -102,7 +99,6 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             {
                 StoreId = request.StoreId,
                 Currency = request.CurrencyCode,
-                Pricelists = request.PricelistIds,
             };
 
             var aggregations = await _aggregationConverter.ConvertAggregationsAsync(searchResult.Aggregations, criteria);
@@ -128,79 +124,6 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             return new LoadProductResponse(expProducts.ToList());
         }
 
-
-        protected virtual async Task<string[]> GetPricelistIdsAsync(SearchProductQuery request)
-        {
-            var context = new PriceEvaluationContext
-            {
-                CatalogId = GetCatalogIdFromFilter(request.Filter),
-                Currency = request.CurrencyCode,
-                CustomerId = request.UserId,
-                Language = request.CultureName,
-                StoreId = request.StoreId,
-                CertainDate = DateTime.UtcNow,
-            };
-
-            using (var userManager = _userManagerFactory())
-            {
-                var appUser = await userManager.FindByIdAsync(request.UserId);
-
-                if (appUser != null)
-                {
-
-                    context.CustomerId = appUser.Id;
-
-                    if (appUser.MemberId != null)
-                    {
-                        var member = await _memberService.GetByIdAsync(appUser.MemberId, memberType: nameof(Contact));
-
-                        if (member is Contact contact)
-                        {
-                            context.GeoTimeZone = contact.TimeZone;
-
-                            var defaultShippingAddress = contact.Addresses.FirstOrDefault(x => (x.AddressType & AddressType.Shipping) == AddressType.Shipping);
-                            var defaultBillingAddress = contact.Addresses.FirstOrDefault(x => (x.AddressType & AddressType.Billing) == AddressType.Billing);
-
-                            var address = defaultShippingAddress ?? defaultBillingAddress;
-
-                            if (address != null)
-                            {
-                                context.GeoCity = address.City;
-                                context.GeoCountry = address.CountryCode;
-                                context.GeoState = address.RegionName;
-                                context.GeoZipCode = address.PostalCode;
-                            }
-
-                            if (!contact.Groups.IsNullOrEmpty())
-                            {
-                                context.UserGroups = contact.Groups.ToArray();
-                            }
-                        }
-                    }
-                }
-            }
-
-            var pricelists = await _pricingService.EvaluatePriceListsAsync(context);
-
-            return pricelists.Select(x => x.Id).ToArray();
-        }
-
-        protected virtual string GetCatalogIdFromFilter(string filterString)
-        {
-            const string catalogLabel = "catalog:";
-            const int catalogIdLength = 32;
-
-            string result = null;
-
-            if (filterString?.Contains(catalogLabel) ?? false)
-            {
-                var catalogIdStartIndex = filterString.IndexOf(catalogLabel, StringComparison.InvariantCulture);
-
-                result = filterString.Substring(catalogIdStartIndex + catalogLabel.Length, catalogIdLength);
-            }
-
-            return result;
-        }
 
         protected virtual async Task<IEnumerable<ExpProduct>> ConvertIndexDocsToProductsWithLoadDependenciesAsync(IEnumerable<SearchDocument> docs, ICatalogQuery query)
         {

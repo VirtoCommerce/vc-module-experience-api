@@ -17,7 +17,6 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Index
     {
         private readonly Mock<ISearchPhraseParser> _phraseParserMock;
         private readonly Mock<IAggregationConverter> _aggregationConverterMock;
-        private readonly Mock<ITermFilterBuilder> _termFilterBuilderMock;
 
         // Queries
         private readonly Mock<IGetDocumentsByIdsQuery> _getDocumentsByIdsQueryMock;
@@ -30,15 +29,13 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Index
         {
             _phraseParserMock = new Mock<ISearchPhraseParser>();
             _aggregationConverterMock = new Mock<IAggregationConverter>();
-            _termFilterBuilderMock = new Mock<ITermFilterBuilder>();
 
             _getDocumentsByIdsQueryMock = new Mock<IGetDocumentsByIdsQuery>();
             _searchDocumentsQueryMock = new Mock<ISearchDocumentsQuery>();
-
+            
             _builder = new ElasticSearchRequestBuilder(
                 _phraseParserMock.Object,
-                _aggregationConverterMock.Object,
-                _termFilterBuilderMock.Object);
+                _aggregationConverterMock.Object);
         }
 
         #region FromQuery(IGetDocumentsByIdsQuery)
@@ -183,6 +180,12 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Index
             _searchDocumentsQueryMock
                 .SetupGet(x => x.Filter)
                 .Returns(_fixture.Create<string>());
+            _searchDocumentsQueryMock
+                .SetupGet(x => x.CurrencyCode)
+                .Returns(_fixture.Create<string>());
+            _searchDocumentsQueryMock
+                .SetupGet(x => x.StoreId)
+                .Returns(_fixture.Create<string>());
 
             _phraseParserMock
                 .Setup(x => x.Parse(It.IsAny<string>()))
@@ -214,6 +217,12 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Index
 
             _searchDocumentsQueryMock
                 .SetupGet(x => x.Filter)
+                .Returns(_fixture.Create<string>());
+            _searchDocumentsQueryMock
+                .SetupGet(x => x.CurrencyCode)
+                .Returns(_fixture.Create<string>());
+            _searchDocumentsQueryMock
+                .SetupGet(x => x.StoreId)
                 .Returns(_fixture.Create<string>());
 
             _phraseParserMock
@@ -261,7 +270,7 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Index
             var expected = _fixture.Create<SearchRequest>();
 
             // Act
-            var actual = _builder.ParseFacets(facetPhrase, null, storeId, currency).Build();
+            var actual = _builder.ParseFacets(facetPhrase, storeId, currency).Build();
 
             // Assert
             actual.Should().BeEquivalentTo(expected);
@@ -287,7 +296,7 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Index
                 .ReturnsAsync(aggregations);
 
             // Act
-            var actual = _builder.ParseFacets(facetPhrase, null, DEFAULT_STORE_ID, CURRENCY_CODE).Build();
+            var actual = _builder.ParseFacets(facetPhrase, DEFAULT_STORE_ID, CURRENCY_CODE).Build();
 
             // Assert
             actual.Aggregations.Should().BeEquivalentTo(aggregations);
@@ -322,13 +331,6 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Index
                 .SetupGet(x => x.StoreId)
                 .Returns(_fixture.Create<string>());
 
-            _termFilterBuilderMock
-                .Setup(x => x.GetTermFiltersAsync(It.IsAny<ProductIndexedSearchCriteria>()))
-                .ReturnsAsync(new FiltersContainer
-                {
-                    RemovableFilters = searchPhraseParseResult.Filters.Select(x => new KeyValuePair<string, IFilter>(string.Empty, x)).ToList()
-                });
-
             _phraseParserMock
                 .Setup(x => x.Parse(It.IsAny<string>()))
                 .Returns(searchPhraseParseResult);
@@ -336,7 +338,7 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Index
             // Act
             var actual = _builder
                 .FromQuery(_searchDocumentsQueryMock.Object)
-                .ParseFacets(_fixture.Create<string>(), null, DEFAULT_STORE_ID, CURRENCY_CODE)
+                .ParseFacets(_fixture.Create<string>(), DEFAULT_STORE_ID, CURRENCY_CODE)
                 .Build();
 
             // Assert
@@ -422,16 +424,6 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Index
                 .SetupGet(x => x.CurrencyCode)
                 .Returns(_fixture.Create<string>());
 
-            _termFilterBuilderMock
-                .Setup(x => x.GetTermFiltersAsync(It.IsAny<ProductIndexedSearchCriteria>()))
-                .ReturnsAsync(new FiltersContainer
-                {
-                    RemovableFilters = new List<KeyValuePair<string, IFilter>>
-                    {
-                        new KeyValuePair<string, IFilter>(string.Empty, idsFilter),
-                    }
-                });
-
             _phraseParserMock
                 .Setup(x => x.Parse(It.IsAny<string>()))
                 .Returns(searchPhraseParseResult);
@@ -454,12 +446,86 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Index
             // Act
             var actual = _builder
                 .FromQuery(_searchDocumentsQueryMock.Object)
-                .ParseFacets(null, null, DEFAULT_STORE_ID, CURRENCY_CODE)
+                .ParseFacets(null, DEFAULT_STORE_ID, CURRENCY_CODE)
                 .Build();
 
             // Assert
             var filters = actual.Filter.As<AndFilter>().ChildFilters;
             filters.Should().ContainEquivalentOf(idsFilter);
+            actual.Aggregations.Should().BeEquivalentTo(aggregations);
+            aggregation.Filter.Should().NotBeNull();
+        }
+
+        [Fact]
+        public void Build_ShouldNotCopySameNamedFiltersToAggregations()
+        {
+            // Arrange
+            var rangeFilter = new RangeFilter
+            {
+                FieldName = "price",
+                Values = new List<RangeFilterValue>
+                {
+                    new RangeFilterValue
+                    {
+                        IncludeLower = false,
+                        IncludeUpper = false,
+                        Lower = string.Empty,
+                        Upper = string.Empty
+                    }
+                }
+            };
+            var searchPhraseParseResult = new SearchPhraseParseResult
+            {
+                Filters = new List<IFilter>
+                {
+                    rangeFilter,
+                }
+            };
+
+            _searchDocumentsQueryMock
+                .SetupGet(x => x.Filter)
+                .Returns(_fixture.Create<string>());
+            _searchDocumentsQueryMock
+                .SetupGet(x => x.StoreId)
+                .Returns(_fixture.Create<string>());
+            _searchDocumentsQueryMock
+                .SetupGet(x => x.CurrencyCode)
+                .Returns(_fixture.Create<string>());
+
+            _phraseParserMock
+                .Setup(x => x.Parse(It.IsAny<string>()))
+                .Returns(searchPhraseParseResult);
+
+            var aggregation = new AggregationRequest
+            {
+                FieldName = _fixture.Create<string>(),
+                Id = _fixture.Create<string>(),
+                Filter = new RangeFilter
+                {
+                    FieldName = "price_usd"
+                }
+            };
+
+            var aggregations = new List<AggregationRequest>
+            {
+                aggregation
+            };
+
+            _aggregationConverterMock
+                .Setup(x => x.GetAggregationRequestsAsync(It.IsAny<ProductIndexedSearchCriteria>(), It.IsAny<FiltersContainer>()))
+                .ReturnsAsync(aggregations);
+
+            // Act
+            var actual = _builder
+                .FromQuery(_searchDocumentsQueryMock.Object)
+                .ParseFacets(null, DEFAULT_STORE_ID, CURRENCY_CODE)
+                .Build();
+
+            // Assert
+            var filters = actual.Aggregations.Single().Filter.As<AndFilter>().ChildFilters;
+
+            var resultRangeFilter = filters.OfType<AndFilter>().FirstOrDefault()?.ChildFilters.FirstOrDefault() as RangeFilter;
+            resultRangeFilter.Should().BeNull();
             actual.Aggregations.Should().BeEquivalentTo(aggregations);
             aggregation.Filter.Should().NotBeNull();
         }
