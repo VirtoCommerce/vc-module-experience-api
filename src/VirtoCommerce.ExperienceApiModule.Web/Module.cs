@@ -98,7 +98,6 @@ namespace VirtoCommerce.ExperienceApiModule.Web
 
 
             services.AddSingleton<IStoreCurrencyResolver, StoreCurrencyResolver>();
-
             services.AddSingleton<IMiddlewareResolver, ServiceProviderMiddlewareResolver>();
             services.AddSingleton<IGenericPipelineLauncher, GenericPipelineLauncher>();
             services.AddPipeline<SearchProductResponse>(builder =>
