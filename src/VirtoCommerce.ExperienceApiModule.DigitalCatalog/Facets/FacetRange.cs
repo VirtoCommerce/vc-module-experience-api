@@ -15,5 +15,6 @@ namespace VirtoCommerce.XDigitalCatalog.Facets
         public long Max { get; set; }
 
         public bool IsSelected { get; set; }
+        public string Label { get; set; }
     }
 }

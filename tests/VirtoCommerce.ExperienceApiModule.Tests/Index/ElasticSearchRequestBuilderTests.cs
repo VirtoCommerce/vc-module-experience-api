@@ -32,7 +32,7 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Index
 
             _getDocumentsByIdsQueryMock = new Mock<IGetDocumentsByIdsQuery>();
             _searchDocumentsQueryMock = new Mock<ISearchDocumentsQuery>();
-
+            
             _builder = new ElasticSearchRequestBuilder(
                 _phraseParserMock.Object,
                 _aggregationConverterMock.Object);
@@ -428,6 +428,74 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Index
             // Assert
             var filters = actual.Filter.As<AndFilter>().ChildFilters;
             filters.Should().ContainEquivalentOf(idsFilter);
+            actual.Aggregations.Should().BeEquivalentTo(aggregations);
+            aggregation.Filter.Should().NotBeNull();
+        }
+
+        [Fact]
+        public void Build_ShouldNotCopySameNamedFiltersToAggregations()
+        {
+            // Arrange
+            var rangeFilter = new RangeFilter
+            {
+                FieldName = "price",
+                Values = new List<RangeFilterValue>
+                {
+                    new RangeFilterValue
+                    {
+                        IncludeLower = false,
+                        IncludeUpper = false,
+                        Lower = string.Empty,
+                        Upper = string.Empty
+                    }
+                }
+            };
+            var searchPhraseParseResult = new SearchPhraseParseResult
+            {
+                Filters = new List<IFilter>
+                {
+                    rangeFilter,
+                }
+            };
+
+            _searchDocumentsQueryMock
+                .SetupGet(x => x.Filter)
+                .Returns(_fixture.Create<string>());
+
+            _phraseParserMock
+                .Setup(x => x.Parse(It.IsAny<string>()))
+                .Returns(searchPhraseParseResult);
+
+            var aggregation = new AggregationRequest
+            {
+                FieldName = _fixture.Create<string>(),
+                Id = _fixture.Create<string>(),
+                Filter = new RangeFilter
+                {
+                    FieldName = "price_usd"
+                }
+            };
+
+            var aggregations = new List<AggregationRequest>
+            {
+                aggregation
+            };
+
+            _aggregationConverterMock
+                .Setup(x => x.GetAggregationRequestsAsync(It.IsAny<ProductIndexedSearchCriteria>(), It.IsAny<FiltersContainer>()))
+                .ReturnsAsync(aggregations);
+
+            // Act
+            var actual = _builder
+                .FromQuery(_searchDocumentsQueryMock.Object)
+                .ParseFacets(null, DEFAULT_STORE_ID, CURRENCY_CODE)
+                .Build();
+
+            // Assert
+            var filters = actual.Aggregations.Single().Filter.As<AndFilter>().ChildFilters;
+
+            var resultRangeFilter = filters.OfType<AndFilter>().FirstOrDefault()?.ChildFilters.FirstOrDefault() as RangeFilter;
+            resultRangeFilter.Should().BeNull();
             actual.Aggregations.Should().BeEquivalentTo(aggregations);
             aggregation.Filter.Should().NotBeNull();
         }
