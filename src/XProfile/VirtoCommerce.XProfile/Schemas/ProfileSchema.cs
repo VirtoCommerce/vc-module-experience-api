@@ -174,7 +174,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                             .ResolveAsync(async context =>
                             {
                                 var command = context.GetArgument<UpdateContactCommand>(_commandName);
-                                await CheckAuthAsync(context, command, CustomerModule.Core.ModuleConstants.Security.Permissions.Update);
+                                await CheckAuthAsync(context, command);
                                 return await _mediator.Send(command);
 
                             })
@@ -296,7 +296,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                         .ResolveAsync(async context =>
                         {
                             var command = context.GetArgument<UpdateUserCommand>(_commandName);
-                            await CheckAuthAsync(context, command, CustomerModule.Core.ModuleConstants.Security.Permissions.Update);
+                            await CheckAuthAsync(context, command);
                             return await _mediator.Send(command);
                         })
                         .FieldType);
