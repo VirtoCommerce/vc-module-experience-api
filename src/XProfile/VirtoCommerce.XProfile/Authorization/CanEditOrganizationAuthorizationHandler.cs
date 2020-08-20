@@ -47,7 +47,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Authorization
             }
             if (context.Resource is OrganizationAggregate organizationAggregate && currentContact != null)
             {
-                result = currentContact.Organizations.Contains(organizationAggregate.Organization.Name);
+                result = currentContact.Organizations.Contains(organizationAggregate.Organization.Id);
             }
             if (context.Resource is Role role)
             {
