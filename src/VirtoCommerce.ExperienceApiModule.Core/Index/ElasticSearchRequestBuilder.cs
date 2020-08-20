@@ -136,25 +136,22 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Index
 
         private void ParseFilters(string filterPhrase)
         {
-            var filters = new List<IFilter>();
-
             if (filterPhrase == null)
             {
                 return;
             }
 
             var parseResult = _phraseParser.Parse(filterPhrase);
-            const string spaceEscapeString = "%x20";
+
+            var filters = new List<IFilter>();
 
             foreach (var filter in parseResult.Filters)
             {
                 FilterSyntaxMapper.MapFilterAdditionalSyntax(filter);
+
                 if (filter is TermFilter termFilter)
                 {
-                    termFilter.FieldName = termFilter.FieldName?.Replace(spaceEscapeString, " ");
-                    termFilter.Values = termFilter.Values?.Select(x => x?.Replace(spaceEscapeString, " ")).ToList();
-
-                    var wildcardValues = termFilter.Values.Where(x => new[] { "?", "*" }.Any(x.Contains));
+                    var wildcardValues = termFilter.Values.Where(x => new[] { "?", "*" }.Any(x.Contains)).ToArray();
 
                     if (wildcardValues.Any())
                     {
