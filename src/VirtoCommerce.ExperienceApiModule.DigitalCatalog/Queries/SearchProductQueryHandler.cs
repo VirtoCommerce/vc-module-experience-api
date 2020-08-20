@@ -6,9 +6,9 @@ using AutoMapper;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.ExperienceApiModule.Core;
-using VirtoCommerce.ExperienceApiModule.Core.Index;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
+using VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.SearchModule.Core.Model;
 using VirtoCommerce.SearchModule.Core.Services;
@@ -21,40 +21,57 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
     {
         private readonly IMapper _mapper;
         private readonly ISearchProvider _searchProvider;
-        private readonly IRequestBuilder _requestBuilder;
         private readonly IStoreCurrencyResolver _storeCurrencyResolver;
         private readonly IStoreService _storeService;
         private readonly IGenericPipelineLauncher _pipeline;
         private readonly IAggregationConverter _aggregationConverter;
+        private readonly ISearchPhraseParser _phraseParser;
+
         public SearchProductQueryHandler(
             ISearchProvider searchProvider
-            , IRequestBuilder requestBuilder
             , IMapper mapper
             , IStoreCurrencyResolver storeCurrencyResolver
             , IStoreService storeService
             , IGenericPipelineLauncher pipeline
-            , IAggregationConverter aggregationConverter)
+            , IAggregationConverter aggregationConverter
+            , ISearchPhraseParser phraseParser)
         {
             _searchProvider = searchProvider;
-            _requestBuilder = requestBuilder;
             _mapper = mapper;
             _storeCurrencyResolver = storeCurrencyResolver;
             _storeService = storeService;
             _pipeline = pipeline;
             _aggregationConverter = aggregationConverter;
+            _phraseParser = phraseParser;
         }
 
         public virtual async Task<SearchProductResponse> Handle(SearchProductQuery request, CancellationToken cancellationToken)
         {
-            var builder = _requestBuilder
-                .FromQuery(request)
-                .ParseFacets(request.Facet, request.StoreId, request.CurrencyCode);
-         
+            var builder = new IndexSearchRequestBuilder()
+                                            .WithFuzzy(request.Fuzzy, request.FuzzyLevel)
+                                            .ParseFilters(_phraseParser, request.Filter)
+                                            .ParseFacets(_phraseParser, request.Facet)
+                                            .WithSearchPhrase(request.Query)
+                                            .WithPaging(request.Skip, request.Take)
+                                            .AddObjectIds(request.ObjectIds)
+                                            .AddSorting(request.Sort)
+                                            .WithIncludeFields(request.IncludeFields.ToArray());
+
             if (request.ObjectIds.IsNullOrEmpty())
             {
                 builder.AddTerms(new[] { "status:visible" });//Only visible, exclude variations from search result
             }
             var searchRequest = builder.Build();
+
+            //Use predefined  facets for store  if they not passed
+            if (searchRequest.Aggregations.IsNullOrEmpty())
+            {
+                searchRequest.Aggregations = await _aggregationConverter.GetAggregationRequestsAsync(new ProductIndexedSearchCriteria
+                {
+                    StoreId = request.StoreId,
+                    Currency = request.CurrencyCode,
+                }, new FiltersContainer());
+            }         
 
             var searchResult = await _searchProvider.SearchAsync(KnownDocumentTypes.Product, searchRequest);
 

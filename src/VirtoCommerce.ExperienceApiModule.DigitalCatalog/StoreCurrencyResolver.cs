@@ -11,6 +11,7 @@ using VirtoCommerce.StoreModule.Core.Services;
 
 namespace VirtoCommerce.XDigitalCatalog
 {
+    //TODO: Move to Store module
     public class StoreCurrencyResolver : IStoreCurrencyResolver
     {
         private readonly ICurrencyService _currencyService;

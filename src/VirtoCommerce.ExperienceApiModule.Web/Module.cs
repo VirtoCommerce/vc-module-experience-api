@@ -62,8 +62,6 @@ namespace VirtoCommerce.ExperienceApiModule.Web
 
             services.AddSingleton<ISchema, SchemaFactory>();
 
-            services.AddTransient<IRequestBuilder, ElasticSearchRequestBuilder>();
-
             // Register core schemas
             services.AddSchemaType<MoneyType>(); // TODO: move to extension
             services.AddSchemaType<DiscountType>();
