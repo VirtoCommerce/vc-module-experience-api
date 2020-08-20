@@ -1,6 +1,7 @@
 using System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using PipelineNet.MiddlewareResolver;
 
 namespace VirtoCommerce.ExperienceApiModule.Core.Pipelines
 {
@@ -12,6 +13,10 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Pipelines
             {
                 throw new ArgumentNullException(nameof(services));
             }
+
+            services.TryAddSingleton<IMiddlewareResolver, ServiceProviderMiddlewareResolver>();
+            services.TryAddSingleton<IGenericPipelineLauncher, GenericPipelineLauncher>();
+
             services.TryAddTransient<GenericPipeline<TParameter>>();
 
             return new GenericPipelineBuilder<TParameter>(services);

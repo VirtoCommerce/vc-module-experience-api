@@ -6,6 +6,7 @@
 
     <ItemGroup>
         <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="7.0.0" />
+        <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="7.0.0" />
         <PackageReference Include="FluentValidation" Version="8.6.2" />
         <PackageReference Include="GraphQL" Version="3.0.0-preview-1490" />
         <PackageReference Include="MediatR" Version="8.0.1" />

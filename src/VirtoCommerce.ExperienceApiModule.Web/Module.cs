@@ -3,10 +3,8 @@ using GraphQL.Server;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
-using PipelineNet.MiddlewareResolver;
 using VirtoCommerce.ExperienceApiModule.Core;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
-using VirtoCommerce.ExperienceApiModule.Core.Index;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
@@ -21,10 +19,7 @@ using VirtoCommerce.TaxModule.Core.Model;
 using VirtoCommerce.XDigitalCatalog;
 using VirtoCommerce.XDigitalCatalog.Extensions;
 using VirtoCommerce.XDigitalCatalog.Mapping;
-using VirtoCommerce.XDigitalCatalog.Middlewares;
-using VirtoCommerce.XDigitalCatalog.Queries;
 using VirtoCommerce.XProfile.Middlewares;
-using VirtoCommerce.XPurchase;
 using VirtoCommerce.XPurchase.Extensions;
 using VirtoCommerce.XPurchase.Mapping;
 using VirtoCommerce.XPurchase.Middlewares;
@@ -37,16 +32,6 @@ namespace VirtoCommerce.ExperienceApiModule.Web
 
         public void Initialize(IServiceCollection services)
         {
-         
-
-            //services.AddSingleton(typeof(IPipelineBehavior<,>), typeof(RequestExceptionProcessorBehavior<,>));
-            //serviceCollection.AddSingleton(typeof(IRequestPreProcessor<>), typeof(GenericRequestPreProcessor<>));
-
-            //Discover the assembly and  register all mapping profiles through reflection
-            services.AddAutoMapper(typeof(XDigitalCatalogAnchor));
-            //services.AddAutoMapper(typeof(XProfileAnchor));
-            services.AddAutoMapper(typeof(XPurchaseAnchor));
-
             //Register .NET GraphQL server
             var graphQlBuilder = services.AddGraphQL(_ =>
             {
@@ -94,22 +79,14 @@ namespace VirtoCommerce.ExperienceApiModule.Web
             var mapper = mappingConfig.CreateMapper();
             services.AddSingleton(mapper);
 
-
             services.AddSingleton<IStoreCurrencyResolver, StoreCurrencyResolver>();
-            services.AddSingleton<IMiddlewareResolver, ServiceProviderMiddlewareResolver>();
-            services.AddSingleton<IGenericPipelineLauncher, GenericPipelineLauncher>();
-            services.AddPipeline<SearchProductResponse>(builder =>
-            {
-                builder.AddMiddleware(typeof(ProductsPricesEvalMiddleware));
-                builder.AddMiddleware(typeof(ProductsDiscountsEvalMiddleware));
-                builder.AddMiddleware(typeof(ProductsTaxEvalMiddleware));
-                builder.AddMiddleware(typeof(ProductsInventoryEvalMiddleware));
-            });
+
+            #region Pipelines
             services.AddPipeline<PromotionEvaluationContext>(builder =>
-            {
-                builder.AddMiddleware(typeof(ProfileEvalContextBuildMiddleware));
-                builder.AddMiddleware(typeof(PurchaseEvalContextBuildMiddleware));
-            });
+               {
+                   builder.AddMiddleware(typeof(ProfileEvalContextBuildMiddleware));
+                   builder.AddMiddleware(typeof(PurchaseEvalContextBuildMiddleware));
+               });
             services.AddPipeline<TaxEvaluationContext>(builder =>
             {
                 builder.AddMiddleware(typeof(ProfileEvalContextBuildMiddleware));
@@ -119,7 +96,8 @@ namespace VirtoCommerce.ExperienceApiModule.Web
             {
                 builder.AddMiddleware(typeof(ProfileEvalContextBuildMiddleware));
                 builder.AddMiddleware(typeof(PurchaseEvalContextBuildMiddleware));
-            });
+            }); 
+            #endregion
 
         }
 

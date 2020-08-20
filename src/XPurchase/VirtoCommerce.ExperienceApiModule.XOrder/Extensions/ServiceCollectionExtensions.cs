@@ -1,3 +1,4 @@
+using AutoMapper;
 using GraphQL.Server;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -12,6 +13,9 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Extensions
     {
         public static IServiceCollection AddXOrder(this IServiceCollection services, IGraphQLBuilder graphQlbuilder)
         {
+            //TODO: Seems this is not work need to find out why
+            services.AddAutoMapper(typeof(XOrderAnchor));
+
             services.AddSingleton<ISchemaBuilder, OrderSchema>();
 
             graphQlbuilder.AddGraphTypes(typeof(XOrderAnchor));

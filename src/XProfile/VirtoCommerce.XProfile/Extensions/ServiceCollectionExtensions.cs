@@ -1,3 +1,4 @@
+using AutoMapper;
 using GraphQL.Server;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,11 +12,11 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Extensions
     {
         public static IServiceCollection AddXProfile(this IServiceCollection services, IGraphQLBuilder graphQlbuilder)
         {
+            services.AddAutoMapper(typeof(XProfileAnchor));
+
             services.AddSchemaBuilder<ProfileSchema>();
 
-
             graphQlbuilder.AddGraphTypes(typeof(XProfileAnchor));
-
 
             services.AddMediatR(typeof(XProfileAnchor));
             services.AddSingleton<IMemberResolver, MemberResolver>();
