@@ -4,9 +4,7 @@
 - Getting and searching orders;
 - Basic order workflow operations;
 
-## Structure
-![OrderType schema structure](OrderType.jpeg)
-## Endpoints
+## QueryRoot
 ### Queries
 |№|Endpoint|Arguments|Returns|
 |------|---------|---------|---------|
@@ -15,13 +13,18 @@
 ### Mutations
 |№ |Endpoint|Arguments|Description|
 |--|-----------------------|---------------------|---------|
-|1 |[createOrderFromCart](#createOrderFromCart-mutation)|`!cartId`|Create order from an existing cart.|
-|2 |[changeOrderStatus](#changeOrderStatus-mutation)|`!orderId` `!status`|Changes order status.|
-|3 |[confirmOrderPayment](#confirmOrderPayment-mutation)|`payment { id sum caurrency …}`|Confirms order payment.|
-|4 |[cancelOrderPayment](#cancelOrderPayment-mutation)|`payment { id sum caurrency …}`|Cancels order payment.|
+|1 |[createOrderFromCart](#createOrderFromCart)|`!cartId`|Create order from an existing cart.|
+|2 |[changeOrderStatus](#changeOrderStatus)|`!orderId` `!status`|Changes order status.|
+|3 |[confirmOrderPayment](#confirmOrderPayment)|`payment { id sum caurrency …}`|Confirms order payment.|
+|4 |[cancelOrderPayment](#cancelOrderPayment)|`payment { id sum caurrency …}`|Cancels order payment.|
 
 > [!NOTE]
 > In arguments column we show additional arguments. if they are marked with an exclamation mark, they are required.
+
+## Queriable objects
+### Order main types schema
+
+![OrderType schema structure](OrderMainTypes.png)
 
 ## Examples
 In this block you can find some examples of queries and mutations.
@@ -193,7 +196,7 @@ With this connection you can get all user's orders.
 
 </p>
 
-### CreateOrderFromCart mutation
+### CreateOrderFromCart
 This mutation creates an order from the cart with given id.
 #### Query:
 ```
@@ -213,7 +216,7 @@ mutation {
   }
 }
 ```
-### ChangeOrderStatus mutation
+### ChangeOrderStatus
 This mutation changes order status.
 #### Query:
 ```
@@ -225,7 +228,7 @@ mutation {
 
 ```
 
-### ConfirmOrderPayment mutation
+### ConfirmOrderPayment
 This mutation confirms order payment.
 #### Query:
 ```
@@ -253,7 +256,7 @@ mutation {
 
 ```
 
-### CancelOrderPayment mutation
+### CancelOrderPayment
 This mutation cancels order payment.
 #### Query:
 ```
