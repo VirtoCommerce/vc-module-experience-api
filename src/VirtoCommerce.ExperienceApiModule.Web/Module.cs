@@ -87,7 +87,7 @@ namespace VirtoCommerce.ExperienceApiModule.Web
             //TODO: Need to find proper way to register mapping profiles from the different projects
             var mappingConfig = new MapperConfiguration(mc =>
             {
-                mc.AddProfile(new MappingProfile());
+                mc.AddProfile(new FacetMappingProfile());
                 mc.AddProfile(new ProductMappingProfile());
                 mc.AddProfile(new CartMappingProfile());
                 mc.AddProfile(new ProfileMappingProfile());

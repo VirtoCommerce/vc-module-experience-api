@@ -132,7 +132,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             //TODO: Need to be able get entire query from context and read all arguments to the query properties
             var query = context.GetCatalogQuery<SearchProductQuery>();
-            query.IncludeFields = includeFields.ToArray();
+            query.IncludeFields = includeFields;
 
             var productIds = context.GetArgument<List<string>>("productIds");
             if (productIds.IsNullOrEmpty())

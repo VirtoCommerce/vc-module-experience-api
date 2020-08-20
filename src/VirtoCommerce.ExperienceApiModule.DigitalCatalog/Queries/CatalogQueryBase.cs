@@ -5,14 +5,6 @@ using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 
 namespace VirtoCommerce.XDigitalCatalog.Queries
 {
-    public interface ICatalogQuery : IHasIncludeFields
-    {
-        string StoreId { get; set; }
-        string UserId { get; set; }
-        string CultureName { get; set; }
-        string CurrencyCode { get; set; }
-    }
-
     public class CatalogQueryBase<TResponse> : ICatalogQuery, IQuery<TResponse>
     {
         public IEnumerable<string> IncludeFields { get; set; } = Array.Empty<string>();
