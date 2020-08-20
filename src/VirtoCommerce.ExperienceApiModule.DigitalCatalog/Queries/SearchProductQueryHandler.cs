@@ -101,6 +101,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                 Currency = request.CurrencyCode,
             };
 
+            // Converting aggregation results to defferent types
             var aggregations = await _aggregationConverter.ConvertAggregationsAsync(searchResult.Aggregations, criteria);
 
             var result = new SearchProductResponse
