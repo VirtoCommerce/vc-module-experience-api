@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <module>
     <id>VirtoCommerce.ExperienceApi</id>
-    <version>3.0.0</version>
+    <version>0.1.0</version>
     <version-tag>beta001</version-tag>
     <platformVersion>3.11.0</platformVersion>
     <title>Commerce experience API module</title>
@@ -25,6 +25,9 @@
         <author>Fillip Kuksov</author>
         <author>Egidijus Mažeika</author>
         <author>Andrei Kostyrin</author>
+        <author>Dmitri Pushnitsa</author>
+        <author>Alexandr Andreev</author>
+        <author>Andrey Kozlov</author>
     </authors>
     <owners>
         <owner>Virto Commerce</owner>
