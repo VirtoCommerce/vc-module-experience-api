@@ -1,4 +1,4 @@
-# X-Purchase
+# X-Purchase cart
 
 ## Key features
 - Working with shopping cart;

@@ -12,7 +12,8 @@ The project "Experience API" it is primarily a intermediated layer between clien
 
 ## Key features
 - [X-Catalog docs](./docs/x-catalog-reference.md)
-- [X-Purchase docs](./docs/x-purchase-reference.md)
+- [X-Purchase cart docs](./docs/x-purchase-cart-reference.md)
+- [X-Purchase order docs](./docs/x-purchase-order-reference.md)
 - [X-UserProfile docs](./docs/x-profile-reference.md)
 - [Recommendations Gateway API](./docs/gateway-api-reference.md) (prototype)
 
