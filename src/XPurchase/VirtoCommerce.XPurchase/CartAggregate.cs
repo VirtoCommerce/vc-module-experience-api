@@ -127,7 +127,7 @@ namespace VirtoCommerce.XPurchase
             var validationResult = await new NewCartItemValidator().ValidateAsync(newCartItem, ruleSet: ValidationRuleSet);
             if (!validationResult.IsValid)
             {
-                ValidationErrors.AddRange(validationResult.Errors);
+                ValidationErrors.AddRange(validationResult.Errors); // TODO: Fix this
             }
 
             if (newCartItem.CartProduct != null)

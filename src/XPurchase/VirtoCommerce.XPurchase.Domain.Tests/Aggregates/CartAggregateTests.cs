@@ -67,7 +67,7 @@ namespace VirtoCommerce.XPurchase.Tests.Aggregates
             action.Should().ThrowExactly<ArgumentNullException>("NewCartItem is null");
         }
 
-        [Theory(Skip = "Fix test after fixing NRE")]// TODO: Fix NRE
+        [Theory]
         [InlineData(-1)]
         [InlineData(0)]
         public void AddItemAsync_ShouldThrow_IfQuantityLessOrEqualZero(int quantity)
