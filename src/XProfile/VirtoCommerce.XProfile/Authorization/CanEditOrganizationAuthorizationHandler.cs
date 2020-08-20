@@ -61,7 +61,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Authorization
             }
             else if (context.Resource is CreateOrganizationCommand createOrganizationCommand)
             {
-                //Can be checked only with platform permission
+                //New user can create organization on b2b-theme
                 result = true;
             }
             else if (context.Resource is CreateUserCommand createUserCommand)
