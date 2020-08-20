@@ -7,10 +7,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
 {
     public class UpdateRoleCommand : Role, ICommand<IdentityResult>
     {
-        public UpdateRoleCommand()
-        {
-
-        }
+        public string UserId { get; set; }
 
         public UpdateRoleCommand(string id = default, string description = null, string name = null, IList<Permission> permissions = null)
         {

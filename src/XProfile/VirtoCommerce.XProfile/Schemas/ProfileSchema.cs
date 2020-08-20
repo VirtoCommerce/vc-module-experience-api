@@ -1,14 +1,21 @@
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Builders;
-using GraphQL.DataLoader;
 using GraphQL.Resolvers;
 using GraphQL.Types;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using Microsoft.AspNetCore.Identity;
+using VirtoCommerce.ExperienceApiModule.XProfile.Authorization;
 using VirtoCommerce.ExperienceApiModule.XProfile.Commands;
 using VirtoCommerce.ExperienceApiModule.XProfile.Queries;
+using VirtoCommerce.Platform.Core;
+using VirtoCommerce.Platform.Core.Security;
+using VirtoCommerce.Platform.Security.Authorization;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 {
@@ -17,12 +24,14 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
         public const string _commandName = "command";
 
         private readonly IMediator _mediator;
-        private readonly IDataLoaderContextAccessor _dataLoader;
+        private readonly Func<SignInManager<ApplicationUser>> _signInManagerFactory;
+        private readonly IAuthorizationService _authorizationService;
 
-        public ProfileSchema(IMediator mediator, IDataLoaderContextAccessor dataLoader)
+        public ProfileSchema(IMediator mediator, Func<SignInManager<ApplicationUser>> signInManagerFactory, IAuthorizationService authorizationService)
         {
             _mediator = mediator;
-            _dataLoader = dataLoader;
+            _signInManagerFactory = signInManagerFactory;
+            _authorizationService = authorizationService;
         }
 
         public void Build(ISchema schema)
@@ -50,6 +59,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                     var getOrganizationByIdQuery = new GetOrganizationByIdQuery(organizationId);
                     var organizationAggregate = await _mediator.Send(getOrganizationByIdQuery);
 
+                    await CheckAuthAsync(context, organizationAggregate);
                     //store organization aggregate in the user context for future usage in the graph types resolvers
                     context.UserContext.Add("organizationAggregate", organizationAggregate);
 
@@ -78,7 +88,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                 {
                     var getContactByIdQuery = new GetContactByIdQuery(context.GetArgument<string>("id"));
                     var contactAggregate = await _mediator.Send(getContactByIdQuery);
-
+                    await CheckAuthAsync(context, contactAggregate);
                     //store organization aggregate in the user context for future usage in the graph types resolvers
                     context.UserContext.Add("contactAggregate", contactAggregate);
 
@@ -109,7 +119,12 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             _ = schema.Mutation.AddField(FieldBuilder.Create<ContactAggregate, ContactAggregate>(typeof(ContactType))
                             .Name("updateAddresses")
                             .Argument<NonNullGraphType<InputUpdateContactAddressType>>(_commandName)
-                            .ResolveAsync(async context => await _mediator.Send(context.GetArgument<UpdateContactAddressesCommand>(_commandName)))
+                            .ResolveAsync(async context =>
+                            {
+                                var command = context.GetArgument<UpdateContactAddressesCommand>(_commandName);
+                                await CheckAuthAsync(context, command);
+                                return await _mediator.Send(command);
+                            })
                             .FieldType);
 
             /// <example>
@@ -122,31 +137,58 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             _ = schema.Mutation.AddField(FieldBuilder.Create<OrganizationAggregate, OrganizationAggregate>(typeof(OrganizationType))
                             .Name("updateOrganization")
                             .Argument<NonNullGraphType<InputUpdateOrganizationType>>(_commandName)
-                            .ResolveAsync(async context => await _mediator.Send(context.GetArgument<UpdateOrganizationCommand>(_commandName)))
+                            .ResolveAsync(async context =>
+                            {
+                                var command = context.GetArgument<UpdateOrganizationCommand>(_commandName);
+                                await CheckAuthAsync(context, command, CustomerModule.Core.ModuleConstants.Security.Permissions.Update);
+                                return await _mediator.Send(command);
+                            })
                             .FieldType);
 
             _ = schema.Mutation.AddField(FieldBuilder.Create<OrganizationAggregate, OrganizationAggregate>(typeof(OrganizationType))
                             .Name("createOrganization")
                             .Argument<NonNullGraphType<InputCreateOrganizationType>>(_commandName)
-                            .ResolveAsync(async context => await _mediator.Send(context.GetArgument<CreateOrganizationCommand>(_commandName)))
+                            .ResolveAsync(async context =>
+                            {
+                                var command = context.GetArgument<CreateOrganizationCommand>(_commandName);
+                                await CheckAuthAsync(context, command);
+                                return await _mediator.Send(command);
+                            })
                             .FieldType);
 
             _ = schema.Mutation.AddField(FieldBuilder.Create<ContactAggregate, ContactAggregate>(typeof(ContactType))
                             .Name("createContact")
                             .Argument<NonNullGraphType<InputCreateContactType>>(_commandName)
-                            .ResolveAsync(async context => await _mediator.Send(context.GetArgument<CreateContactCommand>(_commandName)))
+                            .ResolveAsync(async context =>
+                            {
+                                var command = context.GetArgument<CreateContactCommand>(_commandName);
+                                await CheckAuthAsync(context, command);
+
+                                return await _mediator.Send(command);
+                            })
                             .FieldType);
 
             _ = schema.Mutation.AddField(FieldBuilder.Create<ContactAggregate, ContactAggregate>(typeof(ContactType))
                             .Name("updateContact")
                             .Argument<NonNullGraphType<InputUpdateContactType>>(_commandName)
-                            .ResolveAsync(async context => await _mediator.Send(context.GetArgument<UpdateContactCommand>(_commandName)))
+                            .ResolveAsync(async context =>
+                            {
+                                var command = context.GetArgument<UpdateContactCommand>(_commandName);
+                                await CheckAuthAsync(context, command);
+                                return await _mediator.Send(command);
+
+                            })
                             .FieldType);
 
             _ = schema.Mutation.AddField(FieldBuilder.Create<ContactAggregate, bool>(typeof(BooleanGraphType))
                             .Name("deleteContact")
                             .Argument<NonNullGraphType<InputDeleteContactType>>(_commandName)
-                            .ResolveAsync(async context => await _mediator.Send(context.GetArgument<DeleteContactCommand>(_commandName)))
+                            .ResolveAsync(async context =>
+                            {
+                                var command = context.GetArgument<DeleteContactCommand>(_commandName);
+                                await CheckAuthAsync(context, command, CustomerModule.Core.ModuleConstants.Security.Permissions.Delete);
+                                return await _mediator.Send(command);
+                            })
                             .FieldType);
 
             // Security API fields
@@ -200,6 +242,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                 Resolver = new AsyncFieldResolver<object>(async context =>
                 {
                     var result = await _mediator.Send(new GetRoleQuery(context.GetArgument<string>("roleName")));
+                    await CheckAuthAsync(context, result, PlatformConstants.Security.Permissions.SecurityQuery);
 
                     return result;
                 })
@@ -221,7 +264,12 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             _ = schema.Mutation.AddField(FieldBuilder.Create<object, IdentityResult>(typeof(IdentityResultType))
                         .Name("createUser")
                         .Argument<NonNullGraphType<InputCreateUserType>>(_commandName)
-                        .ResolveAsync(async context => await _mediator.Send(context.GetArgument<CreateUserCommand>(_commandName)))
+                        .ResolveAsync(async context =>
+                        {
+                            var command = context.GetArgument<CreateUserCommand>(_commandName);
+                            await CheckAuthAsync(context, command);
+                            return await _mediator.Send(command);
+                        })
                         .FieldType);
 
 #pragma warning disable S125 // Sections of code should not be commented out
@@ -245,7 +293,12 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             _ = schema.Mutation.AddField(FieldBuilder.Create<object, IdentityResult>(typeof(IdentityResultType))
                         .Name("updateUser")
                         .Argument<NonNullGraphType<InputUpdateUserType>>(_commandName)
-                        .ResolveAsync(async context => await _mediator.Send(context.GetArgument<UpdateUserCommand>(_commandName)))
+                        .ResolveAsync(async context =>
+                        {
+                            var command = context.GetArgument<UpdateUserCommand>(_commandName);
+                            await CheckAuthAsync(context, command);
+                            return await _mediator.Send(command);
+                        })
                         .FieldType);
 
 #pragma warning disable S125 // Sections of code should not be commented out
@@ -264,7 +317,12 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             _ = schema.Mutation.AddField(FieldBuilder.Create<object, IdentityResult>(typeof(IdentityResultType))
                         .Name("deleteUsers")
                         .Argument<NonNullGraphType<InputDeleteUserType>>(_commandName)
-                        .ResolveAsync(async context => await _mediator.Send(context.GetArgument<DeleteUserCommand>(_commandName)))
+                        .ResolveAsync(async context =>
+                        {
+                            var command = context.GetArgument<DeleteUserCommand>(_commandName);
+                            await CheckAuthAsync(context, command, PlatformConstants.Security.Permissions.SecurityDelete);
+                            return await _mediator.Send(command);
+                        })
                         .FieldType);
 
 #pragma warning disable S125 // Sections of code should not be commented out
@@ -286,8 +344,56 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             _ = schema.Mutation.AddField(FieldBuilder.Create<object, IdentityResult>(typeof(IdentityResultType))
                      .Name("updateRole")
                      .Argument<NonNullGraphType<InputUpdateRoleType>>(_commandName)
-                     .ResolveAsync(async context => await _mediator.Send(context.GetArgument<UpdateRoleCommand>(_commandName)))
+                     .ResolveAsync(async context =>
+                     {
+                         var command = context.GetArgument<UpdateRoleCommand>(_commandName);
+                         await CheckAuthAsync(context, command, PlatformConstants.Security.Permissions.SecurityUpdate);
+
+                         return await _mediator.Send(command);
+                     })
                      .FieldType);
+        }
+
+      
+
+        private async Task CheckAuthAsync(IResolveFieldContext context, object resource, params string[] permissions)
+        {
+            var userId = context.GetArgument<string>("userId");
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                var obj = (Dictionary<string, object>) context.GetArgument<object>("command");
+                userId = obj["userId"].ToString();
+            }
+
+            if (userId == null)
+            {
+                throw new ExecutionError($"argument {nameof(userId)} is null");
+            }
+
+            var signInManager = _signInManagerFactory();
+            var user = await signInManager.UserManager.FindByIdAsync(userId) ?? new ApplicationUser
+            {
+                Id = userId,
+                UserName = "Anonymous",
+            };
+
+            var userPrincipal = await signInManager.CreateUserPrincipalAsync(user);
+
+            foreach (var permission in permissions ?? Array.Empty<string>())
+            {
+                var permissionAuthorizationResult = await _authorizationService.AuthorizeAsync(userPrincipal, null, new PermissionAuthorizationRequirement(permission));
+                if (!permissionAuthorizationResult.Succeeded)
+                {
+                    throw new ExecutionError($"User doesn't have the required permission '{permission}'.");
+                }
+            }
+
+            var authorizationResult = await _authorizationService.AuthorizeAsync(userPrincipal, resource, new CanEditOrganizationAuthorizationRequirement());
+
+            if (!authorizationResult.Succeeded)
+            {
+                throw new ExecutionError($"access denied by userId:{userId}");
+            }
         }
     }
 }

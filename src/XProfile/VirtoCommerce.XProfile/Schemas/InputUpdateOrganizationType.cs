@@ -8,6 +8,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
     {
         public InputUpdateOrganizationType()
         {
+            Field<NonNullGraphType<StringGraphType>>("userId");
             Fields.FirstOrDefault(x => x.Name == nameof(Member.Id)).Type = typeof(NonNullGraphType<StringGraphType>);
         }
     }

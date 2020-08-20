@@ -45,5 +45,6 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
 
         public IList<Address> Addresses { get; set; } = new List<Address>();
         public IList<DynamicProperty> DynamicProperties { get; set; } = new List<DynamicProperty>(Enumerable.Empty<DynamicProperty>());
+        public string UserId { get; set; }
     }
 }
