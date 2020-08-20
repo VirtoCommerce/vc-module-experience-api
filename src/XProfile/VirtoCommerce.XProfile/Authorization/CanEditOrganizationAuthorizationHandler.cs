@@ -1,17 +1,14 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using VirtoCommerce.CustomerModule.Core.Model;
-using VirtoCommerce.CustomerModule.Core.Model.Search;
 using VirtoCommerce.CustomerModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.XProfile.Commands;
 using VirtoCommerce.Platform.Core.Security;
 using VirtoCommerce.Platform.Security.Authorization;
-using VirtoCommerce.TaxModule.Core.Model;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Authorization
 {
@@ -25,14 +22,12 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Authorization
     public class CanEditOrganizationAuthorizationHandler : PermissionAuthorizationHandlerBase<CanEditOrganizationAuthorizationRequirement>
     {
         private readonly IMemberService _memberService;
-        private readonly IMemberSearchService _memberSearchService;
         private readonly UserManager<ApplicationUser> _userManager;
 
 
-        public CanEditOrganizationAuthorizationHandler(IMemberService memberService, IMemberSearchService memberSearchService, Func<UserManager<ApplicationUser>> userManager)
+        public CanEditOrganizationAuthorizationHandler(IMemberService memberService, Func<UserManager<ApplicationUser>> userManager)
         {
             _memberService = memberService;
-            _memberSearchService = memberSearchService;
             _userManager = userManager();
         }
 
@@ -42,17 +37,26 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Authorization
             var currentContact = await GetCustomerAsync(GetUserId(context)) as Contact;
 
             var result = false;
-            if (context.Resource is ContactAggregate contactAggregate)
+            if (context.Resource is ContactAggregate contactAggregate && currentContact != null)
             {
-                result = contactAggregate.Contact.Id == GetUserId(context);
+                result = currentContact.Id == contactAggregate.Contact.Id;
+                if (!result)
+                {
+                    result = await HasSameOrganizationAsync(currentContact, contactAggregate.Contact.Id);
+                }
             }
             if (context.Resource is OrganizationAggregate organizationAggregate && currentContact != null)
             {
                 result = currentContact.Organizations.Contains(organizationAggregate.Organization.Name);
             }
+            if (context.Resource is Role role)
+            {
+                //Can be checked only with platform permission
+                result = true;
+            }
             else if (context.Resource is CreateContactCommand createContactCommand && currentContact != null)
             {
-                result = currentContact.Organizations.Intersect(createContactCommand.Organizations).Any();
+                result =  currentContact.Organizations.Intersect(createContactCommand.Organizations).Any();
             }
             else if (context.Resource is CreateOrganizationCommand createOrganizationCommand)
             {
@@ -70,17 +74,17 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Authorization
             }
             else if (context.Resource is DeleteUserCommand deleteUserCommand && currentContact != null)
             {
-                var allowDeleteAllUsers = true;
+                var allowDelete = true;
                 foreach (var userName in deleteUserCommand.UserNames)
                 {
-                    if (allowDeleteAllUsers)
+                    if (allowDelete)
                     {
                         var user = await _userManager.FindByNameAsync(userName);
-                        allowDeleteAllUsers = await HasSameOrganizationAsync(currentContact, user.MemberId);
+                        allowDelete = await HasSameOrganizationAsync(currentContact, user.MemberId);
                     }
                 }
 
-                result = allowDeleteAllUsers;
+                result = allowDelete;
             }
             else if (context.Resource is UpdateContactAddressesCommand updateContactAddressesCommand && currentContact != null)
             {

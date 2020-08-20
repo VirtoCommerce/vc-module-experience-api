@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Identity;
 using VirtoCommerce.ExperienceApiModule.XProfile.Authorization;
 using VirtoCommerce.ExperienceApiModule.XProfile.Commands;
 using VirtoCommerce.ExperienceApiModule.XProfile.Queries;
+using VirtoCommerce.Platform.Core;
 using VirtoCommerce.Platform.Core.Security;
 using VirtoCommerce.Platform.Security.Authorization;
 
@@ -139,7 +140,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                             .ResolveAsync(async context =>
                             {
                                 var command = context.GetArgument<UpdateOrganizationCommand>(_commandName);
-                                await CheckAuthAsync(context, command, "customer:update");
+                                await CheckAuthAsync(context, command, CustomerModule.Core.ModuleConstants.Security.Permissions.Update);
                                 return await _mediator.Send(command);
                             })
                             .FieldType);
@@ -150,7 +151,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                             .ResolveAsync(async context =>
                             {
                                 var command = context.GetArgument<CreateOrganizationCommand>(_commandName);
-                                await CheckAuthAsync(context, command, "customer:create");
+                                await CheckAuthAsync(context, command, CustomerModule.Core.ModuleConstants.Security.Permissions.Create);
                                 return await _mediator.Send(command);
                             })
                             .FieldType);
@@ -161,7 +162,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                             .ResolveAsync(async context =>
                             {
                                 var command = context.GetArgument<CreateContactCommand>(_commandName);
-                                await CheckAuthAsync(context, command, "customer:create");
+                                await CheckAuthAsync(context, command, CustomerModule.Core.ModuleConstants.Security.Permissions.Create);
 
                                 return await _mediator.Send(command);
                             })
@@ -173,7 +174,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                             .ResolveAsync(async context =>
                             {
                                 var command = context.GetArgument<UpdateContactCommand>(_commandName);
-                                await CheckAuthAsync(context, command, "customer:update");
+                                await CheckAuthAsync(context, command, CustomerModule.Core.ModuleConstants.Security.Permissions.Update);
                                 return await _mediator.Send(command);
 
                             })
@@ -185,7 +186,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                             .ResolveAsync(async context =>
                             {
                                 var command = context.GetArgument<DeleteContactCommand>(_commandName);
-                                await CheckAuthAsync(context, command, "customer:delete");
+                                await CheckAuthAsync(context, command, CustomerModule.Core.ModuleConstants.Security.Permissions.Delete);
                                 return await _mediator.Send(command);
                             })
                             .FieldType);
@@ -241,6 +242,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                 Resolver = new AsyncFieldResolver<object>(async context =>
                 {
                     var result = await _mediator.Send(new GetRoleQuery(context.GetArgument<string>("roleName")));
+                    await CheckAuthAsync(context, result, PlatformConstants.Security.Permissions.SecurityQuery);
 
                     return result;
                 })
@@ -265,7 +267,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                         .ResolveAsync(async context =>
                         {
                             var command = context.GetArgument<CreateUserCommand>(_commandName);
-                            await CheckAuthAsync(context, command, "customer:create");
+                            await CheckAuthAsync(context, command, PlatformConstants.Security.Permissions.SecurityCreate);
                             return await _mediator.Send(command);
                         })
                         .FieldType);
@@ -294,7 +296,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                         .ResolveAsync(async context =>
                         {
                             var command = context.GetArgument<UpdateUserCommand>(_commandName);
-                            await CheckAuthAsync(context, command, "customer:update");
+                            await CheckAuthAsync(context, command, PlatformConstants.Security.Permissions.SecurityUpdate);
                             return await _mediator.Send(command);
                         })
                         .FieldType);
@@ -318,7 +320,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                         .ResolveAsync(async context =>
                         {
                             var command = context.GetArgument<DeleteUserCommand>(_commandName);
-                            await CheckAuthAsync(context, command, "customer:delete");
+                            await CheckAuthAsync(context, command, PlatformConstants.Security.Permissions.SecurityDelete);
                             return await _mediator.Send(command);
                         })
                         .FieldType);
@@ -345,7 +347,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                      .ResolveAsync(async context =>
                      {
                          var command = context.GetArgument<UpdateRoleCommand>(_commandName);
-                         await CheckAuthAsync(context, command, "customer:update");
+                         await CheckAuthAsync(context, command, PlatformConstants.Security.Permissions.SecurityUpdate);
 
                          return await _mediator.Send(command);
                      })
