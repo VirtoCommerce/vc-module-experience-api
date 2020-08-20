@@ -5,9 +5,6 @@
 - CRUD operations with **organizations**
 - CRUD operations with **contacts**
 
-## Structure
-![Profile schema type](X-Profile-Type-Schema.jpg)
-
 ## QueryRoot
 #### List of queries:
 |#|Endpoint|Arguments|Return|
@@ -77,6 +74,10 @@ With this query you can get the user by few arguments
   }
 }
 ```
+
+## Queriable objects
+### Profile schema type
+![Profile schema type](X-Profile-Type-Schema.jpg)
 
 ## Mutations
 #### List of mutations:

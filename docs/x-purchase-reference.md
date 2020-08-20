@@ -7,9 +7,6 @@
 - Multi-Currency;
 - Lazy resolving;
 
-## Structure
-![CartType schema structure](CartType.jpeg)
-
 ## QueryRoot
 #### List of queries:
 |№|Endpoint|Arguments|Return|
@@ -82,6 +79,10 @@ With this connection you can get all user's carts/whishlists.
     }
 }
 ```
+
+## Queriable objects
+### CartType
+![CartType schema structure](CartType.jpeg)
 
 ## Mutations
 Every mutation contains base arguments for working with cart context:
