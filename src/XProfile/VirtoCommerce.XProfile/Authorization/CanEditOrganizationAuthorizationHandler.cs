@@ -54,9 +54,10 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Authorization
                 //Can be checked only with platform permission
                 result = true;
             }
-            else if (context.Resource is CreateContactCommand createContactCommand && currentContact != null)
+            else if (context.Resource is CreateContactCommand createContactCommand)
             {
-                result =  currentContact.Organizations.Intersect(createContactCommand.Organizations).Any();
+                //Anonymous user can create contact
+                result = true;
             }
             else if (context.Resource is CreateOrganizationCommand createOrganizationCommand)
             {
@@ -65,7 +66,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Authorization
             }
             else if (context.Resource is CreateUserCommand createUserCommand)
             {
-                //Can be checked only with platform permission
+                //Anonymous user can create user
                 result = true;
             }
             else if (context.Resource is DeleteContactCommand deleteContactCommand && currentContact != null)
@@ -86,11 +87,10 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Authorization
 
                 result = allowDelete;
             }
-            else if (context.Resource is UpdateContactAddressesCommand updateContactAddressesCommand && currentContact != null)
+            else if (context.Resource is UpdateContactAddressesCommand updateContactAddressesCommand)
             {
-                result = updateContactAddressesCommand.ContactId == currentContact.Id;
-
-                if (!result)
+                result = updateContactAddressesCommand.ContactId == GetUserId(context);
+                if (!result && currentContact!= null)
                 {
                     result = await HasSameOrganizationAsync(currentContact, updateContactAddressesCommand.ContactId);
                 }

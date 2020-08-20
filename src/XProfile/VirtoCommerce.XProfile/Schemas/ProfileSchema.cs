@@ -162,7 +162,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                             .ResolveAsync(async context =>
                             {
                                 var command = context.GetArgument<CreateContactCommand>(_commandName);
-                                await CheckAuthAsync(context, command, CustomerModule.Core.ModuleConstants.Security.Permissions.Create);
+                                await CheckAuthAsync(context, command);
 
                                 return await _mediator.Send(command);
                             })
@@ -267,7 +267,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                         .ResolveAsync(async context =>
                         {
                             var command = context.GetArgument<CreateUserCommand>(_commandName);
-                            await CheckAuthAsync(context, command, PlatformConstants.Security.Permissions.SecurityCreate);
+                            await CheckAuthAsync(context, command);
                             return await _mediator.Send(command);
                         })
                         .FieldType);
@@ -296,7 +296,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                         .ResolveAsync(async context =>
                         {
                             var command = context.GetArgument<UpdateUserCommand>(_commandName);
-                            await CheckAuthAsync(context, command, PlatformConstants.Security.Permissions.SecurityUpdate);
+                            await CheckAuthAsync(context, command, CustomerModule.Core.ModuleConstants.Security.Permissions.Update);
                             return await _mediator.Send(command);
                         })
                         .FieldType);
@@ -371,12 +371,11 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             }
 
             var signInManager = _signInManagerFactory();
-            var user = await signInManager.UserManager.FindByIdAsync(userId);
-
-            if (user == null)
+            var user = await signInManager.UserManager.FindByIdAsync(userId) ?? new ApplicationUser
             {
-                throw new ExecutionError($"can't find user with id:{userId}");
-            }
+                Id = userId,
+                UserName = "Anonymous",
+            };
 
             var userPrincipal = await signInManager.CreateUserPrincipalAsync(user);
 
