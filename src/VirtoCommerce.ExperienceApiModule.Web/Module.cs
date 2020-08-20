@@ -52,15 +52,8 @@ namespace VirtoCommerce.ExperienceApiModule.Web
 
             services.AddTransient<IRequestBuilder, ElasticSearchRequestBuilder>();
 
-            // Register core schemas
-            services.AddSchemaType<MoneyType>(); // TODO: move to extension
-            services.AddSchemaType<DiscountType>();
-            services.AddSchemaType<TaxDetailType>();
-            services.AddSchemaType<TaxLineType>();
-            services.AddSchemaType<TaxRateType>();
-            services.AddSchemaType<SeoInfoType>();
-
             //Register all purchase dependencies
+            services.AddCore();
             services.AddXCatalog(graphQlBuilder);
             services.AddXProfile(graphQlBuilder);
             services.AddXPurchase(graphQlBuilder);

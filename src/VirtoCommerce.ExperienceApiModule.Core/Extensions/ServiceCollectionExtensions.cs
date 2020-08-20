@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure.Authorization;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure.Internal;
+using VirtoCommerce.ExperienceApiModule.Core.Schemas;
 
 namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
 {
@@ -45,11 +46,25 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
             services.AddSingleton<ISchema, SchemaFactory>();
 
             // Register all GraphQL types
-            foreach (var type in assembly.GetTypes()
-                .Where(x => !x.IsAbstract && typeof(ISchemaBuilder).IsAssignableFrom(x)))
+            var types = assembly.GetTypes().Where(x => !x.IsAbstract && typeof(ISchemaBuilder).IsAssignableFrom(x));
+            foreach (var type in types)
             {
                 services.TryAdd(new ServiceDescriptor(typeof(ISchemaBuilder), type, serviceLifetime));
             }
+        }
+
+        public static IServiceCollection AddCore(this IServiceCollection services)
+        {
+            services.AddSchemaType<AddressType>();
+            services.AddSchemaType<CurrencyType>();
+            services.AddSchemaType<DiscountType>();
+            services.AddSchemaType<MoneyType>();
+            services.AddSchemaType<SeoInfoType>();
+            services.AddSchemaType<TaxDetailType>();
+            services.AddSchemaType<TaxLineType>();
+            services.AddSchemaType<TaxRateType>();
+
+            return services;
         }
     }
 }

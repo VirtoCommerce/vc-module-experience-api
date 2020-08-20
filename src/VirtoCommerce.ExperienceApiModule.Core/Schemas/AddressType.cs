@@ -1,7 +1,7 @@
 using GraphQL.Types;
-using VirtoCommerce.CartModule.Core.Model;
+using VirtoCommerce.CoreModule.Core.Common;
 
-namespace VirtoCommerce.XPurchase.Schemas
+namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
 {
     public class AddressType : ObjectGraphType<Address>
     {
@@ -25,7 +25,6 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field(x => x.RegionName, nullable: true).Description("Region name");
             Field(x => x.Zip, nullable: true).Description("Zip");
             Field<IntGraphType>(nameof(Address.AddressType), resolve: context => (int)context.Source.AddressType);
-
         }
     }
 }
