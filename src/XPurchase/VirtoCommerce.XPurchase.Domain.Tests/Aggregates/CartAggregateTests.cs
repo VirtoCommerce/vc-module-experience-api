@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
-using FluentValidation;
 using Moq;
 using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model;
@@ -85,10 +84,12 @@ namespace VirtoCommerce.XPurchase.Tests.Aggregates
                 .ReturnsAsync(new List<CartProduct>() { new CartProduct(new CatalogProduct()) });
 
             // Act
-            Action action = () => aggregate.AddItemAsync(newCartItem).GetAwaiter().GetResult();
+            var aggregateAfterAddItem = aggregate.AddItemAsync(newCartItem).GetAwaiter().GetResult();
 
             // Assert
-            action.Should().ThrowExactly<ValidationException>($"Quantity is {quantity}");
+            aggregateAfterAddItem.ValidationErrors.Should().NotBeEmpty();
+            aggregateAfterAddItem.ValidationErrors.Should().Contain(x => x.ErrorCode == "GreaterThanValidator");
+            aggregateAfterAddItem.ValidationErrors.Should().Contain(x => x.ErrorCode == "NotNullValidator");
         }
 
         #endregion AddItemAsync
@@ -133,7 +134,24 @@ namespace VirtoCommerce.XPurchase.Tests.Aggregates
 
         #region ChangeItemQuantityAsync
 
-        // TODO: Write tests
+        [Fact]
+        public void ChangeItemQuantityAsync_LineItemNotFound_ShouldThrowValidationException()
+        {
+            // Arrange
+            var cartAggregate = GetValidCartAggregate();
+            var lineItem = _fixture.Create<LineItem>();
+            cartAggregate.Cart.Items = new List<LineItem> { lineItem };
+
+            // Act
+            var cartAggregateAfterChangeItemQty = cartAggregate.ChangeItemQuantityAsync(new ItemQtyAdjustment(
+                _fixture.Create<string>(),
+                5,
+                _fixture.Create<CartProduct>())).GetAwaiter().GetResult();
+
+            // Assert
+            cartAggregateAfterChangeItemQty.ValidationErrors.Should().NotBeEmpty();
+            cartAggregateAfterChangeItemQty.ValidationErrors.Should().Contain(x => x.ErrorCode == "LINE_ITEM_NOT_FOUND");
+        }
 
         #endregion ChangeItemQuantityAsync
 
