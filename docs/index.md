@@ -11,11 +11,11 @@ The project "Experience API" it is primarily a intermediated layer between clien
 - Tracing and performance requests metrics.
 
 ## Key features
-- [X-Catalog docs](/../../docs/x-catalog-reference.md)
-- [X-Purchase cart docs](/../../docs/x-purchase-cart-reference.md)
-- [X-Purchase order docs](/../../docs/x-purchase-order-reference.md)
-- [X-UserProfile docs](/../../docs/x-profile-reference.md)
-- [Recommendations Gateway API](/../../docs/gateway-api-reference.md) (prototype)
+- [X-Catalog docs](./x-catalog-reference.md)
+- [X-Purchase cart docs](./x-purchase-cart-reference.md)
+- [X-Purchase order docs](./x-purchase-order-reference.md)
+- [X-UserProfile docs](./x-profile-reference.md)
+- [Recommendations Gateway API](./gateway-api-reference.md) (prototype)
 
 ## How to use
 ### Playground IDE
