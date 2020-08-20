@@ -17,6 +17,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             Field(d => d.IncludeTo).Description("The flag indicates that To exclusive");
             Field(d => d.ToStr, nullable: true).Description("The range’s upper endpoint in string format, empty string represents infinity");
             Field(d => d.Total, nullable: true).Description("Sum of all values contained in the range");
+            Field(d => d.Label, nullable: true).Description("Localization label");
         }
     }
 }

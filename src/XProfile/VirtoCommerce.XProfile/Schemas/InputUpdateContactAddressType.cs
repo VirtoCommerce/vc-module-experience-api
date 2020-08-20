@@ -8,6 +8,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
         public InputUpdateContactAddressType()
         {
             Field<NonNullGraphType<StringGraphType>>("contactId");
+            Field<NonNullGraphType<StringGraphType>>("userId");
             Field<NonNullGraphType<ListGraphType<InputMemberAddressType>>>(nameof(Member.Addresses));
         }
     }

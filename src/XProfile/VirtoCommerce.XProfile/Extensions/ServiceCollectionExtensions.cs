@@ -1,7 +1,9 @@
 using GraphQL.Server;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
+using VirtoCommerce.ExperienceApiModule.XProfile.Authorization;
 using VirtoCommerce.ExperienceApiModule.XProfile.Schemas;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Extensions
@@ -20,7 +22,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Extensions
 
             services.AddTransient<IOrganizationAggregateRepository, OrganizationAggregateRepository>();
             services.AddTransient<IContactAggregateRepository, ContactAggregateRepository>();
-
+            services.AddSingleton<IAuthorizationHandler, CanEditOrganizationAuthorizationHandler>();
             return services;
         }
     }

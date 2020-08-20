@@ -4,9 +4,12 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Identity;
+using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.CoreModule.Core.Currency;
+using VirtoCommerce.CustomerModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Index;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
@@ -15,6 +18,7 @@ using VirtoCommerce.InventoryModule.Core.Services;
 using VirtoCommerce.MarketingModule.Core.Model.Promotions;
 using VirtoCommerce.MarketingModule.Core.Services;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.Security;
 using VirtoCommerce.PricingModule.Core.Model;
 using VirtoCommerce.PricingModule.Core.Services;
 using VirtoCommerce.SearchModule.Core.Model;
@@ -44,6 +48,9 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
         private readonly ICurrencyService _currencyService;
         private readonly IStoreService _storeService;
         private readonly IPricingService _pricingService;
+        private readonly IMemberService _memberService;
+        private readonly Func<UserManager<ApplicationUser>> _userManagerFactory;
+        private readonly IAggregationConverter _aggregationConverter;
 
         public SearchProductQueryHandler(
             ISearchProvider searchProvider
@@ -55,7 +62,11 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             , ICurrencyService currencyService
             , IStoreService storeService
             , ITaxProviderSearchService taxProviderSearchService
-            , IPricingService pricingService)
+            , IPricingService pricingService
+            , Func<UserManager<ApplicationUser>> userManagerFactory
+            , IMemberService memberService
+            , IAggregationConverter aggregationConverter
+            )
         {
             _searchProvider = searchProvider;
             _requestBuilder = requestBuilder;
@@ -67,26 +78,40 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             _taxProviderSearchService = taxProviderSearchService;
             _storeService = storeService;
             _pricingService = pricingService;
+            _memberService = memberService;
+            _userManagerFactory = userManagerFactory;
+            _aggregationConverter = aggregationConverter;
         }
 
         public virtual async Task<SearchProductResponse> Handle(SearchProductQuery request, CancellationToken cancellationToken)
         {
             var searchRequest = _requestBuilder
+                .AddTerms(new[] { "status:visible" })//Only visible, exclude variations from search result
                 .FromQuery(request)
                 .ParseFacets(request.Facet, request.StoreId, request.CurrencyCode)
-                .AddTerms(new[] { "status:visible" })//Only visible, exclude variations from search result
                 .Build();
 
             var searchResult = await _searchProvider.SearchAsync(KnownDocumentTypes.Product, searchRequest);
 
             var expProducts = await ConvertIndexDocsToProductsWithLoadDependenciesAsync(searchResult.Documents, request);
 
-            return new SearchProductResponse
+            var criteria = new ProductIndexedSearchCriteria
+            {
+                StoreId = request.StoreId,
+                Currency = request.CurrencyCode,
+            };
+
+            // Converting aggregation results to defferent types
+            var aggregations = await _aggregationConverter.ConvertAggregationsAsync(searchResult.Aggregations, criteria);
+
+            var result = new SearchProductResponse
             {
                 Results = expProducts.ToList(),
-                Facets = searchRequest.Aggregations?.Select(x => _mapper.Map<FacetResult>(x, opts => opts.Items["aggregations"] = searchResult.Aggregations)).ToList(),
+                Facets = aggregations.Select(x => _mapper.Map<FacetResult>(x)).ToList(),
                 TotalCount = (int)searchResult.TotalCount
             };
+
+            return result;
         }
 
         public virtual async Task<LoadProductResponse> Handle(LoadProductsQuery request, CancellationToken cancellationToken)
@@ -99,6 +124,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
 
             return new LoadProductResponse(expProducts.ToList());
         }
+
 
         protected virtual async Task<IEnumerable<ExpProduct>> ConvertIndexDocsToProductsWithLoadDependenciesAsync(IEnumerable<SearchDocument> docs, ICatalogQuery query)
         {

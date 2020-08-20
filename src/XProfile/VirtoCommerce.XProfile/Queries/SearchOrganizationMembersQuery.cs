@@ -10,5 +10,6 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Queries
         public int Take { get; set; }
         public string Sort { get; set; }
         public string SearchPhrase { get; set; }
+        public string UserId { get; set; }
     }
 }

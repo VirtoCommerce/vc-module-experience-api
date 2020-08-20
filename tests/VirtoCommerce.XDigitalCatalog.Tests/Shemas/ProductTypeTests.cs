@@ -159,7 +159,7 @@ namespace VirtoCommerce.XDigitalCatalog.Tests.Shemas
         }
 
         [Fact]
-        public void ProductType_Properties_NoLocalization_ShouldGetDefaultValue()
+        public void ProductType_Properties_NoLocalization_ShouldGetDefaultValueForDictionary()
         {
             // Arrange
             var alias = "i_grouped";
@@ -179,7 +179,8 @@ namespace VirtoCommerce.XDigitalCatalog.Tests.Shemas
                     {
                         new Property
                         {
-                            Values = propValues
+                            Values = propValues,
+                            Dictionary = true
                         }
                     }
                 }
