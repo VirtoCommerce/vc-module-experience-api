@@ -84,6 +84,9 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Index
 
                 var clonedFilter = SearchRequest.Filter.Clone() as AndFilter;
 
+                // For multi-select facet mechanism, we should select
+                // search request filters which do not have the same
+                // names such as aggregation filter
                 clonedFilter.ChildFilters = clonedFilter
                     .ChildFilters
                     .Where(x =>
