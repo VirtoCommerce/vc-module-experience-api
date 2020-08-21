@@ -1,4 +1,4 @@
-# X-Purchase
+# X-Purchase cart
 
 ## Key features
 - Working with shopping cart;
@@ -7,50 +7,13 @@
 - Multi-Currency;
 - Lazy resolving;
 
-## Structure
-![CartType schema structure](CartType.jpeg)
-## Endpoints
-### Queries
+## QueryRoot
+#### List of queries:
 |№|Endpoint|Arguments|Return|
 |------|---------|---------|---------|
-|1|[cart](#cart-query)|`storeId` `cartName` `userId` `cultureName` `currencyCode` `type`|Shopping cart|
-|2|[carts](#carts-connection)|`storeId` `cartName` `userId` `cultureName` `currencyCode` `cartType` `sort` `skip` `take`|Paginated shopping cart list|
-### Mutations
-Every mutation contains base arguments for working with cart context:
-- `storeId` - Id of current store
-- `cartName` - Cart name
-- `userId` - Id of current user
-- `currency` - Currency code (e.g. "USD")
-- `language` - Culture name of current language (e.g. "en-Us")
-- `cartType` - Type of cart ("cart" or "whishlist")
-#### Mutation list:
-|№ |Endpoint|Arguments|Description|
-|--|-----------------------|---------------------|---------|
-|1 |[addItem](#additem-mutation)|`!productId` `!quantity` `price` `comment`|Add item to cart.|
-|2 |[clearCart](#clearcart-mutation)|-|Remove items from cart.|
-|3 |[changeComment](#changecomment-mutation)|`comment`|Update cart comment.|
-|4 |[changeCartItemPrice](#changecartitemprice-mutation)|`!productId` `!price`|Change cart item price.|
-|5 |[changeCartItemQuantity](#changecartitemquantity-mutation)|`!lineItemId` `!quantity`|Change cart item quantity.|
-|6 |[changeCartItemComment](#changecartitemcomment-mutation)|`!lineItemId` `comment`|Change cart item comment.|
-|7 |[removeCartItem](#removecartitem-mutation)|`!lineItemId`|Remove cart item from cart.|
-|8 |[addCoupon](#addcoupon-mutation)|`!couponCode`|Add coupon to cart.|
-|9 |[removeCoupon](#removecoupon-mutation)|`couponCode`|Remove coupon from cart. If coupon not passed clear all coupons from cart.|
-|10|[removeShipment](#removeshipment-mutation)|`shipmentId`|Remove shipment from cart.|
-|11|[addOrUpdateCartShipment](#addorupdatecartshipment-mutation)|`!shipment`([type](https://github.com/VirtoCommerce/vc-module-experience-api/blob/dev/src/XPurchase/VirtoCommerce.XPurchase/Schemas/InputShipmentType.cs))|Add or update shipment for cart.|
-|12|[addOrUpdateCartPayment](#addorupdatecartpayment-mutation)|`!payment`([type](https://github.com/VirtoCommerce/vc-module-experience-api/blob/dev/src/XPurchase/VirtoCommerce.XPurchase/Schemas/InputPaymentType.cs))|Add or update payment for cart.|
-|13|[validateCoupon](#validatecoupon-mutation)|`!coupon`|Validate coupon, return result.|
-|14|[mergeCart](#mergecart-mutation)|`!secondCartId`|Merge two carts into one.|
-|15|[removeCart](#removecart-mutation)|`!cartId`|Remove cart.|
-|16|[clearShipments](#clearshipments-mutation)|-|Clear cart shipments.|
-|17|[clearPayments](#clearpayments-mutation)|-|Clear cart payments.|
-
-> [!NOTE]
-> In arguments column we only show additional arguments. if they are marked with an exclamation mark, they are required.
-
-## Examples
-In this block you can find some examples of queries and mutations.
-### Cart query
-
+|1|[cart](#cart)|`storeId` `cartName` `userId` `cultureName` `currencyCode` `type`|Shopping cart|
+|2|[carts](#carts)|`storeId` `cartName` `userId` `cultureName` `currencyCode` `cartType` `sort` `skip` `take`|Paginated shopping cart list|
+### Cart
 ```
 {
     cart (storeId: "Electronics"
@@ -116,7 +79,44 @@ With this connection you can get all user's carts/whishlists.
     }
 }
 ```
-### AddItem mutation
+
+## Queriable objects
+### CartType
+![CartType schema structure](CartType.jpeg)
+
+## Mutations
+Every mutation contains base arguments for working with cart context:
+- `storeId` - Id of current store
+- `cartName` - Cart name
+- `userId` - Id of current user
+- `currency` - Currency code (e.g. "USD")
+- `language` - Culture name of current language (e.g. "en-Us")
+- `cartType` - Type of cart ("cart" or "whishlist")
+#### Mutation list:
+|№ |Endpoint|Arguments|Description|
+|--|-----------------------|---------------------|---------|
+|1 |[addItem](#additem)|`!productId` `!quantity` `price` `comment`|Add item to cart.|
+|2 |[clearCart](#clearcart)|-|Remove items from cart.|
+|3 |[changeComment](#changecomment)|`comment`|Update cart comment.|
+|4 |[changeCartItemPrice](#changecartitemprice)|`!productId` `!price`|Change cart item price.|
+|5 |[changeCartItemQuantity](#changecartitemquantity)|`!lineItemId` `!quantity`|Change cart item quantity.|
+|6 |[changeCartItemComment](#changecartitemcomment)|`!lineItemId` `comment`|Change cart item comment.|
+|7 |[removeCartItem](#removecartitem)|`!lineItemId`|Remove cart item from cart.|
+|8 |[addCoupon](#addcoupon)|`!couponCode`|Add coupon to cart.|
+|9 |[removeCoupon](#removecoupon)|`couponCode`|Remove coupon from cart. If coupon not passed clear all coupons from cart.|
+|10|[removeShipment](#removeshipment)|`shipmentId`|Remove shipment from cart.|
+|11|[addOrUpdateCartShipment](#addorupdatecartshipment)|`!shipment`([type](https://github.com/VirtoCommerce/vc-module-experience-api/blob/dev/src/XPurchase/VirtoCommerce.XPurchase/Schemas/InputShipmentType.cs))|Add or update shipment for cart.|
+|12|[addOrUpdateCartPayment](#addorupdatecartpayment)|`!payment`([type](https://github.com/VirtoCommerce/vc-module-experience-api/blob/dev/src/XPurchase/VirtoCommerce.XPurchase/Schemas/InputPaymentType.cs))|Add or update payment for cart.|
+|13|[validateCoupon](#validatecoupon)|`!coupon`|Validate coupon, return result.|
+|14|[mergeCart](#mergecart)|`!secondCartId`|Merge two carts into one.|
+|15|[removeCart](#removecart)|`!cartId`|Remove cart.|
+|16|[clearShipments](#clearshipments)|-|Clear cart shipments.|
+|17|[clearPayments](#clearpayments)|-|Clear cart payments.|
+
+> [!NOTE]
+> In arguments column we only show additional arguments. if they are marked with an exclamation mark, they are required.
+
+### AddItem
 This mutation validates item and add it to cart, recalculate promotion rewards and taxes then save cart.
 #### Query:
 ```
@@ -148,7 +148,7 @@ mutation ($command:InputAddItemType!)
     "quantity": 1
 }
 ```
-### ClearCart mutation
+### ClearCart
 This mutation removes all items from cart, reset promotion rewards based on amount of items and save cart.
 #### Query:
 ```
@@ -178,7 +178,7 @@ mutation ($command:InputClearCartType!)
     "cartType": "cart"
 }
 ```
-### ChangeComment mutation
+### ChangeComment
 This mutation changes cart comment.
 #### Query:
 ```
@@ -204,7 +204,7 @@ mutation ($command:InputChangeCommentType!)
 }
 ```
 
-### ChangeCartItemPrice mutation
+### ChangeCartItemPrice
 This mutation changes cart item price.
 #### Query:
 ```
@@ -239,7 +239,7 @@ mutation ($command:InputChangeCartItemPriceType!)
 }
 ```
 
-### ChangeCartItemQuantity mutation
+### ChangeCartItemQuantity
 This mutation changes cart item quantity.
 #### Query:
 ```
@@ -273,7 +273,7 @@ mutation ($command:InputChangeCartItemQuantityType!)
 }
 ```
 
-### ChangeCartItemComment mutation
+### ChangeCartItemComment
 This mutation changes cart item comment.
 #### Query:
 ```
@@ -305,7 +305,7 @@ mutation ($command:InputChangeCartItemCommentType!)
 }
 ```
 
-### RemoveCartItem mutation
+### RemoveCartItem
 This mutation removes item from cart.
 #### Query:
 ```
@@ -336,7 +336,7 @@ mutation ($command:InputRemoveItemType!)
     "lineItemId": "9cbd8f316e254a679ba34a900fccb076",
 }
 ```
-### AddCoupon mutation
+### AddCoupon
 This mutation checks and adds coupon to cart.
 #### Query:
 ```
@@ -366,7 +366,7 @@ mutation ($command:InputAddCouponType!)
 }
 ```
 
-### RemoveCoupon mutation
+### RemoveCoupon
 This mutation removes coupon from cart.
 #### Query:
 ```
@@ -396,7 +396,7 @@ mutation ($command:InputRemoveCouponType!)
 }
 ```
 
-### RemoveShipment mutation
+### RemoveShipment
 This mutation removes shipment from cart.
 #### Query:
 ```
@@ -427,7 +427,7 @@ mutation ($command:InputRemoveShipmentType!)
 }
 ```
 
-### AddOrUpdateCartShipment mutation
+### AddOrUpdateCartShipment
 This mutation adds or updates shipment of cart.
 #### Query:
 ```
@@ -467,7 +467,7 @@ mutation ($command:InputAddOrUpdateCartShipmentType!)
 > [!TIP]
 > To see all possible parametrs for shipment object [look here...](https://github.com/VirtoCommerce/vc-module-experience-api/blob/dev/src/XPurchase/VirtoCommerce.XPurchase/Schemas/InputShipmentType.cs)
 
-### AddOrUpdateCartPayment mutation
+### AddOrUpdateCartPayment
 This mutation adds or updates payment of cart.
 #### Query:
 ```
@@ -506,7 +506,7 @@ mutation ($command:InputAddOrUpdateCartPaymentType!)
 > [!TIP]
 > To see all possible parametrs for payment object [look here...](https://github.com/VirtoCommerce/vc-module-experience-api/blob/dev/src/XPurchase/VirtoCommerce.XPurchase/Schemas/InputPaymentType.cs)
 
-### ValidateCoupon mutation
+### ValidateCoupon
 This mutation validates coupon.
 #### Query:
 ```
@@ -530,7 +530,7 @@ mutation ($command:InputValidateCouponType!)
 }
 ```
 
-### MergeCart mutation
+### MergeCart
 This mutation merges two carts. You can use it to merge anonymous cart with user cart after authorization.
 #### Query:
 ```
@@ -556,7 +556,7 @@ mutation ($command:InputMergeCartType!)
 }
 ```
 
-### RemoveCart mutation
+### RemoveCart
 This mutation removes cart.
 
 #### Query:
@@ -573,7 +573,7 @@ mutation ($command:InputRemoveCartType!)
 }
 ```
 
-### ClearShipments mutation
+### ClearShipments
 This mutation removes all shipments from cart.
 
 #### Query:
@@ -604,7 +604,7 @@ mutation ($command:InputClearShipmentsType!)
 }
 ```
 
-### ClearPayments mutation
+### ClearPayments
 This mutation removes all payments from cart.
 
 #### Query:

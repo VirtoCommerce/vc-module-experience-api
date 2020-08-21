@@ -10,6 +10,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Queries
         public string UserName { get; set; }
         public string LoginProvider { get; }
         public string ProviderKey { get; }
+        public string UserId { get; set; }
 
         public GetUserQuery()
         {

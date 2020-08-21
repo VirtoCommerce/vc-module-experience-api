@@ -5,36 +5,16 @@
 - CRUD operations with **organizations**
 - CRUD operations with **contacts**
 
-## Structure
-![Profile schema type](X-Profile-Type-Schema.jpg)
-
-## Endpoints
-### Queries
+## QueryRoot
+#### List of queries:
 |#|Endpoint|Arguments|Return|
 |-|-|-|-|
-|1|[organization](#organization-query)|`id`|Organization|
-|2|[contact](#contact-query)|`id`|Contact|
-|3|[role](#role-query)|`roleName`|Role|
-|4|[user](#user-query)|`id` `userName` `email` `loginProvider` `providerKey`|User|
+|1|[organization](#organization)|`id`|Organization|
+|2|[contact](#contact)|`id`|Contact|
+|3|[role](#role)|`roleName`|Role|
+|4|[user](#user)|`id` `userName` `email` `loginProvider` `providerKey`|User|
 
-### Mutations
-|#|Endpoint|Arguments|Description|
-|-|-|-|-|
-|1|[createContact](#createcontact-mutation)|`id` `name!` `memberType` `addresses` `phones` `emails` `groups` `fullName` `firstName!` `lastName!` `middleName` `salutation` `photoUrl` `timeZone` `defaultLanguage` `organizations`|Creates contact|
-|2|[updateContact](#updatecontact-mutation)|`id!` `name` `memberType` `addresses` `phones` `emails` `groups` `fullName` `firstName!` `lastName!` `middleName` `salutation` `photoUrl` `timeZone` `defaultLanguage` `organizations`|Updates contact|
-|3|[deleteContact](#deletecontact-mutation)|`contactId!`|Deletes contact|
-|4|[createUser](#createuser-mutation)|`id` `email` `createdBy` `createdDate` `isAdministrator` `lockoutEnabled` `lockoutEnd` `logins` `memberId` `password` `phoneNumber` `phoneContactConfirmed` `photoUrl` `roles` `storeId` `twoFactorEnabled` `userName` `userType`|Creates user|
-|5|[updateUser](#updateuser-mutation)|`accessFailedCount` `email!` `id!` `isAdministrator` `lockoutEnabled` `lockoutEnd` `memberId` `phoneNumber` `phoneNumberConfirmed` `photoUrl` `roles` `storeId` `twoFactorEnabled` `userName!` `userType!` `passwordHash` `securityStamp!`|Updates user|
-|6|[deleteUsers](#deleteusers-mutation)|`userNames!`|Delete users|
-|7|[updateAddresses](#updateaddresses-mutation)|`contactId!` `addresses!`|Update addresses|
-|8|[createOrganization](#createorganization-mutation)|`id` `name` `memberType` `addresses` `phones` `emails` `groups`|Creates organization|
-|9|[updateOrganization](#updateorganization-mutation)|`id!` `name` `memberType` `addresses` `phones` `emails` `groups`|Updates organization|
-|10|[updateRole](#updaterole-mutation)|`concurrencyStamp` `id!` `name!` `description` `permissions!`|Updates role|
-
-## Examples
-In this block you can find some examples of queries and mutations.
-
-### Organization query
+### Organization
 With this query you can get the organization by id
 ```
 {
@@ -50,7 +30,7 @@ With this query you can get the organization by id
   }
 }
 ```
-### Contact query
+### Contact
 With this query you can get the contact by id
 ```
 {
@@ -66,7 +46,7 @@ With this query you can get the contact by id
   }
 }
 ```
-### Role query
+### Role
 With this query you can get the role by name
 ```
 {
@@ -77,7 +57,7 @@ With this query you can get the role by name
   }
 }
 ```
-### User query
+### User
 With this query you can get the user by few arguments
 ```
 {
@@ -94,7 +74,27 @@ With this query you can get the user by few arguments
   }
 }
 ```
-### CreateContact mutation
+
+## Queriable objects
+### Profile schema type
+![Profile schema type](X-Profile-Type-Schema.jpg)
+
+## Mutations
+#### List of mutations:
+|#|Endpoint|Arguments|Description|
+|-|-|-|-|
+|1|[createContact](#createcontact)|`id` `name!` `memberType` `addresses` `phones` `emails` `groups` `fullName` `firstName!` `lastName!` `middleName` `salutation` `photoUrl` `timeZone` `defaultLanguage` `organizations`|Creates contact|
+|2|[updateContact](#updatecontact)|`id!` `name` `memberType` `addresses` `phones` `emails` `groups` `fullName` `firstName!` `lastName!` `middleName` `salutation` `photoUrl` `timeZone` `defaultLanguage` `organizations`|Updates contact|
+|3|[deleteContact](#deletecontact)|`contactId!`|Deletes contact|
+|4|[createUser](#createuser)|`id` `email` `createdBy` `createdDate` `isAdministrator` `lockoutEnabled` `lockoutEnd` `logins` `memberId` `password` `phoneNumber` `phoneContactConfirmed` `photoUrl` `roles` `storeId` `twoFactorEnabled` `userName` `userType`|Creates user|
+|5|[updateUser](#updateuser)|`accessFailedCount` `email!` `id!` `isAdministrator` `lockoutEnabled` `lockoutEnd` `memberId` `phoneNumber` `phoneNumberConfirmed` `photoUrl` `roles` `storeId` `twoFactorEnabled` `userName!` `userType!` `passwordHash` `securityStamp!`|Updates user|
+|6|[deleteUsers](#deleteusers)|`userNames!`|Delete users|
+|7|[updateAddresses](#updateaddresses)|`contactId!` `addresses!`|Update addresses|
+|8|[createOrganization](#createorganization)|`id` `name` `memberType` `addresses` `phones` `emails` `groups`|Creates organization|
+|9|[updateOrganization](#updateorganization)|`id!` `name` `memberType` `addresses` `phones` `emails` `groups`|Updates organization|
+|10|[updateRole](#updaterole)|`concurrencyStamp` `id!` `name!` `description` `permissions!`|Updates role|
+
+### CreateContact
 #### Query
 ```
 mutation($command: InputCreateContactType!) {
@@ -116,7 +116,7 @@ mutation($command: InputCreateContactType!) {
 	}
 }
 ```
-### UpdateContact mutation
+### UpdateContact
 #### Query
 ```
 mutation($command: InputUpdateContactType!){
@@ -136,7 +136,7 @@ mutation($command: InputUpdateContactType!){
 	}
 }
 ```
-### DeleteContact mutation
+### DeleteContact
 #### Query
 ```
 mutation($command: InputDeleteContactType!){
@@ -151,7 +151,7 @@ mutation($command: InputDeleteContactType!){
   }
 }
 ```
-### CreateUser mutation
+### CreateUser
 #### Query
 ```
 mutation($command: InputCreateUserType!) {
@@ -170,7 +170,7 @@ mutation($command: InputCreateUserType!) {
   }
 }
 ```
-### UpdateUser mutation
+### UpdateUser
 #### Query
 ```
 mutation($command: InputUpdateUserType!) {
@@ -196,7 +196,7 @@ mutation($command: InputUpdateUserType!) {
 }
 ```
 > SecurityStamp - A random value that must change whenever a users credentials change (password changed, login removed)
-### DeleteUsers mutation
+### DeleteUsers
 #### Query
 ```
 mutation($command: InputDeleteUserType!) {
@@ -217,7 +217,7 @@ mutation($command: InputDeleteUserType!) {
   }
 }
 ```
-### UpdateAddresses mutation
+### UpdateAddresses
 #### Query
 ```
 mutation($command: InputUpdateContactAddressType!) {
@@ -240,14 +240,14 @@ mutation($command: InputUpdateContactAddressType!) {
         "line1": "testLine1",
         "postalCode": "testPostalCode",
         "city": "testCity",
-        "addressType": 3 
+        "addressType": 3
       }
     ]
   }
 }
 ```
 > Address type: **1** - Billing, **2** - Shipping, **3** - BillingAndShipping
-### CreateOrganization mutation
+### CreateOrganization
 #### Query
 ```
 mutation($command: InputCreateOrganizationType!) {
@@ -267,7 +267,7 @@ mutation($command: InputCreateOrganizationType!) {
   }
 }
 ```
-### UpdateOrganization mutation
+### UpdateOrganization
 #### Query
 ```
 mutation($command: InputUpdateOrganizationType!) {
@@ -288,7 +288,7 @@ mutation($command: InputUpdateOrganizationType!) {
   }
 }
 ```
-### UpdateRole mutation
+### UpdateRole
 #### Query
 ```
 mutation($command: InputUpdateRoleType!) {

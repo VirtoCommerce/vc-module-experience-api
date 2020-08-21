@@ -20,10 +20,10 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile
 
             if (!contactId.IsNullOrEmpty())
             {
-                var contact = await _memberService.GetByIdAsync(contactId, null, nameof(Contact));
-                if (contact != null)
+                var member = await _memberService.GetByIdAsync(contactId, null, nameof(Contact));
+                if (member is Contact contact)
                 {
-                    result = new ContactAggregate(contact as Contact);
+                    result = new ContactAggregate(contact);
                 }
             }
 

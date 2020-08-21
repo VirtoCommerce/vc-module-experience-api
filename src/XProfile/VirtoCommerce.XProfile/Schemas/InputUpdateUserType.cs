@@ -7,6 +7,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
     {
         public InputUpdateUserType()
         {
+            Field<NonNullGraphType<StringGraphType>>("userId");
             Field(x => x.AccessFailedCount, true);
             Field(x => x.Email);
             Field(x => x.Id);

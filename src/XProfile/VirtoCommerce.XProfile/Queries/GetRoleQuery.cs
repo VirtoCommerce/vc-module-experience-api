@@ -7,14 +7,10 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Queries
     {
         public string RoleName { get; set; }
 
-        public GetRoleQuery()
-        {
-
-        }
-
         public GetRoleQuery(string roleName)
         {
             RoleName = roleName;
         }
+        public string UserId { get; set; }
     }
 }
