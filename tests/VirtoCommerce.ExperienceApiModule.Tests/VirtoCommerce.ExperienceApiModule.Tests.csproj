@@ -25,5 +25,6 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\src\VirtoCommerce.ExperienceApiModule.Core\VirtoCommerce.ExperienceApiModule.Core.csproj" />
+        <ProjectReference Include="..\..\src\VirtoCommerce.ExperienceApiModule.DigitalCatalog\VirtoCommerce.XDigitalCatalog.csproj" />
     </ItemGroup>
 </Project>

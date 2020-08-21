@@ -2,29 +2,21 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
-using VirtoCommerce.CatalogModule.Core.Search;
+using VirtoCommerce.ExperienceApiModule.Core.Index;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.SearchModule.Core.Extenstions;
 using VirtoCommerce.SearchModule.Core.Model;
 using VirtoCommerce.SearchModule.Core.Services;
 
-namespace VirtoCommerce.ExperienceApiModule.Core.Index
+namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
 {
-    public class ElasticSearchRequestBuilder : IRequestBuilder
+    public class IndexSearchRequestBuilder
     {
-        private readonly ISearchPhraseParser _phraseParser;
-        private readonly IAggregationConverter _aggregationConverter;
 
         private SearchRequest SearchRequest { get; set; }
 
-        public ElasticSearchRequestBuilder(
-            ISearchPhraseParser phraseParser
-            , IAggregationConverter aggregationConverter
-            )
+        public IndexSearchRequestBuilder()
         {
-            _phraseParser = phraseParser;
-            _aggregationConverter = aggregationConverter;
-
             SearchRequest = new SearchRequest
             {
                 Filter = new AndFilter()
@@ -40,74 +32,53 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Index
             };
         }
 
-        public virtual IRequestBuilder FromQuery(ISearchDocumentsQuery query)
+        public IndexSearchRequestBuilder WithFuzzy(bool fuzzy, int? fuzzyLevel = null)
         {
-            SearchRequest.IsFuzzySearch = query.Fuzzy;
-            SearchRequest.Fuzziness = query.FuzzyLevel;
-            SearchRequest.Skip = query.Skip;
-            SearchRequest.Take = query.Take;
-            SearchRequest.SearchKeywords = query.Query;
-            SearchRequest.IncludeFields = query.IncludeFields.ToList();
-
-            ParseFilters(query.Filter);
-
-            AddSorting(query.Sort);
-
-            if (!query.ObjectIds.IsNullOrEmpty())
-            {
-                AddFiltersToSearchRequest(new IFilter[] { new IdsFilter { Values = query.ObjectIds } });
-            }
-
+            SearchRequest.IsFuzzySearch = fuzzy;
+            SearchRequest.Fuzziness = fuzzyLevel;
             return this;
         }
 
-        public virtual IRequestBuilder FromQuery(IGetDocumentsByIdsQuery query)
+        public IndexSearchRequestBuilder WithPaging(int skip, int take)
         {
-            if (!query.ObjectIds.IsNullOrEmpty())
-            {
-                AddFiltersToSearchRequest(new IFilter[] { new IdsFilter { Values = query.ObjectIds } });
-                SearchRequest.Take = query.ObjectIds.Count();
-            }
-
-            SearchRequest.IncludeFields = query.IncludeFields.ToList();
-
+            SearchRequest.Skip = skip;
+            SearchRequest.Take = take;
             return this;
         }
 
-        public virtual SearchRequest Build()
+        public IndexSearchRequestBuilder WithSearchPhrase(string searchPhrase)
         {
-            //Apply multi-select facet search policy by default
-
-            foreach (var aggr in SearchRequest.Aggregations)
-            {
-                var aggregationFilterFieldName = (aggr.Filter as INamedFilter)?.FieldName;
-
-                var clonedFilter = SearchRequest.Filter.Clone() as AndFilter;
-
-                // For multi-select facet mechanism, we should select
-                // search request filters which do not have the same
-                // names such as aggregation filter
-                clonedFilter.ChildFilters = clonedFilter
-                    .ChildFilters
-                    .Where(x =>
-                    {
-                        var result = true;
-                    
-                        if (x is INamedFilter namedFilter)
-                        {
-                            result = !(aggregationFilterFieldName?.StartsWith(namedFilter.FieldName) ?? false);
-                        }
-                    
-                        return result;
-                    })
-                    .ToList();
-            
-                aggr.Filter = aggr.Filter == null ? clonedFilter : aggr.Filter.And(clonedFilter);
-            }
-            return SearchRequest;
+            SearchRequest.SearchKeywords = searchPhrase;
+            return this;
         }
 
-        public IRequestBuilder AddTerms(IEnumerable<string> terms)
+        public IndexSearchRequestBuilder WithIncludeFields(params string[] includeFields)
+        {
+            if (SearchRequest.IncludeFields == null)
+            {
+                SearchRequest.IncludeFields = new List<string>() { };
+            }
+            if (!includeFields.IsNullOrEmpty())
+            {
+                SearchRequest.IncludeFields.AddRange(includeFields);
+            }
+            return this;
+        }
+
+        public IndexSearchRequestBuilder AddObjectIds(IEnumerable<string> ids)
+        {
+            if (!ids.IsNullOrEmpty())
+            {
+                AddFiltersToSearchRequest(new IFilter[] { new IdsFilter { Values = ids.ToArray() } });
+                SearchRequest.Take = ids.Count();
+            }
+            return this;
+        }
+
+
+
+
+        public IndexSearchRequestBuilder AddTerms(IEnumerable<string> terms)
         {
             if (terms != null)
             {
@@ -132,19 +103,19 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Index
             return this;
         }
 
-        private void AddFiltersToSearchRequest(IFilter[] filters)
+        public IndexSearchRequestBuilder ParseFilters(ISearchPhraseParser phraseParser, string filterPhrase)
         {
-            ((AndFilter)SearchRequest.Filter).ChildFilters.AddRange(filters);
-        }
-
-        private void ParseFilters(string filterPhrase)
-        {
-            if (filterPhrase == null)
+            if (phraseParser == null)
             {
-                return;
+                throw new ArgumentNullException(nameof(phraseParser));
             }
 
-            var parseResult = _phraseParser.Parse(filterPhrase);
+            if (filterPhrase == null)
+            {
+                return this;
+            }
+
+            var parseResult = phraseParser.Parse(filterPhrase);
 
             var filters = new List<IFilter>();
 
@@ -192,30 +163,26 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Index
             }
 
             AddFiltersToSearchRequest(filters.ToArray());
+
+            return this;
         }
 
-        public IRequestBuilder ParseFacets(string facetPhrase, string storeId = null, string currency = null)
+        public IndexSearchRequestBuilder ParseFacets(ISearchPhraseParser phraseParser, string facetPhrase)
         {
-            if (string.IsNullOrWhiteSpace(facetPhrase))
+            if (phraseParser == null)
             {
-                if (!string.IsNullOrEmpty(storeId) && !string.IsNullOrEmpty(currency))
-                {
-                    // TODO: Add izolation from store
-                    // Maybe we need to implement ProductSearchRequestBuilder.BuildRequestAsync to fill FilterContainer correctly?
-                    SearchRequest.Aggregations = _aggregationConverter.GetAggregationRequestsAsync(new ProductIndexedSearchCriteria
-                    {
-                        StoreId = storeId,
-                        Currency = currency,
-                    }, new FiltersContainer()).GetAwaiter().GetResult();
-                }
-            
+                throw new ArgumentNullException(nameof(phraseParser));
+            }
+
+            if (string.IsNullOrEmpty(facetPhrase))
+            {
                 return this;
             }
-            
+
             //TODO: Support aliases for Facet expressions e.g price.usd[TO 200) as price_below_200
             //TODO: Need to create a new  Antlr file with g4-lexer rules and generate parser especially for facets expression that will return proper AggregationRequests objects
-            var parseResult = _phraseParser.Parse(facetPhrase);
-            
+            var parseResult = phraseParser.Parse(facetPhrase);
+
             //Term facets
             if (!string.IsNullOrEmpty(parseResult.Keyword))
             {
@@ -226,12 +193,12 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Index
                     Values = new List<string>()
                 }));
             }
-            
+
             SearchRequest.Aggregations = parseResult.Filters
                 .Select<IFilter, AggregationRequest>(filter =>
                 {
                     FilterSyntaxMapper.MapFilterAdditionalSyntax(filter);
-            
+
                     return filter switch
                     {
                         RangeFilter rangeFilter => new RangeAggregationRequest
@@ -258,11 +225,11 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Index
                 })
                 .Where(x => x != null)
                 .ToList();
-            
+
             return this;
         }
 
-        protected virtual void AddSorting(string sort)
+        public IndexSearchRequestBuilder AddSorting(string sort)
         {
             //TODO: How to sort by scoring relevance???
             //TODO: Alias replacement for sort fields as well as for filter and facet expressions
@@ -297,6 +264,48 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Index
             {
                 SearchRequest.Sorting = sortFields;
             }
+
+            return this;
         }
+
+        public virtual SearchRequest Build()
+        {
+            //Apply multi-select facet search policy by default
+
+            foreach (var aggr in SearchRequest.Aggregations)
+            {
+                var aggregationFilterFieldName = (aggr.Filter as INamedFilter)?.FieldName;
+
+                var clonedFilter = SearchRequest.Filter.Clone() as AndFilter;
+
+                // For multi-select facet mechanism, we should select
+                // search request filters which do not have the same
+                // names such as aggregation filter
+                clonedFilter.ChildFilters = clonedFilter
+                    .ChildFilters
+                    .Where(x =>
+                    {
+                        var result = true;
+
+                        if (x is INamedFilter namedFilter)
+                        {
+                            result = !(aggregationFilterFieldName?.StartsWith(namedFilter.FieldName) ?? false);
+                        }
+
+                        return result;
+                    })
+                    .ToList();
+
+                aggr.Filter = aggr.Filter == null ? clonedFilter : aggr.Filter.And(clonedFilter);
+            }
+            return SearchRequest;
+        }
+
+
+        private void AddFiltersToSearchRequest(IFilter[] filters)
+        {
+            ((AndFilter)SearchRequest.Filter).ChildFilters.AddRange(filters);
+        }
+
     }
 }

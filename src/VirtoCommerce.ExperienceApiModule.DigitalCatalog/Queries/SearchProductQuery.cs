@@ -1,8 +1,6 @@
-using VirtoCommerce.ExperienceApiModule.Core.Index;
-
 namespace VirtoCommerce.XDigitalCatalog.Queries
 {
-    public class SearchProductQuery : CatalogQueryBase<SearchProductResponse>, ISearchDocumentsQuery
+    public class SearchProductQuery : CatalogQueryBase<SearchProductResponse>
     {
         public string Query { get; set; }
         public bool Fuzzy { get; set; }

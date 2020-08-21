@@ -87,7 +87,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             schema.Query.AddField(productsConnectionBuilder.FieldType);
 
-            var categoriesConnectionBuilder = GraphTypeExtenstionHelper.CreateConnection<CategoryType, EdgeType<CategoryType>, CategoriesConnectonType<CategoryType>, object>()
+            var categoriesConnectionBuilder = GraphTypeExtenstionHelper.CreateConnection<CategoryType, object>()
                 .Name("categories")
                 .Argument<NonNullGraphType<StringGraphType>>("storeId", "The store id where category are searched")
                 .Argument<StringGraphType>("cultureName", "The language for which all localized category data will be returned")
@@ -128,7 +128,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
         {
             var first = context.First;
             var skip = Convert.ToInt32(context.After ?? 0.ToString());
-            var includeFields = context.GetAllNodesPaths().Select(x => x.Replace("items.", "")).ToArray();
+            var includeFields = context.GetAllNodesPaths().Select(x => x.Replace("items.", "")).Concat(new[] {"__object.id" }).ToArray();
 
             //TODO: Need to be able get entire query from context and read all arguments to the query properties
             var query = context.GetCatalogQuery<SearchProductQuery>();
@@ -206,7 +206,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             var response = await mediator.Send(query);
 
-            return new CategoriesConnection<ExpCategory>()
+            return new Connection<ExpCategory>()
             {
                 Edges = response.Results
                     .Select((x, index) =>
@@ -223,8 +223,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                     StartCursor = skip.ToString(),
                     EndCursor = Math.Min(response.TotalCount, (int)(skip + first)).ToString()
                 },
-                TotalCount = response.TotalCount,
-                Facets = response.Facets
+                TotalCount = response.TotalCount
             };
         }
     }

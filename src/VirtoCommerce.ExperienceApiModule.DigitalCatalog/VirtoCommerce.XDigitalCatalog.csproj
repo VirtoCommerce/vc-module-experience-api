@@ -7,10 +7,17 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Compile Remove="Interfaces\**" />
+      <EmbeddedResource Remove="Interfaces\**" />
+      <None Remove="Interfaces\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="PipelineNet" Version="0.9.0" />
         <PackageReference Include="AutoMapper" Version="9.0.0" />
+        <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="7.0.0" />
         <PackageReference Include="MediatR" Version="8.0.1" />
         <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="8.0.0" />
-        <PackageReference Include="NEST" Version="7.6.1" />
         <PackageReference Include="Serialize.Linq" Version="1.8.1" />
         <PackageReference Include="VirtoCommerce.CoreModule.Core" Version="3.2.0" />
         <PackageReference Include="VirtoCommerce.InventoryModule.Core" Version="3.3.0" />
@@ -19,16 +26,12 @@
         <PackageReference Include="VirtoCommerce.MarketingModule.Core" Version="3.4.0" />
         <PackageReference Include="VirtoCommerce.PricingModule.Core" Version="3.2.0" />
         <PackageReference Include="VirtoCommerce.Platform.Core" Version="3.11.0" />
+        <PackageReference Include="VirtoCommerce.StoreModule.Core" Version="3.1.0" />
         <PackageReference Include="VirtoCommerce.SearchModule.Core" Version="3.2.0" />
         <PackageReference Include="VirtoCommerce.Tools" Version="3.0.0-rc.5" />
     </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\VirtoCommerce.ExperienceApiModule.Core\VirtoCommerce.ExperienceApiModule.Core.csproj" />
-        <ProjectReference Include="..\XPurchase\VirtoCommerce.XPurchase\VirtoCommerce.XPurchase.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Interfaces\" />
     </ItemGroup>
 </Project>

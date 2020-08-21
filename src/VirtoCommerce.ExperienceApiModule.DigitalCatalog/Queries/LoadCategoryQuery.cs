@@ -5,7 +5,7 @@ using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 
 namespace VirtoCommerce.XDigitalCatalog.Queries
 {
-    public class LoadCategoryQuery : IQuery<LoadCategoryResponse>, IGetDocumentsByIdsQuery
+    public class LoadCategoryQuery : IQuery<LoadCategoryResponse>
     {
         public IEnumerable<string> IncludeFields { get; set; } = Array.Empty<string>();
         public string[] ObjectIds { get; set; }

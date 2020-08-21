@@ -1,4 +1,6 @@
-namespace VirtoCommerce.ExperienceApiModule.Core.Index
+using VirtoCommerce.ExperienceApiModule.Core.Index;
+
+namespace VirtoCommerce.XDigitalCatalog.Queries
 {
     public interface ICatalogQuery : IHasIncludeFields
     {

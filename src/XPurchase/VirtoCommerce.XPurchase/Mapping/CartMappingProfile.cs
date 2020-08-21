@@ -21,8 +21,10 @@ namespace VirtoCommerce.XPurchase.Mapping
             CreateMap<CartModule.Core.Model.Address, TaxModule.Core.Model.Address>();
             CreateMap<CartProduct, LineItem>().ConvertUsing((cartProduct, lineItem, context) =>
             {
-                lineItem = AbstractTypeFactory<LineItem>.TryCreateInstance();
-
+                if (lineItem == null)
+                {
+                    lineItem = AbstractTypeFactory<LineItem>.TryCreateInstance();
+                }
                 //TODO:
                 //lineItem.ValidationType
                 //lineItem.IsReadOnly = newCartItem.CartProduct.Product.IsReadOnly;
@@ -150,8 +152,10 @@ namespace VirtoCommerce.XPurchase.Mapping
 
             CreateMap<LineItem, ProductPromoEntry>().ConvertUsing((lineItem, productPromoEntry, context) =>
             {
-                productPromoEntry = AbstractTypeFactory<ProductPromoEntry>.TryCreateInstance();
-
+                if (productPromoEntry == null)
+                {
+                    productPromoEntry = AbstractTypeFactory<ProductPromoEntry>.TryCreateInstance();
+                }
                 // TODO:
                 // productPromoEntry.InStockQuantity = lineItem.InStockQuantity;
                 // productPromoEntry.Outline = lineItem.Product.Outline;
@@ -170,7 +174,10 @@ namespace VirtoCommerce.XPurchase.Mapping
 
             CreateMap<CartAggregate, PromotionEvaluationContext>().ConvertUsing((cartAggr, promoEvalcontext, context) =>
             {
-                promoEvalcontext = AbstractTypeFactory<PromotionEvaluationContext>.TryCreateInstance();
+                if (promoEvalcontext == null)
+                {
+                    promoEvalcontext = AbstractTypeFactory<PromotionEvaluationContext>.TryCreateInstance();
+                }
 
                 promoEvalcontext.CartPromoEntries = cartAggr.Cart.Items
                     ?.Select(lineItem => context.Mapper.Map<ProductPromoEntry>(lineItem)).ToList()
@@ -232,7 +239,10 @@ namespace VirtoCommerce.XPurchase.Mapping
             //TODO: Need to think about extensibility for converters
             CreateMap<CartAggregate, TaxEvaluationContext>().ConvertUsing((cartAggr, taxEvalcontext, context) =>
             {
-                taxEvalcontext = AbstractTypeFactory<TaxEvaluationContext>.TryCreateInstance();
+                if (taxEvalcontext == null)
+                {
+                    taxEvalcontext = AbstractTypeFactory<TaxEvaluationContext>.TryCreateInstance();
+                }
                 taxEvalcontext.StoreId = cartAggr.Cart.StoreId;
                 taxEvalcontext.Code = cartAggr.Cart.Name;
                 taxEvalcontext.Type = "Cart";

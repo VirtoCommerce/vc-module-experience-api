@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using VirtoCommerce.XDigitalCatalog.Facets;
+using System.Collections.Generic;
 
 namespace VirtoCommerce.XDigitalCatalog.Queries
 {
@@ -7,6 +6,5 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
     {
         public int TotalCount { get; set; }
         public IList<ExpCategory> Results { get; set; }
-        public IList<FacetResult> Facets { get; set; }
     }
 }

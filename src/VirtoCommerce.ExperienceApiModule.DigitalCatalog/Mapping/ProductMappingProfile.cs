@@ -19,6 +19,9 @@ namespace VirtoCommerce.XDigitalCatalog.Mapping
     {
         public ProductMappingProfile()
         {
+            CreateMap<LoadProductsQuery, SearchProductQuery>();
+            CreateMap<LoadCategoryQuery, SearchCategoryQuery>();
+
             CreateMap<SearchProductAssociationsQuery, ProductAssociationSearchCriteria>();
             CreateMap<SearchDocument, ExpProduct>().ConvertUsing((src, dest, context) =>
             {

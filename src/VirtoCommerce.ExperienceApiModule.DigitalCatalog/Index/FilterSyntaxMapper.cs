@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using VirtoCommerce.SearchModule.Core.Model;
 
-namespace VirtoCommerce.ExperienceApiModule.Core.Index
+namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
 {
     public static class FilterSyntaxMapper
     {
