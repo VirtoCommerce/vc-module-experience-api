@@ -1,21 +1,21 @@
-using MediatR;
+using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 
 namespace VirtoCommerce.XPurchase.Commands
 {
-    public class ValidateCouponCommand : IRequest<bool>
+    public class ValidateCouponCommand : ICommand<bool>
     {
         public ValidateCouponCommand()
         {
         }
 
-        public ValidateCouponCommand(string storeId, string cartType, string cartName, string userId, string currency, string lang, string coupon)
+        public ValidateCouponCommand(string storeId, string cartType, string cartName, string userId, string currencyCode, string cultureName, string coupon)
         {
             StoreId = storeId;
             CartType = cartType;
             CartName = cartName;
             UserId = userId;
-            Currency = currency;
-            Language = lang;
+            CurrencyCode = currencyCode;
+            CultureName = cultureName;
             Coupon = coupon;
         }
 
@@ -23,8 +23,8 @@ namespace VirtoCommerce.XPurchase.Commands
         public string CartType { get; set; }
         public string CartName { get; set; }
         public string UserId { get; set; }
-        public string Currency { get; set; }
-        public string Language { get; set; }
+        public string CurrencyCode { get; set; }
+        public string CultureName { get; set; }
         public string Coupon { get; set; }
     }
 }
