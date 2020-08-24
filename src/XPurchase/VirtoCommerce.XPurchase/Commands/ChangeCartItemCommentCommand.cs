@@ -6,8 +6,8 @@ namespace VirtoCommerce.XPurchase.Commands
         {
         }
 
-        public ChangeCartItemCommentCommand(string storeId, string cartType, string cartName, string userId, string currency, string lang, string lineItemId, string comment)
-            : base(storeId, cartType, cartName, userId, currency, lang)
+        public ChangeCartItemCommentCommand(string storeId, string cartType, string cartName, string userId, string currencyCode, string cultureName, string lineItemId, string comment)
+            : base(storeId, cartType, cartName, userId, currencyCode, cultureName)
         {
             LineItemId = lineItemId;
             Comment = comment;

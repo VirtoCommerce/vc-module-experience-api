@@ -13,7 +13,7 @@ namespace VirtoCommerce.XPurchase.Commands
         public override async Task<CartAggregate> Handle(MergeCartCommand request, CancellationToken cancellationToken)
         {
             var cartAggr = await GetOrCreateCartFromCommandAsync(request);
-            var secondCart = await GetCartById(request.SecondCartId, request.Language);
+            var secondCart = await GetCartById(request.SecondCartId, request.CultureName);
             if (secondCart != null)
             {
                 cartAggr = await cartAggr.MergeWithCartAsync(secondCart);

@@ -1,4 +1,4 @@
-﻿namespace VirtoCommerce.XPurchase.Commands
+namespace VirtoCommerce.XPurchase.Commands
 {
     public class ChangeCartItemPriceCommand : CartCommand
     {
@@ -6,8 +6,8 @@
         {
         }
 
-        public ChangeCartItemPriceCommand(string storeId, string cartType, string cartName, string userId, string currency, string lang, string productId, decimal price)
-            : base(storeId, cartType, cartName, userId, currency, lang)
+        public ChangeCartItemPriceCommand(string storeId, string cartType, string cartName, string userId, string currencyCode, string cultureName, string productId, decimal price)
+            : base(storeId, cartType, cartName, userId, currencyCode, cultureName)
         {
             ProductId = productId;
             Price = price;

@@ -9,8 +9,8 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field<NonNullGraphType<StringGraphType>>("storeId");
             Field<StringGraphType>("cartName");
             Field<NonNullGraphType<StringGraphType>>("userId");
-            Field<StringGraphType>("currency");
-            Field<StringGraphType>("language");
+            Field<StringGraphType>("currencyCode");
+            Field<StringGraphType>("cultureName");
             Field<StringGraphType>("cartType");
         }
     }

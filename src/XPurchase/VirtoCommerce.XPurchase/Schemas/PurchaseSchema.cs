@@ -7,7 +7,6 @@ using GraphQL.Resolvers;
 using GraphQL.Types;
 using GraphQL.Types.Relay.DataObjects;
 using MediatR;
-using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using VirtoCommerce.CoreModule.Core.Currency;
@@ -79,7 +78,6 @@ namespace VirtoCommerce.XPurchase.Schemas
             };
             schema.Query.AddField(cartField);
 
-
             var orderConnectionBuilder = GraphTypeExtenstionHelper.CreateConnection<CartType, object>()
                 .Name("carts")
                 .Argument<StringGraphType>("storeId", "")
@@ -90,14 +88,10 @@ namespace VirtoCommerce.XPurchase.Schemas
                 .Argument<StringGraphType>("sort", "The sort expression")
                 .Unidirectional()
                 .PageSize(20);
-                
+
             orderConnectionBuilder.ResolveAsync(async context => await ResolveConnectionAsync(_mediator, context));
 
             schema.Query.AddField(orderConnectionBuilder.FieldType);
-
-
-
-
 
             //Mutations
             /// <example>
@@ -109,8 +103,8 @@ namespace VirtoCommerce.XPurchase.Schemas
             ///          "storeId": "Electronics",
             ///          "cartName": "default",
             ///          "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
-            ///          "language": "en-US",
-            ///          "currency": "USD",
+            ///          "cultureName": "en-US",
+            ///          "currencyCode": "USD",
             ///          "cartType": "cart",
             ///          "productId": "9cbd8f316e254a679ba34a900fccb076",
             ///          "quantity": 1
@@ -143,8 +137,8 @@ namespace VirtoCommerce.XPurchase.Schemas
             ///          "storeId": "Electronics",
             ///          "cartName": "default",
             ///          "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
-            ///          "language": "en-US",
-            ///          "currency": "USD",
+            ///          "cultureName": "en-US",
+            ///          "currencyCode": "USD",
             ///          "cartType": "cart"
             ///      }
             ///   }
@@ -173,8 +167,8 @@ namespace VirtoCommerce.XPurchase.Schemas
             ///          "storeId": "Electronics",
             ///          "cartName": "default",
             ///          "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
-            ///          "language": "en-US",
-            ///          "currency": "USD",
+            ///          "cultureName": "en-US",
+            ///          "currencyCode": "USD",
             ///          "cartType": "cart",
             ///          "comment": "Hi, Virto!"
             ///      }
@@ -205,8 +199,8 @@ namespace VirtoCommerce.XPurchase.Schemas
             ///          "storeId": "Electronics",
             ///          "cartName": "default",
             ///          "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
-            ///          "language": "en-US",
-            ///          "currency": "USD",
+            ///          "cultureName": "en-US",
+            ///          "currencyCode": "USD",
             ///          "cartType": "cart",
             ///          "productId": "9cbd8f316e254a679ba34a900fccb076",
             ///          "price": 777
@@ -237,8 +231,8 @@ namespace VirtoCommerce.XPurchase.Schemas
             ///          "storeId": "Electronics",
             ///          "cartName": "default",
             ///          "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
-            ///          "language": "en-US",
-            ///          "currency": "USD",
+            ///          "cultureName": "en-US",
+            ///          "currencyCode": "USD",
             ///          "cartType": "cart",
             ///          "lineItemId": "9cbd8f316e254a679ba34a900fccb076",
             ///          "quantity": 777
@@ -269,8 +263,8 @@ namespace VirtoCommerce.XPurchase.Schemas
             ///          "storeId": "Electronics",
             ///          "cartName": "default",
             ///          "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
-            ///          "language": "en-US",
-            ///          "currency": "USD",
+            ///          "cultureName": "en-US",
+            ///          "currencyCode": "USD",
             ///          "cartType": "cart",
             ///          "lineItemId": "9cbd8f316e254a679ba34a900fccb076",
             ///          "comment": "verynicecomment"
@@ -301,8 +295,8 @@ namespace VirtoCommerce.XPurchase.Schemas
             ///          "storeId": "Electronics",
             ///          "cartName": "default",
             ///          "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
-            ///          "language": "en-US",
-            ///          "currency": "USD",
+            ///          "cultureName": "en-US",
+            ///          "currencyCode": "USD",
             ///          "cartType": "cart",
             ///          "lineItemId": "9cbd8f316e254a679ba34a900fccb076"
             ///      }
@@ -332,8 +326,8 @@ namespace VirtoCommerce.XPurchase.Schemas
             ///          "storeId": "Electronics",
             ///          "cartName": "default",
             ///          "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
-            ///          "language": "en-US",
-            ///          "currency": "USD",
+            ///          "cultureName": "en-US",
+            ///          "currencyCode": "USD",
             ///          "cartType": "cart",
             ///          "couponCode": "verynicecouponcode"
             ///      }
@@ -363,8 +357,8 @@ namespace VirtoCommerce.XPurchase.Schemas
             ///          "storeId": "Electronics",
             ///          "cartName": "default",
             ///          "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
-            ///          "language": "en-US",
-            ///          "currency": "USD",
+            ///          "cultureName": "en-US",
+            ///          "currencyCode": "USD",
             ///          "cartType": "cart",
             ///          "couponCode": "verynicecouponcode"
             ///      }
@@ -394,8 +388,8 @@ namespace VirtoCommerce.XPurchase.Schemas
             ///          "storeId": "Electronics",
             ///          "cartName": "default",
             ///          "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
-            ///          "language": "en-US",
-            ///          "currency": "USD",
+            ///          "cultureName": "en-US",
+            ///          "currencyCode": "USD",
             ///          "cartType": "cart",
             ///          "shipmentId": "7777-7777-7777-7777"
             ///      }
@@ -426,8 +420,8 @@ namespace VirtoCommerce.XPurchase.Schemas
             ///          "storeId": "Electronics",
             ///          "cartName": "default",
             ///          "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
-            ///          "language": "en-US",
-            ///          "currency": "USD",
+            ///          "cultureName": "en-US",
+            ///          "currencyCode": "USD",
             ///          "cartType": "cart",
             ///          "shipment": { }
             ///      }
@@ -458,8 +452,8 @@ namespace VirtoCommerce.XPurchase.Schemas
             ///          "storeId": "Electronics",
             ///          "cartName": "default",
             ///          "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
-            ///          "language": "en-US",
-            ///          "currency": "USD",
+            ///          "cultureName": "en-US",
+            ///          "currencyCode": "USD",
             ///          "cartType": "cart",
             ///          "payment": { }
             ///      }
@@ -489,8 +483,8 @@ namespace VirtoCommerce.XPurchase.Schemas
             ///          "storeId": "Electronics",
             ///          "cartName": "default",
             ///          "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
-            ///          "language": "en-US",
-            ///          "currency": "USD",
+            ///          "cultureName": "en-US",
+            ///          "currencyCode": "USD",
             ///          "cartType": "cart",
             ///          "coupon": {
             ///             "code":"verynicecodeforvalidation"
@@ -516,8 +510,8 @@ namespace VirtoCommerce.XPurchase.Schemas
             ///          "storeId": "Electronics",
             ///          "cartName": "default",
             ///          "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
-            ///          "language": "en-US",
-            ///          "currency": "USD",
+            ///          "cultureName": "en-US",
+            ///          "currencyCode": "USD",
             ///          "cartType": "cart",
             ///          "secondCartId": "7777-7777-7777-7777"
             ///      }
