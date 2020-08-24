@@ -407,9 +407,9 @@ mutation ($command:InputRemoveShipmentType!)
         name
         availableShippingMethods
         {
-          code
-          optionName
-          optionDescription
+            code
+            optionName
+            optionDescription
         }
     }
 }
@@ -438,9 +438,9 @@ mutation ($command:InputAddOrUpdateCartShipmentType!)
         name
         availableShippingMethods
         {
-          code
-          optionName
-          optionDescription
+            code
+            optionName
+            optionDescription
         }
     }
 }
@@ -458,7 +458,7 @@ mutation ($command:InputAddOrUpdateCartShipmentType!)
         "fulfillmentCenterId": "7777-7777-7777-7777",
         "height": 7,
         "shipmentMethodCode": "code",
-        "currencyCode": "USD",
+        "currency": "USD",
         "price": 98
     },
 }
@@ -478,9 +478,9 @@ mutation ($command:InputAddOrUpdateCartPaymentType!)
         name
         availablePaymentMethods
         {
-          code
-          name
-          paymentMethodType
+            code
+            name
+            paymentMethodType
         }
     }
 }
@@ -497,7 +497,7 @@ mutation ($command:InputAddOrUpdateCartPaymentType!)
     "payment": {
         "outerId": "7777-7777-7777-7777",
         "paymentGatewayCode": "code",
-        "currencyCode": "USD",
+        "currency": "USD",
         "price": 98,
         "amount": 55
     },
@@ -585,9 +585,9 @@ mutation ($command:InputClearShipmentsType!)
         name
         availableShippingMethods
         {
-          code
-          optionName
-          optionDescription
+            code
+            optionName
+            optionDescription
         }
     }
 }
@@ -616,9 +616,9 @@ mutation ($command:InputClearPaymentsType!)
         name
         availablePaymentMethods
         {
-          code
-          name
-          paymentMethodType
+            code
+            name
+            paymentMethodType
         }
     }
 }
