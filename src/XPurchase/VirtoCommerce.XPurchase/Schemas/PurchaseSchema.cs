@@ -87,6 +87,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                 .Argument<StringGraphType>("currencyCode", "")
                 .Argument<StringGraphType>("cultureName", "")
                 .Argument<StringGraphType>("cartType", "")
+                .Argument<StringGraphType>("filter", "This parameter applies a filter to the query results")
                 .Argument<StringGraphType>("sort", "The sort expression")
                 .Unidirectional()
                 .PageSize(20);
@@ -619,10 +620,13 @@ namespace VirtoCommerce.XPurchase.Schemas
             query.Skip = skip;
             query.Take = first ?? context.PageSize ?? 10;
             query.Sort = context.GetArgument<string>("sort");
+            query.Filter = context.GetArgument<string>("filter");
 
             context.UserContext.Add(nameof(Currency.CultureName).ToCamelCase(), query.CultureName);
 
-            await CheckAuthAsync(context, query);
+            //TODO: this authorization checks prevent of returns cart of other users very often case for b2b scenarios
+            //Need to find out other slution how to do such authorization checks
+            //await CheckAuthAsync(context, query);
 
             var response = await mediator.Send(query);
             foreach (var cartAggregate in response.Results)

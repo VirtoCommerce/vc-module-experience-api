@@ -1,10 +1,9 @@
 using GraphQL;
-using GraphQL.Execution;
 using GraphQL.Types;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.XPurchase.Schemas;
+using VirtoCommerce.XPurchase.Queries;
 
 namespace VirtoCommerce.XPurchase.Extensions
 {

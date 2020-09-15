@@ -50,7 +50,10 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                 Resolver = new AsyncFieldResolver<object>(async context =>
                 {
                     var orderAggregate = await _mediator.Send(new GetOrderQuery(context.GetArgument<string>("id"), context.GetArgument<string>("number")));
-                    await CheckAuthAsync(context, orderAggregate.Order);
+                    //TODO: this authorization checks prevent of returns orders of other users very often case for b2b scenarios
+                    //Need to find out other solution how to do such authorization checks
+                    //await CheckAuthAsync(context, orderAggregate.Order);
+
                     //store order aggregate in the user context for future usage in the graph types resolvers
                     context.SetExpandedObjectGraph(orderAggregate);
 
@@ -117,7 +120,9 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 
             context.UserContext.Add(nameof(Currency.CultureName).ToCamelCase(), request.CultureName);
 
-            await CheckAuthAsync(context, request);
+            //TODO: this authorization checks prevent of returns orders of other users very often case for b2b scenarios
+            //Need to find out other solution how to do such authorization checks
+            //await CheckAuthAsync(context, request);
 
             var response = await mediator.Send(request);
 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using VirtoCommerce.ExperienceApiModule.Core.Index;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 
-namespace VirtoCommerce.XPurchase.Schemas
+namespace VirtoCommerce.XPurchase.Queries
 {
     public interface ICartQuery : IHasIncludeFields
     {

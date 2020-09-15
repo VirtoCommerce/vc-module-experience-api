@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using VirtoCommerce.CartModule.Core.Model;
+using VirtoCommerce.CartModule.Core.Model.Search;
 using VirtoCommerce.CartModule.Core.Services;
 using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.CoreModule.Core.Currency;
@@ -86,19 +87,12 @@ namespace VirtoCommerce.XPurchase
             return null;
         }
 
-        public async Task<SearchCartResponse> SearchCartAsync(string storeId, string userId, string cultureName, string currencyCode, string type, string sort, int skip, int take)
+        public async Task<SearchCartResponse> SearchCartAsync(ShoppingCartSearchCriteria criteria)
         {
-            var criteria = new CartModule.Core.Model.Search.ShoppingCartSearchCriteria
+            if (criteria == null)
             {
-                StoreId = storeId,
-                CustomerId = userId,
-                Currency = currencyCode,
-                Type = type,
-                Skip = skip,
-                Take = take,
-                Sort = sort,
-                LanguageCode = cultureName,
-            };
+                throw new ArgumentNullException(nameof(criteria));
+            }
 
             var searchResult = await _shoppingCartSearchService.SearchCartAsync(criteria);
             var cartAggregates = await GetCartsForShoppingCartsAsync(searchResult.Results);
