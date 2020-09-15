@@ -7,7 +7,7 @@
     <title></title>
     <description></description>
     <dependencies>
-        <dependency id="VirtoCommerce.ExperienceApi" version="3.0.0" />
+        <dependency id="VirtoCommerce.ExperienceApi" version="0.3.0" />
     </dependencies>
     <groups>
         <group>commerce</group>

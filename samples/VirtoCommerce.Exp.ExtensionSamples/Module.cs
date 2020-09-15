@@ -4,11 +4,13 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using PetsStoreClient;
 using PetsStoreClient.Nswag;
+using VirtoCommerce.Exp.ExtensionSamples.UseCases.TypeExtension;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Modularity;
 using VirtoCommerce.XDigitalCatalog;
 using VirtoCommerce.XDigitalCatalog.Schemas;
+using VirtoCommerce.XPurchase.Schemas;
 
 namespace VirtoCommerce.Exp.ExtensionSamples
 {
@@ -23,6 +25,8 @@ namespace VirtoCommerce.Exp.ExtensionSamples
             #region Extension scenarios
 
             #region Type override: add a new properties
+            services.AddSchemaType<CartType2>().OverrideType<CartType, CartType2>();
+
             //Register GraphQL ProductType2 type and override exists ProductType
             services.AddSchemaType<ProductType2>().OverrideType<ProductType, ProductType2>();
             //Override domain type ExpProduct -> ExpProduct2
