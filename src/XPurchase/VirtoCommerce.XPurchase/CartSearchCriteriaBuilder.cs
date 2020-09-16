@@ -11,7 +11,7 @@ namespace VirtoCommerce.XPurchase
     {
         private readonly ISearchPhraseParser _phraseParser;
         private readonly IMapper _mapper;
-        private ShoppingCartSearchCriteria searchCriteria { get; set; }
+        private readonly ShoppingCartSearchCriteria _searchCriteria;
 
         public CartSearchCriteriaBuilder(ISearchPhraseParser phraseParser, IMapper mapper) : this()
         {
@@ -21,12 +21,12 @@ namespace VirtoCommerce.XPurchase
 
         public CartSearchCriteriaBuilder()
         {
-            searchCriteria = AbstractTypeFactory<ShoppingCartSearchCriteria>.TryCreateInstance();
+            _searchCriteria = AbstractTypeFactory<ShoppingCartSearchCriteria>.TryCreateInstance();
         }
 
         public virtual ShoppingCartSearchCriteria Build()
         {
-            return searchCriteria;
+            return _searchCriteria.Clone() as ShoppingCartSearchCriteria;
         }
 
         public CartSearchCriteriaBuilder ParseFilters(string filterPhrase)
@@ -41,58 +41,58 @@ namespace VirtoCommerce.XPurchase
             }
 
             var parseResult = _phraseParser.Parse(filterPhrase);
-            _mapper.Map(parseResult.Filters, searchCriteria);
+            _mapper.Map(parseResult.Filters, _searchCriteria);
 
             return this;
         }
 
         public CartSearchCriteriaBuilder WithLanguage(string language)
         {
-            searchCriteria.LanguageCode = language;
+            _searchCriteria.LanguageCode = language ?? _searchCriteria.LanguageCode;
             return this;
 
         }
         public CartSearchCriteriaBuilder WithStore(string storeId)
         {
-            searchCriteria.StoreId = storeId;
+            _searchCriteria.StoreId = storeId ?? _searchCriteria.StoreId;
             return this;
         }
 
         public CartSearchCriteriaBuilder WithType(string type)
         {
-            searchCriteria.Type = type;
+            _searchCriteria.Type = type ?? _searchCriteria.Type;
             return this;
         }
 
         public CartSearchCriteriaBuilder WithCurrency(string currency)
         {
-            searchCriteria.Currency = currency;
+            _searchCriteria.Currency = currency ?? _searchCriteria.Currency;
             return this;
         }
 
         public CartSearchCriteriaBuilder WithCustomerId(string customerId)
         {
-            searchCriteria.CustomerId = customerId;
+            _searchCriteria.CustomerId = customerId ?? _searchCriteria.CustomerId;
             return this;
         }
 
         public CartSearchCriteriaBuilder WithPaging(int skip, int take)
         {
-            searchCriteria.Skip = skip;
-            searchCriteria.Take = take;
+            _searchCriteria.Skip = skip;
+            _searchCriteria.Take = take;
             return this;
         }
 
         public CartSearchCriteriaBuilder WithSorting(string sort)
         {
-            searchCriteria.Sort = sort;
+            _searchCriteria.Sort = sort ?? _searchCriteria.Sort;
 
             return this;
         }
 
         public CartSearchCriteriaBuilder AddResponseGroup(CustomerOrderResponseGroup responseGroup)
         {
-            searchCriteria.ResponseGroup = responseGroup.ToString();
+            _searchCriteria.ResponseGroup = responseGroup.ToString();
 
             return this;
         }

@@ -1,18 +1,56 @@
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using GraphQL.DataLoader;
+using GraphQL.Resolvers;
 using GraphQL.Types;
+using MediatR;
 using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
+using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
+using VirtoCommerce.XDigitalCatalog;
+using VirtoCommerce.XDigitalCatalog.Queries;
+using VirtoCommerce.XDigitalCatalog.Schemas;
 using VirtoCommerce.XPurchase.Extensions;
 
 namespace VirtoCommerce.XPurchase.Schemas
 {
     public class LineItemType : ObjectGraphType<LineItem>
     {
-        public LineItemType()
+        public LineItemType(IMediator mediator, IDataLoaderContextAccessor dataLoader)
         {
-            //TODO:
-            //Field<ProductType>("product", resolve: context => context.Source.Product);
+            var productField = new FieldType
+            {
+                Name = "product",
+                Type = GraphTypeExtenstionHelper.GetActualType<ProductType>(),
+                Resolver = new AsyncFieldResolver<LineItem, object>(async context =>
+                {
+                    var includeFields = context.GetAllNodesPaths().Select(x => x.Replace("items.", "")).Concat(new[] { "__object.id" }).ToArray();
+                    var loader = dataLoader.Context.GetOrAddBatchLoader<string, ExpProduct>("order_lineItems_products", async (ids) =>
+                    {
+                        //Get currencies and store only from one cart.
+                        //We intentionally ignore the case when there are ma be the carts with the different currencies and stores in the resulting set
+                        var cart = context.GetValueForSource<CartAggregate>().Cart;
+                        var request = new LoadProductsQuery
+                        {
+                            StoreId = cart.StoreId,
+                            CurrencyCode = cart.Currency,
+                            ObjectIds = ids.ToArray(),
+                            IncludeFields = includeFields.ToArray()
+                        };
+
+                        var response = await mediator.Send(request);
+
+                        return response.Products.ToDictionary(x => x.Id);
+                    });
+
+                    // IMPORTANT: In order to avoid deadlocking on the loader we use the following construct (next 2 lines):
+                    var loadHandle = loader.LoadAsync(context.Source.ProductId);
+                    return await loadHandle;
+                })
+            };
+            AddField(productField);
 
             //Field<MoneyType>("paymentPlan", resolve: context => context.Source.PaymentPlan);
             Field<IntGraphType>("inStockQuantity", resolve: context => context.GetCart().CartProducts[context.Source.ProductId]?.AvailableQuantity ?? 0);

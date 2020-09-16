@@ -20,6 +20,10 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile
         }
         public async Task<Member> ResolveMemberByIdAsync(string userId)
         {
+            if(string.IsNullOrEmpty(userId))
+            {
+                throw new ArgumentNullException(nameof(userId));
+            }
             // Try to find contact
             var member = await _memberService.GetByIdAsync(userId);
 

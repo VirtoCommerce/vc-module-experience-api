@@ -2,15 +2,16 @@ using System;
 using AutoMapper;
 using VirtoCommerce.OrdersModule.Core.Model;
 using VirtoCommerce.OrdersModule.Core.Model.Search;
+using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.SearchModule.Core.Services;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder
 {
     public class CustomerOrderSearchCriteriaBuilder
     {
-        private ISearchPhraseParser _phraseParser;
+        private readonly ISearchPhraseParser _phraseParser;
         private readonly IMapper _mapper;
-        private CustomerOrderSearchCriteria searchCriteria { get; set; }
+        private readonly CustomerOrderSearchCriteria _searchCriteria;
 
         public CustomerOrderSearchCriteriaBuilder(ISearchPhraseParser phraseParser, IMapper mapper) : this()
         {
@@ -20,12 +21,12 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder
 
         public CustomerOrderSearchCriteriaBuilder()
         {
-            searchCriteria = new CustomerOrderSearchCriteria();
+            _searchCriteria = AbstractTypeFactory<CustomerOrderSearchCriteria>.TryCreateInstance();
         }
 
         public virtual CustomerOrderSearchCriteria Build()
         {
-            return searchCriteria;
+            return _searchCriteria.Clone() as CustomerOrderSearchCriteria;
         }
 
         public CustomerOrderSearchCriteriaBuilder ParseFilters(string filterPhrase)
@@ -36,38 +37,38 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder
             }
             if (_phraseParser == null)
             {
-                throw new OperationCanceledException("phrase parser must be initialized");
+                throw new OperationCanceledException("phrase parser must be set");
             }
 
             var parseResult = _phraseParser.Parse(filterPhrase);
-            _mapper.Map(parseResult.Filters, searchCriteria);
+            _mapper.Map(parseResult.Filters, _searchCriteria);
 
             return this;
         }
 
-        public CustomerOrderSearchCriteriaBuilder AddCustomerId(string customerId)
+        public CustomerOrderSearchCriteriaBuilder WithCustomerId(string customerId)
         {
-            searchCriteria.CustomerId = customerId;
+            _searchCriteria.CustomerId = customerId ?? _searchCriteria.CustomerId;
             return this;
         }
 
         public CustomerOrderSearchCriteriaBuilder WithPaging(int skip, int take)
         {
-            searchCriteria.Skip = skip;
-            searchCriteria.Take = take;
+            _searchCriteria.Skip = skip;
+            _searchCriteria.Take = take;
             return this;
         }
 
-        public CustomerOrderSearchCriteriaBuilder AddSorting(string sort)
+        public CustomerOrderSearchCriteriaBuilder WithSorting(string sort)
         {
-            searchCriteria.Sort = sort;
+            _searchCriteria.Sort = sort ?? _searchCriteria.Sort;
 
             return this;
         }
 
         public CustomerOrderSearchCriteriaBuilder AddResponseGroup(CustomerOrderResponseGroup responseGroup)
         {
-            searchCriteria.ResponseGroup = responseGroup.ToString();
+            _searchCriteria.ResponseGroup = responseGroup.ToString();
 
             return this;
         }

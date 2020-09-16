@@ -11,12 +11,12 @@ namespace VirtoCommerce.XPurchase.Extensions
     {
         public static CartAggregate GetCart(this IResolveFieldContext userContext)
         {
-            return userContext.GetValue<CartAggregate>("cartAggregate");
+            return userContext.GetValueForSource<CartAggregate>();
         }
 
         public static Currency CartCurrency(this IResolveFieldContext userContext)
         {
-            return userContext.GetValue<CartAggregate>("cartAggregate").Currency;
+            return userContext.GetValueForSource<CartAggregate>().Currency;
         }
 
         public static T GetSearchCartQuery<T>(this IResolveFieldContext context) where T : ICartQuery

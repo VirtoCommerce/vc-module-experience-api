@@ -25,24 +25,32 @@ namespace VirtoCommerce.XProfile.Middlewares
 
         public async Task Run(PromotionEvaluationContext parameter, Func<PromotionEvaluationContext, Task> next)
         {
-            await InnerSetShopperDataFromMember(parameter, parameter.CustomerId);
+            if (!string.IsNullOrEmpty(parameter.CustomerId))
+            {
+                await InnerSetShopperDataFromMember(parameter, parameter.CustomerId);
+            }
             await next(parameter);
         }
 
         public async Task Run(PriceEvaluationContext parameter, Func<PriceEvaluationContext, Task> next)
         {
-            await InnerSetShopperDataFromMember(parameter, parameter.CustomerId);
+            if (!string.IsNullOrEmpty(parameter.CustomerId))
+            {
+                await InnerSetShopperDataFromMember(parameter, parameter.CustomerId);
+            }
             await next(parameter);
         }
 
         public async Task Run(TaxEvaluationContext parameter, Func<TaxEvaluationContext, Task> next)
         {
-            var member = await _memberIdResolver.ResolveMemberByIdAsync(parameter.CustomerId);
-            if (member != null && member is Contact contact)
+            if (!string.IsNullOrEmpty(parameter.CustomerId))
             {
-                parameter.Customer = _mapper.Map<Customer>(contact);
+                var member = await _memberIdResolver.ResolveMemberByIdAsync(parameter.CustomerId);
+                if (member != null && member is Contact contact)
+                {
+                    parameter.Customer = _mapper.Map<Customer>(contact);
+                }
             }
-
             await next(parameter);
         }
 

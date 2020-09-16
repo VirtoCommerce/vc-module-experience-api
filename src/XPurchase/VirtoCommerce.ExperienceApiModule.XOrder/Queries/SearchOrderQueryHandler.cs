@@ -29,9 +29,9 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Queries
         {
             var searchCriteria = new CustomerOrderSearchCriteriaBuilder(_searchPhraseParser, _mapper)
                                         .ParseFilters(request.Filter)
-                                        .AddCustomerId(request.CustomerId)
+                                        .WithCustomerId(request.CustomerId)
                                         .WithPaging(request.Skip, request.Take)
-                                        .AddSorting(request.Sort)
+                                        .WithSorting(request.Sort)
                                         .Build();
             var searchResult = await _customerOrderSearchService.SearchCustomerOrdersAsync(searchCriteria);
             var aggregates = await _customerOrderAggregateRepository.GetAggregatesFromOrdersAsync(searchResult.Results);
