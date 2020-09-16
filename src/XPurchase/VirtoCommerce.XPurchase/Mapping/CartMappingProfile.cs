@@ -7,6 +7,7 @@ using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.CartModule.Core.Model.Search;
 using VirtoCommerce.CoreModule.Core.Outlines;
 using VirtoCommerce.CoreModule.Core.Seo;
+using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.MarketingModule.Core.Model.Promotions;
 using VirtoCommerce.PaymentModule.Core.Model;
 using VirtoCommerce.Platform.Core.Common;
@@ -314,24 +315,8 @@ namespace VirtoCommerce.XPurchase.Mapping
               {
                   foreach (var term in terms.OfType<TermFilter>())
                   {
-                      var property = criteria.GetType().GetProperty(term.FieldName.ToPascalCase());
-                      if (property.PropertyType.IsArray)
-                      {
-                          property.SetValue(criteria, term.Values);
-                      }
-                      else if (property.PropertyType == typeof(string))
-                      {
-                          property.SetValue(criteria, term.Values.FirstOrDefault());
-                      }
-                      else if (property.PropertyType == typeof(bool) && bool.TryParse(term.Values.FirstOrDefault(), out var boolValue))
-                      {
-                          property.SetValue(criteria, boolValue);
-                      }
-                      else if (property.PropertyType == typeof(DateTime?))
-                      {
-                          var dateValue = term.Values.FirstOrDefault();
-                          property.SetValue(criteria, string.IsNullOrEmpty(dateValue) ? (DateTime?)null : DateTime.Parse(dateValue));
-                      }
+                      var propertyInfo = criteria.GetType().GetProperty(term.FieldName.ToPascalCase());
+                      propertyInfo.SetValue(criteria, term.Values.FirstOrDefault().ChangeType(propertyInfo.PropertyType), null);
                   }
 
                   return criteria;

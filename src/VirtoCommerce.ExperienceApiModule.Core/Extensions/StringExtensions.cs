@@ -1,3 +1,5 @@
+using System;
+
 namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
 {
     public static class StringExtensions
@@ -26,6 +28,23 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
             }
 
             return result;
+        }
+
+        public static object ChangeType(this string value, Type conversion)
+        {
+            var t = conversion;
+
+            if (t.IsGenericType && t.GetGenericTypeDefinition().Equals(typeof(Nullable<>)))
+            {
+                if (value == null)
+                {
+                    return null;
+                }
+
+                t = Nullable.GetUnderlyingType(t);
+            }
+
+            return Convert.ChangeType(value, t);
         }
     }
 }
