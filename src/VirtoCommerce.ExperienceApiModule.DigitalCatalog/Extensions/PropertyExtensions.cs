@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using VirtoCommerce.CatalogModule.Core.Model;
+using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.Domain;
 
 namespace VirtoCommerce.XDigitalCatalog.Extensions
 {
@@ -10,11 +12,6 @@ namespace VirtoCommerce.XDigitalCatalog.Extensions
     {
         public static IList<Property> ExpandByValues(this IEnumerable<Property> properties, string cultureName)
         {
-            if (string.IsNullOrWhiteSpace(cultureName))
-            {
-                throw new ArgumentNullException($"Culture name is null");
-            }
-
             return properties.SelectMany(property =>
             {
                 var propertyValues = property.Dictionary
@@ -45,5 +42,6 @@ namespace VirtoCommerce.XDigitalCatalog.Extensions
             clonedProperty.Values = new List<PropertyValue> { propertyValue };
             return clonedProperty;
         }
+
     }
 }
