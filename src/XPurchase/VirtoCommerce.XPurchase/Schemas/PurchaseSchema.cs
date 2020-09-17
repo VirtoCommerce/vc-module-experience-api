@@ -71,8 +71,8 @@ namespace VirtoCommerce.XPurchase.Schemas
                         cartAggregate = await _mediator.Send(createCartCommand);
                     }
                     await CheckAuthAsync(context, cartAggregate.Cart);
-                    //store cart aggregate in the user context for future usage in the graph types resolvers
-                    context.UserContext.Add("cartAggregate", cartAggregate);
+                    //store cart aggregate in the user context for future usage in the graph types resolvers    
+                    context.SetExpandedObjectGraph(cartAggregate);
 
                     return cartAggregate;
                 })
