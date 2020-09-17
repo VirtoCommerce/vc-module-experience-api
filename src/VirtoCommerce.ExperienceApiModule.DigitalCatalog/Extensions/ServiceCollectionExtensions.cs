@@ -7,6 +7,8 @@ using VirtoCommerce.XDigitalCatalog.Middlewares;
 using VirtoCommerce.XDigitalCatalog.Queries;
 using VirtoCommerce.XDigitalCatalog.Schemas;
 using AutoMapper;
+using VirtoCommerce.XDigitalCatalog.Mapping;
+using AutoMapper.Configuration;
 
 namespace VirtoCommerce.XDigitalCatalog.Extensions
 {
@@ -14,10 +16,6 @@ namespace VirtoCommerce.XDigitalCatalog.Extensions
     {
         public static IServiceCollection AddXCatalog(this IServiceCollection services, IGraphQLBuilder graphQlbuilder)
         {
-            //Discover the assembly and  register all mapping profiles through reflection
-            //TODO: Seems this is not work need to find out why
-            services.AddAutoMapper(typeof(XDigitalCatalogAnchor));
-
             services.AddSchemaBuilder<DigitalCatalogSchema>();
 
             graphQlbuilder.AddGraphTypes(typeof(XDigitalCatalogAnchor));
@@ -31,6 +29,9 @@ namespace VirtoCommerce.XDigitalCatalog.Extensions
                 builder.AddMiddleware(typeof(ProductsTaxEvalMiddleware));
                 builder.AddMiddleware(typeof(ProductsInventoryEvalMiddleware));
             });
+
+            services.AddAutoMapper(typeof(XDigitalCatalogAnchor));
+
 
             return services;
         }

@@ -1,11 +1,13 @@
 using System;
 using AutoMapper;
+using AutoMapper.Configuration;
 using GraphQL.Server;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.XPurchase.Authorization;
+using VirtoCommerce.XPurchase.Mapping;
 using VirtoCommerce.XPurchase.Schemas;
 using VirtoCommerce.XPurchase.Services;
 using VirtoCommerce.XPurchase.Validators;
@@ -16,9 +18,6 @@ namespace VirtoCommerce.XPurchase.Extensions
     {
         public static IServiceCollection AddXPurchase(this IServiceCollection services, IGraphQLBuilder graphQlbuilder)
         {
-            //TODO: Seems this is not work need to find out why
-            services.AddAutoMapper(typeof(XPurchaseAnchor));
-
             //TODO:
             //services.AddSchemaType<PaymentPlanType>();
             //services.AddSchemaType<SettingType>();
@@ -37,13 +36,13 @@ namespace VirtoCommerce.XPurchase.Extensions
 
             services.AddMediatR(typeof(XPurchaseAnchor));
 
-            //TODO: Not work
-            services.AddAutoMapper(typeof(XPurchaseAnchor));
 
             services.AddTransient<ICartProductService, CartProductService>();
 
             services.AddTransient<CartAggregate>();
             services.AddTransient<Func<CartAggregate>>(provider => () => provider.CreateScope().ServiceProvider.GetRequiredService<CartAggregate>());
+
+            services.AddAutoMapper(typeof(XPurchaseAnchor));
 
             return services;
         }

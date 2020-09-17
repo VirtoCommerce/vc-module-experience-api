@@ -8,7 +8,7 @@ namespace VirtoCommerce.Exp.ExtensionSamples.UseCases.TypeExtension
     {
         public CartType2(ICartAvailMethodsService cartAvailMethods) : base(cartAvailMethods)
         {
-            Field<StringGraphType>("myCoolProperty", resolve: context => "my cool value" );
+            Field<StringGraphType>("myCoolScalarProperty", resolve: context => "my cool value" );
         }
     }
 }

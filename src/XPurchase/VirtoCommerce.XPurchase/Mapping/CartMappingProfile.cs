@@ -155,7 +155,9 @@ namespace VirtoCommerce.XPurchase.Mapping
                 return priceEvalContext;
             });
 
-            CreateMap<LineItem, ProductPromoEntry>().ConvertUsing((lineItem, productPromoEntry, context) =>
+            CreateMap<LineItem, ProductPromoEntry>()
+                .IncludeAllDerived()
+                .ConvertUsing((lineItem, productPromoEntry, context) =>
             {
                 if (productPromoEntry == null)
                 {

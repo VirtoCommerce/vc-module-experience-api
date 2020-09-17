@@ -1,4 +1,5 @@
 using AutoMapper;
+using AutoMapper.Configuration;
 using GraphQL.Server;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -6,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using VirtoCommerce.ExperienceApiModule.Core;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.XProfile.Authorization;
+using VirtoCommerce.ExperienceApiModule.XProfile.Mapping;
 using VirtoCommerce.ExperienceApiModule.XProfile.Schemas;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Extensions
@@ -14,8 +16,6 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Extensions
     {
         public static IServiceCollection AddXProfile(this IServiceCollection services, IGraphQLBuilder graphQlbuilder)
         {
-            services.AddAutoMapper(typeof(XProfileAnchor));
-
             services.AddSchemaBuilder<ProfileSchema>();
 
             graphQlbuilder.AddGraphTypes(typeof(XProfileAnchor));
@@ -25,6 +25,9 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Extensions
             services.AddTransient<IOrganizationAggregateRepository, OrganizationAggregateRepository>();
             services.AddTransient<IContactAggregateRepository, ContactAggregateRepository>();
             services.AddSingleton<IAuthorizationHandler, CanEditOrganizationAuthorizationHandler>();
+
+            services.AddAutoMapper(typeof(XProfileAnchor));
+
             return services;
         }
     }

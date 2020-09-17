@@ -1,10 +1,12 @@
 using AutoMapper;
+using AutoMapper.Configuration;
 using GraphQL.Server;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.XOrder.Authorization;
+using VirtoCommerce.ExperienceApiModule.XOrder.Mapping;
 using VirtoCommerce.ExperienceApiModule.XOrder.Schemas;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Extensions
@@ -13,9 +15,6 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Extensions
     {
         public static IServiceCollection AddXOrder(this IServiceCollection services, IGraphQLBuilder graphQlbuilder)
         {
-            //TODO: Seems this is not work need to find out why
-            services.AddAutoMapper(typeof(XOrderAnchor));
-
             services.AddSingleton<ISchemaBuilder, OrderSchema>();
 
             graphQlbuilder.AddGraphTypes(typeof(XOrderAnchor));
@@ -24,6 +23,8 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Extensions
 
             services.AddTransient<ICustomerOrderAggregateRepository, CustomerOrderAggregateRepository>();
             services.AddSingleton<IAuthorizationHandler, CanAccessOrderAuthorizationHandler>();
+
+            services.AddAutoMapper(typeof(XOrderAnchor));
 
             return services;
         }
