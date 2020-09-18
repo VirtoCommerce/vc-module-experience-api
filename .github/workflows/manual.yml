@@ -1,3 +1,4 @@
+  
 # v1
 name: Module CI
 
@@ -15,6 +16,11 @@ on:
   pull_request:
     branches:
       [master, dev]
+    paths-ignore:
+      - 'docs/**'
+      - 'build/**'
+      - 'README.md'
+      - 'LICENSE'
     
 jobs:
   ci:
@@ -38,13 +44,13 @@ jobs:
 
       - name: Get changelog
         id: changelog
-        uses: VirtoCommerce/vc-github-actions/changelog-generator@dev
+        uses: VirtoCommerce/vc-github-actions/changelog-generator@master
 
       - name: Add version suffix
-        uses: VirtoCommerce/vc-github-actions/add-version-suffix@dev
+        uses: VirtoCommerce/vc-github-actions/add-version-suffix@master
 
       - name: SonarCloud Begin
-        uses: VirtoCommerce/vc-github-actions/sonar-scanner-begin@dev
+        uses: VirtoCommerce/vc-github-actions/sonar-scanner-begin@master
 
       - name: Build
         run: vc-build Compile
@@ -53,15 +59,17 @@ jobs:
         run: vc-build Test -skip
 
       - name: SonarCloud End
-        uses: VirtoCommerce/vc-github-actions/sonar-scanner-end@dev
+        uses: VirtoCommerce/vc-github-actions/sonar-scanner-end@master
 
       - name: Packaging
         run: vc-build Compress -skip Clean+Restore+Compile+Test
       
+      # Step runs only on commit to master or dev brunch
       - name: Publish Nuget
-        uses: VirtoCommerce/vc-github-actions/publish-nuget@dev
+        uses: VirtoCommerce/vc-github-actions/publish-nuget@master
         
+      # Step runs only on commit to master or dev brunch
       - name: Publish Github Release
         with:
           changelog: ${{ steps.changelog.outputs.changelog }}
-        uses: VirtoCommerce/vc-github-actions/publish-github-release@dev
+        uses: VirtoCommerce/vc-github-actions/publish-github-release@master
