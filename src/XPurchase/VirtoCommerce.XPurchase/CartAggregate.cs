@@ -315,6 +315,10 @@ namespace VirtoCommerce.XPurchase
 
             await new CartPaymentValidator(availPaymentMethods).ValidateAndThrowAsync(payment, ruleSet: ValidationRuleSet);
 
+            if (payment.Currency == null)
+            {
+                payment.Currency = Cart.Currency;
+            }
             await RemoveExistingPaymentAsync(payment);
             if (payment.BillingAddress != null)
             {
