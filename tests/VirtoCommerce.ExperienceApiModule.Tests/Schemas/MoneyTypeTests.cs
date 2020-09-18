@@ -18,7 +18,7 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Schemas
         public void MoneyType_ShouldHavePropperFieldAmount()
         {
             // Assert
-            _moneyType.Fields.Should().HaveCount(6);
+            _moneyType.Fields.Should().HaveCount(7);
         }
 
         [Fact]

@@ -19,7 +19,25 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Mapping
                     foreach (var term in terms.OfType<TermFilter>())
                     {
                         var propertyInfo = criteria.GetType().GetProperty(term.FieldName.ToPascalCase());
-                        propertyInfo.SetValue(criteria, term.Values.FirstOrDefault().ChangeType(propertyInfo.PropertyType), null);
+                        object value = term.Values;
+                        if (value != null)
+                        {
+                            if (propertyInfo.PropertyType.IsArray)
+                            {
+                                var elementType = propertyInfo.PropertyType.GetElementType();
+                                var actualValues = Array.CreateInstance(elementType, term.Values.Count);
+                                for (var i = 0; i < term.Values.Count; i++)
+                                {
+                                    actualValues.SetValue(term.Values[i].ChangeType(elementType), i);
+                                }
+                                value = actualValues;
+                            }
+                            else
+                            {
+                                value = term.Values.FirstOrDefault().ChangeType(propertyInfo.PropertyType);
+                            }
+                        }
+                        propertyInfo.SetValue(criteria, value, null);
                     }
 
                     return criteria;

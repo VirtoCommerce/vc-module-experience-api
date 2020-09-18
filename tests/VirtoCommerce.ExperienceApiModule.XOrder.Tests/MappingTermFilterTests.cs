@@ -23,7 +23,9 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Tests
             var terms = new List<IFilter>
             {
                 new TermFilter { FieldName = "CustomerId", Values = new[] { Guid.NewGuid().ToString() } },
-                new TermFilter { FieldName = "CustomerIds", Values = new[] { Guid.NewGuid().ToString() } }
+                new TermFilter { FieldName = "CustomerIds", Values = new[] { Guid.NewGuid().ToString() } },
+                new TermFilter { FieldName = "SubscriptionIds", Values = new string [] { } },
+                new TermFilter { FieldName = "SubscriptionIds", Values = null }
             };
 
             // Action
@@ -34,6 +36,8 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Tests
             Assert.NotNull(criteria);
             Assert.NotNull(criteria.CustomerId);
             Assert.NotNull(criteria.CustomerIds);
+            Assert.NotNull(criteria.CustomerId);
+            Assert.Null(criteria.SubscriptionIds);
         }
     }
 }
