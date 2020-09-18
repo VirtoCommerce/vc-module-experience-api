@@ -9,11 +9,11 @@ using VirtoCommerce.TaxModule.Core.Model;
 
 namespace VirtoCommerce.XPurchase.Middlewares
 {
-    public class PurchaseEvalContextBuildMiddleware : IAsyncMiddleware<PromotionEvaluationContext>, IAsyncMiddleware<PriceEvaluationContext>, IAsyncMiddleware<TaxEvaluationContext>
+    public class LoadCartToEvalContextMiddleware : IAsyncMiddleware<PromotionEvaluationContext>, IAsyncMiddleware<PriceEvaluationContext>, IAsyncMiddleware<TaxEvaluationContext>
     {
         private readonly IMapper _mapper;
         private readonly ICartAggregateRepository _cartAggregateRepository;
-        public PurchaseEvalContextBuildMiddleware(IMapper mapper, ICartAggregateRepository cartAggregateRepository)
+        public LoadCartToEvalContextMiddleware(IMapper mapper, ICartAggregateRepository cartAggregateRepository)
         {
             _mapper = mapper;
             _cartAggregateRepository = cartAggregateRepository;

@@ -10,11 +10,11 @@ using VirtoCommerce.XDigitalCatalog.Queries;
 
 namespace VirtoCommerce.XDigitalCatalog.Middlewares
 {
-    public class ProductsInventoryEvalMiddleware : IAsyncMiddleware<SearchProductResponse>
+    public class EvalProductsInventoryMiddleware : IAsyncMiddleware<SearchProductResponse>
     {
         private readonly IInventorySearchService _inventorySearchService;
 
-        public ProductsInventoryEvalMiddleware(IInventorySearchService inventorySearchService)
+        public EvalProductsInventoryMiddleware(IInventorySearchService inventorySearchService)
         {
             _inventorySearchService = inventorySearchService;
         }

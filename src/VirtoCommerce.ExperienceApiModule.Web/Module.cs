@@ -58,18 +58,18 @@ namespace VirtoCommerce.ExperienceApiModule.Web
             #region Pipelines
             services.AddPipeline<PromotionEvaluationContext>(builder =>
                {
-                   builder.AddMiddleware(typeof(ProfileEvalContextBuildMiddleware));
-                   builder.AddMiddleware(typeof(PurchaseEvalContextBuildMiddleware));
+                   builder.AddMiddleware(typeof(LoadUserToEvalContextMiddleware));
+                   builder.AddMiddleware(typeof(LoadCartToEvalContextMiddleware));
                });
             services.AddPipeline<TaxEvaluationContext>(builder =>
             {
-                builder.AddMiddleware(typeof(ProfileEvalContextBuildMiddleware));
-                builder.AddMiddleware(typeof(PurchaseEvalContextBuildMiddleware));
+                builder.AddMiddleware(typeof(LoadUserToEvalContextMiddleware));
+                builder.AddMiddleware(typeof(LoadCartToEvalContextMiddleware));
             });
             services.AddPipeline<PriceEvaluationContext>(builder =>
             {
-                builder.AddMiddleware(typeof(ProfileEvalContextBuildMiddleware));
-                builder.AddMiddleware(typeof(PurchaseEvalContextBuildMiddleware));
+                builder.AddMiddleware(typeof(LoadUserToEvalContextMiddleware));
+                builder.AddMiddleware(typeof(LoadCartToEvalContextMiddleware));
             }); 
             #endregion
 

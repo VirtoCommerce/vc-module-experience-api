@@ -1,5 +1,4 @@
 using AutoMapper;
-using AutoMapper.Configuration;
 using GraphQL.Server;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -7,7 +6,6 @@ using Microsoft.Extensions.DependencyInjection;
 using VirtoCommerce.ExperienceApiModule.Core;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.XProfile.Authorization;
-using VirtoCommerce.ExperienceApiModule.XProfile.Mapping;
 using VirtoCommerce.ExperienceApiModule.XProfile.Schemas;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Extensions

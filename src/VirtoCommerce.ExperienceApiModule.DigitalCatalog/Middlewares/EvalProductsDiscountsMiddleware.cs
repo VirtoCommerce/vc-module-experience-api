@@ -12,14 +12,14 @@ using VirtoCommerce.XDigitalCatalog.Queries;
 
 namespace VirtoCommerce.XDigitalCatalog.Middlewares
 {
-    public class ProductsDiscountsEvalMiddleware : IAsyncMiddleware<SearchProductResponse>
+    public class EvalProductsDiscountsMiddleware : IAsyncMiddleware<SearchProductResponse>
     {
         private readonly IMapper _mapper;
         private readonly IMarketingPromoEvaluator _marketingEvaluator;
         private readonly IGenericPipelineLauncher _pipeline;
 
 
-        public ProductsDiscountsEvalMiddleware(
+        public EvalProductsDiscountsMiddleware(
             IMapper mapper           
             , IMarketingPromoEvaluator marketingEvaluator
             , IGenericPipelineLauncher pipeline)

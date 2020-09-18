@@ -13,11 +13,11 @@ using VirtoCommerce.TaxModule.Core.Model;
 
 namespace VirtoCommerce.XProfile.Middlewares
 {
-    public class ProfileEvalContextBuildMiddleware : IAsyncMiddleware<PromotionEvaluationContext>, IAsyncMiddleware<PriceEvaluationContext>, IAsyncMiddleware<TaxEvaluationContext>
+    public class LoadUserToEvalContextMiddleware : IAsyncMiddleware<PromotionEvaluationContext>, IAsyncMiddleware<PriceEvaluationContext>, IAsyncMiddleware<TaxEvaluationContext>
     {
         private readonly IMapper _mapper;
         private readonly IMemberResolver _memberIdResolver;
-        public ProfileEvalContextBuildMiddleware(IMapper mapper, IMemberResolver memberIdResolver)
+        public LoadUserToEvalContextMiddleware(IMapper mapper, IMemberResolver memberIdResolver)
         {
             _mapper = mapper;
             _memberIdResolver = memberIdResolver;

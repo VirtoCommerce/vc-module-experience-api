@@ -14,14 +14,14 @@ using VirtoCommerce.XDigitalCatalog.Queries;
 
 namespace VirtoCommerce.XDigitalCatalog.Middlewares
 {
-    public class ProductsTaxEvalMiddleware : IAsyncMiddleware<SearchProductResponse>
+    public class EvalProductsTaxMiddleware : IAsyncMiddleware<SearchProductResponse>
     {
         private readonly IMapper _mapper;
         private readonly ITaxProviderSearchService _taxProviderSearchService;
         private readonly IGenericPipelineLauncher _pipeline;
 
 
-        public ProductsTaxEvalMiddleware(
+        public EvalProductsTaxMiddleware(
             IMapper mapper
             , ITaxProviderSearchService taxProviderSearchService
             , IGenericPipelineLauncher pipeline)
@@ -61,7 +61,9 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
                         StoreId = query.StoreId,
                         CustomerId = query.UserId
                     };
+
                     await _pipeline.Execute(taxEvalContext);
+
                     taxEvalContext.Lines = parameter.Results.SelectMany(x => _mapper.Map<IEnumerable<TaxLine>>(x)).ToList();
                     var taxRates = activeTaxProvider.CalculateRates(taxEvalContext);
                     if (taxRates.Any())

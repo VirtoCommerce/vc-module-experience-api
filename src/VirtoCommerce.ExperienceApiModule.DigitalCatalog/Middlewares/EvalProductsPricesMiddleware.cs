@@ -7,18 +7,19 @@ using PipelineNet.Middleware;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Models;
 using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
+using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.PricingModule.Core.Services;
 using VirtoCommerce.XDigitalCatalog.Queries;
 
 namespace VirtoCommerce.XDigitalCatalog.Middlewares
 {
-    public class ProductsPricesEvalMiddleware : IAsyncMiddleware<SearchProductResponse>
+    public class EvalProductsPricesMiddleware : IAsyncMiddleware<SearchProductResponse>
     {
         private readonly IMapper _mapper;
         private readonly IPricingService _pricingService;
         private readonly IGenericPipelineLauncher _pipeline;
 
-        public ProductsPricesEvalMiddleware(
+        public EvalProductsPricesMiddleware(
             IMapper mapper
       
             , IPricingService pricingService
@@ -49,16 +50,16 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
                 var productsWithoutPrices = parameter.Results.Where(x => !x.IndexedPrices.Any()).ToArray();
                 if (productsWithoutPrices.Any())
                 {
-                    var priceEvalContext = new PricingModule.Core.Model.PriceEvaluationContext
-                    {
-                        Currency = query.CurrencyCode,
-                        StoreId = query.StoreId,
-                        CustomerId = query.UserId,
-                        Language = query.CultureName
-                    };
-                    await _pipeline.Execute(priceEvalContext);
-                    priceEvalContext.ProductIds = productsWithoutPrices.Select(x => x.Id).ToArray();
-                    var prices = await _pricingService.EvaluateProductPricesAsync(priceEvalContext);
+                    var evalContext = AbstractTypeFactory<PricingModule.Core.Model.PriceEvaluationContext>.TryCreateInstance();
+                    evalContext.Currency = query.CurrencyCode;
+                    evalContext.StoreId = query.StoreId;
+                    evalContext.CustomerId = query.UserId;
+                    evalContext.Language = query.CultureName;
+
+                    await _pipeline.Execute(evalContext);
+
+                    evalContext.ProductIds = productsWithoutPrices.Select(x => x.Id).ToArray();
+                    var prices = await _pricingService.EvaluateProductPricesAsync(evalContext);
 
                     foreach (var product in productsWithoutPrices)
                     {

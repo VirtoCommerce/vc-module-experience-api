@@ -11,9 +11,9 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Binding
         public virtual object BindModel(SearchDocument searchDocument)
         {
             var result = AbstractTypeFactory<TResult>.TryCreateInstance();
-            var productProperties = result.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            var properties = result.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
 
-            foreach (var property in productProperties)
+            foreach (var property in properties)
             {
                 var binder = property.GetIndexModelBinder();
 

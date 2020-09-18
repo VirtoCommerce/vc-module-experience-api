@@ -10,6 +10,7 @@ namespace VirtoCommerce.XPurchase.Schemas
     {
         public ShipmentType()
         {
+            Field(x => x.Id, nullable: true).Description("Shipment Id");
             Field(x => x.ShipmentMethodCode, nullable: true).Description("Shipment method code");
             Field(x => x.ShipmentMethodOption, nullable: true).Description("Shipment method option");
             Field(x => x.FulfillmentCenterId, nullable: true).Description("Fulfillment center id");

@@ -40,5 +40,27 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Pipelines
             return Configure(options => options.Middlewares.Add(type));
         }
 
+        public GenericPipelineBuilder<TResult> ReplaceMiddleware(Type oldType, Type newType)
+        {
+            if (oldType == null)
+            {
+                throw new ArgumentNullException(nameof(oldType));
+            }
+            if (newType == null)
+            {
+                throw new ArgumentNullException(nameof(newType));
+            }
+            Services.AddTransient(newType);
+
+            return Configure(options =>
+            {
+                var oldTypeIndex = options.Middlewares.IndexOf(oldType);
+                if (oldTypeIndex < 0)
+                {
+                    throw new OperationCanceledException($"{oldType} is not registered");
+                }
+                options.Middlewares[oldTypeIndex] = newType;
+            });
+        }
     }
 }

@@ -2,6 +2,7 @@ using System.Linq;
 using GraphQL.Types;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
+using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.XPurchase.Services;
 
 namespace VirtoCommerce.XPurchase.Schemas
@@ -54,7 +55,13 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field<ListGraphType<ShipmentType>>("shipments", resolve: context => context.Source.Cart.Shipments);
             FieldAsync<ListGraphType<ShippingMethodType>>("availableShippingMethods", resolve: async context =>
             {
-                return await cartAvailMethods.GetAvailableShippingRatesAsync(context.Source);
+                var rates = await cartAvailMethods.GetAvailableShippingRatesAsync(context.Source);
+                //store the pair ShippingMethodType and cart aggregate in the user context for future usage in the ShippingMethodType fields resolvers
+                if (rates != null)
+                {
+                    rates.Apply(x => context.UserContext[x.GetCacheKey()] = context.Source);
+                }
+                return rates;
             });
 
             // Payment
@@ -65,7 +72,13 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field<ListGraphType<PaymentType>>("payments", resolve: context => context.Source.Cart.Payments);
             FieldAsync<ListGraphType<PaymentMethodType>>("availablePaymentMethods", resolve: async context =>
             {
-                return await cartAvailMethods.GetAvailablePaymentMethodsAsync(context.Source);
+                var methods = await cartAvailMethods.GetAvailablePaymentMethodsAsync(context.Source);
+                //store the pair ShippingMethodType and cart aggregate in the user context for future usage in the ShippingMethodType fields resolvers
+                if (methods != null)
+                {
+                    methods.Apply(x => context.UserContext[x.Id] = context.Source);
+                }
+                return methods;
             });
             //TODO:
             //Field<ListGraphType<PaymentPlanType>>("paymentPlan", resolve: context => context.Source.PaymentPlan);

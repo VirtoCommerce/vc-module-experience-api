@@ -53,8 +53,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Binding
             }
             return result;
         }
-
-
+        
         private static BindingInfo GetBindingInfo(this Type type)
         {
             BindingInfo result = null;
@@ -77,7 +76,12 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Binding
 
         private static IIndexModelBinder GetBinder(BindIndexFieldAttribute attr)
         {
-            return _bindersCache.GetOrAdd(attr.BinderType, type => Activator.CreateInstance(attr.BinderType) as IIndexModelBinder);
+            var binderType = attr.BinderType;
+            if (binderType == null)
+            {
+                binderType = typeof(DefaultPropertyIndexBinder);
+            }
+            return _bindersCache.GetOrAdd(binderType, type => Activator.CreateInstance(binderType) as IIndexModelBinder);
         }
     }
 }
