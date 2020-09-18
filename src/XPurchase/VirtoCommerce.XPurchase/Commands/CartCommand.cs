@@ -18,6 +18,7 @@ namespace VirtoCommerce.XPurchase.Commands
             Language = language;
         }
 
+        public string CartId { get; set; }
         public string StoreId { get; set; }
         public string CartType { get; set; }
         public string CartName { get; set; }

@@ -21,10 +21,18 @@ namespace VirtoCommerce.XPurchase.Commands
 
         protected virtual async Task<CartAggregate> GetOrCreateCartFromCommandAsync(TCartCommand request)
         {
-            var result = await CartRepository.GetCartAsync(request.CartName, request.StoreId, request.UserId, request.Language, request.Currency, request.CartType);
-            if (result == null)
+            CartAggregate result;
+            if (!string.IsNullOrEmpty(request.CartId))
             {
-                result = await CreateNewCartAggregateAsync(request);
+                result = await GetCartById(request.CartId, request.Language);
+            }
+            else
+            {
+                result = await CartRepository.GetCartAsync(request.CartName, request.StoreId, request.UserId, request.Language, request.Currency, request.CartType);
+                if (result == null)
+                {
+                    result = await CreateNewCartAggregateAsync(request);
+                }
             }
             return result;
         }

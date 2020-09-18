@@ -309,6 +309,25 @@ namespace VirtoCommerce.XPurchase
             return Task.FromResult(this);
         }
 
+        public virtual Task<CartAggregate> AddOrUpdateCartAddress(CartModule.Core.Model.Address address)
+        {
+            EnsureCartExists();
+            //Remove existing address 
+            Cart.Addresses.Remove(address);
+            Cart.Addresses.Add(address);
+            
+            return Task.FromResult(this);
+        }
+
+        public virtual Task<CartAggregate> RemoveCartAddress(CartModule.Core.Model.Address address)
+        {
+            EnsureCartExists();
+            //Remove existing address 
+            Cart.Addresses.Remove(address);
+
+            return Task.FromResult(this);
+        }
+
         public virtual async Task<CartAggregate> AddPaymentAsync(Payment payment, IEnumerable<PaymentMethod> availPaymentMethods)
         {
             EnsureCartExists();

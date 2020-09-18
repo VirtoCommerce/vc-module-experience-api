@@ -609,6 +609,61 @@ namespace VirtoCommerce.XPurchase.Schemas
                                                  .FieldType;
 
             schema.Mutation.AddField(clearPaymentsField);
+
+
+            /// <example>
+            /// This is an example JSON request for a mutation
+            /// {
+            ///   "query": "mutation ($command:InputAddOrUpdateCartAddressType!){ addOrUpdateCartAddress(command: $command) {  total { formatedAmount } } }",
+            ///   "variables": {
+            ///      "command": {
+            ///          "storeId": "Electronics",
+            ///          "cartName": "default",
+            ///          "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
+            ///          "language": "en-US",
+            ///          "currency": "USD",
+            ///          "cartType": "cart",
+            ///          "address": {
+            ///             "line1":"st street 1"
+            ///         }
+            ///      }
+            ///   }
+            /// }
+            /// </example>
+            var addOrUpdateCartAddress = FieldBuilder.Create<CartAggregate, CartAggregate>(typeof(CartType))
+                                                 .Name("addOrUpdateCartAddress")
+                                                 .Argument<NonNullGraphType<InputAddOrUpdateCartAddressType>>(_commandName)
+                                                 .ResolveAsync(async context =>
+                                                 {
+                                                     //TODO: Need to refactor later to prevent ugly code duplication
+                                                     //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
+                                                     var cartAggregate = await _mediator.Send(context.GetArgument<AddOrUpdateCartAddressCommand>(_commandName));
+                                                     context.UserContext.Add("cartAggregate", cartAggregate);
+                                                     return cartAggregate;
+                                                 })
+                                                 .FieldType;
+
+            schema.Mutation.AddField(addOrUpdateCartAddress);
+
+            /// <example>
+            /// This is an example JSON request for a mutation
+            /// {
+            ///   "query": "mutation ($command:InputRemoveCartAddressType!){ removeCartAddress(command: $command) {  total { formatedAmount } } }",
+            ///   "variables": {
+            ///      "command": {
+            ///          "cartId": "7777-7777-7777-7777",
+            ///          "addressId": "111"
+            ///      }
+            ///   }
+            /// }
+            /// </example>
+            var removeCartAddressField = FieldBuilder.Create<CartAggregate, CartAggregate>(typeof(CartType))
+                                              .Name("removeCartAddress")
+                                              .Argument<NonNullGraphType<InputRemoveCartAddressType>>(_commandName)
+                                              .ResolveAsync(async context => await _mediator.Send(context.GetArgument<RemoveCartAddressCommand>(_commandName)))
+                                              .FieldType;
+
+            schema.Mutation.AddField(removeCartAddressField);
         }
 
         private async Task<object> ResolveConnectionAsync(IMediator mediator, IResolveConnectionContext<object> context)

@@ -6,6 +6,7 @@ namespace VirtoCommerce.XPurchase.Schemas
     {
         protected InputCartBaseType()
         {
+            Field<StringGraphType>("cartId");
             Field<NonNullGraphType<StringGraphType>>("storeId");
             Field<StringGraphType>("cartName");
             Field<NonNullGraphType<StringGraphType>>("userId");
