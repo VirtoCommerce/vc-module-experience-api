@@ -34,7 +34,6 @@
     </ItemGroup>
     <ItemGroup>
       <Folder Include="UseCases\TypeExtension\Commands\" />
-      <Folder Include="UseCases\TypeExtension\Queries\" />
     </ItemGroup>
   
 
