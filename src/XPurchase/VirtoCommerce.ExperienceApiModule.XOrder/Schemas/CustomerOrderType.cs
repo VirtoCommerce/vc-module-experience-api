@@ -1,6 +1,7 @@
 using GraphQL;
 using GraphQL.Types;
 using VirtoCommerce.CoreModule.Core.Currency;
+using VirtoCommerce.ExperienceApiModule.Core.Schemas;
 using VirtoCommerce.OrdersModule.Core.Model;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
@@ -47,7 +48,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field(x => x.Order.ModifiedDate, true);
             Field(x => x.Order.ModifiedBy, true);
 
-            Field<OrderCurrencyType>(nameof(CustomerOrder.Currency).ToCamelCase(), resolve: context => context.Source.Currency);
+            Field<CurrencyType>(nameof(CustomerOrder.Currency).ToCamelCase(), resolve: context => context.Source.Currency);
             Field<OrderMoneyType>(nameof(CustomerOrder.Total).ToCamelCase(), resolve: context => new Money(context.Source.Order.Total, context.Source.Currency));
             Field<OrderMoneyType>(nameof(CustomerOrder.TaxTotal).ToCamelCase(), resolve: context => new Money(context.Source.Order.TaxTotal, context.Source.Currency));
             Field<OrderMoneyType>(nameof(CustomerOrder.DiscountAmount).ToCamelCase(), resolve: context => new Money(context.Source.Order.DiscountAmount, context.Source.Currency));

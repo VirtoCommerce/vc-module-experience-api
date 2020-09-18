@@ -7,6 +7,7 @@ using MediatR;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
+using VirtoCommerce.ExperienceApiModule.Core.Schemas;
 using VirtoCommerce.ExperienceApiModule.XOrder.Extensions;
 using VirtoCommerce.OrdersModule.Core.Model;
 using VirtoCommerce.XDigitalCatalog;
@@ -54,7 +55,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field(x => x.Quantity);
             Field(x => x.ProductId);
 
-            Field<OrderCurrencyType>(nameof(LineItem.Currency).ToCamelCase(), resolve: context => context.GetOrderCurrency());
+            Field<CurrencyType>(nameof(LineItem.Currency).ToCamelCase(), resolve: context => context.GetOrderCurrency());
             Field<OrderMoneyType>(nameof(LineItem.DiscountAmount).ToCamelCase(), resolve: context => new Money(context.Source.DiscountAmount, context.GetOrderCurrency()));
             Field<OrderMoneyType>(nameof(LineItem.DiscountAmountWithTax).ToCamelCase(), resolve: context => new Money(context.Source.DiscountAmountWithTax, context.GetOrderCurrency()));
             Field<OrderMoneyType>(nameof(LineItem.DiscountTotal).ToCamelCase(), resolve: context => new Money(context.Source.DiscountTotal, context.GetOrderCurrency()));
