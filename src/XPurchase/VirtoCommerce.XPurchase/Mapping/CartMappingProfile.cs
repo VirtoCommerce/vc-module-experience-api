@@ -8,6 +8,7 @@ using VirtoCommerce.CartModule.Core.Model.Search;
 using VirtoCommerce.CoreModule.Core.Outlines;
 using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
+using VirtoCommerce.ExperienceApiModule.Core.Index;
 using VirtoCommerce.MarketingModule.Core.Model.Promotions;
 using VirtoCommerce.PaymentModule.Core.Model;
 using VirtoCommerce.Platform.Core.Common;
@@ -316,8 +317,7 @@ namespace VirtoCommerce.XPurchase.Mapping
               {
                   foreach (var term in terms.OfType<TermFilter>())
                   {
-                      var propertyInfo = criteria.GetType().GetProperty(term.FieldName.ToPascalCase());
-                      propertyInfo.SetValue(criteria, term.Values.FirstOrDefault().ChangeType(propertyInfo.PropertyType), null);
+                      term.MapTo(criteria);
                   }
 
                   return criteria;
