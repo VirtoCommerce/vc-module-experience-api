@@ -21,7 +21,7 @@ namespace VirtoCommerce.XPurchase.Commands
         public string CartId { get; set; }
         public string StoreId { get; set; }
         public string CartType { get; set; }
-        public string CartName { get; set; }
+        public string CartName { get; set; } = "default";
         public string UserId { get; set; }
         public string Currency { get; set; }
         public string Language { get; set; }
