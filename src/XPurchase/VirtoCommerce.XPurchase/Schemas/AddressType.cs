@@ -13,7 +13,6 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field(x => x.CountryName, nullable: false).Description("Country name");
             Field(x => x.Email, nullable: true).Description("Email");
             Field(x => x.FirstName, nullable: true).Description("First name");
-            Field(x => x.Key, nullable: true).Description("Id");
             Field(x => x.LastName, nullable: true).Description("Last name");
             Field(x => x.Line1, nullable: false).Description("Line1");
             Field(x => x.Line2, nullable: true).Description("Line2");
