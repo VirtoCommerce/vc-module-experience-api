@@ -2,7 +2,7 @@ using GraphQL.Types;
 using VirtoCommerce.XPurchase.Schemas;
 using VirtoCommerce.XPurchase.Services;
 
-namespace VirtoCommerce.Exp.ExtensionSamples.UseCases.TypeExtension
+namespace VirtoCommerce.Exp.ExtensionSamples
 {
     public class CartType2 : CartType
     {
