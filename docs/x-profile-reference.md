@@ -309,7 +309,7 @@ mutation($command: InputUpdateRoleType!) {
     "name": "Use api",
     "permissions": [
       {
-      	"name": "security:call_api"
+      	"name": "platform:setting:read"
       },
       {
         "name": "catalog:create"

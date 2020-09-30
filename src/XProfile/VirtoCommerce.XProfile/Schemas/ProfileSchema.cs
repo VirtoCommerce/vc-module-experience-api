@@ -341,7 +341,6 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                         {
                          "command":{
                          "id": "graphtest",  "name": "graphtest", "permissions": [
-                            { "name": "security:call_api", "assignedScopes": [] },
                             { "name": "order:read", "assignedScopes": [{"scope": "{{userId}}", "type": "OnlyOrderResponsibleScope" }] }
                           ]
                          }
