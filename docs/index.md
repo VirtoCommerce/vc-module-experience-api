@@ -43,3 +43,6 @@ $ curl -X POST http://localhost:10645/graphql \
 ## Getting started
 Read this [article...](./getting-started.md)
 
+## How to extend
+Read this [article...](./x-api-extensions.md)
+

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Builders;
+using GraphQL.Resolvers;
 using GraphQL.Types;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 
@@ -25,9 +26,23 @@ namespace VirtoCommerce.Exp.ExtensionSamples
     public class CustomSchema : ISchemaBuilder
     {
         public void Build(ISchema schema)
-        {        
+        {
+            var inventoryQueryField = new FieldType
+            {
+                Name = "inventory",
+                Arguments = new QueryArguments(
+                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id", Description = "id of the inventory" },
+                 ),
+                Type = typeof(InventoryType),
+                Resolver = new AsyncFieldResolver<Inventory>(context =>
+                {
+                    return Task.FromResult(new Inventory { ProductId = "1", FulfillmentCenterId = "center1" }); 
+                })
+            };
+            schema.Query.AddField(inventoryQueryField);
 
-        var saveInventoryField = FieldBuilder.Create<Inventory, Inventory>(typeof(InventoryType))
+
+            var saveInventoryField = FieldBuilder.Create<Inventory, Inventory>(typeof(InventoryType))
                                                   .Name("saveInventory")
                                                   .Argument<NonNullGraphType<InputUpdateInventoryType>>("inventory")
                                                   .Resolve(context =>
