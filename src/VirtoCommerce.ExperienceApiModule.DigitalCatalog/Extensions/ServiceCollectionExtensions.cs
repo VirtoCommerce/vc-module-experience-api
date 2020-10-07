@@ -7,8 +7,12 @@ using VirtoCommerce.XDigitalCatalog.Middlewares;
 using VirtoCommerce.XDigitalCatalog.Queries;
 using VirtoCommerce.XDigitalCatalog.Schemas;
 using AutoMapper;
-using VirtoCommerce.XDigitalCatalog.Mapping;
-using AutoMapper.Configuration;
+using VirtoCommerce.XDigitalCatalog.Services;
+using VirtoCommerce.ExperienceApiModule.Core.Services;
+using Microsoft.Extensions.Options;
+using VirtoCommerce.ExperienceApiModule.Core.Models;
+using System.Linq;
+using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.XDigitalCatalog.Extensions
 {
@@ -19,7 +23,7 @@ namespace VirtoCommerce.XDigitalCatalog.Extensions
             services.AddSchemaBuilder<DigitalCatalogSchema>();
 
             graphQlbuilder.AddGraphTypes(typeof(XDigitalCatalogAnchor));
-
+            
             services.AddMediatR(typeof(XDigitalCatalogAnchor));
             //the generic pipeline that is used  for on-the-fly additional data evaluation (prices, inventories, discounts and taxes) for resulting products 
             services.AddPipeline<SearchProductResponse>(builder =>
@@ -32,6 +36,12 @@ namespace VirtoCommerce.XDigitalCatalog.Extensions
 
             services.AddAutoMapper(typeof(XDigitalCatalogAnchor));
 
+            services.AddTransient<IService, ExpProductAssociationSearchService>();
+            services.AddTransient<IService, ExpProductAssociationSearchServiceNswag>();
+            services.AddService(typeof(IExpProductAssociationSearchService));
+
+            //TODO
+            //var serv = services.BuildServiceProvider().GetService<IExpProductAssociationSearchService>();
 
             return services;
         }

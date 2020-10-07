@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using VirtoCommerce.ExperienceApiModule.Core;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
+using VirtoCommerce.ExperienceApiModule.Core.Models;
 using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
 using VirtoCommerce.ExperienceApiModule.XOrder.Extensions;
@@ -70,9 +71,10 @@ namespace VirtoCommerce.ExperienceApiModule.Web
             {
                 builder.AddMiddleware(typeof(LoadUserToEvalContextMiddleware));
                 builder.AddMiddleware(typeof(LoadCartToEvalContextMiddleware));
-            }); 
+            });
             #endregion
 
+            services.AddOptions<ExpOptions>();
         }
 
         public void PostInitialize(IApplicationBuilder appBuilder)

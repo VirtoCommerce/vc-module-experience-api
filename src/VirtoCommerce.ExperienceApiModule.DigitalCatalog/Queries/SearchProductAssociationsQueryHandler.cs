@@ -1,31 +1,22 @@
 using System.Threading;
 using System.Threading.Tasks;
-using AutoMapper;
 using MediatR;
-using VirtoCommerce.CatalogModule.Core.Model.Search;
-using VirtoCommerce.CatalogModule.Core.Search;
+using VirtoCommerce.XDigitalCatalog.Services;
 
 namespace VirtoCommerce.XDigitalCatalog.Queries
 {
     public class SearchProductAssociationsQueryHandler : IRequestHandler<SearchProductAssociationsQuery, SearchProductAssociationsResponse>
     {
-        private readonly IProductAssociationSearchService _productAssociationSearchService;
-        private readonly IMapper _mapper;
+        private readonly IExpProductAssociationSearchService _productAssociationSearchService;
 
-        public SearchProductAssociationsQueryHandler(IProductAssociationSearchService productAssociationSearchService, IMapper mapper)
+        public SearchProductAssociationsQueryHandler(IExpProductAssociationSearchService productAssociationSearchService)
         {
-            _mapper = mapper;
             _productAssociationSearchService = productAssociationSearchService;
         }
 
-        public async Task<SearchProductAssociationsResponse> Handle(SearchProductAssociationsQuery request, CancellationToken cancellationToken)
+        public Task<SearchProductAssociationsResponse> Handle(SearchProductAssociationsQuery request, CancellationToken cancellationToken)
         {
-            var result = await _productAssociationSearchService.SearchProductAssociationsAsync(_mapper.Map<ProductAssociationSearchCriteria>(request));
-
-            return new SearchProductAssociationsResponse
-            {
-                Result = result
-            };
+            return _productAssociationSearchService.SearchProductAssociationsAsync(request);
         }
     }
 }

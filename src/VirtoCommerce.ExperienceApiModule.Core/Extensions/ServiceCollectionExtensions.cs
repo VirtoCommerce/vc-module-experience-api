@@ -6,9 +6,13 @@ using GraphQL.Types;
 using GraphQL.Validation;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure.Authorization;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure.Internal;
+using VirtoCommerce.ExperienceApiModule.Core.Models;
+using VirtoCommerce.ExperienceApiModule.Core.Services;
+using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
 {
@@ -50,6 +54,16 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
             {
                 services.TryAdd(new ServiceDescriptor(typeof(ISchemaBuilder), type, serviceLifetime));
             }
+        }
+
+        public static void AddService(this IServiceCollection services, Type type)
+        {
+            services.AddTransient(type, factory =>
+            {
+                var providers = factory.GetServices<IService>();
+                var config = factory.GetService<IOptions<ExpOptions>>().Value;
+                return providers.FirstOrDefault(p => p.GetType().GetInterfaces().Contains(type) && p.Provider.EqualsInvariant(config.Provider));
+            });
         }
     }
 }
