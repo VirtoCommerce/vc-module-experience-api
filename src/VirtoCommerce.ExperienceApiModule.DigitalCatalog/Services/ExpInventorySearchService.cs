@@ -31,8 +31,9 @@ namespace VirtoCommerce.XDigitalCatalog.Services
             }
 
             var productIds = parameter.Results.Select(x => x.Id).ToArray();
+            var responseGroup = EnumUtility.SafeParse(query.GetResponseGroup(), ExpProductResponseGroup.None);
             // If products availabilities requested
-            if (query.HasInventoryFields())
+            if (responseGroup.HasFlag(ExpProductResponseGroup.LoadInventories))
             {
                 var inventories = await _inventorySearchService.SearchInventoriesAsync(new InventorySearchCriteria
                 {

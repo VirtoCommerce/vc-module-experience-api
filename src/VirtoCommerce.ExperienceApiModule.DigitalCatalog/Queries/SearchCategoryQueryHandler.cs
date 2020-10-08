@@ -6,7 +6,7 @@ using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index;
 using VirtoCommerce.SearchModule.Core.Model;
 using VirtoCommerce.SearchModule.Core.Services;
-using VirtoCommerce.StoreModule.Core.Services;
+using VirtoCommerce.XDigitalCatalog.Services;
 
 namespace VirtoCommerce.XDigitalCatalog.Queries
 {
@@ -17,13 +17,13 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
         private readonly IMapper _mapper;
         private readonly ISearchProvider _searchProvider;
         private readonly ISearchPhraseParser _phraseParser;
-        private readonly IStoreService _storeService;
+        private readonly IExpStoreService _storeService;
 
         public SearchCategoryQueryHandler(
             ISearchProvider searchProvider
             , IMapper mapper
             , ISearchPhraseParser phraseParser
-            , IStoreService storeService)
+            , IExpStoreService storeService)
         {
             _searchProvider = searchProvider;
             _mapper = mapper;
