@@ -62,12 +62,12 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
 
         public virtual async Task<LoadCategoryResponse> Handle(LoadCategoryQuery request, CancellationToken cancellationToken)
         {
-            var result = new LoadCategoryResponse();
             var searchRequest = _mapper.Map<SearchCategoryQuery>(request);
 
-            result.Category = (await Handle(searchRequest, cancellationToken)).Results.FirstOrDefault();
+            var result = await Handle(searchRequest, cancellationToken);
 
-            return result;
+            return new LoadCategoryResponse(result.Results);
+       
         }
     }
 }

@@ -52,14 +52,11 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
 
             new RegexpNameMapper(new Regex(@"__object.category.*", RegexOptions.Compiled | RegexOptions.IgnoreCase),"__object.categoryId"),
             new RegexpNameMapper(new Regex(@"__object.descriptions", RegexOptions.Compiled | RegexOptions.IgnoreCase),"__object.reviews"),
-            new RegexpNameMapper(new Regex(@"__object.slug", RegexOptions.Compiled | RegexOptions.IgnoreCase),"__object.seoinfos.semanticUrl"),
-            new RegexpNameMapper(new Regex(@"__object.metaDescription", RegexOptions.Compiled | RegexOptions.IgnoreCase),"__object.seoinfos.metaDescription"),
-            new RegexpNameMapper(new Regex(@"__object.metaKeywords", RegexOptions.Compiled | RegexOptions.IgnoreCase),"__object.seoinfos.metaKeywords"),
-            new RegexpNameMapper(new Regex(@"__object.metaTitle", RegexOptions.Compiled | RegexOptions.IgnoreCase),"__object.seoinfos.metaTitle"),
+            new RegexpNameMapper(new Regex(@"__object.seoInfo.*", RegexOptions.Compiled | RegexOptions.IgnoreCase),"__object.seoInfos"),
 
             #region Category
 		
-            new RegexpNameMapper(new Regex(@"__object.slug", RegexOptions.Compiled | RegexOptions.IgnoreCase),"__object.outlines"),
+            new RegexpNameMapper(new Regex(@"__object.slug", RegexOptions.Compiled | RegexOptions.IgnoreCase),"__object.outlines", new [] { "__object.seoInfos" }),
             new RegexpNameMapper(new Regex(@"__object.outline", RegexOptions.Compiled | RegexOptions.IgnoreCase),"__object.outlines"),
             new RegexpNameMapper(new Regex(@"__object.level", RegexOptions.Compiled | RegexOptions.IgnoreCase),"__object.outlines"), 
 	        #endregion

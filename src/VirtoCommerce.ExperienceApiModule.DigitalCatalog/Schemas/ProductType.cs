@@ -76,13 +76,14 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 resolve: async context =>
                 {
                     var categoryId = context.Source.IndexedProduct.CategoryId;
-                    var responce = await mediator.Send(new LoadCategoryQuery
-                    {
-                        ObjectIds = new[] { categoryId },
-                        IncludeFields = context.SubFields.Values.GetAllNodesPaths()
-                    });
 
-                    return responce.Category;
+                    var loadCategoryQuery = context.GetCatalogQuery<LoadCategoryQuery>();
+                    loadCategoryQuery.ObjectIds = new[] { categoryId };
+                    loadCategoryQuery.IncludeFields = context.SubFields.Values.GetAllNodesPaths();
+
+                    var responce = await mediator.Send(loadCategoryQuery);
+
+                    return responce.Categories.FirstOrDefault();
                 });
         
             Field<StringGraphType>(
