@@ -4,6 +4,7 @@ using System.Linq;
 using AutoMapper;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CoreModule.Core.Currency;
+using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.ExperienceApiModule.Core.Binding;
 using VirtoCommerce.ExperienceApiModule.Core.Models;
 using VirtoCommerce.MarketingModule.Core.Model.Promotions;
@@ -11,8 +12,10 @@ using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.PricingModule.Core.Model;
 using VirtoCommerce.SearchModule.Core.Model;
 using VirtoCommerce.TaxModule.Core.Model;
+using VirtoCommerce.XDigitalCatalog.Extensions;
 using VirtoCommerce.XDigitalCatalog.Queries;
 using ProductPrice = VirtoCommerce.ExperienceApiModule.Core.Models.ProductPrice;
+
 namespace VirtoCommerce.XDigitalCatalog.Mapping
 {
     public class ProductMappingProfile : Profile
@@ -25,23 +28,42 @@ namespace VirtoCommerce.XDigitalCatalog.Mapping
             CreateMap<SearchProductAssociationsQuery, ProductAssociationSearchCriteria>();
             CreateMap<SearchDocument, ExpProduct>().ConvertUsing((src, dest, context) =>
             {
+                if (!context.Items.TryGetValue("store", out var storeObj))
+                {
+                    throw new OperationCanceledException("store must be set");
+                }
+                var store = storeObj as StoreModule.Core.Model.Store;
+                context.Items.TryGetValue("language", out var language);
+                language ??= store.DefaultLanguage;
+
                 var genericModelBinder = new GenericModelBinder<ExpProduct>();
                 var result = genericModelBinder.BindModel(src) as ExpProduct;
                 if (result != null)
                 {
                     result.AllPrices = context.Mapper.Map<IEnumerable<ProductPrice>>(result.IndexedPrices).ToList();
+                    context.Items.TryGetValue("currency", out var currency);
+                    if (currency != null)
+                    {
+                        result.AllPrices = result.AllPrices.Where(x => (x.Currency == null) || x.Currency.Equals(currency)).ToList();
+                    }
+
+                    result.Outline = result.IndexedProduct.Outlines.GetOutlinePath(store.Catalog);
+                    result.Slug = result.IndexedProduct.Outlines.GetSeoPath(store, language.ToString(), null);
+
+                    if (!result.IndexedProduct.SeoInfos.IsNullOrEmpty())
+                    {
+                        result.SeoInfo = result.IndexedProduct.SeoInfos.GetBestMatchingSeoInfo(store.Id, language?.ToString()) ?? new SeoInfo
+                        {
+                            SemanticUrl = result.Id,
+                            LanguageCode = language.ToString(),
+                            Name = result.IndexedProduct.Name
+                        };
+                    }
                 }
                 return result;
             });
 
-            CreateMap<SearchDocument, ExpCategory>().ConvertUsing((src, dest, context) =>
-            {
-                var genericModelBinder = new GenericModelBinder<ExpCategory>();
-                var result = genericModelBinder.BindModel(src) as ExpCategory;
-                return result;
-
-            });
-
+       
             CreateMap<ExpProduct, ProductPromoEntry>().ConvertUsing((src, dest, context) =>
             {
                 var result = AbstractTypeFactory<ProductPromoEntry>.TryCreateInstance();

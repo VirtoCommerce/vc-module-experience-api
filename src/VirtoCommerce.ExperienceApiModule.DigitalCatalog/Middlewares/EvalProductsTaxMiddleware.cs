@@ -43,9 +43,10 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
             {
                 throw new OperationCanceledException("Query must be set");
             }
-          
-            // If promotion evaluation requested
-            if (query.HasPricingFields())
+
+            var responseGroup = EnumUtility.SafeParse(query.GetResponseGroup(), ExpProductResponseGroup.None);
+            // If tax evaluation requested
+            if (responseGroup.HasFlag(ExpProductResponseGroup.LoadPrices))
             {              
                 //Evaluate taxes
                 var storeTaxProviders = await _taxProviderSearchService.SearchTaxProvidersAsync(new TaxProviderSearchCriteria

@@ -87,6 +87,29 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             schema.Query.AddField(productsConnectionBuilder.FieldType);
 
+
+            var categoryField = new FieldType
+            {
+                Name = "category",
+                Arguments = new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id", Description = "id of the product" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "storeId", Description = "Store Id" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "userId", Description = "User Id" },
+                    new QueryArgument<StringGraphType> { Name = "currencyCode", Description = "Currency code (\"USD\")" },
+                    new QueryArgument<StringGraphType> { Name = "cultureName", Description = "Culture name (\"en-US\")" }
+                ),
+                Type = GraphTypeExtenstionHelper.GetActualType<CategoryType>(),
+                Resolver = new AsyncFieldResolver<object>(async context =>
+                {
+                    //TODO:  Need to check what there is no any alternative way to access to the original request arguments in sub selection
+                    context.CopyArgumentsToUserContext();
+                    var loader = _dataLoader.Context.GetOrAddBatchLoader<string, ExpCategory>("categoriesLoader", (ids) => LoadCategoriesAsync(_mediator, ids, context));
+                    return await loader.LoadAsync(context.GetArgument<string>("id"));
+                })
+            };
+            schema.Query.AddField(categoryField);
+
+
             var categoriesConnectionBuilder = GraphTypeExtenstionHelper.CreateConnection<CategoryType, object>()
                 .Name("categories")
                 .Argument<NonNullGraphType<StringGraphType>>("storeId", "The store id where category are searched")
@@ -117,18 +140,29 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
         {
             var query = context.GetCatalogQuery<LoadProductsQuery>();
             query.ObjectIds = ids.ToArray();
-            query.IncludeFields = context.GetAllNodesPaths().Concat(new[] { "__object.id" }).ToArray();
+            query.IncludeFields = context.SubFields.Values.GetAllNodesPaths().ToArray();
 
             var response = await mediator.Send(query);
 
             return response.Products.ToDictionary(x => x.Id);
         }
 
+        private static async Task<IDictionary<string, ExpCategory>> LoadCategoriesAsync(IMediator mediator, IEnumerable<string> ids, IResolveFieldContext context)
+        {
+            var query = context.GetCatalogQuery<LoadCategoryQuery>();
+            query.ObjectIds = ids.ToArray();
+            query.IncludeFields = context.SubFields.Values.GetAllNodesPaths().ToArray();
+
+            var response = await mediator.Send(query);
+
+            return response.Categories.ToDictionary(x => x.Id);
+        }
+
         private static async Task<object> ResolveProductsConnectionAsync(IMediator mediator, IResolveConnectionContext<object> context)
         {
             var first = context.First;
             var skip = Convert.ToInt32(context.After ?? 0.ToString());
-            var includeFields = context.GetAllNodesPaths().Select(x => x.Replace("items.", "")).Concat(new[] {"__object.id" }).ToArray();
+            var includeFields = context.SubFields.Values.GetAllNodesPaths();
 
             //TODO: Need to be able get entire query from context and read all arguments to the query properties
             var query = context.GetCatalogQuery<SearchProductQuery>();
@@ -180,7 +214,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
         {
             var first = context.First;
             var skip = Convert.ToInt32(context.After ?? 0.ToString());
-            var includeFields = context.GetAllNodesPaths().Select(x => x.Replace("items.", "")).ToArray();
+            var includeFields = context.SubFields.Values.GetAllNodesPaths().Select(x => x.Replace("items.", "")).ToArray();
 
             var query = context.GetCatalogQuery<SearchCategoryQuery>();
 

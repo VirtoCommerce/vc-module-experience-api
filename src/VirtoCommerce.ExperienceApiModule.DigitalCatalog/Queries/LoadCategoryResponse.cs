@@ -1,7 +1,14 @@
+using System.Collections.Generic;
+
 namespace VirtoCommerce.XDigitalCatalog.Queries
 {
     public class LoadCategoryResponse
     {
-        public ExpCategory Category { get; set; }
+        public LoadCategoryResponse(ICollection<ExpCategory> expCategories)
+        {
+            Categories = expCategories;
+        }
+
+        public ICollection<ExpCategory> Categories { get; private set; }
     }
 }

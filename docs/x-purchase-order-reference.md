@@ -24,7 +24,7 @@
 ## Queriable objects
 ### Order main types schema
 
-![OrderType schema structure](OrderMainTypes.png)
+![OrderType schema structure](./media/OrderMainTypes.png)
 
 ## Examples
 In this block you can find some examples of queries and mutations.

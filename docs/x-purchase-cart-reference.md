@@ -82,7 +82,7 @@ With this connection you can get all user's carts/whishlists.
 
 ## Queriable objects
 ### CartType
-![CartType schema structure](CartType.jpeg)
+![CartType schema structure](./media/CartType.jpeg)
 
 ## Mutations
 Every mutation contains base arguments for working with cart context:

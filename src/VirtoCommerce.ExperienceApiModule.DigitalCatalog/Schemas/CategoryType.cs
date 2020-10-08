@@ -1,3 +1,4 @@
+using System.Linq;
 using GraphQL.Types;
 using MediatR;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
@@ -14,20 +15,14 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             Name = "Category";
 
             Field(x => x.Id, nullable: false).Description("Id of category.");
+            Field(x => x.Category.ImgSrc, nullable: true).Description("The category image.");
             Field(x => x.Category.Code, nullable: false).Description("SKU of category.");
             Field(x => x.Category.Name, nullable: false).Description("Name of category.");
-
-            Field<StringGraphType>(
-                "slug",
-                description: "Get slug for category. You can pass storeId and cultureName for better accuracy",
-                resolve: context =>
-                {
-                    var storeId = context.GetValue<string>("storeId");
-                    var cultureName = context.GetValue<string>("cultureName");
-
-                    return context.Source.Category.SeoInfos.GetBestMatchingSeoInfo(storeId, cultureName)?.SemanticUrl;
-                })
-            .RootAlias("__object.seoInfos");
+            Field(x => x.Level, nullable: true).Description(@"Level in hierarchy");
+            Field(x => x.Outline, nullable: true).Description(@"All parent categories ids relative to the requested catalog and concatenated with \ . E.g. (1/21/344)");
+            Field(x => x.Slug, nullable: true).Description(@"Request related slug for category");
+            Field(x => x.Category.Path, nullable: true).Description("Category path in to the requested catalog  (all parent categories names concatenated. E.g. (parent1/parent2))");
+            Field<SeoInfoType>("seoInfo", resolve: context => context.Source.SeoInfo, description: "Request related SEO info");
 
             FieldAsync<CategoryType>("parent", resolve: async context =>
             {
@@ -36,23 +31,20 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                     return null;
                 }
 
-                var response = await mediator.Send(new LoadCategoryQuery
-                {
-                    ObjectIds = new[] { categoryId },
-                    IncludeFields = context.GetAllNodesPaths()
-                });
+                var loadCategoryQuery = context.GetCatalogQuery<LoadCategoryQuery>();
+                loadCategoryQuery.ObjectIds = new[] { categoryId };
+                loadCategoryQuery.IncludeFields = context.SubFields.Values.GetAllNodesPaths();
 
-                return response.Category;
-            })
-            .RootAlias("__object.parentId");
+                var response = await mediator.Send(loadCategoryQuery);
 
-            Field<BooleanGraphType>("hasParent", resolve: context => TryGetParentId(context, out _)).RootAlias("__object.parentId");
+                return response.Categories.FirstOrDefault();
+            });
 
-            Field<ListGraphType<OutlineType>>("outlines", resolve: context => context.Source.Category.Outlines).RootAlias("__object.outlines");
+            Field<BooleanGraphType>("hasParent", resolve: context => TryGetParentId(context, out _));          
+
+            Field<ListGraphType<OutlineType>>("outlines", resolve: context => context.Source.Category.Outlines);
 
             Field<ListGraphType<ImageType>>("images", resolve: context => context.Source.Category.Images);
-
-            Field<ListGraphType<SeoInfoType>>("seoInfos", resolve: context => context.Source.Category.SeoInfos);
         }
 
         private static bool TryGetParentId(IResolveFieldContext<ExpCategory> context, out string parentId)

@@ -29,7 +29,7 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
             _pipeline = pipeline;
         }
 
-        public async Task Run(SearchProductResponse parameter, Func<SearchProductResponse, Task> next)
+        public virtual async Task Run(SearchProductResponse parameter, Func<SearchProductResponse, Task> next)
         {
             if (parameter == null)
             {
@@ -40,10 +40,11 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
             if (query == null)
             {
                 throw new OperationCanceledException("Query must be set");
-            }          
+            }
 
+            var responseGroup = EnumUtility.SafeParse(query.GetResponseGroup(), ExpProductResponseGroup.None);
             // If promotion evaluation requested
-            if (query.HasPricingFields())
+            if (responseGroup.HasFlag(ExpProductResponseGroup.LoadPrices))
             {                
                 var promoEvalContext = new PromotionEvaluationContext
                 {
