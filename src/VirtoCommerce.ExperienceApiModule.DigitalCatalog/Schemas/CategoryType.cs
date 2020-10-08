@@ -2,7 +2,6 @@ using GraphQL.Types;
 using MediatR;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
-using VirtoCommerce.XDigitalCatalog.Extensions;
 using VirtoCommerce.XDigitalCatalog.Queries;
 
 namespace VirtoCommerce.XDigitalCatalog.Schemas
@@ -14,19 +13,14 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             Name = "Category";
 
             Field(x => x.Id, nullable: false).Description("Id of category.");
+            Field(x => x.Category.ImgSrc, nullable: true).Description("The category image.");
             Field(x => x.Category.Code, nullable: false).Description("SKU of category.");
             Field(x => x.Category.Name, nullable: false).Description("Name of category.");
-
-            Field<StringGraphType>(
-                "slug",
-                description: "Get slug for category. You can pass storeId and cultureName for better accuracy",
-                resolve: context =>
-                {
-                    var storeId = context.GetValue<string>("storeId");
-                    var cultureName = context.GetValue<string>("cultureName");
-
-                    return context.Source.Category.SeoInfos.GetBestMatchingSeoInfo(storeId, cultureName)?.SemanticUrl;
-                });
+            Field(x => x.Level, nullable: true).Description(@"Level in hierarchy");
+            Field(x => x.Outline, nullable: true).Description(@"All parent categories ids relative to the requested catalog and concatenated with \ . E.g. (1/21/344)");
+            Field(x => x.Slug, nullable: true).Description(@"Request related slug for category");
+            Field(x => x.Category.Path, nullable: true).Description("Category path in to the requested catalog  (all parent categories names concatenated. E.g. (parent1/parent2))");
+            Field<SeoInfoType>("seoInfo", resolve: context => context.Source.SeoInfo, description: "Request related SEO info");
 
             FieldAsync<CategoryType>("parent", resolve: async context =>
             {
@@ -44,12 +38,11 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 return response.Category;
             });
 
-            Field<BooleanGraphType>("hasParent", resolve: context => TryGetParentId(context, out _));
+            Field<BooleanGraphType>("hasParent", resolve: context => TryGetParentId(context, out _));          
+
             Field<ListGraphType<OutlineType>>("outlines", resolve: context => context.Source.Category.Outlines);
 
             Field<ListGraphType<ImageType>>("images", resolve: context => context.Source.Category.Images);
-
-            Field<ListGraphType<SeoInfoType>>("seoInfos", resolve: context => context.Source.Category.SeoInfos);
         }
 
         private static bool TryGetParentId(IResolveFieldContext<ExpCategory> context, out string parentId)

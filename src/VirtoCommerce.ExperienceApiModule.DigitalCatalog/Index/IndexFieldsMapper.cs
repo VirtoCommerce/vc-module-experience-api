@@ -56,6 +56,13 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
             new RegexpNameMapper(new Regex(@"__object.metaDescription", RegexOptions.Compiled | RegexOptions.IgnoreCase),"__object.seoinfos.metaDescription"),
             new RegexpNameMapper(new Regex(@"__object.metaKeywords", RegexOptions.Compiled | RegexOptions.IgnoreCase),"__object.seoinfos.metaKeywords"),
             new RegexpNameMapper(new Regex(@"__object.metaTitle", RegexOptions.Compiled | RegexOptions.IgnoreCase),"__object.seoinfos.metaTitle"),
+
+            #region Category
+		
+            new RegexpNameMapper(new Regex(@"__object.slug", RegexOptions.Compiled | RegexOptions.IgnoreCase),"__object.outlines"),
+            new RegexpNameMapper(new Regex(@"__object.outline", RegexOptions.Compiled | RegexOptions.IgnoreCase),"__object.outlines"),
+            new RegexpNameMapper(new Regex(@"__object.level", RegexOptions.Compiled | RegexOptions.IgnoreCase),"__object.outlines"), 
+	        #endregion
         };
 
         public static IEnumerable<string> MapToIndexIncludes(IEnumerable<string> includeFields)

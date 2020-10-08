@@ -61,10 +61,15 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             Description = "Products are the sellable goods in an e-commerce project.";
 
             Field(d => d.IndexedProduct.Id).Description("The unique ID of the product.");
-
             Field(d => d.IndexedProduct.Code, nullable: false).Description("The product SKU.");
-
             Field<StringGraphType>("catalogId", resolve: context => context.Source.IndexedProduct.CatalogId);
+            Field(d => d.IndexedProduct.ProductType, nullable: true).Description("The type of product");
+            Field(x => x.Slug, nullable: true).Description(@"Request related slug for product");
+            Field(d => d.IndexedProduct.Name, nullable: false).Description("The name of the product.");
+            Field(x => x.Outline, nullable: true).Description(@"All parent categories ids relative to the requested catalog and concatenated with \ . E.g. (1/21/344)");
+            Field<SeoInfoType>("seoInfo", resolve: context => context.Source.SeoInfo, description: "Request related SEO info");
+
+            Field<ListGraphType<DescriptionType>>("descriptions", resolve: context => context.Source.IndexedProduct.Reviews);
 
             FieldAsync<CategoryType>(
                 "category",
@@ -79,60 +84,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
                     return responce.Category;
                 });
-
-            Field(d => d.IndexedProduct.Name, nullable: false).Description("The name of the product.");
-
-            Field<ListGraphType<DescriptionType>>(
-                "descriptions",
-                resolve: context => context.Source.IndexedProduct.Reviews);
-
-            Field(d => d.IndexedProduct.ProductType, nullable: true).Description("The type of product");
-
-            Field<StringGraphType>(
-                "slug",
-                description: "Get slug for product.",
-                resolve: context =>
-                {
-                    //TODO: Need to refactor in future
-                    var storeId = context.GetValue<string>("storeId");
-                    var cultureName = context.GetValue<string>("cultureName");
-
-                    return context.Source.IndexedProduct.SeoInfos.GetBestMatchingSeoInfo(storeId, cultureName)?.SemanticUrl;
-                });
-
-            Field<StringGraphType>(
-                "metaDescription",
-                description: "Get metaDescription for product.",
-                resolve: context =>
-                {
-                    var storeId = context.GetValue<string>("storeId");
-                    var cultureName = context.GetValue<string>("cultureName");
-
-                    return context.Source.IndexedProduct.SeoInfos.GetBestMatchingSeoInfo(storeId, cultureName)?.MetaDescription;
-                });
- 
-            Field<StringGraphType>(
-                "metaKeywords",
-                description: "Get metaKeywords for product.",
-                resolve: context =>
-                {
-                    var storeId = context.GetValue<string>("storeId");
-                    var cultureName = context.GetValue<string>("cultureName");
-
-                    return context.Source.IndexedProduct.SeoInfos.GetBestMatchingSeoInfo(storeId, cultureName)?.MetaKeywords;
-                });
-
-            Field<StringGraphType>(
-                "metaTitle",
-                description: "Get metaTitle for product.",
-                resolve: context =>
-                {
-                    var storeId = context.GetValue<string>("storeId");
-                    var cultureName = context.GetValue<string>("cultureName");
-
-                    return context.Source.IndexedProduct.SeoInfos.GetBestMatchingSeoInfo(storeId, cultureName)?.PageTitle;
-                });
-
+        
             Field<StringGraphType>(
                 "imgSrc",
                 description: "The product main image URL.",
@@ -206,8 +158,6 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             Field<ListGraphType<AssetType>>("assets", resolve: context => context.Source.IndexedProduct.Assets);
 
             Field<ListGraphType<OutlineType>>("outlines", resolve: context => context.Source.IndexedProduct.Outlines);//.RootAlias("__object.outlines");
-
-            Field<ListGraphType<SeoInfoType>>("seoInfos", resolve: context => context.Source.IndexedProduct.SeoInfos);
 
             Field<TaxCategoryType>("tax", resolve: context => null); // TODO: We need this?
 
