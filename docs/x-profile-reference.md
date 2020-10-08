@@ -77,7 +77,7 @@ With this query you can get the user by few arguments
 
 ## Queriable objects
 ### Profile schema type
-![Profile schema type](X-Profile-Type-Schema.jpg)
+![Profile schema type](./media/X-Profile-Type-Schema.jpg)
 
 ## Mutations
 #### List of mutations:

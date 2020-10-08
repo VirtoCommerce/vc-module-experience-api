@@ -133,7 +133,7 @@ This connection allows you to search products.
 
 ## Queriable objects
 ### ProductType
-![image](./ProductType.jpeg)
+![image](./media/ProductType.jpeg)
 #### Schema fields:
 |№ |Name             |Type                                 |Description|
 |--|-----------------|-------------------------------------|-----------|
@@ -162,7 +162,7 @@ This connection allows you to search products.
 |23|seoInfos         |List of SeoInfoType                  |SEO information of the product|
 |24|associations     |ProductAssociationType               |Product associations|
 ### CategoryType
-![image](./CategoryType.jpeg)
+![image](./media/CategoryType.jpeg)
 #### Schema fields:
 |№|Name      |Type                   |Description|
 |-|----------|-----------------------|-----------|
