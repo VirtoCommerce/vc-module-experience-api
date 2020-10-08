@@ -19,7 +19,7 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
             _inventorySearchService = inventorySearchService;
         }
 
-        public async Task Run(SearchProductResponse parameter, Func<SearchProductResponse, Task> next)
+        public virtual async Task Run(SearchProductResponse parameter, Func<SearchProductResponse, Task> next)
         {
             if (parameter == null)
             {
@@ -33,8 +33,9 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
             }
 
             var productIds = parameter.Results.Select(x => x.Id).ToArray();
+            var responseGroup = EnumUtility.SafeParse(query.GetResponseGroup(), ExpProductResponseGroup.None);
             // If products availabilities requested
-            if (query.HasInventoryFields())
+            if (responseGroup.HasFlag(ExpProductResponseGroup.LoadInventories))
             {
                 var inventories = await _inventorySearchService.SearchInventoriesAsync(new InventorySearchCriteria
                 {

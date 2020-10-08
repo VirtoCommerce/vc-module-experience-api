@@ -30,7 +30,7 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
             _pipeline = pipeline;
         }
 
-        public async Task Run(SearchProductResponse parameter, Func<SearchProductResponse, Task> next)
+        public virtual async Task Run(SearchProductResponse parameter, Func<SearchProductResponse, Task> next)
         {
             if (parameter == null)
             {
@@ -42,9 +42,10 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
             {
                 throw new OperationCanceledException("Query must be set");
             }
-       
-          // If promotion evaluation requested
-            if (query.HasPricingFields())
+
+            var responseGroup = EnumUtility.SafeParse(query.GetResponseGroup(), ExpProductResponseGroup.None);
+            // If prices evaluation requested
+            if (responseGroup.HasFlag(ExpProductResponseGroup.LoadPrices))
             {
                 //evaluate prices only if product missed prices in the index storage
                 var productsWithoutPrices = parameter.Results.Where(x => !x.IndexedPrices.Any()).ToArray();

@@ -29,7 +29,14 @@ namespace VirtoCommerce.XDigitalCatalog.Mapping
                 var result = genericModelBinder.BindModel(src) as ExpProduct;
                 if (result != null)
                 {
+
                     result.AllPrices = context.Mapper.Map<IEnumerable<ProductPrice>>(result.IndexedPrices).ToList();
+                    context.Items.TryGetValue("currency", out var currency);                    
+                    if (currency != null)
+                    {
+                        result.AllPrices = result.AllPrices.Where(x => (x.Currency == null) || x.Currency.Equals(currency)).ToList();
+                    }
+                    return result;
                 }
                 return result;
             });

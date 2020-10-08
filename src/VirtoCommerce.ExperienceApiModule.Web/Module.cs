@@ -31,7 +31,7 @@ namespace VirtoCommerce.ExperienceApiModule.Web
             //Register .NET GraphQL server
             var graphQlBuilder = services.AddGraphQL(_ =>
             {
-                _.EnableMetrics = true;
+                _.EnableMetrics = false;
                 _.ExposeExceptions = true;
             }).AddNewtonsoftJson(deserializerSettings => { }, serializerSettings => { })
             .AddUserContextBuilder(context => new GraphQLUserContext { User = context.User })

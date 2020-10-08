@@ -36,7 +36,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                                           .WithPaging(request.Skip, request.Take)
                                           .AddObjectIds(request.ObjectIds)
                                           .AddSorting(request.Sort)
-                                          .WithIncludeFields(request.IncludeFields.ToArray())
+                                          .WithIncludeFields(IndexFieldsMapper.MapToIndexIncludes(request.IncludeFields).ToArray())
                                           .Build();        
 
             var searchResult = await _searchProvider.SearchAsync(KnownDocumentTypes.Category, searchRequest);

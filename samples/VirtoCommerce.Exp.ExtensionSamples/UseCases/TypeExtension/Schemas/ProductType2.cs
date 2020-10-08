@@ -16,7 +16,7 @@ namespace VirtoCommerce.Exp.ExtensionSamples
             IDataLoaderContextAccessor dataLoader)
             : base(mediator, dataLoader)
         {
-            Field<ListGraphType<StringGraphType>>("searchKeywords", resolve: context => ((ExpProduct2)context.Source).SearchKeywords).RootAlias("__content"); ;
+            Field<ListGraphType<StringGraphType>>("searchKeywords", resolve: context => ((ExpProduct2)context.Source).SearchKeywords);//.RootAlias("__content"); ;
             Field<ListGraphType<InventoryType>>("inventoriesFromIndex", arguments: new QueryArguments(new QueryArgument<StringGraphType> { Name = "warehouse", Description = "warehouse id" }), resolve: context =>
             {
                 var result = ((ExpProduct2)context.Source).InventoriesFromIndex;

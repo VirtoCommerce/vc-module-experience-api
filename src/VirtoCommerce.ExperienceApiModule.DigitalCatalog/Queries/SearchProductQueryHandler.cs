@@ -47,6 +47,10 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
 
         public virtual async Task<SearchProductResponse> Handle(SearchProductQuery request, CancellationToken cancellationToken)
         {
+            var allStoreCurrencies = await _storeCurrencyResolver.GetAllStoreCurrenciesAsync(request.StoreId, request.CultureName);
+            var currency = await _storeCurrencyResolver.GetStoreCurrencyAsync(request.CurrencyCode, request.StoreId, request.CultureName);
+            var store = await _storeService.GetByIdAsync(request.StoreId);
+
             var builder = new IndexSearchRequestBuilder()
                                             .WithFuzzy(request.Fuzzy, request.FuzzyLevel)
                                             .ParseFilters(_phraseParser, request.Filter)
@@ -55,7 +59,8 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                                             .WithPaging(request.Skip, request.Take)
                                             .AddObjectIds(request.ObjectIds)
                                             .AddSorting(request.Sort)
-                                            .WithIncludeFields(request.IncludeFields.ToArray());
+                                            .AddTerms(new[] { $"catalog:{store.Catalog}" })
+                                            .WithIncludeFields(IndexFieldsMapper.MapToIndexIncludes(request.IncludeFields).ToArray());
 
             if (request.ObjectIds.IsNullOrEmpty())
             {
@@ -83,12 +88,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             //TODO: move later to own implementation
             //Call the catalog aggregation converter service to convert AggregationResponse to proper Aggregation type (term, range, filter)
             var aggregations = await _aggregationConverter.ConvertAggregationsAsync(searchResult.Aggregations, criteria);
-
-
-            var allStoreCurrencies = await _storeCurrencyResolver.GetAllStoreCurrenciesAsync(request.StoreId, request.CultureName);
-            var currency = await _storeCurrencyResolver.GetStoreCurrencyAsync(request.CurrencyCode, request.StoreId, request.CultureName);
-            var store = await _storeService.GetByIdAsync(request.StoreId);
-
+          
             var products = searchResult.Documents?.Select(x => _mapper.Map<ExpProduct>(x, options =>
             {
                 options.Items["all_currencies"] = allStoreCurrencies;

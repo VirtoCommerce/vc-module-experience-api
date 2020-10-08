@@ -36,8 +36,8 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                     return string.IsNullOrWhiteSpace(label)
                         ? context.Source.Name
                         : label;
-                })
-            .RootAlias("__object.properties.displayNames");
+                });
+            //.RootAlias("__object.properties.displayNames");
 
             Field<StringGraphType>(
                 "type",
@@ -52,7 +52,8 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             Field<StringGraphType>(
                 "value",
                 resolve: context => context.Source.Values.Select(x => x.Value).FirstOrDefault()
-            ).RootAlias("__object.properties.values");
+            );
+            //.RootAlias("__object.properties.values");
 
             Field<StringGraphType>(
                 "valueId",

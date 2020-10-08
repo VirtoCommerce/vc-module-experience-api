@@ -30,9 +30,7 @@ namespace VirtoCommerce.Exp.ExtensionSamples
             var inventoryQueryField = new FieldType
             {
                 Name = "inventory",
-                Arguments = new QueryArguments(
-                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id", Description = "id of the inventory" },
-                 ),
+                Arguments = new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id", Description = "id of the inventory" }),
                 Type = typeof(InventoryType),
                 Resolver = new AsyncFieldResolver<Inventory>(context =>
                 {

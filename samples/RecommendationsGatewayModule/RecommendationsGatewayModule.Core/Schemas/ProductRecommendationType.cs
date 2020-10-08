@@ -32,7 +32,7 @@ namespace RecommendationsGatewayModule.Core.Schemas
                 Type = GraphTypeExtenstionHelper.GetActualType<ProductType>(),
                 Resolver = new AsyncFieldResolver<ProductRecommendation, object>(async context =>
                 {
-                    var includeFields = context.GetAllNodesPaths().Select(x => x.Replace("items.", "")).ToArray();
+                    var includeFields = context.SubFields.Values.GetAllNodesPaths().ToArray();
                     var loader = dataLoader.Context.GetOrAddBatchLoader<string, ExpProduct>($"recommendedProducts", (ids) => LoadProductsAsync(mediator, ids, includeFields));
 
                     // IMPORTANT: In order to avoid deadlocking on the loader we use the following construct (next 2 lines):
