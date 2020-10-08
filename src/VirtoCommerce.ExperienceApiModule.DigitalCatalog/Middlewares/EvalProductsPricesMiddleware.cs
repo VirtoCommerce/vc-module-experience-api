@@ -4,25 +4,24 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using PipelineNet.Middleware;
-using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Models;
 using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.PricingModule.Core.Services;
 using VirtoCommerce.XDigitalCatalog.Queries;
+using VirtoCommerce.XDigitalCatalog.Services;
 
 namespace VirtoCommerce.XDigitalCatalog.Middlewares
 {
     public class EvalProductsPricesMiddleware : IAsyncMiddleware<SearchProductResponse>
     {
         private readonly IMapper _mapper;
-        private readonly IPricingService _pricingService;
+        private readonly IExpPricingService _pricingService;
         private readonly IGenericPipelineLauncher _pipeline;
 
         public EvalProductsPricesMiddleware(
             IMapper mapper
       
-            , IPricingService pricingService
+            , IExpPricingService pricingService
             , IGenericPipelineLauncher pipeline)
         {
             _mapper = mapper;
@@ -60,19 +59,15 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
                     await _pipeline.Execute(evalContext);
 
                     evalContext.ProductIds = productsWithoutPrices.Select(x => x.Id).ToArray();
-                    var prices = await _pricingService.EvaluateProductPricesAsync(evalContext);
+                    var prices = await _pricingService.EvaluateProductPricesAsync(parameter, evalContext);
 
                     foreach (var product in productsWithoutPrices)
                     {
-                        product.AllPrices = _mapper.Map<IEnumerable<ProductPrice>>(prices.Where(x => x.ProductId == product.Id), options =>
-                        {
-                            //TODO: Code duplication
-                            options.Items["all_currencies"] = parameter.AllStoreCurrencies;
-                            options.Items["currency"] = parameter.Currency;
-                        }).ToList();
+                        product.AllPrices = prices.Where(x => x.ProductId == product.Id).ToList();
                     }
                 }
             }
+
             await next(parameter);
         }
 

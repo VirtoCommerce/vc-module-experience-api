@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using PipelineNet.Middleware;
+using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.XDigitalCatalog.Queries;
 using VirtoCommerce.XDigitalCatalog.Services;
 
@@ -22,7 +23,18 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
                 throw new ArgumentNullException(nameof(parameter));
             }
 
-            parameter = await _inventorySearchServiceExp.SearchInventoriesAsync(parameter);
+            var query = parameter.Query;
+            if (query == null)
+            {
+                throw new OperationCanceledException("Query must be set");
+            }
+
+            var responseGroup = EnumUtility.SafeParse(query.GetResponseGroup(), ExpProductResponseGroup.None);
+            // If products availabilities requested
+            if (responseGroup.HasFlag(ExpProductResponseGroup.LoadInventories))
+            {
+                parameter = await _inventorySearchServiceExp.SearchInventoriesAsync(parameter);
+            }
                        
             await next(parameter);
         }

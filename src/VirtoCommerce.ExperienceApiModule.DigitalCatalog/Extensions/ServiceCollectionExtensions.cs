@@ -36,6 +36,7 @@ namespace VirtoCommerce.XDigitalCatalog.Extensions
             services.AddExpServices(typeof(IExpInventorySearchService), new[] { typeof(ExpInventorySearchService) });
             services.AddExpServices(typeof(IExpPromotionSearchService), new[] { typeof(ExpPromotionSearchService) });
             services.AddExpServices(typeof(IExpStoreService), new[] { typeof(ExpStoreService) });
+            services.AddExpServices(typeof(IExpPricingService), new[] { typeof(ExpPricingService) });
 
             //TODO
             //var serv = services.BuildServiceProvider().GetService<IExpProductAssociationSearchService>();
