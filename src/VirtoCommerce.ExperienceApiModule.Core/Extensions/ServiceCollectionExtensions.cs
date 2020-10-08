@@ -56,13 +56,18 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
             }
         }
 
-        public static void AddService(this IServiceCollection services, Type type)
+        public static void AddExpServices(this IServiceCollection serviceCollection, Type abstractionType, Type[] implemtationTypes)
         {
-            services.AddTransient(type, factory =>
+            foreach (var implType in implemtationTypes)
+            {
+                serviceCollection.AddTransient(typeof(IService), implType);
+            }
+
+            serviceCollection.AddTransient(abstractionType, factory =>
             {
                 var providers = factory.GetServices<IService>();
                 var config = factory.GetService<IOptions<ExpOptions>>().Value;
-                return providers.FirstOrDefault(p => p.GetType().GetInterfaces().Contains(type) && p.Provider.EqualsInvariant(config.Provider));
+                return providers.FirstOrDefault(p => p.GetType().GetInterfaces().Contains(abstractionType) && p.Provider.EqualsInvariant(config.Provider));
             });
         }
     }

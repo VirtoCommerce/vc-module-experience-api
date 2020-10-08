@@ -1,32 +1,22 @@
-﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
-using VirtoCommerce.MarketingModule.Core.Model.Promotions.Search;
-using VirtoCommerce.MarketingModule.Core.Search;
+using VirtoCommerce.XDigitalCatalog.Services;
 
 namespace VirtoCommerce.XDigitalCatalog.Queries
 {
-    public class LoadPromotionsQueryHandler : IQueryHandler<LoadPromotionsQuery, LoadPromotionsResponce>
+    public class LoadPromotionsQueryHandler : IQueryHandler<LoadPromotionsQuery, LoadPromotionsResponse>
     {
-        private readonly IPromotionSearchService _promotionSearchService;
+        private readonly IExpPromotionSearchService _promotionSearchService;
 
-        public LoadPromotionsQueryHandler(IPromotionSearchService promotionSearchService)
+        public LoadPromotionsQueryHandler(IExpPromotionSearchService promotionSearchService)
         {
             _promotionSearchService = promotionSearchService;
         }
 
-        public virtual async Task<LoadPromotionsResponce> Handle(LoadPromotionsQuery request, CancellationToken cancellationToken)
+        public virtual Task<LoadPromotionsResponse> Handle(LoadPromotionsQuery request, CancellationToken cancellationToken)
         {
-            var promotions = await _promotionSearchService.SearchPromotionsAsync(new PromotionSearchCriteria
-            {
-                ObjectIds = request.Ids.ToArray(),
-            });
-
-            return new LoadPromotionsResponce
-            {
-                Promotions = promotions.Results.ToDictionary(x => x.Id)
-            };
+            return _promotionSearchService.SearchPromotionsAsync(request);
         }
     }
 }

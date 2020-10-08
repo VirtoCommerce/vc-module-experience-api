@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using VirtoCommerce.MarketingModule.Core.Model.Promotions;
 
 namespace VirtoCommerce.XDigitalCatalog.Queries
 {
-    public class LoadPromotionsResponce
+    public class LoadPromotionsResponse
     {
         public IDictionary<string, Promotion> Promotions { get; set; }
     }

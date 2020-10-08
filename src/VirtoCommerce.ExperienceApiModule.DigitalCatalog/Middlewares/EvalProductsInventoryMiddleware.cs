@@ -1,22 +1,18 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using PipelineNet.Middleware;
-using VirtoCommerce.ExperienceApiModule.Core.Extensions;
-using VirtoCommerce.InventoryModule.Core.Model.Search;
-using VirtoCommerce.InventoryModule.Core.Services;
-using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.XDigitalCatalog.Queries;
+using VirtoCommerce.XDigitalCatalog.Services;
 
 namespace VirtoCommerce.XDigitalCatalog.Middlewares
 {
     public class EvalProductsInventoryMiddleware : IAsyncMiddleware<SearchProductResponse>
     {
-        private readonly IInventorySearchService _inventorySearchService;
+        private readonly IExpInventorySearchService _inventorySearchServiceExp;
 
-        public EvalProductsInventoryMiddleware(IInventorySearchService inventorySearchService)
+        public EvalProductsInventoryMiddleware(IExpInventorySearchService inventorySearchServiceExp)
         {
-            _inventorySearchService = inventorySearchService;
+            _inventorySearchServiceExp = inventorySearchServiceExp;
         }
 
         public async Task Run(SearchProductResponse parameter, Func<SearchProductResponse, Task> next)
@@ -26,29 +22,7 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
                 throw new ArgumentNullException(nameof(parameter));
             }
 
-            var query = parameter.Query;
-            if (query == null)
-            {
-                throw new OperationCanceledException("Query must be set");
-            }
-
-            var productIds = parameter.Results.Select(x => x.Id).ToArray();
-            // If products availabilities requested
-            if (query.HasInventoryFields())
-            {
-                var inventories = await _inventorySearchService.SearchInventoriesAsync(new InventorySearchCriteria
-                {
-                    ProductIds = productIds,
-                    //Do not use int.MaxValue use only 10 items per requested product
-                    //TODO: Replace to pagination load
-                    Take = Math.Min(productIds.Length * 10, 500)
-                });
-                if (inventories.Results.Any())
-                {
-                    parameter.Results.Apply(x => x.ApplyStoreInventories(inventories.Results, parameter.Store));
-                }
-            }
-
+            parameter = await _inventorySearchServiceExp.SearchInventoriesAsync(parameter);
 
             await next(parameter);
         }

@@ -12,8 +12,8 @@ using VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.SearchModule.Core.Model;
 using VirtoCommerce.SearchModule.Core.Services;
-using VirtoCommerce.StoreModule.Core.Services;
 using VirtoCommerce.XDigitalCatalog.Facets;
+using VirtoCommerce.XDigitalCatalog.Services;
 
 namespace VirtoCommerce.XDigitalCatalog.Queries
 {
@@ -22,7 +22,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
         private readonly IMapper _mapper;
         private readonly ISearchProvider _searchProvider;
         private readonly IStoreCurrencyResolver _storeCurrencyResolver;
-        private readonly IStoreService _storeService;
+        private readonly IExpStoreService _storeService;
         private readonly IGenericPipelineLauncher _pipeline;
         private readonly IAggregationConverter _aggregationConverter;
         private readonly ISearchPhraseParser _phraseParser;
@@ -31,7 +31,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             ISearchProvider searchProvider
             , IMapper mapper
             , IStoreCurrencyResolver storeCurrencyResolver
-            , IStoreService storeService
+            , IExpStoreService storeService
             , IGenericPipelineLauncher pipeline
             , IAggregationConverter aggregationConverter
             , ISearchPhraseParser phraseParser)

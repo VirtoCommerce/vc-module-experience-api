@@ -8,11 +8,6 @@ using VirtoCommerce.XDigitalCatalog.Queries;
 using VirtoCommerce.XDigitalCatalog.Schemas;
 using AutoMapper;
 using VirtoCommerce.XDigitalCatalog.Services;
-using VirtoCommerce.ExperienceApiModule.Core.Services;
-using Microsoft.Extensions.Options;
-using VirtoCommerce.ExperienceApiModule.Core.Models;
-using System.Linq;
-using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.XDigitalCatalog.Extensions
 {
@@ -36,12 +31,15 @@ namespace VirtoCommerce.XDigitalCatalog.Extensions
 
             services.AddAutoMapper(typeof(XDigitalCatalogAnchor));
 
-            services.AddTransient<IService, ExpProductAssociationSearchService>();
-            services.AddTransient<IService, ExpProductAssociationSearchServiceNswag>();
-            services.AddService(typeof(IExpProductAssociationSearchService));
+            services.AddExpServices(typeof(IExpProductAssociationSearchService)
+                , new[] { typeof(ExpProductAssociationSearchService), typeof(ExpProductAssociationSearchServiceNswag) });
+            services.AddExpServices(typeof(IExpInventorySearchService), new[] { typeof(ExpInventorySearchService) });
+            services.AddExpServices(typeof(IExpPromotionSearchService), new[] { typeof(ExpPromotionSearchService) });
+            services.AddExpServices(typeof(IExpStoreService), new[] { typeof(ExpStoreService) });
 
             //TODO
             //var serv = services.BuildServiceProvider().GetService<IExpProductAssociationSearchService>();
+            //var serv2 = services.BuildServiceProvider().GetService<IExpInventorySearchService>();
 
             return services;
         }
