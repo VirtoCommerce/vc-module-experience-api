@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
+using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.ExperienceApiModule.Core.Binding;
+using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Models;
 using VirtoCommerce.MarketingModule.Core.Model.Promotions;
 using VirtoCommerce.Platform.Core.Common;
@@ -47,8 +49,23 @@ namespace VirtoCommerce.XDigitalCatalog.Mapping
                         result.AllPrices = result.AllPrices.Where(x => (x.Currency == null) || x.Currency.Equals(currency)).ToList();
                     }
 
-                    result.Outline = result.IndexedProduct.Outlines.GetOutlinePath(store.Catalog);
-                    result.Slug = result.IndexedProduct.Outlines.GetSeoPath(store, language.ToString(), null);
+                    if (!result.IndexedProduct.Outlines.IsNullOrEmpty())
+                    {
+                        var outlines = result.IndexedProduct.Outlines;
+                        result.Outline = outlines.GetOutlinePath(store.Catalog);
+                        result.Slug = outlines.GetSeoPath(store, language.ToString(), null);
+                    }
+
+                    if (!result.IndexedProduct.Reviews.IsNullOrEmpty())
+                    {
+                        var descriptions = result.IndexedProduct.Reviews;
+                        result.Description = descriptions.Where(x => x.ReviewType.EqualsInvariant("FullReview"))
+                                                         .FirstBestMatchForLanguage(language?.ToString()) as EditorialReview;
+                        if(result.Description == null)
+                        {
+                            result.Description = descriptions.FirstBestMatchForLanguage(language?.ToString()) as EditorialReview;
+                        }
+                    }
 
                     if (!result.IndexedProduct.SeoInfos.IsNullOrEmpty())
                     {
