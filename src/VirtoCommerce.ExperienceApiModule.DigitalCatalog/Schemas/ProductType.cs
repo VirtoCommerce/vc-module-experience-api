@@ -70,6 +70,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             Field<SeoInfoType>("seoInfo", resolve: context => context.Source.SeoInfo, description: "Request related SEO info");
 
             Field<ListGraphType<DescriptionType>>("descriptions", resolve: context => context.Source.IndexedProduct.Reviews);
+            Field<DescriptionType>("description", resolve: context => context.Source.Description);
 
             FieldAsync<CategoryType>(
                 "category",

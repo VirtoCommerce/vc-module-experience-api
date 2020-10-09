@@ -76,7 +76,7 @@ namespace VirtoCommerce.XDigitalCatalog
         /// </summary>
         public InventoryInfo Inventory { get; private set; }
 
-
+        public EditorialReview Description { get; set; }
 
         public virtual long AvailableQuantity
         {

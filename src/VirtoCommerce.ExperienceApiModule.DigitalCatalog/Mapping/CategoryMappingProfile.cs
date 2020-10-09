@@ -26,9 +26,11 @@ namespace VirtoCommerce.XDigitalCatalog.Mapping
 
                 var genericModelBinder = new GenericModelBinder<ExpCategory>();
                 var result = genericModelBinder.BindModel(src) as ExpCategory;
-
-                result.Outline = result.Category.Outlines.GetOutlinePath(store.Catalog);
-                result.Slug = result.Category.Outlines.GetSeoPath(store, language.ToString(), null);
+                if (!result.Category.Outlines.IsNullOrEmpty())
+                {
+                    result.Outline = result.Category.Outlines.GetOutlinePath(store.Catalog);
+                    result.Slug = result.Category.Outlines.GetSeoPath(store, language.ToString(), null);
+                }
                 if (result.Outline != null)
                 {
                     //Need to take virtual parent from outline (get second last) because for virtual catalog category.ParentId still points to a physical category

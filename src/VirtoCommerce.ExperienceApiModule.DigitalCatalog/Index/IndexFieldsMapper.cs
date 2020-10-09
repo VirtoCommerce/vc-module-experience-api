@@ -52,6 +52,7 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
 
             new RegexpNameMapper(new Regex(@"__object.category.*", RegexOptions.Compiled | RegexOptions.IgnoreCase),"__object.categoryId"),
             new RegexpNameMapper(new Regex(@"__object.descriptions", RegexOptions.Compiled | RegexOptions.IgnoreCase),"__object.reviews"),
+            new RegexpNameMapper(new Regex(@"__object.description", RegexOptions.Compiled | RegexOptions.IgnoreCase),"__object.reviews"),
             new RegexpNameMapper(new Regex(@"__object.seoInfo.*", RegexOptions.Compiled | RegexOptions.IgnoreCase),"__object.seoInfos"),
 
             #region Category
