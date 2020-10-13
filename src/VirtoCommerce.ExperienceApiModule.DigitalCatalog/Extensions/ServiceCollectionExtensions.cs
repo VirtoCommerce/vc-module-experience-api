@@ -31,18 +31,34 @@ namespace VirtoCommerce.XDigitalCatalog.Extensions
 
             services.AddAutoMapper(typeof(XDigitalCatalogAnchor));
 
-            services.AddGatewayServices(typeof(IProductAssociationSearchServiceGateway),
-                new[] { /*typeof(ProductAssociationSearchServiceVirtoCommerce),*/ typeof(ProductAssociationSearchServiceCommerceTools) });
-            services.AddGatewayServices(typeof(IInventorySearchServiceGateway),
-                new[] { /*typeof(InventorySearchServiceVirtoCommerce), */ typeof(InventorySearchServiceCommerceTools)  });
-            services.AddGatewayServices(typeof(IPromotionSearchServiceGateway),
-                new[] { /*typeof(PromotionSearchServiceVirtoCommerce), */ typeof(PromotionSearchServiceCommerceTools) });
-            services.AddGatewayServices(typeof(IStoreServiceGateway),
-                new[] { /*typeof(StoreServiceVirtoCommerce),*/ typeof(StoreServiceCommerceTools) });
-            services.AddGatewayServices(typeof(IPricingServiceGateway),
-                new[] { /*typeof(PricingServiceVirtoCommerce),*/ typeof(PricingServiceCommerceTools) });
+            services.AddServiceGateways<IProductAssociationSearchServiceGateway>(new[]
+                {
+                    /*typeof(ProductAssociationSearchServiceVirtoCommerce),*/
+                    typeof(ProductAssociationSearchServiceCommerceTools)
+                });
+            services.AddServiceGateways<IInventorySearchServiceGateway>(
+                new[]
+                {
+                    /*typeof(InventorySearchServiceVirtoCommerce), */ typeof(InventorySearchServiceCommerceTools)
+                });
+            services.AddServiceGateways<IPromotionSearchServiceGateway>(
+                new[]
+                {
+                    /*typeof(PromotionSearchServiceVirtoCommerce), */
+                    typeof(PromotionSearchServiceCommerceTools)
+                });
+            services.AddServiceGateways<IStoreServiceGateway>(
+                new[]
+                {
+                    /*typeof(StoreServiceVirtoCommerce),*/ typeof(StoreServiceCommerceTools)
+                });
+            services.AddServiceGateways<IPricingServiceGateway>(
+                new[]
+                {
+                    /*typeof(PricingServiceVirtoCommerce),*/ typeof(PricingServiceCommerceTools)
+                });
 
-            //var gateway = services.BuildServiceProvider().GetService<IProductAssociationSearchServiceGateway>();
+            var gateway = services.BuildServiceProvider().GetService<IPricingServiceGateway>();
 
             return services;
         }
