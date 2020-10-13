@@ -42,7 +42,7 @@ namespace VirtoCommerce.XDigitalCatalog.Extensions
             services.AddGatewayServices(typeof(IPricingServiceGateway),
                 new[] { /*typeof(PricingServiceVirtoCommerce),*/ typeof(PricingServiceCommerceTools) });
 
-            var gateway = services.BuildServiceProvider().GetService<IProductAssociationSearchServiceGateway>();
+            //var gateway = services.BuildServiceProvider().GetService<IProductAssociationSearchServiceGateway>();
 
             return services;
         }
