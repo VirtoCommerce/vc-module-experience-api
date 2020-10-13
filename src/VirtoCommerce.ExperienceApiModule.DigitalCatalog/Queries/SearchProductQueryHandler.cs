@@ -22,7 +22,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
         private readonly IMapper _mapper;
         private readonly ISearchProvider _searchProvider;
         private readonly IStoreCurrencyResolver _storeCurrencyResolver;
-        private readonly IExpStoreService _storeService;
+        private readonly IStoreServiceGateway _storeService;
         private readonly IGenericPipelineLauncher _pipeline;
         private readonly IAggregationConverter _aggregationConverter;
         private readonly ISearchPhraseParser _phraseParser;
@@ -31,7 +31,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             ISearchProvider searchProvider
             , IMapper mapper
             , IStoreCurrencyResolver storeCurrencyResolver
-            , IExpStoreService storeService
+            , IStoreServiceGateway storeService
             , IGenericPipelineLauncher pipeline
             , IAggregationConverter aggregationConverter
             , ISearchPhraseParser phraseParser)

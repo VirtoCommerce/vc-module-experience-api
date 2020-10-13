@@ -56,7 +56,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
             }
         }
 
-        public static void AddExpServices(this IServiceCollection serviceCollection, Type abstractionType, Type[] implemtationTypes)
+        public static void AddGatewayServices(this IServiceCollection serviceCollection, Type abstractionType, Type[] implemtationTypes)
         {
             foreach (var implType in implemtationTypes)
             {

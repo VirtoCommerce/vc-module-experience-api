@@ -9,9 +9,9 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
 {
     public class EvalProductsInventoryMiddleware : IAsyncMiddleware<SearchProductResponse>
     {
-        private readonly IExpInventorySearchService _inventorySearchServiceExp;
+        private readonly IInventorySearchServiceGateway _inventorySearchServiceExp;
 
-        public EvalProductsInventoryMiddleware(IExpInventorySearchService inventorySearchServiceExp)
+        public EvalProductsInventoryMiddleware(IInventorySearchServiceGateway inventorySearchServiceExp)
         {
             _inventorySearchServiceExp = inventorySearchServiceExp;
         }

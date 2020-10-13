@@ -7,9 +7,9 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
 {
     public class LoadPromotionsQueryHandler : IQueryHandler<LoadPromotionsQuery, LoadPromotionsResponse>
     {
-        private readonly IExpPromotionSearchService _promotionSearchService;
+        private readonly IPromotionSearchServiceGateway _promotionSearchService;
 
-        public LoadPromotionsQueryHandler(IExpPromotionSearchService promotionSearchService)
+        public LoadPromotionsQueryHandler(IPromotionSearchServiceGateway promotionSearchService)
         {
             _promotionSearchService = promotionSearchService;
         }

@@ -31,12 +31,12 @@ namespace VirtoCommerce.XDigitalCatalog.Extensions
 
             services.AddAutoMapper(typeof(XDigitalCatalogAnchor));
 
-            services.AddExpServices(typeof(IExpProductAssociationSearchService)
-                , new[] { typeof(ExpProductAssociationSearchService), typeof(ExpProductAssociationSearchServiceNswag) });
-            services.AddExpServices(typeof(IExpInventorySearchService), new[] { typeof(ExpInventorySearchService) });
-            services.AddExpServices(typeof(IExpPromotionSearchService), new[] { typeof(ExpPromotionSearchService) });
-            services.AddExpServices(typeof(IExpStoreService), new[] { typeof(ExpStoreService) });
-            services.AddExpServices(typeof(IExpPricingService), new[] { typeof(ExpPricingService) });
+            services.AddGatewayServices(typeof(IProductAssociationSearchServiceGateway)
+                , new[] { typeof(ProductAssociationSearchServiceVirtoCommerce), typeof(ProductAssociationSearchServiceCommerceTools) });
+            services.AddGatewayServices(typeof(IInventorySearchServiceGateway), new[] { typeof(InventorySearchServiceVirtoCommerce) });
+            services.AddGatewayServices(typeof(IPromotionSearchServiceGateway), new[] { typeof(PromotionSearchServiceVirtoCommerce) });
+            services.AddGatewayServices(typeof(IStoreServiceGateway), new[] { typeof(StoreServiceVirtoCommerce) });
+            services.AddGatewayServices(typeof(IPricingServiceGateway), new[] { typeof(PricingServiceVirtoCommerce) });
 
             //TODO
             //var serv = services.BuildServiceProvider().GetService<IExpProductAssociationSearchService>();

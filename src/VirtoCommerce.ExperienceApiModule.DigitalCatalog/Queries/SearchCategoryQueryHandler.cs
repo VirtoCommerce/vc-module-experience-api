@@ -17,13 +17,13 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
         private readonly IMapper _mapper;
         private readonly ISearchProvider _searchProvider;
         private readonly ISearchPhraseParser _phraseParser;
-        private readonly IExpStoreService _storeService;
+        private readonly IStoreServiceGateway _storeService;
 
         public SearchCategoryQueryHandler(
             ISearchProvider searchProvider
             , IMapper mapper
             , ISearchPhraseParser phraseParser
-            , IExpStoreService storeService)
+            , IStoreServiceGateway storeService)
         {
             _searchProvider = searchProvider;
             _mapper = mapper;

@@ -7,9 +7,9 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
 {
     public class SearchProductAssociationsQueryHandler : IRequestHandler<SearchProductAssociationsQuery, SearchProductAssociationsResponse>
     {
-        private readonly IExpProductAssociationSearchService _productAssociationSearchService;
+        private readonly IProductAssociationSearchServiceGateway _productAssociationSearchService;
 
-        public SearchProductAssociationsQueryHandler(IExpProductAssociationSearchService productAssociationSearchService)
+        public SearchProductAssociationsQueryHandler(IProductAssociationSearchServiceGateway productAssociationSearchService)
         {
             _productAssociationSearchService = productAssociationSearchService;
         }
