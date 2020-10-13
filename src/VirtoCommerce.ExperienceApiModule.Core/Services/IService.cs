@@ -1,7 +1,7 @@
 namespace VirtoCommerce.ExperienceApiModule.Core.Services
 {
-    public interface IService
+    public interface IServiceGateway
     {
-        string Provider { get; set; }
+        string Gateway { get; set; }
     }
 }

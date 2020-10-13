@@ -1,14 +1,12 @@
 using System.Linq;
 using System.Threading.Tasks;
-using VirtoCommerce.ExperienceApiModule.Core.Models;
-using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.MarketingModule.Core.Model.Promotions.Search;
 using VirtoCommerce.MarketingModule.Core.Search;
 using VirtoCommerce.XDigitalCatalog.Queries;
 
 namespace VirtoCommerce.XDigitalCatalog.Services
 {
-    public class PromotionSearchServiceVirtoCommerce : IPromotionSearchServiceGateway, IService
+    public class PromotionSearchServiceVirtoCommerce : IPromotionSearchServiceGateway
     {
         private readonly IPromotionSearchService _promotionSearchService;
 
@@ -17,7 +15,7 @@ namespace VirtoCommerce.XDigitalCatalog.Services
             _promotionSearchService = promotionSearchService;
         }
 
-        public string Provider { get; set; } = Providers.PlatformModule;
+        public string Gateway { get; set; } = ExperienceApiModule.Core.Models.Gateways.VirtoCommerce;
 
         public async Task<LoadPromotionsResponse> SearchPromotionsAsync(LoadPromotionsQuery request)
         {

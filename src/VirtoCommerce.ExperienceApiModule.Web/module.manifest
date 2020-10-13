@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <module xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <id>VirtoCommerce.ExperienceApi</id>
   <version>0.5.0</version>
@@ -29,12 +29,6 @@
   <moduleType>VirtoCommerce.ExperienceApiModule.Web.Module, VirtoCommerce.ExperienceApiModule.Web</moduleType>
   <dependencies>
     <dependency id="VirtoCommerce.ElasticSearch" version="3.0.2" />
-    <dependency id="VirtoCommerce.Cart" version="3.2.0" />
-    <dependency id="VirtoCommerce.Marketing" version="3.4.0" />
-    <dependency id="VirtoCommerce.Inventory" version="3.2.0" />
-    <dependency id="VirtoCommerce.Payment" version="3.1.0" />
-    <dependency id="VirtoCommerce.Shipping" version="3.1.0" />
-    <dependency id="VirtoCommerce.Customer" version="3.1.0" />
   </dependencies>
   <incompatibilities />
   <groups>

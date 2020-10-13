@@ -2,13 +2,11 @@ using System.Threading.Tasks;
 using AutoMapper;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
-using VirtoCommerce.ExperienceApiModule.Core.Models;
-using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.XDigitalCatalog.Queries;
 
 namespace VirtoCommerce.XDigitalCatalog.Services
 {
-    public class ProductAssociationSearchServiceVirtoCommerce : IProductAssociationSearchServiceGateway, IService
+    public class ProductAssociationSearchServiceVirtoCommerce : IProductAssociationSearchServiceGateway
     {
         private readonly IProductAssociationSearchService _productAssociationSearchService;
         private readonly IMapper _mapper;
@@ -19,7 +17,7 @@ namespace VirtoCommerce.XDigitalCatalog.Services
             _mapper = mapper;
         }
 
-        public string Provider { get; set; } = Providers.PlatformModule;
+        public string Gateway { get; set; } = ExperienceApiModule.Core.Models.Gateways.VirtoCommerce;
 
         public async Task<SearchProductAssociationsResponse> SearchProductAssociationsAsync(SearchProductAssociationsQuery request)
         {

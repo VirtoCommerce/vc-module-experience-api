@@ -1,19 +1,16 @@
 using System;
 using System.Threading.Tasks;
 using VirtoCommerce.ExperienceApiModule.Core.Models;
+using VirtoCommerce.PricingModule.Core.Model;
 using VirtoCommerce.XDigitalCatalog.Queries;
 
 namespace VirtoCommerce.XDigitalCatalog.Services
 {
-    public class ProductAssociationSearchServiceCommerceTools : IProductAssociationSearchServiceGateway
+    public class PricingServiceCommerceTools : IPricingServiceGateway
     {
-        public ProductAssociationSearchServiceCommerceTools()
-        {
-
-        }
         public string Gateway { get; set; } = Gateways.CommerceTools;
 
-        public Task<SearchProductAssociationsResponse> SearchProductAssociationsAsync(SearchProductAssociationsQuery request)
+        public Task<ExperienceApiModule.Core.Models.ProductPrice[]> EvaluateProductPricesAsync(SearchProductResponse parameter, PriceEvaluationContext priceEvaluationContext)
         {
             throw new NotImplementedException();
         }

@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using AutoMapper;
+using VirtoCommerce.ExperienceApiModule.Core.Models;
 using VirtoCommerce.PricingModule.Core.Model;
 using VirtoCommerce.PricingModule.Core.Services;
 using VirtoCommerce.XDigitalCatalog.Queries;
@@ -16,6 +17,8 @@ namespace VirtoCommerce.XDigitalCatalog.Services
             _pricingService = pricingService;
             _mapper = mapper;
         }
+
+        public string Gateway { get; set; } = Gateways.VirtoCommerce;
 
         public async Task<ExperienceApiModule.Core.Models.ProductPrice[]> EvaluateProductPricesAsync(SearchProductResponse parameter, PriceEvaluationContext evalContext)
         {

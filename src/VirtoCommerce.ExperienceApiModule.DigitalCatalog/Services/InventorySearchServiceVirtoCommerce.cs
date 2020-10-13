@@ -1,8 +1,6 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using VirtoCommerce.ExperienceApiModule.Core.Models;
-using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.InventoryModule.Core.Model.Search;
 using VirtoCommerce.InventoryModule.Core.Services;
 using VirtoCommerce.Platform.Core.Common;
@@ -10,7 +8,7 @@ using VirtoCommerce.XDigitalCatalog.Queries;
 
 namespace VirtoCommerce.XDigitalCatalog.Services
 {
-    public class InventorySearchServiceVirtoCommerce : IInventorySearchServiceGateway, IService
+    public class InventorySearchServiceVirtoCommerce : IInventorySearchServiceGateway
     {
         private readonly IInventorySearchService _inventorySearchService;
 
@@ -19,7 +17,7 @@ namespace VirtoCommerce.XDigitalCatalog.Services
             _inventorySearchService = inventorySearchService;
         }
 
-        public string Provider { get; set; } = Providers.PlatformModule;
+        public string Gateway { get; set; } = ExperienceApiModule.Core.Models.Gateways.VirtoCommerce;
 
         public async Task<SearchProductResponse> SearchInventoriesAsync(SearchProductResponse parameter)
         {

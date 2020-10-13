@@ -5,15 +5,11 @@ using VirtoCommerce.XDigitalCatalog.Queries;
 
 namespace VirtoCommerce.XDigitalCatalog.Services
 {
-    public class ProductAssociationSearchServiceCommerceTools : IProductAssociationSearchServiceGateway
+    public class InventorySearchServiceCommerceTools : IInventorySearchServiceGateway
     {
-        public ProductAssociationSearchServiceCommerceTools()
-        {
-
-        }
         public string Gateway { get; set; } = Gateways.CommerceTools;
 
-        public Task<SearchProductAssociationsResponse> SearchProductAssociationsAsync(SearchProductAssociationsQuery request)
+        public Task<SearchProductResponse> SearchInventoriesAsync(SearchProductResponse query)
         {
             throw new NotImplementedException();
         }

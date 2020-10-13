@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
+using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.ExperienceApiModule.Core;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
@@ -21,34 +22,34 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
     {
         private readonly IMapper _mapper;
         private readonly ISearchProvider _searchProvider;
-        private readonly IStoreCurrencyResolver _storeCurrencyResolver;
+        //private readonly IStoreCurrencyResolver _storeCurrencyResolver;
         private readonly IStoreServiceGateway _storeService;
         private readonly IGenericPipelineLauncher _pipeline;
-        private readonly IAggregationConverter _aggregationConverter;
+        //private readonly IAggregationConverter _aggregationConverter;
         private readonly ISearchPhraseParser _phraseParser;
 
         public SearchProductQueryHandler(
             ISearchProvider searchProvider
             , IMapper mapper
-            , IStoreCurrencyResolver storeCurrencyResolver
+            //, IStoreCurrencyResolver storeCurrencyResolver
             , IStoreServiceGateway storeService
             , IGenericPipelineLauncher pipeline
-            , IAggregationConverter aggregationConverter
+            //, IAggregationConverter aggregationConverter
             , ISearchPhraseParser phraseParser)
         {
             _searchProvider = searchProvider;
             _mapper = mapper;
-            _storeCurrencyResolver = storeCurrencyResolver;
+            //_storeCurrencyResolver = storeCurrencyResolver;
             _storeService = storeService;
             _pipeline = pipeline;
-            _aggregationConverter = aggregationConverter;
+            //_aggregationConverter = aggregationConverter;
             _phraseParser = phraseParser;
         }
 
         public virtual async Task<SearchProductResponse> Handle(SearchProductQuery request, CancellationToken cancellationToken)
         {
-            var allStoreCurrencies = await _storeCurrencyResolver.GetAllStoreCurrenciesAsync(request.StoreId, request.CultureName);
-            var currency = await _storeCurrencyResolver.GetStoreCurrencyAsync(request.CurrencyCode, request.StoreId, request.CultureName);
+            var allStoreCurrencies = Enumerable.Empty<Currency>();//await _storeCurrencyResolver.GetAllStoreCurrenciesAsync(request.StoreId, request.CultureName);
+            Currency currency = null;//await _storeCurrencyResolver.GetStoreCurrencyAsync(request.CurrencyCode, request.StoreId, request.CultureName);
             var store = await _storeService.GetByIdAsync(request.StoreId);
 
             var builder = new IndexSearchRequestBuilder()
@@ -69,14 +70,14 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             var searchRequest = builder.Build();
 
             //Use predefined  facets for store  if they not passed
-            if (searchRequest.Aggregations.IsNullOrEmpty())
-            {
-                searchRequest.Aggregations = await _aggregationConverter.GetAggregationRequestsAsync(new ProductIndexedSearchCriteria
-                {
-                    StoreId = request.StoreId,
-                    Currency = request.CurrencyCode,
-                }, new FiltersContainer());
-            }         
+            //if (searchRequest.Aggregations.IsNullOrEmpty())
+            //{
+            //    searchRequest.Aggregations = await _aggregationConverter.GetAggregationRequestsAsync(new ProductIndexedSearchCriteria
+            //    {
+            //        StoreId = request.StoreId,
+            //        Currency = request.CurrencyCode,
+            //    }, new FiltersContainer());
+            //}         
 
             var searchResult = await _searchProvider.SearchAsync(KnownDocumentTypes.Product, searchRequest);
 
@@ -87,7 +88,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             };
             //TODO: move later to own implementation
             //Call the catalog aggregation converter service to convert AggregationResponse to proper Aggregation type (term, range, filter)
-            var aggregations = await _aggregationConverter.ConvertAggregationsAsync(searchResult.Aggregations, criteria);
+            //var aggregations = await _aggregationConverter.ConvertAggregationsAsync(searchResult.Aggregations, criteria);
           
             var products = searchResult.Documents?.Select(x => _mapper.Map<ExpProduct>(x, options =>
             {
@@ -103,7 +104,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                 Currency = currency,
                 Store = store,
                 Results = products.ToList(),
-                Facets = aggregations?.Select(x => _mapper.Map<FacetResult>(x)).ToList(),
+                //Facets = aggregations?.Select(x => _mapper.Map<FacetResult>(x)).ToList(),
                 TotalCount = (int)searchResult.TotalCount
             };
 

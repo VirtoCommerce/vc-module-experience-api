@@ -1,12 +1,10 @@
 using System.Threading.Tasks;
-using VirtoCommerce.ExperienceApiModule.Core.Models;
-using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.StoreModule.Core.Model;
 using VirtoCommerce.StoreModule.Core.Services;
 
 namespace VirtoCommerce.XDigitalCatalog.Services
 {
-    public class StoreServiceVirtoCommerce : IStoreServiceGateway, IService
+    public class StoreServiceVirtoCommerce : IStoreServiceGateway
     {
         private readonly IStoreService _storeService;
 
@@ -15,7 +13,7 @@ namespace VirtoCommerce.XDigitalCatalog.Services
             _storeService = storeService;
         }
 
-        public string Provider { get; set; } = Providers.PlatformModule;
+        public string Gateway { get; set; } = ExperienceApiModule.Core.Models.Gateways.VirtoCommerce;
 
         public Task<Store> GetByIdAsync(string id)
         {

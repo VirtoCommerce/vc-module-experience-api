@@ -1,7 +1,7 @@
 namespace VirtoCommerce.ExperienceApiModule.Core.Models
 {
-    public class ExpOptions
+    public class ExperienceOptions
     {
-        public string Provider { get; set; } = Providers.PlatformModule;
+        public string Gateway { get; set; } = Gateways.CommerceTools;
     }
 }

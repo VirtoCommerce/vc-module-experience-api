@@ -60,14 +60,14 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
         {
             foreach (var implType in implemtationTypes)
             {
-                serviceCollection.AddTransient(typeof(IService), implType);
+                serviceCollection.AddTransient(typeof(IServiceGateway), implType);
             }
 
             serviceCollection.AddTransient(abstractionType, factory =>
             {
-                var providers = factory.GetServices<IService>();
-                var config = factory.GetService<IOptions<ExpOptions>>().Value;
-                return providers.FirstOrDefault(p => p.GetType().GetInterfaces().Contains(abstractionType) && p.Provider.EqualsInvariant(config.Provider));
+                var providers = factory.GetServices<IServiceGateway>();
+                var config = factory.GetService<IOptions<ExperienceOptions>>().Value;
+                return providers.FirstOrDefault(p => p.GetType().GetInterfaces().Contains(abstractionType) && p.Gateway.EqualsInvariant(config.Gateway));
             });
         }
     }

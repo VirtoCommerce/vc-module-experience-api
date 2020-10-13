@@ -9,17 +9,17 @@ using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.Core.Models;
 using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
-using VirtoCommerce.ExperienceApiModule.XOrder.Extensions;
-using VirtoCommerce.ExperienceApiModule.XProfile.Extensions;
+//using VirtoCommerce.ExperienceApiModule.XOrder.Extensions;
+//using VirtoCommerce.ExperienceApiModule.XProfile.Extensions;
 using VirtoCommerce.MarketingModule.Core.Model.Promotions;
 using VirtoCommerce.Platform.Core.Modularity;
 using VirtoCommerce.PricingModule.Core.Model;
 using VirtoCommerce.TaxModule.Core.Model;
 using VirtoCommerce.XDigitalCatalog;
 using VirtoCommerce.XDigitalCatalog.Extensions;
-using VirtoCommerce.XProfile.Middlewares;
-using VirtoCommerce.XPurchase.Extensions;
-using VirtoCommerce.XPurchase.Middlewares;
+//using VirtoCommerce.XProfile.Middlewares;
+//using VirtoCommerce.XPurchase.Extensions;
+//using VirtoCommerce.XPurchase.Middlewares;
 
 namespace VirtoCommerce.ExperienceApiModule.Web
 {
@@ -47,34 +47,34 @@ namespace VirtoCommerce.ExperienceApiModule.Web
 
             //Register all xApi boundaries
             services.AddXCatalog(graphQlBuilder);
-            services.AddXProfile(graphQlBuilder);
-            services.AddXPurchase(graphQlBuilder);
-            services.AddXOrder(graphQlBuilder);
+            //services.AddXProfile(graphQlBuilder);
+            //services.AddXPurchase(graphQlBuilder);
+            //services.AddXOrder(graphQlBuilder);
 
 
-            services.AddSingleton<IStoreCurrencyResolver, StoreCurrencyResolver>();
+            //services.AddSingleton<IStoreCurrencyResolver, StoreCurrencyResolver>();
 
             services.AddAutoMapper(ModuleInfo.Assembly);
 
             #region Pipelines
-            services.AddPipeline<PromotionEvaluationContext>(builder =>
-               {
-                   builder.AddMiddleware(typeof(LoadUserToEvalContextMiddleware));
-                   builder.AddMiddleware(typeof(LoadCartToEvalContextMiddleware));
-               });
-            services.AddPipeline<TaxEvaluationContext>(builder =>
-            {
-                builder.AddMiddleware(typeof(LoadUserToEvalContextMiddleware));
-                builder.AddMiddleware(typeof(LoadCartToEvalContextMiddleware));
-            });
-            services.AddPipeline<PriceEvaluationContext>(builder =>
-            {
-                builder.AddMiddleware(typeof(LoadUserToEvalContextMiddleware));
-                builder.AddMiddleware(typeof(LoadCartToEvalContextMiddleware));
-            });
+            //services.AddPipeline<PromotionEvaluationContext>(builder =>
+            //   {
+            //       builder.AddMiddleware(typeof(LoadUserToEvalContextMiddleware));
+            //       builder.AddMiddleware(typeof(LoadCartToEvalContextMiddleware));
+            //   });
+            //services.AddPipeline<TaxEvaluationContext>(builder =>
+            //{
+            //    builder.AddMiddleware(typeof(LoadUserToEvalContextMiddleware));
+            //    builder.AddMiddleware(typeof(LoadCartToEvalContextMiddleware));
+            //});
+            //services.AddPipeline<PriceEvaluationContext>(builder =>
+            //{
+            //    builder.AddMiddleware(typeof(LoadUserToEvalContextMiddleware));
+            //    builder.AddMiddleware(typeof(LoadCartToEvalContextMiddleware));
+            //});
             #endregion
 
-            services.AddOptions<ExpOptions>();
+            services.AddOptions<ExperienceOptions>();
         }
 
         public void PostInitialize(IApplicationBuilder appBuilder)
