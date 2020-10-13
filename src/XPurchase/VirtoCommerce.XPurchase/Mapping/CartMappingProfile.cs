@@ -256,7 +256,7 @@ namespace VirtoCommerce.XPurchase.Mapping
                 taxEvalcontext.CustomerId = cartAggr.Cart.CustomerId;
                 //TODO: Customer
 
-                foreach (var lineItem in cartAggr.Cart.Items)
+                foreach (var lineItem in cartAggr.Cart.Items ?? Array.Empty<LineItem>())
                 {
                     taxEvalcontext.Lines.Add(new TaxLine()
                     {
@@ -273,7 +273,7 @@ namespace VirtoCommerce.XPurchase.Mapping
                     });
                 }
 
-                foreach (var shipment in cartAggr.Cart.Shipments)
+                foreach (var shipment in cartAggr.Cart.Shipments ?? Array.Empty<Shipment>())
                 {
                     var totalTaxLine = new TaxLine
                     {
@@ -294,7 +294,7 @@ namespace VirtoCommerce.XPurchase.Mapping
                     }
                 }
 
-                foreach (var payment in cartAggr.Cart.Payments)
+                foreach (var payment in cartAggr.Cart.Payments ?? Array.Empty<Payment>())
                 {
                     var totalTaxLine = new TaxLine
                     {

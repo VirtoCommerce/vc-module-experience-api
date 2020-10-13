@@ -1,7 +1,9 @@
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
+using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
+using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.SearchModule.Core.Services;
 
 namespace VirtoCommerce.XPurchase.Queries
@@ -35,6 +37,7 @@ namespace VirtoCommerce.XPurchase.Queries
                                      .WithSorting(request.Sort)
                                      .Build();
 
+            searchCriteria.ResponseGroup = EnumUtility.SafeParseFlags(request.GetResponseGroup(), CartResponseGroup.Full).ToString();
             return _cartAggregateRepository.SearchCartAsync(searchCriteria);
         }
     }

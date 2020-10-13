@@ -1,3 +1,4 @@
+using System.Linq;
 using GraphQL.Resolvers;
 using GraphQL.Types;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
@@ -29,11 +30,11 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             Field(x => x.NormalizedEmail, true);
             Field(x => x.NormalizedUserName);
             Field(x => x.PasswordExpired);
-            Field(x => x.PasswordHash, true);
             Field(x => x.PhoneNumber, true);
             Field(x => x.PhoneNumberConfirmed);
             Field(x => x.PhotoUrl, true);
             Field<ListGraphType<RoleType>>("roles", resolve: x => x.Source.Roles);
+            Field<ListGraphType<StringGraphType>>("permissions", resolve: x => x.Source.Roles.SelectMany(r => r.Permissions.Select(p=> p.Name)));
             Field(x => x.SecurityStamp);
             Field(x => x.StoreId, true);
             Field(x => x.TwoFactorEnabled);

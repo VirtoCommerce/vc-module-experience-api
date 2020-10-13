@@ -66,7 +66,7 @@ namespace VirtoCommerce.XPurchase
             return await InnerGetCartAggregateFromCartAsync(cart, language ?? Language.InvariantLanguage.CultureName);
         }
 
-        public async Task<CartAggregate> GetCartAsync(string cartName, string storeId, string userId, string language, string currencyCode, string type = null)
+        public async Task<CartAggregate> GetCartAsync(string cartName, string storeId, string userId, string language, string currencyCode, string type = null, string responseGroup = null)
         {
             var criteria = new CartModule.Core.Model.Search.ShoppingCartSearchCriteria
             {
@@ -74,7 +74,8 @@ namespace VirtoCommerce.XPurchase
                 CustomerId = userId,
                 Name = cartName,
                 Currency = currencyCode,
-                Type = type
+                Type = type,
+                ResponseGroup = EnumUtility.SafeParseFlags(responseGroup, CartResponseGroup.Full).ToString()
             };
 
             var cartSearchResult = await _shoppingCartSearchService.SearchCartAsync(criteria);

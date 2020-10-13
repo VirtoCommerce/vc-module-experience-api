@@ -12,6 +12,6 @@ namespace VirtoCommerce.XPurchase.Queries
             CartId = cartId;
         }
         public string CartId { get; set; }
-
+       
     }
 }

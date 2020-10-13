@@ -64,6 +64,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                     var type = context.GetArgument<string>("type");
 
                     var getCartQuery = new GetCartQuery(storeId, type, cartName, userId, currencyCode, cultureName);
+                    getCartQuery.IncludeFields = context.SubFields.Values.GetAllNodesPaths().ToArray();
                     var cartAggregate = await _mediator.Send(getCartQuery);
                     if (cartAggregate == null)
                     {
@@ -692,6 +693,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             query.Take = first ?? context.PageSize ?? 10;
             query.Sort = context.GetArgument<string>("sort");
             query.Filter = context.GetArgument<string>("filter");
+            query.IncludeFields = context.SubFields.Values.GetAllNodesPaths().ToArray();
 
             context.UserContext.Add(nameof(Currency.CultureName).ToCamelCase(), query.CultureName);
 
