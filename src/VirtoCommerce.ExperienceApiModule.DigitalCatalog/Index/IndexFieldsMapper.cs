@@ -8,58 +8,58 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
     {
         public class RegexpNameMapper
         {
-            protected Regex MatchPattern { get; set; }
-            protected string IndexFieldPattern { get; set; }
+            protected string Pattern { get; set; }
+            protected string Replacement { get; set; }
             public string[] AdditionalFields { get; set; }
 
-            public RegexpNameMapper(Regex matchPattern, string indexFieldPattern, string[] additionalFields = null)
+            public RegexpNameMapper(string pattern, string replacement, string[] additionalFields = null)
             {
-                MatchPattern = matchPattern;
-                IndexFieldPattern = indexFieldPattern;
+                Pattern = pattern;
+                Replacement = replacement;
                 AdditionalFields = additionalFields;
             }
 
-            public virtual bool CanMap(string includeField)
+            public virtual bool CanMap(string input)
             {
-                return MatchPattern.Match(includeField).Success;
+                return Regex.IsMatch(input, Pattern, RegexOptions.IgnoreCase);
             }
 
-            public virtual string Map(string includeField)
+            public virtual string Map(string input)
             {
-                return MatchPattern.Replace(includeField, IndexFieldPattern);
+                return Regex.Replace(input, Pattern, Replacement, RegexOptions.IgnoreCase);
             }
         }
 
         public static IList<RegexpNameMapper> Mappers => new List<RegexpNameMapper>()
         {
-            new RegexpNameMapper(new Regex(@".*", RegexOptions.Compiled | RegexOptions.IgnoreCase),"$0", new [] { "__object.id" }),
-            new RegexpNameMapper(new Regex(@"(items.)?price[s]?.(?<part>[^\.]+).*$", RegexOptions.Compiled | RegexOptions.IgnoreCase),"__prices.$2", new [] { "__prices.currency" }),
-            new RegexpNameMapper(new Regex(@"^items.variations", RegexOptions.Compiled | RegexOptions.IgnoreCase),"__variations"),
-            new RegexpNameMapper(new Regex(@"^items", RegexOptions.Compiled | RegexOptions.IgnoreCase),"__object"),
-            new RegexpNameMapper(new Regex(@"^(?!__)", RegexOptions.Compiled | RegexOptions.IgnoreCase),"__object."),
+            new RegexpNameMapper(@".*", "$0", new [] { "__object.id" }),
+            new RegexpNameMapper(@"(items.)?price[s]?.(?<part>[^\.]+).*$","__prices.$2", new [] { "__prices.currency" }),
+            new RegexpNameMapper(@"^items.variations", "__variations"),
+            new RegexpNameMapper(@"^items", "__object"),
+            new RegexpNameMapper(@"^(?!__)", "__object."),
 
          
-            new RegexpNameMapper(new Regex(@"properties.value$", RegexOptions.Compiled | RegexOptions.IgnoreCase),"properties.values"),
-            new RegexpNameMapper(new Regex(@"imgSrc", RegexOptions.Compiled | RegexOptions.IgnoreCase),"images"),
+            new RegexpNameMapper(@"properties.value$", "properties.values"),
+            new RegexpNameMapper(@"imgSrc", "images"),
 
-            new RegexpNameMapper(new Regex(@"__object.availabilityData.isActive", RegexOptions.Compiled | RegexOptions.IgnoreCase),"__object.isActive"),
-            new RegexpNameMapper(new Regex(@"__object.availabilityData.isBuyable", RegexOptions.Compiled | RegexOptions.IgnoreCase),"__object.isBuyable"),
-            new RegexpNameMapper(new Regex(@"__object.availabilityData.trackInventory", RegexOptions.Compiled | RegexOptions.IgnoreCase),"__object.trackInventory"),
+            new RegexpNameMapper(@"__object.availabilityData.isActive", "__object.isActive"),
+            new RegexpNameMapper(@"__object.availabilityData.isBuyable", "__object.isBuyable"),
+            new RegexpNameMapper(@"__object.availabilityData.trackInventory", "__object.trackInventory"),
 
-            new RegexpNameMapper(new Regex(@"__object.parent.*", RegexOptions.Compiled | RegexOptions.IgnoreCase),"__object.parentId"),
-            new RegexpNameMapper(new Regex(@"__object.hasParent.*", RegexOptions.Compiled | RegexOptions.IgnoreCase),"__object.parentId"),
-            new RegexpNameMapper(new Regex(@"__object.parent.*", RegexOptions.Compiled | RegexOptions.IgnoreCase),"__object.parentId"),
+            new RegexpNameMapper(@"__object.parent.*",  "__object.parentId"),
+            new RegexpNameMapper(@"__object.hasParent.*", "__object.parentId"),
+            new RegexpNameMapper(@"__object.parent.*", "__object.parentId"),
 
-            new RegexpNameMapper(new Regex(@"__object.category.*", RegexOptions.Compiled | RegexOptions.IgnoreCase),"__object.categoryId"),
-            new RegexpNameMapper(new Regex(@"__object.descriptions", RegexOptions.Compiled | RegexOptions.IgnoreCase),"__object.reviews"),
-            new RegexpNameMapper(new Regex(@"__object.description", RegexOptions.Compiled | RegexOptions.IgnoreCase),"__object.reviews"),
-            new RegexpNameMapper(new Regex(@"__object.seoInfo.*", RegexOptions.Compiled | RegexOptions.IgnoreCase),"__object.seoInfos"),
+            new RegexpNameMapper(@"__object.category.*", "__object.categoryId"),
+            new RegexpNameMapper(@"__object.descriptions", "__object.reviews"),
+            new RegexpNameMapper(@"__object.description", "__object.reviews"),
+            new RegexpNameMapper(@"__object.seoInfo.*", "__object.seoInfos"),
 
             #region Category
 		
-            new RegexpNameMapper(new Regex(@"__object.slug", RegexOptions.Compiled | RegexOptions.IgnoreCase),"__object.outlines", new [] { "__object.seoInfos" }),
-            new RegexpNameMapper(new Regex(@"__object.outline", RegexOptions.Compiled | RegexOptions.IgnoreCase),"__object.outlines"),
-            new RegexpNameMapper(new Regex(@"__object.level", RegexOptions.Compiled | RegexOptions.IgnoreCase),"__object.outlines"), 
+            new RegexpNameMapper(@"__object.slug", "__object.outlines", new [] { "__object.seoInfos" }),
+            new RegexpNameMapper(@"__object.outline", "__object.outlines"),
+            new RegexpNameMapper(@"__object.level", "__object.outlines"), 
 	        #endregion
         };
 
