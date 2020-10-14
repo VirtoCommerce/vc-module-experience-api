@@ -4,26 +4,25 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using PipelineNet.Middleware;
-using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.TaxModule.Core.Model;
 using VirtoCommerce.TaxModule.Core.Model.Search;
-using VirtoCommerce.TaxModule.Core.Services;
 using VirtoCommerce.XDigitalCatalog.Queries;
+using VirtoCommerce.XGateway.Core.Services;
 
 namespace VirtoCommerce.XDigitalCatalog.Middlewares
 {
     public class EvalProductsTaxMiddleware : IAsyncMiddleware<SearchProductResponse>
     {
         private readonly IMapper _mapper;
-        private readonly ITaxProviderSearchService _taxProviderSearchService;
+        private readonly ITaxProviderSearchServiceGateway _taxProviderSearchService;
         private readonly IGenericPipelineLauncher _pipeline;
 
 
         public EvalProductsTaxMiddleware(
             IMapper mapper
-            , ITaxProviderSearchService taxProviderSearchService
+            , ITaxProviderSearchServiceGateway taxProviderSearchService
             , IGenericPipelineLauncher pipeline)
         {
             _mapper = mapper;        

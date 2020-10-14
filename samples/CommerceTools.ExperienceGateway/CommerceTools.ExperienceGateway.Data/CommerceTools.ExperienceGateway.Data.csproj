@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <noWarn>1591</noWarn>
+        <Description></Description>
+        <IsPackable>True</IsPackable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\src\XGateway\VirtoCommerce.XGateway.Core\VirtoCommerce.XGateway.Core.csproj" />
+    </ItemGroup>
+
+</Project>

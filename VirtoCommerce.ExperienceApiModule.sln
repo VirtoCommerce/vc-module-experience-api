@@ -53,6 +53,22 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtoCommerce.ExperienceApi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtoCommerce.XDigitalCatalog.Tests", "tests\VirtoCommerce.XDigitalCatalog.Tests\VirtoCommerce.XDigitalCatalog.Tests.csproj", "{C07338AA-A581-4DF1-823C-B1A25B8778D4}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "XGateway", "XGateway", "{2C9CAE66-8BCD-459C-AAC4-9D617DE24290}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtoCommerce.XGateway.Core", "src\XGateway\VirtoCommerce.XGateway.Core\VirtoCommerce.XGateway.Core.csproj", "{C6606E30-251F-4405-9B36-0324FA2C0873}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "VirtoCommerce.ExperienceGatewayModule", "VirtoCommerce.ExperienceGatewayModule", "{D9423C6A-65A1-41E4-B6A8-C3533B34B13E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtoCommerce.ExperienceGatewayModule.Web", "src\XGateway\VirtoCommerce.ExperienceGatewayModule\VirtoCommerce.ExperienceGatewayModule.Web\VirtoCommerce.ExperienceGatewayModule.Web.csproj", "{BB65CDBF-0138-450B-BD54-37B67DE4CC4D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VirtoCommerce.ExperienceGatewayModule.Data", "src\XGateway\VirtoCommerce.ExperienceGatewayModule\VirtoCommerce.ExperienceGatewayModule.Data\VirtoCommerce.ExperienceGatewayModule.Data.csproj", "{3EC53C2F-1064-48F1-8FAE-CBAAEF484444}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CommerceTools.ExperienceGatewayModule", "CommerceTools.ExperienceGatewayModule", "{66639071-2EE8-4FB1-8528-D11869FD3A60}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommerceTools.ExperienceGateway.Web", "samples\CommerceTools.ExperienceGateway\CommerceTools.ExperienceGateway.Web\CommerceTools.ExperienceGateway.Web.csproj", "{A9EB248D-46CE-4BCC-8E18-F1CD87A5A576}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommerceTools.ExperienceGateway.Data", "samples\CommerceTools.ExperienceGateway\CommerceTools.ExperienceGateway.Data\CommerceTools.ExperienceGateway.Data.csproj", "{E09CEEB8-4002-4402-AE3F-36E2B705C436}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -127,6 +143,26 @@ Global
 		{C07338AA-A581-4DF1-823C-B1A25B8778D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C07338AA-A581-4DF1-823C-B1A25B8778D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C07338AA-A581-4DF1-823C-B1A25B8778D4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6606E30-251F-4405-9B36-0324FA2C0873}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6606E30-251F-4405-9B36-0324FA2C0873}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6606E30-251F-4405-9B36-0324FA2C0873}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6606E30-251F-4405-9B36-0324FA2C0873}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BB65CDBF-0138-450B-BD54-37B67DE4CC4D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB65CDBF-0138-450B-BD54-37B67DE4CC4D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BB65CDBF-0138-450B-BD54-37B67DE4CC4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BB65CDBF-0138-450B-BD54-37B67DE4CC4D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3EC53C2F-1064-48F1-8FAE-CBAAEF484444}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3EC53C2F-1064-48F1-8FAE-CBAAEF484444}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3EC53C2F-1064-48F1-8FAE-CBAAEF484444}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3EC53C2F-1064-48F1-8FAE-CBAAEF484444}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A9EB248D-46CE-4BCC-8E18-F1CD87A5A576}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9EB248D-46CE-4BCC-8E18-F1CD87A5A576}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9EB248D-46CE-4BCC-8E18-F1CD87A5A576}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9EB248D-46CE-4BCC-8E18-F1CD87A5A576}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E09CEEB8-4002-4402-AE3F-36E2B705C436}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E09CEEB8-4002-4402-AE3F-36E2B705C436}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E09CEEB8-4002-4402-AE3F-36E2B705C436}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E09CEEB8-4002-4402-AE3F-36E2B705C436}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -154,6 +190,14 @@ Global
 		{55587F1C-B83C-46CB-A89E-E7D062144F9B} = {C2FC6659-3B97-4513-A22C-CCF81A4E4395}
 		{E2E45B13-D240-4300-8333-94C6C616CD00} = {E3929EC9-690B-492A-BF16-6F8FDBBD0D97}
 		{C07338AA-A581-4DF1-823C-B1A25B8778D4} = {E3929EC9-690B-492A-BF16-6F8FDBBD0D97}
+		{2C9CAE66-8BCD-459C-AAC4-9D617DE24290} = {FAE6CCF7-298C-4AF3-8044-60DAA0C099F0}
+		{C6606E30-251F-4405-9B36-0324FA2C0873} = {2C9CAE66-8BCD-459C-AAC4-9D617DE24290}
+		{D9423C6A-65A1-41E4-B6A8-C3533B34B13E} = {2C9CAE66-8BCD-459C-AAC4-9D617DE24290}
+		{BB65CDBF-0138-450B-BD54-37B67DE4CC4D} = {D9423C6A-65A1-41E4-B6A8-C3533B34B13E}
+		{3EC53C2F-1064-48F1-8FAE-CBAAEF484444} = {D9423C6A-65A1-41E4-B6A8-C3533B34B13E}
+		{66639071-2EE8-4FB1-8528-D11869FD3A60} = {96726105-C4DE-4ABB-A5B7-AD910202B1C9}
+		{A9EB248D-46CE-4BCC-8E18-F1CD87A5A576} = {66639071-2EE8-4FB1-8528-D11869FD3A60}
+		{E09CEEB8-4002-4402-AE3F-36E2B705C436} = {66639071-2EE8-4FB1-8528-D11869FD3A60}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E56E5C53-D55A-451B-96FA-654D86F96658}

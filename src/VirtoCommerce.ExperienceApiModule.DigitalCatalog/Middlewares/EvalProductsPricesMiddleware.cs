@@ -8,7 +8,7 @@ using VirtoCommerce.ExperienceApiModule.Core.Models;
 using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.XDigitalCatalog.Queries;
-using VirtoCommerce.XDigitalCatalog.Services;
+using VirtoCommerce.XGateway.Core.Services;
 
 namespace VirtoCommerce.XDigitalCatalog.Middlewares
 {
@@ -20,7 +20,6 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
 
         public EvalProductsPricesMiddleware(
             IMapper mapper
-      
             , IPricingServiceGateway pricingService
             , IGenericPipelineLauncher pipeline)
         {
@@ -59,15 +58,19 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
                     await _pipeline.Execute(evalContext);
 
                     evalContext.ProductIds = productsWithoutPrices.Select(x => x.Id).ToArray();
-                    var prices = await _pricingService.EvaluateProductPricesAsync(parameter, evalContext);
+                    var prices = await _pricingService.EvaluateProductPricesAsync(evalContext);
 
                     foreach (var product in productsWithoutPrices)
                     {
-                        product.AllPrices = prices.Where(x => x.ProductId == product.Id).ToList();
+                        product.AllPrices = _mapper.Map<IEnumerable<ProductPrice>>(prices.Where(x => x.ProductId == product.Id), options =>
+                        {
+                            //TODO: Code duplication
+                            options.Items["all_currencies"] = parameter.AllStoreCurrencies;
+                            options.Items["currency"] = parameter.Currency;
+                        }).ToList();
                     }
                 }
             }
-
             await next(parameter);
         }
 

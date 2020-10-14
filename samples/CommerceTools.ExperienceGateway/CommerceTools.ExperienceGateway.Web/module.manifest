@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<module>
+    <id>XGateway.VirtoCommerce</id>
+    <version>3.0.0</version>
+    <version-tag></version-tag>
+    <platformVersion>3.0.0</platformVersion>
+    <title>VirtoCommerce gateway API</title>
+    <description></description>
+    <dependencies>
+        <dependency id="VirtoCommerce.ExperienceApi" version="3.0.0" />
+    </dependencies>
+    <groups>
+        <group>commerce</group>
+    </groups>
+    <authors>
+        <author>Eugeny Tatarincev</author>
+    </authors>
+    <owners>
+        <owner>Virto Commerce</owner>
+    </owners>
+	<groups>
+        <group>commerce</group>
+    </groups>
+    <projectUrl>https://virtocommerce.com</projectUrl>
+    <releaseNotes></releaseNotes>
+    <copyright>Copyright © 2011-2020 Virto Commerce. All rights reserved</copyright>
+    <tags>security core</tags>
+
+    <assemblyFile>VirtoCommerce.ExperienceGatewayModule.Web.dll</assemblyFile>
+    <moduleType>VirtoCommerce.ExperienceGatewayModule.Web.Module, VirtoCommerce.ExperienceGatewayModule.Web</moduleType>
+
+    <dependencies>
+        <dependency id="VirtoCommerce.ElasticSearch" version="3.0.2" />
+        <dependency id="VirtoCommerce.Cart" version="3.2.0" />
+        <dependency id="VirtoCommerce.Marketing" version="3.4.0" />
+        <dependency id="VirtoCommerce.Inventory" version="3.2.0" />
+        <dependency id="VirtoCommerce.Payment" version="3.1.0" />
+        <dependency id="VirtoCommerce.Shipping" version="3.1.0" />
+        <dependency id="VirtoCommerce.Customer" version="3.1.0" />
+    </dependencies>
+    
+    <incompatibilities>
+    </incompatibilities>
+    
+</module>

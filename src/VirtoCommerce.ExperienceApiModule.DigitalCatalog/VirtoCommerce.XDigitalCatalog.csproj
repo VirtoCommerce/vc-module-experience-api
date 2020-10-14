@@ -5,6 +5,12 @@
         <IsPackable>True</IsPackable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <Compile Remove="Services\**" />
+      <EmbeddedResource Remove="Services\**" />
+      <None Remove="Services\**" />
+    </ItemGroup>
+
 
     <ItemGroup>
         <PackageReference Include="Microsoft.Extensions.ApiDescription.Client" Version="3.0.0">
@@ -38,6 +44,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\VirtoCommerce.ExperienceApiModule.Core\VirtoCommerce.ExperienceApiModule.Core.csproj" />
+        <ProjectReference Include="..\XGateway\VirtoCommerce.XGateway.Core\VirtoCommerce.XGateway.Core.csproj" />
     </ItemGroup>
 
     <ItemGroup>

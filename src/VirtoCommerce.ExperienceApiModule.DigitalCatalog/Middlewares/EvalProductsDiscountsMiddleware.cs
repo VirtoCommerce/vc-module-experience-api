@@ -3,25 +3,24 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using PipelineNet.Middleware;
-using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
 using VirtoCommerce.MarketingModule.Core.Model.Promotions;
-using VirtoCommerce.MarketingModule.Core.Services;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.XDigitalCatalog.Queries;
+using VirtoCommerce.XGateway.Core.Services;
 
 namespace VirtoCommerce.XDigitalCatalog.Middlewares
 {
     public class EvalProductsDiscountsMiddleware : IAsyncMiddleware<SearchProductResponse>
     {
         private readonly IMapper _mapper;
-        private readonly IMarketingPromoEvaluator _marketingEvaluator;
+        private readonly IMarketingPromoServiceGateway _marketingEvaluator;
         private readonly IGenericPipelineLauncher _pipeline;
 
 
         public EvalProductsDiscountsMiddleware(
             IMapper mapper           
-            , IMarketingPromoEvaluator marketingEvaluator
+            , IMarketingPromoServiceGateway marketingEvaluator
             , IGenericPipelineLauncher pipeline)
         {
             _mapper = mapper;

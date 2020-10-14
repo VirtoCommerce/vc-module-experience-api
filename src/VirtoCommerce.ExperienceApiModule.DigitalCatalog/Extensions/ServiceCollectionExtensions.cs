@@ -7,7 +7,6 @@ using VirtoCommerce.XDigitalCatalog.Middlewares;
 using VirtoCommerce.XDigitalCatalog.Queries;
 using VirtoCommerce.XDigitalCatalog.Schemas;
 using AutoMapper;
-using VirtoCommerce.XDigitalCatalog.Services;
 
 namespace VirtoCommerce.XDigitalCatalog.Extensions
 {
@@ -29,36 +28,7 @@ namespace VirtoCommerce.XDigitalCatalog.Extensions
             //    builder.AddMiddleware(typeof(EvalProductsInventoryMiddleware));
             });
 
-            services.AddAutoMapper(typeof(XDigitalCatalogAnchor));
-
-            services.AddServiceGateways<IProductAssociationSearchServiceGateway>(new[]
-                {
-                    /*typeof(ProductAssociationSearchServiceVirtoCommerce),*/
-                    typeof(ProductAssociationSearchServiceCommerceTools)
-                });
-            services.AddServiceGateways<IInventorySearchServiceGateway>(
-                new[]
-                {
-                    /*typeof(InventorySearchServiceVirtoCommerce), */ typeof(InventorySearchServiceCommerceTools)
-                });
-            services.AddServiceGateways<IPromotionSearchServiceGateway>(
-                new[]
-                {
-                    /*typeof(PromotionSearchServiceVirtoCommerce), */
-                    typeof(PromotionSearchServiceCommerceTools)
-                });
-            services.AddServiceGateways<IStoreServiceGateway>(
-                new[]
-                {
-                    /*typeof(StoreServiceVirtoCommerce),*/ typeof(StoreServiceCommerceTools)
-                });
-            services.AddServiceGateways<IPricingServiceGateway>(
-                new[]
-                {
-                    /*typeof(PricingServiceVirtoCommerce),*/ typeof(PricingServiceCommerceTools)
-                });
-
-            var gateway = services.BuildServiceProvider().GetService<IPricingServiceGateway>();
+            services.AddAutoMapper(typeof(XDigitalCatalogAnchor));            
 
             return services;
         }

@@ -1,7 +1,9 @@
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
-using VirtoCommerce.XDigitalCatalog.Services;
+using VirtoCommerce.MarketingModule.Core.Model.Promotions.Search;
+using VirtoCommerce.XGateway.Core.Services;
 
 namespace VirtoCommerce.XDigitalCatalog.Queries
 {
@@ -14,9 +16,17 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             _promotionSearchService = promotionSearchService;
         }
 
-        public virtual Task<LoadPromotionsResponse> Handle(LoadPromotionsQuery request, CancellationToken cancellationToken)
+        public virtual async Task<LoadPromotionsResponse> Handle(LoadPromotionsQuery request, CancellationToken cancellationToken)
         {
-            return _promotionSearchService.SearchPromotionsAsync(request);
+            var promotions = await _promotionSearchService.SearchPromotionsAsync(new PromotionSearchCriteria
+            {
+                ObjectIds = request.Ids.ToArray(),
+            });
+
+            return new LoadPromotionsResponse
+            {
+                Promotions = promotions.Results.ToDictionary(x => x.Id)
+            };
         }
     }
 }

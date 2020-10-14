@@ -14,7 +14,7 @@ using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.SearchModule.Core.Model;
 using VirtoCommerce.SearchModule.Core.Services;
 using VirtoCommerce.XDigitalCatalog.Facets;
-using VirtoCommerce.XDigitalCatalog.Services;
+using VirtoCommerce.XGateway.Core.Services;
 
 namespace VirtoCommerce.XDigitalCatalog.Queries
 {
