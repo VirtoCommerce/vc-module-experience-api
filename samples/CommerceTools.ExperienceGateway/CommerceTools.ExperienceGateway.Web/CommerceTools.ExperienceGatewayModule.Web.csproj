@@ -19,7 +19,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\..\src\XGateway\VirtoCommerce.XGateway.Core\VirtoCommerce.XGateway.Core.csproj" />
-        <ProjectReference Include="..\CommerceTools.ExperienceGateway.Data\CommerceTools.ExperienceGateway.Data.csproj" />
+        <ProjectReference Include="..\CommerceTools.ExperienceGateway.Data\CommerceTools.ExperienceGatewayModule.Data.csproj" />
     </ItemGroup>
 
 </Project>

@@ -12,17 +12,18 @@ namespace VirtoCommerce.XGateway.Core.Extensions
     {
         public static void AddServiceGateways<T>(this IServiceCollection serviceCollection, Type[] implemtationTypes) where T : IServiceGateway
         {
-            foreach (var implType in implemtationTypes)
-            {
-                serviceCollection.AddTransient(typeof(IServiceGateway), implType);
-            }
+            //TODO
+            //foreach (var implType in implemtationTypes)
+            //{
+            //    serviceCollection.AddTransient(typeof(IServiceGateway), implType);
+            //}
 
-            serviceCollection.AddTransient(typeof(T), factory =>
-            {
-                var providers = factory.GetServices<IServiceGateway>();
-                var config = factory.GetService<IOptions<ExperienceOptions>>().Value;
-                return providers.FirstOrDefault(p => p.GetType().GetInterfaces().Contains(typeof(T)) && p.Gateway.EqualsInvariant(config.Gateway));
-            });
+            //serviceCollection.AddTransient(typeof(T), factory =>
+            //{
+            //    var providers = factory.GetServices<IServiceGateway>();
+            //    var config = factory.GetService<IOptions<ExperienceOptions>>().Value;
+            //    return providers.FirstOrDefault(p => p.GetType().GetInterfaces().Contains(typeof(T)) && p.Gateway.EqualsInvariant(config.Gateway));
+            //});
         }
     }
 }

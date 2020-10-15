@@ -11,12 +11,10 @@ namespace VirtoCommerce.ExperienceGatewayModule.Data.Services
     {
         private readonly IPricingService _pricingService;
 
-        public PricingServiceGateway(IPricingService pricingService)
+        public PricingServiceGateway(/*IPricingService pricingService*/)
         {
-            _pricingService = pricingService;
+            //_pricingService = pricingService;
         }
-
-        public string Gateway { get; set; } = Gateways.VirtoCommerce;
 
         public Task<IEnumerable<Price>> EvaluateProductPricesAsync(PriceEvaluationContext priceEvaluationContext)
         {

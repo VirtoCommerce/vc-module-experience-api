@@ -7,8 +7,6 @@ namespace CommerceTools.ExperienceGateway.Data.Services
 {
     public class TaxProviderSearchServiceGateway : ITaxProviderSearchServiceGateway
     {
-        public string Gateway { get; set; }
-
         public Task<TaxProviderSearchResult> SearchTaxProvidersAsync(TaxProviderSearchCriteria criteria)
         {
             throw new NotImplementedException();

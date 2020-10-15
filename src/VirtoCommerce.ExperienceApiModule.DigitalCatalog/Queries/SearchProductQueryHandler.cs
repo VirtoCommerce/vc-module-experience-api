@@ -13,6 +13,7 @@ using VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.SearchModule.Core.Model;
 using VirtoCommerce.SearchModule.Core.Services;
+using VirtoCommerce.StoreModule.Core.Model;
 using VirtoCommerce.XDigitalCatalog.Facets;
 using VirtoCommerce.XGateway.Core.Services;
 
@@ -50,7 +51,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
         {
             var allStoreCurrencies = Enumerable.Empty<Currency>();//await _storeCurrencyResolver.GetAllStoreCurrenciesAsync(request.StoreId, request.CultureName);
             Currency currency = null;//await _storeCurrencyResolver.GetStoreCurrencyAsync(request.CurrencyCode, request.StoreId, request.CultureName);
-            var store = await _storeService.GetByIdAsync(request.StoreId);
+            var store = new Store { Catalog = "4974648a41df4e6ea67ef2ad76d7bbd4", Id = "Electronics" };//await _storeService.GetByIdAsync(request.StoreId);
 
             var builder = new IndexSearchRequestBuilder()
                                             .WithFuzzy(request.Fuzzy, request.FuzzyLevel)

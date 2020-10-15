@@ -61,13 +61,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "VirtoCommerce.ExperienceGat
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtoCommerce.ExperienceGatewayModule.Web", "src\XGateway\VirtoCommerce.ExperienceGatewayModule\VirtoCommerce.ExperienceGatewayModule.Web\VirtoCommerce.ExperienceGatewayModule.Web.csproj", "{BB65CDBF-0138-450B-BD54-37B67DE4CC4D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VirtoCommerce.ExperienceGatewayModule.Data", "src\XGateway\VirtoCommerce.ExperienceGatewayModule\VirtoCommerce.ExperienceGatewayModule.Data\VirtoCommerce.ExperienceGatewayModule.Data.csproj", "{3EC53C2F-1064-48F1-8FAE-CBAAEF484444}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtoCommerce.ExperienceGatewayModule.Data", "src\XGateway\VirtoCommerce.ExperienceGatewayModule\VirtoCommerce.ExperienceGatewayModule.Data\VirtoCommerce.ExperienceGatewayModule.Data.csproj", "{3EC53C2F-1064-48F1-8FAE-CBAAEF484444}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CommerceTools.ExperienceGatewayModule", "CommerceTools.ExperienceGatewayModule", "{66639071-2EE8-4FB1-8528-D11869FD3A60}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommerceTools.ExperienceGateway.Web", "samples\CommerceTools.ExperienceGateway\CommerceTools.ExperienceGateway.Web\CommerceTools.ExperienceGateway.Web.csproj", "{A9EB248D-46CE-4BCC-8E18-F1CD87A5A576}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommerceTools.ExperienceGatewayModule.Web", "samples\CommerceTools.ExperienceGateway\CommerceTools.ExperienceGateway.Web\CommerceTools.ExperienceGatewayModule.Web.csproj", "{A9EB248D-46CE-4BCC-8E18-F1CD87A5A576}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommerceTools.ExperienceGateway.Data", "samples\CommerceTools.ExperienceGateway\CommerceTools.ExperienceGateway.Data\CommerceTools.ExperienceGateway.Data.csproj", "{E09CEEB8-4002-4402-AE3F-36E2B705C436}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommerceTools.ExperienceGatewayModule.Data", "samples\CommerceTools.ExperienceGateway\CommerceTools.ExperienceGateway.Data\CommerceTools.ExperienceGatewayModule.Data.csproj", "{E09CEEB8-4002-4402-AE3F-36E2B705C436}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
