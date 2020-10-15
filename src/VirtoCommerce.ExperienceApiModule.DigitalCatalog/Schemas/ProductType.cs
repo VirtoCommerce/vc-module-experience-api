@@ -6,10 +6,10 @@ using GraphQL;
 using GraphQL.Builders;
 using GraphQL.DataLoader;
 using GraphQL.Types;
-using GraphQL.Types.Relay.DataObjects;
 using MediatR;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
+using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.XDigitalCatalog.Extensions;
@@ -193,25 +193,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             var response = await mediator.Send(query);
 
-            return new Connection<ProductAssociation>()
-            {
-                Edges = response.Result.Results
-                    .Select((x, index) =>
-                        new Edge<ProductAssociation>()
-                        {
-                            Cursor = (skip + index).ToString(),
-                            Node = x,
-                        })
-                    .ToList(),
-                PageInfo = new PageInfo()
-                {
-                    HasNextPage = response.Result.TotalCount > skip + first,
-                    HasPreviousPage = skip > 0,
-                    StartCursor = skip.ToString(),
-                    EndCursor = Math.Min(response.Result.TotalCount, (int)(skip + first)).ToString()
-                },
-                TotalCount = response.Result.TotalCount,
-            };
+            return new PagedConnection<ProductAssociation>(response.Result.Results, skip, Convert.ToInt32(context.After ?? 0.ToString()), response.Result.TotalCount);         
         }
     }
 }

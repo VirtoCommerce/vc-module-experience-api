@@ -5,9 +5,7 @@ using GraphQL;
 using GraphQL.Builders;
 using GraphQL.Resolvers;
 using GraphQL.Types;
-using GraphQL.Types.Relay.DataObjects;
 using MediatR;
-using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using VirtoCommerce.CoreModule.Core.Currency;
@@ -706,28 +704,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             {
                 context.SetExpandedObjectGraph(cartAggregate);
             }
-
-            var result = new Connection<CartAggregate>()
-            {
-                Edges = response.Results
-                    .Select((x, index) =>
-                        new Edge<CartAggregate>()
-                        {
-                            Cursor = (skip + index).ToString(),
-                            Node = x,
-                        })
-                    .ToList(),
-                PageInfo = new PageInfo()
-                {
-                    HasNextPage = response.TotalCount > (skip + first),
-                    HasPreviousPage = skip > 0,
-                    StartCursor = skip.ToString(),
-                    EndCursor = Math.Min(response.TotalCount, (int)(skip + first)).ToString()
-                },
-                TotalCount = response.TotalCount,
-            };
-
-            return result;
+            return new PagedConnection<CartAggregate>(response.Results, skip, Convert.ToInt32(context.After ?? 0.ToString()), response.TotalCount);
         }
 
         private async Task CheckAuthAsync(IResolveFieldContext context, object resource)

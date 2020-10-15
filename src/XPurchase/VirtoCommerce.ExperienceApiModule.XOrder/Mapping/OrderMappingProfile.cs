@@ -20,6 +20,15 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Mapping
                     }
                     return criteria;
                 });
+            CreateMap<IList<IFilter>, PaymentSearchCriteria>()
+               .ConvertUsing((terms, criteria, context) =>
+               {
+                   foreach (var term in terms.OfType<TermFilter>())
+                   {
+                       term.MapTo(criteria);
+                   }
+                   return criteria;
+               });
         }
     }
 }

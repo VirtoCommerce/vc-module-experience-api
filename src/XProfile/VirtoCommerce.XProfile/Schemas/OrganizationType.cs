@@ -8,6 +8,7 @@ using GraphQL.Types.Relay.DataObjects;
 using MediatR;
 using VirtoCommerce.CustomerModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
+using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.XProfile.Queries;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
@@ -60,27 +61,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                 Skip = skip,
                 SearchPhrase = context.GetArgument<string>("searchPhrase")
             });
-
-            var result = new Connection<ContactAggregate>()
-            {
-                Edges = response.Results.Select((x, index) =>
-                        new Edge<ContactAggregate>
-                        {
-                            Cursor = (skip + index).ToString(),
-                            Node = new ContactAggregate(x as Contact)
-                        })
-                    .ToList(),
-                PageInfo = new PageInfo
-                {
-                    HasNextPage = response.TotalCount > (skip + first),
-                    HasPreviousPage = skip > 0,
-                    StartCursor = skip.ToString(),
-                    EndCursor = Math.Min(response.TotalCount, (int)(skip + first)).ToString()
-                },
-                TotalCount = response.TotalCount,
-            };
-
-            return result;
+            return new PagedConnection<ContactAggregate>(response.Results.Select(x => new ContactAggregate(x as Contact)), skip, Convert.ToInt32(context.After ?? 0.ToString()), response.TotalCount);
         }
     }
 }

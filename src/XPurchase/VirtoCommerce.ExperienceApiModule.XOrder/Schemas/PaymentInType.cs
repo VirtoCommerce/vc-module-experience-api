@@ -39,12 +39,13 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field(x => x.VoidedDate, true);
             Field(x => x.OrderId, true);
 
-            Field<OrderMoneyType>(nameof(PaymentIn.Sum).ToCamelCase(), resolve: context => new Money(context.Source.Sum, context.GetOrderCurrency()));
-            Field<OrderMoneyType>("tax", resolve: context => new Money(context.Source.TaxTotal, context.GetOrderCurrency()));
+            Field<OrderMoneyType>(nameof(PaymentIn.Sum).ToCamelCase(), resolve: context => new Money(context.Source.Sum, context.GetCurrencyByCode(context.Source.Currency)));
+            Field<OrderMoneyType>("tax", resolve: context => new Money(context.Source.TaxTotal, context.GetCurrencyByCode(context.Source.Currency)));
             Field<StringGraphType>(nameof(PaymentIn.PaymentMethod), resolve: context => context.Source.PaymentMethod.Code);
-            Field<CurrencyType>(nameof(PaymentIn.Currency), resolve: context => context.GetOrderCurrency());
+            Field<CurrencyType>(nameof(PaymentIn.Currency), resolve: context => context.GetCurrencyByCode(context.Source.Currency));
             Field<OrderAddressType>(nameof(PaymentIn.BillingAddress), resolve: context => context.Source.BillingAddress);
 
+            Field<ListGraphType<OrderAddressType>>(nameof(PaymentIn.Transactions), resolve: x => x.Source.Transactions);
             //TODO
             //public IList<Operation> ChildrenOperations);
             //public IList<DynamicProperty> DynamicProperties);

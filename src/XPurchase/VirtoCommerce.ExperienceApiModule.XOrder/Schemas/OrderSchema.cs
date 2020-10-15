@@ -15,7 +15,9 @@ using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.XOrder.Authorization;
 using VirtoCommerce.ExperienceApiModule.XOrder.Commands;
+using VirtoCommerce.ExperienceApiModule.XOrder.Extensions;
 using VirtoCommerce.ExperienceApiModule.XOrder.Queries;
+using VirtoCommerce.OrdersModule.Core.Model;
 using VirtoCommerce.Platform.Core.Security;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
@@ -27,13 +29,19 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
         public readonly IMediator _mediator;
         private readonly IAuthorizationService _authorizationService;
         private readonly Func<SignInManager<ApplicationUser>> _signInManagerFactory;
+        private readonly ICurrencyService _currencyService;
 
 
-        public OrderSchema(IMediator mediator, IAuthorizationService authorizationService, Func<SignInManager<ApplicationUser>> signInManagerFactory)
+        public OrderSchema(
+            IMediator mediator
+            , IAuthorizationService authorizationService
+            , Func<SignInManager<ApplicationUser>> signInManagerFactory
+            , ICurrencyService currencyService)
         {
             _mediator = mediator;
             _authorizationService = authorizationService;
             _signInManagerFactory = signInManagerFactory;
+            _currencyService = currencyService;
         }
 
         public void Build(ISchema schema)
@@ -44,7 +52,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                 Arguments = new QueryArguments(
                     new QueryArgument<StringGraphType> { Name = "id" },
                     new QueryArgument<StringGraphType> { Name = "number" },
-                    new QueryArgument<StringGraphType> { Name = "userId" }
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "userId" }
                     ),
                 Type = GraphTypeExtenstionHelper.GetActualType<CustomerOrderType>(),
                 Resolver = new AsyncFieldResolver<object>(async context =>
@@ -66,13 +74,26 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                 .Argument<StringGraphType>("filter", "This parameter applies a filter to the query results")
                 .Argument<StringGraphType>("sort", "The sort expression")
                 .Argument<StringGraphType>("language", "")
-                .Argument<StringGraphType>("userId", "")
+                .Argument<NonNullGraphType<StringGraphType>>("userId", "")
                 .Unidirectional()
                 .PageSize(20);
 
-            orderConnectionBuilder.ResolveAsync(async context => await ResolveConnectionAsync(_mediator, context));
+            orderConnectionBuilder.ResolveAsync(async context => await ResolveOrdersConnectionAsync(_mediator, context));
 
             schema.Query.AddField(orderConnectionBuilder.FieldType);
+
+
+            var paymentsConnectionBuilder = GraphTypeExtenstionHelper.CreateConnection<PaymentInType, object>()
+             .Name("payments")
+             .Argument<StringGraphType>("filter", "This parameter applies a filter to the query results")
+             .Argument<StringGraphType>("sort", "The sort expression")
+             .Argument<StringGraphType>("language", "")
+             .Argument<NonNullGraphType<StringGraphType>>("userId", "")
+             .Unidirectional()
+             .PageSize(20);
+            paymentsConnectionBuilder.ResolveAsync(async context => await ResolvePaymentsConnectionAsync(_mediator, context));
+            schema.Query.AddField(paymentsConnectionBuilder.FieldType);
+
 
             _ = schema.Mutation.AddField(FieldBuilder.Create<object, CustomerOrderAggregate>(typeof(CustomerOrderType))
                             .Name("createOrderFromCart")
@@ -104,12 +125,45 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                             .FieldType);
         }
 
-        private async Task<object> ResolveConnectionAsync(IMediator mediator, IResolveConnectionContext<object> context)
+        private async Task<object> ResolveOrdersConnectionAsync(IMediator mediator, IResolveConnectionContext<object> context)
         {
             var first = context.First;
             var skip = Convert.ToInt32(context.After ?? 0.ToString());
 
             var request = new SearchOrderQuery
+            {
+                Skip = skip,
+                Take = first ?? context.PageSize ?? 10,
+                Filter = context.GetArgument<string>("filter"),
+                Sort = context.GetArgument<string>("sort"),
+                CultureName = context.GetArgument<string>(nameof(Currency.CultureName).ToCamelCase())
+            };
+
+            context.UserContext.Add(nameof(Currency.CultureName).ToCamelCase(), request.CultureName);
+            var allCurrencies = await _currencyService.GetAllCurrenciesAsync();
+            //Store all currencies in the user context for future resolve in the schema types
+            context.SetCurrencies(allCurrencies, request.CultureName);
+
+            //TODO: this authorization checks prevent of returns orders of other users very often case for b2b scenarios
+            //Need to find out other solution how to do such authorization checks
+            //await CheckAuthAsync(context, request);
+
+            var response = await mediator.Send(request);
+
+            foreach (var customerOrderAggregate in response.Results)
+            {
+                context.SetExpandedObjectGraph(customerOrderAggregate);
+            }
+
+            return new PagedConnection<CustomerOrderAggregate>(response.Results, skip, Convert.ToInt32(context.After ?? 0.ToString()), response.TotalCount);
+        }
+
+        private async Task<object> ResolvePaymentsConnectionAsync(IMediator mediator, IResolveConnectionContext<object> context)
+        {
+            var first = context.First;
+            var skip = Convert.ToInt32(context.After ?? 0.ToString());
+
+            var request = new SearchPaymentsQuery
             {
                 Skip = skip,
                 Take = first ?? context.PageSize ?? 10,
@@ -126,33 +180,15 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 
             var response = await mediator.Send(request);
 
-
-            foreach (var customerOrderAggregate in response.Results)
+            foreach (var payment in response.Results)
             {
-                context.SetExpandedObjectGraph(customerOrderAggregate);
+                context.SetExpandedObjectGraph(payment);
             }
+            var allCurrencies = await _currencyService.GetAllCurrenciesAsync();
+            //Store all currencies in the user context for future resolve in the schema types
+            context.SetCurrencies(allCurrencies, request.CultureName);
 
-            var result = new Connection<CustomerOrderAggregate>()
-            {
-                Edges = response.Results
-                    .Select((x, index) =>
-                        new Edge<CustomerOrderAggregate>()
-                        {
-                            Cursor = (skip + index).ToString(),
-                            Node = x,
-                        })
-                    .ToList(),
-                PageInfo = new PageInfo()
-                {
-                    HasNextPage = response.TotalCount > (skip + first),
-                    HasPreviousPage = skip > 0,
-                    StartCursor = skip.ToString(),
-                    EndCursor = Math.Min(response.TotalCount, (int)(skip + first)).ToString()
-                },
-                TotalCount = response.TotalCount,
-            };
-
-            return result;
+            return new PagedConnection<PaymentIn>(response.Results, skip, Convert.ToInt32(context.After ?? 0.ToString()), response.TotalCount);
         }
 
         private async Task CheckAuthAsync(IResolveFieldContext context, object resource)

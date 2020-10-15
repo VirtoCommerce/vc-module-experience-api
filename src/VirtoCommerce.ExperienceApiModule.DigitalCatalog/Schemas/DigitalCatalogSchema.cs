@@ -8,7 +8,6 @@ using GraphQL.DataLoader;
 using GraphQL.Resolvers;
 using GraphQL.Types;
 using GraphQL.Types.Relay;
-using GraphQL.Types.Relay.DataObjects;
 using MediatR;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
@@ -187,27 +186,11 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             }
 
             var response = await mediator.Send(query);
-
-            return new ProductsConnection<ExpProduct>()
+            var result = new ProductsConnection<ExpProduct>(response.Results, skip, Convert.ToInt32(context.After ?? 0.ToString()), response.TotalCount)
             {
-                Edges = response.Results
-                    .Select((x, index) =>
-                        new Edge<ExpProduct>()
-                        {
-                            Cursor = (skip + index).ToString(),
-                            Node = x,
-                        })
-                    .ToList(),
-                PageInfo = new PageInfo()
-                {
-                    HasNextPage = response.TotalCount > skip + first,
-                    HasPreviousPage = skip > 0,
-                    StartCursor = skip.ToString(),
-                    EndCursor = Math.Min(response.TotalCount, (int)(skip + first)).ToString()
-                },
-                TotalCount = response.TotalCount,
                 Facets = response.Facets
             };
+            return result;
         }
 
         private static async Task<object> ResolveCategoriesConnectionAsync(IMediator mediator, IResolveConnectionContext<object> context)
@@ -240,25 +223,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             var response = await mediator.Send(query);
 
-            return new Connection<ExpCategory>()
-            {
-                Edges = response.Results
-                    .Select((x, index) =>
-                        new Edge<ExpCategory>()
-                        {
-                            Cursor = (skip + index).ToString(),
-                            Node = x,
-                        })
-                    .ToList(),
-                PageInfo = new PageInfo()
-                {
-                    HasNextPage = response.TotalCount > skip + first,
-                    HasPreviousPage = skip > 0,
-                    StartCursor = skip.ToString(),
-                    EndCursor = Math.Min(response.TotalCount, (int)(skip + first)).ToString()
-                },
-                TotalCount = response.TotalCount
-            };
+            return new PagedConnection<ExpCategory>(response.Results, skip, Convert.ToInt32(context.After ?? 0.ToString()), response.TotalCount);
         }
     }
 }
