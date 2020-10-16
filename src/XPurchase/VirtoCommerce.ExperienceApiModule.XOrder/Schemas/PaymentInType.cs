@@ -45,7 +45,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field<CurrencyType>(nameof(PaymentIn.Currency), resolve: context => context.GetCurrencyByCode(context.Source.Currency));
             Field<OrderAddressType>(nameof(PaymentIn.BillingAddress), resolve: context => context.Source.BillingAddress);
 
-            Field<ListGraphType<OrderAddressType>>(nameof(PaymentIn.Transactions), resolve: x => x.Source.Transactions);
+            Field<ListGraphType<PaymentTransactionType>>(nameof(PaymentIn.Transactions), resolve: x => x.Source.Transactions);
             //TODO
             //public IList<Operation> ChildrenOperations);
             //public IList<DynamicProperty> DynamicProperties);
