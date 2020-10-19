@@ -32,7 +32,7 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
 
         public static IList<RegexpNameMapper> Mappers => new List<RegexpNameMapper>()
         {
-            new RegexpNameMapper(@".*", "$0", new [] { "__object.id" }),
+            new RegexpNameMapper(@".*", "$0", new [] { "__object.id", "__object.categoryId", "__object.catalogId" }),
             new RegexpNameMapper(@"(items.)?price[s]?.(?<part>[^\.]+).*$","__prices.$2", new [] { "__prices.currency" }),
             new RegexpNameMapper(@"^items.variations", "__variations"),
             new RegexpNameMapper(@"^items", "__object"),
