@@ -50,6 +50,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             var allStoreCurrencies = await _storeCurrencyResolver.GetAllStoreCurrenciesAsync(request.StoreId, request.CultureName);
             var currency = await _storeCurrencyResolver.GetStoreCurrencyAsync(request.CurrencyCode, request.StoreId, request.CultureName);
             var store = await _storeService.GetByIdAsync(request.StoreId);
+            var responseGroup = EnumUtility.SafeParse(request.GetResponseGroup(), ExpProductResponseGroup.None);
 
             var builder = new IndexSearchRequestBuilder()
                                             .WithFuzzy(request.Fuzzy, request.FuzzyLevel)
@@ -58,18 +59,19 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                                             .WithSearchPhrase(request.Query)
                                             .WithPaging(request.Skip, request.Take)
                                             .AddObjectIds(request.ObjectIds)
-                                            .AddSorting(request.Sort)
-                                            .AddTerms(new[] { $"__outline:{store.Catalog}" })
+                                            .AddSorting(request.Sort)                                           
                                             .WithIncludeFields(IndexFieldsMapper.MapToIndexIncludes(request.IncludeFields).ToArray());
 
             if (request.ObjectIds.IsNullOrEmpty())
             {
+                //filter products only the store catalog and visibility status when search 
                 builder.AddTerms(new[] { "status:visible" });//Only visible, exclude variations from search result
+                builder.AddTerms(new[] { $"__outline:{store.Catalog}" });
             }
             var searchRequest = builder.Build();
 
-            //Use predefined  facets for store  if they not passed
-            if (searchRequest.Aggregations.IsNullOrEmpty())
+            //Use predefined  facets for store  if the facet filter expression is not set
+            if (searchRequest.Aggregations.IsNullOrEmpty() && responseGroup.HasFlag(ExpProductResponseGroup.LoadFacets))
             {
                 searchRequest.Aggregations = await _aggregationConverter.GetAggregationRequestsAsync(new ProductIndexedSearchCriteria
                 {
