@@ -15,6 +15,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Queries
             Number = number;
         }
 
+        public string CultureName { get; set; }
         public string OrderId { get; set; }
         public string Number { get; set; }
     }

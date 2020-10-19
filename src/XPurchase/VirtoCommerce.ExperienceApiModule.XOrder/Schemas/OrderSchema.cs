@@ -52,15 +52,27 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                 Arguments = new QueryArguments(
                     new QueryArgument<StringGraphType> { Name = "id" },
                     new QueryArgument<StringGraphType> { Name = "number" },
+                    new QueryArgument<StringGraphType> { Name = "cultureName", Description = "Culture name (\"en-US\")" },
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "userId" }
                     ),
                 Type = GraphTypeExtenstionHelper.GetActualType<CustomerOrderType>(),
                 Resolver = new AsyncFieldResolver<object>(async context =>
                 {
-                    var orderAggregate = await _mediator.Send(new GetOrderQuery(context.GetArgument<string>("id"), context.GetArgument<string>("number")));
+                    var request = new GetOrderQuery
+                    {
+                        Number = context.GetArgument<string>("number"),
+                        OrderId = context.GetArgument<string>("id"),
+                        CultureName = context.GetArgument<string>(nameof(Currency.CultureName))
+                    };
+                    var orderAggregate = await _mediator.Send(request);
+
                     //TODO: this authorization checks prevent of returns orders of other users very often case for b2b scenarios
                     //Need to find out other solution how to do such authorization checks
                     //await CheckAuthAsync(context, orderAggregate.Order);
+
+                    var allCurrencies = await _currencyService.GetAllCurrenciesAsync();
+                    //Store all currencies in the user context for future resolve in the schema types
+                    context.SetCurrencies(allCurrencies, request.CultureName);
 
                     //store order aggregate in the user context for future usage in the graph types resolvers
                     context.SetExpandedObjectGraph(orderAggregate);
@@ -73,7 +85,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                 .Name("orders")
                 .Argument<StringGraphType>("filter", "This parameter applies a filter to the query results")
                 .Argument<StringGraphType>("sort", "The sort expression")
-                .Argument<StringGraphType>("language", "")
+                .Argument<StringGraphType>("cultureName", "Culture name (\"en-US\")")
                 .Argument<NonNullGraphType<StringGraphType>>("userId", "")
                 .Unidirectional()
                 .PageSize(20);
@@ -87,7 +99,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
              .Name("payments")
              .Argument<StringGraphType>("filter", "This parameter applies a filter to the query results")
              .Argument<StringGraphType>("sort", "The sort expression")
-             .Argument<StringGraphType>("language", "")
+             .Argument<StringGraphType>("cultureName", "Culture name (\"en-US\")")
              .Argument<NonNullGraphType<StringGraphType>>("userId", "")
              .Unidirectional()
              .PageSize(20);

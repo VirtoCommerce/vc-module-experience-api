@@ -18,24 +18,17 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Extensions
 
         public static Currency GetCurrencyByCode<T>(this IResolveFieldContext<T> userContext, string currencyCode)
         {
-            var allCurrencies = userContext.GetValue<IEnumerable<Currency>>("allCurrencies");
-            if (allCurrencies == null)
+            //Try to get a currency from order if currency code is not set explicitly or undefined
+            var result = userContext.GetOrderCurrency();
+            //If the passed currency differs from the order currency, we try to find it from the all registered currencies.
+            if (result == null || (!string.IsNullOrEmpty(currencyCode) && !result.Code.EqualsInvariant(currencyCode)))
             {
-                throw new OperationCanceledException("allCurrencies is not found in the userContext");
+                var allCurrencies = userContext.GetValue<IEnumerable<Currency>>("allCurrencies");
+                result = allCurrencies?.FirstOrDefault(x => x.Code.EqualsInvariant(currencyCode));
             }
-            Currency result = null;
-            if (string.IsNullOrEmpty(currencyCode))
-            {
-                var order = userContext.GetValueForSource<CustomerOrderAggregate>();
-                if (order == null)
-                {
-                    throw new OperationCanceledException("unable to get currency from order, currency can't be null");
-                }
-            }
-            result = allCurrencies.FirstOrDefault(x => x.Code.EqualsInvariant(currencyCode));
             if (result == null)
             {
-                throw new OperationCanceledException($"the currency with code { currencyCode } is not registered");
+                throw new OperationCanceledException($"the currency with code '{ currencyCode }' is not registered");
             }
             return result;
         }

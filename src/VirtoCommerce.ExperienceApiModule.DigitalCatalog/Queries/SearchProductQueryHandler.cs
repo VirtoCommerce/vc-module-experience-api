@@ -59,7 +59,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                                             .WithPaging(request.Skip, request.Take)
                                             .AddObjectIds(request.ObjectIds)
                                             .AddSorting(request.Sort)
-                                            .AddTerms(new[] { $"catalog:{store.Catalog}" })
+                                            .AddTerms(new[] { $"__outline:{store.Catalog}" })
                                             .WithIncludeFields(IndexFieldsMapper.MapToIndexIncludes(request.IncludeFields).ToArray());
 
             if (request.ObjectIds.IsNullOrEmpty())
