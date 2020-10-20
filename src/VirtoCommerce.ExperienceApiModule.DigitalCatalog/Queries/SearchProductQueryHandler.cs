@@ -95,6 +95,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             {
                 options.Items["all_currencies"] = allStoreCurrencies;
                 options.Items["store"] = store;
+                options.Items["language"] = request.CultureName;
                 options.Items["currency"] = currency;
             })).ToList() ?? new List<ExpProduct>();
 
