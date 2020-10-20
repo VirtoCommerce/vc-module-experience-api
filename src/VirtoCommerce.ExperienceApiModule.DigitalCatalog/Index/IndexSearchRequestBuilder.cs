@@ -167,12 +167,13 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
             return this;
         }
 
-        public IndexSearchRequestBuilder ParseFacets(ISearchPhraseParser phraseParser, string facetPhrase)
+        public IndexSearchRequestBuilder ParseFacets(ISearchPhraseParser phraseParser, string facetPhrase, IList<AggregationRequest> predefinedAggregations = null)
         {
             if (phraseParser == null)
             {
                 throw new ArgumentNullException(nameof(phraseParser));
             }
+            SearchRequest.Aggregations = predefinedAggregations ?? new List<AggregationRequest>();
 
             if (string.IsNullOrEmpty(facetPhrase))
             {
@@ -268,11 +269,9 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
             return this;
         }
 
-        public virtual SearchRequest Build()
-        {
-            //Apply multi-select facet search policy by default
-
-            foreach (var aggr in SearchRequest.Aggregations)
+        public IndexSearchRequestBuilder ApplyMultiSelectFacetSearch()
+        {         
+            foreach (var aggr in SearchRequest.Aggregations ?? Array.Empty<AggregationRequest>())
             {
                 var aggregationFilterFieldName = (aggr.Filter as INamedFilter)?.FieldName;
 
@@ -298,6 +297,14 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
 
                 aggr.Filter = aggr.Filter == null ? clonedFilter : aggr.Filter.And(clonedFilter);
             }
+            return this;
+        }
+
+        public virtual SearchRequest Build()
+        {
+            //Apply multi-select facet search policy by default
+
+          
             return SearchRequest;
         }
 

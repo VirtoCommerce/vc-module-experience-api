@@ -54,8 +54,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
 
             var builder = new IndexSearchRequestBuilder()
                                             .WithFuzzy(request.Fuzzy, request.FuzzyLevel)
-                                            .ParseFilters(_phraseParser, request.Filter)
-                                            .ParseFacets(_phraseParser, request.Facet)
+                                            .ParseFilters(_phraseParser, request.Filter)                                          
                                             .WithSearchPhrase(request.Query)
                                             .WithPaging(request.Skip, request.Take)
                                             .AddObjectIds(request.ObjectIds)
@@ -68,18 +67,21 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                 builder.AddTerms(new[] { "status:visible" });//Only visible, exclude variations from search result
                 builder.AddTerms(new[] { $"__outline:{store.Catalog}" });
             }
-            var searchRequest = builder.Build();
 
             //Use predefined  facets for store  if the facet filter expression is not set
-            if (searchRequest.Aggregations.IsNullOrEmpty() && responseGroup.HasFlag(ExpProductResponseGroup.LoadFacets))
+            if (responseGroup.HasFlag(ExpProductResponseGroup.LoadFacets))
             {
-                searchRequest.Aggregations = await _aggregationConverter.GetAggregationRequestsAsync(new ProductIndexedSearchCriteria
+                var predefinedAggregations = await _aggregationConverter.GetAggregationRequestsAsync(new ProductIndexedSearchCriteria
                 {
                     StoreId = request.StoreId,
                     Currency = request.CurrencyCode,
                 }, new FiltersContainer());
-            }         
 
+                builder.ParseFacets(_phraseParser, request.Facet, predefinedAggregations)
+                       .ApplyMultiSelectFacetSearch();             
+            }
+
+            var searchRequest = builder.Build();
             var searchResult = await _searchProvider.SearchAsync(KnownDocumentTypes.Product, searchRequest);
 
             var criteria = new ProductIndexedSearchCriteria
