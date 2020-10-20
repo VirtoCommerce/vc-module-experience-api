@@ -20,11 +20,15 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
         /// <exception cref="ArgumentNullException"></exception>
         public static T GetValue<T>(this IResolveFieldContext resolveContext, string key, T defaultValue)
         {
-            if (resolveContext == null) throw new ArgumentNullException(nameof(resolveContext));
-
-            return resolveContext.UserContext.TryGetValue(key, out var value)
-                ? (T)value
-                : defaultValue;
+            if (resolveContext == null)
+            {
+                throw new ArgumentNullException(nameof(resolveContext));
+            }
+            if (resolveContext.UserContext.TryGetValue(key, out var value))
+            {
+                return value is T ? (T)value : defaultValue;
+            }
+            return defaultValue;
         }
 
         public static T GetValue<T>(this IResolveFieldContext resolveContext, string key)

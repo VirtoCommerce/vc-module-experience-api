@@ -13,7 +13,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Extensions
     {
         public static Currency GetOrderCurrency<T>(this IResolveFieldContext<T> userContext)
         {
-            return userContext.GetValueForSource<CustomerOrderAggregate>().Currency;
+            return userContext.GetValueForSource<CustomerOrderAggregate>()?.Currency;
         }
 
         public static Currency GetCurrencyByCode<T>(this IResolveFieldContext<T> userContext, string currencyCode)
