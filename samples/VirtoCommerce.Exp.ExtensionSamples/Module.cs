@@ -50,6 +50,7 @@ namespace VirtoCommerce.Exp.ExtensionSamples
             AbstractTypeFactory<ExpProduct>.OverrideType<ExpProduct, ExpProduct2>();
 
             services.AddAutoMapper(typeof(XExtensionAnchor));
+            services.AddMediatR(typeof(XExtensionAnchor));
             #endregion
 
             #region UseCase OnTheFlyEvaluation: load product inventories from the index instead of DB

@@ -20,13 +20,6 @@ namespace VirtoCommerce.XDigitalCatalog.Tests.Shemas
             _productType = new ProductType(_mediatorMock.Object, _dataLoaderContextAccessorMock.Object);
         }
 
-        [Fact]
-        public void ProductType_ShouldHavePropperFieldAmount()
-        {
-            // Assert
-            _productType.Fields.Should().HaveCount(25);
-        }
-
         #region Properties
 
         [Fact]

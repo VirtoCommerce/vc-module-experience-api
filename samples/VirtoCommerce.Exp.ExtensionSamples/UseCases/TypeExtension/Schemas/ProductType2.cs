@@ -3,6 +3,7 @@ using GraphQL;
 using GraphQL.DataLoader;
 using GraphQL.Types;
 using MediatR;
+using VirtoCommerce.Exp.ExtensionSamples.UseCases.TypeExtension.Queries;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.XDigitalCatalog.Schemas;
@@ -16,7 +17,13 @@ namespace VirtoCommerce.Exp.ExtensionSamples
             IDataLoaderContextAccessor dataLoader)
             : base(mediator, dataLoader)
         {
-            Field<ListGraphType<StringGraphType>>("searchKeywords", resolve: context => ((ExpProduct2)context.Source).SearchKeywords);//.RootAlias("__content"); ;
+            FieldAsync<ProductRatingType>("rating", resolve: async context =>
+            {
+                var response = await mediator.Send(new GetProductRatingQuery { ProductId = ((ExpProduct2)context.Source).Id });
+                return response;
+            });
+
+            Field<ListGraphType<StringGraphType>>("searchKeywords", resolve: context => ((ExpProduct2)context.Source).SearchKeywords);
             Field<ListGraphType<InventoryType>>("inventoriesFromIndex", arguments: new QueryArguments(new QueryArgument<StringGraphType> { Name = "warehouse", Description = "warehouse id" }), resolve: context =>
             {
                 var result = ((ExpProduct2)context.Source).InventoriesFromIndex;
