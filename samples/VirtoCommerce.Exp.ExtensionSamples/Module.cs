@@ -39,7 +39,12 @@ namespace VirtoCommerce.Exp.ExtensionSamples
             //use such lines to override exists query or command handler
             services.AddTransient<IRequestHandler<GetCartQuery, CartAggregate>, CustomGetCartQueryHandler>();
 
-            services.AddGraphQL().AddGraphTypes(typeof(XExtensionAnchor));
+            services.AddGraphQL(_ =>
+            {
+                 //It is important to pass the GraphQLOptions configure action, because the default parameters used in xAPI module won't be used after this call
+                _.EnableMetrics = false;
+                _.ExposeExceptions = true;
+            }).AddGraphTypes(typeof(XExtensionAnchor));
             //Register custom schema
             services.AddSchemaBuilder<CustomSchema>();
 
