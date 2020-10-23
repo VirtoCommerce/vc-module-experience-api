@@ -40,22 +40,26 @@ namespace VirtoCommerce.XPurchase.Mapping
 
                 lineItem.CatalogId = cartProduct.Product.CatalogId;
                 lineItem.CategoryId = cartProduct.Product.CategoryId;
-                lineItem.Currency = cartProduct.Price.Currency.Code;
-                lineItem.DiscountAmount = cartProduct.Price.DiscountAmount.InternalAmount;
-                lineItem.Discounts = cartProduct.Price.Discounts;
+                if (cartProduct.Price != null)
+                {
+                    lineItem.Currency = cartProduct.Price.Currency.Code;
+                    lineItem.DiscountAmount = cartProduct.Price.DiscountAmount.InternalAmount;
+                    lineItem.PriceId = cartProduct.Price.PricelistId;
+                    lineItem.SalePrice = cartProduct.Price.SalePrice.InternalAmount;
+                    lineItem.TaxDetails = cartProduct.Price.TaxDetails;
+                    lineItem.TaxPercentRate = cartProduct.Price.TaxPercentRate;
+                    lineItem.Discounts = cartProduct.Price.Discounts;
+                }
+
                 lineItem.Height = cartProduct.Product.Height;
                 lineItem.ImageUrl = cartProduct.Product.ImgSrc;
                 lineItem.Length = cartProduct.Product.Length;
                 lineItem.ListPrice = cartProduct.Price.ListPrice.InternalAmount;
                 lineItem.MeasureUnit = cartProduct.Product.MeasureUnit;
                 lineItem.Name = cartProduct.Product.Name;
-                lineItem.PriceId = cartProduct.Price.PricelistId;
                 lineItem.ProductId = cartProduct.Product.Id;
                 lineItem.ProductType = cartProduct.Product.ProductType;
-                lineItem.SalePrice = cartProduct.Price.SalePrice.InternalAmount;
                 lineItem.Sku = cartProduct.Product.Code;
-                lineItem.TaxDetails = cartProduct.Price.TaxDetails;
-                lineItem.TaxPercentRate = cartProduct.Price.TaxPercentRate;
                 lineItem.TaxType = cartProduct.Product.TaxType;
                 lineItem.Weight = cartProduct.Product.Weight;
                 lineItem.WeightUnit = cartProduct.Product.WeightUnit;
