@@ -32,6 +32,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             //TODO: remove later
             Field<StringGraphType>("organizationId", resolve: context => context.Source.Contact.Organizations?.FirstOrDefault());
             Field("organizationsIds", x => x.Contact.Organizations);
+            Field("phones", x => x.Contact.Phones);
 
 
             AddField(new FieldType
