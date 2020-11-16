@@ -1,27 +1,9 @@
-  
-# v1
-name: Module CI
+# v1.1.1
+name: Module Release alpha CI
 
 on:
   workflow_dispatch:
-  push:
-    paths-ignore:
-      - '.github/**'
-      - 'docs/**'
-      - 'build/**'
-      - 'README.md'
-      - 'LICENSE'
-    branches:
-      [master, dev]
-  pull_request:
-    branches:
-      [master, dev]
-    paths-ignore:
-      - 'docs/**'
-      - 'build/**'
-      - 'README.md'
-      - 'LICENSE'
-    
+
 jobs:
   ci:
     runs-on: ubuntu-latest
@@ -42,12 +24,16 @@ jobs:
       - name: Install dotnet-sonarscanner
         run: dotnet tool install --global dotnet-sonarscanner
 
-      - name: Get changelog
-        id: changelog
-        uses: VirtoCommerce/vc-github-actions/changelog-generator@master
+      - name: Get Image Version
+        uses: VirtoCommerce/vc-github-actions/get-image-version@master
+        id: image
+        with:
+           releaseBranch: '' #Always creates tags for alpha version regardless of the forced branch
 
       - name: Add version suffix
         uses: VirtoCommerce/vc-github-actions/add-version-suffix@master
+        with:
+          versionSuffix: ${{ steps.image.outputs.suffix }}
 
       - name: SonarCloud Begin
         uses: VirtoCommerce/vc-github-actions/sonar-scanner-begin@master
@@ -61,15 +47,17 @@ jobs:
       - name: SonarCloud End
         uses: VirtoCommerce/vc-github-actions/sonar-scanner-end@master
 
+      - name: Quality Gate
+        uses: VirtoCommerce/vc-github-actions/sonar-quality-gate@master
+        with:
+          login: ${{secrets.SONAR_TOKEN}}
+
       - name: Packaging
         run: vc-build Compress -skip Clean+Restore+Compile+Test
       
-      # Step runs only on commit to master or dev brunch
-      - name: Publish Nuget
-        uses: VirtoCommerce/vc-github-actions/publish-nuget@master
-        
-      # Step runs only on commit to master or dev brunch
-      - name: Publish Github Release
+      - name: Publish to Blob
+        id: blobRelease
+        uses: VirtoCommerce/vc-github-actions/publish-blob-release@master
         with:
-          changelog: ${{ steps.changelog.outputs.changelog }}
-        uses: VirtoCommerce/vc-github-actions/publish-github-release@master
+          blobSAS: ${{ secrets.BLOB_TOKEN }}
+
