@@ -7,6 +7,7 @@ namespace VirtoCommerce.XPurchase.Schemas
     {
         public InputPaymentType()
         {
+            Field(x => x.Id, nullable: true).Description("the payment id");
             Field(x => x.OuterId, nullable: true).Description("Value of payment outer id");
             Field(x => x.PaymentGatewayCode, nullable: false).Description("Value of payment gateway code");
             Field<InputAddressType>("billingAddress");

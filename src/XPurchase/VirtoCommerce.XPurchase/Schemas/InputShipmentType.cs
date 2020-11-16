@@ -6,7 +6,8 @@ namespace VirtoCommerce.XPurchase.Schemas
     public class InputShipmentType : InputObjectGraphType<Shipment>
     {
         public InputShipmentType()
-        {       
+        {
+            Field(x => x.Id, nullable: true).Description("Shipment Id");
             Field(x => x.FulfillmentCenterId, nullable: true).Description("Fulfillment center id");
             Field(x => x.Height, nullable: true).Description("Value of height");
             Field(x => x.Length, nullable: true).Description("Value of length");

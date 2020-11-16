@@ -244,9 +244,9 @@ Example requests:
 
 ### Filter by category
 Filter products that belong to exactly specified category path.
-`filter: "categories.path:{catalog id/category path}"`
+`filter: "category.path:{catalog id/category path}"`
 
-`filter: "categories.path:catalogId/cat1d1/cat2id"`
+`filter: "category.path:catalogId/cat1d1/cat2id"`
 
 > The search will be performed on `__path` index field of product document
 

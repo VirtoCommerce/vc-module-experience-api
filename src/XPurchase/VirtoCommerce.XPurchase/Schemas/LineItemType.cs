@@ -61,7 +61,7 @@ namespace VirtoCommerce.XPurchase.Schemas
 
             Field(x => x.CatalogId, nullable: true).Description("Value of catalog id");
             Field(x => x.CategoryId, nullable: true).Description("Value of category id");
-            Field(x => x.CreatedDate, nullable: false).Description("Line item created date");
+            Field(x => x.CreatedDate, nullable: true).Description("Line item created date");
             Field(x => x.Height, nullable: true).Description("Value of height");
             Field(x => x.Id, nullable: false).Description("Line item id");
             Field(x => x.ImageUrl, nullable: true).Description("Value of line item image absolute URL");
