@@ -35,6 +35,25 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 
         public void Build(ISchema schema)
         {
+            schema.Query.AddField(new FieldType
+            {
+                Name = "me",
+                Type = GraphTypeExtenstionHelper.GetActualType<UserType>(),
+                Resolver = new AsyncFieldResolver<object>(async context =>
+                {
+                    var userName = ((GraphQLUserContext)context.UserContext).User?.Identity.Name;
+                    if (!string.IsNullOrEmpty(userName))
+                    {
+                        var result = await _mediator.Send(new GetUserQuery
+                        {
+                             UserName = userName
+                        });
+                        return result;
+                    }
+                    return AnonymousUser.Instance;
+                })
+            });
+
             //Queries
 
             /* organization query with contacts connection filtering:
