@@ -1,4 +1,3 @@
-using GraphQL;
 using GraphQL.Types;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.Platform.Core.Common;
@@ -11,10 +10,10 @@ namespace VirtoCommerce.XDigitalCatalog.Extensions
         public static T GetCatalogQuery<T>(this IResolveFieldContext context) where T : ICatalogQuery
         {
             var result = AbstractTypeFactory<T>.TryCreateInstance();
-            result.StoreId = context.GetArgument<string>("storeId") ?? context.GetValue<string>("storeId");
-            result.UserId = context.GetArgument<string>("userId") ?? context.GetValue<string>("userId") ?? context.GetCurrentUserId();
-            result.CurrencyCode = context.GetArgument<string>("currencyCode") ?? context.GetValue<string>("currencyCode");
-            result.CultureName = context.GetArgument<string>("cultureName") ?? context.GetValue<string>("cultureName");
+            result.StoreId = context.GetArgumentOrValue<string>("storeId");
+            result.UserId = context.GetArgumentOrValue<string>("userId") ?? context.GetCurrentUserId();
+            result.CurrencyCode = context.GetArgumentOrValue<string>("currencyCode");
+            result.CultureName = context.GetArgumentOrValue<string>("cultureName");
 
             return result;
         }
