@@ -44,7 +44,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                 Name = "cart",
                 Arguments = new QueryArguments(
                         new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "storeId", Description = "Store Id" },
-                        new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "userId", Description = "User Id" },
+                        new QueryArgument<StringGraphType> { Name = "userId", Description = "User Id" },
                         new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "currencyCode", Description = "Currency code (\"USD\")" },
                         new QueryArgument<StringGraphType> { Name = "cultureName", Description = "Culture name (\"en-Us\")" },
                         new QueryArgument<StringGraphType> { Name = "cartName", Description = "Cart name" },
@@ -52,25 +52,15 @@ namespace VirtoCommerce.XPurchase.Schemas
                 Type = GraphTypeExtenstionHelper.GetActualType<CartType>(),
                 Resolver = new AsyncFieldResolver<object>(async context =>
                 {
-                    //TODO: Move to extension methods
-
-                    var storeId = context.GetArgument<string>("storeId");
-                    var cartName = context.GetArgument("cartName", "default");
-                    var userId = context.GetArgument<string>("userId");
-                    var cultureName = context.GetArgument<string>("cultureName");
-                    var currencyCode = context.GetArgument<string>("currencyCode");
-                    var type = context.GetArgument<string>("type");
-
-                    var getCartQuery = new GetCartQuery(storeId, type, cartName, userId, currencyCode, cultureName);
+                    var getCartQuery = context.GetCartQuery<GetCartQuery>();
                     getCartQuery.IncludeFields = context.SubFields.Values.GetAllNodesPaths().ToArray();
                     var cartAggregate = await _mediator.Send(getCartQuery);
                     if (cartAggregate == null)
                     {
-                        var createCartCommand = new CreateCartCommand(storeId, type, cartName, userId, currencyCode, cultureName);
+                        var createCartCommand = new CreateCartCommand(getCartQuery.StoreId, getCartQuery.CartType, getCartQuery.CartName, getCartQuery.UserId, getCartQuery.CurrencyCode, getCartQuery.CurrencyCode);
                         cartAggregate = await _mediator.Send(createCartCommand);
                     }
-                    await CheckAuthAsync(context, cartAggregate.Cart);
-                    //store cart aggregate in the user context for future usage in the graph types resolvers    
+
                     context.SetExpandedObjectGraph(cartAggregate);
 
                     return cartAggregate;
@@ -94,10 +84,6 @@ namespace VirtoCommerce.XPurchase.Schemas
             orderConnectionBuilder.ResolveAsync(async context => await ResolveConnectionAsync(_mediator, context));
 
             schema.Query.AddField(orderConnectionBuilder.FieldType);
-
-
-
-
 
             //Mutations
             /// <example>
@@ -686,7 +672,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             var first = context.First;
             var skip = Convert.ToInt32(context.After ?? 0.ToString());
 
-            var query = context.GetSearchCartQuery<SearchCartQuery>();
+            var query = context.GetCartQuery<SearchCartQuery>();
             query.Skip = skip;
             query.Take = first ?? context.PageSize ?? 10;
             query.Sort = context.GetArgument<string>("sort");
@@ -695,9 +681,7 @@ namespace VirtoCommerce.XPurchase.Schemas
 
             context.UserContext.Add(nameof(Currency.CultureName).ToCamelCase(), query.CultureName);
 
-            //TODO: this authorization checks prevent of returns cart of other users very often case for b2b scenarios
-            //Need to find out other slution how to do such authorization checks
-            //await CheckAuthAsync(context, query);
+            await CheckAuthAsync(context, query);
 
             var response = await mediator.Send(query);
             foreach (var cartAggregate in response.Results)
@@ -709,26 +693,28 @@ namespace VirtoCommerce.XPurchase.Schemas
 
         private async Task CheckAuthAsync(IResolveFieldContext context, object resource)
         {
-            var userId = context.GetArgument<string>("userId");
+            var currentUserId = context.GetCurrentUserId();
 
-            if (userId == null)
+            if (currentUserId == null)
             {
-                throw new ExecutionError($"argument {nameof(userId)} is null");
+                throw new ExecutionError($"argument {nameof(currentUserId)} is null");
             }
 
             var signInManager = _signInManagerFactory();
-            var user = await signInManager.UserManager.FindByIdAsync(userId) ?? new ApplicationUser
-            {
-                Id = userId,
-                UserName = "Anonymous",
-            };
+            var currentUser = await signInManager.UserManager.FindByIdAsync(currentUserId);
 
-            var userPrincipal = await signInManager.ClaimsFactory.CreateAsync(user);
+            if (currentUser == null)
+            {
+                throw new ExecutionError($"User with id:'{currentUserId}' does not exist");
+            }
+
+
+            var userPrincipal = await signInManager.ClaimsFactory.CreateAsync(currentUser);
             var authorizationResult = await _authorizationService.AuthorizeAsync(userPrincipal, resource, new CanAccessCartAuthorizationRequirement());
 
             if (!authorizationResult.Succeeded)
             {
-                throw new ExecutionError($"access denied by userId:{userId}");
+                throw new ExecutionError($"access denied by userId:{currentUserId}");
             }
         }
     }

@@ -19,15 +19,15 @@ namespace VirtoCommerce.XPurchase.Extensions
             return userContext.GetValueForSource<CartAggregate>().Currency;
         }
 
-        public static T GetSearchCartQuery<T>(this IResolveFieldContext context) where T : ICartQuery
+        public static T GetCartQuery<T>(this IResolveFieldContext context) where T : ICartQuery
         {
             var result = AbstractTypeFactory<T>.TryCreateInstance();
-            result.StoreId = context.GetArgument<string>("storeId") ?? context.GetValue<string>("storeId");
-            result.UserId = context.GetArgument<string>("userId") ?? context.GetValue<string>("userId");
-            result.CurrencyCode = context.GetArgument<string>("currencyCode") ?? context.GetValue<string>("currencyCode");
-            result.CultureName = context.GetArgument<string>("cultureName") ?? context.GetValue<string>("cultureName");
-            result.CartType = context.GetArgument<string>("cartType") ?? context.GetValue<string>("cartType");
-            result.CartName = context.GetArgument<string>("cartName") ?? context.GetValue<string>("cartName");
+            result.StoreId = context.GetArgumentOrValue<string>("storeId");
+            result.UserId = context.GetArgumentOrValue<string>("userId") ?? context.GetCurrentUserId();
+            result.CurrencyCode = context.GetArgumentOrValue<string>("currencyCode");
+            result.CultureName = context.GetArgumentOrValue<string>("cultureName");
+            result.CartType = context.GetArgumentOrValue<string>("cartType");
+            result.CartName = context.GetArgumentOrValue<string>("cartName");
 
             return result;
         }
