@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using GraphQL.Execution;
+using System.Security.Claims;
 using GraphQL.Types;
+using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
@@ -34,7 +35,14 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
         public static T GetValue<T>(this IResolveFieldContext resolveContext, string key)
         {
             return resolveContext.GetValue(key, default(T));
-        }     
+        }
+
+        public static string GetCurrentUserId(this IResolveFieldContext resolveContext)
+        {
+            return ((GraphQLUserContext)resolveContext.UserContext).User?.FindFirstValue(ClaimTypes.NameIdentifier)
+                ?? ((GraphQLUserContext)resolveContext.UserContext).User?.FindFirstValue("name");
+        }
+
 
         //TODO:  Need to check what there is no any alternative way to access to the original request arguments in sub selection
         public static void CopyArgumentsToUserContext(this IResolveFieldContext resolveContext)
