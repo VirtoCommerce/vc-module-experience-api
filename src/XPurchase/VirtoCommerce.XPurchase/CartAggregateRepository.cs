@@ -68,10 +68,11 @@ namespace VirtoCommerce.XPurchase
 
         public async Task<CartAggregate> GetCartAsync(string cartName, string storeId, string userId, string language, string currencyCode, string type = null, string responseGroup = null)
         {
-            var criteria = new CartModule.Core.Model.Search.ShoppingCartSearchCriteria
+            var criteria = new ShoppingCartSearchCriteria
             {
                 StoreId = storeId,
-                CustomerId = userId,
+                // IMPORTANT! Need to specify customerId, otherwise any user cart could be returned while we expect anonymous in this case.
+                CustomerId = userId ?? Guid.NewGuid().ToString(),
                 Name = cartName,
                 Currency = currencyCode,
                 Type = type,
