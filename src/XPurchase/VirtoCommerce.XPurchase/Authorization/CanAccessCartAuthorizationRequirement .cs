@@ -35,17 +35,17 @@ namespace VirtoCommerce.XPurchase.Authorization
                     searchQuery.UserId = GetUserId(context);
                     result = true;
                 }
-
-                if (result)
-                {
-                    context.Succeed(requirement);
-                }
-                else
-                {
-                    context.Fail();
-                }
-
             }
+
+            if (result)
+            {
+                context.Succeed(requirement);
+            }
+            else
+            {
+                context.Fail();
+            }
+
             return Task.CompletedTask;
         }
 
