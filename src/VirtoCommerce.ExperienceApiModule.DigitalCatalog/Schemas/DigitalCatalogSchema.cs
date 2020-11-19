@@ -46,7 +46,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 Arguments = new QueryArguments(
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id", Description = "id of the product" },
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "storeId", Description = "Store Id" },
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "userId", Description = "User Id" },
+                    new QueryArgument<StringGraphType> { Name = "userId", Description = "User Id" },
                     new QueryArgument<StringGraphType> { Name = "currencyCode", Description = "Currency code (\"USD\")" },
                     new QueryArgument<StringGraphType> { Name = "cultureName", Description = "Culture name (\"en-US\")" }
                 ),
@@ -64,7 +64,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             var productsConnectionBuilder = GraphTypeExtenstionHelper.CreateConnection<ProductType, EdgeType<ProductType>, ProductsConnectonType<ProductType>, object>()
                 .Name("products")
                 .Argument<NonNullGraphType<StringGraphType>>("storeId", "The store id where products are searched")
-                .Argument<NonNullGraphType<StringGraphType>>("userId", "The customer id for search result impersonalization")
+                .Argument<StringGraphType>("userId", "The customer id for search result impersonalization")
                 .Argument<StringGraphType>("currencyCode", "The currency for which all prices data will be returned")
                 .Argument<StringGraphType>("cultureName", "The culture name for cart context product")
                 .Argument<StringGraphType>("query", "The query parameter performs the full-text search")
@@ -93,7 +93,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 Arguments = new QueryArguments(
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id", Description = "id of the product" },
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "storeId", Description = "Store Id" },
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "userId", Description = "User Id" },
+                    new QueryArgument<StringGraphType> { Name = "userId", Description = "User Id" },
                     new QueryArgument<StringGraphType> { Name = "currencyCode", Description = "Currency code (\"USD\")" },
                     new QueryArgument<StringGraphType> { Name = "cultureName", Description = "Culture name (\"en-US\")" }
                 ),
@@ -113,7 +113,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 .Name("categories")
                 .Argument<NonNullGraphType<StringGraphType>>("storeId", "The store id where category are searched")
                 .Argument<StringGraphType>("cultureName", "The language for which all localized category data will be returned")
-                .Argument<NonNullGraphType<StringGraphType>>("userId", "The customer id for search result impersonalization")
+                .Argument<StringGraphType>("userId", "The customer id for search result impersonalization")
                 .Argument<StringGraphType>("currencyCode", "The currency for which all prices data will be returned")
                 .Argument<StringGraphType>("query", "The query parameter performs the full-text search")
                 .Argument<StringGraphType>("filter", "This parameter applies a filter to the query results")
