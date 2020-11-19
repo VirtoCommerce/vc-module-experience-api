@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Polly.Caching;
 using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.CartModule.Core.Model.Search;
 using VirtoCommerce.Platform.Security.Authorization;
@@ -20,25 +21,31 @@ namespace VirtoCommerce.XPurchase.Authorization
     {
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, CanAccessCartAuthorizationRequirement requirement)
         {
-            var result = false;
-            if (context.Resource is ShoppingCart cart)
-            {
-                result = cart.CustomerId == GetUserId(context);
-            }
-            else if (context.Resource is SearchCartQuery searchQuery)
-            {
-                searchQuery.UserId = GetUserId(context);
-                result = true;
-            }
-            if (result)
-            {
-                context.Succeed(requirement);
-            }
-            else
-            {
-                context.Fail();
-            }
 
+            var result = context.User.IsInRole("__administrator");
+
+            if (!result)
+            {
+                if (context.Resource is ShoppingCart cart)
+                {
+                    result = cart.CustomerId == GetUserId(context);
+                }
+                else if (context.Resource is SearchCartQuery searchQuery)
+                {
+                    searchQuery.UserId = GetUserId(context);
+                    result = true;
+                }
+
+                if (result)
+                {
+                    context.Succeed(requirement);
+                }
+                else
+                {
+                    context.Fail();
+                }
+
+            }
             return Task.CompletedTask;
         }
 
