@@ -72,7 +72,7 @@ namespace VirtoCommerce.XPurchase
             {
                 StoreId = storeId,
                 // IMPORTANT! Need to specify customerId, otherwise any user cart could be returned while we expect anonymous in this case.
-                CustomerId = userId ?? Guid.NewGuid().ToString(),
+                CustomerId = userId ?? AnonymousUser.UserName,
                 Name = cartName,
                 Currency = currencyCode,
                 Type = type,
