@@ -57,7 +57,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                     var cartAggregate = await _mediator.Send(getCartQuery);
                     if (cartAggregate == null)
                     {
-                        var createCartCommand = new CreateCartCommand(getCartQuery.StoreId, getCartQuery.CartType, getCartQuery.CartName, getCartQuery.UserId, getCartQuery.CurrencyCode, getCartQuery.CurrencyCode);
+                        var createCartCommand = new CreateCartCommand(getCartQuery.StoreId, getCartQuery.CartType, getCartQuery.CartName, getCartQuery.UserId, getCartQuery.CurrencyCode, getCartQuery.CultureName);
                         cartAggregate = await _mediator.Send(createCartCommand);
                     }
 
