@@ -40,8 +40,13 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
 
         public static string GetCurrentUserId(this IResolveFieldContext resolveContext)
         {
-            var claimsPrincipal = ((GraphQLUserContext)resolveContext.UserContext).User;
+            var claimsPrincipal = GetCurrentPrincipal(resolveContext);
             return claimsPrincipal?.FindFirstValue(ClaimTypes.NameIdentifier) ?? claimsPrincipal?.FindFirstValue("name");
+        }
+
+        public static ClaimsPrincipal GetCurrentPrincipal(this IResolveFieldContext resolveContext)
+        {
+            return ((GraphQLUserContext)resolveContext.UserContext).User;
         }
 
         public static T GetArgumentOrValue<T>(this IResolveFieldContext resolveContext, string key)

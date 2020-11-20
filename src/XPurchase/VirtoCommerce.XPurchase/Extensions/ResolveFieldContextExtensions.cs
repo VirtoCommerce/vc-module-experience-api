@@ -22,7 +22,7 @@ namespace VirtoCommerce.XPurchase.Extensions
         {
             var result = AbstractTypeFactory<T>.TryCreateInstance();
             result.StoreId = context.GetArgumentOrValue<string>("storeId");
-            result.UserId = context.GetArgumentOrValue<string>("userId") ?? context.GetCurrentUserId();
+            result.UserId = context.GetArgumentOrValue<string>("userId");
             result.CurrencyCode = context.GetArgumentOrValue<string>("currencyCode");
             result.CultureName = context.GetArgumentOrValue<string>("cultureName");
             result.CartType = context.GetArgumentOrValue<string>("cartType");

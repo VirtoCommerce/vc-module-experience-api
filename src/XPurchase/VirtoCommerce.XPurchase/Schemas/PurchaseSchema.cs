@@ -7,12 +7,10 @@ using GraphQL.Resolvers;
 using GraphQL.Types;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
-using VirtoCommerce.Platform.Core.Security;
 using VirtoCommerce.XPurchase.Authorization;
 using VirtoCommerce.XPurchase.Commands;
 using VirtoCommerce.XPurchase.Extensions;
@@ -24,14 +22,13 @@ namespace VirtoCommerce.XPurchase.Schemas
     {
         private readonly IMediator _mediator;
         private readonly IAuthorizationService _authorizationService;
-        private readonly Func<SignInManager<ApplicationUser>> _signInManagerFactory;
+        
         public const string _commandName = "command";
 
-        public PurchaseSchema(IMediator mediator, IAuthorizationService authorizationService, Func<SignInManager<ApplicationUser>> signInManagerFactory)
+        public PurchaseSchema(IMediator mediator, IAuthorizationService authorizationService)
         {
             _mediator = mediator;
             _authorizationService = authorizationService;
-            _signInManagerFactory = signInManagerFactory;
         }
 
         public void Build(ISchema schema)
@@ -681,7 +678,12 @@ namespace VirtoCommerce.XPurchase.Schemas
 
             context.UserContext.Add(nameof(Currency.CultureName).ToCamelCase(), query.CultureName);
 
-            await CheckAuthAsync(context, query);
+            var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), query, new CanAccessCartAuthorizationRequirement());
+
+            if (!authorizationResult.Succeeded)
+            {
+                throw new ExecutionError($"Access denied");
+            }
 
             var response = await mediator.Send(query);
             foreach (var cartAggregate in response.Results)
@@ -689,33 +691,6 @@ namespace VirtoCommerce.XPurchase.Schemas
                 context.SetExpandedObjectGraph(cartAggregate);
             }
             return new PagedConnection<CartAggregate>(response.Results, skip, Convert.ToInt32(context.After ?? 0.ToString()), response.TotalCount);
-        }
-
-        private async Task CheckAuthAsync(IResolveFieldContext context, object resource)
-        {
-            var currentUserId = context.GetCurrentUserId();
-
-            if (currentUserId == null)
-            {
-                throw new ExecutionError($"argument {nameof(currentUserId)} is null");
-            }
-
-            var signInManager = _signInManagerFactory();
-            var currentUser = await signInManager.UserManager.FindByIdAsync(currentUserId);
-
-            if (currentUser == null)
-            {
-                throw new ExecutionError($"User with id:'{currentUserId}' does not exist");
-            }
-
-
-            var userPrincipal = await signInManager.ClaimsFactory.CreateAsync(currentUser);
-            var authorizationResult = await _authorizationService.AuthorizeAsync(userPrincipal, resource, new CanAccessCartAuthorizationRequirement());
-
-            if (!authorizationResult.Succeeded)
-            {
-                throw new ExecutionError($"access denied by userId:{currentUserId}");
-            }
         }
     }
 }
