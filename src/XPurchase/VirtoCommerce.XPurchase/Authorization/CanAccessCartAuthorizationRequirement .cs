@@ -1,9 +1,7 @@
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Polly.Caching;
 using VirtoCommerce.CartModule.Core.Model;
-using VirtoCommerce.CartModule.Core.Model.Search;
 using VirtoCommerce.Platform.Security.Authorization;
 using VirtoCommerce.XPurchase.Queries;
 
