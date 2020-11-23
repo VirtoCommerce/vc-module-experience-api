@@ -26,8 +26,8 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
 
             if (itemsIds.Any())
             {
-                string responceGroup = parameter.Query.GetCategoryResponseGroup();
-                var categories = await _categoryService.GetByIdsAsync(itemsIds, responceGroup);
+                string responseGroup = parameter.Query.GetCategoryResponseGroup();
+                var categories = await _categoryService.GetByIdsAsync(itemsIds, responseGroup);
 
                 foreach (var category in categories)
                 {
