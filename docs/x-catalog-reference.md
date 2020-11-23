@@ -210,7 +210,7 @@ Example requests:
 ```GraphQL
 # Search all products by keyword `sony` and return the  name and primary image url for first 20 found products and total count
 {
-  products(query: "sony" first:20) {
+  products(query: "sony" storeId: "Electronics" first:20) {
       totalCount
       items
       {
@@ -231,7 +231,7 @@ Example requests:
 ```GraphQL
 # Will return products that have such terms "university", "unversty", "universe" etc.
 {
-  products(query: "unversty" first:20) {
+  products(query: "unversty" storeId: "Electronics" first:20) {
       totalCount
       items
       {
