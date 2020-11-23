@@ -17,7 +17,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Commands
             _customerOrderAggregateRepository = customerOrderAggregateRepository;
         }
 
-        public async Task<CustomerOrderAggregate> Handle(CreateOrderFromCartCommand request, CancellationToken cancellationToken)
+        public virtual async Task<CustomerOrderAggregate> Handle(CreateOrderFromCartCommand request, CancellationToken cancellationToken)
         {
             var cart = await _cartService.GetByIdAsync(request.CartId);
             var result = await _customerOrderAggregateRepository.CreateOrderFromCart(cart);
