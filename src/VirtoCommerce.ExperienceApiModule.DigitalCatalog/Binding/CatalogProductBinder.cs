@@ -18,32 +18,30 @@ namespace VirtoCommerce.XDigitalCatalog.Binding
         {
             var result = default(CatalogProduct);
 
-            var fieldName = BindingInfo.FieldName;
-            if (searchDocument.ContainsKey(fieldName))
+            if (!searchDocument.ContainsKey(BindingInfo.FieldName))
             {
-                var obj = searchDocument[fieldName];
+                // No object in index
+                return result;
+            }
 
-                if (obj is JObject jobj)
+            var obj = searchDocument[BindingInfo.FieldName];
+            if (obj is JObject jobj)
+            {
+                result = (CatalogProduct)jobj.ToObject(_productType);
+
+                var productProperties = result.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
+                foreach (var property in productProperties)
                 {
-                    result = (CatalogProduct)jobj.ToObject(_productType);
+                    var binder = property.GetIndexModelBinder();
 
-                    var productProperties = result.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
-
-                    foreach (var property in productProperties)
+                    if (binder != null)
                     {
-                        var binder = property.GetIndexModelBinder();
-
-                        if (binder != null)
-                        {
-                            property.SetValue(result, binder.BindModel(searchDocument));
-                        }
+                        property.SetValue(result, binder.BindModel(searchDocument));
                     }
                 }
             }
-            else
-            {
-                throw new InvalidOperationException($"{BindingInfo.FieldName} is missed in index data. Unable to load CatalogProduct object from index.");
-            }
+
             return result;
         }
     }

@@ -1,3 +1,4 @@
+using AutoMapper;
 using GraphQL.Server;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
@@ -6,9 +7,6 @@ using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
 using VirtoCommerce.XDigitalCatalog.Middlewares;
 using VirtoCommerce.XDigitalCatalog.Queries;
 using VirtoCommerce.XDigitalCatalog.Schemas;
-using AutoMapper;
-using VirtoCommerce.XDigitalCatalog.Mapping;
-using AutoMapper.Configuration;
 
 namespace VirtoCommerce.XDigitalCatalog.Extensions
 {
@@ -21,17 +19,24 @@ namespace VirtoCommerce.XDigitalCatalog.Extensions
             graphQlbuilder.AddGraphTypes(typeof(XDigitalCatalogAnchor));
 
             services.AddMediatR(typeof(XDigitalCatalogAnchor));
-            //the generic pipeline that is used  for on-the-fly additional data evaluation (prices, inventories, discounts and taxes) for resulting products 
+            //the generic pipeline that is used  for on-the-fly additional data evaluation (prices, inventories, discounts and taxes) for resulting products
             services.AddPipeline<SearchProductResponse>(builder =>
             {
+                builder.AddMiddleware(typeof(EnsureCatalogProductLoadingMiddleware));
+                builder.AddMiddleware(typeof(FinalizeCatalogProductMappingMiddleware));
                 builder.AddMiddleware(typeof(EvalProductsPricesMiddleware));
                 builder.AddMiddleware(typeof(EvalProductsDiscountsMiddleware));
                 builder.AddMiddleware(typeof(EvalProductsTaxMiddleware));
                 builder.AddMiddleware(typeof(EvalProductsInventoryMiddleware));
             });
 
-            services.AddAutoMapper(typeof(XDigitalCatalogAnchor));
+            services.AddPipeline<SearchCategoryResponse>(builder =>
+            {
+                builder.AddMiddleware(typeof(EnsureCategoryLoadingMiddleware));
+                builder.AddMiddleware(typeof(FinalizeCategoryMappingMiddleware));
+            });
 
+            services.AddAutoMapper(typeof(XDigitalCatalogAnchor));
 
             return services;
         }

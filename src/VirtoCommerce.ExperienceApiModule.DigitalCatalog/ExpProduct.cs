@@ -19,7 +19,7 @@ namespace VirtoCommerce.XDigitalCatalog
 {
     public class ExpProduct
     {
-        public string Id => IndexedProduct.Id;
+        public string Id => IndexedProduct?.Id;
 
         [BindIndexField(FieldName = "__object", BinderType = typeof(CatalogProductBinder))]
         public virtual CatalogProduct IndexedProduct { get; set; }
@@ -30,13 +30,15 @@ namespace VirtoCommerce.XDigitalCatalog
         [BindIndexField(FieldName = "__prices", BinderType = typeof(PriceBinder))]
         public virtual IList<Price> IndexedPrices { get; set; } = new List<Price>();
 
+        [BindIndexField(FieldName = "key", BinderType = typeof(KeyBinder))]
+        public virtual string Key { get; set; }
+
         /// <summary>
         /// All parent categories ids concatenated with "/". E.g. (1/21/344)  relative for the given catalog
         /// </summary>
         public string Outline { get; set; }
 
         public string Slug { get; set; }
-
 
         public SeoInfo SeoInfo { get; set; }
 
@@ -64,7 +66,7 @@ namespace VirtoCommerce.XDigitalCatalog
             }
         }
 
-        public IList<ProductPrice> AllPrices { get;  set; } = new List<ProductPrice>();
+        public IList<ProductPrice> AllPrices { get; set; } = new List<ProductPrice>();
 
         /// <summary>
         /// Inventory of all fulfillment centers.

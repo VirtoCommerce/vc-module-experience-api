@@ -17,18 +17,13 @@ namespace VirtoCommerce.XDigitalCatalog.Binding
         {
             var fieldName = BindingInfo.FieldName;
 
-            if (!searchDocument.ContainsKey(fieldName))
+            if (searchDocument.ContainsKey(BindingInfo.FieldName) && searchDocument[fieldName] is JObject jobj)
             {
-                throw new InvalidOperationException($"{BindingInfo.FieldName} is missed in index data. Unable to load Category object from index.");
+                return (Category)jobj.ToObject(_productType);
             }
 
-            if (!(searchDocument[fieldName] is JObject jobj))
-            {
-                return null;
-            }
-
-            var result = (Category)jobj.ToObject(_productType);
-            return result;
+            // No object in index
+            return null;
         }
     }
 }
