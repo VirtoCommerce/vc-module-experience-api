@@ -70,7 +70,7 @@ This connection allows you to search products.
         cultureName: "en-Us"
         currencyCode: "USD"
   	    first: 10
-  	    after: 10)
+  	    after: "10")
     {
         items
         {
@@ -114,7 +114,7 @@ This connection allows you to search products.
         cultureName: "en-Us"
         currencyCode: "USD"
   	    first: 10
-  	    after: 10)
+  	    after: "10")
     {
         items
         {
