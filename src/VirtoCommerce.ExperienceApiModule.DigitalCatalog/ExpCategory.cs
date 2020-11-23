@@ -13,7 +13,7 @@ namespace VirtoCommerce.XDigitalCatalog
         [BindIndexField(FieldName = "__object", BinderType = typeof(CategoryBinder))]
         public virtual Category Category { get; set; }
 
-        [BindIndexField(FieldName = "key", BinderType = typeof(KeyBinder))]
+        [BindIndexField(BinderType = typeof(KeyBinder))]
         public virtual string Key { get; set; }
 
         /// <summary>

@@ -30,7 +30,7 @@ namespace VirtoCommerce.XDigitalCatalog
         [BindIndexField(FieldName = "__prices", BinderType = typeof(PriceBinder))]
         public virtual IList<Price> IndexedPrices { get; set; } = new List<Price>();
 
-        [BindIndexField(FieldName = "key", BinderType = typeof(KeyBinder))]
+        [BindIndexField(BinderType = typeof(KeyBinder))]
         public virtual string Key { get; set; }
 
         /// <summary>
