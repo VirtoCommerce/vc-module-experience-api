@@ -76,6 +76,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Tests.Authorization
 
             //Assert
             context.HasSucceeded.Should().BeTrue();
+            query.CustomerId.Should().Be("userId");
         }
 
         [Theory]
@@ -121,6 +122,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Tests.Authorization
 
             //Assert
             context.HasSucceeded.Should().BeTrue();
+            query.CustomerId.Should().Be("userId");
         }
 
         [Theory]
