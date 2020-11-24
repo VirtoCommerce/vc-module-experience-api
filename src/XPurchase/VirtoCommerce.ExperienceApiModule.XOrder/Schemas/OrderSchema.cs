@@ -53,7 +53,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                     {
                         Number = context.GetArgument<string>("number"),
                         OrderId = context.GetArgument<string>("id"),
-                        CultureName = context.GetArgument<string>(nameof(Currency.CultureName)),
+                        CultureName = context.GetArgument<string>(nameof(Currency.CultureName))
                     };
                     var orderAggregate = await _mediator.Send(request);
 
@@ -80,7 +80,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                 .Argument<StringGraphType>("filter", "This parameter applies a filter to the query results")
                 .Argument<StringGraphType>("sort", "The sort expression")
                 .Argument<StringGraphType>("cultureName", "Culture name (\"en-US\")")
-                .Argument<NonNullGraphType<StringGraphType>>("userId", "")
+                .Argument<StringGraphType>("userId", "")
                 .Unidirectional()
                 .PageSize(20);
 
@@ -119,7 +119,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                             {
                                 var command = context.GetArgument<ChangeOrderStatusCommand>(_commandName);
 
-                                var order = _customerOrderService.GetByIdAsync(command.OrderId);
+                                var order = await _customerOrderService.GetByIdAsync(command.OrderId);
 
                                 var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), order, new CanAccessOrderAuthorizationRequirement());
 
@@ -138,7 +138,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                             .ResolveAsync(async context =>
                             {
                                 var command = context.GetArgument<ConfirmOrderPaymentCommand>(_commandName);
-                                var order = _customerOrderService.GetByIdAsync(command.Payment.OrderId);
+                                var order = await _customerOrderService.GetByIdAsync(command.Payment.OrderId);
 
                                 var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), order, new CanAccessOrderAuthorizationRequirement());
 
@@ -157,7 +157,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                             .ResolveAsync(async context =>
                             {
                                 var command = context.GetArgument<CancelOrderPaymentCommand>(_commandName);
-                                var order = _customerOrderService.GetByIdAsync(command.Payment.OrderId);
+                                var order = await _customerOrderService.GetByIdAsync(command.Payment.OrderId);
 
                                 var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), order, new CanAccessOrderAuthorizationRequirement());
 
