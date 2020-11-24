@@ -44,6 +44,11 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
             return claimsPrincipal?.FindFirstValue(ClaimTypes.NameIdentifier) ?? claimsPrincipal?.FindFirstValue("name");
         }
 
+        public static ClaimsPrincipal GetCurrentPrincipal(this IResolveFieldContext resolveContext)
+        {
+            return ((GraphQLUserContext)resolveContext.UserContext).User;
+        }
+
         public static T GetArgumentOrValue<T>(this IResolveFieldContext resolveContext, string key)
         {
             return resolveContext.GetArgument<T>(key) ?? resolveContext.GetValue<T>(key);

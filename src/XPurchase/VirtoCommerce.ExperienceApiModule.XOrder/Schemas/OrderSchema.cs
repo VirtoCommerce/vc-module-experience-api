@@ -1,14 +1,11 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Builders;
 using GraphQL.Resolvers;
 using GraphQL.Types;
-using GraphQL.Types.Relay.DataObjects;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
@@ -18,7 +15,8 @@ using VirtoCommerce.ExperienceApiModule.XOrder.Commands;
 using VirtoCommerce.ExperienceApiModule.XOrder.Extensions;
 using VirtoCommerce.ExperienceApiModule.XOrder.Queries;
 using VirtoCommerce.OrdersModule.Core.Model;
-using VirtoCommerce.Platform.Core.Security;
+using VirtoCommerce.OrdersModule.Core.Model.Search;
+using VirtoCommerce.OrdersModule.Core.Services;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 {
@@ -27,21 +25,16 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
         public const string _commandName = "command";
 
         public readonly IMediator _mediator;
-        private readonly IAuthorizationService _authorizationService;
-        private readonly Func<SignInManager<ApplicationUser>> _signInManagerFactory;
         private readonly ICurrencyService _currencyService;
+        private readonly IAuthorizationService _authorizationService;
+        private readonly ICustomerOrderService _customerOrderService;
 
-
-        public OrderSchema(
-            IMediator mediator
-            , IAuthorizationService authorizationService
-            , Func<SignInManager<ApplicationUser>> signInManagerFactory
-            , ICurrencyService currencyService)
+        public OrderSchema(IMediator mediator, ICurrencyService currencyService, IAuthorizationService authorizationService, ICustomerOrderService customerOrderService)
         {
             _mediator = mediator;
-            _authorizationService = authorizationService;
-            _signInManagerFactory = signInManagerFactory;
             _currencyService = currencyService;
+            _authorizationService = authorizationService;
+            _customerOrderService = customerOrderService;
         }
 
         public void Build(ISchema schema)
@@ -52,9 +45,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                 Arguments = new QueryArguments(
                     new QueryArgument<StringGraphType> { Name = "id" },
                     new QueryArgument<StringGraphType> { Name = "number" },
-                    new QueryArgument<StringGraphType> { Name = "cultureName", Description = "Culture name (\"en-US\")" },
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "userId" }
-                    ),
+                    new QueryArgument<StringGraphType> { Name = "cultureName", Description = "Culture name (\"en-US\")" }),
                 Type = GraphTypeExtenstionHelper.GetActualType<CustomerOrderType>(),
                 Resolver = new AsyncFieldResolver<object>(async context =>
                 {
@@ -62,13 +53,16 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                     {
                         Number = context.GetArgument<string>("number"),
                         OrderId = context.GetArgument<string>("id"),
-                        CultureName = context.GetArgument<string>(nameof(Currency.CultureName))
+                        CultureName = context.GetArgument<string>(nameof(Currency.CultureName)),
                     };
                     var orderAggregate = await _mediator.Send(request);
 
-                    //TODO: this authorization checks prevent of returns orders of other users very often case for b2b scenarios
-                    //Need to find out other solution how to do such authorization checks
-                    //await CheckAuthAsync(context, orderAggregate.Order);
+                    var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), orderAggregate.Order, new CanAccessOrderAuthorizationRequirement());
+
+                    if (!authorizationResult.Succeeded)
+                    {
+                        throw new ExecutionError($"Access denied");
+                    }
 
                     var allCurrencies = await _currencyService.GetAllCurrenciesAsync();
                     //Store all currencies in the user context for future resolve in the schema types
@@ -121,19 +115,59 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             _ = schema.Mutation.AddField(FieldBuilder.Create<object, bool>(typeof(BooleanGraphType))
                             .Name("changeOrderStatus")
                             .Argument<NonNullGraphType<InputChangeOrderStatusType>>(_commandName)
-                            .ResolveAsync(async context => await _mediator.Send(context.GetArgument<ChangeOrderStatusCommand>(_commandName)))
+                            .ResolveAsync(async context =>
+                            {
+                                var command = context.GetArgument<ChangeOrderStatusCommand>(_commandName);
+
+                                var order = _customerOrderService.GetByIdAsync(command.OrderId);
+
+                                var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), order, new CanAccessOrderAuthorizationRequirement());
+
+                                if (!authorizationResult.Succeeded)
+                                {
+                                    throw new ExecutionError($"Access denied");
+                                }
+
+                                return await _mediator.Send(command);
+                            })
                             .FieldType);
 
             _ = schema.Mutation.AddField(FieldBuilder.Create<object, bool>(typeof(BooleanGraphType))
                             .Name("confirmOrderPayment")
                             .Argument<NonNullGraphType<InputConfirmOrderPaymentType>>(_commandName)
-                            .ResolveAsync(async context => await _mediator.Send(context.GetArgument<ConfirmOrderPaymentCommand>(_commandName)))
+                            .ResolveAsync(async context =>
+                            {
+                                var command = context.GetArgument<ConfirmOrderPaymentCommand>(_commandName);
+                                var order = _customerOrderService.GetByIdAsync(command.Payment.OrderId);
+
+                                var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), order, new CanAccessOrderAuthorizationRequirement());
+
+                                if (!authorizationResult.Succeeded)
+                                {
+                                    throw new ExecutionError($"Access denied");
+                                }
+
+                                return await _mediator.Send(command);
+                            })
                             .FieldType);
 
             _ = schema.Mutation.AddField(FieldBuilder.Create<object, bool>(typeof(BooleanGraphType))
                             .Name("cancelOrderPayment")
                             .Argument<NonNullGraphType<InputCancelOrderPaymentType>>(_commandName)
-                            .ResolveAsync(async context => await _mediator.Send(context.GetArgument<CancelOrderPaymentCommand>(_commandName)))
+                            .ResolveAsync(async context =>
+                            {
+                                var command = context.GetArgument<CancelOrderPaymentCommand>(_commandName);
+                                var order = _customerOrderService.GetByIdAsync(command.Payment.OrderId);
+
+                                var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), order, new CanAccessOrderAuthorizationRequirement());
+
+                                if (!authorizationResult.Succeeded)
+                                {
+                                    throw new ExecutionError($"Access denied");
+                                }
+
+                                return await _mediator.Send(command);
+                            })
                             .FieldType);
         }
 
@@ -148,7 +182,8 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                 Take = first ?? context.PageSize ?? 10,
                 Filter = context.GetArgument<string>("filter"),
                 Sort = context.GetArgument<string>("sort"),
-                CultureName = context.GetArgument<string>(nameof(Currency.CultureName).ToCamelCase())
+                CultureName = context.GetArgument<string>(nameof(Currency.CultureName).ToCamelCase()),
+                CustomerId = context.GetArgumentOrValue<string>("userId")
             };
 
             context.UserContext.Add(nameof(Currency.CultureName).ToCamelCase(), request.CultureName);
@@ -156,9 +191,13 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             //Store all currencies in the user context for future resolve in the schema types
             context.SetCurrencies(allCurrencies, request.CultureName);
 
-            //TODO: this authorization checks prevent of returns orders of other users very often case for b2b scenarios
-            //Need to find out other solution how to do such authorization checks
-            //await CheckAuthAsync(context, request);
+
+            var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), request, new CanAccessOrderAuthorizationRequirement());
+
+            if (!authorizationResult.Succeeded)
+            {
+                throw new ExecutionError($"Access denied");
+            }
 
             var response = await mediator.Send(request);
 
@@ -181,14 +220,18 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                 Take = first ?? context.PageSize ?? 10,
                 Filter = context.GetArgument<string>("filter"),
                 Sort = context.GetArgument<string>("sort"),
-                CultureName = context.GetArgument<string>(nameof(Currency.CultureName).ToCamelCase())
+                CultureName = context.GetArgument<string>(nameof(Currency.CultureName).ToCamelCase()),
+                CustomerId = context.GetArgumentOrValue<string>("userId")
             };
 
-            context.UserContext.Add(nameof(Currency.CultureName).ToCamelCase(), request.CultureName);
+            var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), request, new CanAccessOrderAuthorizationRequirement());
 
-            //TODO: this authorization checks prevent of returns orders of other users very often case for b2b scenarios
-            //Need to find out other solution how to do such authorization checks
-            //await CheckAuthAsync(context, request);
+            if (!authorizationResult.Succeeded)
+            {
+                throw new ExecutionError($"Access denied");
+            }
+
+            context.UserContext.Add(nameof(Currency.CultureName).ToCamelCase(), request.CultureName);
 
             var response = await mediator.Send(request);
 
@@ -201,31 +244,6 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             context.SetCurrencies(allCurrencies, request.CultureName);
 
             return new PagedConnection<PaymentIn>(response.Results, skip, Convert.ToInt32(context.After ?? 0.ToString()), response.TotalCount);
-        }
-
-        private async Task CheckAuthAsync(IResolveFieldContext context, object resource)
-        {
-            var userId = context.GetArgument<string>("userId");
-
-            if (userId == null)
-            {
-                throw new ExecutionError($"argument {nameof(userId)} is null");
-            }
-
-            var signInManager = _signInManagerFactory();
-            var user = await signInManager.UserManager.FindByIdAsync(userId);
-            if (user == null)
-            {
-                throw new ExecutionError($"can't find user with id:{userId}");
-            }
-
-            var userPrincipal = await signInManager.CreateUserPrincipalAsync(user);
-            var authorizationResult = await _authorizationService.AuthorizeAsync(userPrincipal, resource, new CanAccessOrderAuthorizationRequirement());
-
-            if (!authorizationResult.Succeeded)
-            {
-                throw new ExecutionError($"access denied by userId:{userId}");
-            }
         }
     }
 }
