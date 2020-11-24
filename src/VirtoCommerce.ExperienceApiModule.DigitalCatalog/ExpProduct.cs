@@ -33,13 +33,6 @@ namespace VirtoCommerce.XDigitalCatalog
         [BindIndexField(BinderType = typeof(KeyBinder))]
         public virtual string Key { get; set; }
 
-        /// <summary>
-        /// All parent categories ids concatenated with "/". E.g. (1/21/344)  relative for the given catalog
-        /// </summary>
-        public string Outline { get; set; }
-
-        public string Slug { get; set; }
-
         public SeoInfo SeoInfo { get; set; }
 
         public bool IsBuyable

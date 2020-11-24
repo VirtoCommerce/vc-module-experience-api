@@ -23,7 +23,6 @@ namespace VirtoCommerce.XDigitalCatalog.Extensions
             services.AddPipeline<SearchProductResponse>(builder =>
             {
                 builder.AddMiddleware(typeof(EnsureCatalogProductLoadingMiddleware));
-                builder.AddMiddleware(typeof(FinalizeCatalogProductMappingMiddleware));
                 builder.AddMiddleware(typeof(EvalProductsPricesMiddleware));
                 builder.AddMiddleware(typeof(EvalProductsDiscountsMiddleware));
                 builder.AddMiddleware(typeof(EvalProductsTaxMiddleware));
@@ -33,7 +32,6 @@ namespace VirtoCommerce.XDigitalCatalog.Extensions
             services.AddPipeline<SearchCategoryResponse>(builder =>
             {
                 builder.AddMiddleware(typeof(EnsureCategoryLoadingMiddleware));
-                builder.AddMiddleware(typeof(FinalizeCategoryMappingMiddleware));
             });
 
             services.AddAutoMapper(typeof(XDigitalCatalogAnchor));

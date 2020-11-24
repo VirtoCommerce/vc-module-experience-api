@@ -59,7 +59,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                 result |= ItemResponseGroup.WithLinks;
             }
 
-            if (IncludeFields.ContainsAny("outline", "outlines"))
+            if (IncludeFields.ContainsAny("outline", "outlines", "slug", "level"))
             {
                 result |= ItemResponseGroup.WithOutlines;
             }

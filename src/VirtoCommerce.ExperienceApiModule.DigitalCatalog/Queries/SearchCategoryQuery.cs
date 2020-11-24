@@ -20,7 +20,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
         {
             var result = CategoryResponseGroup.None;
 
-            if (IncludeFields.ContainsAny("imgSrc"))
+            if (IncludeFields.ContainsAny("assets", "images", "imgSrc"))
             {
                 result |= CategoryResponseGroup.WithImages;
             }
@@ -40,7 +40,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                 result |= CategoryResponseGroup.WithLinks;
             }
 
-            if (IncludeFields.ContainsAny("outline", "outlines"))
+            if (IncludeFields.ContainsAny("outline", "outlines", "slug", "level"))
             {
                 result |= CategoryResponseGroup.WithOutlines;
             }
