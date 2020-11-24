@@ -36,7 +36,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Authorization
                 else if (context.Resource is SearchPaymentsQuery paymentsQuery)
                 {
                     paymentsQuery.CustomerId = GetUserId(context);
-                    result = true;
+                    result = paymentsQuery.CustomerId != null;
                 }
             }
 
