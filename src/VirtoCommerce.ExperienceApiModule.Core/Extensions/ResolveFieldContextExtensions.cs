@@ -40,15 +40,19 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
 
         public static string GetCurrentUserId(this IResolveFieldContext resolveContext)
         {
-            var claimsPrincipal = ((GraphQLUserContext)resolveContext.UserContext).User;
+            var claimsPrincipal = GetCurrentPrincipal(resolveContext);
             return claimsPrincipal?.FindFirstValue(ClaimTypes.NameIdentifier) ?? claimsPrincipal?.FindFirstValue("name");
+        }
+
+        public static ClaimsPrincipal GetCurrentPrincipal(this IResolveFieldContext resolveContext)
+        {
+            return ((GraphQLUserContext)resolveContext.UserContext).User;
         }
 
         public static T GetArgumentOrValue<T>(this IResolveFieldContext resolveContext, string key)
         {
             return resolveContext.GetArgument<T>(key) ?? resolveContext.GetValue<T>(key);
         }
-
         //TODO:  Need to check what there is no any alternative way to access to the original request arguments in sub selection
         public static void CopyArgumentsToUserContext(this IResolveFieldContext resolveContext)
         {
