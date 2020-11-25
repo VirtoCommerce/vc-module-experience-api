@@ -54,16 +54,16 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
 
             var builder = new IndexSearchRequestBuilder()
                                             .WithFuzzy(request.Fuzzy, request.FuzzyLevel)
-                                            .ParseFilters(_phraseParser, request.Filter)                                          
+                                            .ParseFilters(_phraseParser, request.Filter)
                                             .WithSearchPhrase(request.Query)
                                             .WithPaging(request.Skip, request.Take)
                                             .AddObjectIds(request.ObjectIds)
-                                            .AddSorting(request.Sort)                                           
+                                            .AddSorting(request.Sort)
                                             .WithIncludeFields(IndexFieldsMapper.MapToIndexIncludes(request.IncludeFields).ToArray());
 
             if (request.ObjectIds.IsNullOrEmpty())
             {
-                //filter products only the store catalog and visibility status when search 
+                //filter products only the store catalog and visibility status when search
                 builder.AddTerms(new[] { "status:visible" });//Only visible, exclude variations from search result
                 builder.AddTerms(new[] { $"__outline:{store.Catalog}" });
             }
@@ -78,7 +78,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                 }, new FiltersContainer());
 
                 builder.ParseFacets(_phraseParser, request.Facet, predefinedAggregations)
-                       .ApplyMultiSelectFacetSearch();             
+                       .ApplyMultiSelectFacetSearch();
             }
 
             var searchRequest = builder.Build();
@@ -92,14 +92,8 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             //TODO: move later to own implementation
             //Call the catalog aggregation converter service to convert AggregationResponse to proper Aggregation type (term, range, filter)
             var aggregations = await _aggregationConverter.ConvertAggregationsAsync(searchResult.Aggregations, criteria);
-          
-            var products = searchResult.Documents?.Select(x => _mapper.Map<ExpProduct>(x, options =>
-            {
-                options.Items["all_currencies"] = allStoreCurrencies;
-                options.Items["store"] = store;
-                options.Items["language"] = request.CultureName;
-                options.Items["currency"] = currency;
-            })).ToList() ?? new List<ExpProduct>();
+
+            var products = searchResult.Documents?.Select(x => _mapper.Map<ExpProduct>(x)).ToList() ?? new List<ExpProduct>();
 
             var result = new SearchProductResponse
             {
@@ -107,7 +101,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                 AllStoreCurrencies = allStoreCurrencies,
                 Currency = currency,
                 Store = store,
-                Results = products.ToList(),
+                Results = products,
                 Facets = aggregations?.Select(x => _mapper.Map<FacetResult>(x)).ToList(),
                 TotalCount = (int)searchResult.TotalCount
             };
@@ -116,7 +110,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
 
             return result;
         }
-     
+
         public virtual async Task<LoadProductResponse> Handle(LoadProductsQuery request, CancellationToken cancellationToken)
         {
             var searchRequest = _mapper.Map<SearchProductQuery>(request);
@@ -125,7 +119,5 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
 
             return new LoadProductResponse(result.Results);
         }
-
-
     }
 }

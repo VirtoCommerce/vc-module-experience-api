@@ -8,6 +8,7 @@ using GraphQL.DataLoader;
 using GraphQL.Types;
 using MediatR;
 using VirtoCommerce.CatalogModule.Core.Model;
+using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
@@ -64,13 +65,67 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             Field(d => d.IndexedProduct.Code, nullable: false).Description("The product SKU.");
             Field<StringGraphType>("catalogId", resolve: context => context.Source.IndexedProduct.CatalogId);
             Field(d => d.IndexedProduct.ProductType, nullable: true).Description("The type of product");
-            Field(x => x.Slug, nullable: true).Description(@"Request related slug for product");
+
+            FieldAsync<StringGraphType>("outline", resolve: async context =>
+            {
+                var outlines = context.Source.IndexedProduct.Outlines;
+                if (outlines.IsNullOrEmpty()) return null;
+
+                var loadRelatedCatalogOutlineQuery = context.GetCatalogQuery<LoadRelatedCatalogOutlineQuery>();
+                loadRelatedCatalogOutlineQuery.Outlines = outlines;
+
+                return await mediator.Send(loadRelatedCatalogOutlineQuery);
+            }, description: @"All parent categories ids relative to the requested catalog and concatenated with \ . E.g. (1/21/344)");
+
+            FieldAsync<StringGraphType>("slug", resolve: async context =>
+            {
+                var outlines = context.Source.IndexedProduct.Outlines;
+                if (outlines.IsNullOrEmpty()) return null;
+
+                var loadRelatedSlugPathQuery = context.GetCatalogQuery<LoadRelatedSlugPathQuery>();
+                loadRelatedSlugPathQuery.Outlines = outlines;
+
+                return await mediator.Send(loadRelatedSlugPathQuery);
+            }, description: "Request related slug for product");
+
             Field(d => d.IndexedProduct.Name, nullable: false).Description("The name of the product.");
-            Field(x => x.Outline, nullable: true).Description(@"All parent categories ids relative to the requested catalog and concatenated with \ . E.g. (1/21/344)");
-            Field<SeoInfoType>("seoInfo", resolve: context => context.Source.SeoInfo, description: "Request related SEO info");
+
+            Field<SeoInfoType>("seoInfo", resolve: context =>
+            {
+                var source = context.Source;
+                var storeId = context.GetArgumentOrValue<string>("storeId");
+                var cultureName = context.GetArgumentOrValue<string>("cultureName");
+
+                SeoInfo seoInfo = null;
+
+                if (!source.IndexedProduct.SeoInfos.IsNullOrEmpty())
+                {
+                    seoInfo = source.IndexedProduct.SeoInfos.GetBestMatchingSeoInfo(storeId, cultureName);
+                }
+
+                return seoInfo ?? new SeoInfo
+                {
+                    SemanticUrl = source.Id,
+                    LanguageCode = cultureName,
+                    Name = source.IndexedProduct.Name
+                };
+            }, description: "Request related SEO info");
 
             Field<ListGraphType<DescriptionType>>("descriptions", resolve: context => context.Source.IndexedProduct.Reviews);
-            Field<DescriptionType>("description", resolve: context => context.Source.Description);
+
+            Field<DescriptionType>("description", resolve: context =>
+            {
+                var reviews = context.Source.IndexedProduct.Reviews;
+                var cultureName = context.GetArgumentOrValue<string>("cultureName");
+
+                if (!reviews.IsNullOrEmpty())
+                {
+                    return reviews.Where(x => x.ReviewType.EqualsInvariant("FullReview")).FirstBestMatchForLanguage(cultureName) as EditorialReview
+                        ?? reviews.FirstBestMatchForLanguage(cultureName) as EditorialReview;
+                }
+
+                return null;
+            });
 
             FieldAsync<CategoryType>(
                 "category",
@@ -86,7 +141,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
                     return responce.Categories.FirstOrDefault();
                 });
-        
+
             Field<StringGraphType>(
                 "imgSrc",
                 description: "The product main image URL.",
@@ -107,7 +162,6 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
                     return brandName;
                 });
-
 
             FieldAsync<ListGraphType<VariationType>>(
                 "variations",
@@ -193,7 +247,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             var response = await mediator.Send(query);
 
-            return new PagedConnection<ProductAssociation>(response.Result.Results, skip, Convert.ToInt32(context.After ?? 0.ToString()), response.Result.TotalCount);         
+            return new PagedConnection<ProductAssociation>(response.Result.Results, skip, Convert.ToInt32(context.After ?? 0.ToString()), response.Result.TotalCount);
         }
     }
 }

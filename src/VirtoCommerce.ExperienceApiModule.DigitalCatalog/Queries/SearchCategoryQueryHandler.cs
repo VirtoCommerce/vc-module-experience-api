@@ -1,8 +1,10 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
+using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
 using VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index;
 using VirtoCommerce.SearchModule.Core.Model;
 using VirtoCommerce.SearchModule.Core.Services;
@@ -18,17 +20,20 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
         private readonly ISearchProvider _searchProvider;
         private readonly ISearchPhraseParser _phraseParser;
         private readonly IStoreService _storeService;
+        private readonly IGenericPipelineLauncher _pipeline;
 
         public SearchCategoryQueryHandler(
             ISearchProvider searchProvider
             , IMapper mapper
             , ISearchPhraseParser phraseParser
-            , IStoreService storeService)
+            , IStoreService storeService
+            , IGenericPipelineLauncher pipeline)
         {
             _searchProvider = searchProvider;
             _mapper = mapper;
             _phraseParser = phraseParser;
             _storeService = storeService;
+            _pipeline = pipeline;
         }
 
         public virtual async Task<SearchCategoryResponse> Handle(SearchCategoryQuery request, CancellationToken cancellationToken)
@@ -45,19 +50,27 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                                           //Limit search result with store catalog
                                           .AddTerms(new[] { $"__outline:{store.Catalog}" })
                                           .WithIncludeFields(IndexFieldsMapper.MapToIndexIncludes(request.IncludeFields).ToArray())
-                                          .Build();        
+                                          .Build();
 
             var searchResult = await _searchProvider.SearchAsync(KnownDocumentTypes.Category, searchRequest);
 
-            return new SearchCategoryResponse
+            var categories = searchResult.Documents?.Select(x => _mapper.Map<ExpCategory>(x, options =>
             {
-                Results = searchResult.Documents?.Select(x => _mapper.Map<ExpCategory>(x, options =>
-                {
-                    options.Items["store"] = store;
-                    options.Items["language"] = request.CultureName;
-                })).ToList(),
+                options.Items["store"] = store;
+                options.Items["language"] = request.CultureName;
+            })).ToList() ?? new List<ExpCategory>();
+
+            var result = new SearchCategoryResponse
+            {
+                Query = request,
+                Results = categories,
+                Store = store,
                 TotalCount = (int)searchResult.TotalCount
             };
+
+            await _pipeline.Execute(result);
+
+            return result;
         }
 
         public virtual async Task<LoadCategoryResponse> Handle(LoadCategoryQuery request, CancellationToken cancellationToken)
@@ -67,7 +80,6 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             var result = await Handle(searchRequest, cancellationToken);
 
             return new LoadCategoryResponse(result.Results);
-       
         }
     }
 }

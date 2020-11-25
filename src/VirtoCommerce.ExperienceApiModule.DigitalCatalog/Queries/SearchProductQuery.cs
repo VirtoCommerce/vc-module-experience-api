@@ -1,4 +1,7 @@
+using System;
 using System.Linq;
+using VirtoCommerce.CatalogModule.Core.Model;
+using VirtoCommerce.XDigitalCatalog.Extensions;
 
 namespace VirtoCommerce.XDigitalCatalog.Queries
 {
@@ -32,5 +35,41 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             return result.ToString();
         }
 
+        public virtual string GetItemResponseGroup()
+        {
+            var result = ItemResponseGroup.None;
+
+            if (IncludeFields.ContainsAny("assets", "images", "imgSrc"))
+            {
+                result |= ItemResponseGroup.WithImages;
+            }
+
+            if (IncludeFields.ContainsAny("properties"))
+            {
+                result |= ItemResponseGroup.WithProperties;
+            }
+
+            if (IncludeFields.ContainsAny("seoInfo"))
+            {
+                result |= ItemResponseGroup.WithSeo;
+            }
+
+            if (IncludeFields.ContainsAny("slug"))
+            {
+                result |= ItemResponseGroup.WithLinks;
+            }
+
+            if (IncludeFields.ContainsAny("outline", "outlines", "slug", "level"))
+            {
+                result |= ItemResponseGroup.WithOutlines;
+            }
+
+            if (IncludeFields.ContainsAny("availabilityData"))
+            {
+                result |= ItemResponseGroup.Inventory;
+            }
+
+            return result.ToString();
+        }
     }
 }
