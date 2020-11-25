@@ -93,13 +93,13 @@ namespace VirtoCommerce.XDigitalCatalog.Mapping
                     throw new OperationCanceledException("all_currencies must be set");
                 }
                 var result = new List<ProductPrice>();
-                var allCurrenciesDict = (allCurrenciesObj as IEnumerable<Currency>).ToDictionary(x => x.Code, StringComparer.OrdinalIgnoreCase).WithDefaultValue(null);
+                var allCurrencies = (allCurrenciesObj as IEnumerable<Currency>).ToDictionary(x => x.Code, StringComparer.OrdinalIgnoreCase).WithDefaultValue(null);
 
-                IEnumerable<ProductPrice> PricesToProductPrices(IEnumerable<Price> prices)
+                static IEnumerable<ProductPrice> PricesToProductPrices(IEnumerable<Price> prices, IDictionary<string, Currency> allCurrencies)
                 {
                     foreach (var price in prices)
                     {
-                        var currency = allCurrenciesDict[price.Currency];
+                        var currency = allCurrencies[price.Currency];
                         if (currency != null)
                         {
                             var productPrice = new ProductPrice(currency)
@@ -115,8 +115,9 @@ namespace VirtoCommerce.XDigitalCatalog.Mapping
                         }
                     }
                 }
+
                 //group prices by currency
-                var groupByCurrencyPrices = PricesToProductPrices(src).GroupBy(x => x.Currency).Where(x => x.Any());
+                var groupByCurrencyPrices = PricesToProductPrices(src, allCurrencies).GroupBy(x => x.Currency).Where(x => x.Any());
                 foreach (var currencyGroup in groupByCurrencyPrices)
                 {
                     //For each currency need get nominal price (with min qty)
