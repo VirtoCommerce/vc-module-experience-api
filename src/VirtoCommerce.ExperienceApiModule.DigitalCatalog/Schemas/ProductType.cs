@@ -74,8 +74,8 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 var loadRelatedCatalogOutlineQuery = context.GetCatalogQuery<LoadRelatedCatalogOutlineQuery>();
                 loadRelatedCatalogOutlineQuery.Outlines = outlines;
 
-                var responce = await mediator.Send(loadRelatedCatalogOutlineQuery);
-                return responce.Outline;
+                var response = await mediator.Send(loadRelatedCatalogOutlineQuery);
+                return response.Outline;
             }, description: @"All parent categories ids relative to the requested catalog and concatenated with \ . E.g. (1/21/344)");
 
             FieldAsync<StringGraphType>("slug", resolve: async context =>
@@ -86,8 +86,8 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 var loadRelatedSlugPathQuery = context.GetCatalogQuery<LoadRelatedSlugPathQuery>();
                 loadRelatedSlugPathQuery.Outlines = outlines;
 
-                var responce = await mediator.Send(loadRelatedSlugPathQuery);
-                return responce.Slug;
+                var response = await mediator.Send(loadRelatedSlugPathQuery);
+                return response.Slug;
             }, description: "Request related slug for product");
 
             Field(d => d.IndexedProduct.Name, nullable: false).Description("The name of the product.");
