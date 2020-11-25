@@ -30,15 +30,15 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field(x => x.AuthorizedDate, true);
             Field(x => x.CapturedDate, true);
             Field(x => x.VoidedDate, true);
-            Field(x => x.OrderId, true);
+            Field(x => x.OrderId);
             Field(x => x.Sum);
             Field(x => x.TaxTotal);
             Field(x => x.Currency);
             Field<IntGraphType>(nameof(PaymentIn.PaymentStatus));
             Field(x => x.TaxType, true);
 
-            Field<NonNullGraphType<ListGraphType<InputOrderTaxDetailType>>>(nameof(PaymentIn.TaxDetails));
-            Field<NonNullGraphType<ListGraphType<InputOrderDiscountType>>>(nameof(PaymentIn.Discounts));
+            Field<ListGraphType<InputOrderTaxDetailType>>(nameof(PaymentIn.TaxDetails));
+            Field<ListGraphType<InputOrderDiscountType>>(nameof(PaymentIn.Discounts));
             Field<InputOrderPaymentMethodType>(nameof(PaymentIn.PaymentMethod));
             Field<InputOrderAddressType>(nameof(PaymentIn.BillingAddress));
 
