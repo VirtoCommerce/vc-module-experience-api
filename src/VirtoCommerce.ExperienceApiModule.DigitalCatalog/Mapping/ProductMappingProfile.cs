@@ -128,7 +128,13 @@ namespace VirtoCommerce.XDigitalCatalog.Mapping
                     result.Add(nominalPrice);
                 }
 
-                return result;
+                if (!context.Items.TryGetValue("currency", out var currentCurrency) && !(currentCurrency is string))
+                {
+                    return result;
+                }
+
+                // Filter by current currency
+                return result.Where(x => (x.Currency == null) || x.Currency.Equals(currentCurrency)).ToList();
             });
         }
     }
