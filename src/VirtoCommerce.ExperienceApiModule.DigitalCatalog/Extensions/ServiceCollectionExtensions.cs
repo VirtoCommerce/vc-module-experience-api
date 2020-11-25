@@ -22,7 +22,7 @@ namespace VirtoCommerce.XDigitalCatalog.Extensions
             //the generic pipeline that is used  for on-the-fly additional data evaluation (prices, inventories, discounts and taxes) for resulting products
             services.AddPipeline<SearchProductResponse>(builder =>
             {
-                builder.AddMiddleware(typeof(EnsureCatalogProductLoadingMiddleware));
+                builder.AddMiddleware(typeof(EnsureCatalogProductLoadedMiddleware));
                 builder.AddMiddleware(typeof(EvalProductsPricesMiddleware));
                 builder.AddMiddleware(typeof(EvalProductsDiscountsMiddleware));
                 builder.AddMiddleware(typeof(EvalProductsTaxMiddleware));
@@ -31,7 +31,7 @@ namespace VirtoCommerce.XDigitalCatalog.Extensions
 
             services.AddPipeline<SearchCategoryResponse>(builder =>
             {
-                builder.AddMiddleware(typeof(EnsureCategoryLoadingMiddleware));
+                builder.AddMiddleware(typeof(EnsureCategoryLoadedMiddleware));
             });
 
             services.AddAutoMapper(typeof(XDigitalCatalogAnchor));

@@ -7,11 +7,11 @@ using VirtoCommerce.XDigitalCatalog.Queries;
 
 namespace VirtoCommerce.XDigitalCatalog.Middlewares
 {
-    public class EnsureCategoryLoadingMiddleware : IAsyncMiddleware<SearchCategoryResponse>
+    public class EnsureCategoryLoadedMiddleware : IAsyncMiddleware<SearchCategoryResponse>
     {
         private readonly ICategoryService _categoryService;
 
-        public EnsureCategoryLoadingMiddleware(ICategoryService categoryService)
+        public EnsureCategoryLoadedMiddleware(ICategoryService categoryService)
         {
             _categoryService = categoryService;
         }
