@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using VirtoCommerce.MarketingModule.Core.Model.Promotions;
 
 namespace VirtoCommerce.XDigitalCatalog.Queries

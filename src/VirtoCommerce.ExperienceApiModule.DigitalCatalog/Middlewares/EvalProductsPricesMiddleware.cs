@@ -21,7 +21,7 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
 
         public EvalProductsPricesMiddleware(
             IMapper mapper
-      
+
             , IPricingService pricingService
             , IGenericPipelineLauncher pipeline)
         {
@@ -66,7 +66,6 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
                     {
                         product.AllPrices = _mapper.Map<IEnumerable<ProductPrice>>(prices.Where(x => x.ProductId == product.Id), options =>
                         {
-                            //TODO: Code duplication
                             options.Items["all_currencies"] = parameter.AllStoreCurrencies;
                             options.Items["currency"] = parameter.Currency;
                         }).ToList();
@@ -75,7 +74,5 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
             }
             await next(parameter);
         }
-
-
     }
 }

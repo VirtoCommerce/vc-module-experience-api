@@ -1,12 +1,10 @@
 using AutoMapper;
-using AutoMapper.Configuration;
 using GraphQL.Server;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.XOrder.Authorization;
-using VirtoCommerce.ExperienceApiModule.XOrder.Mapping;
 using VirtoCommerce.ExperienceApiModule.XOrder.Schemas;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Extensions

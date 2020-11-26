@@ -1,5 +1,4 @@
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
-using VirtoCommerce.OrdersModule.Core.Model;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Queries
 {
