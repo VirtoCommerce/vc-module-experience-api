@@ -7,7 +7,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
     {
         public InputCreateOrganizationType()
         {
-            Field<NonNullGraphType<StringGraphType>>("userId");
+            
         }
     }
 }
