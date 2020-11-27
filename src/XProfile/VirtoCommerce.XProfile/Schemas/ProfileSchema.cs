@@ -1,5 +1,4 @@
 using System;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Builders;
@@ -86,7 +85,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                     var query = new GetOrganizationByIdQuery(organizationId);
                     var organizationAggregate = await _mediator.Send(query);
 
-                    await CheckAuthAsync(context.GetCurrentPrincipal(), organizationAggregate);
+                    await CheckAuthAsync(context.GetCurrentUserId(), organizationAggregate);
                     //store organization aggregate in the user context for future usage in the graph types resolvers
                     context.UserContext.Add("organizationAggregate", organizationAggregate);
 
@@ -121,7 +120,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                 {
                     var query = new GetContactByIdQuery(context.GetArgument<string>("id"));
                     var contactAggregate = await _mediator.Send(query);
-                    await CheckAuthAsync(context.GetCurrentPrincipal(), contactAggregate);
+                    await CheckAuthAsync(context.GetCurrentUserId(), contactAggregate);
                     //store organization aggregate in the user context for future usage in the graph types resolvers
                     context.UserContext.Add("contactAggregate", contactAggregate);
 
@@ -159,7 +158,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                             .ResolveAsync(async context =>
                             {
                                 var command = context.GetArgument<UpdateContactAddressesCommand>(_commandName);
-                                await CheckAuthAsync(context.GetCurrentPrincipal(), command);
+                                await CheckAuthAsync(context.GetCurrentUserId(), command);
                                 return await _mediator.Send(command);
                             })
                             .FieldType);
@@ -171,7 +170,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                             .ResolveAsync(async context =>
                             {
                                 var command = context.GetArgument<UpdateOrganizationCommand>(_commandName);
-                                await CheckAuthAsync(context.GetCurrentPrincipal(), command, CustomerModule.Core.ModuleConstants.Security.Permissions.Update);
+                                await CheckAuthAsync(context.GetCurrentUserId(), command, CustomerModule.Core.ModuleConstants.Security.Permissions.Update);
                                 return await _mediator.Send(command);
                             })
                             .FieldType);
@@ -182,7 +181,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                             .ResolveAsync(async context =>
                             {
                                 var command = context.GetArgument<CreateOrganizationCommand>(_commandName);
-                                await CheckAuthAsync(context.GetCurrentPrincipal(), command);
+                                await CheckAuthAsync(context.GetCurrentUserId(), command);
                                 return await _mediator.Send(command);
                             })
                             .FieldType);
@@ -193,7 +192,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                             .ResolveAsync(async context =>
                             {
                                 var command = context.GetArgument<CreateContactCommand>(_commandName);
-                                await CheckAuthAsync(context.GetCurrentPrincipal(), command);
+                                await CheckAuthAsync(context.GetCurrentUserId(), command);
 
                                 return await _mediator.Send(command);
                             })
@@ -205,7 +204,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                             .ResolveAsync(async context =>
                             {
                                 var command = context.GetArgument<UpdateContactCommand>(_commandName);
-                                await CheckAuthAsync(context.GetCurrentPrincipal(), command);
+                                await CheckAuthAsync(context.GetCurrentUserId(), command);
                                 return await _mediator.Send(command);
 
                             })
@@ -217,7 +216,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                             .ResolveAsync(async context =>
                             {
                                 var command = context.GetArgument<DeleteContactCommand>(_commandName);
-                                await CheckAuthAsync(context.GetCurrentPrincipal(), command, CustomerModule.Core.ModuleConstants.Security.Permissions.Delete);
+                                await CheckAuthAsync(context.GetCurrentUserId(), command, CustomerModule.Core.ModuleConstants.Security.Permissions.Delete);
                                 return await _mediator.Send(command);
                             })
                             .FieldType);
@@ -311,7 +310,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                         .ResolveAsync(async context =>
                         {
                             var command = context.GetArgument<CreateUserCommand>(_commandName);
-                            await CheckAuthAsync(context.GetCurrentPrincipal(), command);
+                            await CheckAuthAsync(context.GetCurrentUserId(), command);
                             return await _mediator.Send(command);
                         })
                         .FieldType);
@@ -344,7 +343,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                         .ResolveAsync(async context =>
                         {
                             var command = context.GetArgument<UpdateUserCommand>(_commandName);
-                            await CheckAuthAsync(context.GetCurrentPrincipal(), command);
+                            await CheckAuthAsync(context.GetCurrentUserId(), command);
                             return await _mediator.Send(command);
                         })
                         .FieldType);
@@ -372,7 +371,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                         .ResolveAsync(async context =>
                         {
                             var command = context.GetArgument<DeleteUserCommand>(_commandName);
-                            await CheckAuthAsync(context.GetCurrentPrincipal(), command, PlatformConstants.Security.Permissions.SecurityDelete);
+                            await CheckAuthAsync(context.GetCurrentUserId(), command, PlatformConstants.Security.Permissions.SecurityDelete);
                             return await _mediator.Send(command);
                         })
                         .FieldType);
@@ -402,7 +401,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                      .ResolveAsync(async context =>
                      {
                          var command = context.GetArgument<UpdateRoleCommand>(_commandName);
-                         await CheckAuthAsync(context.GetCurrentPrincipal(), command, PlatformConstants.Security.Permissions.SecurityUpdate);
+                         await CheckAuthAsync(context.GetCurrentUserId(), command, PlatformConstants.Security.Permissions.SecurityUpdate);
 
                          return await _mediator.Send(command);
                      })
@@ -410,25 +409,23 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
         }
 
 
-        private async Task CheckAuthAsync(ClaimsPrincipal userPrincipal, object resource, params string[] permissions)
+        private async Task CheckAuthAsync(string userId, object resource, params string[] permissions)
         {
+            var signInManager = _signInManagerFactory();
+
+            var user = await signInManager.UserManager.FindByIdAsync(userId) ?? new ApplicationUser
+            {
+                Id = userId,
+                UserName = Core.AnonymousUser.UserName,
+            };
+
+            var userPrincipal = await signInManager.CreateUserPrincipalAsync(user);
 
             if (!permissions.IsNullOrEmpty())
             {
-                var signInManager = _signInManagerFactory();
-                var userid = userPrincipal.FindFirstValue("name");
-                var user = await signInManager.UserManager.FindByIdAsync(userid) ;
-
-                if (user == null)
-                {
-                    throw new ExecutionError($"Access denied");
-                }
-
-                var userPrincipalPlatform = await signInManager.CreateUserPrincipalAsync(user);
-
                 foreach (var permission in permissions ?? Array.Empty<string>())
                 {
-                    var permissionAuthorizationResult = await _authorizationService.AuthorizeAsync(userPrincipalPlatform, null, new PermissionAuthorizationRequirement(permission));
+                    var permissionAuthorizationResult = await _authorizationService.AuthorizeAsync(userPrincipal, null, new PermissionAuthorizationRequirement(permission));
                     if (!permissionAuthorizationResult.Succeeded)
                     {
                         throw new ExecutionError($"User doesn't have the required permission '{permission}'.");
