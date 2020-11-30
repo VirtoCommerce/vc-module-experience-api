@@ -6,6 +6,6 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
 {
     public class UpdateUserCommand : ApplicationUser, ICommand<IdentityResult>
     {
-       
+        public string UserId { get; set; }
     }
 }

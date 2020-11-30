@@ -7,6 +7,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
     {
         public InputCreateUserType()
         {
+            Field<NonNullGraphType<StringGraphType>>("userId");
             Field(x => x.CreatedBy, true);
             Field(x => x.CreatedDate, true);
             Field(x => x.Email);
