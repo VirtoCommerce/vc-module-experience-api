@@ -7,6 +7,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
     {
         public InputUpdateRoleType()
         {
+            Field<NonNullGraphType<StringGraphType>>("userId");
             Field(x => x.ConcurrencyStamp, true);
             Field(x => x.Id);
             Field(x => x.Name);
