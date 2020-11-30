@@ -36,14 +36,14 @@ namespace VirtoCommerce.XDigitalCatalog.Binding
 
                     foreach (var listPrice in pair.Value is Array ? (object[])pair.Value : new[] { pair.Value })
                     {
-                        var list = Convert.ToDecimal(listPrice);
-                        if (list == default) continue;
+                        // If schema field required without filled values
+                        if (listPrice is null) continue;
 
                         var price = new Price
                         {
                             Currency = match.Groups[1].Value.ToUpperInvariant(),
                             PricelistId = match.Groups[2].Value,
-                            List = list
+                            List = Convert.ToDecimal(listPrice)
                         };
 
                         result.Add(price);
