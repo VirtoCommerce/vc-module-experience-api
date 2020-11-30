@@ -31,6 +31,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder
                 paymentOrder.IsCancelled = payment.IsCancelled;
                 paymentOrder.CancelReason = payment.CancelReason;
                 paymentOrder.CancelledDate = payment.CancelledDate;
+                paymentOrder.PaymentStatus = payment.PaymentStatus;
                 paymentOrder.Status = payment.Status;
             }
         }
