@@ -49,6 +49,11 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                 result |= ItemResponseGroup.WithProperties;
             }
 
+            if (IncludeFields.ContainsAny("description"))
+            {
+                result |= ItemResponseGroup.ItemEditorialReviews;
+            }
+
             if (IncludeFields.ContainsAny("seoInfo"))
             {
                 result |= ItemResponseGroup.WithSeo;
