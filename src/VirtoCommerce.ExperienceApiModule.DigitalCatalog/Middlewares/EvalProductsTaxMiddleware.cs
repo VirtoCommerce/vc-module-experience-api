@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using PipelineNet.Middleware;
-using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.TaxModule.Core.Model;
@@ -21,12 +20,9 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
         private readonly IGenericPipelineLauncher _pipeline;
 
 
-        public EvalProductsTaxMiddleware(
-            IMapper mapper
-            , ITaxProviderSearchService taxProviderSearchService
-            , IGenericPipelineLauncher pipeline)
+        public EvalProductsTaxMiddleware(IMapper mapper, ITaxProviderSearchService taxProviderSearchService, IGenericPipelineLauncher pipeline)
         {
-            _mapper = mapper;        
+            _mapper = mapper;
             _taxProviderSearchService = taxProviderSearchService;
             _pipeline = pipeline;
         }
@@ -47,21 +43,13 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
             var responseGroup = EnumUtility.SafeParse(query.GetResponseGroup(), ExpProductResponseGroup.None);
             // If tax evaluation requested
             if (responseGroup.HasFlag(ExpProductResponseGroup.LoadPrices))
-            {              
+            {
                 //Evaluate taxes
-                var storeTaxProviders = await _taxProviderSearchService.SearchTaxProvidersAsync(new TaxProviderSearchCriteria
-                {
-                    StoreIds = new[] { query.StoreId }
-                });
+                var storeTaxProviders = await _taxProviderSearchService.SearchTaxProvidersAsync(new TaxProviderSearchCriteria {StoreIds = new[] {query.StoreId}});
                 var activeTaxProvider = storeTaxProviders.Results.FirstOrDefault();
                 if (activeTaxProvider != null)
                 {
-                    var taxEvalContext = new TaxEvaluationContext
-                    {
-                        Currency = query.CurrencyCode,
-                        StoreId = query.StoreId,
-                        CustomerId = query.UserId
-                    };
+                    var taxEvalContext = new TaxEvaluationContext {Currency = query.CurrencyCode, StoreId = query.StoreId, CustomerId = query.UserId};
 
                     await _pipeline.Execute(taxEvalContext);
 
@@ -76,7 +64,5 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
 
             await next(parameter);
         }
-
-
     }
 }
