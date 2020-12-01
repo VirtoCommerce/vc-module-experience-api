@@ -43,8 +43,22 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
                 throw new OperationCanceledException("Query must be set");
             }
 
-            var responseGroup = EnumUtility.SafeParse(query.GetResponseGroup(), ExpProductResponseGroup.None);
+            // Map indexed prices
+            foreach (var expProducts in parameter.Results)
+            {
+                expProducts.AllPrices = _mapper.Map<IEnumerable<ProductPrice>>(expProducts.IndexedPrices, context =>
+                {
+                    context.Items["all_currencies"] = parameter.AllStoreCurrencies;
+                }).ToList();
+
+                if (parameter.Currency != null)
+                {
+                    expProducts.AllPrices = expProducts.AllPrices.Where(x => (x.Currency == null) || x.Currency.Equals(parameter.Currency)).ToList();
+                }
+            }
+
             // If prices evaluation requested
+            var responseGroup = EnumUtility.SafeParse(query.GetResponseGroup(), ExpProductResponseGroup.None);
             if (responseGroup.HasFlag(ExpProductResponseGroup.LoadPrices))
             {
                 //evaluate prices only if product missed prices in the index storage

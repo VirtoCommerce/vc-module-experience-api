@@ -41,7 +41,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
         public static string GetCurrentUserId(this IResolveFieldContext resolveContext)
         {
             var claimsPrincipal = GetCurrentPrincipal(resolveContext);
-            return claimsPrincipal?.FindFirstValue(ClaimTypes.NameIdentifier) ?? claimsPrincipal?.FindFirstValue("name") ?? AnonymousUser.UserName;
+            return claimsPrincipal?.FindFirstValue(ClaimTypes.NameIdentifier) ?? claimsPrincipal?.FindFirstValue("name");
         }
 
         public static ClaimsPrincipal GetCurrentPrincipal(this IResolveFieldContext resolveContext)

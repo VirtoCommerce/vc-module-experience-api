@@ -1,8 +1,9 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
 using FluentValidation;
+using FluentValidation.Validators;
 using VirtoCommerce.ShippingModule.Core.Model;
 using VirtoCommerce.XPurchase.Tests.Helpers;
 using VirtoCommerce.XPurchase.Validators;
@@ -49,7 +50,7 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
         }
 
         [Fact]
-        public async Task ValidateShipment_RuleSetDefault_ShipmentMethodCodeIsNull_Valid()
+        public async Task ValidateShipment_RuleSetDefault_ShipmentMethodCodeIsNull_Invalid()
         {
             // Arrange
             var shipment = new VirtoCommerce.CartModule.Core.Model.Shipment
@@ -62,12 +63,13 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             var result = await validator.ValidateAsync(shipment, ruleSet: "default");
 
             // Assert
-            result.IsValid.Should().BeTrue();
-            result.Errors.Should().BeEmpty();
+            result.IsValid.Should().BeFalse();
+            result.Errors.Should().NotBeEmpty();
+            result.Errors.Should().Contain(x => x.PropertyName == "ShipmentMethodCode" && x.ErrorCode == nameof(NotNullValidator));
         }
 
         [Fact]
-        public async Task ValidateShipment_RuleSetDefault_ShipmentMethodCodeIsEmpty_Valid()
+        public async Task ValidateShipment_RuleSetDefault_ShipmentMethodCodeIsEmpty_Invalid()
         {
             // Arrange
             var shipment = new VirtoCommerce.CartModule.Core.Model.Shipment
@@ -80,8 +82,9 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             var result = await validator.ValidateAsync(shipment, ruleSet: "default");
 
             // Assert
-            result.IsValid.Should().BeTrue();
-            result.Errors.Should().BeEmpty();
+            result.IsValid.Should().BeFalse();
+            result.Errors.Should().NotBeEmpty();
+            result.Errors.Should().Contain(x => x.PropertyName == "ShipmentMethodCode" && x.ErrorCode == nameof(NotEmptyValidator));
         }
 
         [Fact]

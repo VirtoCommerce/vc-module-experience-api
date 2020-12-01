@@ -14,6 +14,6 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
 
         public string Name { get; set; }
         public IList<Address> Addresses { get; set; } = new List<Address>();
-        
+        public string UserId { get; set; }
     }
 }
