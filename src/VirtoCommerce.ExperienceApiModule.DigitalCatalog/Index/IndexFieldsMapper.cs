@@ -34,11 +34,11 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
         {
             new RegexpNameMapper(@".*", "$0", new [] { "__object.id", "__object.categoryId", "__object.catalogId" }),
             new RegexpNameMapper(@"(items.)?price[s]?.(?<part>[^\.]+).*$","__prices.$2", new [] { "__prices.currency" }),
-            new RegexpNameMapper(@"^items.variations", "__variations", new [] { "__variations" } ),
+            new RegexpNameMapper(@"^items.variations", "__variations", new [] { "__variations" }),
+            new RegexpNameMapper(@"^variations", "__variations", new [] { "__variations" }),
             new RegexpNameMapper(@"^items", "__object"),
             new RegexpNameMapper(@"^(?!__)", "__object."),
 
-         
             new RegexpNameMapper(@"properties.value$", "properties.values"),
             new RegexpNameMapper(@"imgSrc", "images"),
 
@@ -56,11 +56,12 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
             new RegexpNameMapper(@"__object.seoInfo.*", "__object.seoInfos"),
 
             #region Category
-		
+
             new RegexpNameMapper(@"__object.slug", "__object.outlines", new [] { "__object.seoInfos" }),
             new RegexpNameMapper(@"__object.outline", "__object.outlines"),
-            new RegexpNameMapper(@"__object.level", "__object.outlines"), 
-	        #endregion
+            new RegexpNameMapper(@"__object.level", "__object.outlines"),
+
+	        #endregion Category
         };
 
         public static IEnumerable<string> MapToIndexIncludes(IEnumerable<string> includeFields)
@@ -74,7 +75,7 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
                     if (mapper.CanMap(indexField))
                     {
                         indexField = mapper.Map(indexField);
-                        if(mapper.AdditionalFields != null)
+                        if (mapper.AdditionalFields != null)
                         {
                             result.AddRange(mapper.AdditionalFields);
                         }
@@ -85,5 +86,4 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
             return result.Distinct();
         }
     }
-    
 }
