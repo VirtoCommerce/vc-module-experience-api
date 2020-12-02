@@ -197,7 +197,21 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                     IsTrackInventory = context.Source.IndexedProduct.TrackInventory ?? false,
                 });
 
-            Field<ListGraphType<ImageType>>("images", resolve: context => context.Source.IndexedProduct.Images);
+            Field<ListGraphType<ImageType>>(
+                "images",
+                resolve: context =>
+                {
+                    var images = context.Source.IndexedProduct.Images;
+
+                    return context.GetValue<string>("cultureName") switch
+                    {
+                        // Get images with null or current cultureName value if cultureName is passed
+                        string languageCode => images.Where(x => string.IsNullOrEmpty(x.LanguageCode) || x.LanguageCode.EqualsInvariant(languageCode)).ToList(),
+
+                        // CultureName is null
+                        _ => images
+                    };
+                });
 
             Field<PriceType>(
                 "price",
