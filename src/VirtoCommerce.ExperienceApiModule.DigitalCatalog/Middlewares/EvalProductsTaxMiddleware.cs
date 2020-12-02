@@ -45,11 +45,11 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
             if (responseGroup.HasFlag(ExpProductResponseGroup.LoadPrices))
             {
                 //Evaluate taxes
-                var storeTaxProviders = await _taxProviderSearchService.SearchTaxProvidersAsync(new TaxProviderSearchCriteria {StoreIds = new[] {query.StoreId}});
+                var storeTaxProviders = await _taxProviderSearchService.SearchTaxProvidersAsync(new TaxProviderSearchCriteria { StoreIds = new[] { query.StoreId } });
                 var activeTaxProvider = storeTaxProviders.Results.FirstOrDefault();
                 if (activeTaxProvider != null)
                 {
-                    var taxEvalContext = new TaxEvaluationContext {Currency = query.CurrencyCode, StoreId = query.StoreId, CustomerId = query.UserId};
+                    var taxEvalContext = new TaxEvaluationContext { Currency = query.CurrencyCode, StoreId = query.StoreId, CustomerId = query.UserId };
 
                     await _pipeline.Execute(taxEvalContext);
 
