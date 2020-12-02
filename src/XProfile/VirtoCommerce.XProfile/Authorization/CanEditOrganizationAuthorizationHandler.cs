@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using VirtoCommerce.CustomerModule.Core.Model;
 using VirtoCommerce.CustomerModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.XProfile.Commands;
+using VirtoCommerce.Platform.Core;
 using VirtoCommerce.Platform.Core.Security;
 using VirtoCommerce.Platform.Security.Authorization;
 
@@ -34,9 +35,17 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Authorization
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, CanEditOrganizationAuthorizationRequirement requirement)
         {
 
-            var currentContact = await GetCustomerAsync(GetUserId(context)) as Contact;
+            var result = context.User.IsInRole(PlatformConstants.Security.SystemRoles.Administrator);
 
-            var result = false;
+            if (result)
+            {
+                context.Succeed(requirement);
+                return;
+            }
+
+            var currentUserId = GetUserId(context);
+            var currentContact = await GetCustomerAsync(currentUserId) as Contact;
+
             if (context.Resource is ContactAggregate contactAggregate && currentContact != null)
             {
                 result = currentContact.Id == contactAggregate.Contact.Id;
@@ -45,11 +54,12 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Authorization
                     result = await HasSameOrganizationAsync(currentContact, contactAggregate.Contact.Id);
                 }
             }
-            if (context.Resource is OrganizationAggregate organizationAggregate && currentContact != null)
+            else if (context.Resource is OrganizationAggregate organizationAggregate && currentContact != null)
             {
                 result = currentContact.Organizations.Contains(organizationAggregate.Organization.Id);
             }
-            if (context.Resource is Role role)
+
+            else if (context.Resource is Role role)
             {
                 //Can be checked only with platform permission
                 result = true;
@@ -89,7 +99,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Authorization
             }
             else if (context.Resource is UpdateContactAddressesCommand updateContactAddressesCommand)
             {
-                result = updateContactAddressesCommand.ContactId == GetUserId(context);
+                result = updateContactAddressesCommand.ContactId == currentUserId;
                 if (!result && currentContact!= null)
                 {
                     result = await HasSameOrganizationAsync(currentContact, updateContactAddressesCommand.ContactId);
@@ -105,7 +115,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Authorization
             }
             else if (context.Resource is UpdateOrganizationCommand updateOrganizationCommand && currentContact != null)
             {
-                result = currentContact.Organizations.Contains(updateOrganizationCommand.Name);
+                result = currentContact.Organizations.Contains(updateOrganizationCommand.Id);
             }
             else if (context.Resource is UpdateRoleCommand updateRoleCommand)
             {
@@ -145,7 +155,11 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Authorization
         //TODO: DRY violation in many places in this solution. Move to abstraction to from multiple boundaries
         protected virtual async Task<Member> GetCustomerAsync(string customerId)
         {
-            // Try to find contact
+            if (string.IsNullOrWhiteSpace(customerId))
+            {
+                return null;
+            }
+
             var result = await _memberService.GetByIdAsync(customerId);
 
             if (result == null)

@@ -11,12 +11,13 @@ namespace VirtoCommerce.XPurchase.Validators
     {
         public CartShipmentValidator(IEnumerable<ShippingRate> availShippingRates)
         {
-            RuleFor(x => x.ShipmentMethodCode).NotNull().NotEmpty();
+            //To support the use case for partial shipment update when user sets the address first.
+            //RuleFor(x => x.ShipmentMethodCode).NotNull().NotEmpty();
             RuleSet("strict", () =>
             {
                 RuleFor(x => x).Custom((shipment, context) =>
                 {
-                    if (availShippingRates != null)
+                    if (availShippingRates != null && !string.IsNullOrEmpty(shipment.ShipmentMethodCode))
                     {
                         var shipmentShippingMethod = availShippingRates.FirstOrDefault(sm => shipment.ShipmentMethodCode.EqualsInvariant(sm.ShippingMethod.Code) && shipment.ShipmentMethodOption.EqualsInvariant(sm.OptionName));
                         if (shipmentShippingMethod == null)

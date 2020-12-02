@@ -12,7 +12,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field(x => x.Height, nullable: true).Description("Value of height");
             Field(x => x.Length, nullable: true).Description("Value of length");
             Field(x => x.MeasureUnit, nullable: true).Description("Value of measurement units");
-            Field(x => x.ShipmentMethodCode, nullable: false).Description("Shipment method code");
+            Field(x => x.ShipmentMethodCode, nullable: true).Description("Shipment method code");
             Field(x => x.ShipmentMethodOption, nullable: true).Description("Shipment method option");
             Field(x => x.VolumetricWeight, nullable: true).Description("Value of volumetric weight");
             Field(x => x.Weight, nullable: true).Description("Value of weight");
