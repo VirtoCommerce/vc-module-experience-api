@@ -9,6 +9,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Mapping
         public ProfileMappingProfile()
         {
             CreateMap<Contact, Customer>();
+            CreateMap<CustomerModule.Core.Model.Address, TaxModule.Core.Model.Address>();
             CreateMap<CreateOrganizationCommand, Organization>()
                 .ConvertUsing((command, org, context) =>
                 {
