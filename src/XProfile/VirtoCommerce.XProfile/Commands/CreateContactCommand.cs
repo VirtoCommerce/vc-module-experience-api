@@ -4,6 +4,6 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
     //remove in the future
     public class CreateContactCommand : ContactCommand
     {
-        public string UserId { get; set; }
+        
     }
 }

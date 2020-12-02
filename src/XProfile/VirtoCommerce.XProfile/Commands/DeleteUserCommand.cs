@@ -6,8 +6,6 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
     public class DeleteUserCommand : ICommand<IdentityResult>
     {
         public string[] UserNames { get; set; }
-        public string UserId { get; set; }
-
         public DeleteUserCommand(string[] userNames)
         {
             UserNames = userNames;
