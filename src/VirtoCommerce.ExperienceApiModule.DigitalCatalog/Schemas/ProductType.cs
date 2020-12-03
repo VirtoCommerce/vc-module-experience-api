@@ -113,7 +113,19 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 };
             }, description: "Request related SEO info");
 
-            Field<ListGraphType<DescriptionType>>("descriptions", resolve: context => context.Source.IndexedProduct.Reviews);
+            Field<ListGraphType<DescriptionType>>("descriptions", resolve: context =>
+            {
+                var reviews = context.Source.IndexedProduct.Reviews;
+
+                return context.GetValue<string>("cultureName") switch
+                {
+                    // Get reviews with null or current cultureName value if cultureName is passed
+                    string languageCode => reviews.Where(x => string.IsNullOrEmpty(x.LanguageCode) || x.LanguageCode.EqualsInvariant(languageCode)).ToList(),
+
+                    // CultureName is null
+                    _ => reviews
+                };
+            });
 
             Field<DescriptionType>("description", resolve: context =>
             {
