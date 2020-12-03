@@ -34,7 +34,6 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Authorization
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, CanEditOrganizationAuthorizationRequirement requirement)
         {
-
             var result = context.User.IsInRole(PlatformConstants.Security.SystemRoles.Administrator);
 
             if (result)
@@ -100,7 +99,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Authorization
             else if (context.Resource is UpdateContactAddressesCommand updateContactAddressesCommand)
             {
                 result = updateContactAddressesCommand.ContactId == currentUserId;
-                if (!result && currentContact!= null)
+                if (!result && currentContact != null)
                 {
                     result = await HasSameOrganizationAsync(currentContact, updateContactAddressesCommand.ContactId);
                 }
@@ -124,7 +123,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Authorization
             }
             else if (context.Resource is UpdateUserCommand updateUserCommand && currentContact != null)
             {
-                result = updateUserCommand.MemberId == currentContact.Id;
+                result = updateUserCommand.Id == currentContact.Id;
                 if (!result)
                 {
                     result = await HasSameOrganizationAsync(currentContact, updateUserCommand.Id);
@@ -146,6 +145,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Authorization
             //TODO use ClaimTypes instead of "name"
             return context.User.FindFirstValue("name");
         }
+
         private async Task<bool> HasSameOrganizationAsync(Contact currentContact, string contactId)
         {
             var contact = await GetCustomerAsync(contactId) as Contact;
@@ -166,7 +166,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Authorization
             {
                 var user = await _userManager.FindByIdAsync(customerId);
 
-                if (user != null && user.MemberId != null)
+                if (user?.MemberId != null)
                 {
                     result = await _memberService.GetByIdAsync(user.MemberId);
                 }
