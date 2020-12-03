@@ -1,6 +1,8 @@
 using GraphQL;
+using GraphQL.Resolvers;
 using GraphQL.Types;
 using VirtoCommerce.CoreModule.Core.Currency;
+using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
 using VirtoCommerce.OrdersModule.Core.Model;
 
@@ -77,7 +79,16 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field<NonNullGraphType<ListGraphType<OrderAddressType>>>(nameof(CustomerOrder.Addresses), resolve: x => x.Source.Order.Addresses);
             Field<NonNullGraphType<ListGraphType<OrderLineItemType>>>(nameof(CustomerOrder.Items), resolve: x => x.Source.Order.Items);
             Field<NonNullGraphType<ListGraphType<PaymentInType>>>(nameof(CustomerOrder.InPayments), resolve: x => x.Source.Order.InPayments);
-            Field<NonNullGraphType<ListGraphType<OrderShipmentType>>>(nameof(CustomerOrder.Shipments), resolve: x => x.Source.Order.Shipments);
+            //Field<NonNullGraphType<ListGraphType<OrderShipmentType>>>(nameof(CustomerOrder.Shipments), resolve: x => x.Source.Order.Shipments);           
+            //TODO: By this registration we support the schema types extensions. Need to move this code into extensions and replace everywhere to this version.
+            var orderShipmentsField = new FieldType
+            {
+                Name = "shipments",
+                Type = typeof(ListGraphType<>).MakeGenericType(GraphTypeExtenstionHelper.GetActualType<OrderShipmentType>()),
+                Resolver = new FuncFieldResolver<CustomerOrderAggregate, object>(context => context.Source.Order.Shipments)
+            };
+            AddField(orderShipmentsField);
+
             Field<NonNullGraphType<ListGraphType<OrderTaxDetailType>>>(nameof(CustomerOrder.TaxDetails), resolve: x => x.Source.Order.TaxDetails);
             //TODO
             //public ICollection<DynamicObjectProperty> DynamicProperties);
