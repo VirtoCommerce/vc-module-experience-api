@@ -31,6 +31,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             Field<StringGraphType>("url", resolve: context => context.Source.Url);
             Field<StringGraphType>("relativeUrl", resolve: context => context.Source.RelativeUrl);
             Field<IntGraphType>("sortOrder", resolve: context => context.Source.SortOrder);
+            Field<StringGraphType>("cultureName", resolve: context => context.Source.LanguageCode);
         }
     }
 }
