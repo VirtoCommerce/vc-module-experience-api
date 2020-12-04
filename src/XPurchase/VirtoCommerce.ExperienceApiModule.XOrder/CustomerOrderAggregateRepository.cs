@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.CoreModule.Core.Currency;
+using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.OrdersModule.Core.Model;
 using VirtoCommerce.OrdersModule.Core.Services;
 using VirtoCommerce.OrdersModule.Data.Services;
@@ -30,8 +31,12 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder
         public async Task<CustomerOrderAggregate> GetOrderByIdAsync(string orderId)
         {
             var order = await _customerOrderService.GetByIdAsync(orderId);
-            var result = await InnerGetCustomerOrderAggregateFromCustomerOrderAsync(order);
-            return result;
+            if (order != null)
+            {
+                var result = await InnerGetCustomerOrderAggregatesFromCustomerOrdersAsync(new[] { order });
+                return result.FirstOrDefault();
+            }
+            return null;
         }
 
         public async Task<CustomerOrderAggregate> CreateOrderFromCart(ShoppingCart cart)
@@ -39,55 +44,31 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder
             var response = await _customerOrderBuilder.PlaceCustomerOrderFromCartAsync(cart);
             //TODO need to add pkMap to FromModel of discount entity
             var order = await _customerOrderService.GetByIdAsync(response.Id);
-            var result = await InnerGetCustomerOrderAggregateFromCustomerOrderAsync(order, order.LanguageCode);
+            if (order != null)
+            {
+                var result = await InnerGetCustomerOrderAggregatesFromCustomerOrdersAsync(new[] { order }, order.LanguageCode);
+                return result.FirstOrDefault();
+            }
 
-            return result;
+            return null; 
         }
 
-        public Task<CustomerOrderAggregate> GetAggregateFromOrderAsync(CustomerOrder orders)
+        public async Task<CustomerOrderAggregate> GetAggregateFromOrderAsync(CustomerOrder order)
         {
-            return InnerGetCustomerOrderAggregateFromCustomerOrderAsync(orders);
+            var result = await InnerGetCustomerOrderAggregatesFromCustomerOrdersAsync(new[] { order });
+            return result.FirstOrDefault();
         }
 
         public Task<IList<CustomerOrderAggregate>> GetAggregatesFromOrdersAsync(IList<CustomerOrder> orders, string cultureName = null)
         {
             return InnerGetCustomerOrderAggregatesFromCustomerOrdersAsync(orders, cultureName);
-        }
-
-        protected virtual async Task<CustomerOrderAggregate> InnerGetCustomerOrderAggregateFromCustomerOrderAsync(CustomerOrder order, string cultureName = null)
-        {
-            if (order == null)
-            {
-                throw new ArgumentNullException(nameof(order));
-            }
-
-            var currency = (await GetCurrenciesAsync(new[] { order.Currency }, order.LanguageCode ?? cultureName)).FirstOrDefault();
-
-            if (currency == null)
-            {
-                throw new OperationCanceledException($"order currency {currency} is not registered in the system");
-            }
-
-            var result = new CustomerOrderAggregate(order, currency);
-
-            return result;
-        }
+        }     
 
         protected virtual async Task<IList<CustomerOrderAggregate>> InnerGetCustomerOrderAggregatesFromCustomerOrdersAsync(IList<CustomerOrder> orders, string cultureName = null)
         {
-            var currencies = await GetCurrenciesAsync(orders.Select(x => x.Currency).Distinct().ToArray(), cultureName);
-
-            return orders.Select(x => new CustomerOrderAggregate(x, currencies.FirstOrDefault(c => c.Code.EqualsInvariant(x.Currency)))).ToList();
+            var currencies = await _currencyService.GetAllCurrenciesAsync();
+            return orders.Select(x => new CustomerOrderAggregate(x, currencies.GetCurrencyForLanguage(x.Currency, cultureName ?? x.LanguageCode))).ToList();
         }
-
-        private async Task<Currency[]> GetCurrenciesAsync(string[] currencyCodes, string cultureName = null)
-        {
-            var allCurrencies = await _currencyService.GetAllCurrenciesAsync();
-            return allCurrencies.Where(x => currencyCodes.Contains(x.Code))
-                .Select(x => new Currency(cultureName != null ? new Language(cultureName) : Language.InvariantLanguage, x.Code, x.Name, x.Symbol, x.ExchangeRate)
-                    {
-                        CustomFormatting = x.CustomFormatting
-                    }).ToArray();
-        }
+               
     }
 }

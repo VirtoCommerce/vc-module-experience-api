@@ -8,6 +8,7 @@ using VirtoCommerce.CartModule.Core.Services;
 using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.ExperienceApiModule.Core;
+using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.StoreModule.Core.Services;
 using VirtoCommerce.XPurchase.Queries;
@@ -128,18 +129,8 @@ namespace VirtoCommerce.XPurchase
                 cart.Currency = store.DefaultCurrency;
             }
 
-            var currency = allCurrencies.FirstOrDefault(x => x.Code.EqualsInvariant(cart.Currency));
-            if (currency == null)
-            {
-                throw new OperationCanceledException($"cart currency {cart.Currency} is not registered in the system");
-            }
-            var defaultLanguage = store.DefaultLanguage != null ? new Language(store.DefaultLanguage) : Language.InvariantLanguage;
-            //Clone  currency with cart language
-            currency = new Currency(language != null ? new Language(language) : defaultLanguage, currency.Code, currency.Name, currency.Symbol, currency.ExchangeRate)
-            {
-                CustomFormatting = currency.CustomFormatting
-            };
-
+            var currency = allCurrencies.GetCurrencyForLanguage(cart.Currency, language ?? store.DefaultLanguage);
+          
             var member = await _memberResolver.ResolveMemberByIdAsync(cart.CustomerId);
             var aggregate = _cartAggregateFactory();
 

@@ -34,7 +34,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Queries
                                         .WithSorting(request.Sort)
                                         .Build();
             var searchResult = await _customerOrderSearchService.SearchCustomerOrdersAsync(searchCriteria);
-            var aggregates = await _customerOrderAggregateRepository.GetAggregatesFromOrdersAsync(searchResult.Results);
+            var aggregates = await _customerOrderAggregateRepository.GetAggregatesFromOrdersAsync(searchResult.Results, request.CultureName);
             return new SearchOrderResponse { TotalCount = searchResult.TotalCount, Results = aggregates };
         }
     }
