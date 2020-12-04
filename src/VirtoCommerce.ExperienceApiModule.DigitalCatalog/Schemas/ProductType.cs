@@ -239,11 +239,23 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 return context.Source.IndexedProduct.Properties.ExpandByValues(cultureName);
             });
 
-            Field<ListGraphType<AssetType>>("assets", resolve: context => context.Source.IndexedProduct.Assets);
+            Field<ListGraphType<AssetType>>(
+                "assets",
+                resolve: context =>
+                {
+                    var assets = context.Source.IndexedProduct.Assets;
+
+                    return context.GetValue<string>("cultureName") switch
+                    {
+                        // Get assets with null or current cultureName value if cultureName is passed
+                        string languageCode => assets.Where(x => string.IsNullOrEmpty(x.LanguageCode) || x.LanguageCode.EqualsInvariant(languageCode)).ToList(),
+
+                        // CultureName is null
+                        _ => assets
+                    };
+                });
 
             Field<ListGraphType<OutlineType>>("outlines", resolve: context => context.Source.IndexedProduct.Outlines);//.RootAlias("__object.outlines");
-
-            Field<TaxCategoryType>("tax", resolve: context => null); // TODO: We need this?
 
             Connection<ProductAssociationType>()
               .Name("associations")
