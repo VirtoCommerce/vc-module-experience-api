@@ -40,7 +40,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
 
         public virtual async Task<SearchCategoryResponse> Handle(SearchCategoryQuery request, CancellationToken cancellationToken)
         {
-            var terms = new List<string>();
+            var essentialTerms = new List<string>();
             Store store = null;
 
             if (!string.IsNullOrWhiteSpace(request.StoreId))
@@ -51,9 +51,8 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                     throw new ArgumentException($"Store with Id: {request.StoreId} is absent");
                 }
 
-                terms.Add($"__outline:{store.Catalog}");
+                essentialTerms.Add($"__outline:{store.Catalog}");
             }
-
 
             var searchRequest = new IndexSearchRequestBuilder()
                                           .WithFuzzy(request.Fuzzy, request.FuzzyLevel)
@@ -63,7 +62,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                                           .AddObjectIds(request.ObjectIds)
                                           .AddSorting(request.Sort)
                                           //Limit search result with store catalog
-                                          .AddTerms(terms)
+                                          .AddTerms(essentialTerms)
                                           .WithIncludeFields(IndexFieldsMapper.MapToIndexIncludes(request.IncludeFields).ToArray())
                                           .Build();
 

@@ -53,9 +53,9 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Authorization
                     result = await HasSameOrganizationAsync(currentContact, contactAggregate.Contact.Id);
                 }
             }
-            else if (context.Resource is ApplicationUser applicationUser && currentContact != null)
+            else if (context.Resource is ApplicationUser applicationUser)
             {
-                result = currentContact.Id == applicationUser.MemberId;
+                result = currentUserId == applicationUser.Id;
                 if (!result)
                 {
                     result = await HasSameOrganizationAsync(currentContact, applicationUser.Id);
