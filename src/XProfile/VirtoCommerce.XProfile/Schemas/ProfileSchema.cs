@@ -248,14 +248,16 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                 Type = GraphTypeExtenstionHelper.GetActualType<UserType>(),
                 Resolver = new AsyncFieldResolver<object>(async context =>
                 {
-                    var result = await _mediator.Send(new GetUserQuery(
+                    var user = await _mediator.Send(new GetUserQuery(
                         id: context.GetArgument<string>("id"),
                         userName: context.GetArgument<string>("userName"),
                         email: context.GetArgument<string>("email"),
                         loginProvider: context.GetArgument<string>("loginProvider"),
                         providerKey: context.GetArgument<string>("providerKey")));
 
-                    return result;
+                    await CheckAuthAsync(context.GetCurrentUserId(), user);
+
+                    return user;
                 })
             });
 

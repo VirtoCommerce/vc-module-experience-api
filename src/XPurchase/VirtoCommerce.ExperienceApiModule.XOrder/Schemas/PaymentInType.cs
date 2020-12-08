@@ -28,7 +28,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field(x => x.IsCancelled);
             Field(x => x.CancelledDate, true);
             Field(x => x.CancelReason, true);
-            Field(x => x.ParentOperationId);
+            Field(x => x.ParentOperationId, true);
             Field(x => x.ObjectType);
             Field(x => x.CreatedDate);
             Field(x => x.ModifiedDate, true);

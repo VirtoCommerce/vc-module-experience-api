@@ -87,6 +87,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                             ObjectIds = ids.ToArray(),
                             IncludeFields = includeFields.ToArray()
                         };
+                        context.UserContext.Add("storeId", order.StoreId);
 
                         var response = await mediator.Send(request);
 

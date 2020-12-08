@@ -8,7 +8,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
     {
         public RoleType()
         {
-            Field(x => x.Description);
+            Field(x => x.Description, true);
             Field(x => x.Id);
             Field(x => x.Name);
             Field(x => x.NormalizedName);

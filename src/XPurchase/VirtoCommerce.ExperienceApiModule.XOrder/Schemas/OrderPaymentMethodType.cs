@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
 using GraphQL;
 using GraphQL.Types;
 using VirtoCommerce.CoreModule.Core.Currency;
@@ -14,7 +11,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
     {
         public OrderPaymentMethodType()
         {
-            Field<NonNullGraphType<ListGraphType<OrderTaxDetailType>>>(nameof(PaymentMethod.TaxDetails), resolve: x => x.Source.TaxDetails);
+            Field<ListGraphType<OrderTaxDetailType>>(nameof(PaymentMethod.TaxDetails), resolve: x => x.Source.TaxDetails);
             Field(x => x.TaxPercentRate);
             Field<MoneyType>(nameof(PaymentMethod.TaxTotal).ToCamelCase(), resolve: context => new Money(context.Source.TaxTotal, context.GetOrderCurrency()));
             Field(x => x.TaxType, true);
@@ -26,14 +23,14 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field<MoneyType>(nameof(PaymentMethod.DiscountAmountWithTax).ToCamelCase(), resolve: context => new Money(context.Source.DiscountAmountWithTax, context.GetOrderCurrency()));
             Field<MoneyType>(nameof(PaymentMethod.Price).ToCamelCase(), resolve: context => new Money(context.Source.Price, context.GetOrderCurrency()));
             Field<MoneyType>(nameof(PaymentMethod.PriceWithTax).ToCamelCase(), resolve: context => new Money(context.Source.PriceWithTax, context.GetOrderCurrency()));
-            Field<CurrencyType>(nameof(PaymentMethod.Currency).ToCamelCase(), resolve: context => context.GetOrderCurrency());          
+            Field<CurrencyType>(nameof(PaymentMethod.Currency).ToCamelCase(), resolve: context => context.GetOrderCurrency());
             Field(x => x.IsAvailableForPartial);
             Field(x => x.Priority);
             Field(x => x.IsActive);
             Field(x => x.LogoUrl);
             Field(x => x.Code);
-            Field<IntGraphType>(nameof(PaymentMethod.PaymentMethodType), resolve: context => (int)context.Source.PaymentMethodType);
-            Field<IntGraphType>(nameof(PaymentMethod.PaymentMethodGroupType), resolve: context => (int)context.Source.PaymentMethodGroupType);
+            Field<IntGraphType>(nameof(PaymentMethod.PaymentMethodType), resolve: context => (int) context.Source.PaymentMethodType);
+            Field<IntGraphType>(nameof(PaymentMethod.PaymentMethodGroupType), resolve: context => (int) context.Source.PaymentMethodGroupType);
 
             //TODO
             //public ICollection<ObjectSettingEntry> Settings);

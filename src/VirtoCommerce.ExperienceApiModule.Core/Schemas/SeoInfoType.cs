@@ -9,7 +9,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
         {
             Name = "SeoInfo";
 
-            Field(x => x.Id, nullable: false);
+            Field(x => x.Id, nullable: true);
             Field(x => x.Name, nullable: true);
             Field(x => x.SemanticUrl, nullable: true);
             Field(x => x.PageTitle, nullable: true);

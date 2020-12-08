@@ -53,6 +53,14 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Authorization
                     result = await HasSameOrganizationAsync(currentContact, contactAggregate.Contact.Id);
                 }
             }
+            else if (context.Resource is ApplicationUser applicationUser)
+            {
+                result = currentUserId == applicationUser.Id;
+                if (!result)
+                {
+                    result = await HasSameOrganizationAsync(currentContact, applicationUser.Id);
+                }
+            }
             else if (context.Resource is OrganizationAggregate organizationAggregate && currentContact != null)
             {
                 result = currentContact.Organizations.Contains(organizationAggregate.Organization.Id);
@@ -129,7 +137,6 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Authorization
                     result = await HasSameOrganizationAsync(currentContact, updateUserCommand.Id);
                 }
             }
-
             if (result)
             {
                 context.Succeed(requirement);
