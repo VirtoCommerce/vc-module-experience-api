@@ -29,7 +29,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             Field(x => x.PhoneNumberConfirmed);
             Field(x => x.PhotoUrl, true);
             Field<ListGraphType<RoleType>>("roles", resolve: x => x.Source.Roles);
-            Field<ListGraphType<StringGraphType>>("permissions", resolve: x => x.Source.Roles?.SelectMany(r => r.Permissions.Select(p=> p.Name)));
+            Field<ListGraphType<StringGraphType>>("permissions", resolve: x => x.Source.Roles?.SelectMany(r => r.Permissions?.Select(p=> p.Name)));
             Field(x => x.SecurityStamp);
             Field(x => x.StoreId, true);
             Field(x => x.TwoFactorEnabled);

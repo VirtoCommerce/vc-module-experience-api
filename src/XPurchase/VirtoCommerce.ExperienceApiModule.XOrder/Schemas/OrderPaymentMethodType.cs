@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-using GraphQL;
 using GraphQL.Types;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
@@ -14,19 +10,19 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
     {
         public OrderPaymentMethodType()
         {
-            Field<NonNullGraphType<ListGraphType<OrderTaxDetailType>>>(nameof(PaymentMethod.TaxDetails), resolve: x => x.Source.TaxDetails);
+            Field<ListGraphType<OrderTaxDetailType>>(nameof(PaymentMethod.TaxDetails), resolve: x => x.Source.TaxDetails);
             Field(x => x.TaxPercentRate);
-            Field<MoneyType>(nameof(PaymentMethod.TaxTotal).ToCamelCase(), resolve: context => new Money(context.Source.TaxTotal, context.GetOrderCurrency()));
+            Field(x => x.TaxTotal);
             Field(x => x.TaxType, true);
             Field(x => x.TypeName);
             Field(x => x.StoreId);
-            Field<MoneyType>(nameof(PaymentMethod.TotalWithTax).ToCamelCase(), resolve: context => new Money(context.Source.TotalWithTax, context.GetOrderCurrency()));
-            Field<MoneyType>(nameof(PaymentMethod.Total).ToCamelCase(), resolve: context => new Money(context.Source.Total, context.GetOrderCurrency()));
-            Field<MoneyType>(nameof(PaymentMethod.DiscountAmount).ToCamelCase(), resolve: context => new Money(context.Source.DiscountAmount, context.GetOrderCurrency()));
-            Field<MoneyType>(nameof(PaymentMethod.DiscountAmountWithTax).ToCamelCase(), resolve: context => new Money(context.Source.DiscountAmountWithTax, context.GetOrderCurrency()));
-            Field<MoneyType>(nameof(PaymentMethod.Price).ToCamelCase(), resolve: context => new Money(context.Source.Price, context.GetOrderCurrency()));
-            Field<MoneyType>(nameof(PaymentMethod.PriceWithTax).ToCamelCase(), resolve: context => new Money(context.Source.PriceWithTax, context.GetOrderCurrency()));
-            Field<CurrencyType>(nameof(PaymentMethod.Currency).ToCamelCase(), resolve: context => context.GetOrderCurrency());          
+            Field(x => x.DiscountAmountWithTax);
+            Field(x => x.DiscountAmount);
+            Field(x => x.TotalWithTax);
+            Field(x => x.Total);
+            Field(x => x.PriceWithTax);
+            Field(x => x.Price);
+            Field(x => x.Currency, true);
             Field(x => x.IsAvailableForPartial);
             Field(x => x.Priority);
             Field(x => x.IsActive);

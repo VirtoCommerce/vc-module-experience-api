@@ -38,7 +38,13 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
 
         public virtual async Task<SearchCategoryResponse> Handle(SearchCategoryQuery request, CancellationToken cancellationToken)
         {
+            var terms = new List<string>();
+
             var store = await _storeService.GetByIdAsync(request.StoreId);
+            if (store != null)
+            {
+                terms.Add($"__outline:{store.Catalog}");
+            }
 
             var searchRequest = new IndexSearchRequestBuilder()
                                           .WithFuzzy(request.Fuzzy, request.FuzzyLevel)
@@ -48,7 +54,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                                           .AddObjectIds(request.ObjectIds)
                                           .AddSorting(request.Sort)
                                           //Limit search result with store catalog
-                                          .AddTerms(new[] { $"__outline:{store.Catalog}" })
+                                          .AddTerms(terms)
                                           .WithIncludeFields(IndexFieldsMapper.MapToIndexIncludes(request.IncludeFields).ToArray())
                                           .Build();
 

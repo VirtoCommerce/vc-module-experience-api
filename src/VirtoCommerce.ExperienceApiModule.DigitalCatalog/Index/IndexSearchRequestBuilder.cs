@@ -234,7 +234,14 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
         {
             //TODO: How to sort by scoring relevance???
             //TODO: Alias replacement for sort fields as well as for filter and facet expressions
+
+            if (string.IsNullOrWhiteSpace(sort))
+            {
+                return this;
+            }
+
             var sortFields = new List<SortingField>();
+
             foreach (var sortInfo in SortInfo.Parse(sort))
             {
                 var sortingField = new SortingField();
