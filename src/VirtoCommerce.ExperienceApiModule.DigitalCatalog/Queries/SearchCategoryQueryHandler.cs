@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -8,6 +9,7 @@ using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
 using VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index;
 using VirtoCommerce.SearchModule.Core.Model;
 using VirtoCommerce.SearchModule.Core.Services;
+using VirtoCommerce.StoreModule.Core.Model;
 using VirtoCommerce.StoreModule.Core.Services;
 
 namespace VirtoCommerce.XDigitalCatalog.Queries
@@ -39,12 +41,19 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
         public virtual async Task<SearchCategoryResponse> Handle(SearchCategoryQuery request, CancellationToken cancellationToken)
         {
             var terms = new List<string>();
+            Store store = null;
 
-            var store = await _storeService.GetByIdAsync(request.StoreId);
-            if (store != null)
+            if (!string.IsNullOrWhiteSpace(request.StoreId))
             {
+                store = await _storeService.GetByIdAsync(request.StoreId);
+                if (store == null)
+                {
+                    throw new ArgumentException($"Store with Id: {request.StoreId} is absent");
+                }
+
                 terms.Add($"__outline:{store.Catalog}");
             }
+
 
             var searchRequest = new IndexSearchRequestBuilder()
                                           .WithFuzzy(request.Fuzzy, request.FuzzyLevel)
