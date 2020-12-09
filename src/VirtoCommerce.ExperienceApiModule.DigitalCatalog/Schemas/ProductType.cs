@@ -113,7 +113,19 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 };
             }, description: "Request related SEO info");
 
-            Field<ListGraphType<DescriptionType>>("descriptions", resolve: context => context.Source.IndexedProduct.Reviews);
+            Field<ListGraphType<DescriptionType>>("descriptions", resolve: context =>
+            {
+                var reviews = context.Source.IndexedProduct.Reviews;
+
+                return context.GetValue<string>("cultureName") switch
+                {
+                    // Get reviews with null or current cultureName value if cultureName is passed
+                    string languageCode => reviews.Where(x => string.IsNullOrEmpty(x.LanguageCode) || x.LanguageCode.EqualsInvariant(languageCode)).ToList(),
+
+                    // CultureName is null
+                    _ => reviews
+                };
+            });
 
             Field<DescriptionType>("description", resolve: context =>
             {
@@ -197,7 +209,21 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                     IsTrackInventory = context.Source.IndexedProduct.TrackInventory ?? false,
                 });
 
-            Field<ListGraphType<ImageType>>("images", resolve: context => context.Source.IndexedProduct.Images);
+            Field<ListGraphType<ImageType>>(
+                "images",
+                resolve: context =>
+                {
+                    var images = context.Source.IndexedProduct.Images;
+
+                    return context.GetValue<string>("cultureName") switch
+                    {
+                        // Get images with null or current cultureName value if cultureName is passed
+                        string languageCode => images.Where(x => string.IsNullOrEmpty(x.LanguageCode) || x.LanguageCode.EqualsInvariant(languageCode)).ToList(),
+
+                        // CultureName is null
+                        _ => images
+                    };
+                });
 
             Field<PriceType>(
                 "price",
@@ -213,11 +239,23 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 return context.Source.IndexedProduct.Properties.ExpandByValues(cultureName);
             });
 
-            Field<ListGraphType<AssetType>>("assets", resolve: context => context.Source.IndexedProduct.Assets);
+            Field<ListGraphType<AssetType>>(
+                "assets",
+                resolve: context =>
+                {
+                    var assets = context.Source.IndexedProduct.Assets;
+
+                    return context.GetValue<string>("cultureName") switch
+                    {
+                        // Get assets with null or current cultureName value if cultureName is passed
+                        string languageCode => assets.Where(x => string.IsNullOrEmpty(x.LanguageCode) || x.LanguageCode.EqualsInvariant(languageCode)).ToList(),
+
+                        // CultureName is null
+                        _ => assets
+                    };
+                });
 
             Field<ListGraphType<OutlineType>>("outlines", resolve: context => context.Source.IndexedProduct.Outlines);//.RootAlias("__object.outlines");
-
-            Field<TaxCategoryType>("tax", resolve: context => null); // TODO: We need this?
 
             Connection<ProductAssociationType>()
               .Name("associations")

@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.XDigitalCatalog.Extensions;
@@ -47,6 +46,12 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             if (IncludeFields.ContainsAny("properties"))
             {
                 result |= ItemResponseGroup.WithProperties;
+            }
+
+            // "descriptions" could look redundant, but better to check it explicitly - clear approach for possible modification or different "Contains" logic  
+            if (IncludeFields.ContainsAny("description", "descriptions"))
+            {
+                result |= ItemResponseGroup.ItemEditorialReviews;
             }
 
             if (IncludeFields.ContainsAny("seoInfo"))

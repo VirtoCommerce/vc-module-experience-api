@@ -7,7 +7,6 @@ using GraphQL.Resolvers;
 using GraphQL.Types;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
@@ -51,6 +50,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                 {
                     var getCartQuery = context.GetCartQuery<GetCartQuery>();
                     getCartQuery.IncludeFields = context.SubFields.Values.GetAllNodesPaths().ToArray();
+                    context.CopyArgumentsToUserContext();
                     var cartAggregate = await _mediator.Send(getCartQuery);
                     if (cartAggregate == null)
                     {
@@ -676,7 +676,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             query.Filter = context.GetArgument<string>("filter");
             query.IncludeFields = context.SubFields.Values.GetAllNodesPaths().ToArray();
 
-            context.UserContext.Add(nameof(Currency.CultureName).ToCamelCase(), query.CultureName);
+            context.CopyArgumentsToUserContext();
 
             var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), query, new CanAccessCartAuthorizationRequirement());
 

@@ -1,6 +1,7 @@
 using GraphQL;
 using GraphQL.Types;
 using VirtoCommerce.CoreModule.Core.Currency;
+using VirtoCommerce.ExperienceApiModule.Core.Schemas;
 using VirtoCommerce.ExperienceApiModule.XOrder.Extensions;
 using VirtoCommerce.OrdersModule.Core.Model;
 
@@ -23,7 +24,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field(x => x.Status);
             Field(x => x.Note);
         
-            Field<OrderMoneyType>(nameof(PaymentGatewayTransaction.Amount).ToCamelCase(), resolve: context => new Money(context.Source.Amount, context.GetCurrencyByCode(context.Source.CurrencyCode)));
+            Field<MoneyType>(nameof(PaymentGatewayTransaction.Amount).ToCamelCase(), resolve: context => new Money(context.Source.Amount, context.GetCurrencyByCode(context.Source.CurrencyCode)));
           
         }
     }

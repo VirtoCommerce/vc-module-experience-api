@@ -111,7 +111,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             var categoriesConnectionBuilder = GraphTypeExtenstionHelper.CreateConnection<CategoryType, object>()
                 .Name("categories")
-                .Argument<NonNullGraphType<StringGraphType>>("storeId", "The store id where category are searched")
+                .Argument<StringGraphType>("storeId", "The store id where category are searched")
                 .Argument<StringGraphType>("cultureName", "The language for which all localized category data will be returned")
                 .Argument<StringGraphType>("userId", "The customer id for search result impersonalization")
                 .Argument<StringGraphType>("currencyCode", "The currency for which all prices data will be returned")

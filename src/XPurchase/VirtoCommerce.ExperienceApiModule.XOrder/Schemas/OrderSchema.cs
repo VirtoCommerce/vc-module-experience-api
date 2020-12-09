@@ -15,7 +15,6 @@ using VirtoCommerce.ExperienceApiModule.XOrder.Commands;
 using VirtoCommerce.ExperienceApiModule.XOrder.Extensions;
 using VirtoCommerce.ExperienceApiModule.XOrder.Queries;
 using VirtoCommerce.OrdersModule.Core.Model;
-using VirtoCommerce.OrdersModule.Core.Model.Search;
 using VirtoCommerce.OrdersModule.Core.Services;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
@@ -55,6 +54,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                         OrderId = context.GetArgument<string>("id"),
                         CultureName = context.GetArgument<string>(nameof(Currency.CultureName))
                     };
+                    
                     var orderAggregate = await _mediator.Send(request);
 
                     var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), orderAggregate.Order, new CanAccessOrderAuthorizationRequirement());
@@ -186,7 +186,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                 CustomerId = context.GetArgumentOrValue<string>("userId")
             };
 
-            context.UserContext.Add(nameof(Currency.CultureName).ToCamelCase(), request.CultureName);
+            context.CopyArgumentsToUserContext();
             var allCurrencies = await _currencyService.GetAllCurrenciesAsync();
             //Store all currencies in the user context for future resolve in the schema types
             context.SetCurrencies(allCurrencies, request.CultureName);

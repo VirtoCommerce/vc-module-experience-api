@@ -28,7 +28,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field(x => x.IsCancelled);
             Field(x => x.CancelledDate, true);
             Field(x => x.CancelReason, true);
-            Field(x => x.ParentOperationId);
+            Field(x => x.ParentOperationId, true);
             Field(x => x.ObjectType);
             Field(x => x.CreatedDate);
             Field(x => x.ModifiedDate, true);
@@ -39,8 +39,8 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field(x => x.VoidedDate, true);
             Field(x => x.OrderId, true);
 
-            Field<OrderMoneyType>(nameof(PaymentIn.Sum).ToCamelCase(), resolve: context => new Money(context.Source.Sum, context.GetCurrencyByCode(context.Source.Currency)));
-            Field<OrderMoneyType>("tax", resolve: context => new Money(context.Source.TaxTotal, context.GetCurrencyByCode(context.Source.Currency)));
+            Field<MoneyType>(nameof(PaymentIn.Sum).ToCamelCase(), resolve: context => new Money(context.Source.Sum, context.GetCurrencyByCode(context.Source.Currency)));
+            Field<MoneyType>("tax", resolve: context => new Money(context.Source.TaxTotal, context.GetCurrencyByCode(context.Source.Currency)));
             Field<OrderPaymentMethodType>(nameof(PaymentIn.PaymentMethod), resolve: context => context.Source.PaymentMethod);
             Field<CurrencyType>(nameof(PaymentIn.Currency), resolve: context => context.GetCurrencyByCode(context.Source.Currency));
             Field<OrderAddressType>(nameof(PaymentIn.BillingAddress), resolve: context => context.Source.BillingAddress);

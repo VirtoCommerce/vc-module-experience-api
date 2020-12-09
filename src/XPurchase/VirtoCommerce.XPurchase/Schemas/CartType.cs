@@ -1,6 +1,8 @@
 using System.Linq;
+using GraphQL.Resolvers;
 using GraphQL.Types;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
+using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.XPurchase.Services;
@@ -52,7 +54,16 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field<MoneyType>("shippingPriceWithTax", resolve: context => context.Source.Cart.ShippingTotalWithTax.ToMoney(context.Source.Currency));
             Field<MoneyType>("shippingTotal", resolve: context => context.Source.Cart.ShippingTotal.ToMoney(context.Source.Currency));
             Field<MoneyType>("shippingTotalWithTax", resolve: context => context.Source.Cart.ShippingTotalWithTax.ToMoney(context.Source.Currency));
-            Field<ListGraphType<ShipmentType>>("shipments", resolve: context => context.Source.Cart.Shipments);
+            //Field<ListGraphType<ShipmentType>>("shipments", resolve: context => context.Source.Cart.Shipments);
+            //TODO: By this registration we support the schema types extensions. Need to move this code into extensions and replace everywhere to this version.
+            var cartShipmentsField = new FieldType
+            {
+                Name = "shipments",
+                Type = typeof(ListGraphType<>).MakeGenericType(GraphTypeExtenstionHelper.GetActualType<ShipmentType>()),
+                Resolver = new FuncFieldResolver<CartAggregate, object>(context => context.Source.Cart.Shipments)
+            };
+            AddField(cartShipmentsField);
+
             FieldAsync<ListGraphType<ShippingMethodType>>("availableShippingMethods", resolve: async context =>
             {
                 var rates = await cartAvailMethods.GetAvailableShippingRatesAsync(context.Source);

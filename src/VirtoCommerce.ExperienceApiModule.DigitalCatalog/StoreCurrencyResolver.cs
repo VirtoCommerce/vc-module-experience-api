@@ -46,15 +46,21 @@ namespace VirtoCommerce.XDigitalCatalog
         public async Task<Currency> GetStoreCurrencyAsync(string currencyCode, string storeId, string cultureName = null)
         {
             var store = await _storeService.GetByIdAsync(storeId);
+
+            if (string.IsNullOrWhiteSpace(currencyCode))
+            {
+                currencyCode = store.DefaultCurrency;
+            }
+
             var allCurrencies = await GetAllStoreCurrenciesAsync(storeId, cultureName);
             //Clone and change culture name for system currencies
-            var currency = allCurrencies.FirstOrDefault(x => x.Code.EqualsInvariant(currencyCode ?? store.DefaultCurrency));
+            var currency = allCurrencies.FirstOrDefault(x => x.Code.EqualsInvariant(currencyCode));
             if (currency == null)
             {
                 throw new OperationCanceledException($"requested currency {currencyCode} is not registered in the system");
             }
-            return currency;
 
+            return currency;
         }
     }
 }
