@@ -71,5 +71,41 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Tests.Authorization
             context.HasFailed.Should().BeTrue();
         }
 
+        [Fact]
+        public async Task CanEditOrganizationAuthorizationHandler_UserGetItself_ShouldSucceed()
+        {
+            //Arrange    
+            var requirements = new[] { new CanEditOrganizationAuthorizationRequirement() };
+            var user = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim("name", UserFromBigOrganizationId) }));
+            var resource = new ApplicationUser() { Id = UserFromBigOrganizationId };
+
+            var context = new AuthorizationHandlerContext(requirements, user, resource);
+            var subject = new CanEditOrganizationAuthorizationHandler(_memberService, _userManagerFunc);
+
+            //Act
+            await subject.HandleAsync(context);
+
+            //Assert
+            context.HasSucceeded.Should().BeTrue();
+        }
+
+
+        [Fact]
+        public async Task CanEditOrganizationAuthorizationHandler_UserGetAnotherUser_ShouldFail()
+        {
+            //Arrange    
+            var requirements = new[] { new CanEditOrganizationAuthorizationRequirement() };
+            var user = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim("name", UserWithoutOrganizationId) }));
+            var resource = new ApplicationUser() { Id = UserFromBigOrganizationId };
+
+            var context = new AuthorizationHandlerContext(requirements, user, resource);
+            var subject = new CanEditOrganizationAuthorizationHandler(_memberService, _userManagerFunc);
+
+            //Act
+            await subject.HandleAsync(context);
+
+            //Assert
+            context.HasFailed.Should().BeTrue();
+        }
     }
 }
