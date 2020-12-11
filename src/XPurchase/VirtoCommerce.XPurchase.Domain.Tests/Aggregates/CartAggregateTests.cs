@@ -90,8 +90,6 @@ namespace VirtoCommerce.XPurchase.Tests.Aggregates
             aggregateAfterAddItem.ValidationErrors.Should().NotBeEmpty();
             aggregateAfterAddItem.ValidationErrors.Should().Contain(x => x.ErrorCode == "GreaterThanValidator");
             aggregateAfterAddItem.ValidationErrors.Should().Contain(x => x.ErrorCode == "NotNullValidator");
-
-
         }
 
         #endregion AddItemAsync
@@ -145,10 +143,12 @@ namespace VirtoCommerce.XPurchase.Tests.Aggregates
             cartAggregate.Cart.Items = new List<LineItem> { lineItem };
 
             // Act
-            var cartAggregateAfterChangeItemQty = cartAggregate.ChangeItemQuantityAsync(new ItemQtyAdjustment(
-                _fixture.Create<string>(),
-                5,
-                _fixture.Create<CartProduct>())).GetAwaiter().GetResult();
+            var cartAggregateAfterChangeItemQty = cartAggregate.ChangeItemQuantityAsync(new ItemQtyAdjustment
+            {
+                LineItemId = _fixture.Create<string>(),
+                NewQuantity = 5,
+                CartProduct = _fixture.Create<CartProduct>()
+            }).GetAwaiter().GetResult();
 
             // Assert
             cartAggregateAfterChangeItemQty.ValidationErrors.Should().NotBeEmpty();

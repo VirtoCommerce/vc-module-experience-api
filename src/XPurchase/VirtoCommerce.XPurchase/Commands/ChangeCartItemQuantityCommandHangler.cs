@@ -24,7 +24,13 @@ namespace VirtoCommerce.XPurchase.Commands
             {
                 product = (await _cartProductService.GetCartProductsByIdsAsync(cartAggregate, new[] { lineItem.ProductId })).FirstOrDefault();
             }
-            await cartAggregate.ChangeItemQuantityAsync(new ItemQtyAdjustment(request.LineItemId, request.Quantity, product));
+
+            await cartAggregate.ChangeItemQuantityAsync(new ItemQtyAdjustment
+            {
+                LineItemId = request.LineItemId,
+                NewQuantity = request.Quantity,
+                CartProduct = product
+            });
 
             return await SaveCartAsync(cartAggregate);
         }

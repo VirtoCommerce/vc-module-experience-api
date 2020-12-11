@@ -5,6 +5,7 @@ using FluentAssertions;
 using FluentValidation;
 using VirtoCommerce.ShippingModule.Core.Model;
 using VirtoCommerce.XPurchase.Tests.Helpers;
+using VirtoCommerce.XPurchase.Tests.Helpers.Stubs;
 using VirtoCommerce.XPurchase.Validators;
 using Xunit;
 
@@ -12,7 +13,6 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
 {
     public class CartShipmentValidatorTests : XPurchaseMoqHelper
     {
-        private readonly CartValidationContext _context = new CartValidationContext();
         private readonly ShippingRate _shippingRate;
 
         public CartShipmentValidatorTests()
@@ -20,7 +20,7 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             _shippingRate = new ShippingRate
             {
                 OptionName = ":)",
-                ShippingMethod = new MockedShippingMethod("shippingMethodCode"),
+                ShippingMethod = new StubShippingMethod("shippingMethodCode"),
                 Rate = 777,
             };
 
@@ -34,7 +34,7 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
         public async Task ValidateShipment_RuleSetDefault_Valid()
         {
             // Arrange
-            var shipment = new VirtoCommerce.CartModule.Core.Model.Shipment
+            var shipment = new CartModule.Core.Model.Shipment
             {
                 ShipmentMethodCode = _fixture.Create<string>()
             };
@@ -52,7 +52,7 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
         public async Task ValidateShipment_RuleSetDefault_ShipmentMethodCodeIsNull_Valid()
         {
             // Arrange
-            var shipment = new VirtoCommerce.CartModule.Core.Model.Shipment
+            var shipment = new CartModule.Core.Model.Shipment
             {
                 ShipmentMethodCode = null
             };
@@ -70,7 +70,7 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
         public async Task ValidateShipment_RuleSetDefault_ShipmentMethodCodeIsEmpty_Valid()
         {
             // Arrange
-            var shipment = new VirtoCommerce.CartModule.Core.Model.Shipment
+            var shipment = new CartModule.Core.Model.Shipment
             {
                 ShipmentMethodCode = string.Empty
             };
@@ -88,7 +88,7 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
         public async Task ValidateShipment_RuleSetStrict_UnavailableMethodError()
         {
             // Arrange
-            var shipment = new VirtoCommerce.CartModule.Core.Model.Shipment
+            var shipment = new CartModule.Core.Model.Shipment
             {
                 ShipmentMethodCode = "UnavailableShipmentMethod"
             };
@@ -108,7 +108,7 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
         public async Task ValidateShipment_RuleSetStrict_PriceError()
         {
             // Arrange
-            var shipment = new VirtoCommerce.CartModule.Core.Model.Shipment
+            var shipment = new CartModule.Core.Model.Shipment
             {
                 ShipmentMethodCode = "shippingMethodCode",
                 ShipmentMethodOption = ":)",

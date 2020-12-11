@@ -12,21 +12,25 @@ using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.CustomerModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.Tests.Helpers;
 using VirtoCommerce.InventoryModule.Core.Model;
-using VirtoCommerce.MarketingModule.Core.Model.Promotions;
 using VirtoCommerce.MarketingModule.Core.Services;
+using VirtoCommerce.PaymentModule.Core.Model;
 using VirtoCommerce.PaymentModule.Core.Services;
 using VirtoCommerce.PricingModule.Core.Model;
-using VirtoCommerce.ShippingModule.Core.Model;
 using VirtoCommerce.ShippingModule.Core.Services;
 using VirtoCommerce.StoreModule.Core.Model;
 using VirtoCommerce.StoreModule.Core.Services;
 using VirtoCommerce.TaxModule.Core.Services;
 using VirtoCommerce.XPurchase.Services;
+using VirtoCommerce.XPurchase.Tests.Helpers.Stubs;
+using VirtoCommerce.XPurchase.Validators;
 
 namespace VirtoCommerce.XPurchase.Tests.Helpers
 {
     public class XPurchaseMoqHelper : MoqHelper
     {
+        // For Validators
+        protected readonly CartValidationContext _context = new CartValidationContext();
+
         protected readonly Mock<ICartProductService> _cartProductServiceMock;
         protected readonly Mock<ICurrencyService> _currencyServiceMock;
         protected readonly Mock<IMarketingPromoEvaluator> _marketingPromoEvaluatorMock;
@@ -46,6 +50,8 @@ namespace VirtoCommerce.XPurchase.Tests.Helpers
 
         public XPurchaseMoqHelper()
         {
+            _fixture.Register<PaymentMethod>(() => new StubPaymentMethod(_fixture.Create<string>()));
+
             _fixture.Register(() => _fixture
                 .Build<ShoppingCart>()
                 .With(x => x.Currency, CURRENCY_CODE)
@@ -116,7 +122,7 @@ namespace VirtoCommerce.XPurchase.Tests.Helpers
             _marketingPromoEvaluatorMock = new Mock<IMarketingPromoEvaluator>();
             _marketingPromoEvaluatorMock
                 .Setup(x => x.EvaluatePromotionAsync(It.IsAny<IEvaluationContext>()))
-                .ReturnsAsync(new MockedPromotionResult());
+                .ReturnsAsync(new StubPromotionResult());
 
             _paymentMethodsSearchServiceMock = new Mock<IPaymentMethodsSearchService>();
             _shippingMethodsSearchServiceMock = new Mock<IShippingMethodsSearchService>();
@@ -133,7 +139,7 @@ namespace VirtoCommerce.XPurchase.Tests.Helpers
 
         protected ShoppingCart GetCart() => _fixture.Create<ShoppingCart>();
 
-        protected Member GetMember() => _fixture.Create<MockedMember>();
+        protected Member GetMember() => _fixture.Create<StubMember>();
 
         protected Store GetStore() => _fixture.Create<Store>();
 
@@ -180,27 +186,6 @@ namespace VirtoCommerce.XPurchase.Tests.Helpers
             aggregate.GrabCart(cart, new Store(), GetMember(), GetCurrency());
 
             return aggregate;
-        }
-    }
-
-    public class MockedPromotionResult : PromotionResult
-    {
-        public new ICollection<PromotionReward> Rewards => Enumerable.Empty<PromotionReward>().ToList();
-    }
-
-    public class MockedMember : Member
-    {
-    }
-
-    public class MockedShippingMethod : ShippingMethod
-    {
-        public MockedShippingMethod(string code) : base(code)
-        {
-        }
-
-        public override IEnumerable<ShippingRate> CalculateRates(IEvaluationContext context)
-        {
-            throw new System.NotImplementedException();
         }
     }
 }
