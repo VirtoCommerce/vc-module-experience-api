@@ -13,8 +13,6 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
 {
     public class CartLineItemValidatorTests : XPurchaseMoqHelper
     {
-        private readonly CartValidationContext _context = new CartValidationContext();
-
         public CartLineItemValidatorTests()
         {
             _context.AllCartProducts = new List<CartProduct>()

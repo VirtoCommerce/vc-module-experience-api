@@ -14,12 +14,12 @@ namespace VirtoCommerce.XPurchase.Validators
             RuleFor(x => x.CartProduct).NotNull();
             RuleFor(x => x).Custom((qtyAdjust, context) =>
             {
-                var lineItem = cartAggr.Cart.Items.FirstOrDefault(x => x.Id.EqualsInvariant(qtyAdjust.LineItemId));
+                var lineItem = cartAggr.Cart?.Items?.FirstOrDefault(x => x.Id.EqualsInvariant(qtyAdjust.LineItemId));
                 if (lineItem == null)
                 {
                     context.AddFailure(CartErrorDescriber.LineItemWithGivenIdNotFound(new LineItem { Id = qtyAdjust.LineItemId }));
                 }
-                else if(lineItem.IsReadOnly)
+                else if (lineItem.IsReadOnly)
                 {
                     context.AddFailure(CartErrorDescriber.LineItemIsReadOnly(lineItem));
                 }
@@ -29,7 +29,6 @@ namespace VirtoCommerce.XPurchase.Validators
                     context.AddFailure(CartErrorDescriber.ProductQtyInsufficientError(qtyAdjust.CartProduct, qtyAdjust.NewQuantity, qtyAdjust.CartProduct.AvailableQuantity));
                 }
             });
-
         }
     }
 }
