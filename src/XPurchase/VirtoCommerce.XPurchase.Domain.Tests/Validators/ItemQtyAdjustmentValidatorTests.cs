@@ -171,10 +171,6 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
 
             // Act
             var result = await validator.ValidateAsync(item);
-            var expected = CartErrorDescriber.ProductQtyInsufficientError(
-                item.CartProduct,
-                item.NewQuantity,
-                item.CartProduct.AvailableQuantity);
 
             // Assert
             result.IsValid.Should().BeTrue();
