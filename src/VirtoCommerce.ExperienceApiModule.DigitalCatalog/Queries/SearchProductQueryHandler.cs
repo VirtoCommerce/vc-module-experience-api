@@ -93,6 +93,20 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             //Call the catalog aggregation converter service to convert AggregationResponse to proper Aggregation type (term, range, filter)
             var aggregations = await _aggregationConverter.ConvertAggregationsAsync(searchResult.Aggregations, criteria);
 
+            // For every request aggregation, check the filter values that exist in the result.
+            // If the value really exist, then fire on IsApplied
+            foreach (var requestAggregation in searchRequest.Aggregations)
+            {
+                var resultAggregation = aggregations.FirstOrDefault(x => x.Field == requestAggregation.FieldName);
+                if (resultAggregation != null)
+                {
+                    foreach (var resultAggregationValue in resultAggregation.Items.Where(x => ((AndFilter)requestAggregation.Filter).ChildFilters.Any(y => ((TermFilter)y).Values.Contains(x.Value))))
+                    {
+                        resultAggregationValue.IsApplied = true;
+                    }
+                }
+            }
+
             var products = searchResult.Documents?.Select(x => _mapper.Map<ExpProduct>(x)).ToList() ?? new List<ExpProduct>();
 
             var result = new SearchProductResponse
