@@ -37,7 +37,7 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Helpers
                     ChildFilters = new List<IFilter>(),
                 },
                 SearchFields = new List<string> { "__content" },
-                Sorting = new List<SortingField> { new SortingField("__sort") },
+                Sorting = new List<SortingField> { new SortingField("score",true) },
                 Skip = 0,
                 Take = 20,
                 Aggregations = new List<AggregationRequest>(),

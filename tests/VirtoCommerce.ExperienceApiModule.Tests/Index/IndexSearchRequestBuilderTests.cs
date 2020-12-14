@@ -347,6 +347,61 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Index
             actual.Should().BeEquivalentTo(expected);
         }
 
+
+        #region Sorting
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        public void AddSorting_SortStringIsNull_ShouldSkipParsing(string sort)
+        {
+            // Arrange
+            var expected = _fixture.Create<SearchRequest>();
+
+            // Act
+            var actual = _builder.AddSorting(sort).Build();
+
+            // Assert
+            actual.Should().BeEquivalentTo(expected);
+        }
+
+
+        [Theory]
+        [InlineData("name:DESC")]
+        public void AddSorting_SortStringField_ShouldBeParsed(string sort)
+        {
+            // Arrange
+
+
+            // Act
+            var actual = _builder.AddSorting(sort).Build();
+
+            // Assert
+            actual.Sorting.Should().HaveCount(1);
+            actual.Sorting.First().FieldName.Should().BeEquivalentTo("name");
+            actual.Sorting.First().IsDescending.Should().BeTrue();
+        }
+
+
+        [Theory]
+        [InlineData("priority; name:ASC")]
+        [InlineData("name:ASC; score")]
+        public void AddSorting_SortStringMultiplyFields_ShouldBeParsed(string sort)
+        {
+            // Arrange
+            
+
+            // Act
+            var actual = _builder.AddSorting(sort).Build();
+
+            // Assert
+            actual.Sorting.Should().HaveCount(2);
+            actual.Sorting.All(x => x.IsDescending == false).Should().BeTrue();
+        }
+
+
+        #endregion
+
         //[Fact]
         //public void Build_ShouldCopyNonNamedFiltersToAggregations()
         //{

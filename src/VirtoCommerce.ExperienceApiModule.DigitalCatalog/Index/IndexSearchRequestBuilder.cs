@@ -24,7 +24,7 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
                     ChildFilters = new List<IFilter>(),
                 },
                 SearchFields = new List<string> { "__content" },
-                Sorting = new List<SortingField> { new SortingField("__sort") },
+                Sorting = new List<SortingField> { new SortingField("score", true) },
                 Skip = 0,
                 Take = 20,
                 Aggregations = new List<AggregationRequest>(),
@@ -232,9 +232,6 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
 
         public IndexSearchRequestBuilder AddSorting(string sort)
         {
-            //TODO: How to sort by scoring relevance???
-            //TODO: Alias replacement for sort fields as well as for filter and facet expressions
-
             if (string.IsNullOrWhiteSpace(sort))
             {
                 return this;
