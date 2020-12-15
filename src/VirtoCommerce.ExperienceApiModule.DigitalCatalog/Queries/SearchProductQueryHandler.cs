@@ -97,8 +97,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             // If the value really exist, then fire on IsApplied
             foreach (var requestAggregation in searchRequest.Aggregations)
             {
-                var resultAggregation = aggregations.FirstOrDefault(x => x.Field == requestAggregation.FieldName);
-                if (resultAggregation != null)
+                foreach (var resultAggregation in aggregations.Where(x => x.Field == requestAggregation.FieldName /*Detect TermFilter*/ || requestAggregation.Id != null && requestAggregation.Id.StartsWith(x.Field)/*Detect RangeFilter*/))
                 {
 
                     foreach (var resultAggregationValue in resultAggregation.Items.Where(x => (requestAggregation.Filter as AndFilter).ChildFilters.Any(y =>
@@ -110,7 +109,8 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                                 result = termFilter.Values.Contains(x.Value);
                                 break;
                             case RangeFilter rangeFilter:
-                                // ??
+                                result = rangeFilter.Values.Any(z => (z.Lower is null ? string.Empty : z.Lower) == (x.RequestedLowerBound is null ? string.Empty : x.RequestedLowerBound) &&
+                                                           (z.Upper is null ? string.Empty : z.Upper) == (x.RequestedUpperBound is null ? string.Empty : x.RequestedUpperBound));
                                 break;
                             default:
                                 break;
