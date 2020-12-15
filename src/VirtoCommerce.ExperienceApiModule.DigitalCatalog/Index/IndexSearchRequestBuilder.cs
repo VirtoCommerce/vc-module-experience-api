@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.ExperienceApiModule.Core.Index;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.SearchModule.Core.Extenstions;
@@ -13,6 +12,7 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
     public class IndexSearchRequestBuilder
     {
 
+        private const string ScoreSortingFieldName = "score";
         private SearchRequest SearchRequest { get; set; }
 
         public IndexSearchRequestBuilder()
@@ -24,7 +24,7 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
                     ChildFilters = new List<IFilter>(),
                 },
                 SearchFields = new List<string> { "__content" },
-                Sorting = new List<SortingField> { new SortingField("score", true) },
+                Sorting = new List<SortingField> { new SortingField(ScoreSortingFieldName, true) },
                 Skip = 0,
                 Take = 20,
                 Aggregations = new List<AggregationRequest>(),
