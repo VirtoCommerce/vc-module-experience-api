@@ -176,6 +176,7 @@ namespace VirtoCommerce.XPurchase.Mapping
                 productPromoEntry.CategoryId = lineItem.CategoryId;
                 productPromoEntry.Code = lineItem.Sku;
                 productPromoEntry.Discount = lineItem.DiscountTotal;
+                //Use only base price for discount evaluation
                 productPromoEntry.Price = lineItem.SalePrice;
                 productPromoEntry.ProductId = lineItem.ProductId;
                 productPromoEntry.Quantity = lineItem.Quantity;
@@ -190,31 +191,20 @@ namespace VirtoCommerce.XPurchase.Mapping
                     promoEvalcontext = AbstractTypeFactory<PromotionEvaluationContext>.TryCreateInstance();
                 }
 
-                promoEvalcontext.CartPromoEntries = cartAggr.Cart.Items
-                    ?.Select(lineItem => context.Mapper.Map<ProductPromoEntry>(lineItem)).ToList()
-                    ?? Enumerable.Empty<ProductPromoEntry>().ToList();
+                promoEvalcontext.CartPromoEntries = new List<ProductPromoEntry>();
 
                 foreach (var lineItem in cartAggr.Cart.Items)
                 {
+                    var promoEntry = context.Mapper.Map<ProductPromoEntry>(lineItem);
                     var cartProduct = cartAggr.CartProducts[lineItem.ProductId];
                     if (cartProduct != null)
                     {
-                        var promoEntry = new ProductPromoEntry
-                        {
-                            CatalogId = lineItem.CatalogId,
-                            CategoryId = lineItem.CategoryId,
-                            Code = lineItem.Sku,
-                            ProductId = lineItem.ProductId,
-                            Discount = lineItem.DiscountTotal,
-                            //Use only base price for discount evaluation
-                            Price = lineItem.SalePrice,
-                            Quantity = lineItem.Quantity,
-                            InStockQuantity = (int)(cartProduct.Inventory?.InStockQuantity ?? 0),
-                            Outline = cartProduct.Product.Outlines.Select(x => context.Mapper.Map<Tools.Models.Outline>(x)).GetOutlinePath(cartProduct.Product.CatalogId),
-                        };
-                        promoEvalcontext.CartPromoEntries.Add(promoEntry);
+                        promoEntry.InStockQuantity = (int)(cartProduct.Inventory?.InStockQuantity ?? 0);
+                        promoEntry.Outline = cartProduct.Product.Outlines.Select(x => context.Mapper.Map<Tools.Models.Outline>(x)).GetOutlinePath(cartProduct.Product.CatalogId);
                     }
+                    promoEvalcontext.CartPromoEntries.Add(promoEntry);
                 }
+
                 promoEvalcontext.CartTotal = cartAggr.Cart.SubTotal;
                 promoEvalcontext.StoreId = cartAggr.Cart.StoreId;
                 promoEvalcontext.Coupons = cartAggr.Cart.Coupons?.ToList();
