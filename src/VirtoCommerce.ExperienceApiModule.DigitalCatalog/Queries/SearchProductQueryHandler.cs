@@ -100,8 +100,26 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                 var resultAggregation = aggregations.FirstOrDefault(x => x.Field == requestAggregation.FieldName);
                 if (resultAggregation != null)
                 {
-                    foreach (var resultAggregationValue in resultAggregation.Items.Where(x => ((AndFilter)requestAggregation.Filter).ChildFilters.Any(y => ((TermFilter)y).Values.Contains(x.Value))))
+
+                    foreach (var resultAggregationValue in resultAggregation.Items.Where(x => (requestAggregation.Filter as AndFilter).ChildFilters.Any(y =>
                     {
+                        var result = false;
+                        switch (y)
+                        {
+                            case TermFilter termFilter:
+                                result = termFilter.Values.Contains(x.Value);
+                                break;
+                            case RangeFilter rangeFilter:
+                                // ??
+                                break;
+                            default:
+                                break;
+                        }
+                        return result;
+                    }
+                    )))
+                    {
+
                         resultAggregationValue.IsApplied = true;
                     }
                 }
