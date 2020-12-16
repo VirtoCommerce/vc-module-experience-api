@@ -91,14 +91,41 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             };
             //TODO: move later to own implementation
             //Call the catalog aggregation converter service to convert AggregationResponse to proper Aggregation type (term, range, filter)
-            var aggregations = await _aggregationConverter.ConvertAggregationsAsync(searchResult.Aggregations, criteria);
+            var resultAggregations = await _aggregationConverter.ConvertAggregationsAsync(searchResult.Aggregations, criteria);
 
-            // For every request aggregation, check the filter values that exist in the result.
-            // If the value really exist, then fire on IsApplied
+
+            SetAppliedAggregations(searchRequest, resultAggregations);
+
+            var products = searchResult.Documents?.Select(x => _mapper.Map<ExpProduct>(x)).ToList() ?? new List<ExpProduct>();
+
+            var result = new SearchProductResponse
+            {
+                Query = request,
+                AllStoreCurrencies = allStoreCurrencies,
+                Currency = currency,
+                Store = store,
+                Results = products,
+                Facets = resultAggregations?.Select(x => _mapper.Map<FacetResult>(x)).ToList(),
+                TotalCount = (int)searchResult.TotalCount
+            };
+
+            await _pipeline.Execute(result);
+
+            return result;
+        }
+
+        /// <summary>
+        /// For every request aggregation, check the filter values that exist in the result.
+        /// If the value really exists, then set on IsApplied
+        /// </summary>
+        /// <param name="searchRequest"></param>
+        /// <param name="resultAggregations"></param>
+        private static void SetAppliedAggregations(SearchRequest searchRequest, Aggregation[] resultAggregations)
+        {
             foreach (var childFilter in ((AndFilter)searchRequest.Filter).ChildFilters)
             {
                 var requestFilter = childFilter as INamedFilter;
-                foreach (var resultAggregation in aggregations.Where(x => x.Field == requestFilter.FieldName /*Detect TermFilter*/ || requestFilter.FieldName.StartsWith(x.Field)/*Detect RangeFilter*/))
+                foreach (var resultAggregation in resultAggregations.Where(x => x.Field == requestFilter.FieldName.Split('_')[0] /* TermFilter names are equal, RangeFilter can contain underscore in the name */))
                 {
                     foreach (var resultAggregationValue in resultAggregation.Items)
                     {
@@ -117,23 +144,6 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                     }
                 }
             }
-
-            var products = searchResult.Documents?.Select(x => _mapper.Map<ExpProduct>(x)).ToList() ?? new List<ExpProduct>();
-
-            var result = new SearchProductResponse
-            {
-                Query = request,
-                AllStoreCurrencies = allStoreCurrencies,
-                Currency = currency,
-                Store = store,
-                Results = products,
-                Facets = aggregations?.Select(x => _mapper.Map<FacetResult>(x)).ToList(),
-                TotalCount = (int)searchResult.TotalCount
-            };
-
-            await _pipeline.Execute(result);
-
-            return result;
         }
 
         public virtual async Task<LoadProductResponse> Handle(LoadProductsQuery request, CancellationToken cancellationToken)
