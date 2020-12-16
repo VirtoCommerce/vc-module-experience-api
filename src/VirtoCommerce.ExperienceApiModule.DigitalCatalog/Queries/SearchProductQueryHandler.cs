@@ -93,7 +93,6 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             //Call the catalog aggregation converter service to convert AggregationResponse to proper Aggregation type (term, range, filter)
             var resultAggregations = await _aggregationConverter.ConvertAggregationsAsync(searchResult.Aggregations, criteria);
 
-
             SetAppliedAggregations(searchRequest, resultAggregations);
 
             var products = searchResult.Documents?.Select(x => _mapper.Map<ExpProduct>(x)).ToList() ?? new List<ExpProduct>();
