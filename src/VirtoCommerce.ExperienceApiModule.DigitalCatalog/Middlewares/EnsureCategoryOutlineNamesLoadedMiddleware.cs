@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using PipelineNet.Middleware;
@@ -12,7 +13,7 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
     /// This middleware enriches outlines with names.
     /// Just reads names of catalogs and categories in outlines thru ICatalogService, ICategoryService
     /// </summary>
-    class EnsureCategoryOutlineNamesLoadedMiddleware : IAsyncMiddleware<SearchCategoryResponse>
+    public class EnsureCategoryOutlineNamesLoadedMiddleware : IAsyncMiddleware<SearchCategoryResponse>
     {
         private readonly ICatalogService _catalogService;
         private readonly ICategoryService _categoryService;
@@ -35,12 +36,12 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
 
                 foreach (var catalogOutlineItem in catalogOutlineItems)
                 {
-                    catalogOutlineItem.Name = catalogs.ContainsKey(catalogOutlineItem.Id) ? catalogs[catalogOutlineItem.Id].Name : null;
+                    catalogOutlineItem.Name = catalogs.GetValueOrDefault(catalogOutlineItem.Id)?.Name;
                 }
 
                 foreach (var categoryOutlineItem in categoryOutlineItems)
                 {
-                    categoryOutlineItem.Name = categories.ContainsKey(categoryOutlineItem.Id) ? categories[categoryOutlineItem.Id].Name : null;
+                    categoryOutlineItem.Name = categories.GetValueOrDefault(categoryOutlineItem.Id)?.Name;
                 }
             }
             await next(parameter);
