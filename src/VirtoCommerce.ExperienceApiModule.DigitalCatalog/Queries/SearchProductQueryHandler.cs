@@ -130,29 +130,26 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
         /// <param name="resultAggregations"></param>
         private static void SetAppliedAggregations(SearchRequest searchRequest, Aggregation[] resultAggregations)
         {
-            if (searchRequest.Filter is AndFilter searchFilter)
+            foreach (var childFilter in (searchRequest.Filter as AndFilter)?.ChildFilters ?? Enumerable.Empty<IFilter>())
             {
-                foreach (var childFilter in searchFilter.ChildFilters)
+                foreach (var resultAggregation in resultAggregations.Where(x => x.Field == ((INamedFilter)childFilter).FieldName.Split('_')[0] /* TermFilter names are equal, RangeFilter can contain underscore in the name */))
                 {
-                    foreach (var resultAggregation in resultAggregations.Where(x => x.Field == ((INamedFilter)childFilter).FieldName.Split('_')[0] /* TermFilter names are equal, RangeFilter can contain underscore in the name */))
+                    foreach (var resultAggregationValue in resultAggregation.Items)
                     {
-                        foreach (var resultAggregationValue in resultAggregation.Items)
+                        switch (childFilter)
                         {
-                            switch (childFilter)
-                            {
-                                case TermFilter termFilter:
-                                    // For term filters: just check result value in filter values
-                                    resultAggregationValue.IsApplied = termFilter.Values.Contains(resultAggregationValue.Value);
-                                    break;
-                                case RangeFilter rangeFilter:
-                                    // For range filters check the values have the same bounds
-                                    resultAggregationValue.IsApplied = rangeFilter.Values.Any(z =>
-                                        (z.Lower ?? string.Empty) == (resultAggregationValue.RequestedLowerBound ?? string.Empty) &&
-                                        (z.Upper ?? string.Empty) == (resultAggregationValue.RequestedUpperBound ?? string.Empty));
-                                    break;
-                                default:
-                                    break;
-                            }
+                            case TermFilter termFilter:
+                                // For term filters: just check result value in filter values
+                                resultAggregationValue.IsApplied = termFilter.Values.Contains(resultAggregationValue.Value);
+                                break;
+                            case RangeFilter rangeFilter:
+                                // For range filters check the values have the same bounds
+                                resultAggregationValue.IsApplied = rangeFilter.Values.Any(z =>
+                                    (z.Lower ?? string.Empty) == (resultAggregationValue.RequestedLowerBound ?? string.Empty) &&
+                                    (z.Upper ?? string.Empty) == (resultAggregationValue.RequestedUpperBound ?? string.Empty));
+                                break;
+                            default:
+                                break;
                         }
                     }
                 }
