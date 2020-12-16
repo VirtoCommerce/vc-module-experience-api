@@ -12,12 +12,12 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
     /// This middleware enriches outlines with names.
     /// Just reads names of catalogs and categories in outlines thru ICatalogService, ICategoryService
     /// </summary>
-    class EnsureCategoryOutlinesMiddleware : IAsyncMiddleware<SearchCategoryResponse>
+    class EnsureCategoryOutlineNamesLoadedMiddleware : IAsyncMiddleware<SearchCategoryResponse>
     {
         private readonly ICatalogService _catalogService;
         private readonly ICategoryService _categoryService;
 
-        public EnsureCategoryOutlinesMiddleware(ICatalogService catalogService, ICategoryService categoryService)
+        public EnsureCategoryOutlineNamesLoadedMiddleware(ICatalogService catalogService, ICategoryService categoryService)
         {
             _catalogService = catalogService;
             _categoryService = categoryService;
@@ -35,12 +35,12 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
 
                 foreach (var catalogOutlineItem in catalogOutlineItems)
                 {
-                    catalogOutlineItem.Name = catalogs[catalogOutlineItem.Id].Name;
+                    catalogOutlineItem.Name = catalogs.ContainsKey(catalogOutlineItem.Id) ? catalogs[catalogOutlineItem.Id].Name : null;
                 }
 
                 foreach (var categoryOutlineItem in categoryOutlineItems)
                 {
-                    categoryOutlineItem.Name = categories[categoryOutlineItem.Id].Name;
+                    categoryOutlineItem.Name = categories.ContainsKey(categoryOutlineItem.Id) ? categories[categoryOutlineItem.Id].Name : null;
                 }
             }
             await next(parameter);
