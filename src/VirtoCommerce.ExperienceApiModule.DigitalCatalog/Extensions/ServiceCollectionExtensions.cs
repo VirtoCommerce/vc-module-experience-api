@@ -32,6 +32,7 @@ namespace VirtoCommerce.XDigitalCatalog.Extensions
             services.AddPipeline<SearchCategoryResponse>(builder =>
             {
                 builder.AddMiddleware(typeof(EnsureCategoryLoadedMiddleware));
+                builder.AddMiddleware(typeof(EnsureCategoryOutlinesMiddleware));
             });
 
             services.AddAutoMapper(typeof(XDigitalCatalogAnchor));
