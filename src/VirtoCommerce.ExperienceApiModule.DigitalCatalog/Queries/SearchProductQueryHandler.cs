@@ -95,32 +95,25 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
 
             // For every request aggregation, check the filter values that exist in the result.
             // If the value really exist, then fire on IsApplied
-            foreach (var requestAggregation in searchRequest.Aggregations)
+            foreach (var childFilter in ((AndFilter)searchRequest.Filter).ChildFilters)
             {
-                foreach (var resultAggregation in aggregations.Where(x => x.Field == requestAggregation.FieldName /*Detect TermFilter*/ || requestAggregation.Id != null && requestAggregation.Id.StartsWith(x.Field)/*Detect RangeFilter*/))
+                var requestFilter = childFilter as INamedFilter;
+                foreach (var resultAggregation in aggregations.Where(x => x.Field == requestFilter.FieldName /*Detect TermFilter*/ || requestFilter.FieldName.StartsWith(x.Field)/*Detect RangeFilter*/))
                 {
-
-                    foreach (var resultAggregationValue in resultAggregation.Items.Where(x => (requestAggregation.Filter as AndFilter).ChildFilters.Any(y =>
+                    foreach (var resultAggregationValue in resultAggregation.Items)
                     {
-                        var result = false;
-                        switch (y)
+                        switch (requestFilter)
                         {
                             case TermFilter termFilter:
-                                result = termFilter.Values.Contains(x.Value);
+                                resultAggregationValue.IsApplied = termFilter.Values.Contains(resultAggregationValue.Value);
                                 break;
                             case RangeFilter rangeFilter:
-                                result = rangeFilter.Values.Any(z => (z.Lower is null ? string.Empty : z.Lower) == (x.RequestedLowerBound is null ? string.Empty : x.RequestedLowerBound) &&
-                                                           (z.Upper is null ? string.Empty : z.Upper) == (x.RequestedUpperBound is null ? string.Empty : x.RequestedUpperBound));
+                                resultAggregationValue.IsApplied = rangeFilter.Values.Any(z => (z.Lower is null ? string.Empty : z.Lower) == (resultAggregationValue.RequestedLowerBound is null ? string.Empty : resultAggregationValue.RequestedLowerBound) &&
+                                                           (z.Upper is null ? string.Empty : z.Upper) == (resultAggregationValue.RequestedUpperBound is null ? string.Empty : resultAggregationValue.RequestedUpperBound));
                                 break;
                             default:
                                 break;
                         }
-                        return result;
-                    }
-                    )))
-                    {
-
-                        resultAggregationValue.IsApplied = true;
                     }
                 }
             }
