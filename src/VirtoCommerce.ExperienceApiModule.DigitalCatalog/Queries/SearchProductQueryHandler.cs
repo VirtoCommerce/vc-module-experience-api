@@ -132,9 +132,11 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                         switch (requestFilter)
                         {
                             case TermFilter termFilter:
+                                // For term filters: just check result value in filter values
                                 resultAggregationValue.IsApplied = termFilter.Values.Contains(resultAggregationValue.Value);
                                 break;
                             case RangeFilter rangeFilter:
+                                // For range filters check the values have the same bounds
                                 resultAggregationValue.IsApplied = rangeFilter.Values.Any(z => (z.Lower is null ? string.Empty : z.Lower) == (resultAggregationValue.RequestedLowerBound is null ? string.Empty : resultAggregationValue.RequestedLowerBound) &&
                                                            (z.Upper is null ? string.Empty : z.Upper) == (resultAggregationValue.RequestedUpperBound is null ? string.Empty : resultAggregationValue.RequestedUpperBound));
                                 break;
