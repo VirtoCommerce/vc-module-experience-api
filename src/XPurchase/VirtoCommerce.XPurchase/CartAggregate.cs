@@ -166,7 +166,7 @@ namespace VirtoCommerce.XPurchase
         {
             EnsureCartExists();
 
-            var lineItem = Cart.Items.FirstOrDefault(x => x.ProductId == priceAdjustment.LineItemId);
+            var lineItem = Cart.Items.FirstOrDefault(x => x.Id == priceAdjustment.LineItemId);
             if (lineItem != null)
             {
                 await new ChangeCartItemPriceValidator(this).ValidateAndThrowAsync(priceAdjustment, ruleSet: ValidationRuleSet);
