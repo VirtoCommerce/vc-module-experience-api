@@ -134,12 +134,11 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             {
                 foreach (var childFilter in searchFilter.ChildFilters)
                 {
-                    var requestFilter = childFilter as INamedFilter;
-                    foreach (var resultAggregation in resultAggregations.Where(x => x.Field == requestFilter.FieldName.Split('_')[0] /* TermFilter names are equal, RangeFilter can contain underscore in the name */))
+                    foreach (var resultAggregation in resultAggregations.Where(x => x.Field == ((INamedFilter)childFilter).FieldName.Split('_')[0] /* TermFilter names are equal, RangeFilter can contain underscore in the name */))
                     {
                         foreach (var resultAggregationValue in resultAggregation.Items)
                         {
-                            switch (requestFilter)
+                            switch (childFilter)
                             {
                                 case TermFilter termFilter:
                                     // For term filters: just check result value in filter values
