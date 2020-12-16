@@ -113,6 +113,15 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             return result;
         }
 
+        public virtual async Task<LoadProductResponse> Handle(LoadProductsQuery request, CancellationToken cancellationToken)
+        {
+            var searchRequest = _mapper.Map<SearchProductQuery>(request);
+
+            var result = await Handle(searchRequest, cancellationToken);
+
+            return new LoadProductResponse(result.Results);
+        }
+
         /// <summary>
         /// For every request aggregation, check the filter values that exist in the result.
         /// If the value really exists, then set on IsApplied
@@ -121,39 +130,33 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
         /// <param name="resultAggregations"></param>
         private static void SetAppliedAggregations(SearchRequest searchRequest, Aggregation[] resultAggregations)
         {
-            foreach (var childFilter in ((AndFilter)searchRequest.Filter).ChildFilters)
+            if (searchRequest.Filter is AndFilter searchFilter)
             {
-                var requestFilter = childFilter as INamedFilter;
-                foreach (var resultAggregation in resultAggregations.Where(x => x.Field == requestFilter.FieldName.Split('_')[0] /* TermFilter names are equal, RangeFilter can contain underscore in the name */))
+                foreach (var childFilter in searchFilter.ChildFilters)
                 {
-                    foreach (var resultAggregationValue in resultAggregation.Items)
+                    var requestFilter = childFilter as INamedFilter;
+                    foreach (var resultAggregation in resultAggregations.Where(x => x.Field == requestFilter.FieldName.Split('_')[0] /* TermFilter names are equal, RangeFilter can contain underscore in the name */))
                     {
-                        switch (requestFilter)
+                        foreach (var resultAggregationValue in resultAggregation.Items)
                         {
-                            case TermFilter termFilter:
-                                // For term filters: just check result value in filter values
-                                resultAggregationValue.IsApplied = termFilter.Values.Contains(resultAggregationValue.Value);
-                                break;
-                            case RangeFilter rangeFilter:
-                                // For range filters check the values have the same bounds
-                                resultAggregationValue.IsApplied = rangeFilter.Values.Any(z => (z.Lower is null ? string.Empty : z.Lower) == (resultAggregationValue.RequestedLowerBound is null ? string.Empty : resultAggregationValue.RequestedLowerBound) &&
-                                                           (z.Upper is null ? string.Empty : z.Upper) == (resultAggregationValue.RequestedUpperBound is null ? string.Empty : resultAggregationValue.RequestedUpperBound));
-                                break;
-                            default:
-                                break;
+                            switch (requestFilter)
+                            {
+                                case TermFilter termFilter:
+                                    // For term filters: just check result value in filter values
+                                    resultAggregationValue.IsApplied = termFilter.Values.Contains(resultAggregationValue.Value);
+                                    break;
+                                case RangeFilter rangeFilter:
+                                    // For range filters check the values have the same bounds
+                                    resultAggregationValue.IsApplied = rangeFilter.Values.Any(z => (z.Lower is null ? string.Empty : z.Lower) == (resultAggregationValue.RequestedLowerBound is null ? string.Empty : resultAggregationValue.RequestedLowerBound) &&
+                                                               (z.Upper is null ? string.Empty : z.Upper) == (resultAggregationValue.RequestedUpperBound is null ? string.Empty : resultAggregationValue.RequestedUpperBound));
+                                    break;
+                                default:
+                                    break;
+                            }
                         }
                     }
                 }
             }
-        }
-
-        public virtual async Task<LoadProductResponse> Handle(LoadProductsQuery request, CancellationToken cancellationToken)
-        {
-            var searchRequest = _mapper.Map<SearchProductQuery>(request);
-
-            var result = await Handle(searchRequest, cancellationToken);
-
-            return new LoadProductResponse(result.Results);
         }
     }
 }
