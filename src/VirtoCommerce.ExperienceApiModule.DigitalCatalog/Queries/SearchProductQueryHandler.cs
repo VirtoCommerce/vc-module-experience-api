@@ -146,8 +146,9 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                                     break;
                                 case RangeFilter rangeFilter:
                                     // For range filters check the values have the same bounds
-                                    resultAggregationValue.IsApplied = rangeFilter.Values.Any(z => (z.Lower is null ? string.Empty : z.Lower) == (resultAggregationValue.RequestedLowerBound is null ? string.Empty : resultAggregationValue.RequestedLowerBound) &&
-                                                               (z.Upper is null ? string.Empty : z.Upper) == (resultAggregationValue.RequestedUpperBound is null ? string.Empty : resultAggregationValue.RequestedUpperBound));
+                                    resultAggregationValue.IsApplied = rangeFilter.Values.Any(z =>
+                                        (z.Lower ?? string.Empty) == (resultAggregationValue.RequestedLowerBound ?? string.Empty) &&
+                                        (z.Upper ?? string.Empty) == (resultAggregationValue.RequestedUpperBound ?? string.Empty));
                                     break;
                                 default:
                                     break;
