@@ -15,9 +15,14 @@ namespace VirtoCommerce.XPurchase.Commands
 
         public async Task<bool> Handle(ValidateCouponCommand request, CancellationToken cancellationToken)
         {
-            var cartAggr = await GetCartAggregateFromCommandAsync(request);
-            var isValid = await cartAggr.ValidateCouponAsync(request.Coupon);
-            return isValid;
+            var cartAggregate = await GetCartAggregateFromCommandAsync(request);
+
+            if (cartAggregate != null)
+            {
+                return await cartAggregate.ValidateCouponAsync(request.Coupon);
+            }
+
+            return false;
         }
 
         protected Task<CartAggregate> GetCartAggregateFromCommandAsync(ValidateCouponCommand request)
