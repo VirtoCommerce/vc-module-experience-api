@@ -320,7 +320,7 @@ The muti-select faceting search policy is enabled by default and you do not need
 ### Sorting
 By default, search results are sorted descending by their relevancy with respect to the provided text (that is their “score”). An alternative sorting can be specified  via the sort query parameter which has the structure `{field}:{asc|desc}` you can combine multiple sort expression  by semicolon  `;`
 
-`sort: "priority:desc;price.usd;score"`
+`sort: "priority:desc;price_usd;score"`
 
 ### Facets
 Faceted search (sometimes also called faceted navigation) allows users to navigate through a web site by applying filters for categories, attributes, price ranges and so on. The main idea behind faceted search is to present the attributes of the documents of the previous search result as filters, which can be used by the user to narrow down search results along with calculate statistical counts to aid.
