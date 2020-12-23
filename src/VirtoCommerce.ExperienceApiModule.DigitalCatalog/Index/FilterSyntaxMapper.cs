@@ -126,8 +126,8 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
             new RegexpNameMapper(new Regex(@"price.([A-Za-z]{3})", RegexOptions.Compiled | RegexOptions.IgnoreCase),"price_$1"),
             new RegexpNameMapper(new Regex(@"catalog.id", RegexOptions.Compiled | RegexOptions.IgnoreCase), "catalog"),
             new RegexpNameMapper(new Regex(@"category.path", RegexOptions.Compiled | RegexOptions.IgnoreCase), "__path"),
-            new RegexpNameMapper(new Regex(@"category.subtree", RegexOptions.Compiled | RegexOptions.IgnoreCase), "__outline"),
-            new RegexpNameMapper(new Regex(@"categories.subtree", RegexOptions.Compiled | RegexOptions.IgnoreCase), "__outline"),
+            new RegexpNameMapper(new Regex(@"category.subtree", RegexOptions.Compiled | RegexOptions.IgnoreCase), "__outline_named"),
+            new RegexpNameMapper(new Regex(@"categories.subtree", RegexOptions.Compiled | RegexOptions.IgnoreCase), "__outline_named"),
             new RegexpNameMapper(new Regex(@"sku", RegexOptions.Compiled | RegexOptions.IgnoreCase), "code"),
             new RegexpNameMapper(new Regex(@"properties.([A-Za-z0-9_\s+])", RegexOptions.Compiled | RegexOptions.IgnoreCase), "$1")
         };

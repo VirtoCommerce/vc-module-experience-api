@@ -23,7 +23,7 @@ namespace VirtoCommerce.XDigitalCatalog.Mapping
                                 Count = x.Count,
                                 IsSelected = x.IsApplied,
                                 Term = x.Value.ToString(),
-                                Label = x.Value.ToString(),
+                                Label = string.Join(' ', x.Labels.Select(l => l.Label)),
                             })
                             .ToArray(),
                         Name = request.Field
