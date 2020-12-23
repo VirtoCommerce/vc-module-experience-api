@@ -13,6 +13,7 @@ using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.SearchModule.Core.Model;
 using VirtoCommerce.SearchModule.Core.Services;
 using VirtoCommerce.StoreModule.Core.Services;
+using VirtoCommerce.XDigitalCatalog.Extensions;
 using VirtoCommerce.XDigitalCatalog.Facets;
 
 namespace VirtoCommerce.XDigitalCatalog.Queries
@@ -93,7 +94,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             //Call the catalog aggregation converter service to convert AggregationResponse to proper Aggregation type (term, range, filter)
             var resultAggregations = await _aggregationConverter.ConvertAggregationsAsync(searchResult.Aggregations, criteria);
 
-            SetAppliedAggregations(searchRequest, resultAggregations);
+            searchRequest.SetAppliedAggregations(resultAggregations);
 
             var products = searchResult.Documents?.Select(x => _mapper.Map<ExpProduct>(x)).ToList() ?? new List<ExpProduct>();
 
@@ -120,40 +121,6 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             var result = await Handle(searchRequest, cancellationToken);
 
             return new LoadProductResponse(result.Results);
-        }
-
-        /// <summary>
-        /// For every request aggregation, check the filter values that exist in the result.
-        /// If the value really exists, then set on IsApplied
-        /// </summary>
-        /// <param name="searchRequest"></param>
-        /// <param name="resultAggregations"></param>
-        private static void SetAppliedAggregations(SearchRequest searchRequest, Aggregation[] resultAggregations)
-        {
-            foreach (var childFilter in (searchRequest.Filter as AndFilter)?.ChildFilters ?? Enumerable.Empty<IFilter>())
-            {
-                foreach (var resultAggregation in resultAggregations.Where(x => x.Field == ((INamedFilter)childFilter).FieldName.Split('_')[0] /* TermFilter names are equal, RangeFilter can contain underscore in the name */))
-                {
-                    foreach (var resultAggregationValue in resultAggregation.Items)
-                    {
-                        switch (childFilter)
-                        {
-                            case TermFilter termFilter:
-                                // For term filters: just check result value in filter values
-                                resultAggregationValue.IsApplied = termFilter.Values.Contains(resultAggregationValue.Value);
-                                break;
-                            case RangeFilter rangeFilter:
-                                // For range filters check the values have the same bounds
-                                resultAggregationValue.IsApplied = rangeFilter.Values.Any(z =>
-                                    (z.Lower ?? string.Empty) == (resultAggregationValue.RequestedLowerBound ?? string.Empty) &&
-                                    (z.Upper ?? string.Empty) == (resultAggregationValue.RequestedUpperBound ?? string.Empty));
-                                break;
-                            default:
-                                break;
-                        }
-                    }
-                }
-            }
         }
     }
 }
