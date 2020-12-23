@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using AutoMapper;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
-using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.XDigitalCatalog.Facets;
 
 namespace VirtoCommerce.XDigitalCatalog.Mapping
