@@ -65,7 +65,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             {
                 //filter products only the store catalog and visibility status when search
                 builder.AddTerms(new[] { "status:visible" });//Only visible, exclude variations from search result
-                builder.AddTerms(new[] { $"__outlines:{store.Catalog}" });
+                builder.AddTerms(new[] { $"__outline_named:{store.Catalog}" });
             }
 
             //Use predefined  facets for store  if the facet filter expression is not set
