@@ -13,6 +13,7 @@ using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.SearchModule.Core.Model;
 using VirtoCommerce.SearchModule.Core.Services;
 using VirtoCommerce.StoreModule.Core.Services;
+using VirtoCommerce.XDigitalCatalog.Extensions;
 using VirtoCommerce.XDigitalCatalog.Facets;
 
 namespace VirtoCommerce.XDigitalCatalog.Queries
@@ -91,7 +92,9 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             };
             //TODO: move later to own implementation
             //Call the catalog aggregation converter service to convert AggregationResponse to proper Aggregation type (term, range, filter)
-            var aggregations = await _aggregationConverter.ConvertAggregationsAsync(searchResult.Aggregations, criteria);
+            var resultAggregations = await _aggregationConverter.ConvertAggregationsAsync(searchResult.Aggregations, criteria);
+
+            searchRequest.SetAppliedAggregations(resultAggregations);
 
             var products = searchResult.Documents?.Select(x => _mapper.Map<ExpProduct>(x)).ToList() ?? new List<ExpProduct>();
 
@@ -102,7 +105,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                 Currency = currency,
                 Store = store,
                 Results = products,
-                Facets = aggregations?.Select(x => _mapper.Map<FacetResult>(x)).ToList(),
+                Facets = resultAggregations?.Select(x => _mapper.Map<FacetResult>(x)).ToList(),
                 TotalCount = (int)searchResult.TotalCount
             };
 
