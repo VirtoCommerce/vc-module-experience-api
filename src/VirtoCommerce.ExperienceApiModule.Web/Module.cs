@@ -1,13 +1,14 @@
+using System;
 using AutoMapper;
 using GraphQL.Server;
 using GraphQL.Types;
+using GraphQL.Utilities;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using VirtoCommerce.ExperienceApiModule.Core;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
-using VirtoCommerce.ExperienceApiModule.Core.Schemas;
 using VirtoCommerce.ExperienceApiModule.XOrder.Extensions;
 using VirtoCommerce.ExperienceApiModule.XProfile.Extensions;
 using VirtoCommerce.MarketingModule.Core.Model.Promotions;
@@ -50,7 +51,7 @@ namespace VirtoCommerce.ExperienceApiModule.Web
             services.AddXPurchase(graphQlBuilder);
             services.AddXOrder(graphQlBuilder);
 
-
+            GraphTypeTypeRegistry.Register<DateTime, DateTimeGraphType>();
             services.AddSingleton<IStoreCurrencyResolver, StoreCurrencyResolver>();
 
             services.AddAutoMapper(ModuleInfo.Assembly);
