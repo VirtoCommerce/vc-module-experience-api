@@ -1,17 +1,10 @@
-using System;
-using System.Linq;
 using AutoMapper;
 using GraphQL.Server;
 using MediatR;
-using MediatR.Pipeline;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
-using PetsStoreClient;
-using PetsStoreClient.Nswag;
-using VirtoCommerce.Exp.ExtensionSamples.UseCases.TypeExtension;
 using VirtoCommerce.Exp.ExtensionSamples.UseCases.TypeExtension.Queries;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
-using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Modularity;
@@ -39,12 +32,17 @@ namespace VirtoCommerce.Exp.ExtensionSamples
             //use such lines to override exists query or command handler
             services.AddTransient<IRequestHandler<GetCartQuery, CartAggregate>, CustomGetCartQueryHandler>();
 
-            services.AddGraphQL(_ =>
-            {
+            services.AddGraphQL(_ => {
                  //It is important to pass the GraphQLOptions configure action, because the default parameters used in xAPI module won't be used after this call
                 _.EnableMetrics = false;
-                _.ExposeExceptions = true;
-            }).AddGraphTypes(typeof(XExtensionAnchor));
+
+            })
+                .AddGraphTypes(typeof(XExtensionAnchor))
+                .AddErrorInfoProvider(options =>
+                {
+                    options.ExposeExtensions = true;
+                    options.ExposeExceptionStackTrace = true;
+                });
             //Register custom schema
             services.AddSchemaBuilder<CustomSchema>();
 

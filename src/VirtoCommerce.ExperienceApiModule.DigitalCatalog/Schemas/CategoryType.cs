@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Threading.Tasks;
+using GraphQL;
 using GraphQL.Types;
 using MediatR;
 using VirtoCommerce.CoreModule.Core.Seo;
