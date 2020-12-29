@@ -72,7 +72,7 @@ jobs:
       shell: sh
       run: |
         git clone https://github.com/VirtoCommerce/vc-quality-gate-katalon.git
-        git checkout -b dev origin/dev
+        git checkout dev 
 
     - name: Katalon Studio Github Action
       uses: katalon-studio/katalon-studio-github-action@v2.2
