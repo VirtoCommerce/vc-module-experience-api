@@ -49,13 +49,13 @@ jobs:
     - name: Packaging
       run: vc-build Compress -skip Clean+Restore+Compile+Test
 
-    - name: Build Docker Image
-      id: dockerBuild
-      uses: VirtoCommerce/vc-github-actions/build-docker-image@master
-      with:
-        tag: ${{ steps.image.outputs.taggedVersion }}
-        imageName: "platform"
-        dockerFiles: "https://raw.githubusercontent.com/VirtoCommerce/vc-docker/master/linux/platform/Dockerfile;https://raw.githubusercontent.com/VirtoCommerce/vc-docker/master/linux/platform/wait-for-it.sh"
+    # - name: Build Docker Image
+    #   id: dockerBuild
+    #   uses: VirtoCommerce/vc-github-actions/build-docker-image@master
+    #   with:
+    #     tag: ${{ steps.image.outputs.taggedVersion }}
+    #     imageName: "platform"
+    #     dockerFiles: "https://raw.githubusercontent.com/VirtoCommerce/vc-docker/master/linux/platform/Dockerfile;https://raw.githubusercontent.com/VirtoCommerce/vc-docker/master/linux/platform/wait-for-it.sh"
 
     - name: Docker Login
       uses: azure/docker-login@v1
@@ -69,7 +69,7 @@ jobs:
       with:
         githubUser: ${{ env.GITHUB_ACTOR }}
         githubToken: ${{ env.GITHUB_TOKEN }}
-        platformDockerTag: ${{ steps.image.outputs.taggedVersion }}
+        platformDockerTag: 'dev-linux-latest'
         storefrontDockerTag: 'dev-linux-latest'
         platformImage: docker.pkg.github.com/virtocommerce/vc-platform/platform
         storefrontImage: docker.pkg.github.com/virtocommerce/vc-storefront/storefront
