@@ -6,7 +6,7 @@ namespace VirtoCommerce.XPurchase.Schemas
     {
         public InputChangeCartItemPriceType()
         {
-            Field<NonNullGraphType<StringGraphType>>("productId");
+            Field<NonNullGraphType<StringGraphType>>("lineItemId");
             Field<NonNullGraphType<DecimalGraphType>>("price");
         }
     }

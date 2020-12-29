@@ -1,0 +1,399 @@
+{
+	"info": {
+		"_postman_id": "ed1d226e-04dd-4ed6-829d-cdb5f44f49c8",
+		"name": "Sorting",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "queries",
+			"item": [
+				{
+					"name": "carts",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query carts ($after: String, $first: Int, $storeId: String, $userId: String, $currencyCode: String, $cultureName: String, $cartType: String, $filter: String, $sort: String) {\n    carts (after: $after, first: $first, storeId: $storeId, userId: $userId, currencyCode: $currencyCode, cultureName: $cultureName, cartType: $cartType, filter: $filter, sort: $sort) {\n        edges {\n            cursor\n            node {\n                addresses {\n                    addressType\n                    city\n                    countryCode\n                    countryName\n                    email\n                    firstName\n                    id\n                    lastName\n                    line1\n                    line2\n                    middleName\n                    name\n                    organization\n                    phone\n                    postalCode\n                    regionId\n                    regionName\n                    zip\n                }\n                availablePaymentMethods {\n                    code\n                    currency {\n                        code\n                        customFormatting\n                        exchangeRate\n                        symbol\n                    }\n                    discountAmount {\n                        amount\n                        decimalDigits\n                        formattedAmount\n                        formattedAmountWithoutCurrency\n                        formattedAmountWithoutPoint\n                        formattedAmountWithoutPointAndCurrency\n                    }\n                    discountAmountWithTax {\n                        amount\n                        decimalDigits\n                        formattedAmount\n                        formattedAmountWithoutCurrency\n                        formattedAmountWithoutPoint\n                        formattedAmountWithoutPointAndCurrency\n                    }\n                    isAvailableForPartial\n                    logoUrl\n                    name\n                    paymentMethodGroupType\n                    paymentMethodType\n                    price {\n                        amount\n                        decimalDigits\n                        formattedAmount\n                        formattedAmountWithoutCurrency\n                        formattedAmountWithoutPoint\n                        formattedAmountWithoutPointAndCurrency\n                    }\n                    priceWithTax {\n                        amount\n                        decimalDigits\n                        formattedAmount\n                        formattedAmountWithoutCurrency\n                        formattedAmountWithoutPoint\n                        formattedAmountWithoutPointAndCurrency\n                    }\n                    priority\n                    taxDetails {\n                        name\n                    }\n                    taxPercentRate\n                    taxTotal {\n                        amount\n                        decimalDigits\n                        formattedAmount\n                        formattedAmountWithoutCurrency\n                        formattedAmountWithoutPoint\n                        formattedAmountWithoutPointAndCurrency\n                    }\n                    taxType\n                    total {\n                        amount\n                        decimalDigits\n                        formattedAmount\n                        formattedAmountWithoutCurrency\n                        formattedAmountWithoutPoint\n                        formattedAmountWithoutPointAndCurrency\n                    }\n                    totalWithTax {\n                        amount\n                        decimalDigits\n                        formattedAmount\n                        formattedAmountWithoutCurrency\n                        formattedAmountWithoutPoint\n                        formattedAmountWithoutPointAndCurrency\n                    }\n                }\n                availableShippingMethods {\n                    code\n                    currency {\n                        code\n                        customFormatting\n                        exchangeRate\n                        symbol\n                    }\n                    discountAmount {\n                        amount\n                        decimalDigits\n                        formattedAmount\n                        formattedAmountWithoutCurrency\n                        formattedAmountWithoutPoint\n                        formattedAmountWithoutPointAndCurrency\n                    }\n                    discountAmountWithTax {\n                        amount\n                        decimalDigits\n                        formattedAmount\n                        formattedAmountWithoutCurrency\n                        formattedAmountWithoutPoint\n                        formattedAmountWithoutPointAndCurrency\n                    }\n                    logoUrl\n                    optionDescription\n                    optionName\n                    price {\n                        amount\n                        decimalDigits\n                        formattedAmount\n                        formattedAmountWithoutCurrency\n                        formattedAmountWithoutPoint\n                        formattedAmountWithoutPointAndCurrency\n                    }\n                    priceWithTax {\n                        amount\n                        decimalDigits\n                        formattedAmount\n                        formattedAmountWithoutCurrency\n                        formattedAmountWithoutPoint\n                        formattedAmountWithoutPointAndCurrency\n                    }\n                    priority\n                    total {\n                        amount\n                        decimalDigits\n                        formattedAmount\n                        formattedAmountWithoutCurrency\n                        formattedAmountWithoutPoint\n                        formattedAmountWithoutPointAndCurrency\n                    }\n                    totalWithTax {\n                        amount\n                        decimalDigits\n                        formattedAmount\n                        formattedAmountWithoutCurrency\n                        formattedAmountWithoutPoint\n                        formattedAmountWithoutPointAndCurrency\n                    }\n                }\n                channelId\n                comment\n                coupons {\n                    code\n                    isAppliedSuccessfully\n                }\n                currency {\n                    code\n                    customFormatting\n                    exchangeRate\n                    symbol\n                }\n                customerId\n                customerName\n                discounts {\n                    amount\n                    amountWithTax\n                    coupon\n                    description\n                    promotionId\n                }\n                discountTotal {\n                    amount\n                    currency {\n                        code\n                        customFormatting\n                        exchangeRate\n                        symbol\n                    }\n                    decimalDigits\n                    formattedAmount\n                    formattedAmountWithoutCurrency\n                    formattedAmountWithoutPoint\n                    formattedAmountWithoutPointAndCurrency\n                }\n                discountTotalWithTax {\n                    amount\n                    currency {\n                        code\n                        customFormatting\n                        exchangeRate\n                        symbol\n                    }\n                    decimalDigits\n                    formattedAmount\n                    formattedAmountWithoutCurrency\n                    formattedAmountWithoutPoint\n                    formattedAmountWithoutPointAndCurrency\n                }\n                extendedPriceTotal {\n                    amount\n                    currency {\n                        code\n                        customFormatting\n                        exchangeRate\n                        symbol\n                    }\n                    decimalDigits\n                    formattedAmount\n                    formattedAmountWithoutCurrency\n                    formattedAmountWithoutPoint\n                    formattedAmountWithoutPointAndCurrency\n                }\n                extendedPriceTotalWithTax {\n                    amount\n                    currency {\n                        code\n                        customFormatting\n                        exchangeRate\n                        symbol\n                    }\n                    decimalDigits\n                    formattedAmount\n                    formattedAmountWithoutCurrency\n                    formattedAmountWithoutPoint\n                    formattedAmountWithoutPointAndCurrency\n                }\n                handlingTotal {\n                    amount\n                    currency {\n                        code\n                        customFormatting\n                        exchangeRate\n                        symbol\n                    }\n                    decimalDigits\n                    formattedAmount\n                    formattedAmountWithoutCurrency\n                    formattedAmountWithoutPoint\n                    formattedAmountWithoutPointAndCurrency\n                }\n                handlingTotalWithTax {\n                    amount\n                    currency {\n                        code\n                        customFormatting\n                        exchangeRate\n                        symbol\n                    }\n                    decimalDigits\n                    formattedAmount\n                    formattedAmountWithoutCurrency\n                    formattedAmountWithoutPoint\n                    formattedAmountWithoutPointAndCurrency\n                }\n                hasPhysicalProducts\n                id\n                isAnonymous\n                isRecuring\n                isValid\n                items {\n                    catalogId\n                    categoryId\n                    createdDate\n                    discountAmount {\n                        amount\n                        decimalDigits\n                        formattedAmount\n                        formattedAmountWithoutCurrency\n                        formattedAmountWithoutPoint\n                        formattedAmountWithoutPointAndCurrency\n                    }\n                    discountAmountWithTax {\n                        amount\n                        decimalDigits\n                        formattedAmount\n                        formattedAmountWithoutCurrency\n                        formattedAmountWithoutPoint\n                        formattedAmountWithoutPointAndCurrency\n                    }\n                    discounts {\n                        amount\n                        amountWithTax\n                        coupon\n                        description\n                        promotionId\n                    }\n                    discountTotal {\n                        amount\n                        decimalDigits\n                        formattedAmount\n                        formattedAmountWithoutCurrency\n                        formattedAmountWithoutPoint\n                        formattedAmountWithoutPointAndCurrency\n                    }\n                    discountTotalWithTax {\n                        amount\n                        decimalDigits\n                        formattedAmount\n                        formattedAmountWithoutCurrency\n                        formattedAmountWithoutPoint\n                        formattedAmountWithoutPointAndCurrency\n                    }\n                    extendedPrice {\n                        amount\n                        decimalDigits\n                        formattedAmount\n                        formattedAmountWithoutCurrency\n                        formattedAmountWithoutPoint\n                        formattedAmountWithoutPointAndCurrency\n                    }\n                    extendedPriceWithTax {\n                        amount\n                        decimalDigits\n                        formattedAmount\n                        formattedAmountWithoutCurrency\n                        formattedAmountWithoutPoint\n                        formattedAmountWithoutPointAndCurrency\n                    }\n                    height\n                    id\n                    imageUrl\n                    inStockQuantity\n                    isGift\n                    isReadOnly\n                    isReccuring\n                    isValid\n                    languageCode\n                    length\n                    listPrice {\n                        amount\n                        decimalDigits\n                        formattedAmount\n                        formattedAmountWithoutCurrency\n                        formattedAmountWithoutPoint\n                        formattedAmountWithoutPointAndCurrency\n                    }\n                    listPriceWithTax {\n                        amount\n                        decimalDigits\n                        formattedAmount\n                        formattedAmountWithoutCurrency\n                        formattedAmountWithoutPoint\n                        formattedAmountWithoutPointAndCurrency\n                    }\n                    measureUnit\n                    name\n                    note\n                    objectType\n                    placedPrice {\n                        amount\n                        decimalDigits\n                        formattedAmount\n                        formattedAmountWithoutCurrency\n                        formattedAmountWithoutPoint\n                        formattedAmountWithoutPointAndCurrency\n                    }\n                    placedPriceWithTax {\n                        amount\n                        decimalDigits\n                        formattedAmount\n                        formattedAmountWithoutCurrency\n                        formattedAmountWithoutPoint\n                        formattedAmountWithoutPointAndCurrency\n                    }\n                    product {\n                        brandName\n                        catalogId\n                        code\n                        id\n                        imgSrc\n                        name\n                        outerId\n                        outline\n                        productType\n                        slug\n                    }\n                    productId\n                    productType\n                    quantity\n                    requiredShipping\n                    salePrice {\n                        amount\n                        decimalDigits\n                        formattedAmount\n                        formattedAmountWithoutCurrency\n                        formattedAmountWithoutPoint\n                        formattedAmountWithoutPointAndCurrency\n                    }\n                    salePriceWithTax {\n                        amount\n                        decimalDigits\n                        formattedAmount\n                        formattedAmountWithoutCurrency\n                        formattedAmountWithoutPoint\n                        formattedAmountWithoutPointAndCurrency\n                    }\n                    shipmentMethodCode\n                    sku\n                    taxDetails {\n                        name\n                    }\n                    taxPercentRate\n                    taxTotal {\n                        amount\n                        decimalDigits\n                        formattedAmount\n                        formattedAmountWithoutCurrency\n                        formattedAmountWithoutPoint\n                        formattedAmountWithoutPointAndCurrency\n                    }\n                    taxType\n                    thumbnailImageUrl\n                    validationErrors {\n                        errorCode\n                        errorMessage\n                        objectId\n                        objectType\n                    }\n                    volumetricWeight\n                    warehouseLocation\n                    weight\n                    weightUnit\n                    width\n                }\n                itemsCount\n                itemsQuantity\n                name\n                organizationId\n                paymentPrice {\n                    amount\n                    currency {\n                        code\n                        customFormatting\n                        exchangeRate\n                        symbol\n                    }\n                    decimalDigits\n                    formattedAmount\n                    formattedAmountWithoutCurrency\n                    formattedAmountWithoutPoint\n                    formattedAmountWithoutPointAndCurrency\n                }\n                paymentPriceWithTax {\n                    amount\n                    currency {\n                        code\n                        customFormatting\n                        exchangeRate\n                        symbol\n                    }\n                    decimalDigits\n                    formattedAmount\n                    formattedAmountWithoutCurrency\n                    formattedAmountWithoutPoint\n                    formattedAmountWithoutPointAndCurrency\n                }\n                payments {\n                    amount {\n                        amount\n                        decimalDigits\n                        formattedAmount\n                        formattedAmountWithoutCurrency\n                        formattedAmountWithoutPoint\n                        formattedAmountWithoutPointAndCurrency\n                    }\n                    billingAddress {\n                        addressType\n                        city\n                        countryCode\n                        countryName\n                        email\n                        firstName\n                        id\n                        lastName\n                        line1\n                        line2\n                        middleName\n                        name\n                        organization\n                        phone\n                        postalCode\n                        regionId\n                        regionName\n                        zip\n                    }\n                    currency {\n                        code\n                        customFormatting\n                        exchangeRate\n                        symbol\n                    }\n                    discountAmount {\n                        amount\n                        decimalDigits\n                        formattedAmount\n                        formattedAmountWithoutCurrency\n                        formattedAmountWithoutPoint\n                        formattedAmountWithoutPointAndCurrency\n                    }\n                    discountAmountWithTax {\n                        amount\n                        decimalDigits\n                        formattedAmount\n                        formattedAmountWithoutCurrency\n                        formattedAmountWithoutPoint\n                        formattedAmountWithoutPointAndCurrency\n                    }\n                    discounts {\n                        amount\n                        amountWithTax\n                        coupon\n                        description\n                        promotionId\n                    }\n                    id\n                    outerId\n                    paymentGatewayCode\n                    price {\n                        amount\n                        decimalDigits\n                        formattedAmount\n                        formattedAmountWithoutCurrency\n                        formattedAmountWithoutPoint\n                        formattedAmountWithoutPointAndCurrency\n                    }\n                    priceWithTax {\n                        amount\n                        decimalDigits\n                        formattedAmount\n                        formattedAmountWithoutCurrency\n                        formattedAmountWithoutPoint\n                        formattedAmountWithoutPointAndCurrency\n                    }\n                    taxDetails {\n                        name\n                    }\n                    taxPercentRate\n                    taxTotal {\n                        amount\n                        decimalDigits\n                        formattedAmount\n                        formattedAmountWithoutCurrency\n                        formattedAmountWithoutPoint\n                        formattedAmountWithoutPointAndCurrency\n                    }\n                    taxType\n                    total {\n                        amount\n                        decimalDigits\n                        formattedAmount\n                        formattedAmountWithoutCurrency\n                        formattedAmountWithoutPoint\n                        formattedAmountWithoutPointAndCurrency\n                    }\n                    totalWithTax {\n                        amount\n                        decimalDigits\n                        formattedAmount\n                        formattedAmountWithoutCurrency\n                        formattedAmountWithoutPoint\n                        formattedAmountWithoutPointAndCurrency\n                    }\n                }\n                paymentTotal {\n                    amount\n                    currency {\n                        code\n                        customFormatting\n                        exchangeRate\n                        symbol\n                    }\n                    decimalDigits\n                    formattedAmount\n                    formattedAmountWithoutCurrency\n                    formattedAmountWithoutPoint\n                    formattedAmountWithoutPointAndCurrency\n                }\n                paymentTotalWithTax {\n                    amount\n                    currency {\n                        code\n                        customFormatting\n                        exchangeRate\n                        symbol\n                    }\n                    decimalDigits\n                    formattedAmount\n                    formattedAmountWithoutCurrency\n                    formattedAmountWithoutPoint\n                    formattedAmountWithoutPointAndCurrency\n                }\n                shipments {\n                    currency {\n                        code\n                        customFormatting\n                        exchangeRate\n                        symbol\n                    }\n                    deliveryAddress {\n                        addressType\n                        city\n                        countryCode\n                        countryName\n                        email\n                        firstName\n                        id\n                        lastName\n                        line1\n                        line2\n                        middleName\n                        name\n                        organization\n                        phone\n                        postalCode\n                        regionId\n                        regionName\n                        zip\n                    }\n                    discountAmount {\n                        amount\n                        decimalDigits\n                        formattedAmount\n                        formattedAmountWithoutCurrency\n                        formattedAmountWithoutPoint\n                        formattedAmountWithoutPointAndCurrency\n                    }\n                    discountAmountWithTax {\n                        amount\n                        decimalDigits\n                        formattedAmount\n                        formattedAmountWithoutCurrency\n                        formattedAmountWithoutPoint\n                        formattedAmountWithoutPointAndCurrency\n                    }\n                    discounts {\n                        amount\n                        amountWithTax\n                        coupon\n                        description\n                        promotionId\n                    }\n                    fulfillmentCenterId\n                    height\n                    id\n                    items {\n                        quantity\n                    }\n                    length\n                    measureUnit\n                    price {\n                        amount\n                        decimalDigits\n                        formattedAmount\n                        formattedAmountWithoutCurrency\n                        formattedAmountWithoutPoint\n                        formattedAmountWithoutPointAndCurrency\n                    }\n                    priceWithTax {\n                        amount\n                        decimalDigits\n                        formattedAmount\n                        formattedAmountWithoutCurrency\n                        formattedAmountWithoutPoint\n                        formattedAmountWithoutPointAndCurrency\n                    }\n                    shipmentMethodCode\n                    shipmentMethodOption\n                    taxDetails {\n                        name\n                    }\n                    taxPercentRate\n                    taxTotal {\n                        amount\n                        decimalDigits\n                        formattedAmount\n                        formattedAmountWithoutCurrency\n                        formattedAmountWithoutPoint\n                        formattedAmountWithoutPointAndCurrency\n                    }\n                    taxType\n                    total {\n                        amount\n                        decimalDigits\n                        formattedAmount\n                        formattedAmountWithoutCurrency\n                        formattedAmountWithoutPoint\n                        formattedAmountWithoutPointAndCurrency\n                    }\n                    totalWithTax {\n                        amount\n                        decimalDigits\n                        formattedAmount\n                        formattedAmountWithoutCurrency\n                        formattedAmountWithoutPoint\n                        formattedAmountWithoutPointAndCurrency\n                    }\n                    volumetricWeight\n                    weight\n                    weightUnit\n                    width\n                }\n                shippingPrice {\n                    amount\n                    currency {\n                        code\n                        customFormatting\n                        exchangeRate\n                        symbol\n                    }\n                    decimalDigits\n                    formattedAmount\n                    formattedAmountWithoutCurrency\n                    formattedAmountWithoutPoint\n                    formattedAmountWithoutPointAndCurrency\n                }\n                shippingPriceWithTax {\n                    amount\n                    currency {\n                        code\n                        customFormatting\n                        exchangeRate\n                        symbol\n                    }\n                    decimalDigits\n                    formattedAmount\n                    formattedAmountWithoutCurrency\n                    formattedAmountWithoutPoint\n                    formattedAmountWithoutPointAndCurrency\n                }\n                shippingTotal {\n                    amount\n                    currency {\n                        code\n                        customFormatting\n                        exchangeRate\n                        symbol\n                    }\n                    decimalDigits\n                    formattedAmount\n                    formattedAmountWithoutCurrency\n                    formattedAmountWithoutPoint\n                    formattedAmountWithoutPointAndCurrency\n                }\n                shippingTotalWithTax {\n                    amount\n                    currency {\n                        code\n                        customFormatting\n                        exchangeRate\n                        symbol\n                    }\n                    decimalDigits\n                    formattedAmount\n                    formattedAmountWithoutCurrency\n                    formattedAmountWithoutPoint\n                    formattedAmountWithoutPointAndCurrency\n                }\n                status\n                storeId\n                subTotal {\n                    amount\n                    currency {\n                        code\n                        customFormatting\n                        exchangeRate\n                        symbol\n                    }\n                    decimalDigits\n                    formattedAmount\n                    formattedAmountWithoutCurrency\n                    formattedAmountWithoutPoint\n                    formattedAmountWithoutPointAndCurrency\n                }\n                subTotalWithTax {\n                    amount\n                    currency {\n                        code\n                        customFormatting\n                        exchangeRate\n                        symbol\n                    }\n                    decimalDigits\n                    formattedAmount\n                    formattedAmountWithoutCurrency\n                    formattedAmountWithoutPoint\n                    formattedAmountWithoutPointAndCurrency\n                }\n                taxDetails {\n                    amount {\n                        amount\n                        decimalDigits\n                        formattedAmount\n                        formattedAmountWithoutCurrency\n                        formattedAmountWithoutPoint\n                        formattedAmountWithoutPointAndCurrency\n                    }\n                    name\n                    price {\n                        amount\n                        decimalDigits\n                        formattedAmount\n                        formattedAmountWithoutCurrency\n                        formattedAmountWithoutPoint\n                        formattedAmountWithoutPointAndCurrency\n                    }\n                    rate {\n                        amount\n                        decimalDigits\n                        formattedAmount\n                        formattedAmountWithoutCurrency\n                        formattedAmountWithoutPoint\n                        formattedAmountWithoutPointAndCurrency\n                    }\n                }\n                taxPercentRate\n                taxTotal {\n                    amount\n                    currency {\n                        code\n                        customFormatting\n                        exchangeRate\n                        symbol\n                    }\n                    decimalDigits\n                    formattedAmount\n                    formattedAmountWithoutCurrency\n                    formattedAmountWithoutPoint\n                    formattedAmountWithoutPointAndCurrency\n                }\n                taxType\n                total {\n                    amount\n                    currency {\n                        code\n                        customFormatting\n                        exchangeRate\n                        symbol\n                    }\n                    decimalDigits\n                    formattedAmount\n                    formattedAmountWithoutCurrency\n                    formattedAmountWithoutPoint\n                    formattedAmountWithoutPointAndCurrency\n                }\n                type\n                validationErrors {\n                    errorCode\n                    errorMessage\n                    errorParameters {\n                        key\n                        value\n                    }\n                    objectId\n                    objectType\n                }\n                volumetricWeight\n                weight\n                weightUnit\n            }\n        }\n        items {\n            addresses {\n                addressType\n                city\n                countryCode\n                countryName\n                email\n                firstName\n                id\n                lastName\n                line1\n                line2\n                middleName\n                name\n                organization\n                phone\n                postalCode\n                regionId\n                regionName\n                zip\n            }\n            availablePaymentMethods {\n                code\n                isAvailableForPartial\n                logoUrl\n                name\n                paymentMethodGroupType\n                paymentMethodType\n                priority\n                taxPercentRate\n                taxType\n            }\n            availableShippingMethods {\n                code\n                logoUrl\n                optionDescription\n                optionName\n                priority\n            }\n            channelId\n            comment\n            coupons {\n                code\n                isAppliedSuccessfully\n            }\n            currency {\n                code\n                customFormatting\n                exchangeRate\n                symbol\n            }\n            customerId\n            customerName\n            extendedPriceTotal {\n                amount\n                decimalDigits\n                formattedAmount\n                formattedAmountWithoutCurrency\n                formattedAmountWithoutPoint\n                formattedAmountWithoutPointAndCurrency\n            }\n            extendedPriceTotalWithTax {\n                amount\n                decimalDigits\n                formattedAmount\n                formattedAmountWithoutCurrency\n                formattedAmountWithoutPoint\n                formattedAmountWithoutPointAndCurrency\n            }\n            handlingTotal {\n                amount\n                decimalDigits\n                formattedAmount\n                formattedAmountWithoutCurrency\n                formattedAmountWithoutPoint\n                formattedAmountWithoutPointAndCurrency\n            }\n            handlingTotalWithTax {\n                amount\n                decimalDigits\n                formattedAmount\n                formattedAmountWithoutCurrency\n                formattedAmountWithoutPoint\n                formattedAmountWithoutPointAndCurrency\n            }\n            hasPhysicalProducts\n            id\n            isAnonymous\n            isRecuring\n            isValid\n            items {\n                catalogId\n                categoryId\n                createdDate\n                height\n                id\n                imageUrl\n                inStockQuantity\n                isGift\n                isReadOnly\n                isReccuring\n                isValid\n                languageCode\n                length\n                measureUnit\n                name\n                note\n                objectType\n                productId\n                productType\n                quantity\n                requiredShipping\n                shipmentMethodCode\n                sku\n                taxPercentRate\n                taxType\n                thumbnailImageUrl\n                volumetricWeight\n                warehouseLocation\n                weight\n                weightUnit\n                width\n            }\n            itemsCount\n            itemsQuantity\n            name\n            organizationId\n            paymentPrice {\n                amount\n                decimalDigits\n                formattedAmount\n                formattedAmountWithoutCurrency\n                formattedAmountWithoutPoint\n                formattedAmountWithoutPointAndCurrency\n            }\n            paymentPriceWithTax {\n                amount\n                decimalDigits\n                formattedAmount\n                formattedAmountWithoutCurrency\n                formattedAmountWithoutPoint\n                formattedAmountWithoutPointAndCurrency\n            }\n            payments {\n                id\n                outerId\n                paymentGatewayCode\n                taxPercentRate\n                taxType\n            }\n            paymentTotal {\n                amount\n                decimalDigits\n                formattedAmount\n                formattedAmountWithoutCurrency\n                formattedAmountWithoutPoint\n                formattedAmountWithoutPointAndCurrency\n            }\n            paymentTotalWithTax {\n                amount\n                decimalDigits\n                formattedAmount\n                formattedAmountWithoutCurrency\n                formattedAmountWithoutPoint\n                formattedAmountWithoutPointAndCurrency\n            }\n            shipments {\n                fulfillmentCenterId\n                height\n                id\n                length\n                measureUnit\n                shipmentMethodCode\n                shipmentMethodOption\n                taxPercentRate\n                taxType\n                volumetricWeight\n                weight\n                weightUnit\n                width\n            }\n            shippingPrice {\n                amount\n                decimalDigits\n                formattedAmount\n                formattedAmountWithoutCurrency\n                formattedAmountWithoutPoint\n                formattedAmountWithoutPointAndCurrency\n            }\n            shippingPriceWithTax {\n                amount\n                decimalDigits\n                formattedAmount\n                formattedAmountWithoutCurrency\n                formattedAmountWithoutPoint\n                formattedAmountWithoutPointAndCurrency\n            }\n            shippingTotal {\n                amount\n                decimalDigits\n                formattedAmount\n                formattedAmountWithoutCurrency\n                formattedAmountWithoutPoint\n                formattedAmountWithoutPointAndCurrency\n            }\n            shippingTotalWithTax {\n                amount\n                decimalDigits\n                formattedAmount\n                formattedAmountWithoutCurrency\n                formattedAmountWithoutPoint\n                formattedAmountWithoutPointAndCurrency\n            }\n            status\n            storeId\n            subTotal {\n                amount\n                decimalDigits\n                formattedAmount\n                formattedAmountWithoutCurrency\n                formattedAmountWithoutPoint\n                formattedAmountWithoutPointAndCurrency\n            }\n            subTotalWithTax {\n                amount\n                decimalDigits\n                formattedAmount\n                formattedAmountWithoutCurrency\n                formattedAmountWithoutPoint\n                formattedAmountWithoutPointAndCurrency\n            }\n            taxPercentRate\n            taxType\n            total {\n                amount\n                decimalDigits\n                formattedAmount\n                formattedAmountWithoutCurrency\n                formattedAmountWithoutPoint\n                formattedAmountWithoutPointAndCurrency\n            }\n            type\n            volumetricWeight\n            weight\n            weightUnit\n        }\n        pageInfo {\n            endCursor\n            hasNextPage\n            hasPreviousPage\n            startCursor\n        }\n        totalCount\n    }\n}",
+								"variables": "{\n  \"after\": \"\",\n  \"first\": 0,\n  \"storeId\": \"\",\n  \"userId\": \"\",\n  \"currencyCode\": \"\",\n  \"cultureName\": \"\",\n  \"cartType\": \"\",\n  \"filter\": \"\",\n  \"sort\": \"\"\n}"
+							},
+							"options": {
+								"graphql": {}
+							}
+						},
+						"url": {
+							"raw": "{{url}}",
+							"host": [
+								"{{url}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "categories",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query categories ($after: String, $first: Int, $storeId: String, $cultureName: String, $userId: String, $currencyCode: String, $query: String, $filter: String, $fuzzy: Boolean, $fuzzyLevel: Int, $facet: String, $sort: String, $categoryIds: [String]) {\n    categories (after: $after, first: $first, storeId: $storeId, cultureName: $cultureName, userId: $userId, currencyCode: $currencyCode, query: $query, filter: $filter, fuzzy: $fuzzy, fuzzyLevel: $fuzzyLevel, facet: $facet, sort: $sort, categoryIds: $categoryIds) {\n        edges {\n            cursor\n            node {\n                code\n                hasParent\n                id\n                images {\n                    cultureName\n                    group\n                    id\n                    name\n                    relativeUrl\n                    sortOrder\n                    url\n                }\n                imgSrc\n                level\n                name\n                outline\n                outlines {\n                    items {\n                        id\n                        name\n                        seoObjectType\n                    }\n                }\n                parent {\n                    code\n                    hasParent\n                    id\n                    images {\n                        cultureName\n                        group\n                        id\n                        name\n                        relativeUrl\n                        sortOrder\n                        url\n                    }\n                    imgSrc\n                    level\n                    name\n                    outline\n                    parent {\n                        code\n                        hasParent\n                        id\n                        imgSrc\n                        level\n                        name\n                        outline\n                        path\n                        slug\n                    }\n                    path\n                    seoInfo {\n                        id\n                        imageAltDescription\n                        isActive\n                        languageCode\n                        metaDescription\n                        metaKeywords\n                        name\n                        objectId\n                        objectType\n                        pageTitle\n                        semanticUrl\n                        storeId\n                    }\n                    slug\n                }\n                path\n                seoInfo {\n                    id\n                    imageAltDescription\n                    isActive\n                    languageCode\n                    metaDescription\n                    metaKeywords\n                    name\n                    objectId\n                    objectType\n                    pageTitle\n                    semanticUrl\n                    storeId\n                }\n                slug\n            }\n        }\n        items {\n            code\n            hasParent\n            id\n            images {\n                cultureName\n                group\n                id\n                name\n                relativeUrl\n                sortOrder\n                url\n            }\n            imgSrc\n            level\n            name\n            outline\n            parent {\n                code\n                hasParent\n                id\n                imgSrc\n                level\n                name\n                outline\n                path\n                slug\n            }\n            path\n            seoInfo {\n                id\n                imageAltDescription\n                isActive\n                languageCode\n                metaDescription\n                metaKeywords\n                name\n                objectId\n                objectType\n                pageTitle\n                semanticUrl\n                storeId\n            }\n            slug\n        }\n        pageInfo {\n            endCursor\n            hasNextPage\n            hasPreviousPage\n            startCursor\n        }\n        totalCount\n    }\n}",
+								"variables": "{\n  \"after\": \"\",\n  \"first\": 0,\n  \"storeId\": \"\",\n  \"cultureName\": \"\",\n  \"userId\": \"\",\n  \"currencyCode\": \"\",\n  \"query\": \"\",\n  \"filter\": \"\",\n  \"fuzzy\": true,\n  \"fuzzyLevel\": 0,\n  \"facet\": \"\",\n  \"sort\": \"\",\n  \"categoryIds\": [\n    \"\"\n  ]\n}"
+							},
+							"options": {
+								"graphql": {}
+							}
+						},
+						"url": {
+							"raw": "{{url}}",
+							"host": [
+								"{{url}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "orders",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query orders ($after: String, $first: Int, $filter: String, $sort: String, $cultureName: String, $userId: String) {\n    orders (after: $after, first: $first, filter: $filter, sort: $sort, cultureName: $cultureName, userId: $userId) {\n        items {\n            customerId\n            customerName\n            employeeId\n            employeeName\n            id\n            isApproved\n            isCancelled\n            shoppingCartId\n            status\n            storeId\n            storeName\n            subscriptionId\n            subscriptionNumber\n            subTotal {\n                amount\n            }\n            subTotalDiscount {\n                amount\n            }\n            total {\n                amount\n            }\n        }\n        totalCount\n    }\n}",
+								"variables": "{\n  \"after\": \"0\",\n  \"first\": 10,\n  \"filter\": \"\",\n  \"sort\": \"customerName:DESC\",\n  \"cultureName\": \"\",\n  \"userId\": \"\"\n}"
+							},
+							"options": {
+								"graphql": {}
+							}
+						},
+						"url": {
+							"raw": "{{url}}",
+							"host": [
+								"{{url}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "payments",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query payments ($after: String, $first: Int, $filter: String, $sort: String, $cultureName: String, $userId: String!) {\n    payments (after: $after, first: $first, filter: $filter, sort: $sort, cultureName: $cultureName, userId: $userId) {\n        items {\n            currency {\n                code\n            }\n            customerId\n            customerName\n            gatewayCode\n            id\n            number\n            paymentMethod {\n                code\n            }\n            purpose\n            status\n            sum {\n                amount\n            }\n        }\n        totalCount\n    }\n}",
+								"variables": "{\n  \"after\": \"0\",\n  \"first\": 10,\n  \"sort\": \"status:DESC\",\n  \"userId\": \"\"\n}"
+							},
+							"options": {
+								"graphql": {}
+							}
+						},
+						"url": {
+							"raw": "{{url}}",
+							"host": [
+								"{{url}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "products_sort_dafault",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "d1780172-39fa-48c4-b32c-7ea73bd65f6d",
+								"exec": [
+									"pm.test(\"Default sorting should be  same as SCORE:ASC\", function () {\r",
+									"    var json = pm.response.json();\r",
+									"    pm.expect(json.errors).to.be.undefined;\r",
+									"\r",
+									"    const item = json.data.products.items[0].name\r",
+									"    pm.expect(item).to.be.equal(\"DJI Spreading Wings S1000+ Professional Octocopter\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query products ($after: String, $first: Int, $storeId: String!, $userId: String, $currencyCode: String,  $sort: String , $query: String) {\n    products (after: $after, first: $first,  storeId: $storeId, userId: $userId, currencyCode: $currencyCode, sort: $sort, query: $query) {\n        items {\n            code\n            id\n            name\n        }\n        totalCount\n    }\n}",
+								"variables": "{\n  \"after\": \"0\",\n  \"first\": 10,\n  \"storeId\": \"Electronics\",\n  \"currencyCode\": \"USD\",\n  \"query\": \"Octocopter\"\n}"
+							},
+							"options": {
+								"graphql": {}
+							}
+						},
+						"url": {
+							"raw": "{{url}}",
+							"host": [
+								"{{url}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "products_sort_multivalue",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "42de1bae-281e-4b27-ae0f-4da0084e1d55",
+								"exec": [
+									"pm.test(\"Multivalue. second parameter works\", function () {\r",
+									"    var json = pm.response.json();\r",
+									"    pm.expect(json.errors).to.be.undefined;\r",
+									"\r",
+									"    const item = json.data.products.items[0].name\r",
+									"    pm.expect(item).to.be.equal(\"3DR X8-M Octocopter for Visual-Spectrum Aerial Maps (915 MHz)\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query products ($after: String, $first: Int, $storeId: String!, $userId: String, $currencyCode: String,  $sort: String , $query: String) {\n    products (after: $after, first: $first,  storeId: $storeId, userId: $userId, currencyCode: $currencyCode, sort: $sort, query: $query) {\n        items {\n            code\n            id\n            name\n            productType\n        }\n        totalCount\n    }\n}",
+								"variables": "{\n  \"after\": \"0\",\n  \"first\": 10,\n  \"storeId\": \"Electronics\",\n  \"currencyCode\": \"USD\",\n  \"query\": \"Octocopter\",\n  \"sort\": \"productType;score:ASC\"\n}"
+							},
+							"options": {
+								"graphql": {}
+							}
+						},
+						"url": {
+							"raw": "{{url}}",
+							"host": [
+								"{{url}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "products_sort_price_usd",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "ea36a9b9-b799-4261-85c2-97d986d81149",
+								"exec": [
+									"pm.test(\"Sort by field in index\", function () {\r",
+									"    var json = pm.response.json();\r",
+									"    pm.expect(json.errors).to.be.undefined;\r",
+									"\r",
+									"    const item = json.data.products.items[0].name\r",
+									"    pm.expect(item).to.be.equal(\"xFold CINEMA X12 RTF U7\");\r",
+									"\r",
+									"    const amount = json.data.products.items[0].price.list.amount;\r",
+									"    pm.expect(amount).to.be.equal(23638);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query products ($after: String, $first: Int, $storeId: String!, $userId: String, $currencyCode: String,  $sort: String , $query: String) {\n    products (after: $after, first: $first,  storeId: $storeId, userId: $userId, currencyCode: $currencyCode, sort: $sort, query: $query) {\n        items {\n            code\n            id\n            name\n            price {\n                list {\n                    amount\n                }\n            }\n            \n        }\n        totalCount\n    }\n}",
+								"variables": "{\n  \"after\": \"0\",\n  \"first\": 10,\n  \"storeId\": \"Electronics\",\n  \"currencyCode\": \"USD\",\n  \"sort\":\"price_usd:DESC\"\n}"
+							},
+							"options": {
+								"graphql": {}
+							}
+						},
+						"url": {
+							"raw": "{{url}}",
+							"host": [
+								"{{url}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "products_sort_score_ASC",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "02d76f6d-3e7b-4d61-bd86-b6d0955685c3",
+								"exec": [
+									"pm.test(\"sorting by score ASC\", function () {\r",
+									"    var json = pm.response.json();\r",
+									"    pm.expect(json.errors).to.be.undefined;\r",
+									"\r",
+									"    const item = json.data.products.items[0].name\r",
+									"    pm.expect(item).to.be.equal(\"3DR X8-M Octocopter for Visual-Spectrum Aerial Maps (915 MHz)\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query products ($after: String, $first: Int, $storeId: String!, $userId: String, $currencyCode: String,  $sort: String , $query: String) {\n    products (after: $after, first: $first,  storeId: $storeId, userId: $userId, currencyCode: $currencyCode, sort: $sort, query: $query) {\n        items {\n            code\n            id\n            name\n        }\n        totalCount\n    }\n}",
+								"variables": "{\n  \"after\": \"0\",\n  \"first\": 10,\n  \"storeId\": \"Electronics\",\n  \"currencyCode\": \"USD\",\n  \"sort\": \"score:ASC\",\n  \"query\": \"Octocopter\"\n}"
+							},
+							"options": {
+								"graphql": {}
+							}
+						},
+						"url": {
+							"raw": "{{url}}",
+							"host": [
+								"{{url}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "products_sort_score_DESC",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "98db56df-6be4-40ee-b404-f3a7020b4d17",
+								"exec": [
+									"pm.test(\"sorting by score DESC\", function () {\r",
+									"    var json = pm.response.json();\r",
+									"    pm.expect(json.errors).to.be.undefined;\r",
+									"\r",
+									"    const item = json.data.products.items[0].name\r",
+									"    pm.expect(item).to.be.equal(\"DJI Spreading Wings S1000+ Professional Octocopter\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query products ($after: String, $first: Int, $storeId: String!, $userId: String, $currencyCode: String,  $sort: String , $query: String) {\n    products (after: $after, first: $first,  storeId: $storeId, userId: $userId, currencyCode: $currencyCode, sort: $sort, query: $query) {\n        items {\n            code\n            id\n            name\n        }\n        totalCount\n    }\n}",
+								"variables": "{\n  \"after\": \"0\",\n  \"first\": 10,\n  \"storeId\": \"Electronics\",\n  \"currencyCode\": \"USD\",\n  \"sort\": \"score:DESC\",\n  \"query\": \"Octocopter\"\n}"
+							},
+							"options": {
+								"graphql": {}
+							}
+						},
+						"url": {
+							"raw": "{{url}}",
+							"host": [
+								"{{url}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"auth": {
+		"type": "oauth2",
+		"oauth2": [
+			{
+				"key": "password",
+				"value": "admin_password",
+				"type": "string"
+			},
+			{
+				"key": "username",
+				"value": "admin_usename",
+				"type": "string"
+			},
+			{
+				"key": "accessTokenUrl",
+				"value": "https://qa-demovc3-admin.azurewebsites.net//connect/token",
+				"type": "string"
+			},
+			{
+				"key": "challengeAlgorithm",
+				"value": "S256",
+				"type": "string"
+			},
+			{
+				"key": "grant_type",
+				"value": "password_credentials",
+				"type": "string"
+			},
+			{
+				"key": "addTokenTo",
+				"value": "header",
+				"type": "string"
+			},
+			{
+				"key": "client_authentication",
+				"value": "header",
+				"type": "string"
+			},
+			{
+				"key": "tokenType",
+				"value": "Bearer",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "1292c177-d370-4121-8a0e-84edfa9b9bac",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "56eb7b9b-c05a-4a17-aee1-136016c8a992",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "8ec17386-66fd-41e5-9276-6b12cc7b4472",
+			"key": "url",
+			"value": ""
+		}
+	],
+	"protocolProfileBehavior": {}
+}

@@ -19,14 +19,26 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Index
         private readonly Mock<ISearchPhraseParser> _phraseParserMock;
         private readonly Mock<IAggregationConverter> _aggregationConverterMock;
 
-        private readonly IndexSearchRequestBuilder _builder;
+        private readonly IndexSearchRequestBuilder _indexSearchRequestBuilder;
+        private readonly SearchRequest _expectedSearchRequest;
 
         public IndexSearchRequestBuilderTests()
         {
             _phraseParserMock = new Mock<ISearchPhraseParser>();
             _aggregationConverterMock = new Mock<IAggregationConverter>();
 
-            _builder = new IndexSearchRequestBuilder();
+            _indexSearchRequestBuilder = new IndexSearchRequestBuilder();
+
+            _expectedSearchRequest = new SearchRequest
+            {
+                Filter = new AndFilter() { ChildFilters = new List<IFilter>(), },
+                SearchFields = new List<string> { "__content" },
+                Sorting = new List<SortingField> { new SortingField("score", true) },
+                Skip = 0,
+                Take = 20,
+                Aggregations = new List<AggregationRequest>(),
+                IncludeFields = new List<string>(),
+            };
         }
 
         #region FromQuery(IGetDocumentsByIdsQuery)
@@ -38,7 +50,7 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Index
             var includeFields = _fixture.CreateMany<string>().ToArray();
 
             // Act
-            var result = _builder.WithIncludeFields(includeFields).Build();
+            var result = _indexSearchRequestBuilder.WithIncludeFields(includeFields).Build();
 
             // Assert
             result.IncludeFields.Should().BeEquivalentTo(includeFields.ToArray());
@@ -51,7 +63,7 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Index
             var objectIds = _fixture.CreateMany<string>().ToArray();
 
             // Act
-            var result = _builder.AddObjectIds(objectIds).Build();
+            var result = _indexSearchRequestBuilder.AddObjectIds(objectIds).Build();
 
             // Assert
             result.Take.Should().Be(objectIds.Count());
@@ -74,7 +86,7 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Index
             var includeFields = _fixture.CreateMany<string>().ToArray();
 
             // Act
-            var result = _builder
+            var result = _indexSearchRequestBuilder
                 .WithFuzzy(fuzzy, fuzzyLevel)
                 .WithIncludeFields(includeFields)
                 .WithPaging(skip, take)
@@ -99,7 +111,7 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Index
             var objectIds = _fixture.CreateMany<string>().ToArray();
 
             // Act
-            var result = _builder.AddObjectIds(objectIds).WithPaging(0, take).Build();
+            var result = _indexSearchRequestBuilder.AddObjectIds(objectIds).WithPaging(0, take).Build();
 
             // Assert
             result.Take.Should().Be(take);
@@ -131,7 +143,7 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Index
                 .Returns(searchPhraseParseResult);
 
             // Act
-            var result = _builder
+            var result = _indexSearchRequestBuilder
                 .ParseFilters(_phraseParserMock.Object, _fixture.Create<string>())
                 .Build();
 
@@ -158,7 +170,7 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Index
                 .Returns(searchPhraseParseResult);
 
             // Act
-            var result = _builder
+            var result = _indexSearchRequestBuilder
                 .ParseFilters(_phraseParserMock.Object, _fixture.Create<string>())
                 .Build();
 
@@ -188,7 +200,7 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Index
                 .Returns(searchPhraseParseResult);
 
             // Act
-            var result = _builder
+            var result = _indexSearchRequestBuilder
                 .ParseFilters(_phraseParserMock.Object, _fixture.Create<string>())
                 .Build();
 
@@ -223,13 +235,13 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Index
         public void ParseFacets_FacetPhraseIsNull_ShouldSkipParsing(string facetPhrase)
         {
             // Arrange
-            var expected = _fixture.Create<SearchRequest>();
+            
 
             // Act
-            var actual = _builder.ParseFacets(_phraseParserMock.Object, facetPhrase).Build();
+            var actual = _indexSearchRequestBuilder.ParseFacets(_phraseParserMock.Object, facetPhrase).Build();
 
             // Assert
-            actual.Should().BeEquivalentTo(expected);
+            actual.Should().BeEquivalentTo(_expectedSearchRequest);
         }
 
         [Theory]
@@ -252,7 +264,7 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Index
                 .ReturnsAsync(aggregations);
 
             // Act
-            var actual = _builder.ParseFacets(_phraseParserMock.Object, facetPhrase).Build();
+            var actual = _indexSearchRequestBuilder.ParseFacets(_phraseParserMock.Object, facetPhrase).Build();
 
             // Assert
             actual.Aggregations.Should().BeEmpty();
@@ -283,7 +295,7 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Index
                 .Returns(searchPhraseParseResult);
 
             // Act
-            var actual = _builder
+            var actual = _indexSearchRequestBuilder
                 .ParseFacets(_phraseParserMock.Object, searchPhrase)
                 .Build();
 
@@ -338,14 +350,34 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Index
         public void BuildRequestFromDefault_ReturnDefaultRequest()
         {
             // Arrange
-            var expected = _fixture.Create<SearchRequest>();
+            
 
             // Act
-            var actual = _builder.Build();
+            var actual = _indexSearchRequestBuilder.Build();
 
             // Assert
-            actual.Should().BeEquivalentTo(expected);
+            actual.Should().BeEquivalentTo(_expectedSearchRequest);
         }
+
+
+        #region AddSorting
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        public void AddSorting_SortStringIsNull_ShouldSkipParsing(string sort)
+        {
+            // Arrange
+            
+
+            // Act
+            var actual = _indexSearchRequestBuilder.AddSorting(sort).Build();
+
+            // Assert
+            actual.Should().BeEquivalentTo(_expectedSearchRequest);
+        }
+
+        #endregion
 
         //[Fact]
         //public void Build_ShouldCopyNonNamedFiltersToAggregations()
@@ -380,7 +412,7 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Index
         //        .ReturnsAsync(aggregations);
 
         //    // Act
-        //    var actual = _builder
+        //    var actual = _indexSearchRequestBuilder
         //        .ParseFilters(_phraseParserMock.Object, idsFilter.Stringify())
         //        .ParseFacets(_phraseParserMock.Object, null)
         //        .Build();
@@ -442,7 +474,7 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Index
         //        .ReturnsAsync(aggregations);
 
         //    // Act
-        //    var actual = _builder
+        //    var actual = _indexSearchRequestBuilder
         //        .ParseFilters(_phraseParserMock.Object, _fixture.Create<string>())
         //        .ParseFacets(_phraseParserMock.Object, null)
         //        .Build();

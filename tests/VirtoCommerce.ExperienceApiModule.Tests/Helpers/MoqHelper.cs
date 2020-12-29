@@ -30,19 +30,6 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Helpers
         {
             _fixture.Register(() => new Language(CULTURE_NAME));
             _fixture.Register(() => new Currency(_fixture.Create<Language>(), CURRENCY_CODE));
-            _fixture.Register(() => new SearchRequest
-            {
-                Filter = new AndFilter()
-                {
-                    ChildFilters = new List<IFilter>(),
-                },
-                SearchFields = new List<string> { "__content" },
-                Sorting = new List<SortingField> { new SortingField("__sort") },
-                Skip = 0,
-                Take = 20,
-                Aggregations = new List<AggregationRequest>(),
-                IncludeFields = new List<string>(),
-            });
         }
 
         protected Discount GetDiscount() => _fixture.Create<Discount>();
