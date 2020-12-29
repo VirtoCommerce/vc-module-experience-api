@@ -47,7 +47,8 @@ jobs:
       shell: sh
       run: |
         git clone https://github.com/VirtoCommerce/vc-quality-gate-katalon.git
-        git checkout dev 
+        cd ${{ github.workspace }}/vc-quality-gate-katalon/
+        git checkout -b dev origin/dev
         ls -l
 
 
