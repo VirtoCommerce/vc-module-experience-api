@@ -12,7 +12,7 @@ namespace VirtoCommerce.XPurchase.Schemas
         {
             Field(x => x.Id, nullable: true).Description("Payment Id");
             Field(x => x.OuterId, nullable: true).Description("Value of payment outer id");
-            Field(x => x.PaymentGatewayCode, nullable: false).Description("Value of payment gateway code");
+            Field(x => x.PaymentGatewayCode, nullable: true).Description("Value of payment gateway code");
             Field<CurrencyType>("currency", resolve: context => context.GetCart().Currency);
             Field<MoneyType>("amount", resolve: context => context.Source.Amount.ToMoney(context.GetCart().Currency));
             Field<AddressType>("billingAddress", resolve: context => context.Source.BillingAddress);

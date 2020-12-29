@@ -10,6 +10,7 @@ namespace VirtoCommerce.XPurchase.Schemas
     {
         public ShippingMethodType()
         {
+            Field<StringGraphType>("id", resolve: context => string.Join("_", context.Source.ShippingMethod.Code, context.Source.OptionName));
             Field(x => x.ShippingMethod.Code, nullable: true).Description("Value of shipping gateway code");
             Field(x => x.ShippingMethod.LogoUrl, nullable: true).Description("Value of shipping method logo absolute URL");
             Field(x => x.OptionName, nullable: true).Description("Value of shipping method option name");
