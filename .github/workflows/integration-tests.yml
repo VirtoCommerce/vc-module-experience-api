@@ -43,6 +43,14 @@ jobs:
       uses: VirtoCommerce/vc-github-actions/get-image-version@master
       id: image
 
+    - name: Getting tests
+      shell: sh
+      run: |
+        git clone https://github.com/VirtoCommerce/vc-quality-gate-katalon.git
+        git checkout dev 
+        ls -l
+
+
     # Temporary commented for speedup workflow test
     # - name: Build
     #   run: vc-build Compile
@@ -67,12 +75,6 @@ jobs:
         platformImage: docker.pkg.github.com/virtocommerce/vc-platform/platform
         storefrontImage: docker.pkg.github.com/virtocommerce/vc-storefront/storefront
         validateSwagger: 'false'
-
-    - name: Getting tests
-      shell: sh
-      run: |
-        git clone https://github.com/VirtoCommerce/vc-quality-gate-katalon.git
-        git checkout dev 
 
     - name: Katalon Studio Github Action
       uses: katalon-studio/katalon-studio-github-action@v2.2
