@@ -43,19 +43,12 @@ jobs:
       uses: VirtoCommerce/vc-github-actions/get-image-version@master
       id: image
 
-    - name: Build
-      run: vc-build Compile
+    # Temporary commented for speedup workflow test
+    # - name: Build
+    #   run: vc-build Compile
 
-    - name: Packaging
-      run: vc-build Compress -skip Clean+Restore+Compile+Test
-
-    # - name: Build Docker Image
-    #   id: dockerBuild
-    #   uses: VirtoCommerce/vc-github-actions/build-docker-image@master
-    #   with:
-    #     tag: ${{ steps.image.outputs.taggedVersion }}
-    #     imageName: "platform"
-    #     dockerFiles: "https://raw.githubusercontent.com/VirtoCommerce/vc-docker/master/linux/platform/Dockerfile;https://raw.githubusercontent.com/VirtoCommerce/vc-docker/master/linux/platform/wait-for-it.sh"
+    # - name: Packaging
+    #   run: vc-build Compress -skip Clean+Restore+Compile+Test
 
     - name: Docker Login
       uses: azure/docker-login@v1
