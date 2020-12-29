@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using GraphQL;
@@ -33,7 +34,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                  loadRelatedCatalogOutlineQuery.Outlines = outlines;
 
                  var response = await mediator.Send(loadRelatedCatalogOutlineQuery);
-                 return response.Outline;
+                 return response?.Outline;
              }, description: @"All parent categories ids relative to the requested catalog and concatenated with \ . E.g. (1/21/344)");
 
             FieldAsync<StringGraphType>("slug", resolve: async context =>
@@ -45,7 +46,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 loadRelatedSlugPathQuery.Outlines = outlines;
 
                 var response = await mediator.Send(loadRelatedSlugPathQuery);
-                return response.Slug;
+                return response?.Slug;
             }, description: @"Request related slug for category");
 
             Field(x => x.Category.Path, nullable: true).Description("Category path in to the requested catalog  (all parent categories names concatenated. E.g. (parent1/parent2))");
