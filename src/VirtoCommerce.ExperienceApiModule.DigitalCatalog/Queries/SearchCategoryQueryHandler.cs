@@ -51,7 +51,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                     throw new ArgumentException($"Store with Id: {request.StoreId} is absent");
                 }
 
-                essentialTerms.Add($"__outline_named:{store.Catalog}");
+                essentialTerms.Add($"__outline:{store.Catalog}");
             }
 
             var searchRequest = new IndexSearchRequestBuilder()
