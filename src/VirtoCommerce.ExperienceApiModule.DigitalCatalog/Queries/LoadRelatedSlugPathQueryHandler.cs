@@ -1,4 +1,4 @@
-﻿using System.Threading;
+using System.Threading;
 using System.Threading.Tasks;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.StoreModule.Core.Services;
@@ -18,7 +18,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
         public async Task<LoadRelatedSlugPathResponse> Handle(LoadRelatedSlugPathQuery request, CancellationToken cancellationToken)
         {
             var store = await _storeService.GetByIdAsync(request.StoreId);
-            if (store is null) return null;
+            if (store is null) return new LoadRelatedSlugPathResponse();
 
             var language = request.CultureName ?? store.DefaultLanguage;
             var slug = request.Outlines.GetSeoPath(store, language, null);
