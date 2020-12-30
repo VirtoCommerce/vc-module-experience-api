@@ -18,7 +18,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
                 // IMPORTANT: In order to avoid deadlocking on the loader we use the following construct (next 2 lines):
                 var loadHandle = loader.LoadAsync(context.Source.PromotionId).GetResultAsync();
-                return loadHandle;
+                return await loadHandle;
             });
         }
 
