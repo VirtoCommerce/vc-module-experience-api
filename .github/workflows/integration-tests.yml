@@ -43,19 +43,21 @@ jobs:
       uses: VirtoCommerce/vc-github-actions/get-image-version@master
       id: image
 
-    - name: Build
-      run: vc-build Compile
+    - name: Getting tests
+      shell: sh
+      run: |
+        git clone https://github.com/VirtoCommerce/vc-quality-gate-katalon.git
+        cd ${{ github.workspace }}/vc-quality-gate-katalon/
+        git checkout -b dev origin/dev
+        ls -l
 
-    - name: Packaging
-      run: vc-build Compress -skip Clean+Restore+Compile+Test
 
-    - name: Build Docker Image
-      id: dockerBuild
-      uses: VirtoCommerce/vc-github-actions/build-docker-image@master
-      with:
-        tag: ${{ steps.image.outputs.taggedVersion }}
-        imageName: "platform"
-        dockerFiles: "https://raw.githubusercontent.com/VirtoCommerce/vc-docker/master/linux/platform/Dockerfile;https://raw.githubusercontent.com/VirtoCommerce/vc-docker/master/linux/platform/wait-for-it.sh"
+    # Temporary commented for speedup workflow test
+    # - name: Build
+    #   run: vc-build Compile
+
+    # - name: Packaging
+    #   run: vc-build Compress -skip Clean+Restore+Compile+Test
 
     - name: Docker Login
       uses: azure/docker-login@v1
@@ -69,15 +71,11 @@ jobs:
       with:
         githubUser: ${{ env.GITHUB_ACTOR }}
         githubToken: ${{ env.GITHUB_TOKEN }}
-        platformDockerTag: ${{ steps.image.outputs.taggedVersion }}
+        platformDockerTag: 'dev-linux-latest'
         storefrontDockerTag: 'dev-linux-latest'
         platformImage: docker.pkg.github.com/virtocommerce/vc-platform/platform
         storefrontImage: docker.pkg.github.com/virtocommerce/vc-storefront/storefront
         validateSwagger: 'false'
-
-    - name: Getting tests
-      shell: sh
-      run: git clone https://github.com/VirtoCommerce/vc-quality-gate-katalon.git
 
     - name: Katalon Studio Github Action
       uses: katalon-studio/katalon-studio-github-action@v2.2
