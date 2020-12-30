@@ -30,9 +30,6 @@ namespace VirtoCommerce.ExperienceApiModule.Web
 
         public void Initialize(IServiceCollection services)
         {
-
-
-
             //Register .NET GraphQL server
             var graphQlBuilder = services.AddGraphQL(_ =>
             {
