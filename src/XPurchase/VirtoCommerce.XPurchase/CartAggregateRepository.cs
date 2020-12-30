@@ -84,7 +84,7 @@ namespace VirtoCommerce.XPurchase
             var cart = cartSearchResult.Results.FirstOrDefault();
             if (cart != null)
             {
-                return await InnerGetCartAggregateFromCartAsync(cart, language);
+                return await InnerGetCartAggregateFromCartAsync(cart.Clone() as ShoppingCart, language);
             }
 
             return null;
