@@ -125,23 +125,22 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Infrastructure
 
         public TType GetMetadata<TType>(string key, TType defaultValue = default(TType))
         {
-            var result = defaultValue;
-            if (Metadata.ContainsKey(key) && Metadata[key] is TType value)
-            {
-                result = value;
-            }
-
-            return result;
+            return Metadata.ContainsKey(key) ? (TType) Metadata[key] : defaultValue;
         }
 
         public TType GetMetadata<TType>(string key, Func<TType> defaultValueFactory)
         {
-            throw new NotImplementedException();
+            if (Metadata.ContainsKey(key))
+            {
+                var valueFactory = (Func<TType>)Metadata[key];
+                return valueFactory();
+            }
+            return defaultValueFactory();
         }
 
         public bool HasMetadata(string key)
         {
-            throw new NotImplementedException();
+            return Metadata.ContainsKey(key);
         }
 
         public IDictionary<string, object> Metadata { get; private set; } = new Dictionary<string, object>();
