@@ -56,7 +56,9 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                     //TODO:  Need to check what there is no any alternative way to access to the original request arguments in sub selection
                     context.CopyArgumentsToUserContext();
                     var loader = _dataLoader.Context.GetOrAddBatchLoader<string, ExpProduct>("productsLoader", (ids) => LoadProductsAsync(_mediator, ids, context));
-                    return await loader.LoadAsync(context.GetArgument<string>("id")).GetResultAsync();
+                    // IMPORTANT: In order to avoid deadlocking on the loader we use the following construct (next 2 lines):
+                    var loadHandle = loader.LoadAsync(context.GetArgument<string>("id")).GetResultAsync();
+                    return await loadHandle;
                 })
             };
             schema.Query.AddField(productField);
@@ -103,7 +105,9 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                     //TODO:  Need to check what there is no any alternative way to access to the original request arguments in sub selection
                     context.CopyArgumentsToUserContext();
                     var loader = _dataLoader.Context.GetOrAddBatchLoader<string, ExpCategory>("categoriesLoader", (ids) => LoadCategoriesAsync(_mediator, ids, context));
-                    return await loader.LoadAsync(context.GetArgument<string>("id")).GetResultAsync();
+                    // IMPORTANT: In order to avoid deadlocking on the loader we use the following construct (next 2 lines):
+                    var loadHandle= loader.LoadAsync(context.GetArgument<string>("id")).GetResultAsync();
+                    return await loadHandle;
                 })
             };
             schema.Query.AddField(categoryField);
