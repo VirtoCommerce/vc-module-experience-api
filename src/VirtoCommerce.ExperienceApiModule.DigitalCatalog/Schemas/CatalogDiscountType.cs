@@ -16,7 +16,9 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             {
                 var loader = dataLoader.Context.GetOrAddBatchLoader<string, Promotion>("promotionsLoader", (ids) => LoadPromotionsAsync(mediator, ids));
 
-                return await loader.LoadAsync(context.Source.PromotionId);
+                // IMPORTANT: In order to avoid deadlocking on the loader we use the following construct (next 2 lines):
+                var loadHandle = loader.LoadAsync(context.Source.PromotionId).GetResultAsync();
+                return await loadHandle;
             });
         }
 

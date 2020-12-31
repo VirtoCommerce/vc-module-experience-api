@@ -37,7 +37,7 @@ namespace RecommendationsGatewayModule.Core.Schemas
                     var loader = dataLoader.Context.GetOrAddBatchLoader<string, ExpProduct>($"recommendedProducts", (ids) => LoadProductsAsync(mediator, context, ids, includeFields));
 
                     // IMPORTANT: In order to avoid deadlocking on the loader we use the following construct (next 2 lines):
-                    var loadHandle = loader.LoadAsync(context.Source.ProductId);
+                    var loadHandle = loader.LoadAsync(context.Source.ProductId).GetResultAsync();
                     return await loadHandle;
                 })
             };

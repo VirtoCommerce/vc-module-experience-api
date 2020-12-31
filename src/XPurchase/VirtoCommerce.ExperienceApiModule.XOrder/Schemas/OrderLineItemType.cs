@@ -95,7 +95,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                     });
 
                     // IMPORTANT: In order to avoid deadlocking on the loader we use the following construct (next 2 lines):
-                    var loadHandle = loader.LoadAsync(context.Source.ProductId);
+                    var loadHandle = loader.LoadAsync(context.Source.ProductId).GetResultAsync();
                     return await loadHandle;
                 })
             };

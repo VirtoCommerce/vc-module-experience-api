@@ -1,0 +1,167 @@
+{
+	"info": {
+		"_postman_id": "ae9fc774-7d03-4ec8-9520-36d3334b13f2",
+		"name": "Extensibility",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "CoolChannelId",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"TEST CustomGetCartQueryHandler\", function () {\r",
+							"    var data = pm.response.json();\r",
+							"    var cart = data.data.cart; \r",
+							"    pm.expect(cart).to.not.eql(null);\r",
+							"    pm.expect(cart).to.be.an(\"object\");\r",
+							"    pm.expect(cart.channelId).to.be.equal('my-cool-channel')\r",
+							"    pm.expect(data.errors).to.be.undefined;\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "query cart ($storeId: String!, $userId: String, $currencyCode: String!, $cultureName: String, $cartName: String, $type: String) {\n    cart (storeId: $storeId, userId: $userId, currencyCode: $currencyCode, cultureName: $cultureName, cartName: $cartName, type: $type) {\n        channelId\n   }\n}",
+						"variables": "{\n  \"storeId\": \"Electronics\",\n  \"userId\": \"820c58c5-b518-454b-aefd-2fc4616bd25e\",\n  \"currencyCode\": \"USD\",\n  \"cultureName\": \"\",\n  \"cartName\": \"default\",\n  \"type\": \"\"\n}"
+					}
+				},
+				"url": {
+					"raw": "{{url}}",
+					"host": [
+						"{{url}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Extend cart filed",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"TEST CustomGetCartQueryHandler\", function () {\r",
+							"    var data = pm.response.json();\r",
+							"    var cart = data.data.cart; \r",
+							"    pm.expect(cart).to.not.eql(null);\r",
+							"    pm.expect(cart).to.be.an(\"object\");\r",
+							"    pm.expect(cart.myCoolScalarProperty).to.be.equal('my cool value')\r",
+							"    pm.expect(data.errors).to.be.undefined;\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "query cart ($storeId: String!, $userId: String, $currencyCode: String!, $cultureName: String, $cartName: String, $type: String) {\n    cart (storeId: $storeId, userId: $userId, currencyCode: $currencyCode, cultureName: $cultureName, cartName: $cartName, type: $type) {\n        myCoolScalarProperty\n   }\n}",
+						"variables": "{\n  \"storeId\": \"Electronics\",\n  \"userId\": \"820c58c5-b518-454b-aefd-2fc4616bd25e\",\n  \"currencyCode\": \"USD\",\n  \"cultureName\": \"\",\n  \"cartName\": \"default\",\n  \"type\": \"\"\n}"
+					}
+				},
+				"url": {
+					"raw": "{{url}}",
+					"host": [
+						"{{url}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ProductInventory",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"TEST CustomInventory100\", function () {\r",
+							"    var data = pm.response.json();\r",
+							"    var product = data.data.product; \r",
+							"    pm.expect(product).to.not.eql(null);\r",
+							"    pm.expect(product).to.be.an(\"object\");\r",
+							"    pm.expect(product.availabilityData.availableQuantity).to.be.equal(100)\r",
+							"    pm.expect(product.availabilityData.inventories[0].inStockQuantity).to.be.equal(100)\r",
+							"    pm.expect(data.errors).to.be.undefined;\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "query product (  $id: String!, $storeId: String!, $userId: String, $currencyCode: String, $cultureName: String) {\n    product (id: $id, storeId: $storeId, userId: $userId, currencyCode: $currencyCode, cultureName: $cultureName) {\n        availabilityData {\n            availableQuantity\n            inventories {\n                inStockQuantity\n            }\n        }\n   }\n}",
+						"variables": "{\n  \"id\": \"f9330eb5ed78427abb4dc4089bc37d9f\",\n  \"storeId\": \"Electronics\",\n  \"userId\": \"\",\n  \"currencyCode\": \"USD\",\n  \"cultureName\": \"\"\n}"
+					}
+				},
+				"url": {
+					"raw": "{{url}}",
+					"host": [
+						"{{url}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Inventory mutation",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"TEST CustomInventory100\", function () {\r",
+							"    var data = pm.response.json();\r",
+							"    var saveInventory = data.data.saveInventory; \r",
+							"    pm.expect(saveInventory).to.not.eql(null);\r",
+							"    pm.expect(saveInventory).to.be.an(\"object\");\r",
+							"    pm.expect(saveInventory.productId).to.be.equal('f9330eb5ed78427abb4dc4089bc37d9f')\r",
+							"    pm.expect(saveInventory.inStockQuantity).to.be.equal(22)\r",
+							"    pm.expect(data.errors).to.be.undefined;\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "mutation ($inventory:InputUpdateInventoryType!)\n{ \n  saveInventory(inventory: $inventory) \n  { \n    productId\n    inStockQuantity \n  }\n}",
+						"variables": "{\n  \"inventory\":  {\n    \"productId\": \"f9330eb5ed78427abb4dc4089bc37d9f\",\n    \"inStockQuantity\": 22\n  }\n}"
+					}
+				},
+				"url": {
+					"raw": "{{url}}",
+					"host": [
+						"{{url}}"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

@@ -1,5 +1,6 @@
 using System;
 using AutoMapper;
+using GraphQL.Execution;
 using GraphQL.Server;
 using GraphQL.Types;
 using GraphQL.Utilities;
@@ -33,8 +34,12 @@ namespace VirtoCommerce.ExperienceApiModule.Web
             var graphQlBuilder = services.AddGraphQL(_ =>
             {
                 _.EnableMetrics = false;
-                _.ExposeExceptions = true;
             }).AddNewtonsoftJson(deserializerSettings => { }, serializerSettings => { })
+            .AddErrorInfoProvider(options =>
+            {
+                options.ExposeExtensions = true;
+                options.ExposeExceptionStackTrace = true;
+            })
             .AddUserContextBuilder(context => context.BuildGraphQLUserContext())
             .AddRelayGraphTypes()
             .AddDataLoader()
