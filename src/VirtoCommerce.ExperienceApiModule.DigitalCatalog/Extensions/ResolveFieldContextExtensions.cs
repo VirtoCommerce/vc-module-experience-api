@@ -1,4 +1,4 @@
-using GraphQL.Types;
+using GraphQL;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.XDigitalCatalog.Queries;

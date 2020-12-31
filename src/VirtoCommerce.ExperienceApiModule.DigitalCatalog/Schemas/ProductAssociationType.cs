@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GraphQL;
 using GraphQL.DataLoader;
 using GraphQL.Resolvers;
 using GraphQL.Types;
@@ -36,7 +37,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                     var loader = dataLoader.Context.GetOrAddBatchLoader<string, ExpProduct>("associatedProductLoader", (ids) => LoadProductsAsync(mediator, ids, context));
 
                     // IMPORTANT: In order to avoid deadlocking on the loader we use the following construct (next 2 lines):
-                    var loadHandle = loader.LoadAsync(context.Source.AssociatedObjectId);
+                    var loadHandle = loader.LoadAsync(context.Source.AssociatedObjectId).GetResultAsync();
                     return await loadHandle;
                 })
             };

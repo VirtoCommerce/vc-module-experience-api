@@ -1,4 +1,4 @@
-using GraphQL.Types;
+using GraphQL;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.Platform.Core.Common;

@@ -22,8 +22,9 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Infrastructure
         }
 
         public bool Initialized => _schema.Value?.Initialized == true;
+        public string Description { get; set; }
 
-        public IFieldNameConverter FieldNameConverter { get => _schema.Value?.FieldNameConverter; set => _schema.Value.FieldNameConverter = value; }
+        public INameConverter NameConverter { get => _schema.Value?.NameConverter; set => _schema.Value.NameConverter = value; }
         public IObjectGraphType Query { get => _schema.Value?.Query; set => _schema.Value.Query = value; }
         public IObjectGraphType Mutation { get => _schema.Value?.Mutation; set => _schema.Value.Mutation = value; }
         public IObjectGraphType Subscription { get => _schema.Value?.Subscription; set => _schema.Value.Subscription = value; }
@@ -34,20 +35,9 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Infrastructure
         public IEnumerable<Type> AdditionalTypes => _schema.Value?.AdditionalTypes;
 
         public ISchemaFilter Filter { get => _schema.Value?.Filter; set => _schema.Value.Filter = value; }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                _schema.Value.Dispose();
-            }
-        }
+        public FieldType SchemaMetaFieldType  => _schema.Value?.SchemaMetaFieldType;
+        public FieldType TypeMetaFieldType => _schema.Value?.TypeMetaFieldType;
+        public FieldType TypeNameMetaFieldType => _schema.Value?.TypeNameMetaFieldType;
 
         public DirectiveGraphType FindDirective(string name)
         {
@@ -66,7 +56,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Infrastructure
 
         public ISchema GetSchema()
         {
-            var schema = new GraphQL.Types.Schema(_services)
+            var schema = new Schema(_services)
             {
                 Query = new ObjectGraphType { Name = "Query" },
                 Mutation = new ObjectGraphType { Name = "Mutations" }
@@ -132,5 +122,22 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Infrastructure
         {
             _schema.Value.RegisterValueConverter(converter);
         }
+
+        public TType GetMetadata<TType>(string key, TType defaultValue = default)
+        {
+            return Metadata.ContainsKey(key) ? (TType) Metadata[key] : defaultValue;
+        }
+
+        public TType GetMetadata<TType>(string key, Func<TType> defaultValueFactory)
+        {
+            return Metadata.ContainsKey(key) ? (TType) Metadata[key] : defaultValueFactory();
+        }
+
+        public bool HasMetadata(string key)
+        {
+            return Metadata.ContainsKey(key);
+        }
+
+        public IDictionary<string, object> Metadata { get; private set; } = new Dictionary<string, object>();
     }
 }
