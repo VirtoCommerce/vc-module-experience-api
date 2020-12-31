@@ -7,6 +7,7 @@ using GraphQL.Types;
 using GraphQL.Types.Relay.DataObjects;
 using MediatR;
 using RecommendationsGatewayModule.Core.Requests;
+using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 
@@ -27,11 +28,14 @@ namespace RecommendationsGatewayModule.Core.Schemas
                 .Argument<StringGraphType>("scenario", "The recommendation scenario")
                 .Argument<StringGraphType>("itemId", "The context product id")
                 .Argument<StringGraphType>("userId", "The context user id")
+                .Argument<StringGraphType>("storeId", "the store id")
                 .Unidirectional()
                 .PageSize(20);
 
             connectionBuilder.ResolveAsync(async context =>
             {
+                //TODO:  Need to check what there is no any alternative way to access to the original request arguments in sub selection
+                context.CopyArgumentsToUserContext();
                 return await ResolveConnectionAsync(context);
             });
             schema.Query.AddField(connectionBuilder.FieldType);
