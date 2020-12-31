@@ -20,7 +20,7 @@ using VirtoCommerce.XDigitalCatalog.Extensions;
 using VirtoCommerce.XProfile.Middlewares;
 using VirtoCommerce.XPurchase.Extensions;
 using VirtoCommerce.XPurchase.Middlewares;
-
+using VirtoCommerce.ExperienceApiModule.Web.Extensions;
 namespace VirtoCommerce.ExperienceApiModule.Web
 {
     public class Module : IModule
@@ -35,7 +35,7 @@ namespace VirtoCommerce.ExperienceApiModule.Web
                 _.EnableMetrics = false;
                 _.ExposeExceptions = true;
             }).AddNewtonsoftJson(deserializerSettings => { }, serializerSettings => { })
-            .AddUserContextBuilder(context => new GraphQLUserContext { User = context.User })
+            .AddUserContextBuilder(context => context.BuildGraphQLUserContext())
             .AddRelayGraphTypes()
             .AddDataLoader()
             .AddGraphTypes(typeof(XCoreAnchor));

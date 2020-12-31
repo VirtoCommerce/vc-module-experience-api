@@ -6,6 +6,10 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Infrastructure
 {
     public class GraphQLUserContext : Dictionary<string, object>, IProvideClaimsPrincipal
     {
-        public ClaimsPrincipal User { get; set; }
+        public GraphQLUserContext(ClaimsPrincipal user)
+        {
+            User = user;
+        }
+        public ClaimsPrincipal User { get; private set; }
     }
 }

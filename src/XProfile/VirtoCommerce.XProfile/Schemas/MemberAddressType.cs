@@ -11,6 +11,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
     {
         public MemberAddressType()
         {
+            Field<StringGraphType>("id", resolve: context => context.Source.Key, description: "Id");
             Field(x => x.Key, true).Description("Id");
             Field(x => x.Name, true).Description("Name");
             Field(x => x.Organization, true).Description("Company name");
