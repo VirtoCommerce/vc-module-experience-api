@@ -7,6 +7,7 @@ namespace VirtoCommerce.XPurchase.Schemas
     {
         public InputAddressType()
         {
+            Field<StringGraphType>("id", resolve: context => context.Source.Key, description: "Id");
             Field(x => x.City, nullable: true).Description("City");
             Field(x => x.CountryCode, nullable: true).Description("Country code");
             Field(x => x.CountryName, nullable: true).Description("Country name");
