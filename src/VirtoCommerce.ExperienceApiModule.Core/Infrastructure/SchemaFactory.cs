@@ -123,19 +123,14 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Infrastructure
             _schema.Value.RegisterValueConverter(converter);
         }
 
-        public TType GetMetadata<TType>(string key, TType defaultValue = default(TType))
+        public TType GetMetadata<TType>(string key, TType defaultValue = default)
         {
             return Metadata.ContainsKey(key) ? (TType) Metadata[key] : defaultValue;
         }
 
         public TType GetMetadata<TType>(string key, Func<TType> defaultValueFactory)
         {
-            if (Metadata.ContainsKey(key))
-            {
-                var valueFactory = (Func<TType>)Metadata[key];
-                return valueFactory();
-            }
-            return defaultValueFactory();
+            return Metadata.ContainsKey(key) ? (TType) Metadata[key] : defaultValueFactory();
         }
 
         public bool HasMetadata(string key)
