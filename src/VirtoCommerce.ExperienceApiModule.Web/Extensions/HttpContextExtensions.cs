@@ -22,12 +22,19 @@ namespace VirtoCommerce.ExperienceApiModule.Web.Extensions
                 && context.Request.Headers.TryGetValue("VirtoCommerce-User-Name", out var userNameFromHeader)
                 && principal.IsInRole(PlatformConstants.Security.SystemRoles.Administrator))
             {
-                var factory = context.RequestServices.GetService<Func<SignInManager<ApplicationUser>>>();
-                var signInManager = factory();
-                var user  = signInManager.UserManager.FindByNameAsync(userNameFromHeader).GetAwaiter().GetResult();
-                if(user != null)
+                if (userNameFromHeader == "Anonymous")
                 {
-                    principal = signInManager.CreateUserPrincipalAsync(user).GetAwaiter().GetResult();
+                    principal = null;
+                }
+                else
+                {
+                    var factory = context.RequestServices.GetService<Func<SignInManager<ApplicationUser>>>();
+                    var signInManager = factory();
+                    var user = signInManager.UserManager.FindByNameAsync(userNameFromHeader).GetAwaiter().GetResult();
+                    if (user != null)
+                    {
+                        principal = signInManager.CreateUserPrincipalAsync(user).GetAwaiter().GetResult();
+                    }
                 }
             }
             return new GraphQLUserContext(principal);
