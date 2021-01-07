@@ -1,3 +1,4 @@
+using System.Linq;
 using GraphQL.Types;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.XDigitalCatalog.Extensions;
@@ -32,6 +33,8 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 });
 
             Field<ListGraphType<ImageType>>("images", resolve: context => context.Source.IndexedProduct.Images);
+
+            Field<PriceType>("price", resolve: context => context.Source.AllPrices.FirstOrDefault());
 
             Field<ListGraphType<PriceType>>("prices", resolve: context => context.Source.AllPrices);
 

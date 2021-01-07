@@ -113,28 +113,35 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 };
             }, description: "Request related SEO info");
 
-            Field<ListGraphType<DescriptionType>>("descriptions", resolve: context =>
-            {
-                var reviews = context.Source.IndexedProduct.Reviews;
-
-                return context.GetValue<string>("cultureName") switch
+            Field<ListGraphType<DescriptionType>>("descriptions",
+                  arguments: new QueryArguments(new QueryArgument<StringGraphType> { Name = "type" }),
+                  resolve: context =>
                 {
-                    // Get reviews with null or current cultureName value if cultureName is passed
-                    string languageCode => reviews.Where(x => string.IsNullOrEmpty(x.LanguageCode) || x.LanguageCode.EqualsInvariant(languageCode)).ToList(),
+                    var reviews = context.Source.IndexedProduct.Reviews;
+                    var cultureName = context.GetArgumentOrValue<string>("cultureName");
+                    var type = context.GetArgumentOrValue<string>("type");
+                    if (cultureName != null)
+                    {
+                        reviews = reviews.Where(x => string.IsNullOrEmpty(x.LanguageCode) || x.LanguageCode.EqualsInvariant(cultureName)).ToList();
+                    }
+                    if (type != null)
+                    {
+                        reviews = reviews.Where(x => x.ReviewType?.EqualsInvariant(type) ?? true).ToList();
+                    }
+                    return reviews;
+                });
 
-                    // CultureName is null
-                    _ => reviews
-                };
-            });
-
-            Field<DescriptionType>("description", resolve: context =>
+            Field<DescriptionType>("description",
+                arguments: new QueryArguments(new QueryArgument<StringGraphType> { Name = "type" }),
+                resolve: context =>
             {
                 var reviews = context.Source.IndexedProduct.Reviews;
+                var type = context.GetArgumentOrValue<string>("type");
                 var cultureName = context.GetArgumentOrValue<string>("cultureName");
 
                 if (!reviews.IsNullOrEmpty())
                 {
-                    return reviews.Where(x => x.ReviewType.EqualsInvariant("FullReview")).FirstBestMatchForLanguage(cultureName) as EditorialReview
+                    return reviews.Where(x => x.ReviewType.EqualsInvariant(type ?? "FullReview")).FirstBestMatchForLanguage(cultureName) as EditorialReview
                         ?? reviews.FirstBestMatchForLanguage(cultureName) as EditorialReview;
                 }
 
