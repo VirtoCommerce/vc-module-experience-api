@@ -24,7 +24,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field(x => x.Status);
             Field(x => x.Note);
         
-            Field<MoneyType>(nameof(PaymentGatewayTransaction.Amount).ToCamelCase(), resolve: context => new Money(context.Source.Amount, context.GetCurrencyByCode(context.Source.CurrencyCode)));
+            Field<MoneyType>(nameof(PaymentGatewayTransaction.Amount).ToCamelCase(), resolve: context => new Money(context.Source.Amount, context.GetOrderCurrencyByCode(context.Source.CurrencyCode)));
           
         }
     }

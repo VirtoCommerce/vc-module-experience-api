@@ -16,7 +16,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Extensions
             return userContext.GetValueForSource<CustomerOrderAggregate>()?.Currency;
         }
 
-        public static Currency GetCurrencyByCode<T>(this IResolveFieldContext<T> userContext, string currencyCode)
+        public static Currency GetOrderCurrencyByCode<T>(this IResolveFieldContext<T> userContext, string currencyCode)
         {
             //Try to get a currency from order if currency code is not set explicitly or undefined
             var result = userContext.GetOrderCurrency();
@@ -33,17 +33,6 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Extensions
             return result;
         }
 
-        public static void SetCurrencies(this IResolveFieldContext context, IEnumerable<Currency> currencies, string cultureName)
-        {
-            if (currencies == null)
-            {
-                throw new ArgumentNullException(nameof(currencies));
-            }
-            var currenciesWithCulture = currencies.Select(x => new Currency(cultureName != null ? new Language(cultureName) : Language.InvariantLanguage, x.Code, x.Name, x.Symbol, x.ExchangeRate)
-            {
-                CustomFormatting = x.CustomFormatting
-            }).ToArray();
-            context.UserContext["allCurrencies"] = currenciesWithCulture;
-        }
+      
     }
 }

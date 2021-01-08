@@ -58,9 +58,9 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
 
             #region Category
 		
-            new RegexpNameMapper(@"__object.slug", "__object.outlines", new [] { "__object.seoInfos" }),
-            new RegexpNameMapper(@"__object.outline", "__object.outlines"),
-            new RegexpNameMapper(@"__object.level", "__object.outlines"), 
+            new RegexpNameMapper(@"__object.slug$", "__object.outlines", new [] { "__object.seoInfos" }),
+            new RegexpNameMapper(@"__object.outline$", "__object.outlines"),
+            new RegexpNameMapper(@"__object.level$", "__object.outlines"), 
 	        #endregion
         };
 

@@ -11,6 +11,7 @@ using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
+using VirtoCommerce.ExperienceApiModule.Core.Models;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.XDigitalCatalog.Extensions;
@@ -234,7 +235,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             Field<PriceType>(
                 "price",
-                resolve: context => context.Source.AllPrices.FirstOrDefault());
+                resolve: context => context.Source.AllPrices.FirstOrDefault() ?? new ProductPrice(context.GetCurrencyByCode(context.GetValue<string>("currencyCode"))));
 
             Field<ListGraphType<PriceType>>(
                 "prices",

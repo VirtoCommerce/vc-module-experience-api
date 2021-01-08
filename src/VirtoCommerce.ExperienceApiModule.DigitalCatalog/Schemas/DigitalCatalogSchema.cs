@@ -9,6 +9,7 @@ using GraphQL.Resolvers;
 using GraphQL.Types;
 using GraphQL.Types.Relay;
 using MediatR;
+using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
@@ -22,11 +23,13 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
     {
         private readonly IMediator _mediator;
         private readonly IDataLoaderContextAccessor _dataLoader;
+        private readonly ICurrencyService _currencyService;
 
-        public DigitalCatalogSchema(IMediator mediator, IDataLoaderContextAccessor dataLoader)
+        public DigitalCatalogSchema(IMediator mediator, IDataLoaderContextAccessor dataLoader, ICurrencyService currencyService)
         {
             _mediator = mediator;
             _dataLoader = dataLoader;
+            _currencyService = currencyService;
         }
 
         /// <summary>
@@ -51,14 +54,20 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                     new QueryArgument<StringGraphType> { Name = "cultureName", Description = "Culture name (\"en-US\")" }
                 ),
                 Type = GraphTypeExtenstionHelper.GetActualType<ProductType>(),
-                Resolver = new AsyncFieldResolver<object>(async context =>
+                Resolver = new AsyncFieldResolver<object, IDataLoaderResult<ExpProduct>>(async context =>
                 {
                     //TODO:  Need to check what there is no any alternative way to access to the original request arguments in sub selection
                     context.CopyArgumentsToUserContext();
-                    var loader = _dataLoader.Context.GetOrAddBatchLoader<string, ExpProduct>("productsLoader", (ids) => LoadProductsAsync(_mediator, ids, context));
-                    // IMPORTANT: In order to avoid deadlocking on the loader we use the following construct (next 2 lines):
-                    var loadHandle = loader.LoadAsync(context.GetArgument<string>("id")).GetResultAsync();
-                    return await loadHandle;
+
+                    var cultureName = context.GetArgument<string>("cultureName");
+
+                    var allCurrencies = await _currencyService.GetAllCurrenciesAsync();
+                    //Store all currencies in the user context for future resolve in the schema types
+                    context.SetCurrencies(allCurrencies, cultureName);
+
+                    var loader = _dataLoader.Context.GetOrAddBatchLoader<string, ExpProduct>("productsLoader", (ids) => LoadProductsAsync(_mediator, ids, context));                   
+                    return loader.LoadAsync(context.GetArgument<string>("id"));
+
                 })
             };
             schema.Query.AddField(productField);
@@ -83,6 +92,14 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             {
                 //TODO:  Need to check what there is no any alternative way to access to the original request arguments in sub selection
                 context.CopyArgumentsToUserContext();
+
+                var cultureName = context.GetArgument<string>("cultureName");
+
+                var allCurrencies = await _currencyService.GetAllCurrenciesAsync();
+                //Store all currencies in the user context for future resolve in the schema types
+                context.SetCurrencies(allCurrencies, cultureName);
+
+
                 return await ResolveProductsConnectionAsync(_mediator, context);
             });
 
@@ -100,14 +117,12 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                     new QueryArgument<StringGraphType> { Name = "cultureName", Description = "Culture name (\"en-US\")" }
                 ),
                 Type = GraphTypeExtenstionHelper.GetActualType<CategoryType>(),
-                Resolver = new AsyncFieldResolver<object>(async context =>
+                Resolver = new FuncFieldResolver<ExpCategory, IDataLoaderResult<ExpCategory>>(context =>
                 {
                     //TODO:  Need to check what there is no any alternative way to access to the original request arguments in sub selection
                     context.CopyArgumentsToUserContext();
                     var loader = _dataLoader.Context.GetOrAddBatchLoader<string, ExpCategory>("categoriesLoader", (ids) => LoadCategoriesAsync(_mediator, ids, context));
-                    // IMPORTANT: In order to avoid deadlocking on the loader we use the following construct (next 2 lines):
-                    var loadHandle= loader.LoadAsync(context.GetArgument<string>("id")).GetResultAsync();
-                    return await loadHandle;
+                    return loader.LoadAsync(context.GetArgument<string>("id"));
                 })
             };
             schema.Query.AddField(categoryField);

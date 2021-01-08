@@ -39,10 +39,10 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field(x => x.VoidedDate, true);
             Field(x => x.OrderId, true);
 
-            Field<MoneyType>(nameof(PaymentIn.Sum).ToCamelCase(), resolve: context => new Money(context.Source.Sum, context.GetCurrencyByCode(context.Source.Currency)));
-            Field<MoneyType>("tax", resolve: context => new Money(context.Source.TaxTotal, context.GetCurrencyByCode(context.Source.Currency)));
+            Field<MoneyType>(nameof(PaymentIn.Sum).ToCamelCase(), resolve: context => new Money(context.Source.Sum, context.GetOrderCurrencyByCode(context.Source.Currency)));
+            Field<MoneyType>("tax", resolve: context => new Money(context.Source.TaxTotal, context.GetOrderCurrencyByCode(context.Source.Currency)));
             Field<OrderPaymentMethodType>(nameof(PaymentIn.PaymentMethod), resolve: context => context.Source.PaymentMethod);
-            Field<CurrencyType>(nameof(PaymentIn.Currency), resolve: context => context.GetCurrencyByCode(context.Source.Currency));
+            Field<CurrencyType>(nameof(PaymentIn.Currency), resolve: context => context.GetOrderCurrencyByCode(context.Source.Currency));
             Field<OrderAddressType>(nameof(PaymentIn.BillingAddress), resolve: context => context.Source.BillingAddress);
 
             Field<ListGraphType<PaymentTransactionType>>(nameof(PaymentIn.Transactions), resolve: x => x.Source.Transactions);

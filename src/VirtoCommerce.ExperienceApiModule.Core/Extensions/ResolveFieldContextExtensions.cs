@@ -4,6 +4,8 @@ using System.Linq;
 using System.Security.Claims;
 using GraphQL;
 using GraphQL.Types;
+using VirtoCommerce.CoreModule.Core.Common;
+using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.Platform.Core.Common;
 
@@ -94,6 +96,30 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
                 result = resolveContext.GetValue<TResult>(((ValueObject)valueObject).GetCacheKey());
             }
 
+            return result;
+        }
+
+        public static void SetCurrencies(this IResolveFieldContext context, IEnumerable<Currency> currencies, string cultureName)
+        {
+            if (currencies == null)
+            {
+                throw new ArgumentNullException(nameof(currencies));
+            }
+            var currenciesWithCulture = currencies.Select(x => new Currency(cultureName != null ? new Language(cultureName) : Language.InvariantLanguage, x.Code, x.Name, x.Symbol, x.ExchangeRate)
+            {
+                CustomFormatting = x.CustomFormatting
+            }).ToArray();
+            context.UserContext["allCurrencies"] = currenciesWithCulture;
+        }
+
+        public static Currency GetCurrencyByCode<T>(this IResolveFieldContext<T> userContext, string currencyCode)
+        {
+            var allCurrencies = userContext.GetValue<IEnumerable<Currency>>("allCurrencies");
+            var result = allCurrencies?.FirstOrDefault(x => x.Code.EqualsInvariant(currencyCode));
+            if (result == null)
+            {
+                throw new OperationCanceledException($"the currency with code '{ currencyCode }' is not registered");
+            }
             return result;
         }
 

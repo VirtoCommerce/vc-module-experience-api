@@ -72,7 +72,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             {
                 Name = "product",
                 Type = GraphTypeExtenstionHelper.GetActualType<ProductType>(),
-                Resolver = new AsyncFieldResolver<LineItem, object>(async context =>
+                Resolver = new FuncFieldResolver<LineItem, IDataLoaderResult<ExpProduct>>(context =>
                 {
                     var includeFields = context.SubFields.Values.GetAllNodesPaths();
                     var loader = dataLoader.Context.GetOrAddBatchLoader<string, ExpProduct>("order_lineItems_products", async (ids) =>
@@ -97,9 +97,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                         return response.Products.ToDictionary(x => x.Id);
                     });
 
-                    // IMPORTANT: In order to avoid deadlocking on the loader we use the following construct (next 2 lines):
-                    var loadHandle = loader.LoadAsync(context.Source.ProductId).GetResultAsync();
-                    return await loadHandle;
+                    return loader.LoadAsync(context.Source.ProductId);
                 })
             };
             AddField(productField);

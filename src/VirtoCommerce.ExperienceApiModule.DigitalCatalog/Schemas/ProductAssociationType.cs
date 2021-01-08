@@ -32,13 +32,10 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             {
                 Name = "product",
                 Type = GraphTypeExtenstionHelper.GetActualType<ProductType>(),
-                Resolver = new AsyncFieldResolver<ProductAssociation, object>(async context =>
+                Resolver = new FuncFieldResolver<ProductAssociation, IDataLoaderResult<ExpProduct>>(context =>
                 {
                     var loader = dataLoader.Context.GetOrAddBatchLoader<string, ExpProduct>("associatedProductLoader", (ids) => LoadProductsAsync(mediator, ids, context));
-
-                    // IMPORTANT: In order to avoid deadlocking on the loader we use the following construct (next 2 lines):
-                    var loadHandle = loader.LoadAsync(context.Source.AssociatedObjectId).GetResultAsync();
-                    return await loadHandle;
+                    return loader.LoadAsync(context.Source.AssociatedObjectId);
                 })
             };
             AddField(productField);
@@ -48,7 +45,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
         {
             var query = context.GetCatalogQuery<LoadProductsQuery>();
             query.ObjectIds = ids.ToArray();
-            query.IncludeFields = context.SubFields.Values.GetAllNodesPaths();
+            query.IncludeFields = context.SubFields.Values.GetAllNodesPaths().Select(x=> x.Replace("associations.items.product", string.Empty));
 
             var response = await mediator.Send(query);
             return response.Products.ToDictionary(x => x.Id);
