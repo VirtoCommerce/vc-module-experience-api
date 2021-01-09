@@ -22,7 +22,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Extensions
             services.AddTransient<IMemberResolver, MemberResolver>();
             services.AddTransient<IOrganizationAggregateRepository, OrganizationAggregateRepository>();
             services.AddTransient<IContactAggregateRepository, ContactAggregateRepository>();
-            services.AddSingleton<IAuthorizationHandler, CanEditOrganizationAuthorizationHandler>();
+            services.AddSingleton<IAuthorizationHandler, ProfileAuthorizationHandler>();
 
             services.AddAutoMapper(typeof(XProfileAnchor));
 

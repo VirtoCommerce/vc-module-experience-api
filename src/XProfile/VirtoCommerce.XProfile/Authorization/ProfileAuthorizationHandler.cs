@@ -9,30 +9,29 @@ using VirtoCommerce.CustomerModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.XProfile.Commands;
 using VirtoCommerce.Platform.Core;
 using VirtoCommerce.Platform.Core.Security;
-using VirtoCommerce.Platform.Security.Authorization;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Authorization
 {
-    public class CanEditOrganizationAuthorizationRequirement : PermissionAuthorizationRequirement
+    public class ProfileAuthorizationRequirement : IAuthorizationRequirement
     {
-        public CanEditOrganizationAuthorizationRequirement() : base("CanEditOrganization")
+        public ProfileAuthorizationRequirement()
         {
         }
     }
 
-    public class CanEditOrganizationAuthorizationHandler : PermissionAuthorizationHandlerBase<CanEditOrganizationAuthorizationRequirement>
+    public class ProfileAuthorizationHandler : AuthorizationHandler<ProfileAuthorizationRequirement>
     {
         private readonly IMemberService _memberService;
         private readonly UserManager<ApplicationUser> _userManager;
 
 
-        public CanEditOrganizationAuthorizationHandler(IMemberService memberService, Func<UserManager<ApplicationUser>> userManager)
+        public ProfileAuthorizationHandler(IMemberService memberService, Func<UserManager<ApplicationUser>> userManager)
         {
             _memberService = memberService;
             _userManager = userManager();
         }
 
-        protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, CanEditOrganizationAuthorizationRequirement requirement)
+        protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, ProfileAuthorizationRequirement requirement)
         {
             var result = context.User.IsInRole(PlatformConstants.Security.SystemRoles.Administrator);
 
@@ -136,6 +135,11 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Authorization
                 {
                     result = await HasSameOrganizationAsync(currentContact, updateUserCommand.Id);
                 }
+            }
+            else if (context.Resource is UpdatePersonalDataCommand updatePersonalDataCommand)
+            {
+                updatePersonalDataCommand.UserId = currentUserId;
+                result = true;
             }
             if (result)
             {

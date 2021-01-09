@@ -221,6 +221,18 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                             })
                             .FieldType);
 
+            _ = schema.Mutation.AddField(FieldBuilder.Create<object, IdentityResult>(typeof(IdentityResultType))
+                          .Name("updatePersonalData")
+                          .Argument<NonNullGraphType<InputUpdatePersonalDataType>>(_commandName)
+                          .ResolveAsync(async context =>
+                          {
+                              var command = context.GetArgument<UpdatePersonalDataCommand>(_commandName);
+                              await CheckAuthAsync(context.GetCurrentUserId(), command);
+                              return await _mediator.Send(command);
+
+                          })
+                          .FieldType);
+
             // Security API fields
 
             #region user query
@@ -433,10 +445,8 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                         throw new ExecutionError($"User doesn't have the required permission '{permission}'.");
                     }
                 }
-
             }
-
-            var authorizationResult = await _authorizationService.AuthorizeAsync(userPrincipal, resource, new CanEditOrganizationAuthorizationRequirement());
+            var authorizationResult = await _authorizationService.AuthorizeAsync(userPrincipal, resource, new ProfileAuthorizationRequirement());
 
             if (!authorizationResult.Succeeded)
             {
