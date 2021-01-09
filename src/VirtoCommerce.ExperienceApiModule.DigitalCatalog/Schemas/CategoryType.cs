@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GraphQL;
+using GraphQL.DataLoader;
 using GraphQL.Types;
 using MediatR;
 using VirtoCommerce.CoreModule.Core.Seo;
@@ -15,7 +17,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 {
     public class CategoryType : ObjectGraphType<ExpCategory>
     {
-        public CategoryType(IMediator mediator)
+        public CategoryType(IMediator mediator, IDataLoaderContextAccessor dataLoader)
         {
             Name = "Category";
 
@@ -72,21 +74,16 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 };
             }, description: "Request related SEO info");
 
-            FieldAsync<CategoryType>("parent", resolve: async context =>
+
+            Field<CategoryType, ExpCategory>("parent").ResolveAsync(ctx =>
             {
-                if (!TryGetParentId(context, out var categoryId))
+                var loader = dataLoader.Context.GetOrAddBatchLoader<string, ExpCategory>("parentsCategoryLoader", (ids) => LoadCategoriesAsync(mediator, ids, ctx));
+                if (TryGetParentId(ctx, out var parentCategoryId))
                 {
-                    return null;
+                    return loader.LoadAsync(parentCategoryId);
                 }
-
-                var loadCategoryQuery = context.GetCatalogQuery<LoadCategoryQuery>();
-                loadCategoryQuery.ObjectIds = new[] { categoryId };
-                loadCategoryQuery.IncludeFields = context.SubFields.Values.GetAllNodesPaths();
-
-                var response = await mediator.Send(loadCategoryQuery);
-
-                return response.Categories.FirstOrDefault();
-            });
+                return null;
+            });  
 
             Field<BooleanGraphType>("hasParent", resolve: context => TryGetParentId(context, out _));
 
@@ -101,5 +98,16 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             return parentId != null;
         }
+
+        private static async Task<IDictionary<string, ExpCategory>> LoadCategoriesAsync(IMediator mediator, IEnumerable<string> ids, IResolveFieldContext context)
+        {
+            var loadCategoryQuery = context.GetCatalogQuery<LoadCategoryQuery>();
+            loadCategoryQuery.ObjectIds = ids.Where(x => x != null).ToArray();
+            loadCategoryQuery.IncludeFields = context.SubFields.Values.GetAllNodesPaths();
+
+            var response = await mediator.Send(loadCategoryQuery);
+            return response.Categories.ToDictionary(x => x.Id);
+        }
+
     }
 }
