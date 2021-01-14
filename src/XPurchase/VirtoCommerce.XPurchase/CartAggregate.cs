@@ -26,7 +26,7 @@ using Store = VirtoCommerce.StoreModule.Core.Model.Store;
 
 namespace VirtoCommerce.XPurchase
 {
-    public class CartAggregate : Entity, IAggregateRoot
+    public class CartAggregate : Entity, IAggregateRoot, ICloneable
     {
         private readonly IMarketingPromoEvaluator _marketingEvaluator;
         private readonly IShoppingCartTotalsCalculator _cartTotalsCalculator;
@@ -315,7 +315,7 @@ namespace VirtoCommerce.XPurchase
             //Remove existing address 
             Cart.Addresses.Remove(address);
             Cart.Addresses.Add(address);
-            
+
             return Task.FromResult(this);
         }
 
@@ -563,5 +563,22 @@ namespace VirtoCommerce.XPurchase
 
             return storeTaxProviders?.Results.FirstOrDefault(x => x.IsActive);
         }
+
+        #region ICloneable
+
+        public virtual object Clone()
+        {
+            var result = MemberwiseClone() as CartAggregate;
+
+            result.Cart = Cart?.Clone() as ShoppingCart;
+            result.CartProducts = CartProducts.ToDictionary(kvp => kvp.Key, kvp => kvp.Value?.Clone() as CartProduct);
+            result.Currency = Currency.Clone() as Currency;
+            result.Member = Member.Clone() as Member;
+            result.Store = Store.Clone() as Store;
+
+            return result;
+        }
+
+        #endregion ICloneable
     }
 }
