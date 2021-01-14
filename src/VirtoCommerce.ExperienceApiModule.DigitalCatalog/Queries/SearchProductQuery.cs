@@ -62,6 +62,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             if (IncludeFields.ContainsAny("slug"))
             {
                 result |= ItemResponseGroup.WithLinks;
+                result |= ItemResponseGroup.WithSeo;
             }
 
             if (IncludeFields.ContainsAny("outline", "outlines", "slug", "level"))
