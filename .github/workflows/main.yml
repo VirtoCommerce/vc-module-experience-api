@@ -48,7 +48,7 @@ jobs:
           fetch-depth: 0
 
       - name: Install VirtoCommerce.GlobalTool
-        run: dotnet tool install --global VirtoCommerce.GlobalTool
+        uses: VirtoCommerce/vc-github-actions/setup-vcbuild@master
 
       - name: Install dotnet-sonarscanner
         run: dotnet tool install --global dotnet-sonarscanner
@@ -123,3 +123,11 @@ jobs:
         uses: VirtoCommerce/vc-github-actions/publish-manifest@master
         with:
           packageUrl: ${{ steps.blobRelease.outputs.packageUrl }}
+          
+      - name: Invoke Update VST environment workflow
+        if: ${{ github.ref == 'refs/heads/dev' || (github.event_name == 'workflow_dispatch' && github.ref != 'refs/heads/master')}}
+        uses: benc-uk/workflow-dispatch@v1
+        with:
+          workflow: Update VST environment
+          token: ${{ secrets.REPO_TOKEN }}
+          inputs: '{ "blobUrl": "${{ steps.blobRelease.outputs.packageUrl }}", "artifactVersion": "${{ steps.image.outputs.fullVersion }}" }'

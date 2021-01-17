@@ -10,7 +10,7 @@ using VirtoCommerce.StoreModule.Core.Model;
 
 namespace VirtoCommerce.XPurchase
 {
-    public class CartProduct : Entity
+    public class CartProduct : Entity, ICloneable
     {
         public CartProduct(CatalogProduct product)
         {
@@ -116,5 +116,20 @@ namespace VirtoCommerce.XPurchase
                 Inventory = AllInventories.FirstOrDefault(x => x.FulfillmentCenterId == store.MainFulfillmentCenterId) ?? Inventory;
             }
         }
+
+        #region ICloneable
+
+        public virtual object Clone()
+        {
+            var result = MemberwiseClone() as CartProduct;
+
+            result.Inventory = Inventory?.Clone() as InventoryInfo;
+            result.Price = Price?.Clone() as ProductPrice;
+            result.Product = Product.Clone() as CatalogProduct;
+
+            return result;
+        }
+
+        #endregion ICloneable
     }
 }

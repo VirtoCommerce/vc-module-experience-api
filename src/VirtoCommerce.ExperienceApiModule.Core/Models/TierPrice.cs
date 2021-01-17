@@ -128,5 +128,21 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Models
             yield return TaxPercentRate;
             yield return Quantity;
         }
+
+        #region ICloneable
+
+        public override object Clone()
+        {
+            var result = MemberwiseClone() as TierPrice;
+
+            result.Currency = Currency?.Clone() as Currency;
+            result.DiscountAmount = DiscountAmount?.Clone() as Money;
+            result.Price = Price?.Clone() as Money;
+            result.TaxDetails = TaxDetails?.Select(x => x.Clone() as TaxDetail).ToList();
+
+            return result;
+        }
+
+        #endregion ICloneable
     }
 }
