@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -26,6 +27,7 @@ using Store = VirtoCommerce.StoreModule.Core.Model.Store;
 
 namespace VirtoCommerce.XPurchase
 {
+    [DebuggerDisplay("CartId = {Cart.Id}")]
     public class CartAggregate : Entity, IAggregateRoot
     {
         private readonly IMarketingPromoEvaluator _marketingEvaluator;
@@ -129,8 +131,7 @@ namespace VirtoCommerce.XPurchase
             {
                 ValidationErrors.AddRange(validationResult.Errors);
             }
-
-            if (newCartItem.CartProduct != null)
+            else if (newCartItem.CartProduct != null)
             {
                 var lineItem = _mapper.Map<LineItem>(newCartItem.CartProduct);
                 lineItem.Quantity = newCartItem.Quantity;
@@ -312,17 +313,17 @@ namespace VirtoCommerce.XPurchase
         public virtual Task<CartAggregate> AddOrUpdateCartAddress(CartModule.Core.Model.Address address)
         {
             EnsureCartExists();
-            //Remove existing address 
+            //Remove existing address
             Cart.Addresses.Remove(address);
             Cart.Addresses.Add(address);
-            
+
             return Task.FromResult(this);
         }
 
         public virtual Task<CartAggregate> RemoveCartAddress(CartModule.Core.Model.Address address)
         {
             EnsureCartExists();
-            //Remove existing address 
+            //Remove existing address
             Cart.Addresses.Remove(address);
 
             return Task.FromResult(this);
@@ -393,7 +394,6 @@ namespace VirtoCommerce.XPurchase
         {
             EnsureCartExists();
 
-            ValidationErrors.Clear();
             var result = await new CartValidator(validationContext).ValidateAsync(this, ruleSet: ValidationRuleSet);
             if (!result.IsValid)
             {
