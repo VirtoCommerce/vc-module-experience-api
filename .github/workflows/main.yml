@@ -130,4 +130,4 @@ jobs:
         with:
           workflow: Update VST environment
           token: ${{ secrets.REPO_TOKEN }}
-          inputs: '{ "blobUrl": "${{ steps.publish.outputs.blobUrl }}", "artifactVersion": "${{ steps.image.outputs.fullVersion }}" }'
+          inputs: '{ "blobUrl": "${{ steps.blobRelease.outputs.packageUrl }}", "artifactVersion": "${{ steps.image.outputs.fullVersion }}" }'
