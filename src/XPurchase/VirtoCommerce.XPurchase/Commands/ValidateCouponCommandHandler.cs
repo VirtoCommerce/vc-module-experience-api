@@ -19,7 +19,10 @@ namespace VirtoCommerce.XPurchase.Commands
 
             if (cartAggregate != null)
             {
-                return await cartAggregate.ValidateCouponAsync(request.Coupon);
+                var clonedCartAggrerate = cartAggregate.Clone() as CartAggregate;
+                clonedCartAggrerate.Cart.Coupons = new[] { request.Coupon };
+
+                return await clonedCartAggrerate.ValidateCouponAsync(request.Coupon);
             }
 
             return false;

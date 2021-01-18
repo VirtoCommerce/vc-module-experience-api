@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -26,7 +27,8 @@ using Store = VirtoCommerce.StoreModule.Core.Model.Store;
 
 namespace VirtoCommerce.XPurchase
 {
-    public class CartAggregate : Entity, IAggregateRoot
+    [DebuggerDisplay("CartId = {Cart.Id}")]
+    public class CartAggregate : Entity, IAggregateRoot, ICloneable
     {
         private readonly IMarketingPromoEvaluator _marketingEvaluator;
         private readonly IShoppingCartTotalsCalculator _cartTotalsCalculator;
@@ -129,8 +131,7 @@ namespace VirtoCommerce.XPurchase
             {
                 ValidationErrors.AddRange(validationResult.Errors);
             }
-
-            if (newCartItem.CartProduct != null)
+            else if (newCartItem.CartProduct != null)
             {
                 var lineItem = _mapper.Map<LineItem>(newCartItem.CartProduct);
                 lineItem.Quantity = newCartItem.Quantity;
@@ -312,17 +313,17 @@ namespace VirtoCommerce.XPurchase
         public virtual Task<CartAggregate> AddOrUpdateCartAddress(CartModule.Core.Model.Address address)
         {
             EnsureCartExists();
-            //Remove existing address 
+            //Remove existing address
             Cart.Addresses.Remove(address);
             Cart.Addresses.Add(address);
-            
+
             return Task.FromResult(this);
         }
 
         public virtual Task<CartAggregate> RemoveCartAddress(CartModule.Core.Model.Address address)
         {
             EnsureCartExists();
-            //Remove existing address 
+            //Remove existing address
             Cart.Addresses.Remove(address);
 
             return Task.FromResult(this);
@@ -393,7 +394,6 @@ namespace VirtoCommerce.XPurchase
         {
             EnsureCartExists();
 
-            ValidationErrors.Clear();
             var result = await new CartValidator(validationContext).ValidateAsync(this, ruleSet: ValidationRuleSet);
             if (!result.IsValid)
             {
@@ -563,5 +563,22 @@ namespace VirtoCommerce.XPurchase
 
             return storeTaxProviders?.Results.FirstOrDefault(x => x.IsActive);
         }
+
+        #region ICloneable
+
+        public virtual object Clone()
+        {
+            var result = MemberwiseClone() as CartAggregate;
+
+            result.Cart = Cart?.Clone() as ShoppingCart;
+            result.CartProducts = CartProducts.ToDictionary(kvp => kvp.Key, kvp => kvp.Value?.Clone() as CartProduct);
+            result.Currency = Currency.Clone() as Currency;
+            result.Member = Member.Clone() as Member;
+            result.Store = Store.Clone() as Store;
+
+            return result;
+        }
+
+        #endregion ICloneable
     }
 }

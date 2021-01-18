@@ -178,5 +178,23 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Models
                 }
             }
         }
+
+        #region ICloneable
+
+        public override object Clone()
+        {
+            var result = MemberwiseClone() as ProductPrice;
+
+            result.Currency = Currency?.Clone() as Currency;
+            result.DiscountAmount = DiscountAmount?.Clone() as Money;
+            result.ListPrice = ListPrice?.Clone() as Money;
+            result.SalePrice = SalePrice?.Clone() as Money;
+            result.TierPrices = TierPrices?.Select(x => x.Clone() as TierPrice).ToList();
+            result.Discounts = Discounts?.Select(x => x.Clone() as Discount).ToList();
+
+            return result;
+        }
+
+        #endregion ICloneable
     }
 }
