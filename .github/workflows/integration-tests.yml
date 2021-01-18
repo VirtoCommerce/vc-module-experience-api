@@ -78,6 +78,7 @@ jobs:
         storefrontImage: docker.pkg.github.com/virtocommerce/vc-storefront/storefront
         validateSwagger: 'false'
         installModule: 'true'
+        moduleId: ${{ steps.image.outputs.moduleId }}
 
     - name: Katalon Studio Github Action
       uses: katalon-studio/katalon-studio-github-action@v2.2
