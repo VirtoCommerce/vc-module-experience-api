@@ -27,6 +27,12 @@ namespace VirtoCommerce.XPurchase.Commands
                 CartProduct = product
             });
 
+            // Prevent saving invalid cart
+            if (!cartAggregate.IsValid)
+            {
+                return cartAggregate;
+            }
+
             return await SaveCartAsync(cartAggregate);
         }
     }

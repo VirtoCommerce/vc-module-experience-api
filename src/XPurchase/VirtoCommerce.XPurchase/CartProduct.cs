@@ -62,16 +62,20 @@ namespace VirtoCommerce.XPurchase
             AllPrices.Clear();
             Price = null;
 
+            // Return correct currency from price
+            Currency GetCurrencyFromPrice(PricingModule.Core.Model.Price price) => new Currency(new CoreModule.Core.Common.Language(currency.CultureName), price.Currency);
+
             AllPrices = prices.Where(x => x.ProductId == Id)
                               .Select(x =>
                               {
-                                  var productPrice = new ProductPrice(currency)
+                                  var productPrice = new ProductPrice(GetCurrencyFromPrice(x))
                                   {
                                       PricelistId = x.PricelistId,
-                                      ListPrice = new Money(x.List, currency),
+                                      ListPrice = new Money(x.List, GetCurrencyFromPrice(x)),
                                       MinQuantity = x.MinQuantity
                                   };
-                                  productPrice.SalePrice = x.Sale == null ? productPrice.ListPrice : new Money(x.Sale.GetValueOrDefault(), currency);
+
+                                  productPrice.SalePrice = !x.Sale.HasValue ? productPrice.ListPrice : new Money(x.Sale.Value, GetCurrencyFromPrice(x));
 
                                   return productPrice;
                               }).ToList();

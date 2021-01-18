@@ -24,7 +24,7 @@ namespace VirtoCommerce.XPurchase.Commands
             CartAggregate result;
             if (!string.IsNullOrEmpty(request.CartId))
             {
-                result = await GetCartById(request.CartId, request.Language);
+                result = await GetCartById(request.CartId, request.Language, request.Currency);
             }
             else
             {
@@ -37,7 +37,7 @@ namespace VirtoCommerce.XPurchase.Commands
             return result;
         }
 
-        protected virtual async Task<CartAggregate> GetCartById(string cartId, string language) => await CartRepository.GetCartByIdAsync(cartId, language);
+        protected virtual async Task<CartAggregate> GetCartById(string cartId, string language, string currency) => await CartRepository.GetCartByIdAsync(cartId, language, currency);
 
         protected virtual Task<CartAggregate> CreateNewCartAggregateAsync(TCartCommand request)
         {

@@ -68,6 +68,8 @@ namespace VirtoCommerce.XPurchase.Tests.Helpers
 
                 var cartProduct = new CartProduct(catalogProduct);
 
+                var currency = GetCurrency();
+
                 cartProduct.ApplyPrices(new List<Price>()
                 {
                     new Price
@@ -76,8 +78,9 @@ namespace VirtoCommerce.XPurchase.Tests.Helpers
                         PricelistId = _fixture.Create<string>(),
                         List = ItemCost,
                         MinQuantity = 1,
+                        Currency = currency.Code
                     }
-                }, GetCurrency());
+                }, currency);
 
                 var store = GetStore();
 
@@ -110,7 +113,10 @@ namespace VirtoCommerce.XPurchase.Tests.Helpers
                                             .With(x => x.ListPrice, ItemCost)
                                             .Create());
 
-            _fixture.Register<Price>(() => null);
+            _fixture.Register(() => new Price
+            {
+                Currency = GetCurrency().Code
+            });
 
             _cartProductServiceMock = new Mock<ICartProductService>();
 

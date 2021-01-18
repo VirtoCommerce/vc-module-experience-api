@@ -92,7 +92,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Models
         /// <returns></returns>
         public TierPrice GetTierPrice(int quantity)
         {
-            var retVal = TierPrices.OrderBy(x => x.Quantity).LastOrDefault(x => x.Quantity <= quantity);
+            var retVal = TierPrices.OrderBy(x => x.Quantity).LastOrDefault(x => x.Quantity <= quantity && x.Currency == Currency);
             if (retVal == null)
             {
                 retVal = new TierPrice(SalePrice, 1);
@@ -150,7 +150,6 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Models
             {
                 TierPrices.Apply(x => x.ApplyTaxRates(productTaxRates));
             }
-
         }
 
         #endregion ITaxable Members
