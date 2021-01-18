@@ -67,7 +67,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder
         protected virtual async Task<IList<CustomerOrderAggregate>> InnerGetCustomerOrderAggregatesFromCustomerOrdersAsync(IList<CustomerOrder> orders, string cultureName = null)
         {
             var currencies = await _currencyService.GetAllCurrenciesAsync();
-            return orders.Select(x => new CustomerOrderAggregate(x, currencies.GetCurrencyForLanguage(x.Currency, cultureName ?? x.LanguageCode))).ToList();
+            return orders.Select(x => new CustomerOrderAggregate(x.Clone() as CustomerOrder, currencies.GetCurrencyForLanguage(x.Currency, cultureName ?? x.LanguageCode))).ToList();
         }
                
     }
