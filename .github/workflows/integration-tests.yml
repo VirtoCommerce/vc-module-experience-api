@@ -54,11 +54,11 @@ jobs:
 
 
     # Temporary commented for speedup workflow test
-    # - name: Build
-    #   run: vc-build Compile
+    - name: Build
+      run: vc-build Compile
 
-    # - name: Packaging
-    #   run: vc-build Compress -skip Clean+Restore+Compile+Test
+    - name: Packaging
+      run: vc-build Compress -skip Clean+Restore+Compile+Test
 
     - name: Docker Login
       uses: azure/docker-login@v1
