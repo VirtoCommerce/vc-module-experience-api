@@ -38,7 +38,7 @@ jobs:
         dotnet-version: '3.1.x'
 
     - name: Install VirtoCommerce.GlobalTool
-      run: dotnet tool install --global VirtoCommerce.GlobalTool
+      uses: VirtoCommerce/vc-github-actions/setup-vcbuild@master
 
     - name: Get Image Version
       uses: VirtoCommerce/vc-github-actions/get-image-version@master
@@ -68,7 +68,7 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Docker Env
-      uses: VirtoCommerce/vc-github-actions/docker-env@master
+      uses: VirtoCommerce/vc-github-actions/docker-env@VP-6536
       with:
         githubUser: ${{ env.GITHUB_ACTOR }}
         githubToken: ${{ env.GITHUB_TOKEN }}
@@ -77,6 +77,7 @@ jobs:
         platformImage: docker.pkg.github.com/virtocommerce/vc-platform/platform
         storefrontImage: docker.pkg.github.com/virtocommerce/vc-storefront/storefront
         validateSwagger: 'false'
+        installModule: 'true'
 
     - name: Katalon Studio Github Action
       uses: katalon-studio/katalon-studio-github-action@v2.2
