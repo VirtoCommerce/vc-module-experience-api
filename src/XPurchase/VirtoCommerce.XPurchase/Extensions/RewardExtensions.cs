@@ -43,7 +43,7 @@ namespace VirtoCommerce.XPurchase.Extensions
                     Currency = shoppingCart.Currency,
                     Description = reward.Promotion?.Description,
                     DiscountAmount = reward.GetRewardAmount(shoppingCart.SubTotal, 1),
-                    PromotionId = reward.PromotionId,
+                    PromotionId = reward.PromotionId ?? reward.Promotion?.Id,
                 };
                 if (shoppingCart.Discounts == null)
                 {
