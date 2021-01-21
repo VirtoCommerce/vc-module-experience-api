@@ -68,7 +68,7 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Docker Env
-      uses: VirtoCommerce/vc-github-actions/docker-env@VP-6536
+      uses: VirtoCommerce/vc-github-actions/docker-env@master
       with:
         githubUser: ${{ env.GITHUB_ACTOR }}
         githubToken: ${{ env.GITHUB_TOKEN }}
