@@ -1,4 +1,5 @@
 using FluentValidation;
+using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.XPurchase.Validators
 {
@@ -14,7 +15,7 @@ namespace VirtoCommerce.XPurchase.Validators
             {
                 RuleFor(x => x).Custom((newCartItem, context) =>
                 {
-                    if (newCartItem.CartProduct != null && !new ProductIsAvailableSpecification().IsSatisfiedBy(newCartItem.CartProduct, newCartItem.Quantity))
+                    if (newCartItem.CartProduct != null && !AbstractTypeFactory<ProductIsAvailableSpecification>.TryCreateInstance().IsSatisfiedBy(newCartItem.CartProduct, newCartItem.Quantity))
                     {
                         context.AddFailure(CartErrorDescriber.ProductUnavailableError(newCartItem.CartProduct));
                     }
