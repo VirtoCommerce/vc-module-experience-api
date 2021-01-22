@@ -1,10 +1,12 @@
+using VirtoCommerce.Platform.Core.Common;
+
 namespace VirtoCommerce.XPurchase
 {
     public class ProductIsAvailableSpecification
     {
         public virtual bool IsSatisfiedBy(CartProduct product, long requestedQuantity)
         {
-            var result = new ProductIsBuyableSpecification().IsSatisfiedBy(product);
+            var result = AbstractTypeFactory<ProductIsBuyableSpecification>.TryCreateInstance().IsSatisfiedBy(product);
 
             if (result && product.Product.TrackInventory.GetValueOrDefault(false))
             {

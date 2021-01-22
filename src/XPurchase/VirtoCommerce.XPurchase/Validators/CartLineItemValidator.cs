@@ -15,13 +15,13 @@ namespace VirtoCommerce.XPurchase.Validators
                 RuleFor(x => x).Custom((lineItem, context) =>
                 {
                     var cartProduct = allCartProducts.FirstOrDefault(x => x.Id.EqualsInvariant(lineItem.ProductId));
-                    if (cartProduct == null || !new ProductIsBuyableSpecification().IsSatisfiedBy(cartProduct))
+                    if (cartProduct == null || !AbstractTypeFactory<ProductIsBuyableSpecification>.TryCreateInstance().IsSatisfiedBy(cartProduct))
                     {
                         context.AddFailure(CartErrorDescriber.ProductUnavailableError(lineItem));
                     }
                     else
                     {
-                        var isProductAvailable = new ProductIsAvailableSpecification().IsSatisfiedBy(cartProduct, lineItem.Quantity);
+                        var isProductAvailable = AbstractTypeFactory<ProductIsAvailableSpecification>.TryCreateInstance().IsSatisfiedBy(cartProduct, lineItem.Quantity);
                         if (!isProductAvailable)
                         {
                             context.AddFailure(CartErrorDescriber.ProductQtyChangedError(lineItem, cartProduct.AvailableQuantity));

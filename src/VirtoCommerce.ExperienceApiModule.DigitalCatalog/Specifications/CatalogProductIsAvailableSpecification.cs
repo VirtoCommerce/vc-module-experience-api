@@ -8,7 +8,7 @@ namespace VirtoCommerce.XDigitalCatalog.Specifications
     {
         public virtual bool IsSatisfiedBy(ExpProduct expProduct)
         {
-            var result = new CatalogProductIsBuyableSpecification().IsSatisfiedBy(expProduct);
+            var result = AbstractTypeFactory<CatalogProductIsBuyableSpecification>.TryCreateInstance().IsSatisfiedBy(expProduct);
 
             if (result && expProduct.IndexedProduct.TrackInventory.GetValueOrDefault(false) && !expProduct.AllInventories.IsNullOrEmpty())
             {
