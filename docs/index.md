@@ -46,3 +46,9 @@ Read this [article...](./getting-started.md)
 ## How to extend
 Read this [article...](./x-api-extensions.md)
 
+## Limitation
+
+The project has integration with Elastic Search 7.x and Azure Search Service providers for indexing search.
+
+Lucene search provider not supported.
+
