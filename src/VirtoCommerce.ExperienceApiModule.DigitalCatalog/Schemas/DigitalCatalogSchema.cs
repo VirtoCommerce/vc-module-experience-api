@@ -76,7 +76,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 .Name("products")
                 .Argument<NonNullGraphType<StringGraphType>>("storeId", "The store id where products are searched")
                 .Argument<StringGraphType>("userId", "The customer id for search result impersonalization")
-                .Argument<StringGraphType>("currencyCode", "The currency for which all prices data will be returned")
+                .Argument<NonNullGraphType<StringGraphType>>("currencyCode", "The currency for which all prices data will be returned")
                 .Argument<StringGraphType>("cultureName", "The culture name for cart context product")
                 .Argument<StringGraphType>("query", "The query parameter performs the full-text search")
                 .Argument<StringGraphType>("filter", "This parameter applies a filter to the query results")
