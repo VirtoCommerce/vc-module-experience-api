@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using GraphQL;
-using GraphQL.Types;
 using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
@@ -110,6 +109,15 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
                 CustomFormatting = x.CustomFormatting
             }).ToArray();
             context.UserContext["allCurrencies"] = currenciesWithCulture;
+        }
+
+        public static void SetCurrency(this IResolveFieldContext context, Currency currency)
+        {
+            if (currency == null)
+            {
+                throw new ArgumentNullException(nameof(currency));
+            }
+            context.UserContext["currencyCode"] = currency.Code;
         }
 
         public static Currency GetCurrencyByCode<T>(this IResolveFieldContext<T> userContext, string currencyCode)
