@@ -205,6 +205,12 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             }
 
             var response = await mediator.Send(query);
+            var currencyCode = context.GetArgumentOrValue<string>("currencyCode");
+            if (string.IsNullOrWhiteSpace(currencyCode))
+            {
+                context.SetCurrency(response.Currency);
+            }
+            
             var result = new ProductsConnection<ExpProduct>(response.Results, skip, Convert.ToInt32(context.After ?? 0.ToString()), response.TotalCount)
             {
                 Facets = response.Facets
