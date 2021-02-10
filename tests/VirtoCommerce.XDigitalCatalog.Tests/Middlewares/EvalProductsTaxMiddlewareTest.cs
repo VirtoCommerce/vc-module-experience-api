@@ -84,6 +84,7 @@ namespace VirtoCommerce.XDigitalCatalog.Tests.Middlewares
         {
             // Arrange
             var taxProvider = new Mock<TaxProvider>();
+            taxProvider.Object.IsActive = true;
 
             var mapper = new Mock<IMapper>();
             var taxProviderSearchService = new Mock<ITaxProviderSearchService>();
@@ -134,6 +135,8 @@ namespace VirtoCommerce.XDigitalCatalog.Tests.Middlewares
             productPrice.ProductId = "someId";
 
             var taxProvider = new Mock<TaxProvider>();
+            taxProvider.Object.IsActive = true;
+
             taxProvider.Setup(x => x.CalculateRates(It.IsAny<TaxEvaluationContext>()))
                 .Returns(() => new List<TaxRate>() {new TaxRate() {Currency = "USD", Rate = 50, Line = new TaxLine() {Id = "someId", Quantity = 0}}});
 
