@@ -110,7 +110,7 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
                 throw new ArgumentNullException(nameof(phraseParser));
             }
 
-            if (filterPhrase == null)
+            if (string.IsNullOrEmpty(filterPhrase))
             {
                 return this;
             }
