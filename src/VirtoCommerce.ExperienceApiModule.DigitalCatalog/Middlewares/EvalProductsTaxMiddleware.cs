@@ -46,7 +46,7 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
             {
                 //Evaluate taxes
                 var storeTaxProviders = await _taxProviderSearchService.SearchTaxProvidersAsync(new TaxProviderSearchCriteria { StoreIds = new[] { query.StoreId } });
-                var activeTaxProvider = storeTaxProviders.Results.FirstOrDefault();
+                var activeTaxProvider = storeTaxProviders.Results.FirstOrDefault(x => x.IsActive);
                 if (activeTaxProvider != null)
                 {
                     var taxEvalContext = new TaxEvaluationContext { Currency = query.CurrencyCode, StoreId = query.StoreId, CustomerId = query.UserId };
