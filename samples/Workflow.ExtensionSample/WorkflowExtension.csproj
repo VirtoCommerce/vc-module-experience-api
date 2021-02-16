@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Elsa" Version="1.5.3.1369" />
+        <PackageReference Include="Elsa.Activities.Email" Version="1.5.3.1369" />
+        <PackageReference Include="Elsa.Activities.Http" Version="1.5.3.1369" />
+        <PackageReference Include="Elsa.Activities.Timers" Version="1.5.3.1369" />
+        <PackageReference Include="Elsa.Dashboard" Version="1.5.3.1369" />
+        <PackageReference Include="Elsa.Persistence.EntityFrameworkCore" Version="1.5.3.1369" />
+        <PackageReference Include="Fluid.Core" Version="1.0.0-beta-9693" />
+        <PackageReference Include="MediatR" Version="9.0.0" />
+        <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="9.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Update="GetMyCoolProductsWorkflow.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
+
+
+
+</Project>

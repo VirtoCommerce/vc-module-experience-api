@@ -270,3 +270,4 @@ __pycache__/
 
 # Webpack output
 dist/
+/samples/Workflow.ExtensionSample/elsa.db

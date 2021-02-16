@@ -1,0 +1,124 @@
+{
+  "activities": [
+    {
+      "id": "ab01d145-ca83-40ea-86de-7ffa13ef3edb",
+      "top": 164,
+      "left": 96,
+      "type": "Start",
+      "state": {}
+    },
+    {
+      "id": "cda3b819-be29-4c13-8149-0ac7aa2a0e72",
+      "top": 151,
+      "left": 438,
+      "type": "EvalProductsDiscountsActivity",
+      "state": {
+        "response": {
+          "expression": "input('Response')",
+          "syntax": "JavaScript"
+        },
+        "name": "",
+        "title": "",
+        "description": ""
+      }
+    },
+    {
+      "id": "79501c30-b2b9-4bbd-86b7-df3903c07071",
+      "top": 154,
+      "left": 833,
+      "type": "EvalProductsPricesActivity",
+      "state": {
+        "response": {
+          "expression": "input('Response')",
+          "syntax": "JavaScript"
+        },
+        "name": "",
+        "title": "",
+        "description": ""
+      }
+    },
+    {
+      "id": "001aafc9-16a5-4e11-8fa8-7f9fe09591e3",
+      "top": 397,
+      "left": 1264,
+      "type": "SetVariable",
+      "state": {
+        "variableName": "Result",
+        "valueExpression": {
+          "expression": "HttpExtension.Response.Content",
+          "syntax": "JavaScript"
+        },
+        "name": "",
+        "title": "",
+        "description": ""
+      }
+    },
+    {
+      "id": "aa2cb38d-ebb0-48cd-8188-c2fb38f27042",
+      "top": 392,
+      "left": 837,
+      "type": "Finish",
+      "state": {}
+    },
+    {
+      "id": "229ea9b3-0e7a-498d-bf90-f2872f4039ce",
+      "top": 161,
+      "left": 1250,
+      "type": "SendHttpRequest",
+      "state": {
+        "url": {
+          "expression": "https://localhost:44350/api/load-product-inventories",
+          "syntax": "Literal"
+        },
+        "method": "POST",
+        "content": {
+          "expression": "{{ Input.Request | json2 }}",
+          "syntax": "Liquid"
+        },
+        "contentType": "application/json",
+        "authorization": {
+          "expression": "",
+          "syntax": "Literal"
+        },
+        "requestHeaders": {
+          "expression": "",
+          "syntax": "Literal"
+        },
+        "readContent": true,
+        "supportedStatusCodes": [
+          "200"
+        ],
+        "name": "HttpExtension",
+        "title": "",
+        "description": ""
+      }
+    }
+  ],
+  "connections": [
+    {
+      "sourceActivityId": "ab01d145-ca83-40ea-86de-7ffa13ef3edb",
+      "destinationActivityId": "cda3b819-be29-4c13-8149-0ac7aa2a0e72",
+      "outcome": "Done"
+    },
+    {
+      "sourceActivityId": "cda3b819-be29-4c13-8149-0ac7aa2a0e72",
+      "destinationActivityId": "79501c30-b2b9-4bbd-86b7-df3903c07071",
+      "outcome": "Done"
+    },
+    {
+      "sourceActivityId": "79501c30-b2b9-4bbd-86b7-df3903c07071",
+      "destinationActivityId": "229ea9b3-0e7a-498d-bf90-f2872f4039ce",
+      "outcome": "Done"
+    },
+    {
+      "sourceActivityId": "229ea9b3-0e7a-498d-bf90-f2872f4039ce",
+      "destinationActivityId": "001aafc9-16a5-4e11-8fa8-7f9fe09591e3",
+      "outcome": "200"
+    },
+    {
+      "sourceActivityId": "001aafc9-16a5-4e11-8fa8-7f9fe09591e3",
+      "destinationActivityId": "aa2cb38d-ebb0-48cd-8188-c2fb38f27042",
+      "outcome": "Done"
+    }
+  ]
+}
