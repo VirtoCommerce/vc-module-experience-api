@@ -159,6 +159,9 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Authorization
 
         private async Task<bool> HasSameOrganizationAsync(Contact currentContact, string contactId)
         {
+            if (currentContact is null)
+                return false;
+
             var contact = await GetCustomerAsync(contactId) as Contact;
             return currentContact.Organizations.Intersect(contact?.Organizations ?? Array.Empty<string>()).Any();
         }
