@@ -159,15 +159,11 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Authorization
 
         private async Task<bool> HasSameOrganizationAsync(Contact currentContact, string contactId)
         {
-            var result = false;
+            if (currentContact is null)
+                return false;
 
-            if (currentContact != null)
-            {
-                var contact = await GetCustomerAsync(contactId) as Contact;
-                result = currentContact.Organizations.Intersect(contact?.Organizations ?? Array.Empty<string>()).Any();
-            }
-
-            return result;
+            var contact = await GetCustomerAsync(contactId) as Contact;
+            return currentContact.Organizations.Intersect(contact?.Organizations ?? Array.Empty<string>()).Any();
         }
 
         //TODO: DRY violation in many places in this solution. Move to abstraction to from multiple boundaries
