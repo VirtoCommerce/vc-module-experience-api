@@ -2,7 +2,6 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using VirtoCommerce.Platform.Core.Security;
 using VirtoCommerce.StoreModule.Core.Services;
@@ -14,13 +13,11 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
     {
         private readonly Func<UserManager<ApplicationUser>> _userManagerFactory;
         private readonly IStoreNotificationSender _storeNotificationSender;
-        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public SendVerifyEmailCommandHandler(Func<UserManager<ApplicationUser>> userManagerFactory, IStoreNotificationSender storeNotificationSender, IHttpContextAccessor httpContextAccessor)
+        public SendVerifyEmailCommandHandler(Func<UserManager<ApplicationUser>> userManagerFactory, IStoreNotificationSender storeNotificationSender)
         {
             _userManagerFactory = userManagerFactory;
             _storeNotificationSender = storeNotificationSender;
-            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<bool> Handle(SendVerifyEmailCommand request, CancellationToken cancellationToken)
