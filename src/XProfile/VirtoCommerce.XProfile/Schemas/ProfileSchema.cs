@@ -48,7 +48,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                     {
                         var result = await _mediator.Send(new GetUserQuery
                         {
-                             UserName = userName
+                            UserName = userName
                         });
                         return result;
                     }
@@ -163,7 +163,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                             })
                             .FieldType);
 
-            
+
             _ = schema.Mutation.AddField(FieldBuilder.Create<OrganizationAggregate, OrganizationAggregate>(typeof(OrganizationType))
                             .Name("updateOrganization")
                             .Argument<NonNullGraphType<InputUpdateOrganizationType>>(_commandName)
@@ -229,9 +229,26 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                               var command = context.GetArgument<UpdatePersonalDataCommand>(_commandName);
                               await CheckAuthAsync(context.GetCurrentUserId(), command);
                               return await _mediator.Send(command);
-
                           })
                           .FieldType);
+
+            _ = schema.Mutation.AddField(FieldBuilder.Create<object, bool>(typeof(BooleanGraphType))
+                        .Name("sendVerifyEmail")
+                        .Argument<InputSendVerifyEmailType>(_commandName)
+                        .ResolveAsync(async context =>
+                        {
+                            var command = context.GetArgument<SendVerifyEmailCommand>(_commandName);
+
+                            var isAuthenticated = ((GraphQLUserContext)context.UserContext).User?.Identity?.IsAuthenticated ?? false;
+                            if (isAuthenticated)
+                            {
+                                command.Email = await GetUserEmailAsync(context.GetCurrentUserId());
+                            }
+
+                            return await _mediator.Send(command);
+                        })
+                        .FieldType);
+
 
             // Security API fields
 
@@ -452,6 +469,15 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             {
                 throw new ExecutionError($"Access denied");
             }
+        }
+
+        private async Task<string> GetUserEmailAsync(string userId)
+        {
+            var signInManager = _signInManagerFactory();
+
+            var user = await signInManager.UserManager.FindByIdAsync(userId);
+
+            return user?.Email;
         }
     }
 }

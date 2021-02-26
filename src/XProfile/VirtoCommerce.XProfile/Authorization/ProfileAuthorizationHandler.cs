@@ -85,6 +85,11 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Authorization
                 //Anonymous user can create user
                 result = true;
             }
+            else if (context.Resource is SendVerifyEmailCommand)
+            {
+                //Anonymous user request verification email
+                result = true;
+            }
             else if (context.Resource is DeleteContactCommand deleteContactCommand && currentContact != null)
             {
                 result = await HasSameOrganizationAsync(currentContact, deleteContactCommand.ContactId);

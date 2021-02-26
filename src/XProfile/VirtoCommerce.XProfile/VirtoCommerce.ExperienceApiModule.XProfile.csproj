@@ -14,8 +14,9 @@
         <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="8.0.0" />
         <PackageReference Include="VirtoCommerce.CustomerModule.Core" Version="3.1.0" />
         <PackageReference Include="VirtoCommerce.MarketingModule.Core" Version="3.6.0" />
-        <PackageReference Include="VirtoCommerce.Platform.Core" Version="3.11.0" />
+        <PackageReference Include="VirtoCommerce.Platform.Core" Version="3.47.0" />
         <PackageReference Include="VirtoCommerce.PricingModule.Core" Version="3.2.0" />
+        <PackageReference Include="VirtoCommerce.StoreModule.Core" Version="3.14.0" />
 
     </ItemGroup>
 
