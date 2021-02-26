@@ -48,7 +48,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                     {
                         var result = await _mediator.Send(new GetUserQuery
                         {
-                             UserName = userName
+                            UserName = userName
                         });
                         return result;
                     }
@@ -163,7 +163,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                             })
                             .FieldType);
 
-            
+
             _ = schema.Mutation.AddField(FieldBuilder.Create<OrganizationAggregate, OrganizationAggregate>(typeof(OrganizationType))
                             .Name("updateOrganization")
                             .Argument<NonNullGraphType<InputUpdateOrganizationType>>(_commandName)
@@ -232,6 +232,17 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 
                           })
                           .FieldType);
+
+            _ = schema.Mutation.AddField(FieldBuilder.Create<object, bool>(typeof(BooleanGraphType))
+                        .Name("sendVerifyEmail")
+                        .Argument<InputSendVerifyEmailType>(_commandName)
+                        .ResolveAsync(async context =>
+                        {
+                            var command = context.GetArgument<SendVerifyEmailCommand>(_commandName);
+                            return await _mediator.Send(command);
+                        })
+                        .FieldType);
+
 
             // Security API fields
 

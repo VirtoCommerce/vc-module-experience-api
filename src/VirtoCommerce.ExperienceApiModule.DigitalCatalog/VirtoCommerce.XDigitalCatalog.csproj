@@ -19,8 +19,8 @@
         <PackageReference Include="VirtoCommerce.CatalogModule.Core" Version="3.4.0" />
         <PackageReference Include="VirtoCommerce.MarketingModule.Core" Version="3.6.0" />
         <PackageReference Include="VirtoCommerce.PricingModule.Core" Version="3.2.0" />
-        <PackageReference Include="VirtoCommerce.Platform.Core" Version="3.11.0" />
-        <PackageReference Include="VirtoCommerce.StoreModule.Core" Version="3.1.0" />
+        <PackageReference Include="VirtoCommerce.Platform.Core" Version="3.47.0" />
+        <PackageReference Include="VirtoCommerce.StoreModule.Core" Version="3.14.0" />
         <PackageReference Include="VirtoCommerce.SearchModule.Core" Version="3.2.0" />
         <PackageReference Include="VirtoCommerce.Tools" Version="3.0.0-rc.5" />
     </ItemGroup>
