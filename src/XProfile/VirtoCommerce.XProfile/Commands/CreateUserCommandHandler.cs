@@ -39,22 +39,10 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
                 {
                     var user = await userManager.FindByNameAsync(request.UserName);
 
-                    await SendUserEmailVerificationAsync(user);
+                    await _storeNotificationSender.SendUserEmailVerificationAsync(user);
                 }
 
                 return result;
-            }
-        }
-
-        private async Task SendUserEmailVerificationAsync(ApplicationUser user)
-        {
-            try
-            {
-                await _storeNotificationSender.SendUserEmailVerificationAsync(user);
-            }
-            catch (Exception)
-            {
-                // suppress all exceptions 
             }
         }
     }

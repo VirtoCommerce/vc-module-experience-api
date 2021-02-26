@@ -27,43 +27,14 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
         {
             using (var userManager = _userManagerFactory())
             {
-                var user = await GetUserAsync(request.Email, userManager);
+                var user = await userManager.FindByEmailAsync(request.Email);
 
                 if (user == null)
                     return true;
 
-                await SendUserEmailVerificationAsync(user);
+                await _storeNotificationSender.SendUserEmailVerificationAsync(user);
 
                 return true;
-            }
-        }
-
-        private async Task<ApplicationUser> GetUserAsync(string userEmail, UserManager<ApplicationUser> userManager)
-        {
-            var context = _httpContextAccessor.HttpContext;
-
-            if (context != null &&
-                context.User != null &&
-                context.User.Identity != null &&
-                context.User.Identity.IsAuthenticated)
-            {
-                return await userManager.FindByNameAsync(context.User.Identity.Name);
-            }
-            else
-            {
-                return await userManager.FindByEmailAsync(userEmail);
-            }
-        }
-
-        private async Task SendUserEmailVerificationAsync(ApplicationUser user)
-        {
-            try
-            {
-                await _storeNotificationSender.SendUserEmailVerificationAsync(user);
-            }
-            catch (Exception)
-            {
-                // suppress all exceptions 
             }
         }
     }

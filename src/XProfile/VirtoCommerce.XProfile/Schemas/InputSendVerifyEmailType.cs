@@ -2,7 +2,7 @@ using GraphQL.Types;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 {
-    class InputSendVerifyEmailType : InputObjectGraphType
+    public class InputSendVerifyEmailType : InputObjectGraphType
     {
         public InputSendVerifyEmailType()
         {

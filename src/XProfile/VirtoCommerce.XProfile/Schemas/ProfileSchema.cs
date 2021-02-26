@@ -229,7 +229,6 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                               var command = context.GetArgument<UpdatePersonalDataCommand>(_commandName);
                               await CheckAuthAsync(context.GetCurrentUserId(), command);
                               return await _mediator.Send(command);
-
                           })
                           .FieldType);
 
@@ -239,6 +238,13 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                         .ResolveAsync(async context =>
                         {
                             var command = context.GetArgument<SendVerifyEmailCommand>(_commandName);
+
+                            var isAuthenticated = ((GraphQLUserContext)context.UserContext).User?.Identity?.IsAuthenticated ?? false;
+                            if (isAuthenticated)
+                            {
+                                command.Email = await GetUserEmailAsync(context.GetCurrentUserId());
+                            }
+
                             return await _mediator.Send(command);
                         })
                         .FieldType);
@@ -463,6 +469,15 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             {
                 throw new ExecutionError($"Access denied");
             }
+        }
+
+        private async Task<string> GetUserEmailAsync(string userId)
+        {
+            var signInManager = _signInManagerFactory();
+
+            var user = await signInManager.UserManager.FindByIdAsync(userId);
+
+            return user?.Email;
         }
     }
 }
