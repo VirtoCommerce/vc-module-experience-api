@@ -23,6 +23,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\..\tests\VirtoCommerce.ExperienceApiModule.Tests\VirtoCommerce.ExperienceApiModule.Tests.csproj" />
+        <ProjectReference Include="..\VirtoCommerce.ExperienceApiModule.XOrder\VirtoCommerce.ExperienceApiModule.XOrder.csproj" />
         <ProjectReference Include="..\VirtoCommerce.XPurchase\VirtoCommerce.XPurchase.csproj" />
     </ItemGroup>
 </Project>

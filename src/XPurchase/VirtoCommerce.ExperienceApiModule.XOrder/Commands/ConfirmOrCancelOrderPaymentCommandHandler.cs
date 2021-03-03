@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -10,6 +9,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Commands
     {
         private readonly ICustomerOrderAggregateRepository _customerOrderAggregateRepository;
         private readonly ICustomerOrderService _customerOrderService;
+
         public ConfirmOrCancelOrderPaymentCommandHandler(ICustomerOrderService customerOrderService, ICustomerOrderAggregateRepository customerOrderAggregateRepository)
         {
             _customerOrderService = customerOrderService;
@@ -19,19 +19,25 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Commands
         public async Task<bool> Handle(CancelOrderPaymentCommand request, CancellationToken cancellationToken)
         {
             var orderAggregate = await _customerOrderAggregateRepository.GetOrderByIdAsync(request.Payment.OrderId);
-            orderAggregate.CancelOrderPayment(request.Payment);
+            var paymentCancelledSuccessful = orderAggregate.CancelOrderPayment(request.Payment);
+            if (paymentCancelledSuccessful)
+            {
+                await _customerOrderService.SaveChangesAsync(new[] { orderAggregate.Order });
+            }
 
-            await _customerOrderService.SaveChangesAsync(new[] { orderAggregate.Order });
-
-            return true;
+            return paymentCancelledSuccessful;
         }
 
         public async Task<bool> Handle(ConfirmOrderPaymentCommand request, CancellationToken cancellationToken)
         {
             var orderAggregate = await _customerOrderAggregateRepository.GetOrderByIdAsync(request.Payment.OrderId);
-            orderAggregate.ConfirmOrderPayment(request.Payment);
-            await _customerOrderService.SaveChangesAsync(new[] { orderAggregate.Order });
-            return true;
+            var paymentConfirmedSuccessful = orderAggregate.ConfirmOrderPayment(request.Payment);
+            if (paymentConfirmedSuccessful)
+            {
+                await _customerOrderService.SaveChangesAsync(new[] { orderAggregate.Order });
+            }
+
+            return paymentConfirmedSuccessful;
         }
     }
 }
