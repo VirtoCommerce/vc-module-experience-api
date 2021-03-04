@@ -265,6 +265,8 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             Field<ListGraphType<OutlineType>>("outlines", resolve: context => context.Source.IndexedProduct.Outlines);//.RootAlias("__object.outlines");
 
+            Field<ListGraphType<BreadcrumbType>>("breadcrumbs", resolve: context => context.Source.IndexedProduct.GetBreadcrumbs(context.Source.Store, context.Source.CultureName));
+
             Connection<ProductAssociationType>()
               .Name("associations")
               .Argument<StringGraphType>("query", "the search phrase")

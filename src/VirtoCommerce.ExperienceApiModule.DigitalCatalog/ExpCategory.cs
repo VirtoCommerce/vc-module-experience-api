@@ -1,7 +1,12 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.Core.Binding;
+using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.StoreModule.Core.Model;
 using VirtoCommerce.XDigitalCatalog.Binding;
+using VirtoCommerce.XDigitalCatalog.Extensions;
 
 namespace VirtoCommerce.XDigitalCatalog
 {
@@ -17,5 +22,9 @@ namespace VirtoCommerce.XDigitalCatalog
 
         //Level in hierarchy
         public int Level => Category?.Outline?.Split("/").Count() ?? 0;
+
+        public Store Store { get; set; }
+
+        public string CultureName { get; set; }
     }
 }

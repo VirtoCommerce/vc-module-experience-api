@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Policy;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.CoreModule.Core.Currency;
@@ -12,6 +13,7 @@ using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.PricingModule.Core.Model;
 using VirtoCommerce.StoreModule.Core.Model;
 using VirtoCommerce.XDigitalCatalog.Binding;
+using VirtoCommerce.XDigitalCatalog.Extensions;
 using VirtoCommerce.XDigitalCatalog.Specifications;
 using ProductPrice = VirtoCommerce.ExperienceApiModule.Core.Models.ProductPrice;
 
@@ -34,6 +36,10 @@ namespace VirtoCommerce.XDigitalCatalog
         public virtual string Key { get; set; }
 
         public SeoInfo SeoInfo { get; set; }
+
+        public Store Store { get; set; }
+
+        public string CultureName { get; set; }
 
         public bool IsBuyable
         {

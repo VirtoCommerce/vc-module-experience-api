@@ -90,6 +90,8 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             Field<ListGraphType<OutlineType>>("outlines", resolve: context => context.Source.Category.Outlines);
 
             Field<ListGraphType<ImageType>>("images", resolve: context => context.Source.Category.Images);
+
+            Field<ListGraphType<BreadcrumbType>>("breadcrumbs", resolve: context => context.Source.Category.GetBreadcrumbs(context.Source.Store, context.Source.CultureName));
         }
 
         private static bool TryGetParentId(IResolveFieldContext<ExpCategory> context, out string parentId)

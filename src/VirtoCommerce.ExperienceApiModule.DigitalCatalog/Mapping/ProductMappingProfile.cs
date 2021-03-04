@@ -25,7 +25,19 @@ namespace VirtoCommerce.XDigitalCatalog.Mapping
 
             CreateMap<SearchProductAssociationsQuery, ProductAssociationSearchCriteria>();
 
-            CreateMap<SearchDocument, ExpProduct>().ConvertUsing(src => new GenericModelBinder<ExpProduct>().BindModel(src) as ExpProduct);
+            CreateMap<SearchDocument, ExpProduct>().ConvertUsing((src, dest, context) =>
+                {
+                    var expProduct = new GenericModelBinder<ExpProduct>().BindModel(src) as ExpProduct;
+
+                    if (expProduct != null)
+                    {
+                        expProduct.Store = context.Options.Items["store"] as StoreModule.Core.Model.Store;
+                        expProduct.CultureName = context.Options.Items["cultureName"].ToString();
+                    }
+
+                    return expProduct;
+                }
+            );
 
             CreateMap<ExpProduct, ProductPromoEntry>().ConvertUsing((src, dest, context) =>
             {
