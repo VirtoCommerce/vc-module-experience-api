@@ -4,6 +4,7 @@ using System.Linq;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.StoreModule.Core.Model;
+using VirtoCommerce.XDigitalCatalog.Breadcrumbs;
 
 namespace VirtoCommerce.XDigitalCatalog.Extensions
 {
