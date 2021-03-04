@@ -4,11 +4,11 @@ using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Builders;
 using GraphQL.Types;
-using GraphQL.Types.Relay.DataObjects;
 using MediatR;
 using VirtoCommerce.CustomerModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
+using VirtoCommerce.ExperienceApiModule.Core.Schemas;
 using VirtoCommerce.ExperienceApiModule.XProfile.Queries;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
@@ -29,7 +29,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             Field(x => x.Organization.Name, true).Description("Name");
             Field(x => x.Organization.MemberType).Description("Member type");
             Field(x => x.Organization.OuterId, true).Description("Outer id");
-            Field<NonNullGraphType<ListGraphType<MemberAddressType>>>("addresses", resolve: x => x.Source.Organization.Addresses);
+            Field<NonNullGraphType<ListGraphType<AddressType>>>("addresses", resolve: x => x.Source.Organization.Addresses);
             Field(x => x.Organization.Phones, true);
             Field(x => x.Organization.Emails, true);
             Field(x => x.Organization.Groups, true);
