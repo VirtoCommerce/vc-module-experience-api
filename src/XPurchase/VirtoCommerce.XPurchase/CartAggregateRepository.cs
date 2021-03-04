@@ -103,7 +103,7 @@ namespace VirtoCommerce.XPurchase
             return new SearchCartResponse() { Results = cartAggregates, TotalCount = searchResult.TotalCount };
         }
 
-        public virtual async Task RemoveCartAsync(string cartId) => await _shoppingCartService.DeleteAsync(new[] { cartId });
+        public virtual async Task RemoveCartAsync(string cartId) => await _shoppingCartService.DeleteAsync(new[] { cartId }, softDelete: true);
 
         protected virtual async Task<CartAggregate> InnerGetCartAggregateFromCartAsync(ShoppingCart cart, string language)
         {
