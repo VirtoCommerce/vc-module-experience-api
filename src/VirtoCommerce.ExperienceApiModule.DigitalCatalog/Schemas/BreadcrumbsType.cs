@@ -1,4 +1,5 @@
 using GraphQL.Types;
+using VirtoCommerce.XDigitalCatalog.Breadcrumbs;
 
 namespace VirtoCommerce.XDigitalCatalog.Schemas
 {
