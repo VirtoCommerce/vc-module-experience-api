@@ -89,8 +89,8 @@ Every mutation contains base arguments for working with cart context:
 - `storeId` - Id of current store
 - `cartName` - Cart name
 - `userId` - Id of current user
-- `currency` - Currency code (e.g. "USD")
-- `language` - Culture name of current language (e.g. "en-Us")
+- `currencyCode` - Currency code (e.g. "USD")
+- `cultureName` - Culture name of current language (e.g. "en-Us")
 - `cartType` - Type of cart ("cart" or "whishlist")
 #### Mutation list:
 |№ |Endpoint|Arguments|Description|
@@ -141,8 +141,8 @@ mutation ($command:InputAddItemType!)
     "storeId": "Electronics",
     "cartName": "default",
     "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
-    "language": "en-US",
-    "currency": "USD",
+    "cultureName": "en-US",
+    "currencyCode": "USD",
     "cartType": "cart",
     "productId": "9cbd8f316e254a679ba34a900fccb076",
     "quantity": 1
@@ -173,8 +173,8 @@ mutation ($command:InputClearCartType!)
     "storeId": "Electronics",
     "cartName": "default",
     "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
-    "language": "en-US",
-    "currency": "USD",
+    "cultureName": "en-US",
+    "currencyCode": "USD",
     "cartType": "cart"
 }
 ```
@@ -197,8 +197,8 @@ mutation ($command:InputChangeCommentType!)
     "storeId": "Electronics",
     "cartName": "default",
     "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
-    "language": "en-US",
-    "currency": "USD",
+    "cultureName": "en-US",
+    "currencyCode": "USD",
     "cartType": "cart",
     "comment": "Hi, Virto! :)"
 }
@@ -231,8 +231,8 @@ mutation ($command:InputChangeCartItemPriceType!)
     "storeId": "Electronics",
     "cartName": "default",
     "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
-    "language": "en-US",
-    "currency": "USD",
+    "cultureName": "en-US",
+    "currencyCode": "USD",
     "cartType": "cart",
     "productId": "9cbd8f316e254a679ba34a900fccb076",
     "price": 777
@@ -265,8 +265,8 @@ mutation ($command:InputChangeCartItemQuantityType!)
     "storeId": "Electronics",
     "cartName": "default",
     "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
-    "language": "en-US",
-    "currency": "USD",
+    "cultureName": "en-US",
+    "currencyCode": "USD",
     "cartType": "cart",
     "lineItemId": "9cbd8f316e254a679ba34a900fccb076",
     "quantity": 7
@@ -297,8 +297,8 @@ mutation ($command:InputChangeCartItemCommentType!)
     "storeId": "Electronics",
     "cartName": "default",
     "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
-    "language": "en-US",
-    "currency": "USD",
+    "cultureName": "en-US",
+    "currencyCode": "USD",
     "cartType": "cart",
     "lineItemId": "9cbd8f316e254a679ba34a900fccb076",
     "comment": "nice product"
@@ -330,8 +330,8 @@ mutation ($command:InputRemoveItemType!)
     "storeId": "Electronics",
     "cartName": "default",
     "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
-    "language": "en-US",
-    "currency": "USD",
+    "cultureName": "en-US",
+    "currencyCode": "USD",
     "cartType": "cart",
     "lineItemId": "9cbd8f316e254a679ba34a900fccb076",
 }
@@ -359,8 +359,8 @@ mutation ($command:InputAddCouponType!)
     "storeId": "Electronics",
     "cartName": "default",
     "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
-    "language": "en-US",
-    "currency": "USD",
+    "cultureName": "en-US",
+    "currencyCode": "USD",
     "cartType": "cart",
     "couponCode": "freeItemsCouponCode",
 }
@@ -389,8 +389,8 @@ mutation ($command:InputRemoveCouponType!)
     "storeId": "Electronics",
     "cartName": "default",
     "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
-    "language": "en-US",
-    "currency": "USD",
+    "cultureName": "en-US",
+    "currencyCode": "USD",
     "cartType": "cart",
     "couponCode": "freeItemsCouponCode",
 }
@@ -420,8 +420,8 @@ mutation ($command:InputRemoveShipmentType!)
     "storeId": "Electronics",
     "cartName": "default",
     "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
-    "language": "en-US",
-    "currency": "USD",
+    "cultureName": "en-US",
+    "currencyCode": "USD",
     "cartType": "cart",
     "shipmentId": "7777-7777-7777-7777",
 }
@@ -451,8 +451,8 @@ mutation ($command:InputAddOrUpdateCartShipmentType!)
     "storeId": "Electronics",
     "cartName": "default",
     "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
-    "language": "en-US",
-    "currency": "USD",
+    "cultureName": "en-US",
+    "currencyCode": "USD",
     "cartType": "cart",
     "shipment": {
         "fulfillmentCenterId": "7777-7777-7777-7777",
@@ -491,8 +491,8 @@ mutation ($command:InputAddOrUpdateCartPaymentType!)
     "storeId": "Electronics",
     "cartName": "default",
     "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
-    "language": "en-US",
-    "currency": "USD",
+    "cultureName": "en-US",
+    "currencyCode": "USD",
     "cartType": "cart",
     "payment": {
         "outerId": "7777-7777-7777-7777",
@@ -521,8 +521,8 @@ mutation ($command:InputValidateCouponType!)
     "storeId": "Electronics",
     "cartName": "default",
     "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
-    "language": "en-US",
-    "currency": "USD",
+    "cultureName": "en-US",
+    "currencyCode": "USD",
     "cartType": "cart",
     "coupon": {
         "code": "freeItemsCouponCode"
@@ -549,8 +549,8 @@ mutation ($command:InputMergeCartType!)
     "storeId": "Electronics",
     "cartName": "default",
     "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
-    "language": "en-US",
-    "currency": "USD",
+    "cultureName": "en-US",
+    "currencyCode": "USD",
     "cartType": "cart",
     "secondCartId": "7777-7777-7777-7777",
 }
@@ -598,8 +598,8 @@ mutation ($command:InputClearShipmentsType!)
     "storeId": "Electronics",
     "cartName": "default",
     "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
-    "language": "en-US",
-    "currency": "USD",
+    "cultureName": "en-US",
+    "currencyCode": "USD",
     "cartType": "cart"
 }
 ```
@@ -629,8 +629,8 @@ mutation ($command:InputClearPaymentsType!)
     "storeId": "Electronics",
     "cartName": "default",
     "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
-    "language": "en-US",
-    "currency": "USD",
+    "cultureName": "en-US",
+    "currencyCode": "USD",
     "cartType": "cart"
 }
 ```
