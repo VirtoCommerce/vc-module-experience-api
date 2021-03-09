@@ -10,20 +10,21 @@ namespace VirtoCommerce.XDigitalCatalog.Extensions
     {
         public static IEnumerable<Breadcrumb> GetBreadcrumbs(this CatalogProduct product, Store store, string cultureName)
         {
-            if (product.Category != null)
+            if (product.Category == null)
+            {
+                yield return new ProductBreadcrumb(product)
+                {
+                    Title = product.Name,
+                    SeoPath = product.Outlines.GetSeoPath(store, cultureName, null)
+                };
+            }
+            else
             {
                 foreach (var breadCrumb in product.Category.GetBreadcrumbs(store, cultureName).Distinct())
                 {
                     yield return breadCrumb;
                 }
             }
-            yield return new ProductBreadcrumb(product)
-            {
-
-                Title = product.Name,
-                SeoPath = product.Outlines.GetSeoPath(store, cultureName, null),
-            };
         }
-
     }
 }
