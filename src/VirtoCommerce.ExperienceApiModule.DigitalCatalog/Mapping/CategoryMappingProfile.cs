@@ -16,7 +16,7 @@ namespace VirtoCommerce.XDigitalCatalog.Mapping
                 if (expCategory != null)
                 {
                     expCategory.Store = context.Options.Items["store"] as Store;
-                    expCategory.CultureName = context.Options.Items["language"].ToString();
+                    expCategory.CultureName = context.Options.Items["cultureName"].ToString();
                 }
 
                 return expCategory;
