@@ -12,6 +12,11 @@ namespace VirtoCommerce.XDigitalCatalog.Extensions
     {
         public static IEnumerable<Breadcrumb> GetBreadcrumbs(this Category category, Store store, string cultureName)
         {
+            if (category == null)
+            {
+                throw new ArgumentException("Category can't be null");
+            }
+
             if (category.Outlines == null)
             {
                 throw new ArgumentException("Category outlines can't be null");
