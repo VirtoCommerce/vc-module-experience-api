@@ -34,7 +34,7 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
             if (query.IncludeFields.ContainsAny("breadcrumbs"))
             {
                 var categoryIds = parameter.Results.Select(x => x.IndexedProduct.CategoryId).ToArray();
-                var categories = await _categoryService.GetByIdsAsync(categoryIds, string.Join(",", CategoryResponseGroup.WithParents.ToString(), CategoryResponseGroup.WithOutlines.ToString()));
+                var categories = await _categoryService.GetByIdsAsync(categoryIds, JoinResponseGroups(CategoryResponseGroup.WithParents, CategoryResponseGroup.WithOutlines));
 
                 foreach (var product in parameter.Results)
                 {
@@ -46,5 +46,7 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
 
             await next(parameter);
         }
+
+        private string JoinResponseGroups(params CategoryResponseGroup[] responseGroups) => string.Join(",", responseGroups);
     }
 }
