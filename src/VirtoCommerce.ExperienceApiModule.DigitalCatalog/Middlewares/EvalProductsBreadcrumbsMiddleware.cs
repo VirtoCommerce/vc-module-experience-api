@@ -33,10 +33,10 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
 
             if (query.IncludeFields.ContainsAny("breadcrumbs"))
             {
-                var categoryIds = parameter.Results.Select(x => x.IndexedProduct.CategoryId).ToArray();
+                var categoryIds = parameter.Results.Select(x => x.IndexedProduct.CategoryId).Distinct().ToArray();
                 var categories = await _categoryService.GetByIdsAsync(categoryIds, JoinResponseGroups(CategoryResponseGroup.WithParents, CategoryResponseGroup.WithOutlines));
 
-                foreach (var product in parameter.Results)
+                foreach (var product in parameter.Results.Where(x=>x.IndexedProduct != null))
                 {
                     var category = categories.FirstOrDefault(x => x.Id == product.IndexedProduct.CategoryId);
                     product.IndexedProduct.Category = category;

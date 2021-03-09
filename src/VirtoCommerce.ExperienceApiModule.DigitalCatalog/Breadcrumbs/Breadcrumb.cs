@@ -9,6 +9,5 @@ namespace VirtoCommerce.XDigitalCatalog.Breadcrumbs
         public string TypeName { get; private set; }
         public virtual string Title { get; set; }
         public virtual string SeoPath { get; set; }
-        public virtual string Url { get; set; }
     }
 }

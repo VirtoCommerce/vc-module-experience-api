@@ -31,7 +31,6 @@ namespace VirtoCommerce.XDigitalCatalog.Extensions
                     yield return new CategoryBreadcrumb(parentCategory)
                     {
                         SeoPath = parentSeoPath,
-                        Url = parentSeoPath,
                         Title = parentCategory.Name
                     };
                 }
