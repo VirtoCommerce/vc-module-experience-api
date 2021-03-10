@@ -9,6 +9,4 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field<NonNullGraphType<InputShipmentType>>("shipment");
         }
     }
-
-    public class InputClearPaymentsType : InputCartBaseType { }
 }

@@ -8,7 +8,7 @@ using VirtoCommerce.OrdersModule.Core.Model;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 {
-    public class CustomerOrderType : ObjectGraphType<CustomerOrderAggregate> 
+    public class CustomerOrderType : ObjectGraphType<CustomerOrderAggregate>
     {
         public CustomerOrderType()
         {
@@ -42,7 +42,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field(x => x.Order.FeeTotal);
             Field(x => x.Order.FeeTotalWithTax);
             Field(x => x.Order.TaxType, true);
-            
+
             Field(x => x.Order.TaxPercentRate);
             Field(x => x.Order.LanguageCode, true);
             Field(x => x.Order.CreatedDate);
@@ -76,7 +76,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field<MoneyType>(nameof(CustomerOrder.DiscountTotal).ToCamelCase(), resolve: context => new Money(context.Source.Order.DiscountTotal, context.Source.Currency));
             Field<MoneyType>(nameof(CustomerOrder.DiscountTotalWithTax).ToCamelCase(), resolve: context => new Money(context.Source.Order.DiscountTotalWithTax, context.Source.Currency));
 
-            Field<NonNullGraphType<ListGraphType<OrderAddressType>>>(nameof(CustomerOrder.Addresses), resolve: x => x.Source.Order.Addresses);
+            Field<NonNullGraphType<ListGraphType<AddressType>>>(nameof(CustomerOrder.Addresses), resolve: x => x.Source.Order.Addresses);
             Field<NonNullGraphType<ListGraphType<OrderLineItemType>>>(nameof(CustomerOrder.Items), resolve: x => x.Source.Order.Items);
             Field<NonNullGraphType<ListGraphType<PaymentInType>>>(nameof(CustomerOrder.InPayments), resolve: x => x.Source.Order.InPayments);
             //Field<NonNullGraphType<ListGraphType<OrderShipmentType>>>(nameof(CustomerOrder.Shipments), resolve: x => x.Source.Order.Shipments);           

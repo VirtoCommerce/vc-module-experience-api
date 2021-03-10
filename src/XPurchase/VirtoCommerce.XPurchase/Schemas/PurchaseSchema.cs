@@ -21,7 +21,7 @@ namespace VirtoCommerce.XPurchase.Schemas
     {
         private readonly IMediator _mediator;
         private readonly IAuthorizationService _authorizationService;
-        
+
         public const string _commandName = "command";
 
         public PurchaseSchema(IMediator mediator, IAuthorizationService authorizationService)
@@ -77,7 +77,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                 .Argument<StringGraphType>("sort", "The sort expression")
                 .Unidirectional()
                 .PageSize(20);
-                
+
             orderConnectionBuilder.ResolveAsync(async context => await ResolveConnectionAsync(_mediator, context));
 
             schema.Query.AddField(orderConnectionBuilder.FieldType);
@@ -662,6 +662,37 @@ namespace VirtoCommerce.XPurchase.Schemas
                                               .FieldType;
 
             schema.Mutation.AddField(removeCartAddressField);
+
+            /// <example>
+            /// This is an example JSON request for a mutation
+            /// mutation ($command: InputAddItemsType!) { addItemsCart(command: $command) }
+            /// "variables": {
+            ///    "command": {
+            ///         "storeId": "Electronics",
+            ///         "cartName": "default",
+            ///         "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
+            ///         "currencyCode": "USD",
+            ///         "cultureName": "en-US",
+            ///         "cartType": "cart",
+            ///         "cartId": "",
+            ///         "cartItems": [{
+            ///             "productId": "1111-1111-1111-1111",
+            ///             "quantity": 2
+            ///         },
+            ///         {
+            ///             "productId": "2222-2222-2222-2222",
+            ///             "quantity": 5
+            ///         }]
+            ///     }
+            /// }
+            /// </example>
+            var addItemsCartField = FieldBuilder.Create<CartAggregate, CartAggregate>(typeof(CartType))
+                                                 .Name("addItemsCart")
+                                                 .Argument<NonNullGraphType<InputAddItemsType>>(_commandName)
+                                                 .ResolveAsync(async context => await _mediator.Send(context.GetArgument<AddCartItemsCommand>(_commandName)))
+                                                 .FieldType;
+
+            schema.Mutation.AddField(addItemsCartField);
         }
 
         private async Task<object> ResolveConnectionAsync(IMediator mediator, IResolveConnectionContext<object> context)
