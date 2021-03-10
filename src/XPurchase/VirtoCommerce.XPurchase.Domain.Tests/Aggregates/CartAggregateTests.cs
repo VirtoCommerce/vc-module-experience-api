@@ -22,6 +22,7 @@ namespace VirtoCommerce.XPurchase.Tests.Aggregates
                 _marketingPromoEvaluatorMock.Object,
                 _shoppingCartTotalsCalculatorMock.Object,
                 _taxProviderSearchServiceMock.Object,
+                _cartProductServiceMock.Object,
                 _mapperMock.Object);
 
             var cart = GetCart();
@@ -93,6 +94,57 @@ namespace VirtoCommerce.XPurchase.Tests.Aggregates
         }
 
         #endregion AddItemAsync
+
+        #region AddItemsAsync
+
+        [Fact]
+        public async Task AddItemsAsync_ItemsExist_ShouldAddNewItems()
+        {
+            // Arrange
+            var productId1 = _fixture.Create<string>();
+            var newCartItem1 = new NewCartItem(productId1, 1);
+
+            var productId2 = _fixture.Create<string>();
+            var newCartItem2 = new NewCartItem(productId2, 2);
+
+            var newCartItems = new List<NewCartItem>() { newCartItem1, newCartItem2 };
+
+            _cartProductServiceMock
+                .Setup(x => x.GetCartProductsByIdsAsync(It.IsAny<CartAggregate>(), new[] { productId1, productId2 }))
+                .ReturnsAsync(
+                    new List<CartProduct>()
+                    {
+                        new CartProduct(new CatalogProduct() { Id = productId1, IsActive = true, IsBuyable = true }),
+                        new CartProduct(new CatalogProduct() { Id = productId2, IsActive = true, IsBuyable = true }),
+                    });
+
+
+            _mapperMock.Setup(m => m.Map<LineItem>(It.IsAny<object>())).Returns<object>((arg) =>
+            {
+                if (arg is CartProduct cartProduct)
+                {
+                    return new LineItem()
+                    {
+                        ProductId = cartProduct.Id
+                    };
+                }
+
+                return null;
+            });
+
+            var cartAggregate = GetValidCartAggregate();
+            cartAggregate.ValidationRuleSet = "default";
+            cartAggregate.Cart.Items = Enumerable.Empty<LineItem>().ToList();
+
+            // Act
+            var newAggregate = await cartAggregate.AddItemsAsync(newCartItems);
+
+            // Assert
+            cartAggregate.Cart.Items.Should().Contain(x => x.ProductId == newCartItem1.ProductId);
+            cartAggregate.Cart.Items.Should().Contain(x => x.ProductId == newCartItem2.ProductId);
+        }
+
+        #endregion AddItemsAsync
 
         #region ChangeItemPriceAsync
 

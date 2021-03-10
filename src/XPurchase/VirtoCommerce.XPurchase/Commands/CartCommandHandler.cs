@@ -24,11 +24,11 @@ namespace VirtoCommerce.XPurchase.Commands
             CartAggregate result;
             if (!string.IsNullOrEmpty(request.CartId))
             {
-                result = await GetCartById(request.CartId, request.Language);
+                result = await GetCartById(request.CartId, request.CultureName);
             }
             else
             {
-                result = await CartRepository.GetCartAsync(request.CartName, request.StoreId, request.UserId, request.Language, request.Currency, request.CartType);
+                result = await CartRepository.GetCartAsync(request.CartName, request.StoreId, request.UserId, request.CultureName, request.CurrencyCode, request.CartType);
                 if (result == null)
                 {
                     result = await CreateNewCartAggregateAsync(request);
@@ -46,9 +46,9 @@ namespace VirtoCommerce.XPurchase.Commands
             cart.CustomerId = request.UserId;
             cart.Name = request.CartName ?? "default";
             cart.StoreId = request.StoreId;
-            cart.LanguageCode = request.Language;
+            cart.LanguageCode = request.CultureName;
             cart.Type = request.CartType;
-            cart.Currency = request.Currency;
+            cart.Currency = request.CurrencyCode;
             cart.Items = new List<LineItem>();
             cart.Shipments = new List<Shipment>();
             cart.Payments = new List<Payment>();
