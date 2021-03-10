@@ -41,7 +41,12 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
                 var categoryIds = parameter.Results.Select(x => x.IndexedProduct.CategoryId).Distinct().ToArray();
 
                 var store = await _storeService.GetByIdAsync(query.StoreId, StoreResponseGroup.StoreInfo.ToString());
-                var categories = await _searchService.SearchCategoriesAsync(new CategorySearchCriteria() { CatalogId = store.Catalog, ObjectIds = categoryIds });
+                var categories = await _searchService.SearchCategoriesAsync(new CategorySearchCriteria()
+                {
+                    CatalogId = store.Catalog,
+                    ObjectIds = categoryIds,
+                    ResponseGroup = JoinResponseGroups(CategoryResponseGroup.WithParents, CategoryResponseGroup.WithOutlines)
+                });
 
                 foreach (var product in parameter.Results.Where(x=>x.IndexedProduct != null))
                 {

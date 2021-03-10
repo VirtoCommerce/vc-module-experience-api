@@ -19,7 +19,6 @@ namespace VirtoCommerce.XDigitalCatalog.Extensions
             }
             yield return new ProductBreadcrumb(product)
             {
-
                 Title = product.Name,
                 SeoPath = product.Outlines.GetSeoPath(store, cultureName, null),
             };
