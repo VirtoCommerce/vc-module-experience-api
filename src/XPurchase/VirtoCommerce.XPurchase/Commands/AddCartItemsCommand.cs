@@ -6,12 +6,12 @@ namespace VirtoCommerce.XPurchase.Commands
         {
         }
 
-        public AddCartItemsCommand(string storeId, string cartType, string cartName, string userId, string currencyCode, string cultureName, NewCartItem[] addCartItems)
+        public AddCartItemsCommand(string storeId, string cartType, string cartName, string userId, string currencyCode, string cultureName, NewCartItem[] cartItems)
             : base(storeId, cartType, cartName, userId, currencyCode, cultureName)
         {
-            AddCartItems = addCartItems;
+            CartItems = cartItems;
         }
 
-        public NewCartItem[] AddCartItems { get; set; }
+        public NewCartItem[] CartItems { get; set; }
     }
 }
