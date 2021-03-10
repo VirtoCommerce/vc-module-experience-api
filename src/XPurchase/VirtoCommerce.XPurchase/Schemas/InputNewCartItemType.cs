@@ -6,8 +6,8 @@ namespace VirtoCommerce.XPurchase.Schemas
     {
         public InputNewCartItemType()
         {
-            Field(x => x.ProductId, false).Description("Product Id");
-            Field(x => x.Quantity, true).Description("Product quantity");
+            Field(x => x.ProductId, nullable: false).Description("Product Id");
+            Field(x => x.Quantity, nullable: true).Description("Product quantity");
         }
     }
 }

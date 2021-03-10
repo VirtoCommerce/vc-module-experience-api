@@ -6,7 +6,7 @@ namespace VirtoCommerce.XPurchase.Schemas
     {
         public InputAddItemsType()
         {
-            Field<NonNullGraphType<ListGraphType<InputNewCartItemType>>>("AddCartItems");
+            Field<NonNullGraphType<ListGraphType<InputNewCartItemType>>>("CartItems");
         }
     }
 }

@@ -167,17 +167,17 @@ namespace VirtoCommerce.XPurchase
             return this;
         }
 
-        public virtual async Task<CartAggregate> AddItemsAsync(ICollection<NewCartItem> newCartItem)
+        public virtual async Task<CartAggregate> AddItemsAsync(ICollection<NewCartItem> newCartItems)
         {
             EnsureCartExists();
 
-            var productIds = newCartItem.Select(x => x.ProductId).Distinct().ToArray();
+            var productIds = newCartItems.Select(x => x.ProductId).Distinct().ToArray();
 
             var productsByIds =
                 (await _cartProductService.GetCartProductsByIdsAsync(this, productIds))
                 .ToDictionary(x => x.Id);
 
-            foreach (var item in newCartItem)
+            foreach (var item in newCartItems)
             {
                 if (productsByIds.TryGetValue(item.ProductId, out var product))
                 {

@@ -668,14 +668,14 @@ namespace VirtoCommerce.XPurchase.Schemas
             /// mutation ($command: InputAddItemsType!) { addItemsCart(command: $command) }
             /// "variables": {
             ///    "command": {
-            ///        "storeId": "Electronics",
+            ///         "storeId": "Electronics",
             ///         "cartName": "default",
             ///         "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
             ///         "currencyCode": "USD",
             ///         "cultureName": "en-US",
             ///         "cartType": "cart",
             ///         "cartId": "",
-            ///         "addCartItems": [{
+            ///         "cartItems": [{
             ///             "productId": "1111-1111-1111-1111",
             ///             "quantity": 2
             ///         },
