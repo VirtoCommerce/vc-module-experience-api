@@ -25,7 +25,8 @@ namespace VirtoCommerce.XPurchase.Tests.Handlers
             var aggregate = await handler.Handle(request, CancellationToken.None);
 
             // Assert
-            cartAggregateMock.Verify(x => x.AddItemsAsync(It.IsAny<ICollection<NewCartItem>>()));
+            cartAggregateMock.Verify(x => x.AddItemsAsync(It.IsAny<ICollection<NewCartItem>>()), Times.Once);
+            cartAggregateRepositoryMock.Verify(x => x.SaveAsync(It.IsAny<CartAggregate>()), Times.Once);
         }
     }
 }
