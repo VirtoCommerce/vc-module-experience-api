@@ -495,9 +495,6 @@ namespace VirtoCommerce.XPurchase.Tests.Aggregates
             // Act
             await cartAggregate.AddOrUpdateCartAddressByTypeAsync(newAddress);
 
-            var a = cartAggregate.Cart.Payments.Select(x => x.BillingAddress).ToList();
-            var b = cartAggregate.Cart.Shipments.Select(x => x.DeliveryAddress).ToList();
-
             // Assert
             cartAggregate.Cart.Shipments.Select(x => x.DeliveryAddress).Should().NotContain(x => x.Name.EqualsInvariant(newAddress.Name));
             cartAggregate.Cart.Payments.Select(x => x.BillingAddress).Should().NotContain(x => x.Name.EqualsInvariant(newAddress.Name));
