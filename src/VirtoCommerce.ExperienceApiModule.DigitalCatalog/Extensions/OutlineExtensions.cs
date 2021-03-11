@@ -7,6 +7,7 @@ using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Settings;
 using VirtoCommerce.StoreModule.Core.Model;
 using VirtoCommerce.Tools;
+using VirtoCommerce.XDigitalCatalog.Breadcrumbs;
 using toolsDto = VirtoCommerce.Tools.Models;
 
 namespace VirtoCommerce.XDigitalCatalog.Extensions
@@ -110,6 +111,40 @@ namespace VirtoCommerce.XDigitalCatalog.Extensions
                     .Where(x => x != null && x.SeoObjectType != "Catalog")
                     .Select(x => x.Id)
                 );
+        }
+
+        public static IEnumerable<Breadcrumb> GetBreadcrumbsFromOutLine(this IEnumerable<Outline> outlines, Store store, string cultureName)
+        {
+
+            var outlineFilteredByCatalog = outlines.FirstOrDefault(outline => outline.Items.Any(item => item.Id == store.Catalog && item.SeoObjectType == "Catalog"));
+            var breadcrumbs = new List<Breadcrumb>();
+            var outlineItems = outlineFilteredByCatalog?.Items.ToList();
+
+            if (outlineItems.IsNullOrEmpty())
+            {
+                return breadcrumbs;
+            }
+
+            for (var i = outlineItems.Count - 1; i > 0; i--)
+            {
+                var item = outlineItems[i];
+
+                var innerOutline = new List<Outline> { new Outline { Items = outlineItems } };
+                var seoPath = innerOutline.GetSeoPath(store, cultureName, null);
+
+                outlineItems.Remove(item);
+                if (string.IsNullOrWhiteSpace(seoPath)) continue;
+
+                var breadcrumb = new Breadcrumb(item.SeoObjectType)
+                {
+                    ItemId = item.Id,
+                    Title = item.SeoInfos?.FirstOrDefault()?.SemanticUrl ?? item.Name,
+                    SeoPath = seoPath
+                };
+                breadcrumbs.Insert(0, breadcrumb);
+            }
+            return breadcrumbs;
+
         }
     }
 }

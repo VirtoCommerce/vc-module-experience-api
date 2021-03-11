@@ -270,32 +270,11 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             Field<ListGraphType<BreadcrumbType>>("breadcrumbs", resolve: context =>
             {
-                var breadcrumbs = new List<Breadcrumb>();
                 var store = context.GetArgumentOrValue<Store>("store");
                 var cultureName = context.GetValue<string>("cultureName");
 
-                var outline = context.Source.IndexedProduct.Outlines.FirstOrDefault(outline => outline.Items.Any(item => item.Id == store.Catalog && item.SeoObjectType == "Catalog"));
-                var outlineItems = outline?.Items.ToList();
-
-                for (var i = outlineItems?.Count -1 ?? 0; i > 0; i--)
-                {
-                    var item = outlineItems[i];
-
-                    var innerOutline = new List<Outline>() { new Outline() { Items = outlineItems } };
-                    var seoPath = innerOutline.GetSeoPath(store, cultureName, null);
-
-                    outlineItems.Remove(item);
-                    if (string.IsNullOrWhiteSpace(seoPath)) continue;
-
-                    var breadcrumb = new Breadcrumb(item.SeoObjectType)
-                    {
-                        ItemId = item.Id,
-                        Title = item.SeoInfos?.FirstOrDefault()?.SemanticUrl ?? item.Name,
-                        SeoPath  = seoPath
-                    };
-                    breadcrumbs.Insert(0, breadcrumb);
-                }
-                return breadcrumbs;
+                
+                return context.Source.IndexedProduct.Outlines.GetBreadcrumbsFromOutLine(store, cultureName);
             });
 
             Connection<ProductAssociationType>()
