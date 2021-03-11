@@ -387,6 +387,8 @@ namespace VirtoCommerce.XPurchase
         {
             EnsureCartExists();
 
+            address.Key = null;
+
             var existingAddress = Cart.Addresses.FirstOrDefault(x => x.AddressType == address.AddressType);
 
             if (existingAddress != null)
