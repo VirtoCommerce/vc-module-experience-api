@@ -14,7 +14,7 @@ namespace VirtoCommerce.XPurchase.Commands
         {
             var cartAggregate = await GetOrCreateCartFromCommandAsync(request);
 
-            await cartAggregate.AddItemsAsync(request.AddCartItems);
+            await cartAggregate.AddItemsAsync(request.CartItems);
 
             return await SaveCartAsync(cartAggregate);
         }
