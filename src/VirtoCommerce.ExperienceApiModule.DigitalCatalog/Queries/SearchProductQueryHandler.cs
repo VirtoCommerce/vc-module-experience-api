@@ -96,11 +96,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
 
             searchRequest.SetAppliedAggregations(resultAggregations);
 
-            var products = searchResult.Documents?.Select(x => _mapper.Map<ExpProduct>(x, options =>
-            {
-                options.Items["store"] = store;
-                options.Items["cultureName"] = request.CultureName;
-            })).ToList() ?? new List<ExpProduct>();
+            var products = searchResult.Documents?.Select(x => _mapper.Map<ExpProduct>(x)).ToList() ?? new List<ExpProduct>();
 
             var result = new SearchProductResponse
             {

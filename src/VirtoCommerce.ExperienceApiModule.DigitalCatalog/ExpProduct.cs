@@ -35,10 +35,6 @@ namespace VirtoCommerce.XDigitalCatalog
 
         public SeoInfo SeoInfo { get; set; }
 
-        public Store Store { get; set; }
-
-        public string CultureName { get; set; }
-
         public bool IsBuyable
         {
             get

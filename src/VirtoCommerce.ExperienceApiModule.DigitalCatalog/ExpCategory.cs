@@ -18,9 +18,5 @@ namespace VirtoCommerce.XDigitalCatalog
 
         //Level in hierarchy
         public int Level => Category?.Outline?.Split("/").Count() ?? 0;
-
-        public Store Store { get; set; }
-
-        public string CultureName { get; set; }
     }
 }
