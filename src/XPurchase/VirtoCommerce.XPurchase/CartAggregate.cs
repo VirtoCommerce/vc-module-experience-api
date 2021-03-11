@@ -383,6 +383,22 @@ namespace VirtoCommerce.XPurchase
             return this;
         }
 
+        public virtual Task<CartAggregate> AddOrUpdateCartAddressByTypeAsync(CartModule.Core.Model.Address address)
+        {
+            EnsureCartExists();
+
+            var existingAddress = Cart.Addresses.FirstOrDefault(x => x.AddressType == address.AddressType);
+
+            if (existingAddress != null)
+            {
+                Cart.Addresses.Remove(existingAddress);
+            }
+
+            Cart.Addresses.Add(address);
+
+            return Task.FromResult(this);
+        }
+
         public virtual async Task<CartAggregate> MergeWithCartAsync(CartAggregate otherCart)
         {
             EnsureCartExists();

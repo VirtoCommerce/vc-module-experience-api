@@ -7,6 +7,7 @@ using FluentAssertions;
 using Moq;
 using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model;
+using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.XPurchase.Tests.Helpers;
 using Xunit;
 
@@ -446,5 +447,34 @@ namespace VirtoCommerce.XPurchase.Tests.Aggregates
         // TODO: Write tests
 
         #endregion RecalculateAsync
+
+        #region AddCartAddressAsync
+
+        [Fact]
+        public async Task AddCartAddressAsync_AddressExists_ShouldUpdateAddress()
+        {
+            // Arrange
+            var cartAggregate = GetValidCartAggregate();
+            var oldAddress = new Address
+            {
+                Name = "existing_address",
+                AddressType = CoreModule.Core.Common.AddressType.BillingAndShipping,
+            };
+            cartAggregate.Cart.Addresses = new List<Address> { oldAddress };
+
+            var newAddress = new Address
+            {
+                Name = "new_address",
+                AddressType = CoreModule.Core.Common.AddressType.BillingAndShipping,
+            };
+
+            // Act
+            await cartAggregate.AddOrUpdateCartAddressByTypeAsync(newAddress);
+
+            // Assert
+            cartAggregate.Cart.Addresses.Should().ContainSingle(x => x.Name.EqualsInvariant(newAddress.Name)).And.NotContain(x => x.Name.EqualsInvariant(oldAddress.Name));
+        }
+
+        #endregion AddCartAddressAsync
     }
 }
