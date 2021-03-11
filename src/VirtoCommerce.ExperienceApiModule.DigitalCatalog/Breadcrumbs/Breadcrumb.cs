@@ -1,11 +1,12 @@
 namespace VirtoCommerce.XDigitalCatalog.Breadcrumbs
 {
-    public abstract class Breadcrumb
+    public class Breadcrumb
     {
-        protected Breadcrumb(string type)
+        public Breadcrumb(string type)
         {
             TypeName = type;
         }
+        public string ItemId { get; set; }
         public string TypeName { get; private set; }
         public virtual string Title { get; set; }
         public virtual string SeoPath { get; set; }

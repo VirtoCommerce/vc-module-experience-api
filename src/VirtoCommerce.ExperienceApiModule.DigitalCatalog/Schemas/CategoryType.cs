@@ -6,10 +6,13 @@ using GraphQL;
 using GraphQL.DataLoader;
 using GraphQL.Types;
 using MediatR;
+using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.StoreModule.Core.Model;
+using VirtoCommerce.XDigitalCatalog.Breadcrumbs;
 using VirtoCommerce.XDigitalCatalog.Extensions;
 using VirtoCommerce.XDigitalCatalog.Queries;
 
@@ -83,7 +86,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                     return loader.LoadAsync(parentCategoryId);
                 }
                 return null;
-            });  
+            });
 
             Field<BooleanGraphType>("hasParent", resolve: context => TryGetParentId(context, out _));
 
@@ -91,7 +94,40 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             Field<ListGraphType<ImageType>>("images", resolve: context => context.Source.Category.Images);
 
-            Field<ListGraphType<BreadcrumbType>>("breadcrumbs", resolve: context => context.Source.Category.GetBreadcrumbs(context.Source.Store, context.Source.CultureName));
+            Field<ListGraphType<BreadcrumbType>>("breadcrumbs", resolve: context =>
+            {
+                var breadcrumbs = new List<Breadcrumb>();
+                var store = context.GetArgumentOrValue<Store>("store");
+                var cultureName = context.GetValue<string>("cultureName");
+
+                var seoPath = context.Source.Category.Outlines.GetSeoPath(store, cultureName, null);
+                foreach (var parentCategory in context.Source.Category.Parents?.Distinct() ?? new List<Category>())
+                {
+                    var parentSeoPath = parentCategory.Outlines.GetSeoPath(store, cultureName, null);
+                    if (!parentSeoPath.IsNullOrEmpty())
+                    {
+                        var breadcrumb = new Breadcrumb(nameof(parentCategory))
+                        {
+                            ItemId = parentCategory.Id,
+                            SeoPath = parentSeoPath,
+                            Title = parentCategory.Name
+                        };
+                        breadcrumbs.Add(breadcrumb);
+                    }
+
+                }
+                if (!seoPath.IsNullOrEmpty())
+                {
+                    breadcrumbs.Add(new Breadcrumb(nameof(context.Source.Category))
+                    {
+                        ItemId = context.Source.Category.Id,
+                        Title = context.Source.Category.Name,
+                        SeoPath = seoPath
+                    });
+                }
+
+                return breadcrumbs;
+            });
         }
 
         private static bool TryGetParentId(IResolveFieldContext<ExpCategory> context, out string parentId)

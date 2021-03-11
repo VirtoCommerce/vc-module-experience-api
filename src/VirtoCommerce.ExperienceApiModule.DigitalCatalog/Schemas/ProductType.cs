@@ -8,12 +8,15 @@ using GraphQL.DataLoader;
 using GraphQL.Types;
 using MediatR;
 using VirtoCommerce.CatalogModule.Core.Model;
+using VirtoCommerce.CoreModule.Core.Outlines;
 using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.Core.Models;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.StoreModule.Core.Model;
+using VirtoCommerce.XDigitalCatalog.Breadcrumbs;
 using VirtoCommerce.XDigitalCatalog.Extensions;
 using VirtoCommerce.XDigitalCatalog.Queries;
 
@@ -265,7 +268,35 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             Field<ListGraphType<OutlineType>>("outlines", resolve: context => context.Source.IndexedProduct.Outlines);//.RootAlias("__object.outlines");
 
-            Field<ListGraphType<BreadcrumbType>>("breadcrumbs", resolve: context => context.Source.IndexedProduct.GetBreadcrumbs(context.Source.Store, context.Source.CultureName));
+            Field<ListGraphType<BreadcrumbType>>("breadcrumbs", resolve: context =>
+            {
+                var breadcrumbs = new List<Breadcrumb>();
+                var store = context.GetArgumentOrValue<Store>("store");
+                var cultureName = context.GetValue<string>("cultureName");
+
+                var outline = context.Source.IndexedProduct.Outlines.FirstOrDefault(outline => outline.Items.Any(item => item.Id == store.Catalog && item.SeoObjectType == "Catalog"));
+                var outlineItems = outline?.Items.ToList();
+
+                for (var i = outlineItems?.Count -1 ?? 0; i > 0; i--)
+                {
+                    var item = outlineItems[i];
+
+                    var innerOutline = new List<Outline>() { new Outline() { Items = outlineItems } };
+                    var seoPath = innerOutline.GetSeoPath(store, cultureName, null);
+
+                    outlineItems.Remove(item);
+                    if (string.IsNullOrWhiteSpace(seoPath)) continue;
+
+                    var breadcrumb = new Breadcrumb(item.SeoObjectType)
+                    {
+                        ItemId = item.Id,
+                        Title = item.SeoInfos?.FirstOrDefault()?.SemanticUrl ?? item.Name,
+                        SeoPath  = seoPath
+                    };
+                    breadcrumbs.Insert(0, breadcrumb);
+                }
+                return breadcrumbs;
+            });
 
             Connection<ProductAssociationType>()
               .Name("associations")
