@@ -383,6 +383,26 @@ namespace VirtoCommerce.XPurchase
             return this;
         }
 
+        public virtual Task<CartAggregate> AddOrUpdateCartAddressByTypeAsync(CartModule.Core.Model.Address address)
+        {
+            EnsureCartExists();
+
+            //Reset address key because it can equal a customer address from profile and if not do that it may cause
+            //address primary key duplication error for multiple carts with the same address
+            address.Key = null;
+
+            var existingAddress = Cart.Addresses.FirstOrDefault(x => x.AddressType == address.AddressType);
+
+            if (existingAddress != null)
+            {
+                Cart.Addresses.Remove(existingAddress);
+            }
+
+            Cart.Addresses.Add(address);
+
+            return Task.FromResult(this);
+        }
+
         public virtual async Task<CartAggregate> MergeWithCartAsync(CartAggregate otherCart)
         {
             EnsureCartExists();

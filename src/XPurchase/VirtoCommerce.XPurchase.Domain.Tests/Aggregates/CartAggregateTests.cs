@@ -7,8 +7,10 @@ using FluentAssertions;
 using Moq;
 using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model;
+using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.XPurchase.Tests.Helpers;
 using Xunit;
+using AddressType = VirtoCommerce.CoreModule.Core.Common.AddressType;
 
 namespace VirtoCommerce.XPurchase.Tests.Aggregates
 {
@@ -446,5 +448,60 @@ namespace VirtoCommerce.XPurchase.Tests.Aggregates
         // TODO: Write tests
 
         #endregion RecalculateAsync
+
+        #region AddCartAddressAsync
+
+        [Fact]
+        public async Task AddOrUpdateCartAddressByTypeAsync_AddressExists_ShouldUpdateAddress()
+        {
+            // Arrange
+            var cartAggregate = GetValidCartAggregate();
+            var oldAddress = new Address
+            {
+                Name = "existing_address",
+                AddressType = AddressType.BillingAndShipping,
+            };
+            cartAggregate.Cart.Addresses = new List<Address> { oldAddress };
+
+            var newAddress = new Address
+            {
+                Name = "new_address",
+                Key = "key",
+                AddressType = AddressType.BillingAndShipping,
+            };
+
+            // Act
+            await cartAggregate.AddOrUpdateCartAddressByTypeAsync(newAddress);
+
+            // Assert
+            newAddress.Key.Should().BeNull();
+            cartAggregate.Cart.Addresses.Should().ContainSingle(x => x.Name.EqualsInvariant(newAddress.Name)).And.NotContain(x => x.Name.EqualsInvariant(oldAddress.Name));
+        }
+
+        [Theory]
+        [InlineData(AddressType.Billing)]
+        [InlineData(AddressType.Shipping)]
+        [InlineData(AddressType.BillingAndShipping)]
+        [InlineData(AddressType.Pickup)]
+        public async Task AddOrUpdateCartAddressByTypeAsync_PaymentAndShipmentExist_ShouldNotUpdatePaymentAndShipmentAddresses(AddressType addressType)
+        {
+            // Arrange
+            var cartAggregate = GetValidCartAggregate();
+
+            var newAddress = new Address
+            {
+                Name = "new_address",
+                AddressType = addressType,
+            };
+
+            // Act
+            await cartAggregate.AddOrUpdateCartAddressByTypeAsync(newAddress);
+
+            // Assert
+            cartAggregate.Cart.Shipments.Select(x => x.DeliveryAddress).Should().NotContain(x => x.Name.EqualsInvariant(newAddress.Name));
+            cartAggregate.Cart.Payments.Select(x => x.BillingAddress).Should().NotContain(x => x.Name.EqualsInvariant(newAddress.Name));
+        }
+
+        #endregion AddCartAddressAsync
     }
 }

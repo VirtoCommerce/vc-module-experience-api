@@ -693,6 +693,34 @@ namespace VirtoCommerce.XPurchase.Schemas
                                                  .FieldType;
 
             schema.Mutation.AddField(addItemsCartField);
+
+
+            /// <example>
+            /// This is an example JSON request for a mutation
+            /// {
+            ///   "query": mutation ($command: InputAddOrUpdateCartAddressType!) { addCartAddress(command: $command) }
+            ///   "variables": {
+            ///      "command": {
+            ///          "storeId": "Electronics",
+            ///          "cartName": "default",
+            ///          "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
+            ///          "language": "en-US",
+            ///          "currency": "USD",
+            ///          "cartType": "cart",
+            ///          "address": {
+            ///             "line1":"st street 1"
+            ///           }
+            ///       }
+            ///    }
+            /// }
+            /// </example>
+            var addCartAddressField = FieldBuilder.Create<CartAggregate, CartAggregate>(typeof(CartType))
+                                                 .Name("addCartAddress")
+                                                 .Argument<NonNullGraphType<InputAddOrUpdateCartAddressType>>(_commandName)
+                                                 .ResolveAsync(async context => await _mediator.Send(context.GetArgument<AddCartAddressCommand>(_commandName)))
+                                                 .FieldType;
+
+            schema.Mutation.AddField(addCartAddressField);
         }
 
         private async Task<object> ResolveConnectionAsync(IMediator mediator, IResolveConnectionContext<object> context)
