@@ -22,6 +22,7 @@ using VirtoCommerce.TaxModule.Core.Model;
 using VirtoCommerce.TaxModule.Core.Model.Search;
 using VirtoCommerce.TaxModule.Core.Services;
 using VirtoCommerce.XPurchase.Extensions;
+using VirtoCommerce.XPurchase.Services;
 using VirtoCommerce.XPurchase.Validators;
 using Store = VirtoCommerce.StoreModule.Core.Model.Store;
 
@@ -33,6 +34,7 @@ namespace VirtoCommerce.XPurchase
         private readonly IMarketingPromoEvaluator _marketingEvaluator;
         private readonly IShoppingCartTotalsCalculator _cartTotalsCalculator;
         private readonly ITaxProviderSearchService _taxProviderSearchService;
+        private readonly ICartProductService _cartProductService;
 
         private readonly IMapper _mapper;
 
@@ -40,12 +42,14 @@ namespace VirtoCommerce.XPurchase
             IMarketingPromoEvaluator marketingEvaluator,
             IShoppingCartTotalsCalculator cartTotalsCalculator,
             ITaxProviderSearchService taxProviderSearchService,
+            ICartProductService cartProductService,
             IMapper mapper
             )
         {
             _cartTotalsCalculator = cartTotalsCalculator;
             _marketingEvaluator = marketingEvaluator;
             _taxProviderSearchService = taxProviderSearchService;
+            _cartProductService = cartProductService;
             _mapper = mapper;
         }
 
@@ -158,6 +162,33 @@ namespace VirtoCommerce.XPurchase
 
                 CartProducts[newCartItem.CartProduct.Id] = newCartItem.CartProduct;
                 await InnerAddLineItemAsync(lineItem, newCartItem.CartProduct);
+            }
+
+            return this;
+        }
+
+        public virtual async Task<CartAggregate> AddItemsAsync(ICollection<NewCartItem> newCartItems)
+        {
+            EnsureCartExists();
+
+            var productIds = newCartItems.Select(x => x.ProductId).Distinct().ToArray();
+
+            var productsByIds =
+                (await _cartProductService.GetCartProductsByIdsAsync(this, productIds))
+                .ToDictionary(x => x.Id);
+
+            foreach (var item in newCartItems)
+            {
+                if (productsByIds.TryGetValue(item.ProductId, out var product))
+                {
+                    await AddItemAsync(new NewCartItem(item.ProductId, item.Quantity)
+                    {
+                        Comment = item.Comment,
+                        DynamicProperties = item.DynamicProperties,
+                        Price = item.Price,
+                        CartProduct = product
+                    });
+                }
             }
 
             return this;
@@ -350,6 +381,26 @@ namespace VirtoCommerce.XPurchase
             Cart.Payments.Add(payment);
 
             return this;
+        }
+
+        public virtual Task<CartAggregate> AddOrUpdateCartAddressByTypeAsync(CartModule.Core.Model.Address address)
+        {
+            EnsureCartExists();
+
+            //Reset address key because it can equal a customer address from profile and if not do that it may cause
+            //address primary key duplication error for multiple carts with the same address
+            address.Key = null;
+
+            var existingAddress = Cart.Addresses.FirstOrDefault(x => x.AddressType == address.AddressType);
+
+            if (existingAddress != null)
+            {
+                Cart.Addresses.Remove(existingAddress);
+            }
+
+            Cart.Addresses.Add(address);
+
+            return Task.FromResult(this);
         }
 
         public virtual async Task<CartAggregate> MergeWithCartAsync(CartAggregate otherCart)

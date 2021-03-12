@@ -7,8 +7,10 @@ using FluentAssertions;
 using Moq;
 using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model;
+using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.XPurchase.Tests.Helpers;
 using Xunit;
+using AddressType = VirtoCommerce.CoreModule.Core.Common.AddressType;
 
 namespace VirtoCommerce.XPurchase.Tests.Aggregates
 {
@@ -22,6 +24,7 @@ namespace VirtoCommerce.XPurchase.Tests.Aggregates
                 _marketingPromoEvaluatorMock.Object,
                 _shoppingCartTotalsCalculatorMock.Object,
                 _taxProviderSearchServiceMock.Object,
+                _cartProductServiceMock.Object,
                 _mapperMock.Object);
 
             var cart = GetCart();
@@ -93,6 +96,57 @@ namespace VirtoCommerce.XPurchase.Tests.Aggregates
         }
 
         #endregion AddItemAsync
+
+        #region AddItemsAsync
+
+        [Fact]
+        public async Task AddItemsAsync_ItemsExist_ShouldAddNewItems()
+        {
+            // Arrange
+            var productId1 = _fixture.Create<string>();
+            var newCartItem1 = new NewCartItem(productId1, 1);
+
+            var productId2 = _fixture.Create<string>();
+            var newCartItem2 = new NewCartItem(productId2, 2);
+
+            var newCartItems = new List<NewCartItem>() { newCartItem1, newCartItem2 };
+
+            _cartProductServiceMock
+                .Setup(x => x.GetCartProductsByIdsAsync(It.IsAny<CartAggregate>(), new[] { productId1, productId2 }))
+                .ReturnsAsync(
+                    new List<CartProduct>()
+                    {
+                        new CartProduct(new CatalogProduct() { Id = productId1, IsActive = true, IsBuyable = true }),
+                        new CartProduct(new CatalogProduct() { Id = productId2, IsActive = true, IsBuyable = true }),
+                    });
+
+
+            _mapperMock.Setup(m => m.Map<LineItem>(It.IsAny<object>())).Returns<object>((arg) =>
+            {
+                if (arg is CartProduct cartProduct)
+                {
+                    return new LineItem()
+                    {
+                        ProductId = cartProduct.Id
+                    };
+                }
+
+                return null;
+            });
+
+            var cartAggregate = GetValidCartAggregate();
+            cartAggregate.ValidationRuleSet = "default";
+            cartAggregate.Cart.Items = Enumerable.Empty<LineItem>().ToList();
+
+            // Act
+            var newAggregate = await cartAggregate.AddItemsAsync(newCartItems);
+
+            // Assert
+            cartAggregate.Cart.Items.Should().Contain(x => x.ProductId == newCartItem1.ProductId);
+            cartAggregate.Cart.Items.Should().Contain(x => x.ProductId == newCartItem2.ProductId);
+        }
+
+        #endregion AddItemsAsync
 
         #region ChangeItemPriceAsync
 
@@ -394,5 +448,60 @@ namespace VirtoCommerce.XPurchase.Tests.Aggregates
         // TODO: Write tests
 
         #endregion RecalculateAsync
+
+        #region AddCartAddressAsync
+
+        [Fact]
+        public async Task AddOrUpdateCartAddressByTypeAsync_AddressExists_ShouldUpdateAddress()
+        {
+            // Arrange
+            var cartAggregate = GetValidCartAggregate();
+            var oldAddress = new Address
+            {
+                Name = "existing_address",
+                AddressType = AddressType.BillingAndShipping,
+            };
+            cartAggregate.Cart.Addresses = new List<Address> { oldAddress };
+
+            var newAddress = new Address
+            {
+                Name = "new_address",
+                Key = "key",
+                AddressType = AddressType.BillingAndShipping,
+            };
+
+            // Act
+            await cartAggregate.AddOrUpdateCartAddressByTypeAsync(newAddress);
+
+            // Assert
+            newAddress.Key.Should().BeNull();
+            cartAggregate.Cart.Addresses.Should().ContainSingle(x => x.Name.EqualsInvariant(newAddress.Name)).And.NotContain(x => x.Name.EqualsInvariant(oldAddress.Name));
+        }
+
+        [Theory]
+        [InlineData(AddressType.Billing)]
+        [InlineData(AddressType.Shipping)]
+        [InlineData(AddressType.BillingAndShipping)]
+        [InlineData(AddressType.Pickup)]
+        public async Task AddOrUpdateCartAddressByTypeAsync_PaymentAndShipmentExist_ShouldNotUpdatePaymentAndShipmentAddresses(AddressType addressType)
+        {
+            // Arrange
+            var cartAggregate = GetValidCartAggregate();
+
+            var newAddress = new Address
+            {
+                Name = "new_address",
+                AddressType = addressType,
+            };
+
+            // Act
+            await cartAggregate.AddOrUpdateCartAddressByTypeAsync(newAddress);
+
+            // Assert
+            cartAggregate.Cart.Shipments.Select(x => x.DeliveryAddress).Should().NotContain(x => x.Name.EqualsInvariant(newAddress.Name));
+            cartAggregate.Cart.Payments.Select(x => x.BillingAddress).Should().NotContain(x => x.Name.EqualsInvariant(newAddress.Name));
+        }
+
+        #endregion AddCartAddressAsync
     }
 }
