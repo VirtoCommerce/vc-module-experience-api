@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,6 +9,7 @@ using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.StoreModule.Core.Model;
 using VirtoCommerce.XDigitalCatalog.Extensions;
 using VirtoCommerce.XDigitalCatalog.Queries;
 
@@ -83,13 +83,23 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                     return loader.LoadAsync(parentCategoryId);
                 }
                 return null;
-            });  
+            });
 
             Field<BooleanGraphType>("hasParent", resolve: context => TryGetParentId(context, out _));
 
             Field<ListGraphType<OutlineType>>("outlines", resolve: context => context.Source.Category.Outlines);
 
             Field<ListGraphType<ImageType>>("images", resolve: context => context.Source.Category.Images);
+
+            Field<ListGraphType<BreadcrumbType>>("breadcrumbs", resolve: context =>
+            {
+                
+                var store = context.GetArgumentOrValue<Store>("store");
+                var cultureName = context.GetValue<string>("cultureName");
+
+                return context.Source.Category.Outlines.GetBreadcrumbsFromOutLine(store, cultureName);
+
+            });
         }
 
         private static bool TryGetParentId(IResolveFieldContext<ExpCategory> context, out string parentId)

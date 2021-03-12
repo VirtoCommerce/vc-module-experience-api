@@ -14,6 +14,7 @@ using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.StoreModule.Core.Services;
 using VirtoCommerce.XDigitalCatalog.Extensions;
 using VirtoCommerce.XDigitalCatalog.Queries;
 
@@ -24,12 +25,14 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
         private readonly IMediator _mediator;
         private readonly IDataLoaderContextAccessor _dataLoader;
         private readonly ICurrencyService _currencyService;
+        private readonly IStoreService _storeService;
 
-        public DigitalCatalogSchema(IMediator mediator, IDataLoaderContextAccessor dataLoader, ICurrencyService currencyService)
+        public DigitalCatalogSchema(IMediator mediator, IDataLoaderContextAccessor dataLoader, ICurrencyService currencyService, IStoreService storeService)
         {
             _mediator = mediator;
             _dataLoader = dataLoader;
             _currencyService = currencyService;
+            _storeService = storeService;
         }
 
         /// <summary>
@@ -59,13 +62,16 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                     //TODO:  Need to check what there is no any alternative way to access to the original request arguments in sub selection
                     context.CopyArgumentsToUserContext();
 
+                    var store = await _storeService.GetByIdAsync(context.GetArgument<string>("storeId"));
+                    context.UserContext["store"] = store;
+
                     var cultureName = context.GetArgument<string>("cultureName");
 
                     var allCurrencies = await _currencyService.GetAllCurrenciesAsync();
                     //Store all currencies in the user context for future resolve in the schema types
                     context.SetCurrencies(allCurrencies, cultureName);
 
-                    var loader = _dataLoader.Context.GetOrAddBatchLoader<string, ExpProduct>("productsLoader", (ids) => LoadProductsAsync(_mediator, ids, context));                   
+                    var loader = _dataLoader.Context.GetOrAddBatchLoader<string, ExpProduct>("productsLoader", (ids) => LoadProductsAsync(_mediator, ids, context));
                     return loader.LoadAsync(context.GetArgument<string>("id"));
 
                 })
@@ -94,6 +100,8 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 context.CopyArgumentsToUserContext();
 
                 var cultureName = context.GetArgument<string>("cultureName");
+                var store = await _storeService.GetByIdAsync(context.GetArgument<string>("storeId"));
+                context.UserContext["store"] = store;
 
                 var allCurrencies = await _currencyService.GetAllCurrenciesAsync();
                 //Store all currencies in the user context for future resolve in the schema types
@@ -117,8 +125,11 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                     new QueryArgument<StringGraphType> { Name = "cultureName", Description = "Culture name (\"en-US\")" }
                 ),
                 Type = GraphTypeExtenstionHelper.GetActualType<CategoryType>(),
-                Resolver = new FuncFieldResolver<ExpCategory, IDataLoaderResult<ExpCategory>>(context =>
+                Resolver = new AsyncFieldResolver<ExpCategory, IDataLoaderResult<ExpCategory>>( async context =>
                 {
+                    var store = await _storeService.GetByIdAsync(context.GetArgument<string>("storeId"));
+                    context.UserContext["store"] = store;
+
                     //TODO:  Need to check what there is no any alternative way to access to the original request arguments in sub selection
                     context.CopyArgumentsToUserContext();
                     var loader = _dataLoader.Context.GetOrAddBatchLoader<string, ExpCategory>("categoriesLoader", (ids) => LoadCategoriesAsync(_mediator, ids, context));
@@ -146,6 +157,9 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             categoriesConnectionBuilder.ResolveAsync(async context =>
             {
+                var store = await _storeService.GetByIdAsync(context.GetArgument<string>("storeId"));
+                context.UserContext["store"] = store;
+
                 //TODO:  Need to check what there is no any alternative way to access to the original request arguments in sub selection
                 context.CopyArgumentsToUserContext();
                 return await ResolveCategoriesConnectionAsync(_mediator, context);
@@ -210,7 +224,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             {
                 context.SetCurrency(response.Currency);
             }
-            
+
             var result = new ProductsConnection<ExpProduct>(response.Results, skip, Convert.ToInt32(context.After ?? 0.ToString()), response.TotalCount)
             {
                 Facets = response.Facets

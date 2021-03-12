@@ -14,6 +14,7 @@ using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.Core.Models;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.StoreModule.Core.Model;
 using VirtoCommerce.XDigitalCatalog.Extensions;
 using VirtoCommerce.XDigitalCatalog.Queries;
 
@@ -264,6 +265,15 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 });
 
             Field<ListGraphType<OutlineType>>("outlines", resolve: context => context.Source.IndexedProduct.Outlines);//.RootAlias("__object.outlines");
+
+            Field<ListGraphType<BreadcrumbType>>("breadcrumbs", resolve: context =>
+            {
+                var store = context.GetArgumentOrValue<Store>("store");
+                var cultureName = context.GetValue<string>("cultureName");
+
+                
+                return context.Source.IndexedProduct.Outlines.GetBreadcrumbsFromOutLine(store, cultureName);
+            });
 
             Connection<ProductAssociationType>()
               .Name("associations")

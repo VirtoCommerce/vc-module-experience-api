@@ -45,6 +45,11 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                 result |= CategoryResponseGroup.WithOutlines;
             }
 
+            if (IncludeFields.ContainsAny("breadcrumbs"))
+            {
+                result |= CategoryResponseGroup.WithParents | CategoryResponseGroup.WithOutlines;
+            }
+
             return result.ToString();
         }
     }
