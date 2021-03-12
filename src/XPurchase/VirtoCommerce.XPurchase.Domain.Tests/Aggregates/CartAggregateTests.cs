@@ -466,6 +466,7 @@ namespace VirtoCommerce.XPurchase.Tests.Aggregates
             var newAddress = new Address
             {
                 Name = "new_address",
+                Key = "key",
                 AddressType = AddressType.BillingAndShipping,
             };
 
@@ -473,6 +474,7 @@ namespace VirtoCommerce.XPurchase.Tests.Aggregates
             await cartAggregate.AddOrUpdateCartAddressByTypeAsync(newAddress);
 
             // Assert
+            newAddress.Key.Should().BeNull();
             cartAggregate.Cart.Addresses.Should().ContainSingle(x => x.Name.EqualsInvariant(newAddress.Name)).And.NotContain(x => x.Name.EqualsInvariant(oldAddress.Name));
         }
 
