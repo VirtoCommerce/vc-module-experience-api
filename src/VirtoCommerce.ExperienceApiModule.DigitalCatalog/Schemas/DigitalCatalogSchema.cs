@@ -9,7 +9,6 @@ using GraphQL.Resolvers;
 using GraphQL.Types;
 using GraphQL.Types.Relay;
 using MediatR;
-using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
@@ -26,15 +25,13 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
         private readonly IMediator _mediator;
         private readonly IDataLoaderContextAccessor _dataLoader;
         private readonly ICurrencyService _currencyService;
-        private readonly ICategorySearchService _categorySearchService;
         private readonly IStoreService _storeService;
 
-        public DigitalCatalogSchema(IMediator mediator, IDataLoaderContextAccessor dataLoader, ICurrencyService currencyService, ICategorySearchService categorySearchService, IStoreService storeService)
+        public DigitalCatalogSchema(IMediator mediator, IDataLoaderContextAccessor dataLoader, ICurrencyService currencyService, IStoreService storeService)
         {
             _mediator = mediator;
             _dataLoader = dataLoader;
             _currencyService = currencyService;
-            _categorySearchService = categorySearchService;
             _storeService = storeService;
         }
 
