@@ -115,7 +115,6 @@ namespace VirtoCommerce.XDigitalCatalog.Extensions
 
         public static IEnumerable<Breadcrumb> GetBreadcrumbsFromOutLine(this IEnumerable<Outline> outlines, Store store, string cultureName)
         {
-
             var outlineFilteredByCatalog = outlines.FirstOrDefault(outline => outline.Items.Any(item => item.Id == store.Catalog && item.SeoObjectType == "Catalog"));
             var breadcrumbs = new List<Breadcrumb>();
             var outlineItems = outlineFilteredByCatalog?.Items.ToList();
@@ -143,8 +142,8 @@ namespace VirtoCommerce.XDigitalCatalog.Extensions
                 };
                 breadcrumbs.Insert(0, breadcrumb);
             }
-            return breadcrumbs;
 
+            return breadcrumbs;
         }
     }
 }
