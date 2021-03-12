@@ -71,7 +71,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             var categories = searchResult.Documents?.Select(x => _mapper.Map<ExpCategory>(x, options =>
             {
                 options.Items["store"] = store;
-                options.Items["language"] = request.CultureName;
+                options.Items["cultureName"] = request.CultureName;
             })).ToList() ?? new List<ExpCategory>();
 
             var result = new SearchCategoryResponse
