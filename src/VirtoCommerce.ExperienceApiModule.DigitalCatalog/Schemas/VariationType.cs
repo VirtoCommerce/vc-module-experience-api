@@ -17,6 +17,12 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             );
 
             Field<StringGraphType>(
+                "name",
+                description: "Name of variation.",
+                resolve: context => context.Source.IndexedProduct.Name
+            );
+
+            Field<StringGraphType>(
                 "code",
                 description: "SKU of variation.",
                 resolve: context => context.Source.IndexedProduct.Code
