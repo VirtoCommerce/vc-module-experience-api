@@ -10,7 +10,6 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             Name = "Asset";
 
             Field(x => x.Id, nullable: true).Description("The unique ID of the asset.");
-            Field(x => x.IsInherited).Description("Is asset inherited from parent product.");
             Field(x => x.Name, nullable: true).Description("The name of the asset.");
             Field(x => x.MimeType, nullable: true).Description("MimeType of the asset.");
             Field(x => x.Size, nullable: true).Description("Size of the asset.");
