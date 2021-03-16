@@ -43,14 +43,14 @@ namespace VirtoCommerce.XPurchase.Services
                 throw new ArgumentNullException(nameof(ids));
             }
 
-            var itemResponseGroups = ItemResponseGroup.ItemAssets | ItemResponseGroup.ItemInfo | ItemResponseGroup.Outlines | ItemResponseGroup.Seo;
+            var defaultResponseGroups = ItemResponseGroup.ItemAssets | ItemResponseGroup.ItemInfo | ItemResponseGroup.Outlines | ItemResponseGroup.Seo;
             if (!string.IsNullOrEmpty(additionalResponseGroups))
             {
-                itemResponseGroups |= EnumUtility.SafeParseFlags(additionalResponseGroups, ItemResponseGroup.ItemLarge);
+                defaultResponseGroups |= EnumUtility.SafeParseFlags(additionalResponseGroups, ItemResponseGroup.ItemLarge);
             }
 
             var result = new List<CartProduct>();
-            var products = await _productService.GetByIdsAsync(ids, itemResponseGroups.ToString());
+            var products = await _productService.GetByIdsAsync(ids, defaultResponseGroups.ToString());
             if (!products.IsNullOrEmpty())
             {
                 var loadInventoriesTask = _inventorySearchService.SearchInventoriesAsync(new InventorySearchCriteria
