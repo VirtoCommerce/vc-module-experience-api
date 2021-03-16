@@ -101,20 +101,21 @@ namespace VirtoCommerce.XPurchase.Schemas
             ///   }
             /// }
             /// </example>
-            var addItemField = FieldBuilder.Create<CartAggregate, CartAggregate>(typeof(CartType))
-                                           .Name("addItem")
-                                           .Argument<NonNullGraphType<InputAddItemType>>(_commandName)
-                                           //TODO: Write the unit-tests for successfully mapping input variable to the command
-                                           .ResolveAsync(async context =>
-                                           {
-                                               //TODO: Need to refactor later to prevent ugly code duplication
-                                               //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
-                                               var cartAggregate = await _mediator.Send(context.GetCartCommand<AddCartItemCommand>());
-                                               //store cart aggregate in the user context for future usage in the graph types resolvers    
-                                               context.SetExpandedObjectGraph(cartAggregate);
-                                               return cartAggregate;
-                                           })
-                                           .FieldType;
+            var addItemField = new EventStreamFieldType
+            {
+                Name = "addItem",
+                Type = GraphTypeExtenstionHelper.GetActualType<CartType>(),
+                Arguments = QueryArgumentsHelper.GetComplexTypeQueryArguments<NonNullGraphType<InputAddItemType>>(_commandName),
+                Resolver = new AsyncFieldResolver<CartAggregate, CartAggregate>(async context =>
+                {
+                    //TODO: Need to refactor later to prevent ugly code duplication
+                    //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
+                    var cartAggregate = await _mediator.Send(context.GetCartCommand<AddCartItemCommand>());
+                    //store cart aggregate in the user context for future usage in the graph types resolvers    
+                    context.SetExpandedObjectGraph(cartAggregate);
+                    return cartAggregate;
+                })
+            };
 
             schema.Mutation.AddField(addItemField);
 
@@ -134,18 +135,21 @@ namespace VirtoCommerce.XPurchase.Schemas
             ///   }
             /// }
             /// </example>
-            var clearCartField = FieldBuilder.Create<CartAggregate, CartAggregate>(typeof(CartType))
-                                             .Name("clearCart")
-                                             .Argument<NonNullGraphType<InputClearCartType>>(_commandName)
-                                             .ResolveAsync(async context =>
-                                             {
-                                                 //TODO: Need to refactor later to prevent ugly code duplication
-                                                 //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
-                                                 var cartAggregate = await _mediator.Send(context.GetCartCommand<ClearCartCommand>());
-                                                 //store cart aggregate in the user context for future usage in the graph types resolvers    
-                                                 context.SetExpandedObjectGraph(cartAggregate);
-                                                 return cartAggregate;
-                                             }).FieldType;
+            var clearCartField = new EventStreamFieldType
+            {
+                Name = "clearCart",
+                Type = GraphTypeExtenstionHelper.GetActualType<CartType>(),
+                Arguments = QueryArgumentsHelper.GetComplexTypeQueryArguments<NonNullGraphType<InputClearCartType>>(_commandName),
+                Resolver = new AsyncFieldResolver<CartAggregate, CartAggregate>(async context =>
+                {
+                    //TODO: Need to refactor later to prevent ugly code duplication
+                    //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
+                    var cartAggregate = await _mediator.Send(context.GetCartCommand<ClearCartCommand>());
+                    //store cart aggregate in the user context for future usage in the graph types resolvers    
+                    context.SetExpandedObjectGraph(cartAggregate);
+                    return cartAggregate;
+                })
+            };
 
             schema.Mutation.AddField(clearCartField);
 
@@ -166,19 +170,21 @@ namespace VirtoCommerce.XPurchase.Schemas
             ///   }
             /// }
             /// </example>
-            var changeCommentField = FieldBuilder.Create<CartAggregate, CartAggregate>(typeof(CartType))
-                                                 .Name("changeComment")
-                                                 .Argument<InputChangeCommentType>(_commandName)
-                                                 .ResolveAsync(async context =>
-                                                 {
-                                                     //TODO: Need to refactor later to prevent ugly code duplication
-                                                     //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
-                                                     var cartAggregate = await _mediator.Send(context.GetCartCommand<ChangeCommentCommand>());
-                                                     //store cart aggregate in the user context for future usage in the graph types resolvers    
-                                                     context.SetExpandedObjectGraph(cartAggregate);
-                                                     return cartAggregate;
-                                                 })
-                                                 .FieldType;
+            var changeCommentField = new EventStreamFieldType
+            {
+                Name = "changeComment",
+                Type = GraphTypeExtenstionHelper.GetActualType<CartType>(),
+                Arguments = QueryArgumentsHelper.GetQueryArguments<InputChangeCommentType>(_commandName),
+                Resolver = new AsyncFieldResolver<CartAggregate, CartAggregate>(async context =>
+                {
+                    //TODO: Need to refactor later to prevent ugly code duplication
+                    //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
+                    var cartAggregate = await _mediator.Send(context.GetCartCommand<ChangeCommentCommand>());
+                    //store cart aggregate in the user context for future usage in the graph types resolvers    
+                    context.SetExpandedObjectGraph(cartAggregate);
+                    return cartAggregate;
+                })
+            };
 
             schema.Mutation.AddField(changeCommentField);
 
@@ -200,18 +206,21 @@ namespace VirtoCommerce.XPurchase.Schemas
             ///   }
             /// }
             /// </example>
-            var changeCartItemPriceField = FieldBuilder.Create<CartAggregate, CartAggregate>(typeof(CartType))
-                                                       .Name("changeCartItemPrice")
-                                                       .Argument<NonNullGraphType<InputChangeCartItemPriceType>>(_commandName)
-                                                       .ResolveAsync(async context =>
-                                                       {
-                                                           //TODO: Need to refactor later to prevent ugly code duplication
-                                                           //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
-                                                           var cartAggregate = await _mediator.Send(context.GetCartCommand<ChangeCartItemPriceCommand>());
-                                                           //store cart aggregate in the user context for future usage in the graph types resolvers    
-                                                           context.SetExpandedObjectGraph(cartAggregate);
-                                                           return cartAggregate;
-                                                       }).FieldType;
+            var changeCartItemPriceField = new EventStreamFieldType
+            {
+                Name = "changeCartItemPrice",
+                Type = GraphTypeExtenstionHelper.GetActualType<CartType>(),
+                Arguments = QueryArgumentsHelper.GetComplexTypeQueryArguments<NonNullGraphType<InputChangeCartItemPriceType>>(_commandName),
+                Resolver = new AsyncFieldResolver<CartAggregate, CartAggregate>(async context =>
+                {
+                    //TODO: Need to refactor later to prevent ugly code duplication
+                    //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
+                    var cartAggregate = await _mediator.Send(context.GetCartCommand<ChangeCartItemPriceCommand>());
+                    //store cart aggregate in the user context for future usage in the graph types resolvers    
+                    context.SetExpandedObjectGraph(cartAggregate);
+                    return cartAggregate;
+                })
+            };
 
             schema.Mutation.AddField(changeCartItemPriceField);
 
@@ -233,18 +242,21 @@ namespace VirtoCommerce.XPurchase.Schemas
             ///   }
             /// }
             /// </example>
-            var changeCartItemQuantityField = FieldBuilder.Create<CartAggregate, CartAggregate>(typeof(CartType))
-                                                          .Name("changeCartItemQuantity")
-                                                          .Argument<NonNullGraphType<InputChangeCartItemQuantityType>>(_commandName)
-                                                          .ResolveAsync(async context =>
-                                                          {
-                                                              //TODO: Need to refactor later to prevent ugly code duplication
-                                                              //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
-                                                              var cartAggregate = await _mediator.Send(context.GetCartCommand<ChangeCartItemQuantityCommand>());
-                                                              //store cart aggregate in the user context for future usage in the graph types resolvers    
-                                                              context.SetExpandedObjectGraph(cartAggregate);
-                                                              return cartAggregate;
-                                                          }).FieldType;
+            var changeCartItemQuantityField = new EventStreamFieldType
+            {
+                Name = "changeCartItemQuantity",
+                Type = GraphTypeExtenstionHelper.GetActualType<CartType>(),
+                Arguments = QueryArgumentsHelper.GetComplexTypeQueryArguments<NonNullGraphType<InputChangeCartItemQuantityType>>(_commandName),
+                Resolver = new AsyncFieldResolver<CartAggregate, CartAggregate>(async context =>
+                {
+                    //TODO: Need to refactor later to prevent ugly code duplication
+                    //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
+                    var cartAggregate = await _mediator.Send(context.GetCartCommand<ChangeCartItemQuantityCommand>());
+                    //store cart aggregate in the user context for future usage in the graph types resolvers    
+                    context.SetExpandedObjectGraph(cartAggregate);
+                    return cartAggregate;
+                })
+            };
 
             schema.Mutation.AddField(changeCartItemQuantityField);
 
@@ -266,18 +278,21 @@ namespace VirtoCommerce.XPurchase.Schemas
             ///   }
             /// }
             /// </example>
-            var changeCartItemCommentField = FieldBuilder.Create<CartAggregate, CartAggregate>(typeof(CartType))
-                                                          .Name("changeCartItemComment")
-                                                          .Argument<InputChangeCartItemCommentType>(_commandName)
-                                                          .ResolveAsync(async context =>
-                                                          {
-                                                              //TODO: Need to refactor later to prevent ugly code duplication
-                                                              //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
-                                                              var cartAggregate = await _mediator.Send(context.GetCartCommand<ChangeCartItemCommentCommand>());
-                                                              //store cart aggregate in the user context for future usage in the graph types resolvers    
-                                                              context.SetExpandedObjectGraph(cartAggregate);
-                                                              return cartAggregate;
-                                                          }).FieldType;
+            var changeCartItemCommentField = new EventStreamFieldType
+            {
+                Name = "changeCartItemComment",
+                Type = GraphTypeExtenstionHelper.GetActualType<CartType>(),
+                Arguments = QueryArgumentsHelper.GetComplexTypeQueryArguments<NonNullGraphType<InputChangeCartItemCommentType>>(_commandName),
+                Resolver = new AsyncFieldResolver<CartAggregate, CartAggregate>(async context =>
+                {
+                    //TODO: Need to refactor later to prevent ugly code duplication
+                    //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
+                    var cartAggregate = await _mediator.Send(context.GetCartCommand<ChangeCartItemCommentCommand>());
+                    //store cart aggregate in the user context for future usage in the graph types resolvers    
+                    context.SetExpandedObjectGraph(cartAggregate);
+                    return cartAggregate;
+                })
+            };
 
             schema.Mutation.AddField(changeCartItemCommentField);
 
@@ -298,18 +313,21 @@ namespace VirtoCommerce.XPurchase.Schemas
             ///   }
             /// }
             /// </example>
-            var removeCartItemField = FieldBuilder.Create<CartAggregate, CartAggregate>(typeof(CartType))
-                                                  .Name("removeCartItem")
-                                                  .Argument<NonNullGraphType<InputRemoveItemType>>(_commandName)
-                                                  .ResolveAsync(async context =>
-                                                  {
-                                                      //TODO: Need to refactor later to prevent ugly code duplication
-                                                      //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
-                                                      var cartAggregate = await _mediator.Send(context.GetCartCommand<RemoveCartItemCommand>());
-                                                      //store cart aggregate in the user context for future usage in the graph types resolvers    
-                                                      context.SetExpandedObjectGraph(cartAggregate);
-                                                      return cartAggregate;
-                                                  }).FieldType;
+            var removeCartItemField = new EventStreamFieldType
+            {
+                Name = "removeCartItem",
+                Type = GraphTypeExtenstionHelper.GetActualType<CartType>(),
+                Arguments = QueryArgumentsHelper.GetComplexTypeQueryArguments<NonNullGraphType<InputRemoveItemType>>(_commandName),
+                Resolver = new AsyncFieldResolver<CartAggregate, CartAggregate>(async context =>
+                {
+                    //TODO: Need to refactor later to prevent ugly code duplication
+                    //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
+                    var cartAggregate = await _mediator.Send(context.GetCartCommand<RemoveCartItemCommand>());
+                    //store cart aggregate in the user context for future usage in the graph types resolvers    
+                    context.SetExpandedObjectGraph(cartAggregate);
+                    return cartAggregate;
+                })
+            };
 
             schema.Mutation.AddField(removeCartItemField);
 
@@ -330,18 +348,21 @@ namespace VirtoCommerce.XPurchase.Schemas
             ///   }
             /// }
             /// </example>
-            var addCouponField = FieldBuilder.Create<CartAggregate, CartAggregate>(typeof(CartType))
-                                             .Name("addCoupon")
-                                             .Argument<NonNullGraphType<InputAddCouponType>>(_commandName)
-                                             .ResolveAsync(async context =>
-                                             {
-                                                 //TODO: Need to refactor later to prevent ugly code duplication
-                                                 //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
-                                                 var cartAggregate = await _mediator.Send(context.GetCartCommand<AddCouponCommand>());
-                                                 //store cart aggregate in the user context for future usage in the graph types resolvers    
-                                                 context.SetExpandedObjectGraph(cartAggregate);
-                                                 return cartAggregate;
-                                             }).FieldType;
+            var addCouponField = new EventStreamFieldType
+            {
+                Name = "addCoupon",
+                Type = GraphTypeExtenstionHelper.GetActualType<CartType>(),
+                Arguments = QueryArgumentsHelper.GetComplexTypeQueryArguments<NonNullGraphType<InputAddCouponType>>(_commandName),
+                Resolver = new AsyncFieldResolver<CartAggregate, CartAggregate>(async context =>
+                {
+                    //TODO: Need to refactor later to prevent ugly code duplication
+                    //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
+                    var cartAggregate = await _mediator.Send(context.GetCartCommand<AddCouponCommand>());
+                    //store cart aggregate in the user context for future usage in the graph types resolvers    
+                    context.SetExpandedObjectGraph(cartAggregate);
+                    return cartAggregate;
+                })
+            };
 
             schema.Mutation.AddField(addCouponField);
 
@@ -362,18 +383,21 @@ namespace VirtoCommerce.XPurchase.Schemas
             ///   }
             /// }
             /// </example>
-            var removeCouponField = FieldBuilder.Create<CartAggregate, CartAggregate>(typeof(CartType))
-                                                .Name("removeCoupon")
-                                                .Argument<NonNullGraphType<InputRemoveCouponType>>(_commandName)
-                                                .ResolveAsync(async context =>
-                                                 {
-                                                     //TODO: Need to refactor later to prevent ugly code duplication
-                                                     //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
-                                                     var cartAggregate = await _mediator.Send(context.GetCartCommand<RemoveCouponCommand>());
-                                                     //store cart aggregate in the user context for future usage in the graph types resolvers    
-                                                     context.SetExpandedObjectGraph(cartAggregate);
-                                                     return cartAggregate;
-                                                 }).FieldType;
+            var removeCouponField = new EventStreamFieldType
+            {
+                Name = "removeCoupon",
+                Type = GraphTypeExtenstionHelper.GetActualType<CartType>(),
+                Arguments = QueryArgumentsHelper.GetComplexTypeQueryArguments<NonNullGraphType<InputRemoveCouponType>>(_commandName),
+                Resolver = new AsyncFieldResolver<CartAggregate, CartAggregate>(async context =>
+                {
+                    //TODO: Need to refactor later to prevent ugly code duplication
+                    //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
+                    var cartAggregate = await _mediator.Send(context.GetCartCommand<RemoveCouponCommand>());
+                    //store cart aggregate in the user context for future usage in the graph types resolvers    
+                    context.SetExpandedObjectGraph(cartAggregate);
+                    return cartAggregate;
+                })
+            };
 
             schema.Mutation.AddField(removeCouponField);
 
@@ -394,18 +418,21 @@ namespace VirtoCommerce.XPurchase.Schemas
             ///   }
             /// }
             /// </example>
-            var removeShipmentField = FieldBuilder.Create<CartAggregate, CartAggregate>(typeof(CartType))
-                                                  .Name("removeShipment")
-                                                  .Argument<NonNullGraphType<InputRemoveShipmentType>>(_commandName)
-                                                  .ResolveAsync(async context =>
-                                                  {
-                                                      //TODO: Need to refactor later to prevent ugly code duplication
-                                                      //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
-                                                      var cartAggregate = await _mediator.Send(context.GetCartCommand<RemoveShipmentCommand>());
-                                                      //store cart aggregate in the user context for future usage in the graph types resolvers    
-                                                      context.SetExpandedObjectGraph(cartAggregate);
-                                                      return cartAggregate;
-                                                  }).FieldType;
+            var removeShipmentField = new EventStreamFieldType
+            {
+                Name = "removeShipment",
+                Type = GraphTypeExtenstionHelper.GetActualType<CartType>(),
+                Arguments = QueryArgumentsHelper.GetComplexTypeQueryArguments<NonNullGraphType<InputRemoveShipmentType>>(_commandName),
+                Resolver = new AsyncFieldResolver<CartAggregate, CartAggregate>(async context =>
+                {
+                    //TODO: Need to refactor later to prevent ugly code duplication
+                    //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
+                    var cartAggregate = await _mediator.Send(context.GetCartCommand<RemoveShipmentCommand>());
+                    //store cart aggregate in the user context for future usage in the graph types resolvers    
+                    context.SetExpandedObjectGraph(cartAggregate);
+                    return cartAggregate;
+                })
+            };
 
             schema.Mutation.AddField(removeShipmentField);
 
@@ -427,18 +454,21 @@ namespace VirtoCommerce.XPurchase.Schemas
             ///   }
             /// }
             /// </example>
-            var addOrUpdateCartShipmentField = FieldBuilder.Create<CartAggregate, CartAggregate>(typeof(CartType))
-                                                           .Name("addOrUpdateCartShipment")
-                                                           .Argument<NonNullGraphType<InputAddOrUpdateCartShipmentType>>(_commandName)
-                                                           .ResolveAsync(async context =>
-                                                           {
-                                                               //TODO: Need to refactor later to prevent ugly code duplication
-                                                               //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
-                                                               var cartAggregate = await _mediator.Send(context.GetCartCommand<AddOrUpdateCartShipmentCommand>());
-                                                               //store cart aggregate in the user context for future usage in the graph types resolvers    
-                                                               context.SetExpandedObjectGraph(cartAggregate);
-                                                               return cartAggregate;
-                                                           }).FieldType;
+            var addOrUpdateCartShipmentField = new EventStreamFieldType
+            {
+                Name = "addOrUpdateCartShipment",
+                Type = GraphTypeExtenstionHelper.GetActualType<CartType>(),
+                Arguments = QueryArgumentsHelper.GetComplexTypeQueryArguments<NonNullGraphType<InputAddOrUpdateCartShipmentType>>(_commandName),
+                Resolver = new AsyncFieldResolver<CartAggregate, CartAggregate>(async context =>
+                {
+                    //TODO: Need to refactor later to prevent ugly code duplication
+                    //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
+                    var cartAggregate = await _mediator.Send(context.GetCartCommand<AddOrUpdateCartShipmentCommand>());
+                    //store cart aggregate in the user context for future usage in the graph types resolvers    
+                    context.SetExpandedObjectGraph(cartAggregate);
+                    return cartAggregate;
+                })
+            };
 
             schema.Mutation.AddField(addOrUpdateCartShipmentField);
 
@@ -460,18 +490,21 @@ namespace VirtoCommerce.XPurchase.Schemas
             ///   }
             /// }
             /// </example>
-            var addOrUpdateCartPaymentField = FieldBuilder.Create<CartAggregate, CartAggregate>(typeof(CartType))
-                                                          .Name("addOrUpdateCartPayment")
-                                                          .Argument<NonNullGraphType<InputAddOrUpdateCartPaymentType>>(_commandName)
-                                                          .ResolveAsync(async context =>
-                                                          {
-                                                              //TODO: Need to refactor later to prevent ugly code duplication
-                                                              //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
-                                                              var cartAggregate = await _mediator.Send(context.GetCartCommand<AddOrUpdateCartPaymentCommand>());
-                                                              //store cart aggregate in the user context for future usage in the graph types resolvers    
-                                                              context.SetExpandedObjectGraph(cartAggregate);
-                                                              return cartAggregate;
-                                                          }).FieldType;
+            var addOrUpdateCartPaymentField = new EventStreamFieldType
+            {
+                Name = "addOrUpdateCartPayment",
+                Type = GraphTypeExtenstionHelper.GetActualType<CartType>(),
+                Arguments = QueryArgumentsHelper.GetComplexTypeQueryArguments<NonNullGraphType<InputAddOrUpdateCartPaymentType>>(_commandName),
+                Resolver = new AsyncFieldResolver<CartAggregate, CartAggregate>(async context =>
+                {
+                    //TODO: Need to refactor later to prevent ugly code duplication
+                    //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
+                    var cartAggregate = await _mediator.Send(context.GetCartCommand<AddOrUpdateCartPaymentCommand>());
+                    //store cart aggregate in the user context for future usage in the graph types resolvers    
+                    context.SetExpandedObjectGraph(cartAggregate);
+                    return cartAggregate;
+                })
+            };
 
             schema.Mutation.AddField(addOrUpdateCartPaymentField);
 
@@ -494,11 +527,14 @@ namespace VirtoCommerce.XPurchase.Schemas
             ///   }
             /// }
             /// </example>
-            var validateCouponField = FieldBuilder.Create<CartAggregate, bool>(typeof(BooleanGraphType))
-                                                  .Name("validateCoupon")
-                                                  .Argument<NonNullGraphType<InputValidateCouponType>>(_commandName)
-                                                  .ResolveAsync(async context => await _mediator.Send(context.GetArgument<ValidateCouponCommand>(_commandName)))
-                                                  .FieldType;
+            var validateCouponField = new EventStreamFieldType
+            {
+                Name = "validateCoupon",
+                Type = typeof(BooleanGraphType),
+                Arguments = QueryArgumentsHelper.GetComplexTypeQueryArguments<NonNullGraphType<InputValidateCouponType>>(_commandName),
+                Resolver = new AsyncFieldResolver<CartAggregate, bool>(async context =>
+                    (bool)await _mediator.Send(context.GetArgument(GenericTypeHelper.GetActualType<ValidateCouponCommand>(), _commandName)))
+            };
 
             schema.Mutation.AddField(validateCouponField);
 
@@ -519,18 +555,21 @@ namespace VirtoCommerce.XPurchase.Schemas
             ///   }
             /// }
             /// </example>
-            var margeCartField = FieldBuilder.Create<CartAggregate, CartAggregate>(typeof(CartType))
-                                             .Name("mergeCart")
-                                             .Argument<NonNullGraphType<InputMergeCartType>>(_commandName)
-                                             .ResolveAsync(async context =>
-                                             {
-                                                 //TODO: Need to refactor later to prevent ugly code duplication
-                                                 //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
-                                                 var cartAggregate = await _mediator.Send(context.GetCartCommand<MergeCartCommand>());
-                                                 //store cart aggregate in the user context for future usage in the graph types resolvers    
-                                                 context.SetExpandedObjectGraph(cartAggregate);
-                                                 return cartAggregate;
-                                             }).FieldType;
+            var margeCartField = new EventStreamFieldType
+            {
+                Name = "mergeCart",
+                Type = GraphTypeExtenstionHelper.GetActualType<CartType>(),
+                Arguments = QueryArgumentsHelper.GetComplexTypeQueryArguments<NonNullGraphType<InputMergeCartType>>(_commandName),
+                Resolver = new AsyncFieldResolver<CartAggregate, CartAggregate>(async context =>
+                {
+                    //TODO: Need to refactor later to prevent ugly code duplication
+                    //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
+                    var cartAggregate = await _mediator.Send(context.GetCartCommand<MergeCartCommand>());
+                    //store cart aggregate in the user context for future usage in the graph types resolvers    
+                    context.SetExpandedObjectGraph(cartAggregate);
+                    return cartAggregate;
+                })
+            };
 
             schema.Mutation.AddField(margeCartField);
 
@@ -545,11 +584,14 @@ namespace VirtoCommerce.XPurchase.Schemas
             ///   }
             /// }
             /// </example>
-            var removeCartField = FieldBuilder.Create<CartAggregate, bool>(typeof(BooleanGraphType))
-                                              .Name("removeCart")
-                                              .Argument<NonNullGraphType<InputRemoveCartType>>(_commandName)
-                                              .ResolveAsync(async context => await _mediator.Send(context.GetArgument<RemoveCartCommand>(_commandName)))
-                                              .FieldType;
+            var removeCartField = new EventStreamFieldType
+            {
+                Name = "removeCart",
+                Type = typeof(BooleanGraphType),
+                Arguments = QueryArgumentsHelper.GetComplexTypeQueryArguments<NonNullGraphType<InputRemoveCartType>>(_commandName),
+                Resolver = new AsyncFieldResolver<CartAggregate, bool>(async context =>
+                    (bool)await _mediator.Send(context.GetArgument(GenericTypeHelper.GetActualType<RemoveCartCommand>(), _commandName)))
+            };
 
             schema.Mutation.AddField(removeCartField);
 
@@ -564,19 +606,21 @@ namespace VirtoCommerce.XPurchase.Schemas
             ///   }
             /// }
             /// </example>
-            var clearShipmentsField = FieldBuilder.Create<CartAggregate, CartAggregate>(typeof(CartType))
-                                                  .Name("clearShipments")
-                                                  .Argument<NonNullGraphType<InputClearShipmentsType>>(_commandName)
-                                                  .ResolveAsync(async context =>
-                                                  {
-                                                      //TODO: Need to refactor later to prevent ugly code duplication
-                                                      //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
-                                                      var cartAggregate = await _mediator.Send(context.GetArgument<ClearShipmentsCommand>(_commandName));
-                                                      //store cart aggregate in the user context for future usage in the graph types resolvers    
-                                                      context.SetExpandedObjectGraph(cartAggregate);
-                                                      return cartAggregate;
-                                                  })
-                                                  .FieldType;
+            var clearShipmentsField = new EventStreamFieldType
+            {
+                Name = "clearShipments",
+                Type = GraphTypeExtenstionHelper.GetActualType<CartType>(),
+                Arguments = QueryArgumentsHelper.GetComplexTypeQueryArguments<NonNullGraphType<InputClearShipmentsType>>(_commandName),
+                Resolver = new AsyncFieldResolver<CartAggregate, CartAggregate>(async context =>
+                {
+                    //TODO: Need to refactor later to prevent ugly code duplication
+                    //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
+                    var cartAggregate = await _mediator.Send(context.GetCartCommand<ClearShipmentsCommand>());
+                    //store cart aggregate in the user context for future usage in the graph types resolvers    
+                    context.SetExpandedObjectGraph(cartAggregate);
+                    return cartAggregate;
+                })
+            };
 
             schema.Mutation.AddField(clearShipmentsField);
 
@@ -591,19 +635,21 @@ namespace VirtoCommerce.XPurchase.Schemas
             ///   }
             /// }
             /// </example>
-            var clearPaymentsField = FieldBuilder.Create<CartAggregate, CartAggregate>(typeof(CartType))
-                                                 .Name("clearPayments")
-                                                 .Argument<NonNullGraphType<InputClearPaymentsType>>(_commandName)
-                                                 .ResolveAsync(async context =>
-                                                 {
-                                                     //TODO: Need to refactor later to prevent ugly code duplication
-                                                     //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
-                                                     var cartAggregate = await _mediator.Send(context.GetArgument<ClearPaymentsCommand>(_commandName));
-                                                     //store cart aggregate in the user context for future usage in the graph types resolvers    
-                                                     context.SetExpandedObjectGraph(cartAggregate);
-                                                     return cartAggregate;
-                                                 })
-                                                 .FieldType;
+            var clearPaymentsField = new EventStreamFieldType
+            {
+                Name = "clearPayments",
+                Type = GraphTypeExtenstionHelper.GetActualType<CartType>(),
+                Arguments = QueryArgumentsHelper.GetComplexTypeQueryArguments<NonNullGraphType<InputClearPaymentsType>>(_commandName),
+                Resolver = new AsyncFieldResolver<CartAggregate, CartAggregate>(async context =>
+                {
+                    //TODO: Need to refactor later to prevent ugly code duplication
+                    //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
+                    var cartAggregate = await _mediator.Send(context.GetCartCommand<ClearPaymentsCommand>());
+                    //store cart aggregate in the user context for future usage in the graph types resolvers    
+                    context.SetExpandedObjectGraph(cartAggregate);
+                    return cartAggregate;
+                })
+            };
 
             schema.Mutation.AddField(clearPaymentsField);
 
@@ -627,19 +673,21 @@ namespace VirtoCommerce.XPurchase.Schemas
             ///   }
             /// }
             /// </example>
-            var addOrUpdateCartAddress = FieldBuilder.Create<CartAggregate, CartAggregate>(typeof(CartType))
-                                                 .Name("addOrUpdateCartAddress")
-                                                 .Argument<NonNullGraphType<InputAddOrUpdateCartAddressType>>(_commandName)
-                                                 .ResolveAsync(async context =>
-                                                 {
-                                                     //TODO: Need to refactor later to prevent ugly code duplication
-                                                     //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
-                                                     var cartAggregate = await _mediator.Send(context.GetArgument<AddOrUpdateCartAddressCommand>(_commandName));
-                                                     //store cart aggregate in the user context for future usage in the graph types resolvers    
-                                                     context.SetExpandedObjectGraph(cartAggregate);
-                                                     return cartAggregate;
-                                                 })
-                                                 .FieldType;
+            var addOrUpdateCartAddress = new EventStreamFieldType
+            {
+                Name = "addOrUpdateCartAddress",
+                Type = GraphTypeExtenstionHelper.GetActualType<CartType>(),
+                Arguments = QueryArgumentsHelper.GetComplexTypeQueryArguments<NonNullGraphType<InputAddOrUpdateCartAddressType>>(_commandName),
+                Resolver = new AsyncFieldResolver<CartAggregate, CartAggregate>(async context =>
+                {
+                    //TODO: Need to refactor later to prevent ugly code duplication
+                    //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
+                    var cartAggregate = await _mediator.Send(context.GetCartCommand<AddOrUpdateCartAddressCommand>());
+                    //store cart aggregate in the user context for future usage in the graph types resolvers    
+                    context.SetExpandedObjectGraph(cartAggregate);
+                    return cartAggregate;
+                })
+            };
 
             schema.Mutation.AddField(addOrUpdateCartAddress);
 
@@ -655,11 +703,14 @@ namespace VirtoCommerce.XPurchase.Schemas
             ///   }
             /// }
             /// </example>
-            var removeCartAddressField = FieldBuilder.Create<CartAggregate, CartAggregate>(typeof(CartType))
-                                              .Name("removeCartAddress")
-                                              .Argument<NonNullGraphType<InputRemoveCartAddressType>>(_commandName)
-                                              .ResolveAsync(async context => await _mediator.Send(context.GetArgument<RemoveCartAddressCommand>(_commandName)))
-                                              .FieldType;
+            var removeCartAddressField = new EventStreamFieldType
+            {
+                Name = "removeCartAddress",
+                Type = GraphTypeExtenstionHelper.GetActualType<CartType>(),
+                Arguments = QueryArgumentsHelper.GetComplexTypeQueryArguments<NonNullGraphType<InputRemoveCartAddressType>>(_commandName),
+                Resolver = new AsyncFieldResolver<CartAggregate, CartAggregate>(async context =>
+                    await _mediator.Send(context.GetCartCommand<RemoveCartAddressCommand>()))
+            };
 
             schema.Mutation.AddField(removeCartAddressField);
 
@@ -686,14 +737,16 @@ namespace VirtoCommerce.XPurchase.Schemas
             ///     }
             /// }
             /// </example>
-            var addItemsCartField = FieldBuilder.Create<CartAggregate, CartAggregate>(typeof(CartType))
-                                                 .Name("addItemsCart")
-                                                 .Argument<NonNullGraphType<InputAddItemsType>>(_commandName)
-                                                 .ResolveAsync(async context => await _mediator.Send(context.GetArgument<AddCartItemsCommand>(_commandName)))
-                                                 .FieldType;
+            var addItemsCartField = new EventStreamFieldType
+            {
+                Name = "addItemsCart",
+                Type = GraphTypeExtenstionHelper.GetActualType<CartType>(),
+                Arguments = QueryArgumentsHelper.GetComplexTypeQueryArguments<NonNullGraphType<InputAddItemsType>>(_commandName),
+                Resolver = new AsyncFieldResolver<CartAggregate, CartAggregate>(async context =>
+                    await _mediator.Send(context.GetCartCommand<AddCartItemsCommand>()))
+            };
 
             schema.Mutation.AddField(addItemsCartField);
-
 
             /// <example>
             /// This is an example JSON request for a mutation
@@ -714,11 +767,14 @@ namespace VirtoCommerce.XPurchase.Schemas
             ///    }
             /// }
             /// </example>
-            var addCartAddressField = FieldBuilder.Create<CartAggregate, CartAggregate>(typeof(CartType))
-                                                 .Name("addCartAddress")
-                                                 .Argument<NonNullGraphType<InputAddOrUpdateCartAddressType>>(_commandName)
-                                                 .ResolveAsync(async context => await _mediator.Send(context.GetArgument<AddCartAddressCommand>(_commandName)))
-                                                 .FieldType;
+            var addCartAddressField = new EventStreamFieldType
+            {
+                Name = "addCartAddress",
+                Type = GraphTypeExtenstionHelper.GetActualType<CartType>(),
+                Arguments = QueryArgumentsHelper.GetComplexTypeQueryArguments<NonNullGraphType<InputAddOrUpdateCartAddressType>>(_commandName),
+                Resolver = new AsyncFieldResolver<CartAggregate, CartAggregate>(async context =>
+                    await _mediator.Send(context.GetCartCommand<AddCartAddressCommand>()))
+            };
 
             schema.Mutation.AddField(addCartAddressField);
         }

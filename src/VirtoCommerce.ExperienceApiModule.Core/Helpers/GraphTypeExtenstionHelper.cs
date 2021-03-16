@@ -13,12 +13,41 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Helpers
         public static Type GetActualType<TGraphType>() where TGraphType : IGraphType
         {
             var graphType = typeof(TGraphType);
+
+            return GetActualType(graphType);
+        }
+
+        public static Type GetActualType(Type graphType)
+        {
             var result = AbstractTypeFactory<IGraphType>.FindTypeInfoByName(graphType.Name)?.Type;
+
             if (result == null)
             {
                 result = graphType;
             }
+
             return result;
+        }
+
+        /// For generic graph type definitions like NonNullGraphType ProdcutType 
+        public static Type GetComplexType<TGraphType>() where TGraphType : IGraphType
+        {
+            var outerGraphType = typeof(TGraphType);
+
+            Type complexType;
+
+            if (outerGraphType.IsGenericType && outerGraphType.GenericTypeArguments.Length > 0)
+            {
+                var innerGraphType = GetActualType(outerGraphType.GenericTypeArguments[0]);
+
+                complexType = outerGraphType.GetGenericTypeDefinition().MakeGenericType(new[] { innerGraphType });
+            }
+            else
+            {
+                complexType = GetActualType(outerGraphType);
+            }
+
+            return complexType;
         }
 
         public static ConnectionBuilder<TSourceType> CreateConnection<TNodeType, TSourceType>() where TNodeType : IGraphType

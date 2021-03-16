@@ -1,7 +1,6 @@
 using System;
 using System.Threading.Tasks;
 using GraphQL;
-using GraphQL.Builders;
 using GraphQL.Resolvers;
 using GraphQL.Types;
 using MediatR;
@@ -152,103 +151,134 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 #pragma warning restore S125 // Sections of code should not be commented out
 
             #endregion
-            _ = schema.Mutation.AddField(FieldBuilder.Create<ContactAggregate, ContactAggregate>(typeof(ContactType))
-                            .Name("updateAddresses")
-                            .Argument<NonNullGraphType<InputUpdateContactAddressType>>(_commandName)
-                            .ResolveAsync(async context =>
-                            {
-                                var command = context.GetArgument<UpdateContactAddressesCommand>(_commandName);
-                                await CheckAuthAsync(context.GetCurrentUserId(), command);
-                                return await _mediator.Send(command);
-                            })
-                            .FieldType);
 
+            var updateAddressesField = new EventStreamFieldType
+            {
+                Name = "updateAddresses",
+                Type = GraphTypeExtenstionHelper.GetActualType<ContactType>(),
+                Arguments = QueryArgumentsHelper.GetComplexTypeQueryArguments<NonNullGraphType<InputUpdateContactAddressType>>(_commandName),
+                Resolver = new AsyncFieldResolver<ContactAggregate, ContactAggregate>(async context =>
+                {
+                    var type = GenericTypeHelper.GetActualType<UpdateContactAddressesCommand>();
+                    var command = (UpdateContactAddressesCommand)context.GetArgument(type, _commandName);
+                    await CheckAuthAsync(context.GetCurrentUserId(), command);
+                    return await _mediator.Send(command);
+                })
+            };
+            _ = schema.Mutation.AddField(updateAddressesField);
 
-            _ = schema.Mutation.AddField(FieldBuilder.Create<OrganizationAggregate, OrganizationAggregate>(typeof(OrganizationType))
-                            .Name("updateOrganization")
-                            .Argument<NonNullGraphType<InputUpdateOrganizationType>>(_commandName)
-                            .ResolveAsync(async context =>
-                            {
-                                var command = context.GetArgument<UpdateOrganizationCommand>(_commandName);
-                                await CheckAuthAsync(context.GetCurrentUserId(), command, CustomerModule.Core.ModuleConstants.Security.Permissions.Update);
-                                return await _mediator.Send(command);
-                            })
-                            .FieldType);
+            var updateOrganizationField = new EventStreamFieldType
+            {
+                Name = "updateOrganization",
+                Type = GraphTypeExtenstionHelper.GetActualType<OrganizationType>(),
+                Arguments = QueryArgumentsHelper.GetComplexTypeQueryArguments<NonNullGraphType<InputUpdateOrganizationType>>(_commandName),
+                Resolver = new AsyncFieldResolver<OrganizationAggregate, OrganizationAggregate>(async context =>
+                {
+                    var type = GenericTypeHelper.GetActualType<UpdateOrganizationCommand>();
+                    var command = (UpdateOrganizationCommand)context.GetArgument(type, _commandName);
+                    await CheckAuthAsync(context.GetCurrentUserId(), command, CustomerModule.Core.ModuleConstants.Security.Permissions.Update);
+                    return await _mediator.Send(command);
+                })
+            };
+            _ = schema.Mutation.AddField(updateOrganizationField);
 
-            _ = schema.Mutation.AddField(FieldBuilder.Create<OrganizationAggregate, OrganizationAggregate>(typeof(OrganizationType))
-                            .Name("createOrganization")
-                            .Argument<NonNullGraphType<InputCreateOrganizationType>>(_commandName)
-                            .ResolveAsync(async context =>
-                            {
-                                var command = context.GetArgument<CreateOrganizationCommand>(_commandName);
-                                await CheckAuthAsync(context.GetCurrentUserId(), command);
-                                return await _mediator.Send(command);
-                            })
-                            .FieldType);
+            var createOrganizationField = new EventStreamFieldType
+            {
+                Name = "createOrganization",
+                Type = GraphTypeExtenstionHelper.GetActualType<OrganizationType>(),
+                Arguments = QueryArgumentsHelper.GetComplexTypeQueryArguments<NonNullGraphType<InputCreateOrganizationType>>(_commandName),
+                Resolver = new AsyncFieldResolver<OrganizationAggregate, OrganizationAggregate>(async context =>
+                {
+                    var type = GenericTypeHelper.GetActualType<CreateOrganizationCommand>();
+                    var command = (CreateOrganizationCommand)context.GetArgument(type, _commandName);
+                    await CheckAuthAsync(context.GetCurrentUserId(), command);
+                    return await _mediator.Send(command);
+                })
+            };
+            _ = schema.Mutation.AddField(createOrganizationField);
 
-            _ = schema.Mutation.AddField(FieldBuilder.Create<ContactAggregate, ContactAggregate>(typeof(ContactType))
-                            .Name("createContact")
-                            .Argument<NonNullGraphType<InputCreateContactType>>(_commandName)
-                            .ResolveAsync(async context =>
-                            {
-                                var command = context.GetArgument<CreateContactCommand>(_commandName);
-                                await CheckAuthAsync(context.GetCurrentUserId(), command);
+            var createContactField = new EventStreamFieldType
+            {
+                Name = "createContact",
+                Type = GraphTypeExtenstionHelper.GetActualType<ContactType>(),
+                Arguments = QueryArgumentsHelper.GetComplexTypeQueryArguments<NonNullGraphType<InputCreateContactType>>(_commandName),
+                Resolver = new AsyncFieldResolver<ContactAggregate, ContactAggregate>(async context =>
+                {
+                    var type = GenericTypeHelper.GetActualType<CreateContactCommand>();
+                    var command = (CreateContactCommand)context.GetArgument(type, _commandName);
+                    await CheckAuthAsync(context.GetCurrentUserId(), command);
 
-                                return await _mediator.Send(command);
-                            })
-                            .FieldType);
+                    return await _mediator.Send(command);
+                })
+            };
+            _ = schema.Mutation.AddField(createContactField);
 
-            _ = schema.Mutation.AddField(FieldBuilder.Create<ContactAggregate, ContactAggregate>(typeof(ContactType))
-                            .Name("updateContact")
-                            .Argument<NonNullGraphType<InputUpdateContactType>>(_commandName)
-                            .ResolveAsync(async context =>
-                            {
-                                var command = context.GetArgument<UpdateContactCommand>(_commandName);
-                                await CheckAuthAsync(context.GetCurrentUserId(), command);
-                                return await _mediator.Send(command);
+            var updateContactField = new EventStreamFieldType
+            {
+                Name = "updateContact",
+                Type = GraphTypeExtenstionHelper.GetActualType<ContactType>(),
+                Arguments = QueryArgumentsHelper.GetComplexTypeQueryArguments<NonNullGraphType<InputUpdateContactType>>(_commandName),
+                Resolver = new AsyncFieldResolver<ContactAggregate, ContactAggregate>(async context =>
+                {
+                    var type = GenericTypeHelper.GetActualType<UpdateContactCommand>();
+                    var command = (UpdateContactCommand)context.GetArgument(type, _commandName);
+                    await CheckAuthAsync(context.GetCurrentUserId(), command);
+                    return await _mediator.Send(command);
 
-                            })
-                            .FieldType);
+                })
+            };
+            _ = schema.Mutation.AddField(updateContactField);
 
-            _ = schema.Mutation.AddField(FieldBuilder.Create<ContactAggregate, bool>(typeof(BooleanGraphType))
-                            .Name("deleteContact")
-                            .Argument<NonNullGraphType<InputDeleteContactType>>(_commandName)
-                            .ResolveAsync(async context =>
-                            {
-                                var command = context.GetArgument<DeleteContactCommand>(_commandName);
-                                await CheckAuthAsync(context.GetCurrentUserId(), command, CustomerModule.Core.ModuleConstants.Security.Permissions.Delete);
-                                return await _mediator.Send(command);
-                            })
-                            .FieldType);
+            var deleteContactField = new EventStreamFieldType
+            {
+                Name = "deleteContact",
+                Type = typeof(BooleanGraphType),
+                Arguments = QueryArgumentsHelper.GetComplexTypeQueryArguments<NonNullGraphType<InputDeleteContactType>>(_commandName),
+                Resolver = new AsyncFieldResolver<ContactAggregate, bool>(async context =>
+                {
+                    var type = GenericTypeHelper.GetActualType<DeleteContactCommand>();
+                    var command = (DeleteContactCommand)context.GetArgument(type, _commandName);
+                    await CheckAuthAsync(context.GetCurrentUserId(), command, CustomerModule.Core.ModuleConstants.Security.Permissions.Delete);
+                    return await _mediator.Send(command);
+                })
+            };
+            _ = schema.Mutation.AddField(deleteContactField);
 
-            _ = schema.Mutation.AddField(FieldBuilder.Create<object, IdentityResult>(typeof(IdentityResultType))
-                          .Name("updatePersonalData")
-                          .Argument<NonNullGraphType<InputUpdatePersonalDataType>>(_commandName)
-                          .ResolveAsync(async context =>
-                          {
-                              var command = context.GetArgument<UpdatePersonalDataCommand>(_commandName);
-                              await CheckAuthAsync(context.GetCurrentUserId(), command);
-                              return await _mediator.Send(command);
-                          })
-                          .FieldType);
+            var updatePersonalDataField = new EventStreamFieldType
+            {
+                Name = "updatePersonalData",
+                Type = GraphTypeExtenstionHelper.GetActualType<IdentityResultType>(),
+                Arguments = QueryArgumentsHelper.GetComplexTypeQueryArguments<NonNullGraphType<InputUpdatePersonalDataType>>(_commandName),
+                Resolver = new AsyncFieldResolver<object, IdentityResult>(async context =>
+                {
+                    var type = GenericTypeHelper.GetActualType<UpdatePersonalDataCommand>();
+                    var command = (UpdatePersonalDataCommand)context.GetArgument(type, _commandName);
+                    await CheckAuthAsync(context.GetCurrentUserId(), command);
+                    return await _mediator.Send(command);
+                })
+            };
+            _ = schema.Mutation.AddField(updatePersonalDataField);
 
-            _ = schema.Mutation.AddField(FieldBuilder.Create<object, bool>(typeof(BooleanGraphType))
-                        .Name("sendVerifyEmail")
-                        .Argument<InputSendVerifyEmailType>(_commandName)
-                        .ResolveAsync(async context =>
-                        {
-                            var command = context.GetArgument<SendVerifyEmailCommand>(_commandName);
+            var sendVerifyEmailField = new EventStreamFieldType
+            {
+                Name = "sendVerifyEmail",
+                Type = typeof(BooleanGraphType),
+                Arguments = QueryArgumentsHelper.GetQueryArguments<InputSendVerifyEmailType>(_commandName),
+                Resolver = new AsyncFieldResolver<object, bool>(async context =>
+                {
+                    var type = GenericTypeHelper.GetActualType<SendVerifyEmailCommand>();
+                    var command = (SendVerifyEmailCommand)context.GetArgument(type, _commandName);
 
-                            var isAuthenticated = ((GraphQLUserContext)context.UserContext).User?.Identity?.IsAuthenticated ?? false;
-                            if (isAuthenticated)
-                            {
-                                command.Email = await GetUserEmailAsync(context.GetCurrentUserId());
-                            }
+                    var isAuthenticated = ((GraphQLUserContext)context.UserContext).User?.Identity?.IsAuthenticated ?? false;
+                    if (isAuthenticated)
+                    {
+                        command.Email = await GetUserEmailAsync(context.GetCurrentUserId());
+                    }
 
-                            return await _mediator.Send(command);
-                        })
-                        .FieldType);
-
+                    return await _mediator.Send(command);
+                })
+            };
+            _ = schema.Mutation.AddField(sendVerifyEmailField);
 
             // Security API fields
 
@@ -335,16 +365,20 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 #pragma warning restore S125 // Sections of code should not be commented out
 
             #endregion
-            _ = schema.Mutation.AddField(FieldBuilder.Create<object, IdentityResult>(typeof(IdentityResultType))
-                        .Name("createUser")
-                        .Argument<NonNullGraphType<InputCreateUserType>>(_commandName)
-                        .ResolveAsync(async context =>
-                        {
-                            var command = context.GetArgument<CreateUserCommand>(_commandName);
-                            await CheckAuthAsync(context.GetCurrentUserId(), command);
-                            return await _mediator.Send(command);
-                        })
-                        .FieldType);
+            var createUserField = new EventStreamFieldType
+            {
+                Name = "createUser",
+                Type = GraphTypeExtenstionHelper.GetActualType<IdentityResultType>(),
+                Arguments = QueryArgumentsHelper.GetComplexTypeQueryArguments<NonNullGraphType<InputCreateUserType>>(_commandName),
+                Resolver = new AsyncFieldResolver<object, IdentityResult>(async context =>
+                {
+                    var type = GenericTypeHelper.GetActualType<CreateUserCommand>();
+                    var command = (CreateUserCommand)context.GetArgument(type, _commandName);
+                    await CheckAuthAsync(context.GetCurrentUserId(), command);
+                    return await _mediator.Send(command);
+                })
+            };
+            _ = schema.Mutation.AddField(createUserField);
 
             #region update user
 
@@ -368,16 +402,20 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 #pragma warning restore S125 // Sections of code should not be commented out
 
             #endregion
-            _ = schema.Mutation.AddField(FieldBuilder.Create<object, IdentityResult>(typeof(IdentityResultType))
-                        .Name("updateUser")
-                        .Argument<NonNullGraphType<InputUpdateUserType>>(_commandName)
-                        .ResolveAsync(async context =>
-                        {
-                            var command = context.GetArgument<UpdateUserCommand>(_commandName);
-                            await CheckAuthAsync(context.GetCurrentUserId(), command);
-                            return await _mediator.Send(command);
-                        })
-                        .FieldType);
+            var updateUserField = new EventStreamFieldType
+            {
+                Name = "updateUser",
+                Type = GraphTypeExtenstionHelper.GetActualType<IdentityResultType>(),
+                Arguments = QueryArgumentsHelper.GetComplexTypeQueryArguments<NonNullGraphType<InputUpdateUserType>>(_commandName),
+                Resolver = new AsyncFieldResolver<object, IdentityResult>(async context =>
+                {
+                    var type = GenericTypeHelper.GetActualType<UpdateUserCommand>();
+                    var command = (UpdateUserCommand)context.GetArgument(type, _commandName);
+                    await CheckAuthAsync(context.GetCurrentUserId(), command);
+                    return await _mediator.Send(command);
+                })
+            };
+            _ = schema.Mutation.AddField(updateUserField);
 
             #region delete user
 
@@ -396,16 +434,20 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 #pragma warning restore S125 // Sections of code should not be commented out
 
             #endregion
-            _ = schema.Mutation.AddField(FieldBuilder.Create<object, IdentityResult>(typeof(IdentityResultType))
-                        .Name("deleteUsers")
-                        .Argument<NonNullGraphType<InputDeleteUserType>>(_commandName)
-                        .ResolveAsync(async context =>
-                        {
-                            var command = context.GetArgument<DeleteUserCommand>(_commandName);
-                            await CheckAuthAsync(context.GetCurrentUserId(), command, PlatformConstants.Security.Permissions.SecurityDelete);
-                            return await _mediator.Send(command);
-                        })
-                        .FieldType);
+            var deleteUsersField = new EventStreamFieldType
+            {
+                Name = "deleteUsers",
+                Type = GraphTypeExtenstionHelper.GetActualType<IdentityResultType>(),
+                Arguments = QueryArgumentsHelper.GetComplexTypeQueryArguments<NonNullGraphType<InputDeleteUserType>>(_commandName),
+                Resolver = new AsyncFieldResolver<object, IdentityResult>(async context =>
+                {
+                    var type = GenericTypeHelper.GetActualType<DeleteUserCommand>();
+                    var command = (DeleteUserCommand)context.GetArgument(type, _commandName);
+                    await CheckAuthAsync(context.GetCurrentUserId(), command, PlatformConstants.Security.Permissions.SecurityDelete);
+                    return await _mediator.Send(command);
+                })
+            };
+            _ = schema.Mutation.AddField(deleteUsersField);
 
             #region update role query
 
@@ -426,17 +468,21 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 #pragma warning restore S125 // Sections of code should not be commented out
 
             #endregion
-            _ = schema.Mutation.AddField(FieldBuilder.Create<object, IdentityResult>(typeof(IdentityResultType))
-                     .Name("updateRole")
-                     .Argument<NonNullGraphType<InputUpdateRoleType>>(_commandName)
-                     .ResolveAsync(async context =>
-                     {
-                         var command = context.GetArgument<UpdateRoleCommand>(_commandName);
-                         await CheckAuthAsync(context.GetCurrentUserId(), command, PlatformConstants.Security.Permissions.SecurityUpdate);
+            var updateRoleField = new EventStreamFieldType
+            {
+                Name = "updateRole",
+                Type = GraphTypeExtenstionHelper.GetActualType<IdentityResultType>(),
+                Arguments = QueryArgumentsHelper.GetComplexTypeQueryArguments<NonNullGraphType<InputUpdateRoleType>>(_commandName),
+                Resolver = new AsyncFieldResolver<object, IdentityResult>(async context =>
+                {
+                    var type = GenericTypeHelper.GetActualType<UpdateRoleCommand>();
+                    var command = (UpdateRoleCommand)context.GetArgument(type, _commandName);
+                    await CheckAuthAsync(context.GetCurrentUserId(), command, PlatformConstants.Security.Permissions.SecurityUpdate);
 
-                         return await _mediator.Send(command);
-                     })
-                     .FieldType);
+                    return await _mediator.Send(command);
+                })
+            };
+            _ = schema.Mutation.AddField(updateRoleField);
         }
 
 
