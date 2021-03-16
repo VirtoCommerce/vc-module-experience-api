@@ -32,7 +32,7 @@ namespace VirtoCommerce.XPurchase.Services
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<CartProduct>> GetCartProductsByIdsAsync(CartAggregate cartAggr, string[] ids)
+        public async Task<IEnumerable<CartProduct>> GetCartProductsByIdsAsync(CartAggregate cartAggr, string[] ids, string additionalResponseGroups = null)
         {
             if (cartAggr == null)
             {
@@ -43,8 +43,14 @@ namespace VirtoCommerce.XPurchase.Services
                 throw new ArgumentNullException(nameof(ids));
             }
 
+            var itemResponseGroups = ItemResponseGroup.ItemAssets | ItemResponseGroup.ItemInfo | ItemResponseGroup.Outlines | ItemResponseGroup.Seo;
+            if (!string.IsNullOrEmpty(additionalResponseGroups))
+            {
+                itemResponseGroups |= EnumUtility.SafeParseFlags(additionalResponseGroups, ItemResponseGroup.ItemLarge);
+            }
+
             var result = new List<CartProduct>();
-            var products = await _productService.GetByIdsAsync(ids, (ItemResponseGroup.ItemAssets | ItemResponseGroup.ItemInfo | ItemResponseGroup.Outlines | ItemResponseGroup.Seo).ToString());
+            var products = await _productService.GetByIdsAsync(ids, itemResponseGroups.ToString());
             if (!products.IsNullOrEmpty())
             {
                 var loadInventoriesTask = _inventorySearchService.SearchInventoriesAsync(new InventorySearchCriteria
