@@ -32,9 +32,6 @@
       <ProjectReference Include="..\..\src\XPurchase\VirtoCommerce.XPurchase\VirtoCommerce.XPurchase.csproj" />
       <ProjectReference Include="..\PetsStoreClient\PetsStoreClient.csproj" />
     </ItemGroup>
-    <ItemGroup>
-      <Folder Include="UseCases\TypeExtension\Commands\" />
-    </ItemGroup>
   
 
 
