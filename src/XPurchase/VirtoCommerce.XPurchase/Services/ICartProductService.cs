@@ -5,6 +5,6 @@ namespace VirtoCommerce.XPurchase.Services
 {
     public interface ICartProductService
     {
-        Task<IEnumerable<CartProduct>> GetCartProductsByIdsAsync(CartAggregate cartAggr, string[] ids);
+        Task<IEnumerable<CartProduct>> GetCartProductsByIdsAsync(CartAggregate cartAggr, string[] ids, string additionalResponseGroups = null);
     }
 }
