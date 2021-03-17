@@ -99,90 +99,78 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             paymentsConnectionBuilder.ResolveAsync(async context => await ResolvePaymentsConnectionAsync(_mediator, context));
             schema.Query.AddField(paymentsConnectionBuilder.FieldType);
 
-            var createOrderFromCartField = new EventStreamFieldType
-            {
-                Name = "createOrderFromCart",
-                Type = GraphTypeExtenstionHelper.GetActualType<CustomerOrderType>(),
-                Arguments = QueryArgumentsHelper.GetComplexTypeQueryArguments<NonNullGraphType<InputCreateOrderFromCartType>>(_commandName),
-                Resolver = new AsyncFieldResolver<object, CustomerOrderAggregate>(async context =>
-                {
-                    var type = GenericTypeHelper.GetActualType<CreateOrderFromCartCommand>();
-                    var response = (CustomerOrderAggregate)await _mediator.Send(context.GetArgument(type, _commandName));
-                    context.SetExpandedObjectGraph(response);
-                    return response;
-                })
-            };
-            _ = schema.Mutation.AddField(createOrderFromCartField);
+            _ = schema.Mutation.AddField(FieldBuilder.Create<object, CustomerOrderAggregate>(GraphTypeExtenstionHelper.GetActualType<CustomerOrderType>())
+                            .Name("createOrderFromCart")
+                            .Argument(GraphTypeExtenstionHelper.GetComplexType<NonNullGraphType<InputCreateOrderFromCartType>>(), _commandName)
+                            .ResolveAsync(async context =>
+                            {
+                                var type = GenericTypeHelper.GetActualType<CreateOrderFromCartCommand>();
+                                var response = (CustomerOrderAggregate)await _mediator.Send(context.GetArgument(type, _commandName));
+                                context.SetExpandedObjectGraph(response);
+                                return response;
+                            })
+                            .FieldType);
 
-            var changeOrderStatusField = new EventStreamFieldType
-            {
-                Name = "changeOrderStatus",
-                Type = typeof(BooleanGraphType),
-                Arguments = QueryArgumentsHelper.GetComplexTypeQueryArguments<NonNullGraphType<InputChangeOrderStatusType>>(_commandName),
-                Resolver = new AsyncFieldResolver<object, bool>(async context =>
-                {
-                    var type = GenericTypeHelper.GetActualType<ChangeOrderStatusCommand>();
-                    var command = (ChangeOrderStatusCommand)context.GetArgument(type, _commandName);
+            _ = schema.Mutation.AddField(FieldBuilder.Create<object, bool>(typeof(BooleanGraphType))
+                            .Name("changeOrderStatus")
+                            .Argument(GraphTypeExtenstionHelper.GetComplexType<NonNullGraphType<InputChangeOrderStatusType>>(), _commandName)
+                            .ResolveAsync(async context =>
+                            {
+                                var type = GenericTypeHelper.GetActualType<ChangeOrderStatusCommand>();
+                                var command = (ChangeOrderStatusCommand)context.GetArgument(type, _commandName);
 
-                    var order = await _customerOrderService.GetByIdAsync(command.OrderId);
+                                var order = await _customerOrderService.GetByIdAsync(command.OrderId);
 
-                    var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), order, new CanAccessOrderAuthorizationRequirement());
+                                var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), order, new CanAccessOrderAuthorizationRequirement());
 
-                    if (!authorizationResult.Succeeded)
-                    {
-                        throw new ExecutionError($"Access denied");
-                    }
+                                if (!authorizationResult.Succeeded)
+                                {
+                                    throw new ExecutionError($"Access denied");
+                                }
 
-                    return await _mediator.Send(command);
-                })
-            };
-            _ = schema.Mutation.AddField(changeOrderStatusField);
+                                return await _mediator.Send(command);
+                            })
+                            .FieldType);
 
-            var confirmOrderPaymentField = new EventStreamFieldType
-            {
-                Name = "confirmOrderPayment",
-                Type = typeof(BooleanGraphType),
-                Arguments = QueryArgumentsHelper.GetComplexTypeQueryArguments<NonNullGraphType<InputConfirmOrderPaymentType>>(_commandName),
-                Resolver = new AsyncFieldResolver<object, bool>(async context =>
-                {
-                    var type = GenericTypeHelper.GetActualType<ConfirmOrderPaymentCommand>();
-                    var command = (ConfirmOrderPaymentCommand)context.GetArgument(type, _commandName);
-                    var order = await _customerOrderService.GetByIdAsync(command.Payment.OrderId);
+            _ = schema.Mutation.AddField(FieldBuilder.Create<object, bool>(typeof(BooleanGraphType))
+                            .Name("confirmOrderPayment")
+                            .Argument(GraphTypeExtenstionHelper.GetComplexType<NonNullGraphType<InputConfirmOrderPaymentType>>(), _commandName)
+                            .ResolveAsync(async context =>
+                            {
+                                var type = GenericTypeHelper.GetActualType<ConfirmOrderPaymentCommand>();
+                                var command = (ConfirmOrderPaymentCommand)context.GetArgument(type, _commandName);
+                                var order = await _customerOrderService.GetByIdAsync(command.Payment.OrderId);
 
-                    var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), order, new CanAccessOrderAuthorizationRequirement());
+                                var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), order, new CanAccessOrderAuthorizationRequirement());
 
-                    if (!authorizationResult.Succeeded)
-                    {
-                        throw new ExecutionError($"Access denied");
-                    }
+                                if (!authorizationResult.Succeeded)
+                                {
+                                    throw new ExecutionError($"Access denied");
+                                }
 
-                    return await _mediator.Send(command);
-                })
-            };
-            _ = schema.Mutation.AddField(confirmOrderPaymentField);
+                                return await _mediator.Send(command);
+                            })
+                            .FieldType);
 
-            var cancelOrderPaymentField = new EventStreamFieldType
-            {
-                Name = "cancelOrderPayment",
-                Type = typeof(BooleanGraphType),
-                Arguments = QueryArgumentsHelper.GetComplexTypeQueryArguments<NonNullGraphType<InputCancelOrderPaymentType>>(_commandName),
-                Resolver = new AsyncFieldResolver<object, bool>(async context =>
-                {
-                    var type = GenericTypeHelper.GetActualType<CancelOrderPaymentCommand>();
-                    var command = (CancelOrderPaymentCommand)context.GetArgument(type, _commandName);
-                    var order = await _customerOrderService.GetByIdAsync(command.Payment.OrderId);
+            _ = schema.Mutation.AddField(FieldBuilder.Create<object, bool>(typeof(BooleanGraphType))
+                            .Name("cancelOrderPayment")
+                            .Argument(GraphTypeExtenstionHelper.GetComplexType<NonNullGraphType<InputCancelOrderPaymentType>>(), _commandName)
+                            .ResolveAsync(async context =>
+                            {
+                                var type = GenericTypeHelper.GetActualType<CancelOrderPaymentCommand>();
+                                var command = (CancelOrderPaymentCommand)context.GetArgument(type, _commandName);
+                                var order = await _customerOrderService.GetByIdAsync(command.Payment.OrderId);
 
-                    var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), order, new CanAccessOrderAuthorizationRequirement());
+                                var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), order, new CanAccessOrderAuthorizationRequirement());
 
-                    if (!authorizationResult.Succeeded)
-                    {
-                        throw new ExecutionError($"Access denied");
-                    }
+                                if (!authorizationResult.Succeeded)
+                                {
+                                    throw new ExecutionError($"Access denied");
+                                }
 
-                    return await _mediator.Send(command);
-                })
-            };
-            _ = schema.Mutation.AddField(cancelOrderPaymentField);
+                                return await _mediator.Send(command);
+                            })
+                            .FieldType);
         }
 
         private async Task<object> ResolveOrdersConnectionAsync(IMediator mediator, IResolveConnectionContext<object> context)
