@@ -44,13 +44,9 @@ namespace VirtoCommerce.XPurchase.Services
             }
 
             var defaultResponseGroups = ItemResponseGroup.ItemAssets | ItemResponseGroup.ItemInfo | ItemResponseGroup.Outlines | ItemResponseGroup.Seo;
-            if (!string.IsNullOrEmpty(additionalResponseGroups))
-            {
-                defaultResponseGroups |= EnumUtility.SafeParseFlags(additionalResponseGroups, ItemResponseGroup.ItemLarge);
-            }
 
             var result = new List<CartProduct>();
-            var products = await _productService.GetByIdsAsync(ids, defaultResponseGroups.ToString());
+            var products = await _productService.GetByIdsAsync(ids, (defaultResponseGroups | EnumUtility.SafeParseFlags(additionalResponseGroups, ItemResponseGroup.None)).ToString());
             if (!products.IsNullOrEmpty())
             {
                 var loadInventoriesTask = _inventorySearchService.SearchInventoriesAsync(new InventorySearchCriteria
