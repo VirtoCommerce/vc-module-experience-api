@@ -54,14 +54,6 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field<MoneyType>("shippingTotal", resolve: context => context.Source.Cart.ShippingTotal.ToMoney(context.Source.Currency));
             Field<MoneyType>("shippingTotalWithTax", resolve: context => context.Source.Cart.ShippingTotalWithTax.ToMoney(context.Source.Currency));
             Field(GraphTypeExtenstionHelper.GetComplexType<ListGraphType<ShipmentType>>(), "shipments", resolve: context => context.Source.Cart.Shipments);
-            //TODO: By this registration we support the schema types extensions. Need to move this code into extensions and replace everywhere to this version.
-            //var cartShipmentsField = new FieldType
-            //{
-            //    Name = "shipments",
-            //    Type = typeof(ListGraphType<>).MakeGenericType(GraphTypeExtenstionHelper.GetActualType<ShipmentType>()),
-            //    Resolver = new FuncFieldResolver<CartAggregate, object>(context => context.Source.Cart.Shipments)
-            //};
-            //AddField(cartShipmentsField);
 
             FieldAsync<ListGraphType<ShippingMethodType>>("availableShippingMethods", resolve: async context =>
             {
