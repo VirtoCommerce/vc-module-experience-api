@@ -39,10 +39,6 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
 
                 builder.Services.AddTransient(serviceType, extendedHanderType);
             }
-            else
-            {
-                return builder;
-            }
 
             return builder;
         }
