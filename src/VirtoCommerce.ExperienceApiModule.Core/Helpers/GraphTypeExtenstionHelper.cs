@@ -29,8 +29,10 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Helpers
             return result;
         }
 
+        /// <summary>
         /// For generic graph type definitions like NonNullGraphType ProdcutType
         /// or NonNullGraphType ListGraphType ProdcutType
+        /// </summary>
         public static Type GetComplexType<TGraphType>() where TGraphType : IGraphType
         {
             var outerGraphType = typeof(TGraphType);
@@ -40,20 +42,14 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Helpers
 
         private static Type GetComplexTypeRecursive(Type outerGraphType)
         {
-            Type complexType;
-
             if (outerGraphType.IsGenericType && outerGraphType.GenericTypeArguments.Length > 0)
             {
                 var actualInnerType = GetComplexTypeRecursive(outerGraphType.GenericTypeArguments[0]);
 
-                complexType = outerGraphType.GetGenericTypeDefinition().MakeGenericType(new[] { actualInnerType });
-            }
-            else
-            {
-                complexType = GetActualType(outerGraphType);
+                return outerGraphType.GetGenericTypeDefinition().MakeGenericType(new[] { actualInnerType });
             }
 
-            return complexType;
+            return GetActualType(outerGraphType);
         }
 
         public static ConnectionBuilder<TSourceType> CreateConnection<TNodeType, TSourceType>() where TNodeType : IGraphType

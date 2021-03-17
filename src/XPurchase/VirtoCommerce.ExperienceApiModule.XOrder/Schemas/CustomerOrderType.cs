@@ -79,15 +79,6 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field(GraphTypeExtenstionHelper.GetComplexType<NonNullGraphType<ListGraphType<OrderLineItemType>>>(), nameof(CustomerOrder.Items), resolve: x => x.Source.Order.Items);
             Field(GraphTypeExtenstionHelper.GetComplexType<NonNullGraphType<ListGraphType<PaymentInType>>>(), nameof(CustomerOrder.InPayments), resolve: x => x.Source.Order.InPayments);
             Field(GraphTypeExtenstionHelper.GetComplexType<ListGraphType<OrderShipmentType>>(), nameof(CustomerOrder.Shipments), resolve: x => x.Source.Order.Shipments);
-            //Field<NonNullGraphType<ListGraphType<OrderShipmentType>>>(nameof(CustomerOrder.Shipments), resolve: x => x.Source.Order.Shipments);
-            //TODO: By this registration we support the schema types extensions. Need to move this code into extensions and replace everywhere to this version.
-            //var orderShipmentsField = new FieldType
-            //{
-            //    Name = "shipments",
-            //    Type = typeof(ListGraphType<>).MakeGenericType(GraphTypeExtenstionHelper.GetActualType<OrderShipmentType>()),
-            //    Resolver = new FuncFieldResolver<CustomerOrderAggregate, object>(context => context.Source.Order.Shipments)
-            //};
-            //AddField(orderShipmentsField);
 
             Field<NonNullGraphType<ListGraphType<OrderTaxDetailType>>>(nameof(CustomerOrder.TaxDetails), resolve: x => x.Source.Order.TaxDetails);
             //TODO
