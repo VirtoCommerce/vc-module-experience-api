@@ -1,15 +1,14 @@
-using GraphQL.Types;
 using VirtoCommerce.CartModule.Core.Model;
-using VirtoCommerce.ExperienceApiModule.Core.Helpers;
+using VirtoCommerce.ExperienceApiModule.Core.Schemas;
 
 namespace VirtoCommerce.XPurchase.Schemas
 {
-    public class CartShipmentItemType : ObjectGraphType<ShipmentItem>
+    public class CartShipmentItemType : ExtendableGraphType<ShipmentItem>
     {
         public CartShipmentItemType()
         {
             Field(x => x.Quantity, nullable: true).Description("Quantity");
-            Field(GraphTypeExtenstionHelper.GetActualType<LineItemType>(), "lineItem", resolve: context => context.Source.LineItem);
+            ExtendableFiled<LineItemType>("lineItem", resolve: context => context.Source.LineItem);
         }
     }
 }

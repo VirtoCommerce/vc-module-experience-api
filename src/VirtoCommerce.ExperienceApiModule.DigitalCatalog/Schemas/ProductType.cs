@@ -21,7 +21,7 @@ using VirtoCommerce.XDigitalCatalog.Queries;
 
 namespace VirtoCommerce.XDigitalCatalog.Schemas
 {
-    public class ProductType : ObjectGraphType<ExpProduct>
+    public class ProductType : ExtendableGraphType<ExpProduct>
     {
         /// <example>
         ///{
@@ -244,7 +244,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 "prices",
                 resolve: context => context.Source.AllPrices);
 
-            Field(GraphTypeExtenstionHelper.GetActualComplexType<ListGraphType<PropertyType>>(), "properties", resolve: context =>
+            ExtendableFiled<ListGraphType<PropertyType>>("properties", resolve: context =>
             {
                 var cultureName = context.GetValue<string>("cultureName");
                 return context.Source.IndexedProduct.Properties.ExpandByValues(cultureName);

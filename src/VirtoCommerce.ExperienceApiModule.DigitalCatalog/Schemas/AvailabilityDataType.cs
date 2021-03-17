@@ -1,9 +1,9 @@
 using GraphQL.Types;
-using VirtoCommerce.ExperienceApiModule.Core.Helpers;
+using VirtoCommerce.ExperienceApiModule.Core.Schemas;
 
 namespace VirtoCommerce.XDigitalCatalog.Schemas
 {
-    public class AvailabilityDataType : ObjectGraphType<ExpAvailabilityData>
+    public class AvailabilityDataType : ExtendableGraphType<ExpAvailabilityData>
     {
         public AvailabilityDataType()
         {
@@ -21,7 +21,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             Field<BooleanGraphType>("IsTrackInventory", resolve: context => context.Source.IsTrackInventory);
 
-            Field(GraphTypeExtenstionHelper.GetActualComplexType<ListGraphType<InventoryInfoType>>(), "inventories", resolve: context => context.Source.InventoryAll);
+            ExtendableFiled<ListGraphType<InventoryInfoType>>("inventories", resolve: context => context.Source.InventoryAll);
         }
     }
 }

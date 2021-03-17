@@ -1,14 +1,13 @@
 using GraphQL;
 using GraphQL.Types;
 using VirtoCommerce.CoreModule.Core.Currency;
-using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
 using VirtoCommerce.ExperienceApiModule.XOrder.Extensions;
 using VirtoCommerce.OrdersModule.Core.Model;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 {
-    public class PaymentInType : ObjectGraphType<PaymentIn>
+    public class PaymentInType : ExtendableGraphType<PaymentIn>
     {
         public PaymentInType()
         {
@@ -42,9 +41,9 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 
             Field<MoneyType>(nameof(PaymentIn.Sum).ToCamelCase(), resolve: context => new Money(context.Source.Sum, context.GetOrderCurrencyByCode(context.Source.Currency)));
             Field<MoneyType>("tax", resolve: context => new Money(context.Source.TaxTotal, context.GetOrderCurrencyByCode(context.Source.Currency)));
-            Field(GraphTypeExtenstionHelper.GetActualType<OrderPaymentMethodType>(), nameof(PaymentIn.PaymentMethod), resolve: context => context.Source.PaymentMethod);
+            ExtendableFiled<OrderPaymentMethodType>(nameof(PaymentIn.PaymentMethod), resolve: context => context.Source.PaymentMethod);
             Field<CurrencyType>(nameof(PaymentIn.Currency), resolve: context => context.GetOrderCurrencyByCode(context.Source.Currency));
-            Field(GraphTypeExtenstionHelper.GetActualType<AddressType>(), nameof(PaymentIn.BillingAddress), resolve: context => context.Source.BillingAddress);
+            ExtendableFiled<AddressType>(nameof(PaymentIn.BillingAddress), resolve: context => context.Source.BillingAddress);
 
             Field<ListGraphType<PaymentTransactionType>>(nameof(PaymentIn.Transactions), resolve: x => x.Source.Transactions);
             //TODO

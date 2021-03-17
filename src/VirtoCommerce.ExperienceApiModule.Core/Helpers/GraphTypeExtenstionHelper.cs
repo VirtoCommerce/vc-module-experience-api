@@ -9,7 +9,9 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Helpers
 {
     public static class GraphTypeExtenstionHelper
     {
-        //Returns the actual (overridden) type for requested
+        /// <summary>
+        /// Returns the actual (overridden) type for requested type
+        /// </summary>
         public static Type GetActualType<TGraphType>() where TGraphType : IGraphType
         {
             var graphType = typeof(TGraphType);
@@ -30,6 +32,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Helpers
         }
 
         /// <summary>
+        /// Returns the actual (overridden) type for requested type
         /// For generic graph type definitions like NonNullGraphType ProdcutType
         /// or NonNullGraphType ListGraphType ProdcutType
         /// </summary>
