@@ -40,7 +40,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field(x => x.Height, true);
             Field(x => x.Length, true);
             Field(x => x.Width, true);
-            ExtendableFiled<AddressType>(nameof(Shipment.DeliveryAddress).ToCamelCase(), resolve: x => x.Source.DeliveryAddress);
+            ExtendableField<AddressType>(nameof(Shipment.DeliveryAddress).ToCamelCase(), resolve: x => x.Source.DeliveryAddress);
 
             Field(x => x.TaxType, true);
             Field(x => x.TaxPercentRate);
@@ -57,7 +57,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field<NonNullGraphType<ListGraphType<OrderTaxDetailType>>>(nameof(Shipment.TaxDetails), resolve: x => x.Source.TaxDetails);
             Field<NonNullGraphType<ListGraphType<OrderShipmentItemType>>>(nameof(Shipment.Items), resolve: x => x.Source.Items);
             Field<NonNullGraphType<ListGraphType<OrderShipmentPackageType>>>(nameof(Shipment.Packages), resolve: x => x.Source.Packages);
-            ExtendableFiled<NonNullGraphType<ListGraphType<PaymentInType>>>(nameof(Shipment.InPayments), resolve: x => x.Source.InPayments);
+            ExtendableField<NonNullGraphType<ListGraphType<PaymentInType>>>(nameof(Shipment.InPayments), resolve: x => x.Source.InPayments);
             Field<NonNullGraphType<ListGraphType<OrderDiscountType>>>(nameof(Shipment.Discounts), resolve: x => x.Source.Discounts);
         }
     }

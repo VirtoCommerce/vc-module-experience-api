@@ -29,7 +29,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 resolve: context => context.Source.IndexedProduct.Code
             );
 
-            ExtendableFiled<AvailabilityDataType>(
+            ExtendableField<AvailabilityDataType>(
                 "availabilityData",
                 resolve: context => new ExpAvailabilityData
                 {
@@ -46,7 +46,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             Field<ListGraphType<PriceType>>("prices", resolve: context => context.Source.AllPrices);
 
-            ExtendableFiled<ListGraphType<PropertyType>>("properties", resolve: context =>
+            ExtendableField<ListGraphType<PropertyType>>("properties", resolve: context =>
             {
                 var cultureName = context.GetValue<string>("cultureName");
                 return context.Source.IndexedProduct.Properties.ExpandByValues(cultureName);

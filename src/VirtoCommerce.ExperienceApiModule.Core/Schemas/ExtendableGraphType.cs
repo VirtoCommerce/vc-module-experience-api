@@ -8,7 +8,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
 {
     public class ExtendableGraphType<TSourceType> : ObjectGraphType<TSourceType>
     {
-        public FieldType ExtendableFiled<TGraphType>(
+        public FieldType ExtendableField<TGraphType>(
             string name,
             string description = null,
             QueryArguments arguments = null,

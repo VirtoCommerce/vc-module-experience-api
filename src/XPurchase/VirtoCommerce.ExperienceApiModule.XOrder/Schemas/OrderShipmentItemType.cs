@@ -9,7 +9,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
         {
             Field(x => x.Id);
             Field(x => x.LineItemId);
-            ExtendableFiled<OrderLineItemType>(nameof(ShipmentItem.LineItem), resolve: context => context.Source.LineItem);
+            ExtendableField<OrderLineItemType>(nameof(ShipmentItem.LineItem), resolve: context => context.Source.LineItem);
             Field(x => x.BarCode, true);
             Field(x => x.Quantity);
             Field(x => x.OuterId, true);

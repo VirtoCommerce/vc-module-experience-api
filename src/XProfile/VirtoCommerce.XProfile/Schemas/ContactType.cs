@@ -27,7 +27,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             Field(x => x.Contact.MiddleName, true);
             Field(x => x.Contact.Name, true);
             Field(x => x.Contact.OuterId, true);
-            ExtendableFiled<ListGraphType<AddressType>>("addresses", resolve: context => context.Source.Contact.Addresses);
+            ExtendableField<ListGraphType<AddressType>>("addresses", resolve: context => context.Source.Contact.Addresses);
             Field<ListGraphType<UserType>>("securityAccounts", resolve: context => context.Source.Contact.SecurityAccounts);
             //TODO: remove later
             Field<StringGraphType>("organizationId", resolve: context => context.Source.Contact.Organizations?.FirstOrDefault());

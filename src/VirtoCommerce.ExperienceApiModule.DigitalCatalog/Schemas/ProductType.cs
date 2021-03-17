@@ -244,7 +244,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 "prices",
                 resolve: context => context.Source.AllPrices);
 
-            ExtendableFiled<ListGraphType<PropertyType>>("properties", resolve: context =>
+            ExtendableField<ListGraphType<PropertyType>>("properties", resolve: context =>
             {
                 var cultureName = context.GetValue<string>("cultureName");
                 return context.Source.IndexedProduct.Properties.ExpandByValues(cultureName);

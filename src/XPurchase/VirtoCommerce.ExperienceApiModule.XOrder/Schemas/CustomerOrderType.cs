@@ -74,10 +74,10 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field<MoneyType>(nameof(CustomerOrder.DiscountTotal).ToCamelCase(), resolve: context => new Money(context.Source.Order.DiscountTotal, context.Source.Currency));
             Field<MoneyType>(nameof(CustomerOrder.DiscountTotalWithTax).ToCamelCase(), resolve: context => new Money(context.Source.Order.DiscountTotalWithTax, context.Source.Currency));
 
-            ExtendableFiled<NonNullGraphType<ListGraphType<AddressType>>>(nameof(CustomerOrder.Addresses), resolve: x => x.Source.Order.Addresses);
-            ExtendableFiled<NonNullGraphType<ListGraphType<OrderLineItemType>>>(nameof(CustomerOrder.Items), resolve: x => x.Source.Order.Items);
-            ExtendableFiled<NonNullGraphType<ListGraphType<PaymentInType>>>(nameof(CustomerOrder.InPayments), resolve: x => x.Source.Order.InPayments);
-            ExtendableFiled<ListGraphType<OrderShipmentType>>(nameof(CustomerOrder.Shipments), resolve: x => x.Source.Order.Shipments);
+            ExtendableField<NonNullGraphType<ListGraphType<AddressType>>>(nameof(CustomerOrder.Addresses), resolve: x => x.Source.Order.Addresses);
+            ExtendableField<NonNullGraphType<ListGraphType<OrderLineItemType>>>(nameof(CustomerOrder.Items), resolve: x => x.Source.Order.Items);
+            ExtendableField<NonNullGraphType<ListGraphType<PaymentInType>>>(nameof(CustomerOrder.InPayments), resolve: x => x.Source.Order.InPayments);
+            ExtendableField<ListGraphType<OrderShipmentType>>(nameof(CustomerOrder.Shipments), resolve: x => x.Source.Order.Shipments);
 
             Field<NonNullGraphType<ListGraphType<OrderTaxDetailType>>>(nameof(CustomerOrder.TaxDetails), resolve: x => x.Source.Order.TaxDetails);
             //TODO
