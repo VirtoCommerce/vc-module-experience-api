@@ -156,8 +156,8 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Models
         #endregion ITaxable Members
 
         public ICollection<Discount> Discounts { get; set; }
-        public DateTime ValidFrom { get; set; }
-        public DateTime ValidUntil { get; set; }
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
 
         protected override IEnumerable<object> GetEqualityComponents()
         {
