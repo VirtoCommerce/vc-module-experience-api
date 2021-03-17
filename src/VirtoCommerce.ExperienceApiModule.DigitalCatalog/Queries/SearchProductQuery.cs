@@ -48,7 +48,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                 result |= ItemResponseGroup.WithProperties;
             }
 
-            // "descriptions" could look redundant, but better to check it explicitly - clear approach for possible modification or different "Contains" logic  
+            // "descriptions" could look redundant, but better to check it explicitly - clear approach for possible modification or different "Contains" logic
             if (IncludeFields.ContainsAny("description", "descriptions"))
             {
                 result |= ItemResponseGroup.ItemEditorialReviews;
@@ -65,7 +65,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                 result |= ItemResponseGroup.WithSeo;
             }
 
-            if (IncludeFields.ContainsAny("outline", "outlines", "slug", "level"))
+            if (IncludeFields.ContainsAny("outline", "outlines", "slug", "level", "breadcrumbs"))
             {
                 result |= ItemResponseGroup.WithOutlines;
             }
