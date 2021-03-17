@@ -21,10 +21,10 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 Name = "promotion",
                 Type = GraphTypeExtenstionHelper.GetActualType<PromotionType>(),
                 Arguments = new QueryArguments(),
-                Resolver = new AsyncFieldResolver<Discount, IDataLoaderResult<Promotion>>(async ctx =>
+                Resolver = new FuncFieldResolver<Discount, IDataLoaderResult<Promotion>>(context =>
                 {
                     var loader = dataLoader.Context.GetOrAddBatchLoader<string, Promotion>("promotionsLoader", (ids) => LoadPromotionsAsync(mediator, ids));
-                    return loader.LoadAsync(ctx.Source.PromotionId);
+                    return loader.LoadAsync(context.Source.PromotionId);
                 })
             };
             AddField(promotion);
