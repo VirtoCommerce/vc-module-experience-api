@@ -1,6 +1,7 @@
 using System.Linq;
 using GraphQL.Types;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
+using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Models;
 using VirtoCommerce.XDigitalCatalog.Extensions;
 
@@ -28,7 +29,8 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 resolve: context => context.Source.IndexedProduct.Code
             );
 
-            Field<AvailabilityDataType>(
+            Field(
+                GraphTypeExtenstionHelper.GetActualType<AvailabilityDataType>(),
                 "availabilityData",
                 resolve: context => new ExpAvailabilityData
                 {
@@ -45,7 +47,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             Field<ListGraphType<PriceType>>("prices", resolve: context => context.Source.AllPrices);
 
-            Field<ListGraphType<PropertyType>>("properties", resolve: context =>
+            Field(GraphTypeExtenstionHelper.GetComplexType<ListGraphType<PropertyType>>(), "properties", resolve: context =>
             {
                 var cultureName = context.GetValue<string>("cultureName");
                 return context.Source.IndexedProduct.Properties.ExpandByValues(cultureName);

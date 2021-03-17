@@ -29,18 +29,24 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Helpers
             return result;
         }
 
-        /// For generic graph type definitions like NonNullGraphType ProdcutType 
+        /// For generic graph type definitions like NonNullGraphType ProdcutType
+        /// or NonNullGraphType ListGraphType ProdcutType
         public static Type GetComplexType<TGraphType>() where TGraphType : IGraphType
         {
             var outerGraphType = typeof(TGraphType);
 
+            return GetComplexTypeRecursive(outerGraphType);
+        }
+
+        private static Type GetComplexTypeRecursive(Type outerGraphType)
+        {
             Type complexType;
 
             if (outerGraphType.IsGenericType && outerGraphType.GenericTypeArguments.Length > 0)
             {
-                var innerGraphType = GetActualType(outerGraphType.GenericTypeArguments[0]);
+                var actualInnerType = GetComplexTypeRecursive(outerGraphType.GenericTypeArguments[0]);
 
-                complexType = outerGraphType.GetGenericTypeDefinition().MakeGenericType(new[] { innerGraphType });
+                complexType = outerGraphType.GetGenericTypeDefinition().MakeGenericType(new[] { actualInnerType });
             }
             else
             {

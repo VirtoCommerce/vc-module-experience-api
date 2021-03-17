@@ -1,5 +1,4 @@
 using System.Linq;
-using GraphQL.Resolvers;
 using GraphQL.Types;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
@@ -54,15 +53,15 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field<MoneyType>("shippingPriceWithTax", resolve: context => context.Source.Cart.ShippingTotalWithTax.ToMoney(context.Source.Currency));
             Field<MoneyType>("shippingTotal", resolve: context => context.Source.Cart.ShippingTotal.ToMoney(context.Source.Currency));
             Field<MoneyType>("shippingTotalWithTax", resolve: context => context.Source.Cart.ShippingTotalWithTax.ToMoney(context.Source.Currency));
-            //Field<ListGraphType<ShipmentType>>("shipments", resolve: context => context.Source.Cart.Shipments);
+            Field(GraphTypeExtenstionHelper.GetComplexType<ListGraphType<ShipmentType>>(), "shipments", resolve: context => context.Source.Cart.Shipments);
             //TODO: By this registration we support the schema types extensions. Need to move this code into extensions and replace everywhere to this version.
-            var cartShipmentsField = new FieldType
-            {
-                Name = "shipments",
-                Type = typeof(ListGraphType<>).MakeGenericType(GraphTypeExtenstionHelper.GetActualType<ShipmentType>()),
-                Resolver = new FuncFieldResolver<CartAggregate, object>(context => context.Source.Cart.Shipments)
-            };
-            AddField(cartShipmentsField);
+            //var cartShipmentsField = new FieldType
+            //{
+            //    Name = "shipments",
+            //    Type = typeof(ListGraphType<>).MakeGenericType(GraphTypeExtenstionHelper.GetActualType<ShipmentType>()),
+            //    Resolver = new FuncFieldResolver<CartAggregate, object>(context => context.Source.Cart.Shipments)
+            //};
+            //AddField(cartShipmentsField);
 
             FieldAsync<ListGraphType<ShippingMethodType>>("availableShippingMethods", resolve: async context =>
             {
@@ -80,7 +79,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field<MoneyType>("paymentPriceWithTax", resolve: context => context.Source.Cart.PaymentTotalWithTax.ToMoney(context.Source.Currency));
             Field<MoneyType>("paymentTotal", resolve: context => context.Source.Cart.PaymentTotal.ToMoney(context.Source.Currency));
             Field<MoneyType>("paymentTotalWithTax", resolve: context => context.Source.Cart.PaymentTotalWithTax.ToMoney(context.Source.Currency));
-            Field<ListGraphType<PaymentType>>("payments", resolve: context => context.Source.Cart.Payments);
+            Field(GraphTypeExtenstionHelper.GetComplexType<ListGraphType<PaymentType>>(), "payments", resolve: context => context.Source.Cart.Payments);
             FieldAsync<ListGraphType<PaymentMethodType>>("availablePaymentMethods", resolve: async context =>
             {
                 var methods = await cartAvailMethods.GetAvailablePaymentMethodsAsync(context.Source);
@@ -109,10 +108,10 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field<ListGraphType<DiscountType>>("discounts", resolve: context => context.Source.Cart.Discounts);
 
             // Addresses
-            Field<ListGraphType<AddressType>>("addresses", resolve: context => context.Source.Cart.Addresses);
+            Field(GraphTypeExtenstionHelper.GetComplexType<ListGraphType<AddressType>>(), "addresses", resolve: context => context.Source.Cart.Addresses);
 
             // Items
-            Field<ListGraphType<LineItemType>>("items", resolve: context => context.Source.Cart.Items);
+            Field(GraphTypeExtenstionHelper.GetComplexType<ListGraphType<LineItemType>>(), "items", resolve: context => context.Source.Cart.Items);
 
             Field<IntGraphType>("itemsCount", "Count of different items", resolve: context => context.Source.Cart.Items.Count);
             Field<IntGraphType>("itemsQuantity", "Quantity of items", resolve: context => context.Source.Cart.Items.Sum(x => x.Quantity));

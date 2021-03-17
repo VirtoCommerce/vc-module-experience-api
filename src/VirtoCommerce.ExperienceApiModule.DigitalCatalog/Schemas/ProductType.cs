@@ -10,6 +10,7 @@ using MediatR;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
+using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.Core.Models;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
@@ -205,7 +206,8 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                     return response.Products.Select(expProduct => new ExpVariation(expProduct));
                 });
 
-            Field<AvailabilityDataType>(
+            Field(
+                GraphTypeExtenstionHelper.GetActualType<AvailabilityDataType>(),
                 "availabilityData",
                 resolve: context => new ExpAvailabilityData
                 {
@@ -242,7 +244,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 "prices",
                 resolve: context => context.Source.AllPrices);
 
-            Field<ListGraphType<PropertyType>>("properties", resolve: context =>
+            Field(GraphTypeExtenstionHelper.GetComplexType<ListGraphType<PropertyType>>(), "properties", resolve: context =>
             {
                 var cultureName = context.GetValue<string>("cultureName");
                 return context.Source.IndexedProduct.Properties.ExpandByValues(cultureName);
@@ -271,7 +273,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 var store = context.GetArgumentOrValue<Store>("store");
                 var cultureName = context.GetValue<string>("cultureName");
 
-                
+
                 return context.Source.IndexedProduct.Outlines.GetBreadcrumbsFromOutLine(store, cultureName);
             });
 

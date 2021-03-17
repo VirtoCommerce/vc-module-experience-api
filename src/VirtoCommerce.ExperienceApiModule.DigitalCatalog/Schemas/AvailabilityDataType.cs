@@ -1,4 +1,5 @@
 using GraphQL.Types;
+using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 
 namespace VirtoCommerce.XDigitalCatalog.Schemas
 {
@@ -20,7 +21,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             Field<BooleanGraphType>("IsTrackInventory", resolve: context => context.Source.IsTrackInventory);
 
-            Field<ListGraphType<InventoryInfoType>>("inventories", resolve: context => context.Source.InventoryAll);
+            Field(GraphTypeExtenstionHelper.GetComplexType<ListGraphType<InventoryInfoType>>(), "inventories", resolve: context => context.Source.InventoryAll);
         }
     }
 }

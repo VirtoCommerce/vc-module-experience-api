@@ -28,10 +28,38 @@ namespace VirtoCommerce.ExperienceApiModule.Tests
             AbstractTypeFactory<IGraphType>.OverrideType<FooType, FooTypeExtended>();
 
             // Act
-            var targetType = GraphTypeExtenstionHelper.GetComplexType<FooCompltex<FooType>>();
+            var targetType = GraphTypeExtenstionHelper.GetComplexType<FooType>();
 
             // Assert
+            targetType.Name.Should().Be(nameof(FooTypeExtended));
+        }
+
+        [Fact]
+        public void GetComplexTypeTwoLevels_HasOverriddenType_OverriddenTypeReturned()
+        {
+            // Arrange
+            AbstractTypeFactory<IGraphType>.OverrideType<FooType, FooTypeExtended>();
+
+            // Act
+            var targetType = GraphTypeExtenstionHelper.GetComplexType<FooComplex<FooType>>();
+
+            // Assert
+            typeof(FooComplex<FooType>).GenericTypeArguments.Should().OnlyContain(x => x.Name.EqualsInvariant(nameof(FooType)));
             targetType.GenericTypeArguments.Should().OnlyContain(x => x.Name.EqualsInvariant(nameof(FooTypeExtended)));
+        }
+
+        [Fact]
+        public void GetComplexTypeThreeLevels_HasOverriddenType_OverriddenTypeReturned()
+        {
+            // Arrange
+            AbstractTypeFactory<IGraphType>.OverrideType<FooType, FooTypeExtended>();
+
+            // Act
+            var targetType = GraphTypeExtenstionHelper.GetComplexType<FooComplex2<FooComplex<FooType>>>();
+
+            // Assert
+            typeof(FooComplex2<FooComplex<FooType>>).GenericTypeArguments[0].GenericTypeArguments.Should().OnlyContain(x => x.Name.EqualsInvariant(nameof(FooType)));
+            targetType.GenericTypeArguments[0].GenericTypeArguments.Should().OnlyContain(x => x.Name.EqualsInvariant(nameof(FooTypeExtended)));
         }
 
         public class FooType : GraphType
@@ -46,7 +74,15 @@ namespace VirtoCommerce.ExperienceApiModule.Tests
         {
         }
 
-        public class FooCompltex<T> : FooComplex where T : GraphType
+        public class FooComplex<T> : FooComplex where T : GraphType
+        {
+        }
+
+        public class FooComplex2 : GraphType
+        {
+        }
+
+        public class FooComplex2<T> : FooComplex where T : GraphType
         {
         }
     }
