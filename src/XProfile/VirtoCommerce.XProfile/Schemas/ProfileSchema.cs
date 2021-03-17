@@ -154,7 +154,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             #endregion
             _ = schema.Mutation.AddField(FieldBuilder.Create<ContactAggregate, ContactAggregate>(GraphTypeExtenstionHelper.GetActualType<ContactType>())
                             .Name("updateAddresses")
-                            .Argument(GraphTypeExtenstionHelper.GetComplexType<NonNullGraphType<InputUpdateContactAddressType>>(), _commandName)
+                            .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputUpdateContactAddressType>>(), _commandName)
                             .ResolveAsync(async context =>
                             {
                                 var type = GenericTypeHelper.GetActualType<UpdateContactAddressesCommand>();
@@ -166,7 +166,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 
             _ = schema.Mutation.AddField(FieldBuilder.Create<OrganizationAggregate, OrganizationAggregate>(GraphTypeExtenstionHelper.GetActualType<OrganizationType>())
                             .Name("updateOrganization")
-                            .Argument(GraphTypeExtenstionHelper.GetComplexType<NonNullGraphType<InputUpdateOrganizationType>>(), _commandName)
+                            .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputUpdateOrganizationType>>(), _commandName)
                             .ResolveAsync(async context =>
                             {
                                 var type = GenericTypeHelper.GetActualType<UpdateOrganizationCommand>();
@@ -178,7 +178,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 
             _ = schema.Mutation.AddField(FieldBuilder.Create<OrganizationAggregate, OrganizationAggregate>(GraphTypeExtenstionHelper.GetActualType<OrganizationType>())
                             .Name("createOrganization")
-                            .Argument(GraphTypeExtenstionHelper.GetComplexType<NonNullGraphType<InputCreateOrganizationType>>(), _commandName)
+                            .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputCreateOrganizationType>>(), _commandName)
                             .ResolveAsync(async context =>
                             {
                                 var type = GenericTypeHelper.GetActualType<CreateOrganizationCommand>();
@@ -190,7 +190,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 
             _ = schema.Mutation.AddField(FieldBuilder.Create<ContactAggregate, ContactAggregate>(GraphTypeExtenstionHelper.GetActualType<ContactType>())
                             .Name("createContact")
-                            .Argument(GraphTypeExtenstionHelper.GetComplexType<NonNullGraphType<InputCreateContactType>>(), _commandName)
+                            .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputCreateContactType>>(), _commandName)
                             .ResolveAsync(async context =>
                             {
                                 var type = GenericTypeHelper.GetActualType<CreateContactCommand>();
@@ -203,7 +203,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 
             _ = schema.Mutation.AddField(FieldBuilder.Create<ContactAggregate, ContactAggregate>(GraphTypeExtenstionHelper.GetActualType<ContactType>())
                             .Name("updateContact")
-                            .Argument(GraphTypeExtenstionHelper.GetComplexType<NonNullGraphType<InputUpdateContactType>>(), _commandName)
+                            .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputUpdateContactType>>(), _commandName)
                             .ResolveAsync(async context =>
                             {
                                 var type = GenericTypeHelper.GetActualType<UpdateContactCommand>();
@@ -216,7 +216,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 
             _ = schema.Mutation.AddField(FieldBuilder.Create<ContactAggregate, bool>(typeof(BooleanGraphType))
                             .Name("deleteContact")
-                            .Argument(GraphTypeExtenstionHelper.GetComplexType<NonNullGraphType<InputDeleteContactType>>(), _commandName)
+                            .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputDeleteContactType>>(), _commandName)
                             .ResolveAsync(async context =>
                             {
                                 var type = GenericTypeHelper.GetActualType<DeleteContactCommand>();
@@ -228,7 +228,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 
             _ = schema.Mutation.AddField(FieldBuilder.Create<object, IdentityResult>(GraphTypeExtenstionHelper.GetActualType<IdentityResultType>())
                           .Name("updatePersonalData")
-                          .Argument(GraphTypeExtenstionHelper.GetComplexType<NonNullGraphType<InputUpdatePersonalDataType>>(), _commandName)
+                          .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputUpdatePersonalDataType>>(), _commandName)
                           .ResolveAsync(async context =>
                           {
                               var type = GenericTypeHelper.GetActualType<UpdatePersonalDataCommand>();
@@ -343,7 +343,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             #endregion
             _ = schema.Mutation.AddField(FieldBuilder.Create<object, IdentityResult>(GraphTypeExtenstionHelper.GetActualType<IdentityResultType>())
                         .Name("createUser")
-                        .Argument(GraphTypeExtenstionHelper.GetComplexType<NonNullGraphType<InputCreateUserType>>(), _commandName)
+                        .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputCreateUserType>>(), _commandName)
                         .ResolveAsync(async context =>
                         {
                             var type = GenericTypeHelper.GetActualType<CreateUserCommand>();
@@ -377,7 +377,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             #endregion
             _ = schema.Mutation.AddField(FieldBuilder.Create<object, IdentityResult>(GraphTypeExtenstionHelper.GetActualType<IdentityResultType>())
                         .Name("updateUser")
-                        .Argument(GraphTypeExtenstionHelper.GetComplexType<NonNullGraphType<InputUpdateUserType>>(), _commandName)
+                        .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputUpdateUserType>>(), _commandName)
                         .ResolveAsync(async context =>
                         {
                             var type = GenericTypeHelper.GetActualType<UpdateUserCommand>();
@@ -406,7 +406,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             #endregion
             _ = schema.Mutation.AddField(FieldBuilder.Create<object, IdentityResult>(GraphTypeExtenstionHelper.GetActualType<IdentityResultType>())
                         .Name("deleteUsers")
-                        .Argument(GraphTypeExtenstionHelper.GetComplexType<NonNullGraphType<InputDeleteUserType>>(), _commandName)
+                        .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputDeleteUserType>>(), _commandName)
                         .ResolveAsync(async context =>
                         {
                             var type = GenericTypeHelper.GetActualType<DeleteUserCommand>();
@@ -437,7 +437,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             #endregion
             _ = schema.Mutation.AddField(FieldBuilder.Create<object, IdentityResult>(GraphTypeExtenstionHelper.GetActualType<IdentityResultType>())
                      .Name("updateRole")
-                     .Argument(GraphTypeExtenstionHelper.GetComplexType<NonNullGraphType<InputUpdateRoleType>>(), _commandName)
+                     .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputUpdateRoleType>>(), _commandName)
                      .ResolveAsync(async context =>
                      {
                          var type = GenericTypeHelper.GetActualType<UpdateRoleCommand>();

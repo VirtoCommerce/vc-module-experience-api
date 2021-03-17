@@ -47,7 +47,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             Field<ListGraphType<PriceType>>("prices", resolve: context => context.Source.AllPrices);
 
-            Field(GraphTypeExtenstionHelper.GetComplexType<ListGraphType<PropertyType>>(), "properties", resolve: context =>
+            Field(GraphTypeExtenstionHelper.GetActualComplexType<ListGraphType<PropertyType>>(), "properties", resolve: context =>
             {
                 var cultureName = context.GetValue<string>("cultureName");
                 return context.Source.IndexedProduct.Properties.ExpandByValues(cultureName);

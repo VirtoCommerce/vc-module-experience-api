@@ -58,7 +58,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field<NonNullGraphType<ListGraphType<OrderTaxDetailType>>>(nameof(Shipment.TaxDetails), resolve: x => x.Source.TaxDetails);
             Field<NonNullGraphType<ListGraphType<OrderShipmentItemType>>>(nameof(Shipment.Items), resolve: x => x.Source.Items);
             Field<NonNullGraphType<ListGraphType<OrderShipmentPackageType>>>(nameof(Shipment.Packages), resolve: x => x.Source.Packages);
-            Field(GraphTypeExtenstionHelper.GetComplexType<NonNullGraphType<ListGraphType<PaymentInType>>>(), nameof(Shipment.InPayments), resolve: x => x.Source.InPayments);
+            Field(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<ListGraphType<PaymentInType>>>(), nameof(Shipment.InPayments), resolve: x => x.Source.InPayments);
             Field<NonNullGraphType<ListGraphType<OrderDiscountType>>>(nameof(Shipment.Discounts), resolve: x => x.Source.Discounts);
         }
     }

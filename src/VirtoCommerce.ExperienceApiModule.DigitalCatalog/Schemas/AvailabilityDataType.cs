@@ -21,7 +21,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             Field<BooleanGraphType>("IsTrackInventory", resolve: context => context.Source.IsTrackInventory);
 
-            Field(GraphTypeExtenstionHelper.GetComplexType<ListGraphType<InventoryInfoType>>(), "inventories", resolve: context => context.Source.InventoryAll);
+            Field(GraphTypeExtenstionHelper.GetActualComplexType<ListGraphType<InventoryInfoType>>(), "inventories", resolve: context => context.Source.InventoryAll);
         }
     }
 }

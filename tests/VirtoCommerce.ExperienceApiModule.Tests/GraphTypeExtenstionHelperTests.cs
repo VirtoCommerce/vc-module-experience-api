@@ -28,7 +28,7 @@ namespace VirtoCommerce.ExperienceApiModule.Tests
             AbstractTypeFactory<IGraphType>.OverrideType<FooType, FooTypeExtended>();
 
             // Act
-            var targetType = GraphTypeExtenstionHelper.GetComplexType<FooType>();
+            var targetType = GraphTypeExtenstionHelper.GetActualComplexType<FooType>();
 
             // Assert
             targetType.Name.Should().Be(nameof(FooTypeExtended));
@@ -41,7 +41,7 @@ namespace VirtoCommerce.ExperienceApiModule.Tests
             AbstractTypeFactory<IGraphType>.OverrideType<FooType, FooTypeExtended>();
 
             // Act
-            var targetType = GraphTypeExtenstionHelper.GetComplexType<FooComplex<FooType>>();
+            var targetType = GraphTypeExtenstionHelper.GetActualComplexType<FooComplex<FooType>>();
 
             // Assert
             typeof(FooComplex<FooType>).GenericTypeArguments.Should().OnlyContain(x => x.Name.EqualsInvariant(nameof(FooType)));
@@ -55,7 +55,7 @@ namespace VirtoCommerce.ExperienceApiModule.Tests
             AbstractTypeFactory<IGraphType>.OverrideType<FooType, FooTypeExtended>();
 
             // Act
-            var targetType = GraphTypeExtenstionHelper.GetComplexType<FooComplex2<FooComplex<FooType>>>();
+            var targetType = GraphTypeExtenstionHelper.GetActualComplexType<FooComplex2<FooComplex<FooType>>>();
 
             // Assert
             typeof(FooComplex2<FooComplex<FooType>>).GenericTypeArguments[0].GenericTypeArguments.Should().OnlyContain(x => x.Name.EqualsInvariant(nameof(FooType)));

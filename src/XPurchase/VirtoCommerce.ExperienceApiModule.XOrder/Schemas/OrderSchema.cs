@@ -101,7 +101,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 
             _ = schema.Mutation.AddField(FieldBuilder.Create<object, CustomerOrderAggregate>(GraphTypeExtenstionHelper.GetActualType<CustomerOrderType>())
                             .Name("createOrderFromCart")
-                            .Argument(GraphTypeExtenstionHelper.GetComplexType<NonNullGraphType<InputCreateOrderFromCartType>>(), _commandName)
+                            .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputCreateOrderFromCartType>>(), _commandName)
                             .ResolveAsync(async context =>
                             {
                                 var type = GenericTypeHelper.GetActualType<CreateOrderFromCartCommand>();
@@ -113,7 +113,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 
             _ = schema.Mutation.AddField(FieldBuilder.Create<object, bool>(typeof(BooleanGraphType))
                             .Name("changeOrderStatus")
-                            .Argument(GraphTypeExtenstionHelper.GetComplexType<NonNullGraphType<InputChangeOrderStatusType>>(), _commandName)
+                            .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputChangeOrderStatusType>>(), _commandName)
                             .ResolveAsync(async context =>
                             {
                                 var type = GenericTypeHelper.GetActualType<ChangeOrderStatusCommand>();
@@ -134,7 +134,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 
             _ = schema.Mutation.AddField(FieldBuilder.Create<object, bool>(typeof(BooleanGraphType))
                             .Name("confirmOrderPayment")
-                            .Argument(GraphTypeExtenstionHelper.GetComplexType<NonNullGraphType<InputConfirmOrderPaymentType>>(), _commandName)
+                            .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputConfirmOrderPaymentType>>(), _commandName)
                             .ResolveAsync(async context =>
                             {
                                 var type = GenericTypeHelper.GetActualType<ConfirmOrderPaymentCommand>();
@@ -154,7 +154,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 
             _ = schema.Mutation.AddField(FieldBuilder.Create<object, bool>(typeof(BooleanGraphType))
                             .Name("cancelOrderPayment")
-                            .Argument(GraphTypeExtenstionHelper.GetComplexType<NonNullGraphType<InputCancelOrderPaymentType>>(), _commandName)
+                            .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputCancelOrderPaymentType>>(), _commandName)
                             .ResolveAsync(async context =>
                             {
                                 var type = GenericTypeHelper.GetActualType<CancelOrderPaymentCommand>();
