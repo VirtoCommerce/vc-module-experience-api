@@ -8,11 +8,17 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
 {
     public static class CommandTypeBuilderExtensions
     {
+        /// <summary>
+        /// Gets command builder for an existing query or command
+        /// </summary>
         public static ICommandTypeBuilder UseCommandType<TCommandType>(this IServiceCollection services)
         {
             return new CommandTypeBuilder(services, typeof(TCommandType));
         }
 
+        /// <summary>
+        /// Overrides an existing query or command in abstracts factory and returns a new builder
+        /// </summary>
         public static ICommandTypeBuilder OverrideCommandType<TCommandType, TExtendedCommandType>(this IServiceCollection services)
              where TExtendedCommandType : TCommandType
         {
@@ -21,6 +27,9 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
             return new CommandTypeBuilder(services, typeof(TExtendedCommandType));
         }
 
+        /// <summary>
+        /// Registers a new handler for a query or command
+        /// </summary>
         public static ICommandTypeBuilder WithCommandHandler<TExtendedCommandHandler>(this ICommandTypeBuilder builder)
         {
             if (builder?.CommandType == null)
