@@ -13,7 +13,6 @@ using VirtoCommerce.XDigitalCatalog;
 using VirtoCommerce.XDigitalCatalog.Middlewares;
 using VirtoCommerce.XDigitalCatalog.Queries;
 using VirtoCommerce.XDigitalCatalog.Schemas;
-using VirtoCommerce.XPurchase;
 using VirtoCommerce.XPurchase.Commands;
 using VirtoCommerce.XPurchase.Queries;
 using VirtoCommerce.XPurchase.Schemas;
@@ -30,7 +29,7 @@ namespace VirtoCommerce.Exp.ExtensionSamples
 
             #region Type override: add a new properties
             //use such lines to override exists query or command handler
-            services.AddTransient<IRequestHandler<GetCartQuery, CartAggregate>, CustomGetCartQueryHandler>();
+            services.UseCommandType<GetCartQuery>().WithCommandHandler<CustomGetCartQueryHandler>();
 
             services.AddGraphQL(_ =>
             {

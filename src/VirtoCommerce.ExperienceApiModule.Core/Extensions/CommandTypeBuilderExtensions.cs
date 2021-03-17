@@ -8,6 +8,11 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
 {
     public static class CommandTypeBuilderExtensions
     {
+        public static ICommandTypeBuilder UseCommandType<TCommandType>(this IServiceCollection services)
+        {
+            return new CommandTypeBuilder(services, typeof(TCommandType));
+        }
+
         public static ICommandTypeBuilder OverrideCommandType<TCommandType, TExtendedCommandType>(this IServiceCollection services)
              where TExtendedCommandType : TCommandType
         {
