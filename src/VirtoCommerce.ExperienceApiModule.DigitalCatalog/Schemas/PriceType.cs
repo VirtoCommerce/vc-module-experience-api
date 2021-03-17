@@ -18,8 +18,10 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             Field<MoneyType>("discountAmountWithTax", resolve: context => context.Source.DiscountAmountWithTax);
             Field(d => d.DiscountPercent, nullable: true);
             Field<StringGraphType>("currency", resolve: context => context.Source.Currency.Code);
-            Field<DateGraphType>("validFrom", resolve: context => context.Source.ValidFrom);
-            Field<DateGraphType>("validUntil", resolve: context => context.Source.ValidUntil);
+            Field<DateTimeGraphType>("validFrom", resolve: context => context.Source.StartDate, deprecationReason: "startDate");
+            Field<DateTimeGraphType>("startDate", resolve: context => context.Source.StartDate);
+            Field<DateTimeGraphType>("validUntil", resolve: context => context.Source.EndDate, deprecationReason: "endDate");
+            Field<DateTimeGraphType>("endDate", resolve: context => context.Source.EndDate);
             Field<ListGraphType<TierPriceType>>("tierPrices", resolve: context => context.Source.TierPrices);
             Field<ListGraphType<CatalogDiscountType>>("discounts", resolve: context => context.Source.Discounts);
 

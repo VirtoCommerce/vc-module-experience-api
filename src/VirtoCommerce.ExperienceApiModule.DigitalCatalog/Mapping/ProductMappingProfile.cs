@@ -107,6 +107,8 @@ namespace VirtoCommerce.XDigitalCatalog.Mapping
                                 ProductId = price.ProductId,
                                 PricelistId = price.PricelistId,
                                 Currency = currency,
+                                StartDate = price.StartDate,
+                                EndDate = price.EndDate,
                                 ListPrice = new Money(price.List, currency)
                             };
                             productPrice.SalePrice = price.Sale == null ? productPrice.ListPrice : new Money(price.Sale ?? 0m, currency);
