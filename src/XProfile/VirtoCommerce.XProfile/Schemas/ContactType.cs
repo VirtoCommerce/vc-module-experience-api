@@ -8,7 +8,7 @@ using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 {
-    public class ContactType : ObjectGraphType<ContactAggregate>
+    public class ContactType : ExtendableGraphType<ContactAggregate>
     {
         private readonly IOrganizationAggregateRepository _organizationAggregateRepository;
 
@@ -27,7 +27,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             Field(x => x.Contact.MiddleName, true);
             Field(x => x.Contact.Name, true);
             Field(x => x.Contact.OuterId, true);
-            Field<ListGraphType<AddressType>>("addresses", resolve: context => context.Source.Contact.Addresses);
+            ExtendableField<ListGraphType<AddressType>>("addresses", resolve: context => context.Source.Contact.Addresses);
             Field<ListGraphType<UserType>>("securityAccounts", resolve: context => context.Source.Contact.SecurityAccounts);
             //TODO: remove later
             Field<StringGraphType>("organizationId", resolve: context => context.Source.Contact.Organizations?.FirstOrDefault());

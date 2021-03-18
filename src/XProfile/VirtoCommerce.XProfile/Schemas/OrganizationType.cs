@@ -13,7 +13,7 @@ using VirtoCommerce.ExperienceApiModule.XProfile.Queries;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 {
-    public class OrganizationType : ObjectGraphType<OrganizationAggregate>
+    public class OrganizationType : ExtendableGraphType<OrganizationAggregate>
     {
         public OrganizationType(IMediator mediator)
         {
@@ -29,7 +29,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             Field(x => x.Organization.Name, true).Description("Name");
             Field(x => x.Organization.MemberType).Description("Member type");
             Field(x => x.Organization.OuterId, true).Description("Outer id");
-            Field<NonNullGraphType<ListGraphType<AddressType>>>("addresses", resolve: x => x.Source.Organization.Addresses);
+            ExtendableField<NonNullGraphType<ListGraphType<AddressType>>>("addresses", resolve: x => x.Source.Organization.Addresses);
             Field(x => x.Organization.Phones, true);
             Field(x => x.Organization.Emails, true);
             Field(x => x.Organization.Groups, true);

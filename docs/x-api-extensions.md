@@ -149,3 +149,17 @@ To do this, it is just enough to replace the required handler in the DI containe
     }
  }
 ```
+
+To replace an existing command with your own implementation first register and override of your Input type
+
+*module.cs*
+```C#
+services.AddSchemaType<InputRemoveCartType2>().OverrideType<InputRemoveCartType, InputRemoveCartType2>();
+```
+
+And then regiser your implementations of Command and Handler like this
+
+*module.cs*
+```C#
+services.OverrideCommandType<RemoveCartCommand, RemoveCartCommandExtended>().WithCommandHandler<RemoveCartCommandHandlerExtended>();
+```

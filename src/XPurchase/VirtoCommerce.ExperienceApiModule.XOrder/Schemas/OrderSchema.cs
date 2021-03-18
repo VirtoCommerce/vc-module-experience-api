@@ -12,7 +12,6 @@ using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.XOrder.Authorization;
 using VirtoCommerce.ExperienceApiModule.XOrder.Commands;
-using VirtoCommerce.ExperienceApiModule.XOrder.Extensions;
 using VirtoCommerce.ExperienceApiModule.XOrder.Queries;
 using VirtoCommerce.OrdersModule.Core.Model;
 using VirtoCommerce.OrdersModule.Core.Services;
@@ -54,7 +53,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                         OrderId = context.GetArgument<string>("id"),
                         CultureName = context.GetArgument<string>(nameof(Currency.CultureName))
                     };
-                    
+
                     var orderAggregate = await _mediator.Send(request);
 
                     var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), orderAggregate.Order, new CanAccessOrderAuthorizationRequirement());
@@ -100,13 +99,13 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             paymentsConnectionBuilder.ResolveAsync(async context => await ResolvePaymentsConnectionAsync(_mediator, context));
             schema.Query.AddField(paymentsConnectionBuilder.FieldType);
 
-
-            _ = schema.Mutation.AddField(FieldBuilder.Create<object, CustomerOrderAggregate>(typeof(CustomerOrderType))
+            _ = schema.Mutation.AddField(FieldBuilder.Create<object, CustomerOrderAggregate>(GraphTypeExtenstionHelper.GetActualType<CustomerOrderType>())
                             .Name("createOrderFromCart")
-                            .Argument<NonNullGraphType<InputCreateOrderFromCartType>>(_commandName)
+                            .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputCreateOrderFromCartType>>(), _commandName)
                             .ResolveAsync(async context =>
                             {
-                                var response = await _mediator.Send(context.GetArgument<CreateOrderFromCartCommand>(_commandName));
+                                var type = GenericTypeHelper.GetActualType<CreateOrderFromCartCommand>();
+                                var response = (CustomerOrderAggregate)await _mediator.Send(context.GetArgument(type, _commandName));
                                 context.SetExpandedObjectGraph(response);
                                 return response;
                             })
@@ -114,10 +113,11 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 
             _ = schema.Mutation.AddField(FieldBuilder.Create<object, bool>(typeof(BooleanGraphType))
                             .Name("changeOrderStatus")
-                            .Argument<NonNullGraphType<InputChangeOrderStatusType>>(_commandName)
+                            .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputChangeOrderStatusType>>(), _commandName)
                             .ResolveAsync(async context =>
                             {
-                                var command = context.GetArgument<ChangeOrderStatusCommand>(_commandName);
+                                var type = GenericTypeHelper.GetActualType<ChangeOrderStatusCommand>();
+                                var command = (ChangeOrderStatusCommand)context.GetArgument(type, _commandName);
 
                                 var order = await _customerOrderService.GetByIdAsync(command.OrderId);
 
@@ -134,10 +134,11 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 
             _ = schema.Mutation.AddField(FieldBuilder.Create<object, bool>(typeof(BooleanGraphType))
                             .Name("confirmOrderPayment")
-                            .Argument<NonNullGraphType<InputConfirmOrderPaymentType>>(_commandName)
+                            .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputConfirmOrderPaymentType>>(), _commandName)
                             .ResolveAsync(async context =>
                             {
-                                var command = context.GetArgument<ConfirmOrderPaymentCommand>(_commandName);
+                                var type = GenericTypeHelper.GetActualType<ConfirmOrderPaymentCommand>();
+                                var command = (ConfirmOrderPaymentCommand)context.GetArgument(type, _commandName);
                                 var order = await _customerOrderService.GetByIdAsync(command.Payment.OrderId);
 
                                 var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), order, new CanAccessOrderAuthorizationRequirement());
@@ -153,10 +154,11 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 
             _ = schema.Mutation.AddField(FieldBuilder.Create<object, bool>(typeof(BooleanGraphType))
                             .Name("cancelOrderPayment")
-                            .Argument<NonNullGraphType<InputCancelOrderPaymentType>>(_commandName)
+                            .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputCancelOrderPaymentType>>(), _commandName)
                             .ResolveAsync(async context =>
                             {
-                                var command = context.GetArgument<CancelOrderPaymentCommand>(_commandName);
+                                var type = GenericTypeHelper.GetActualType<CancelOrderPaymentCommand>();
+                                var command = (CancelOrderPaymentCommand)context.GetArgument(type, _commandName);
                                 var order = await _customerOrderService.GetByIdAsync(command.Payment.OrderId);
 
                                 var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), order, new CanAccessOrderAuthorizationRequirement());

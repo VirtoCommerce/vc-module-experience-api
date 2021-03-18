@@ -152,58 +152,62 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 #pragma warning restore S125 // Sections of code should not be commented out
 
             #endregion
-            _ = schema.Mutation.AddField(FieldBuilder.Create<ContactAggregate, ContactAggregate>(typeof(ContactType))
+            _ = schema.Mutation.AddField(FieldBuilder.Create<ContactAggregate, ContactAggregate>(GraphTypeExtenstionHelper.GetActualType<ContactType>())
                             .Name("updateAddresses")
-                            .Argument<NonNullGraphType<InputUpdateContactAddressType>>(_commandName)
+                            .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputUpdateContactAddressType>>(), _commandName)
                             .ResolveAsync(async context =>
                             {
-                                var command = context.GetArgument<UpdateContactAddressesCommand>(_commandName);
+                                var type = GenericTypeHelper.GetActualType<UpdateContactAddressesCommand>();
+                                var command = (UpdateContactAddressesCommand)context.GetArgument(type, _commandName);
                                 await CheckAuthAsync(context.GetCurrentUserId(), command);
                                 return await _mediator.Send(command);
                             })
                             .FieldType);
 
-
-            _ = schema.Mutation.AddField(FieldBuilder.Create<OrganizationAggregate, OrganizationAggregate>(typeof(OrganizationType))
+            _ = schema.Mutation.AddField(FieldBuilder.Create<OrganizationAggregate, OrganizationAggregate>(GraphTypeExtenstionHelper.GetActualType<OrganizationType>())
                             .Name("updateOrganization")
-                            .Argument<NonNullGraphType<InputUpdateOrganizationType>>(_commandName)
+                            .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputUpdateOrganizationType>>(), _commandName)
                             .ResolveAsync(async context =>
                             {
-                                var command = context.GetArgument<UpdateOrganizationCommand>(_commandName);
+                                var type = GenericTypeHelper.GetActualType<UpdateOrganizationCommand>();
+                                var command = (UpdateOrganizationCommand)context.GetArgument(type, _commandName);
                                 await CheckAuthAsync(context.GetCurrentUserId(), command, CustomerModule.Core.ModuleConstants.Security.Permissions.Update);
                                 return await _mediator.Send(command);
                             })
                             .FieldType);
 
-            _ = schema.Mutation.AddField(FieldBuilder.Create<OrganizationAggregate, OrganizationAggregate>(typeof(OrganizationType))
+            _ = schema.Mutation.AddField(FieldBuilder.Create<OrganizationAggregate, OrganizationAggregate>(GraphTypeExtenstionHelper.GetActualType<OrganizationType>())
                             .Name("createOrganization")
-                            .Argument<NonNullGraphType<InputCreateOrganizationType>>(_commandName)
+                            .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputCreateOrganizationType>>(), _commandName)
                             .ResolveAsync(async context =>
                             {
-                                var command = context.GetArgument<CreateOrganizationCommand>(_commandName);
+                                var type = GenericTypeHelper.GetActualType<CreateOrganizationCommand>();
+                                var command = (CreateOrganizationCommand)context.GetArgument(type, _commandName);
                                 await CheckAuthAsync(context.GetCurrentUserId(), command);
                                 return await _mediator.Send(command);
                             })
                             .FieldType);
 
-            _ = schema.Mutation.AddField(FieldBuilder.Create<ContactAggregate, ContactAggregate>(typeof(ContactType))
+            _ = schema.Mutation.AddField(FieldBuilder.Create<ContactAggregate, ContactAggregate>(GraphTypeExtenstionHelper.GetActualType<ContactType>())
                             .Name("createContact")
-                            .Argument<NonNullGraphType<InputCreateContactType>>(_commandName)
+                            .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputCreateContactType>>(), _commandName)
                             .ResolveAsync(async context =>
                             {
-                                var command = context.GetArgument<CreateContactCommand>(_commandName);
+                                var type = GenericTypeHelper.GetActualType<CreateContactCommand>();
+                                var command = (CreateContactCommand)context.GetArgument(type, _commandName);
                                 await CheckAuthAsync(context.GetCurrentUserId(), command);
 
                                 return await _mediator.Send(command);
                             })
                             .FieldType);
 
-            _ = schema.Mutation.AddField(FieldBuilder.Create<ContactAggregate, ContactAggregate>(typeof(ContactType))
+            _ = schema.Mutation.AddField(FieldBuilder.Create<ContactAggregate, ContactAggregate>(GraphTypeExtenstionHelper.GetActualType<ContactType>())
                             .Name("updateContact")
-                            .Argument<NonNullGraphType<InputUpdateContactType>>(_commandName)
+                            .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputUpdateContactType>>(), _commandName)
                             .ResolveAsync(async context =>
                             {
-                                var command = context.GetArgument<UpdateContactCommand>(_commandName);
+                                var type = GenericTypeHelper.GetActualType<UpdateContactCommand>();
+                                var command = (UpdateContactCommand)context.GetArgument(type, _commandName);
                                 await CheckAuthAsync(context.GetCurrentUserId(), command);
                                 return await _mediator.Send(command);
 
@@ -212,21 +216,23 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 
             _ = schema.Mutation.AddField(FieldBuilder.Create<ContactAggregate, bool>(typeof(BooleanGraphType))
                             .Name("deleteContact")
-                            .Argument<NonNullGraphType<InputDeleteContactType>>(_commandName)
+                            .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputDeleteContactType>>(), _commandName)
                             .ResolveAsync(async context =>
                             {
-                                var command = context.GetArgument<DeleteContactCommand>(_commandName);
+                                var type = GenericTypeHelper.GetActualType<DeleteContactCommand>();
+                                var command = (DeleteContactCommand)context.GetArgument(type, _commandName);
                                 await CheckAuthAsync(context.GetCurrentUserId(), command, CustomerModule.Core.ModuleConstants.Security.Permissions.Delete);
                                 return await _mediator.Send(command);
                             })
                             .FieldType);
 
-            _ = schema.Mutation.AddField(FieldBuilder.Create<object, IdentityResult>(typeof(IdentityResultType))
+            _ = schema.Mutation.AddField(FieldBuilder.Create<object, IdentityResult>(GraphTypeExtenstionHelper.GetActualType<IdentityResultType>())
                           .Name("updatePersonalData")
-                          .Argument<NonNullGraphType<InputUpdatePersonalDataType>>(_commandName)
+                          .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputUpdatePersonalDataType>>(), _commandName)
                           .ResolveAsync(async context =>
                           {
-                              var command = context.GetArgument<UpdatePersonalDataCommand>(_commandName);
+                              var type = GenericTypeHelper.GetActualType<UpdatePersonalDataCommand>();
+                              var command = (UpdatePersonalDataCommand)context.GetArgument(type, _commandName);
                               await CheckAuthAsync(context.GetCurrentUserId(), command);
                               return await _mediator.Send(command);
                           })
@@ -234,10 +240,11 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 
             _ = schema.Mutation.AddField(FieldBuilder.Create<object, bool>(typeof(BooleanGraphType))
                         .Name("sendVerifyEmail")
-                        .Argument<InputSendVerifyEmailType>(_commandName)
+                        .Argument(GraphTypeExtenstionHelper.GetActualType<InputSendVerifyEmailType>(), _commandName)
                         .ResolveAsync(async context =>
                         {
-                            var command = context.GetArgument<SendVerifyEmailCommand>(_commandName);
+                            var type = GenericTypeHelper.GetActualType<SendVerifyEmailCommand>();
+                            var command = (SendVerifyEmailCommand)context.GetArgument(type, _commandName);
 
                             var isAuthenticated = ((GraphQLUserContext)context.UserContext).User?.Identity?.IsAuthenticated ?? false;
                             if (isAuthenticated)
@@ -248,7 +255,6 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                             return await _mediator.Send(command);
                         })
                         .FieldType);
-
 
             // Security API fields
 
@@ -335,12 +341,13 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 #pragma warning restore S125 // Sections of code should not be commented out
 
             #endregion
-            _ = schema.Mutation.AddField(FieldBuilder.Create<object, IdentityResult>(typeof(IdentityResultType))
+            _ = schema.Mutation.AddField(FieldBuilder.Create<object, IdentityResult>(GraphTypeExtenstionHelper.GetActualType<IdentityResultType>())
                         .Name("createUser")
-                        .Argument<NonNullGraphType<InputCreateUserType>>(_commandName)
+                        .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputCreateUserType>>(), _commandName)
                         .ResolveAsync(async context =>
                         {
-                            var command = context.GetArgument<CreateUserCommand>(_commandName);
+                            var type = GenericTypeHelper.GetActualType<CreateUserCommand>();
+                            var command = (CreateUserCommand)context.GetArgument(type, _commandName);
                             await CheckAuthAsync(context.GetCurrentUserId(), command);
                             return await _mediator.Send(command);
                         })
@@ -368,12 +375,13 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 #pragma warning restore S125 // Sections of code should not be commented out
 
             #endregion
-            _ = schema.Mutation.AddField(FieldBuilder.Create<object, IdentityResult>(typeof(IdentityResultType))
+            _ = schema.Mutation.AddField(FieldBuilder.Create<object, IdentityResult>(GraphTypeExtenstionHelper.GetActualType<IdentityResultType>())
                         .Name("updateUser")
-                        .Argument<NonNullGraphType<InputUpdateUserType>>(_commandName)
+                        .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputUpdateUserType>>(), _commandName)
                         .ResolveAsync(async context =>
                         {
-                            var command = context.GetArgument<UpdateUserCommand>(_commandName);
+                            var type = GenericTypeHelper.GetActualType<UpdateUserCommand>();
+                            var command = (UpdateUserCommand)context.GetArgument(type, _commandName);
                             await CheckAuthAsync(context.GetCurrentUserId(), command);
                             return await _mediator.Send(command);
                         })
@@ -396,12 +404,13 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 #pragma warning restore S125 // Sections of code should not be commented out
 
             #endregion
-            _ = schema.Mutation.AddField(FieldBuilder.Create<object, IdentityResult>(typeof(IdentityResultType))
+            _ = schema.Mutation.AddField(FieldBuilder.Create<object, IdentityResult>(GraphTypeExtenstionHelper.GetActualType<IdentityResultType>())
                         .Name("deleteUsers")
-                        .Argument<NonNullGraphType<InputDeleteUserType>>(_commandName)
+                        .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputDeleteUserType>>(), _commandName)
                         .ResolveAsync(async context =>
                         {
-                            var command = context.GetArgument<DeleteUserCommand>(_commandName);
+                            var type = GenericTypeHelper.GetActualType<DeleteUserCommand>();
+                            var command = (DeleteUserCommand)context.GetArgument(type, _commandName);
                             await CheckAuthAsync(context.GetCurrentUserId(), command, PlatformConstants.Security.Permissions.SecurityDelete);
                             return await _mediator.Send(command);
                         })
@@ -426,12 +435,13 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 #pragma warning restore S125 // Sections of code should not be commented out
 
             #endregion
-            _ = schema.Mutation.AddField(FieldBuilder.Create<object, IdentityResult>(typeof(IdentityResultType))
+            _ = schema.Mutation.AddField(FieldBuilder.Create<object, IdentityResult>(GraphTypeExtenstionHelper.GetActualType<IdentityResultType>())
                      .Name("updateRole")
-                     .Argument<NonNullGraphType<InputUpdateRoleType>>(_commandName)
+                     .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputUpdateRoleType>>(), _commandName)
                      .ResolveAsync(async context =>
                      {
-                         var command = context.GetArgument<UpdateRoleCommand>(_commandName);
+                         var type = GenericTypeHelper.GetActualType<UpdateRoleCommand>();
+                         var command = (UpdateRoleCommand)context.GetArgument(type, _commandName);
                          await CheckAuthAsync(context.GetCurrentUserId(), command, PlatformConstants.Security.Permissions.SecurityUpdate);
 
                          return await _mediator.Send(command);

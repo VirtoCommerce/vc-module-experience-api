@@ -3,6 +3,7 @@ using GraphQL.Server;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using VirtoCommerce.Exp.ExtensionSamples.Commands;
 using VirtoCommerce.Exp.ExtensionSamples.UseCases.TypeExtension.Queries;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
@@ -12,14 +13,12 @@ using VirtoCommerce.XDigitalCatalog;
 using VirtoCommerce.XDigitalCatalog.Middlewares;
 using VirtoCommerce.XDigitalCatalog.Queries;
 using VirtoCommerce.XDigitalCatalog.Schemas;
-using VirtoCommerce.XPurchase;
+using VirtoCommerce.XPurchase.Commands;
 using VirtoCommerce.XPurchase.Queries;
 using VirtoCommerce.XPurchase.Schemas;
 
 namespace VirtoCommerce.Exp.ExtensionSamples
 {
-
-
     public class Module : IModule
     {
         public ManifestModuleInfo ModuleInfo { get; set; }
@@ -30,10 +29,11 @@ namespace VirtoCommerce.Exp.ExtensionSamples
 
             #region Type override: add a new properties
             //use such lines to override exists query or command handler
-            services.AddTransient<IRequestHandler<GetCartQuery, CartAggregate>, CustomGetCartQueryHandler>();
+            services.UseCommandType<GetCartQuery>().WithCommandHandler<CustomGetCartQueryHandler>();
 
-            services.AddGraphQL(_ => {
-                 //It is important to pass the GraphQLOptions configure action, because the default parameters used in xAPI module won't be used after this call
+            services.AddGraphQL(_ =>
+            {
+                //It is important to pass the GraphQLOptions configure action, because the default parameters used in xAPI module won't be used after this call
                 _.EnableMetrics = false;
 
             })
@@ -46,9 +46,12 @@ namespace VirtoCommerce.Exp.ExtensionSamples
             //Register custom schema
             services.AddSchemaBuilder<CustomSchema>();
 
-            //GraphQL schema overrides 
+            //GraphQL schema overrides
             services.AddSchemaType<CartType2>().OverrideType<CartType, CartType2>();
             services.AddSchemaType<ProductType2>().OverrideType<ProductType, ProductType2>();
+            services.AddSchemaType<InputRemoveCartType2>().OverrideType<InputRemoveCartType, InputRemoveCartType2>();
+            services.OverrideCommandType<RemoveCartCommand, RemoveCartCommandExtended>().WithCommandHandler<RemoveCartCommandHandlerExtended>();
+
             //Domain types overrides
             AbstractTypeFactory<ExpProduct>.OverrideType<ExpProduct, ExpProduct2>();
 
@@ -79,15 +82,11 @@ namespace VirtoCommerce.Exp.ExtensionSamples
 
         public void PostInitialize(IApplicationBuilder appBuilder)
         {
-
-
         }
 
         public void Uninstall()
         {
         }
-
-
     }
 }
 
