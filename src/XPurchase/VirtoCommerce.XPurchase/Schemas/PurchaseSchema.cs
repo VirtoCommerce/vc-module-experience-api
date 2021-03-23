@@ -137,7 +137,6 @@ namespace VirtoCommerce.XPurchase.Schemas
             var clearCartField = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<CartType>())
                                              .Name("clearCart")
                                              .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputClearCartType>>(), _commandName)
-                                             .Argument<NonNullGraphType<InputClearCartType>>(_commandName)
                                              .ResolveAsync(async context =>
                                              {
                                                  //TODO: Need to refactor later to prevent ugly code duplication
