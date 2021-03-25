@@ -100,5 +100,4 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
             return result;
         }
     }
-
 }
