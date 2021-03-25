@@ -414,4 +414,4 @@ The range facet type counts the products for which the query value is a range sp
 `ranges.isSelected` - flag indicates that requested facet term is used in `filter` expression, in order to simplify displaying the already selected facet terms on the frontend.
 
 ### Querying product breadcrumbs
-When querying breadcrumbs of the product make sure your store's `SEO Links` setting is **not** set to `None`, otherwise breadcrumbs would not be returned correctly. To check the setting go to Store - select your store - Settings - SEO - SEO Links.
+When querying breadcrumbs of the product make sure your store's `SEO Links` setting is **not** set to `None`, otherwise breadcrumbs for the store would not be created. To check the setting go to Store - select your store - Settings - SEO - SEO Links.
