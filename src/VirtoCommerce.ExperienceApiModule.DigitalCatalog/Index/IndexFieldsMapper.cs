@@ -48,7 +48,6 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
                         new RegexpNameMapper(@"^items", "__object"),
                         new RegexpNameMapper(@"^(?!__)", "__object."),
 
-
                         new RegexpNameMapper(@"properties.value$", "properties.values"),
                         new RegexpNameMapper(@"imgSrc", "images"),
 
@@ -64,6 +63,8 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
                         new RegexpNameMapper(@"__object.descriptions", "__object.reviews"),
                         new RegexpNameMapper(@"__object.description.*", "__object.reviews"),
                         new RegexpNameMapper(@"__object.seoInfo.*", "__object.seoInfos"),
+
+                        new RegexpNameMapper(@"__object.breadcrumbs.*", "__object.outlines"),
 
                         #region Category
 		
@@ -99,5 +100,5 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
             return result;
         }
     }
-    
+
 }
