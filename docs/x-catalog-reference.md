@@ -161,6 +161,7 @@ This connection allows you to search products.
 |22|outlines         |List of OutlineType                  |Category outlines|
 |23|seoInfos         |List of SeoInfoType                  |SEO information of the product|
 |24|associations     |ProductAssociationType               |Product associations|
+|25|breadcrumbs      |BreadcrumbType                       |Product navigation information|
 ### CategoryType
 ![image](./media/CategoryType.jpeg)
 #### Schema fields:
@@ -411,3 +412,6 @@ The range facet type counts the products for which the query value is a range sp
 `ranges.includeTo` - flag indicates that lower bound is included
 `ranges.includeFrom` - flag indicates that upper bound is included
 `ranges.isSelected` - flag indicates that requested facet term is used in `filter` expression, in order to simplify displaying the already selected facet terms on the frontend.
+
+### Querying product breadcrumbs
+When querying breadcrumbs of the product make sure your store's `SEO Links` setting is **not** set to `None`, otherwise breadcrumbs for the store would not be created. To check the setting go to Store - select your store - Settings - SEO - SEO Links.
