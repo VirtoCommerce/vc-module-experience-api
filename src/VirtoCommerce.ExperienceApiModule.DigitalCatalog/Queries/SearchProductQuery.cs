@@ -68,6 +68,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             if (IncludeFields.ContainsAny("outline", "outlines", "slug", "level", "breadcrumbs"))
             {
                 result |= ItemResponseGroup.WithOutlines;
+                result |= ItemResponseGroup.WithSeo;
             }
 
             if (IncludeFields.ContainsAny("availabilityData"))
