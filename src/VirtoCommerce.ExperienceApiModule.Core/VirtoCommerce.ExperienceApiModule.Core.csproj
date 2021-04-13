@@ -6,6 +6,10 @@
         <GenerateDocumentationFile>true</GenerateDocumentationFile>     
         <noWarn>1591</noWarn>
         <IsPackable>True</IsPackable>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -19,6 +23,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
         <PackageReference Include="PipelineNet" Version="0.9.0" />     
         <PackageReference Include="VirtoCommerce.CoreModule.Core" Version="3.2.0" />
         <PackageReference Include="VirtoCommerce.TaxModule.Core" Version="3.2.0" />
