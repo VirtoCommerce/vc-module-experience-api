@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <module xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <id>VirtoCommerce.ExperienceApi</id>
   <version>1.5.0</version>
@@ -24,7 +24,7 @@
   <iconUrl>Modules/$(VirtoCommerce.ExperienceApi)/Content/logoVC.png</iconUrl>
   <requireLicenseAcceptance>false</requireLicenseAcceptance>
   <releaseNotes />
-  <copyright>Copyright © 2011-2020 Virto Commerce. All rights reserved</copyright>
+  <copyright>Copyright © 2011-2021 Virto Commerce. All rights reserved</copyright>
   <tags>security core</tags>
   <assemblyFile>VirtoCommerce.ExperienceApiModule.Web.dll</assemblyFile>
   <moduleType>VirtoCommerce.ExperienceApiModule.Web.Module, VirtoCommerce.ExperienceApiModule.Web</moduleType>
