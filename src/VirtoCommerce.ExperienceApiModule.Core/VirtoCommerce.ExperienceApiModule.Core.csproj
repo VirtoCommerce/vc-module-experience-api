@@ -13,11 +13,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Compile Remove="Commands\**" />
       <Compile Remove="Constants\**" />
-      <EmbeddedResource Remove="Commands\**" />
       <EmbeddedResource Remove="Constants\**" />
-      <None Remove="Commands\**" />
       <None Remove="Constants\**" />
     </ItemGroup>
 
