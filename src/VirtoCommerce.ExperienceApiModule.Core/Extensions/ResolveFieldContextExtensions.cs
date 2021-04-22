@@ -31,7 +31,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
 
             if (resolveContext.UserContext.TryGetValue(key, out var value))
             {
-                return value is T ? (T)value : defaultValue;
+                return value is T typedObject ? typedObject : defaultValue;
             }
 
             return defaultValue;

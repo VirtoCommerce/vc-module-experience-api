@@ -1,9 +1,9 @@
-﻿using VirtoCommerce.Platform.Data.Model;
+using VirtoCommerce.Platform.Core.DynamicProperties;
 
 namespace VirtoCommerce.ExperienceApiModule.Core.Queries
 {
     public class GetDynamicPropertyResponse
     {
-        public DynamicPropertyEntity DynamicProperty { get; set; }
+        public DynamicProperty DynamicProperty { get; set; }
     }
 }

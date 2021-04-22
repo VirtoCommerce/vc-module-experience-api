@@ -3,9 +3,9 @@ using VirtoCommerce.Platform.Core.DynamicProperties;
 
 namespace VirtoCommerce.ExperienceApiModule.Core.Queries
 {
-    public class SearchDynamicPropertiesResponse
+    public class SearchDynamicPropertyDictionaryItemResponse
     {
-        public IReadOnlyList<DynamicProperty> Results { get; set; }
+        public IList<DynamicPropertyDictionaryItem> Results { get; set; }
         public int TotalCount { get; set; }
     }
 }
