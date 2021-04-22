@@ -1,5 +1,4 @@
 using VirtoCommerce.CatalogModule.Core.Model;
-using VirtoCommerce.ExperienceApiModule.Core.Index;
 using VirtoCommerce.XDigitalCatalog.Extensions;
 
 namespace VirtoCommerce.XDigitalCatalog.Queries

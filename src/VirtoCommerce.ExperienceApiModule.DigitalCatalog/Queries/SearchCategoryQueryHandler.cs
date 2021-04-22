@@ -15,8 +15,8 @@ using VirtoCommerce.StoreModule.Core.Services;
 namespace VirtoCommerce.XDigitalCatalog.Queries
 {
     public class SearchCategoryQueryHandler :
-        IQueryHandler<SearchCategoryQuery, SearchCategoryResponse>
-        , IQueryHandler<LoadCategoryQuery, LoadCategoryResponse>
+        IQueryHandler<SearchCategoryQuery, SearchCategoryResponse>,
+        IQueryHandler<LoadCategoryQuery, LoadCategoryResponse>
     {
         private readonly IMapper _mapper;
         private readonly ISearchProvider _searchProvider;
