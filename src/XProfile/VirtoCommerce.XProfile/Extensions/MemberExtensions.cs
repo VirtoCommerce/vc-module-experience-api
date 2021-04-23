@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using VirtoCommerce.CustomerModule.Core.Model;
@@ -11,13 +12,11 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Extensions
         /// <summary>
         /// Load the dynamic property values for member. Include empty meta-data for missing values.
         /// </summary>
-        /// <param name="member"></param>
-        /// <param name="dynamicPropertySearchService"></param>
-        /// <returns></returns>
-        internal static async Task<object> LoadMemberDynamicPropertyValues(this Member member, IDynamicPropertySearchService dynamicPropertySearchService)
+        /// <returns>Loaded Dynamic Property Values for specified member</returns>
+        internal static async Task<IEnumerable<DynamicPropertyObjectValue>> LoadMemberDynamicPropertyValues(this Member member, IDynamicPropertySearchService dynamicPropertySearchService)
         {
             // actual values
-            var result = member.DynamicProperties.SelectMany(x => x.Values).ToList();
+            var result = member.DynamicProperties.SelectMany(x => x.Values);
 
             // find and add all the properties without values
             var criteria = AbstractTypeFactory<DynamicPropertySearchCriteria>.TryCreateInstance();
@@ -36,8 +35,8 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Extensions
                 newValue.ValueType = x.ValueType;
                 return newValue;
             });
-            result.AddRange(emptyValues);
-            return result;
+
+            return result.Union(emptyValues);
         }
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Reflection;
+using AutoMapper;
 using GraphQL.Authorization;
 using GraphQL.Server;
 using GraphQL.Types;
@@ -57,11 +58,11 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
 
         public static IServiceCollection AddXCore(this IServiceCollection services, IGraphQLBuilder graphQlbuilder)
         {
-            services.AddSchemaBuilder<DynamicPropertySchema>();
-
             graphQlbuilder.AddGraphTypes(typeof(XCoreAnchor));
 
+            services.AddSchemaBuilder<DynamicPropertySchema>();
             services.AddMediatR(typeof(XCoreAnchor));
+            services.AddAutoMapper(typeof(XCoreAnchor));
 
             return services;
         }

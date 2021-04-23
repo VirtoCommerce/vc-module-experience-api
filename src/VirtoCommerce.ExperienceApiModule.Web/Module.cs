@@ -41,8 +41,7 @@ namespace VirtoCommerce.ExperienceApiModule.Web
             })
             .AddUserContextBuilder(context => context.BuildGraphQLUserContext())
             .AddRelayGraphTypes()
-            .AddDataLoader()
-            .AddGraphTypes(typeof(XCoreAnchor));
+            .AddDataLoader();
 
             //Register custom GraphQL dependencies
             services.AddPermissionAuthorization();
