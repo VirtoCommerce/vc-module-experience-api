@@ -68,7 +68,6 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder
         public DynamicPropertyDictionaryItemSearchCriteriaBuilder WithSorting(string sort)
         {
             _searchCriteria.Sort = sort ?? _searchCriteria.Sort;
-
             return this;
         }
 
