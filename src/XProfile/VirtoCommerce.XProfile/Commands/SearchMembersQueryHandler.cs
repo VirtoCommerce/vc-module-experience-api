@@ -19,18 +19,18 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
             _memberSearchService = memberSearchService;
         }
 
-        public async Task<MemberSearchResult> Handle(SearchContactsQuery request, CancellationToken cancellationToken)
+        public Task<MemberSearchResult> Handle(SearchContactsQuery request, CancellationToken cancellationToken)
         {
             var searchCriteria = BuildMembersSearchCriteria(request, nameof(Contact));
 
-            return await _memberSearchService.SearchMembersAsync(searchCriteria);
+            return _memberSearchService.SearchMembersAsync(searchCriteria);
         }
 
-        public async Task<MemberSearchResult> Handle(SearchOrganizationsQuery request, CancellationToken cancellationToken)
+        public Task<MemberSearchResult> Handle(SearchOrganizationsQuery request, CancellationToken cancellationToken)
         {
             var searchCriteria = BuildMembersSearchCriteria(request, nameof(Organization));
 
-            return await _memberSearchService.SearchMembersAsync(searchCriteria);
+            return _memberSearchService.SearchMembersAsync(searchCriteria);
         }
 
         private static MembersSearchCriteria BuildMembersSearchCriteria(SearchMembersQueryBase request, string memberType)
