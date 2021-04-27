@@ -6,6 +6,7 @@ using GraphQL.Builders;
 using GraphQL.Types;
 using MediatR;
 using VirtoCommerce.CustomerModule.Core.Model;
+using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
@@ -36,8 +37,19 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             Field(x => x.Organization.Emails, true);
             Field(x => x.Organization.Groups, true);
             Field(x => x.Organization.SeoObjectType).Description("SEO object type");
-            ExtendableField<NonNullGraphType<ListGraphType<Core.Schemas.DynamicPropertyValueType>>>("dynamicProperties", resolve: context =>
-             context.Source.Organization.LoadMemberDynamicPropertyValues(dynamicPropertySearchService));
+            ExtendableField<NonNullGraphType<ListGraphType<Core.Schemas.DynamicPropertyValueType>>>(
+               "dynamicProperties",
+               "Organization's dynamic property values",
+               new QueryArguments(new QueryArgument<StringGraphType>
+               {
+                   Name = "cultureName",
+                   Description = "Filter multilingual dynamic properties to return only values of specified language (\"en-US\")"
+               }),
+               context => context.Source.Organization.LoadMemberDynamicPropertyValues(
+                   dynamicPropertySearchService,
+                   context.GetArgumentOrValue<string>("cultureName")
+                   )
+               );
 
             // TODO:
             //    SeoInfos

@@ -49,7 +49,6 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder
         {
             _searchCriteria.LanguageCode = language ?? _searchCriteria.LanguageCode;
             return this;
-
         }
 
         public DynamicPropertySearchCriteriaBuilder WithPaging(int skip, int take)
@@ -62,7 +61,6 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder
         public DynamicPropertySearchCriteriaBuilder WithSorting(string sort)
         {
             _searchCriteria.Sort = sort ?? _searchCriteria.Sort;
-
             return this;
         }
 
