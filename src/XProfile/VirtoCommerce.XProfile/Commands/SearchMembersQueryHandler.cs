@@ -36,6 +36,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
         private static MembersSearchCriteria BuildMembersSearchCriteria(SearchMembersQueryBase request, string memberType)
         {
             var result = AbstractTypeFactory<MembersSearchCriteria>.TryCreateInstance();
+            result.DeepSearch = true;
             result.MemberType = memberType;
             result.Keyword = request.Filter;
             result.Skip = request.Skip;
