@@ -6,6 +6,10 @@
         <GenerateDocumentationFile>true</GenerateDocumentationFile>     
         <noWarn>1591</noWarn>
         <IsPackable>True</IsPackable>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -13,15 +17,16 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Compile Remove="Commands\**" />
       <Compile Remove="Constants\**" />
-      <EmbeddedResource Remove="Commands\**" />
       <EmbeddedResource Remove="Constants\**" />
-      <None Remove="Commands\**" />
       <None Remove="Constants\**" />
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="AutoMapper" Version="10.0.0" />
+        <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.0.1" />
+        <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="8.0.0" />
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
         <PackageReference Include="PipelineNet" Version="0.9.0" />     
         <PackageReference Include="VirtoCommerce.CoreModule.Core" Version="3.2.0" />
         <PackageReference Include="VirtoCommerce.TaxModule.Core" Version="3.2.0" />

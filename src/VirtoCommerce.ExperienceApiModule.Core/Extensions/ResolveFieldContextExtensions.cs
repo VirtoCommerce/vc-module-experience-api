@@ -6,6 +6,7 @@ using GraphQL;
 using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
+using VirtoCommerce.ExperienceApiModule.Core.Queries;
 using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
@@ -27,10 +28,12 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
             {
                 throw new ArgumentNullException(nameof(resolveContext));
             }
+
             if (resolveContext.UserContext.TryGetValue(key, out var value))
             {
-                return value is T ? (T)value : defaultValue;
+                return value is T typedObject ? typedObject : defaultValue;
             }
+
             return defaultValue;
         }
 
@@ -54,14 +57,16 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
         {
             return resolveContext.GetArgument<T>(key) ?? resolveContext.GetValue<T>(key);
         }
+
         //TODO:  Need to check what there is no any alternative way to access to the original request arguments in sub selection
         public static void CopyArgumentsToUserContext(this IResolveFieldContext resolveContext)
         {
-            foreach(var pair in resolveContext.Arguments)
+            foreach (var pair in resolveContext.Arguments)
             {
                 resolveContext.UserContext[pair.Key] = pair.Value;
             }
         }
+
         public static void SetExpandedObjectGraph<T>(this IResolveFieldContext resolveContext, T value)
         {
             var entities = value.GetFlatObjectsListWithInterface<IEntity>();
@@ -84,6 +89,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
             {
                 throw new ArgumentNullException(nameof(resolveContext));
             }
+
             TResult result = default;
 
             if (resolveContext.Source is IEntity entity)
@@ -104,10 +110,12 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
             {
                 throw new ArgumentNullException(nameof(currencies));
             }
+
             var currenciesWithCulture = currencies.Select(x => new Currency(cultureName != null ? new Language(cultureName) : Language.InvariantLanguage, x.Code, x.Name, x.Symbol, x.ExchangeRate)
             {
                 CustomFormatting = x.CustomFormatting
             }).ToArray();
+
             context.UserContext["allCurrencies"] = currenciesWithCulture;
         }
 
@@ -117,6 +125,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
             {
                 throw new ArgumentNullException(nameof(currency));
             }
+
             context.UserContext["currencyCode"] = currency.Code;
         }
 
@@ -128,9 +137,15 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
             {
                 throw new OperationCanceledException($"the currency with code '{ currencyCode }' is not registered");
             }
+
             return result;
         }
 
-
+        public static T GetDynamicPropertiesQuery<T>(this IResolveFieldContext context) where T : IDynamicPropertiesQuery
+        {
+            var result = AbstractTypeFactory<T>.TryCreateInstance();
+            result.CultureName = context.GetArgumentOrValue<string>("cultureName");
+            return result;
+        }
     }
 }

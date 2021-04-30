@@ -6,22 +6,25 @@ using GraphQL.Builders;
 using GraphQL.Types;
 using MediatR;
 using VirtoCommerce.CustomerModule.Core.Model;
+using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
+using VirtoCommerce.ExperienceApiModule.XProfile.Extensions;
 using VirtoCommerce.ExperienceApiModule.XProfile.Queries;
+using VirtoCommerce.Platform.Core.DynamicProperties;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 {
     public class OrganizationType : ExtendableGraphType<OrganizationAggregate>
     {
-        public OrganizationType(IMediator mediator)
+        public OrganizationType(IMediator mediator, IDynamicPropertySearchService dynamicPropertySearchService)
         {
             Name = "Organization";
             Description = "Organization info";
             //this.AuthorizeWith(CustomerModule.Core.ModuleConstants.Security.Permissions.Read);
 
-            Field(x => x.Organization.Id).Description("Description");
+            Field(x => x.Organization.Id);
             Field(x => x.Organization.Description, true).Description("Description");
             Field(x => x.Organization.BusinessCategory, true).Description("Business category");
             Field(x => x.Organization.OwnerId, true).Description("Owner id");
@@ -34,9 +37,21 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             Field(x => x.Organization.Emails, true);
             Field(x => x.Organization.Groups, true);
             Field(x => x.Organization.SeoObjectType).Description("SEO object type");
+            ExtendableField<NonNullGraphType<ListGraphType<Core.Schemas.DynamicPropertyValueType>>>(
+               "dynamicProperties",
+               "Organization's dynamic property values",
+               new QueryArguments(new QueryArgument<StringGraphType>
+               {
+                   Name = "cultureName",
+                   Description = "Filter multilingual dynamic properties to return only values of specified language (\"en-US\")"
+               }),
+               context => context.Source.Organization.LoadMemberDynamicPropertyValues(
+                   dynamicPropertySearchService,
+                   context.GetArgumentOrValue<string>("cultureName")
+                   )
+               );
 
             // TODO:
-            //DynamicProperties
             //    SeoInfos
 
             var connectionBuilder = GraphTypeExtenstionHelper.CreateConnection<ContactType, OrganizationAggregate>()

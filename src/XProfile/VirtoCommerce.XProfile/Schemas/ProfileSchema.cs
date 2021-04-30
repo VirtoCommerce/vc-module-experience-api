@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Builders;
@@ -7,11 +8,13 @@ using GraphQL.Types;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using VirtoCommerce.CustomerModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.XProfile.Authorization;
 using VirtoCommerce.ExperienceApiModule.XProfile.Commands;
+using VirtoCommerce.ExperienceApiModule.XProfile.Extensions;
 using VirtoCommerce.ExperienceApiModule.XProfile.Queries;
 using VirtoCommerce.Platform.Core;
 using VirtoCommerce.Platform.Core.Common;
@@ -81,10 +84,8 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                 Type = GraphTypeExtenstionHelper.GetActualType<OrganizationType>(),
                 Resolver = new AsyncFieldResolver<object>(async context =>
                 {
-                    var organizationId = context.GetArgument<string>("id");
-                    var query = new GetOrganizationByIdQuery(organizationId);
+                    var query = new GetOrganizationByIdQuery(context.GetArgument<string>("id"));
                     var organizationAggregate = await _mediator.Send(query);
-
                     await CheckAuthAsync(context.GetCurrentUserId(), organizationAggregate);
                     //store organization aggregate in the user context for future usage in the graph types resolvers
                     context.UserContext.Add("organizationAggregate", organizationAggregate);
@@ -92,6 +93,25 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                     return organizationAggregate;
                 })
             });
+
+            var organizationsConnectionBuilder = GraphTypeExtenstionHelper.CreateConnection<OrganizationType, object>()
+                .Name("organizations")
+                .Argument<StringGraphType>("filter", "This parameter applies a filter to the query results")
+                .Argument<StringGraphType>("sort", "The sort expression")
+                .Unidirectional()
+                .PageSize(20);
+
+            organizationsConnectionBuilder.ResolveAsync(async context =>
+            {
+                context.CopyArgumentsToUserContext();
+
+                var query = context.GetSearchMembersQuery<SearchOrganizationsQuery>();
+                var response = await _mediator.Send(query);
+
+                return new PagedConnection<OrganizationAggregate>(response.Results.Select(x => new OrganizationAggregate(x as Organization)), query.Skip, query.Take, response.TotalCount);
+            });
+
+            schema.Query.AddField(organizationsConnectionBuilder.FieldType);
 
             #region contact query
             /// <example>
@@ -121,12 +141,31 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                     var query = new GetContactByIdQuery(context.GetArgument<string>("id"));
                     var contactAggregate = await _mediator.Send(query);
                     await CheckAuthAsync(context.GetCurrentUserId(), contactAggregate);
-                    //store organization aggregate in the user context for future usage in the graph types resolvers
+                    //store contactAggregate in the user context for future usage in the graph types resolvers
                     context.UserContext.Add("contactAggregate", contactAggregate);
 
                     return contactAggregate;
                 })
             });
+
+            var contactsConnectionBuilder = GraphTypeExtenstionHelper.CreateConnection<ContactType, object>()
+                .Name("contacts")
+                .Argument<StringGraphType>("filter", "This parameter applies a filter to the query results")
+                .Argument<StringGraphType>("sort", "The sort expression")
+                .Unidirectional()
+                .PageSize(20);
+
+            contactsConnectionBuilder.ResolveAsync(async context =>
+            {
+                context.CopyArgumentsToUserContext();
+
+                var query = context.GetSearchMembersQuery<SearchContactsQuery>();
+                var response = await _mediator.Send(query);
+
+                return new PagedConnection<ContactAggregate>(response.Results.Select(x => new ContactAggregate(x as Contact)), query.Skip, query.Take, response.TotalCount);
+            });
+
+            schema.Query.AddField(contactsConnectionBuilder.FieldType);
 
             #region updateAddressMutation
 
@@ -448,7 +487,6 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                      })
                      .FieldType);
         }
-
 
         private async Task CheckAuthAsync(string userId, object resource, params string[] permissions)
         {

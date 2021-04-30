@@ -25,7 +25,5 @@ namespace VirtoCommerce.XDigitalCatalog.Extensions
             context.UserContext["currencyCode"] = query.CurrencyCode;
             context.UserContext["cultureName"] = query.CultureName;
         }
-
-     
     }
 }

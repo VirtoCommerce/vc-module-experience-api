@@ -1,6 +1,5 @@
 using System;
 using AutoMapper;
-using GraphQL.Execution;
 using GraphQL.Server;
 using GraphQL.Types;
 using GraphQL.Utilities;
@@ -10,6 +9,7 @@ using VirtoCommerce.ExperienceApiModule.Core;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
+using VirtoCommerce.ExperienceApiModule.Web.Extensions;
 using VirtoCommerce.ExperienceApiModule.XOrder.Extensions;
 using VirtoCommerce.ExperienceApiModule.XProfile.Extensions;
 using VirtoCommerce.MarketingModule.Core.Model.Promotions;
@@ -21,7 +21,6 @@ using VirtoCommerce.XDigitalCatalog.Extensions;
 using VirtoCommerce.XProfile.Middlewares;
 using VirtoCommerce.XPurchase.Extensions;
 using VirtoCommerce.XPurchase.Middlewares;
-using VirtoCommerce.ExperienceApiModule.Web.Extensions;
 namespace VirtoCommerce.ExperienceApiModule.Web
 {
     public class Module : IModule
@@ -42,8 +41,7 @@ namespace VirtoCommerce.ExperienceApiModule.Web
             })
             .AddUserContextBuilder(context => context.BuildGraphQLUserContext())
             .AddRelayGraphTypes()
-            .AddDataLoader()
-            .AddGraphTypes(typeof(XCoreAnchor));
+            .AddDataLoader();
 
             //Register custom GraphQL dependencies
             services.AddPermissionAuthorization();
@@ -52,6 +50,7 @@ namespace VirtoCommerce.ExperienceApiModule.Web
 
             //Register all xApi boundaries
             services.AddXCatalog(graphQlBuilder);
+            services.AddXCore(graphQlBuilder);
             services.AddXProfile(graphQlBuilder);
             services.AddXPurchase(graphQlBuilder);
             services.AddXOrder(graphQlBuilder);
@@ -80,7 +79,7 @@ namespace VirtoCommerce.ExperienceApiModule.Web
             {
                 builder.AddMiddleware(typeof(LoadUserToEvalContextMiddleware));
                 builder.AddMiddleware(typeof(LoadCartToEvalContextMiddleware));
-            }); 
+            });
             #endregion
 
         }
@@ -98,5 +97,5 @@ namespace VirtoCommerce.ExperienceApiModule.Web
         {
             // Method intentionally left empty.
         }
-    }   
+    }
 }
