@@ -62,9 +62,9 @@ namespace VirtoCommerce.XPurchase
             return null;
         }        
 
-        public async Task<CartAggregate> GetCartForShoppingCartAsync(ShoppingCart cart, string language = null)
+        public Task<CartAggregate> GetCartForShoppingCartAsync(ShoppingCart cart, string language = null)
         {
-            return await InnerGetCartAggregateFromCartAsync(cart, language ?? Language.InvariantLanguage.CultureName);
+            return InnerGetCartAggregateFromCartAsync(cart, language ?? Language.InvariantLanguage.CultureName);
         }
 
         public async Task<CartAggregate> GetCartAsync(string cartName, string storeId, string userId, string language, string currencyCode, string type = null, string responseGroup = null)
@@ -81,7 +81,9 @@ namespace VirtoCommerce.XPurchase
             };
 
             var cartSearchResult = await _shoppingCartSearchService.SearchCartAsync(criteria);
-            var cart = cartSearchResult.Results.FirstOrDefault();
+            //The null value for the Type parameter should be interpreted as a valuable parameter, and we must return a cart object with Type property that has null exactly set.
+            //otherwise, for the case where the system contains carts with different Types, the resulting cart may be a random result.
+            var cart = cartSearchResult.Results.FirstOrDefault(x => (type != null) || x.Type == null);
             if (cart != null)
             {
                 return await InnerGetCartAggregateFromCartAsync(cart.Clone() as ShoppingCart, language);
@@ -103,7 +105,7 @@ namespace VirtoCommerce.XPurchase
             return new SearchCartResponse() { Results = cartAggregates, TotalCount = searchResult.TotalCount };
         }
 
-        public virtual async Task RemoveCartAsync(string cartId) => await _shoppingCartService.DeleteAsync(new[] { cartId }, softDelete: true);
+        public virtual Task RemoveCartAsync(string cartId) => _shoppingCartService.DeleteAsync(new[] { cartId }, softDelete: true);
 
         protected virtual async Task<CartAggregate> InnerGetCartAggregateFromCartAsync(ShoppingCart cart, string language)
         {
