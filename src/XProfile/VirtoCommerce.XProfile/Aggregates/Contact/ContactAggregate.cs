@@ -1,25 +1,26 @@
-using System.Collections.Generic;
-using System.Linq;
 using VirtoCommerce.CustomerModule.Core.Model;
+using VirtoCommerce.ExperienceApiModule.XProfile.Aggregates;
 using VirtoCommerce.ExperienceApiModule.XProfile.Aggregates.Contact;
-using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.Platform.Core.Domain;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile
 {
-    public class ContactAggregate : Entity, IAggregateRoot
+    public class ContactAggregate : MemberAggregateRootBase
     {
-        public ContactAggregate(Contact contact)
+        public Contact Contact => Member as Contact;
+
+        public override Member Member
         {
-            Contact = contact;
-            if (string.IsNullOrEmpty(contact.FullName))
+            get => base.Member;
+            set
             {
-                contact.FullName = string.Join(" ", contact.FirstName, contact.LastName);
+                base.Member = value;
+
+                if (string.IsNullOrEmpty(Contact?.FullName))
+                {
+                    Contact.FullName = string.Join(" ", Contact.FirstName, Contact.LastName);
+                }
             }
         }
-
-        public Contact Contact { get; protected set; }
-
 
         public virtual ContactAggregate UpdatePersonalDetails(PersonalData personalDetails)
         {
@@ -27,13 +28,6 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile
             Contact.LastName = personalDetails.LastName;
             Contact.MiddleName = personalDetails.MiddleName;
             Contact.FullName = personalDetails.FullName;
-
-            return this;
-        }
-
-        public virtual ContactAggregate UpdateContactAddresses(IList<Address> addresses)
-        {
-            Contact.Addresses = addresses.ToList();
 
             return this;
         }

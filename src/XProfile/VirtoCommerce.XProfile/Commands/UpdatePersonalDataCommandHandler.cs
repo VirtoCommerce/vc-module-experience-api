@@ -17,7 +17,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
             , Func<UserManager<ApplicationUser>> userManager
             , IOptions<AuthorizationOptions> securityOptions
             )
-            :base(userManager, securityOptions)
+            : base(userManager, securityOptions)
         {
             _contactAggregateRepository = contactAggregateRepository;
         }
@@ -36,22 +36,22 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
                 {
                     return IdentityResult.Failed(new IdentityError { Description = "It is forbidden to edit this user." });
                 }
-                if(request.PersonalData?.Email != null && user.Email != request.PersonalData?.Email)
+                if (request.PersonalData?.Email != null && user.Email != request.PersonalData?.Email)
                 {
                     user.Email = request.PersonalData.Email;
                     result = await userManager.UpdateAsync(user);
                 }
 
-                var contactAggregate = await _contactAggregateRepository.GetContactByIdAsync(user.MemberId);
-                if(contactAggregate != null)
+                var contactAggregate = (ContactAggregate)await _contactAggregateRepository.GetMemberAggregateRootByIdAsync(user.MemberId);
+                if (contactAggregate != null)
                 {
                     contactAggregate.UpdatePersonalDetails(request.PersonalData);
 
                     await _contactAggregateRepository.SaveAsync(contactAggregate);
-                }               
+                }
             }
             return result;
-           
+
         }
     }
 }

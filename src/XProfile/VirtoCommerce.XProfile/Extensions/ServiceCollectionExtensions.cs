@@ -20,6 +20,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Extensions
 
             services.AddMediatR(typeof(XProfileAnchor));
             services.AddTransient<IMemberResolver, MemberResolver>();
+            services.AddSingleton<MemberAggregateBuilder>();
             services.AddTransient<IOrganizationAggregateRepository, OrganizationAggregateRepository>();
             services.AddTransient<IContactAggregateRepository, ContactAggregateRepository>();
             services.AddSingleton<IAuthorizationHandler, ProfileAuthorizationHandler>();

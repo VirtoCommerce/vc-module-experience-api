@@ -5,7 +5,6 @@ using GraphQL;
 using GraphQL.Builders;
 using GraphQL.Types;
 using MediatR;
-using VirtoCommerce.CustomerModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
@@ -18,7 +17,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 {
     public class OrganizationType : ExtendableGraphType<OrganizationAggregate>
     {
-        public OrganizationType(IMediator mediator, IDynamicPropertySearchService dynamicPropertySearchService)
+        public OrganizationType(IMediator mediator, IDynamicPropertySearchService dynamicPropertySearchService, MemberAggregateBuilder builder)
         {
             Name = "Organization";
             Description = "Organization info";
@@ -60,11 +59,11 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                .Unidirectional()
                .PageSize(20);
 
-            connectionBuilder.ResolveAsync(async context => await ResolveConnectionAsync(mediator, context));
+            connectionBuilder.ResolveAsync(async context => await ResolveConnectionAsync(mediator, builder, context));
             AddField(connectionBuilder.FieldType);
         }
 
-        private async Task<object> ResolveConnectionAsync(IMediator mediator, IResolveConnectionContext<OrganizationAggregate> context)
+        private async Task<object> ResolveConnectionAsync(IMediator mediator, MemberAggregateBuilder builder, IResolveConnectionContext<OrganizationAggregate> context)
         {
             var first = context.First;
             var skip = Convert.ToInt32(context.After ?? 0.ToString());
@@ -76,7 +75,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                 Skip = skip,
                 SearchPhrase = context.GetArgument<string>("searchPhrase")
             });
-            return new PagedConnection<ContactAggregate>(response.Results.Select(x => new ContactAggregate(x as Contact)), skip, Convert.ToInt32(context.After ?? 0.ToString()), response.TotalCount);
+            return new PagedConnection<ContactAggregate>(response.Results.Select(x => (ContactAggregate)builder.BuildMemberAggregate(x)), skip, Convert.ToInt32(context.After ?? 0.ToString()), response.TotalCount);
         }
     }
 }

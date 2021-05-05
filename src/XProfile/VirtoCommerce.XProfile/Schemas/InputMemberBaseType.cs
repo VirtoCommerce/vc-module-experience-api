@@ -15,7 +15,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             Field<ListGraphType<StringGraphType>>(nameof(Member.Emails));
             Field<ListGraphType<StringGraphType>>(nameof(Member.Groups));
             //TODO
-            // Field<NonNullGraphType<ListGraphType<DynamicObjectPropertyInputType>>>(nameof(Member.DynamicProperties));
+            // Field<ListGraphType<InputDynamicPropertyValueType>>(nameof(Member.DynamicProperties));
         }
     }
 }

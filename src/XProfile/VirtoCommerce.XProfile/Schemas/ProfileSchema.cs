@@ -8,10 +8,10 @@ using GraphQL.Types;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using VirtoCommerce.CustomerModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
+using VirtoCommerce.ExperienceApiModule.XProfile.Aggregates;
 using VirtoCommerce.ExperienceApiModule.XProfile.Authorization;
 using VirtoCommerce.ExperienceApiModule.XProfile.Commands;
 using VirtoCommerce.ExperienceApiModule.XProfile.Extensions;
@@ -30,12 +30,14 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
         private readonly IMediator _mediator;
         private readonly IAuthorizationService _authorizationService;
         private readonly Func<SignInManager<ApplicationUser>> _signInManagerFactory;
+        private readonly MemberAggregateBuilder _builder;
 
-        public ProfileSchema(IMediator mediator, IAuthorizationService authorizationService, Func<SignInManager<ApplicationUser>> signInManagerFactory)
+        public ProfileSchema(IMediator mediator, IAuthorizationService authorizationService, Func<SignInManager<ApplicationUser>> signInManagerFactory, MemberAggregateBuilder builder)
         {
             _mediator = mediator;
             _authorizationService = authorizationService;
             _signInManagerFactory = signInManagerFactory;
+            _builder = builder;
         }
 
         public void Build(ISchema schema)
@@ -108,7 +110,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                 var query = context.GetSearchMembersQuery<SearchOrganizationsQuery>();
                 var response = await _mediator.Send(query);
 
-                return new PagedConnection<OrganizationAggregate>(response.Results.Select(x => new OrganizationAggregate(x as Organization)), query.Skip, query.Take, response.TotalCount);
+                return new PagedConnection<OrganizationAggregate>(response.Results.Select(x => (OrganizationAggregate)_builder.BuildMemberAggregate(x)), query.Skip, query.Take, response.TotalCount);
             });
 
             schema.Query.AddField(organizationsConnectionBuilder.FieldType);
@@ -162,7 +164,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                 var query = context.GetSearchMembersQuery<SearchContactsQuery>();
                 var response = await _mediator.Send(query);
 
-                return new PagedConnection<ContactAggregate>(response.Results.Select(x => new ContactAggregate(x as Contact)), query.Skip, query.Take, response.TotalCount);
+                return new PagedConnection<ContactAggregate>(response.Results.Select(x => (ContactAggregate)_builder.BuildMemberAggregate(x)), query.Skip, query.Take, response.TotalCount);
             });
 
             schema.Query.AddField(contactsConnectionBuilder.FieldType);
@@ -276,6 +278,19 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                               return await _mediator.Send(command);
                           })
                           .FieldType);
+
+            _ = schema.Mutation.AddField(FieldBuilder.Create<object, IMemberAggregateRoot>(GraphTypeExtenstionHelper.GetActualType<MemberType>())
+                        .Name("updateMemberDynamicProperties")
+                        .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputUpdateMemberDynamicPropertiesType>>(), _commandName)
+                        .ResolveAsync(async context =>
+                        {
+                            var type = GenericTypeHelper.GetActualType<UpdateMemberDynamicPropertiesCommand>();
+                            var command = (UpdateMemberDynamicPropertiesCommand)context.GetArgument(type, _commandName);
+                            await CheckAuthAsync(context.GetCurrentUserId(), command);
+
+                            return await _mediator.Send(command);
+                        })
+                        .FieldType);
 
             _ = schema.Mutation.AddField(FieldBuilder.Create<object, bool>(typeof(BooleanGraphType))
                         .Name("sendVerifyEmail")

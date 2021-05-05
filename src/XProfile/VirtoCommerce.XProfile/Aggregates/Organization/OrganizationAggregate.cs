@@ -1,16 +1,10 @@
 using VirtoCommerce.CustomerModule.Core.Model;
-using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.Platform.Core.Domain;
+using VirtoCommerce.ExperienceApiModule.XProfile.Aggregates;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile
 {
-    public class OrganizationAggregate : Entity, IAggregateRoot
+    public class OrganizationAggregate : MemberAggregateRootBase
     {
-        public Organization Organization { get; protected set; }
-
-        public OrganizationAggregate(Organization organization)
-        {
-            Organization = organization;
-        }
+        public Organization Organization => Member as Organization;
     }
 }
