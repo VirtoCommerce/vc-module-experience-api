@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using PipelineNet.Middleware;
-using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.InventoryModule.Core.Model.Search;
 using VirtoCommerce.InventoryModule.Core.Services;
 using VirtoCommerce.Platform.Core.Common;
@@ -40,8 +39,8 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
                 var inventories = await _inventorySearchService.SearchInventoriesAsync(new InventorySearchCriteria
                 {
                     ProductIds = productIds,
-                    //Do not use int.MaxValue use only 10 items per requested product
-                    //TODO: Replace to pagination load
+                    // Do not use int.MaxValue use only 10 items per requested product
+                    // PT-1619: Replace to pagination load
                     Take = Math.Min(productIds.Length * 10, 500)
                 });
                 if (inventories.Results.Any())
@@ -50,10 +49,7 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
                 }
             }
 
-
             await next(parameter);
         }
-
-
     }
 }
