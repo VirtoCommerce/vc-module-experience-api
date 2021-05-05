@@ -11,7 +11,6 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
 {
     public class IndexSearchRequestBuilder
     {
-
         private const string ScoreSortingFieldName = "score";
         private SearchRequest SearchRequest { get; set; }
 
@@ -74,9 +73,6 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
             }
             return this;
         }
-
-
-
 
         public IndexSearchRequestBuilder AddTerms(IEnumerable<string> terms)
         {
@@ -180,8 +176,8 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
                 return this;
             }
 
-            //TODO: Support aliases for Facet expressions e.g price.usd[TO 200) as price_below_200
-            //TODO: Need to create a new  Antlr file with g4-lexer rules and generate parser especially for facets expression that will return proper AggregationRequests objects
+            // PT-1613: Support aliases for Facet expressions e.g price.usd[TO 200) as price_below_200
+            // PT-1613: Need to create a new  Antlr file with g4-lexer rules and generate parser especially for facets expression that will return proper AggregationRequests objects
             var parseResult = phraseParser.Parse(facetPhrase);
 
             //Term facets
@@ -274,7 +270,7 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
         }
 
         public IndexSearchRequestBuilder ApplyMultiSelectFacetSearch()
-        {         
+        {
             foreach (var aggr in SearchRequest.Aggregations ?? Array.Empty<AggregationRequest>())
             {
                 var aggregationFilterFieldName = (aggr.Filter as INamedFilter)?.FieldName;
@@ -308,15 +304,12 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
         {
             //Apply multi-select facet search policy by default
 
-          
             return SearchRequest;
         }
-
 
         private void AddFiltersToSearchRequest(IFilter[] filters)
         {
             ((AndFilter)SearchRequest.Filter).ChildFilters.AddRange(filters);
         }
-
     }
 }
