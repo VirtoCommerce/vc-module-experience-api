@@ -44,7 +44,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                         new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "currencyCode", Description = "Currency code (\"USD\")" },
                         new QueryArgument<StringGraphType> { Name = "cultureName", Description = "Culture name (\"en-Us\")" },
                         new QueryArgument<StringGraphType> { Name = "cartName", Description = "Cart name" },
-                        new QueryArgument<StringGraphType> { Name = "type", Description = "Cart type" }),
+                        new QueryArgument<StringGraphType> { Name = "cartType", Description = "Cart type" }),
                 Type = GraphTypeExtenstionHelper.GetActualType<CartType>(),
                 Resolver = new AsyncFieldResolver<object>(async context =>
                 {
@@ -64,7 +64,6 @@ namespace VirtoCommerce.XPurchase.Schemas
                 })
             };
             schema.Query.AddField(cartField);
-
 
             var orderConnectionBuilder = GraphTypeExtenstionHelper.CreateConnection<CartType, object>()
                 .Name("carts")
@@ -110,7 +109,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                                                //TODO: Need to refactor later to prevent ugly code duplication
                                                //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
                                                var cartAggregate = await _mediator.Send(context.GetCartCommand<AddCartItemCommand>());
-                                               //store cart aggregate in the user context for future usage in the graph types resolvers    
+                                               //store cart aggregate in the user context for future usage in the graph types resolvers
                                                context.SetExpandedObjectGraph(cartAggregate);
                                                return cartAggregate;
                                            })
@@ -142,7 +141,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                                                  //TODO: Need to refactor later to prevent ugly code duplication
                                                  //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
                                                  var cartAggregate = await _mediator.Send(context.GetCartCommand<ClearCartCommand>());
-                                                 //store cart aggregate in the user context for future usage in the graph types resolvers    
+                                                 //store cart aggregate in the user context for future usage in the graph types resolvers
                                                  context.SetExpandedObjectGraph(cartAggregate);
                                                  return cartAggregate;
                                              }).FieldType;
@@ -174,7 +173,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                                                      //TODO: Need to refactor later to prevent ugly code duplication
                                                      //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
                                                      var cartAggregate = await _mediator.Send(context.GetCartCommand<ChangeCommentCommand>());
-                                                     //store cart aggregate in the user context for future usage in the graph types resolvers    
+                                                     //store cart aggregate in the user context for future usage in the graph types resolvers
                                                      context.SetExpandedObjectGraph(cartAggregate);
                                                      return cartAggregate;
                                                  })
@@ -208,7 +207,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                                                            //TODO: Need to refactor later to prevent ugly code duplication
                                                            //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
                                                            var cartAggregate = await _mediator.Send(context.GetCartCommand<ChangeCartItemPriceCommand>());
-                                                           //store cart aggregate in the user context for future usage in the graph types resolvers    
+                                                           //store cart aggregate in the user context for future usage in the graph types resolvers
                                                            context.SetExpandedObjectGraph(cartAggregate);
                                                            return cartAggregate;
                                                        }).FieldType;
@@ -241,7 +240,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                                                               //TODO: Need to refactor later to prevent ugly code duplication
                                                               //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
                                                               var cartAggregate = await _mediator.Send(context.GetCartCommand<ChangeCartItemQuantityCommand>());
-                                                              //store cart aggregate in the user context for future usage in the graph types resolvers    
+                                                              //store cart aggregate in the user context for future usage in the graph types resolvers
                                                               context.SetExpandedObjectGraph(cartAggregate);
                                                               return cartAggregate;
                                                           }).FieldType;
@@ -274,7 +273,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                                                               //TODO: Need to refactor later to prevent ugly code duplication
                                                               //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
                                                               var cartAggregate = await _mediator.Send(context.GetCartCommand<ChangeCartItemCommentCommand>());
-                                                              //store cart aggregate in the user context for future usage in the graph types resolvers    
+                                                              //store cart aggregate in the user context for future usage in the graph types resolvers
                                                               context.SetExpandedObjectGraph(cartAggregate);
                                                               return cartAggregate;
                                                           }).FieldType;
@@ -306,7 +305,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                                                       //TODO: Need to refactor later to prevent ugly code duplication
                                                       //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
                                                       var cartAggregate = await _mediator.Send(context.GetCartCommand<RemoveCartItemCommand>());
-                                                      //store cart aggregate in the user context for future usage in the graph types resolvers    
+                                                      //store cart aggregate in the user context for future usage in the graph types resolvers
                                                       context.SetExpandedObjectGraph(cartAggregate);
                                                       return cartAggregate;
                                                   }).FieldType;
@@ -338,7 +337,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                                                  //TODO: Need to refactor later to prevent ugly code duplication
                                                  //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
                                                  var cartAggregate = await _mediator.Send(context.GetCartCommand<AddCouponCommand>());
-                                                 //store cart aggregate in the user context for future usage in the graph types resolvers    
+                                                 //store cart aggregate in the user context for future usage in the graph types resolvers
                                                  context.SetExpandedObjectGraph(cartAggregate);
                                                  return cartAggregate;
                                              }).FieldType;
@@ -370,7 +369,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                                                     //TODO: Need to refactor later to prevent ugly code duplication
                                                     //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
                                                     var cartAggregate = await _mediator.Send(context.GetCartCommand<RemoveCouponCommand>());
-                                                    //store cart aggregate in the user context for future usage in the graph types resolvers    
+                                                    //store cart aggregate in the user context for future usage in the graph types resolvers
                                                     context.SetExpandedObjectGraph(cartAggregate);
                                                     return cartAggregate;
                                                 }).FieldType;
@@ -402,7 +401,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                                                       //TODO: Need to refactor later to prevent ugly code duplication
                                                       //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
                                                       var cartAggregate = await _mediator.Send(context.GetCartCommand<RemoveShipmentCommand>());
-                                                      //store cart aggregate in the user context for future usage in the graph types resolvers    
+                                                      //store cart aggregate in the user context for future usage in the graph types resolvers
                                                       context.SetExpandedObjectGraph(cartAggregate);
                                                       return cartAggregate;
                                                   }).FieldType;
@@ -435,7 +434,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                                                                //TODO: Need to refactor later to prevent ugly code duplication
                                                                //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
                                                                var cartAggregate = await _mediator.Send(context.GetCartCommand<AddOrUpdateCartShipmentCommand>());
-                                                               //store cart aggregate in the user context for future usage in the graph types resolvers    
+                                                               //store cart aggregate in the user context for future usage in the graph types resolvers
                                                                context.SetExpandedObjectGraph(cartAggregate);
                                                                return cartAggregate;
                                                            }).FieldType;
@@ -468,7 +467,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                                                               //TODO: Need to refactor later to prevent ugly code duplication
                                                               //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
                                                               var cartAggregate = await _mediator.Send(context.GetCartCommand<AddOrUpdateCartPaymentCommand>());
-                                                              //store cart aggregate in the user context for future usage in the graph types resolvers    
+                                                              //store cart aggregate in the user context for future usage in the graph types resolvers
                                                               context.SetExpandedObjectGraph(cartAggregate);
                                                               return cartAggregate;
                                                           }).FieldType;
@@ -527,7 +526,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                                                  //TODO: Need to refactor later to prevent ugly code duplication
                                                  //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
                                                  var cartAggregate = await _mediator.Send(context.GetCartCommand<MergeCartCommand>());
-                                                 //store cart aggregate in the user context for future usage in the graph types resolvers    
+                                                 //store cart aggregate in the user context for future usage in the graph types resolvers
                                                  context.SetExpandedObjectGraph(cartAggregate);
                                                  return cartAggregate;
                                              }).FieldType;
@@ -572,7 +571,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                                                       //TODO: Need to refactor later to prevent ugly code duplication
                                                       //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
                                                       var cartAggregate = await _mediator.Send(context.GetCartCommand<ClearShipmentsCommand>());
-                                                      //store cart aggregate in the user context for future usage in the graph types resolvers    
+                                                      //store cart aggregate in the user context for future usage in the graph types resolvers
                                                       context.SetExpandedObjectGraph(cartAggregate);
                                                       return cartAggregate;
                                                   })
@@ -599,7 +598,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                                                      //TODO: Need to refactor later to prevent ugly code duplication
                                                      //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
                                                      var cartAggregate = await _mediator.Send(context.GetCartCommand<ClearPaymentsCommand>());
-                                                     //store cart aggregate in the user context for future usage in the graph types resolvers    
+                                                     //store cart aggregate in the user context for future usage in the graph types resolvers
                                                      context.SetExpandedObjectGraph(cartAggregate);
                                                      return cartAggregate;
                                                  })
@@ -634,7 +633,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                                                      //TODO: Need to refactor later to prevent ugly code duplication
                                                      //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
                                                      var cartAggregate = await _mediator.Send(context.GetCartCommand<AddOrUpdateCartAddressCommand>());
-                                                     //store cart aggregate in the user context for future usage in the graph types resolvers    
+                                                     //store cart aggregate in the user context for future usage in the graph types resolvers
                                                      context.SetExpandedObjectGraph(cartAggregate);
                                                      return cartAggregate;
                                                  })
@@ -747,7 +746,8 @@ namespace VirtoCommerce.XPurchase.Schemas
             {
                 context.SetExpandedObjectGraph(cartAggregate);
             }
-            return new PagedConnection<CartAggregate>(response.Results, skip, Convert.ToInt32(context.After ?? 0.ToString()), response.TotalCount);
+
+            return new PagedConnection<CartAggregate>(response.Results, query.Skip, query.Take, response.TotalCount);
         }
     }
 }

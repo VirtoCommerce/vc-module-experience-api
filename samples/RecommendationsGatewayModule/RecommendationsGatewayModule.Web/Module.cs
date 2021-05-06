@@ -32,7 +32,7 @@ namespace RecommendationsGatewayModule.Web
             var sp = services.BuildServiceProvider();
             // Resolve the services from the service provider
             var configuration = sp.GetService<IConfiguration>();
-            //TODO: ValidateDataAnnotations() doesn't throws any exception on the first access of IOptions<RecommendationOptions>.Value.
+            //PT-1611: ValidateDataAnnotations() doesn't throws any exception on the first access of IOptions<RecommendationOptions>.Value.
             //Need to investigate why this doesn't work as expected because it makes difficult to diagnose errors in the configuration.
             services.AddOptions<RecommendationOptions>().Bind(configuration.GetSection("Recommendations"))
                     .ValidateDataAnnotations().PostConfigure(opts =>
@@ -45,19 +45,14 @@ namespace RecommendationsGatewayModule.Web
                                                     });
             services.AddHttpClient<IDownstreamRequestSender, DownstreamRequestSender>()
                 .AddTransientHttpErrorPolicy(p => p.WaitAndRetryAsync(3, _ => TimeSpan.FromMilliseconds(600)));
-
         }
 
         public void PostInitialize(IApplicationBuilder appBuilder)
         {
-
-       
         }
 
         public void Uninstall()
         {
         }
-               
     }
 }
-

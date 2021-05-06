@@ -17,7 +17,16 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
         }
 
         /// <summary>
-        /// Overrides an existing query or command in abstracts factory and returns a new builder
+        /// Overrides an existing query in abstracts factory and returns a new builder
+        /// </summary>
+        public static ICommandTypeBuilder OverrideQueryType<TQueryType, TExtendedQueryType>(this IServiceCollection services)
+             where TExtendedQueryType : TQueryType
+        {
+            return services.OverrideCommandType<TQueryType, TExtendedQueryType>();
+        }
+
+        /// <summary>
+        /// Overrides an existing  query or command in abstracts factory and returns a new builder
         /// </summary>
         public static ICommandTypeBuilder OverrideCommandType<TCommandType, TExtendedCommandType>(this IServiceCollection services)
              where TExtendedCommandType : TCommandType
@@ -26,7 +35,10 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
 
             return new CommandTypeBuilder(services, typeof(TExtendedCommandType));
         }
-
+        public static ICommandTypeBuilder WithQueryHandler<TExtendedQueryHandler>(this ICommandTypeBuilder builder)
+        {
+            return builder.WithCommandHandler<TExtendedQueryHandler>();
+        }
         /// <summary>
         /// Registers a new handler for a query or command
         /// </summary>

@@ -58,7 +58,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
             return resolveContext.GetArgument<T>(key) ?? resolveContext.GetValue<T>(key);
         }
 
-        //TODO:  Need to check what there is no any alternative way to access to the original request arguments in sub selection
+        //PT-1606:  Need to check what there is no any alternative way to access to the original request arguments in sub selection
         public static void CopyArgumentsToUserContext(this IResolveFieldContext resolveContext)
         {
             foreach (var pair in resolveContext.Arguments)

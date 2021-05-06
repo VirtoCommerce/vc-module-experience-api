@@ -10,7 +10,6 @@ using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 
 namespace VirtoCommerce.Exp.ExtensionSamples
 {
-
     /// <example>
     /// This is an example JSON request for a mutation
     /// {
@@ -34,11 +33,11 @@ namespace VirtoCommerce.Exp.ExtensionSamples
                 Type = typeof(InventoryType),
                 Resolver = new AsyncFieldResolver<Inventory>(context =>
                 {
-                    return Task.FromResult(new Inventory { ProductId = "1", FulfillmentCenterId = "center1" }); 
+                    return Task.FromResult(new Inventory { ProductId = "1", FulfillmentCenterId = "center1" });
                 })
             };
-            schema.Query.AddField(inventoryQueryField);
 
+            schema.Query.AddField(inventoryQueryField);
 
             var saveInventoryField = FieldBuilder.Create<Inventory, Inventory>(typeof(InventoryType))
                                                   .Name("saveInventory")
@@ -46,9 +45,10 @@ namespace VirtoCommerce.Exp.ExtensionSamples
                                                   .Resolve(context =>
             {
                 var inventory = context.GetArgument<Inventory>("inventory");
-                //TODO: Insert mutation logic here
+                // Insert mutation logic here
                 return inventory;
             }).FieldType;
+
             schema.Mutation.AddField(saveInventoryField);
         }
     }

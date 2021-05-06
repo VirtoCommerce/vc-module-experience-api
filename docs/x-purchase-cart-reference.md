@@ -11,7 +11,7 @@
 #### List of queries:
 |№|Endpoint|Arguments|Return|
 |------|---------|---------|---------|
-|1|[cart](#cart)|`storeId` `cartName` `userId` `cultureName` `currencyCode` `type`|Shopping cart|
+|1|[cart](#cart)|`storeId` `cartName` `userId` `cultureName` `currencyCode` `cartType`|Shopping cart|
 |2|[carts](#carts)|`storeId` `cartName` `userId` `cultureName` `currencyCode` `cartType` `sort` `skip` `take`|Paginated shopping cart list|
 ### Cart
 ```
@@ -21,7 +21,7 @@
         userId: "d97ee2c7-e29d-440a-a43a-388eb5586087"
         cultureName: "en-Us"
         currencyCode: "USD"
-        type: "cart")
+        cartType: "cart")
     {
         id
         name
