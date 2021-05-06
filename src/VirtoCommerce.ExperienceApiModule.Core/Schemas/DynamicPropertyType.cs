@@ -60,7 +60,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
 
             var response = await mediator.Send(query);
 
-            return new PagedConnection<DynamicPropertyDictionaryItem>(response.Results, skip, Convert.ToInt32(context.After ?? 0.ToString()), response.TotalCount);
+            return new PagedConnection<DynamicPropertyDictionaryItem>(response.Results, query.Skip, query.Take, response.TotalCount);
         }
     }
 }

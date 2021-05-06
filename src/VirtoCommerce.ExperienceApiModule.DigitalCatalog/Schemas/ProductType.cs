@@ -273,7 +273,6 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 var store = context.GetArgumentOrValue<Store>("store");
                 var cultureName = context.GetValue<string>("cultureName");
 
-
                 return context.Source.IndexedProduct.Outlines.GetBreadcrumbsFromOutLine(store, cultureName);
             });
 
@@ -307,7 +306,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             var response = await mediator.Send(query);
 
-            return new PagedConnection<ProductAssociation>(response.Result.Results, skip, Convert.ToInt32(context.After ?? 0.ToString()), response.Result.TotalCount);
+            return new PagedConnection<ProductAssociation>(response.Result.Results, query.Skip, query.Take, response.Result.TotalCount);
         }
     }
 }

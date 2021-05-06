@@ -87,7 +87,6 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 
             schema.Query.AddField(orderConnectionBuilder.FieldType);
 
-
             var paymentsConnectionBuilder = GraphTypeExtenstionHelper.CreateConnection<PaymentInType, object>()
              .Name("payments")
              .Argument<StringGraphType>("filter", "This parameter applies a filter to the query results")
@@ -178,7 +177,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             var first = context.First;
             var skip = Convert.ToInt32(context.After ?? 0.ToString());
 
-            var request = new SearchOrderQuery
+            var query = new SearchOrderQuery
             {
                 Skip = skip,
                 Take = first ?? context.PageSize ?? 10,
@@ -191,24 +190,23 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             context.CopyArgumentsToUserContext();
             var allCurrencies = await _currencyService.GetAllCurrenciesAsync();
             //Store all currencies in the user context for future resolve in the schema types
-            context.SetCurrencies(allCurrencies, request.CultureName);
+            context.SetCurrencies(allCurrencies, query.CultureName);
 
-
-            var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), request, new CanAccessOrderAuthorizationRequirement());
+            var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), query, new CanAccessOrderAuthorizationRequirement());
 
             if (!authorizationResult.Succeeded)
             {
                 throw new ExecutionError($"Access denied");
             }
 
-            var response = await mediator.Send(request);
+            var response = await mediator.Send(query);
 
             foreach (var customerOrderAggregate in response.Results)
             {
                 context.SetExpandedObjectGraph(customerOrderAggregate);
             }
 
-            return new PagedConnection<CustomerOrderAggregate>(response.Results, skip, Convert.ToInt32(context.After ?? 0.ToString()), response.TotalCount);
+            return new PagedConnection<CustomerOrderAggregate>(response.Results, query.Skip, query.Take, response.TotalCount);
         }
 
         private async Task<object> ResolvePaymentsConnectionAsync(IMediator mediator, IResolveConnectionContext<object> context)
@@ -216,7 +214,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             var first = context.First;
             var skip = Convert.ToInt32(context.After ?? 0.ToString());
 
-            var request = new SearchPaymentsQuery
+            var query = new SearchPaymentsQuery
             {
                 Skip = skip,
                 Take = first ?? context.PageSize ?? 10,
@@ -226,26 +224,26 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                 CustomerId = context.GetArgumentOrValue<string>("userId")
             };
 
-            var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), request, new CanAccessOrderAuthorizationRequirement());
-
+            var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), query, new CanAccessOrderAuthorizationRequirement());
             if (!authorizationResult.Succeeded)
             {
                 throw new ExecutionError($"Access denied");
             }
 
-            context.UserContext.Add(nameof(Currency.CultureName).ToCamelCase(), request.CultureName);
+            context.UserContext.Add(nameof(Currency.CultureName).ToCamelCase(), query.CultureName);
 
-            var response = await mediator.Send(request);
+            var response = await mediator.Send(query);
 
             foreach (var payment in response.Results)
             {
                 context.SetExpandedObjectGraph(payment);
             }
+
             var allCurrencies = await _currencyService.GetAllCurrenciesAsync();
             //Store all currencies in the user context for future resolve in the schema types
-            context.SetCurrencies(allCurrencies, request.CultureName);
+            context.SetCurrencies(allCurrencies, query.CultureName);
 
-            return new PagedConnection<PaymentIn>(response.Results, skip, Convert.ToInt32(context.After ?? 0.ToString()), response.TotalCount);
+            return new PagedConnection<PaymentIn>(response.Results, query.Skip, query.Take, response.TotalCount);
         }
     }
 }

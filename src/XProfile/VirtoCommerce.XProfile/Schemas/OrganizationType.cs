@@ -68,14 +68,17 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             var first = context.First;
             var skip = Convert.ToInt32(context.After ?? 0.ToString());
 
-            var response = await mediator.Send(new SearchOrganizationMembersQuery
+            var query = new SearchOrganizationMembersQuery
             {
                 OrganizationId = context.Source.Organization.Id,
                 Take = first ?? 20,
                 Skip = skip,
                 SearchPhrase = context.GetArgument<string>("searchPhrase")
-            });
-            return new PagedConnection<ContactAggregate>(response.Results.Select(x => (ContactAggregate)builder.BuildMemberAggregate(x)), skip, Convert.ToInt32(context.After ?? 0.ToString()), response.TotalCount);
+            };
+
+            var response = await mediator.Send(query);
+
+            return new PagedConnection<ContactAggregate>(response.Results.Select(x => (ContactAggregate)builder.BuildMemberAggregate(x)), query.Skip, query.Take, response.TotalCount);
         }
     }
 }

@@ -10,6 +10,7 @@ using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.Core.Queries;
 using VirtoCommerce.Platform.Core.DynamicProperties;
+
 namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
 {
     public class DynamicPropertySchema : ISchemaBuilder
@@ -72,7 +73,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
 
             var response = await mediator.Send(query);
 
-            return new PagedConnection<DynamicProperty>(response.Results, skip, Convert.ToInt32(context.After ?? 0.ToString()), response.TotalCount);
+            return new PagedConnection<DynamicProperty>(response.Results, query.Skip, query.Take, response.TotalCount);
         }
     }
 }
