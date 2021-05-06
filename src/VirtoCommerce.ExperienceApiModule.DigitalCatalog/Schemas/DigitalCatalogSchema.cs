@@ -59,7 +59,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 Type = GraphTypeExtenstionHelper.GetActualType<ProductType>(),
                 Resolver = new AsyncFieldResolver<object, IDataLoaderResult<ExpProduct>>(async context =>
                 {
-                    //TODO:  Need to check what there is no any alternative way to access to the original request arguments in sub selection
+                    //PT-1606:  Need to check what there is no any alternative way to access to the original request arguments in sub selection
                     context.CopyArgumentsToUserContext();
 
                     var store = await _storeService.GetByIdAsync(context.GetArgument<string>("storeId"));
@@ -95,7 +95,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             productsConnectionBuilder.ResolveAsync(async context =>
             {
-                //TODO:  Need to check what there is no any alternative way to access to the original request arguments in sub selection
+                //PT-1606:  Need to check what there is no any alternative way to access to the original request arguments in sub selection
                 context.CopyArgumentsToUserContext();
 
                 var cultureName = context.GetArgument<string>("cultureName");
@@ -127,8 +127,9 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                    var store = await _storeService.GetByIdAsync(context.GetArgument<string>("storeId"));
                    context.UserContext["store"] = store;
 
-                   //TODO:  Need to check what there is no any alternative way to access to the original request arguments in sub selection
-                   context.CopyArgumentsToUserContext();
+                    //PT-1606:  Need to check what there is no any alternative way to access to the original request arguments in sub selection
+                    context.CopyArgumentsToUserContext();
+
                    var loader = _dataLoader.Context.GetOrAddBatchLoader<string, ExpCategory>("categoriesLoader", (ids) => LoadCategoriesAsync(_mediator, ids, context));
                    return loader.LoadAsync(context.GetArgument<string>("id"));
                })
@@ -156,7 +157,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 var store = await _storeService.GetByIdAsync(context.GetArgument<string>("storeId"));
                 context.UserContext["store"] = store;
 
-                //TODO:  Need to check what there is no any alternative way to access to the original request arguments in sub selection
+                //PT-1606:  Need to check what there is no any alternative way to access to the original request arguments in sub selection
                 context.CopyArgumentsToUserContext();
                 return await ResolveCategoriesConnectionAsync(_mediator, context);
             });
