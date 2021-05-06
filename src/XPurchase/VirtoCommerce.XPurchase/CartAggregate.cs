@@ -108,6 +108,7 @@ namespace VirtoCommerce.XPurchase
             Cart.IsAnonymous = member == null;
             //TODO: Need to check what member.Name contains name for all derived member types such as contact etc.
             Cart.CustomerName = member?.Name ?? "Anonymous";
+            Cart.Items ??= new List<LineItem>();
 
             return this;
         }
