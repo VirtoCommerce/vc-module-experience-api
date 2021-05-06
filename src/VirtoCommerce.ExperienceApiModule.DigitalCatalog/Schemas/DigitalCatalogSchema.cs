@@ -129,6 +129,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
                     //PT-1606:  Need to check what there is no any alternative way to access to the original request arguments in sub selection
                     context.CopyArgumentsToUserContext();
+
                    var loader = _dataLoader.Context.GetOrAddBatchLoader<string, ExpCategory>("categoriesLoader", (ids) => LoadCategoriesAsync(_mediator, ids, context));
                    return loader.LoadAsync(context.GetArgument<string>("id"));
                })
@@ -221,11 +222,10 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 context.SetCurrency(response.Currency);
             }
 
-            var result = new ProductsConnection<ExpProduct>(response.Results, skip, Convert.ToInt32(context.After ?? 0.ToString()), response.TotalCount)
+            return new ProductsConnection<ExpProduct>(response.Results, query.Skip, query.Take, response.TotalCount)
             {
                 Facets = response.Facets
             };
-            return result;
         }
 
         private static async Task<object> ResolveCategoriesConnectionAsync(IMediator mediator, IResolveConnectionContext<object> context)
@@ -258,7 +258,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             var response = await mediator.Send(query);
 
-            return new PagedConnection<ExpCategory>(response.Results, skip, Convert.ToInt32(context.After ?? 0.ToString()), response.TotalCount);
+            return new PagedConnection<ExpCategory>(response.Results, query.Skip, query.Take, response.TotalCount);
         }
     }
 }

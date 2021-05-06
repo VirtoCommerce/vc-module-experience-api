@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using GraphQL.Types;
 using GraphQL.Types.Relay;
-using GraphQL.Types.Relay.DataObjects;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.XDigitalCatalog.Facets;
 
@@ -26,10 +25,11 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
     public class ProductsConnection<TNode> : PagedConnection<TNode>
     {
-        public ProductsConnection(IEnumerable<TNode> superset, int skip, int first, int totalCount)
-            : base(superset, skip, first, totalCount)
+        public ProductsConnection(IEnumerable<TNode> superset, int skip, int take, int totalCount)
+            : base(superset, skip, take, totalCount)
         {
         }
+
         public IList<FacetResult> Facets { get; set; }
     }
 }
