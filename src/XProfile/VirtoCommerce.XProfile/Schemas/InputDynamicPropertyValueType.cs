@@ -13,7 +13,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
         public InputDynamicPropertyValueType()
         {
             Field(x => x.Name).Description("Dynamic property name");
-            Field<StringGraphType>(nameof(DynamicPropertyObjectValue.Value), "Dynamic property value (or ID for associated dictionary item)");
+            Field<StringGraphType>(nameof(DynamicPropertyObjectValue.Value), "Dynamic property value. ID must be passed for dictionary item");
             Field(x => x.Locale, true).Description("Language (\"en-US\") for multilingual property");
         }
     }

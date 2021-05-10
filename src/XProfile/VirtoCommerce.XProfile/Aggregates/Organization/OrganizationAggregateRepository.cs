@@ -10,8 +10,8 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile
 {
     public class OrganizationAggregateRepository : MemberAggregateRootRepository, IOrganizationAggregateRepository
     {
-        public OrganizationAggregateRepository(IMemberService memberService, MemberAggregateBuilder builder)
-            : base(memberService, builder)
+        public OrganizationAggregateRepository(IMemberService memberService, IMemberAggregateFactory factory)
+            : base(memberService, factory)
         {
         }
 
@@ -19,14 +19,12 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile
         {
             var members = await _memberService.GetByIdsAsync(ids, null, new[] { nameof(Organization) });
 
-            if (members.IsNullOrEmpty())
+            if (!members.IsNullOrEmpty())
             {
-                return null;
+                return members.OfType<Organization>().Select(x => _memberAggregateFactory.Create<OrganizationAggregate>(x));
             }
-            else
-            {
-                return members.OfType<Organization>().Select(x => (OrganizationAggregate)_builder.BuildMemberAggregate(x));
-            }
+
+            return null;
         }
     }
 }

@@ -7,16 +7,16 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
     public class UpdateContactCommandHandler : IRequestHandler<UpdateContactCommand, ContactAggregate>
     {
         private readonly IContactAggregateRepository _contactAggregateRepository;
-        private readonly MemberAggregateBuilder _builder;
+        private readonly IMemberAggregateFactory _memberAggregateFactory;
 
-        public UpdateContactCommandHandler(IContactAggregateRepository contactAggregateRepository, MemberAggregateBuilder builder)
+        public UpdateContactCommandHandler(IContactAggregateRepository contactAggregateRepository, IMemberAggregateFactory factory)
         {
             _contactAggregateRepository = contactAggregateRepository;
-            _builder = builder;
+            _memberAggregateFactory = factory;
         }
         public async Task<ContactAggregate> Handle(UpdateContactCommand request, CancellationToken cancellationToken)
         {
-            var contactAggregate = (ContactAggregate) _builder.BuildMemberAggregate(request);
+            var contactAggregate = _memberAggregateFactory.Create<ContactAggregate>(request);
 
             await _contactAggregateRepository.SaveAsync(contactAggregate);
 

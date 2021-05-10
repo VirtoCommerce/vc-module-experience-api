@@ -10,21 +10,23 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
     public class CreateContactCommandHandler : IRequestHandler<CreateContactCommand, ContactAggregate>
     {
         private readonly IContactAggregateRepository _contactAggregateRepository;
-        private readonly MemberAggregateBuilder _builder;
+        private readonly IMemberAggregateFactory _memberAggregateFactory;
+        private readonly NewContactValidator _validator;
 
-
-        public CreateContactCommandHandler(IContactAggregateRepository contactAggregateRepository, MemberAggregateBuilder builder)
+        public CreateContactCommandHandler(IContactAggregateRepository contactAggregateRepository, IMemberAggregateFactory factory, NewContactValidator validator)
         {
             _contactAggregateRepository = contactAggregateRepository;
-            _builder = builder;
+            _memberAggregateFactory = factory;
+            _validator = validator;
         }
+
         public async Task<ContactAggregate> Handle(CreateContactCommand request, CancellationToken cancellationToken)
         {
             request.MemberType = nameof(Contact);
 
-            var contactAggregate = (ContactAggregate) _builder.BuildMemberAggregate(request);
+            var contactAggregate = _memberAggregateFactory.Create<ContactAggregate>(request);
 
-            await new NewContactValidator().ValidateAndThrowAsync(contactAggregate.Contact);
+            await _validator.ValidateAndThrowAsync(contactAggregate.Contact);
 
             await _contactAggregateRepository.SaveAsync(contactAggregate);
 

@@ -9,11 +9,5 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
     {
         public string MemberId { get; set; }
         public IList<DynamicPropertyValue> DynamicProperties { get; set; }
-
-        public UpdateMemberDynamicPropertiesCommand(string memberId, IList<DynamicPropertyValue> dynamicProperties)
-        {
-            MemberId = memberId;
-            DynamicProperties = dynamicProperties;
-        }
     }
 }

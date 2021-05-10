@@ -41,8 +41,8 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                 Name = "Contact",
                 Description = "The associated contact info",
                 Type = GraphTypeExtenstionHelper.GetActualType<ContactType>(),
-                Resolver = new AsyncFieldResolver<ApplicationUser, ContactAggregate>(async context =>
-                    (ContactAggregate) await contactAggregateRepository.GetMemberAggregateRootByIdAsync(context.Source.MemberId))
+                Resolver = new AsyncFieldResolver<ApplicationUser, ContactAggregate>(context =>
+                     contactAggregateRepository.GetMemberAggregateRootByIdAsync<ContactAggregate>(context.Source.MemberId))
             });
         }
     }

@@ -42,7 +42,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
                     result = await userManager.UpdateAsync(user);
                 }
 
-                var contactAggregate = (ContactAggregate)await _contactAggregateRepository.GetMemberAggregateRootByIdAsync(user.MemberId);
+                var contactAggregate = await _contactAggregateRepository.GetMemberAggregateRootByIdAsync<ContactAggregate>(user.MemberId);
                 if (contactAggregate != null)
                 {
                     contactAggregate.UpdatePersonalDetails(request.PersonalData);

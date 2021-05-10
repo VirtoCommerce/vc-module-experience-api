@@ -10,19 +10,19 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
     {
         protected readonly IMapper _mapper;
         protected readonly IOrganizationAggregateRepository _organizationAggregateRepository;
-        protected readonly MemberAggregateBuilder _builder;
+        protected readonly IMemberAggregateFactory _memberAggregateFactory;
 
-        public CreateOrganizationCommandHandler(IMapper mapper, IOrganizationAggregateRepository organizationAggregateRepository, MemberAggregateBuilder builder)
+        public CreateOrganizationCommandHandler(IMapper mapper, IOrganizationAggregateRepository organizationAggregateRepository, IMemberAggregateFactory factory)
         {
             _mapper = mapper;
             _organizationAggregateRepository = organizationAggregateRepository;
-            _builder = builder;
+            _memberAggregateFactory = factory;
         }
 
         public async Task<OrganizationAggregate> Handle(CreateOrganizationCommand request, CancellationToken cancellationToken)
         {
             var org = _mapper.Map<Organization>(request);
-            var orgAggr = (OrganizationAggregate)_builder.BuildMemberAggregate(org);
+            var orgAggr = _memberAggregateFactory.Create<OrganizationAggregate>(org);
             await _organizationAggregateRepository.SaveAsync(orgAggr);
 
             return orgAggr;

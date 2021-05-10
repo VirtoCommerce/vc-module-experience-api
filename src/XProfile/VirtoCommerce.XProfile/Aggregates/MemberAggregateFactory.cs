@@ -4,18 +4,18 @@ using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile
 {
-    public class MemberAggregateBuilder
+    public class MemberAggregateFactory : IMemberAggregateFactory
     {
-        public virtual IMemberAggregateRoot BuildMemberAggregate(Member member)
+        public virtual T Create<T>(Member member) where T : class, IMemberAggregateRoot
         {
-            IMemberAggregateRoot result = null;
+            var result = default(T);
 
             if (member != null)
             {
                 result = member.MemberType switch
                 {
-                    nameof(Organization) => AbstractTypeFactory<OrganizationAggregate>.TryCreateInstance(),
-                    _ => AbstractTypeFactory<ContactAggregate>.TryCreateInstance(),
+                    nameof(Organization) => (T)(object)AbstractTypeFactory<OrganizationAggregate>.TryCreateInstance(),
+                    _ => (T)(object)AbstractTypeFactory<ContactAggregate>.TryCreateInstance()
                 };
 
                 result.Member = member;

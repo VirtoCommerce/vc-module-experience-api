@@ -10,24 +10,23 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
     {
         private readonly IContactAggregateRepository _contactAggregateRepository;
         private readonly IDynamicPropertyMetaDataResolver _metadataResolver;
-        private readonly IDynamicPropertyDictionaryItemsSearchService _dynamicPropertyDictionaryItemsSearchService;
 
 
-        public UpdateMemberDynamicPropertiesCommandHandler(IContactAggregateRepository contactAggregateRepository, IDynamicPropertyMetaDataResolver metadataResolver, IDynamicPropertyDictionaryItemsSearchService dynamicPropertyDictionaryItemsSearchService)
+        public UpdateMemberDynamicPropertiesCommandHandler(IContactAggregateRepository contactAggregateRepository, IDynamicPropertyMetaDataResolver metadataResolver)
         {
             _contactAggregateRepository = contactAggregateRepository;
             _metadataResolver = metadataResolver;
-            _dynamicPropertyDictionaryItemsSearchService = dynamicPropertyDictionaryItemsSearchService;
         }
 
         public async Task<IMemberAggregateRoot> Handle(UpdateMemberDynamicPropertiesCommand request, CancellationToken cancellationToken)
         {
-            var memberAggregate = await _contactAggregateRepository.GetMemberAggregateRootByIdAsync(request.MemberId);
-            memberAggregate.UpdateDynamicProperties(request.DynamicProperties, _metadataResolver, _dynamicPropertyDictionaryItemsSearchService);
+            var memberAggregate = await _contactAggregateRepository.GetMemberAggregateRootByIdAsync<MemberAggregateRootBase>(request.MemberId);
+
+            await memberAggregate.UpdateDynamicPropertiesAsync(request.DynamicProperties, _metadataResolver);
 
             await _contactAggregateRepository.SaveAsync(memberAggregate);
 
-            return await _contactAggregateRepository.GetMemberAggregateRootByIdAsync(request.MemberId);
+            return await _contactAggregateRepository.GetMemberAggregateRootByIdAsync<MemberAggregateRootBase>(request.MemberId);
         }
     }
 }

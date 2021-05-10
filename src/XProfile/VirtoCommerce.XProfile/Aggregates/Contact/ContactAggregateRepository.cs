@@ -5,8 +5,8 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile
 {
     public class ContactAggregateRepository : MemberAggregateRootRepository, IContactAggregateRepository
     {
-        public ContactAggregateRepository(IMemberService memberService, MemberAggregateBuilder builder)
-            : base(memberService, builder)
+        public ContactAggregateRepository(IMemberService memberService, IMemberAggregateFactory factory)
+            : base(memberService, factory)
         {
         }
     }

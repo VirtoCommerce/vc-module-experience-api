@@ -15,11 +15,11 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
 
         public async Task<ContactAggregate> Handle(UpdateContactAddressesCommand request, CancellationToken cancellationToken)
         {
-            var contactAggregate = await _contactAggregateRepository.GetMemberAggregateRootByIdAsync(request.ContactId);
+            var contactAggregate = await _contactAggregateRepository.GetMemberAggregateRootByIdAsync<ContactAggregate>(request.ContactId);
             contactAggregate.UpdateAddresses(request.Addresses);
             await _contactAggregateRepository.SaveAsync(contactAggregate);
 
-            return (ContactAggregate)await _contactAggregateRepository.GetMemberAggregateRootByIdAsync(request.ContactId);
+            return await _contactAggregateRepository.GetMemberAggregateRootByIdAsync<ContactAggregate>(request.ContactId);
         }
     }
 }

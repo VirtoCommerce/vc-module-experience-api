@@ -6,19 +6,19 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Aggregates
     public class MemberAggregateRootRepository : IMemberAggregateRootRepository
     {
         protected readonly IMemberService _memberService;
-        protected readonly MemberAggregateBuilder _builder;
+        protected readonly IMemberAggregateFactory _memberAggregateFactory;
 
-        public MemberAggregateRootRepository(IMemberService memberService, MemberAggregateBuilder builder)
+        public MemberAggregateRootRepository(IMemberService memberService, IMemberAggregateFactory factory)
         {
             _memberService = memberService;
-            _builder = builder;
+            _memberAggregateFactory = factory;
         }
 
 
-        public async Task<IMemberAggregateRoot> GetMemberAggregateRootByIdAsync(string id)
+        public async Task<T> GetMemberAggregateRootByIdAsync<T>(string id) where T : class, IMemberAggregateRoot
         {
             var member = await _memberService.GetByIdAsync(id);
-            return _builder.BuildMemberAggregate(member);
+            return _memberAggregateFactory.Create<T>(member);
         }
 
         public Task SaveAsync(IMemberAggregateRoot aggregate)

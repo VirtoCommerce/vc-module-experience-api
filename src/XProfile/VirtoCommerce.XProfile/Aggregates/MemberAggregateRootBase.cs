@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using VirtoCommerce.CustomerModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.XProfile.Schemas;
 using VirtoCommerce.Platform.Core.Common;
@@ -7,15 +8,6 @@ using VirtoCommerce.Platform.Core.DynamicProperties;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Aggregates
 {
-    public interface IMemberAggregateRoot
-    {
-        public Member Member { get; set; }
-
-        MemberAggregateRootBase UpdateAddresses(IList<Address> addresses);
-        MemberAggregateRootBase UpdateDynamicProperties(IList<DynamicPropertyValue> values, IDynamicPropertyMetaDataResolver metaDataResolver, IDynamicPropertyDictionaryItemsSearchService dynamicPropertyDictionaryItemsSearchService);
-    }
-
-
     public abstract class MemberAggregateRootBase : IMemberAggregateRoot
     {
         public virtual Member Member { get; set; }
@@ -27,69 +19,71 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Aggregates
             return this;
         }
 
-        public virtual MemberAggregateRootBase UpdateDynamicProperties(IList<DynamicPropertyValue> values, IDynamicPropertyMetaDataResolver metaDataResolver, IDynamicPropertyDictionaryItemsSearchService dynamicPropertyDictionaryItemsSearchService)
+        public virtual async Task<MemberAggregateRootBase> UpdateDynamicPropertiesAsync(IList<DynamicPropertyValue> values, IDynamicPropertyMetaDataResolver metaDataResolver)
         {
-            var memberDynamicProperties = Member.DynamicProperties.ToList();
-
-            foreach (var propValueGroup in values.GroupBy(x => x.Name))
+            var tasks = values.GroupBy(x => x.Name).Select(async newValuesGroup =>
             {
-                var propertyValue = memberDynamicProperties.FirstOrDefault(x => x.Name.EqualsInvariant(propValueGroup.Key));
-                if (propertyValue is null)
-                {
-                    propertyValue = new DynamicObjectProperty { Name = propValueGroup.Key };
-                    memberDynamicProperties.Add(propertyValue);
-                }
+                var result = AbstractTypeFactory<DynamicObjectProperty>.TryCreateInstance();
+                result.Name = newValuesGroup.Key;
 
-                var metadata = metaDataResolver.GetByNameAsync(Member.ObjectType, propertyValue.Name).GetAwaiter().GetResult();
+                var metadata = await metaDataResolver.GetByNameAsync(Member.ObjectType, newValuesGroup.Key);
                 if (metadata != null)
                 {
-                    propertyValue.SetMetaData(metadata);
+                    result.SetMetaData(metadata);
                 }
 
-                // override all the values of a dictionary property. Need to set the correct ValueId.
-                if (propertyValue.IsDictionary)
+                if (result.IsDictionary)
                 {
-                    var dictionaryItems = dynamicPropertyDictionaryItemsSearchService.SearchDictionaryItemsAsync(
-                        new DynamicPropertyDictionaryItemSearchCriteria { PropertyId = propertyValue.Id, ObjectType = Member.ObjectType })
-                        .GetAwaiter().GetResult()
-                        .Results;
-
-                    foreach (var propValue in propValueGroup.Where(x => x.Value is string))
+                    // all Values actually are IDs of dictionary values => set ValueIds
+                    foreach (var propValue in newValuesGroup.Where(x => x.Value is string))
                     {
-                        var dictionaryItem = dictionaryItems.FirstOrDefault(x => x.Id == (string)propValue.Value || x.Name == (string)propValue.Value);
-                        if (dictionaryItem != null)
-                        {
-                            propValue.ValueId = dictionaryItem.Id;
-                        }
+                        propValue.ValueId = (string)propValue.Value;
                     }
                 }
 
-                // override only values of a specific locale for multilingual property. Except dictionary properties.
-                if (propertyValue.IsMultilingual && !propertyValue.IsDictionary)
+                foreach (var newValue in newValuesGroup)
                 {
-                    foreach (var propValue in propValueGroup)
-                    {
-                        var multilingualValue = propertyValue.Values.FirstOrDefault(x => x.Locale.EqualsInvariant(propValue.Locale));
-                        if (multilingualValue is null)
-                        {
-                            multilingualValue = propValue;
-                            propertyValue.Values = propertyValue.Values.Union(new[] { multilingualValue }).ToArray();
-                        }
-                        else
-                        {
-                            multilingualValue.Value = propValue.Value;
-                        }
-                    }
+                    newValue.ValueType = result.ValueType;
                 }
-                else
-                {
-                    propertyValue.Values = propValueGroup.ToArray();
-                }
-            }
 
-            Member.DynamicProperties = memberDynamicProperties;
+                result.Values = newValuesGroup.ToArray();
+                return result;
+            });
+            var sourceProperties = await Task.WhenAll(tasks);
+
+            var comparer = AnonymousComparer.Create((DynamicObjectProperty x) => x.Name);
+
+            // fill missing values with the original ones. (That enables single value updates)
+            sourceProperties = sourceProperties.Union(Member.DynamicProperties, comparer).ToArray();
+
+            Member.DynamicProperties = Member.DynamicProperties.ToList();
+            sourceProperties.Patch(Member.DynamicProperties, comparer, Patch);
 
             return this;
+        }
+
+        private void Patch(DynamicObjectProperty source, DynamicObjectProperty target)
+        {
+            // override only values of a specific locale for multilingual property. Except dictionary properties.
+            if (source.IsMultilingual && !source.IsDictionary)
+            {
+                var comparer = AnonymousComparer.Create((DynamicPropertyObjectValue x) => x.Locale);
+
+                // fill missing values with the original ones. (That enables single value updates)
+                source.Values = source.Values.Union(target.Values, comparer).ToArray();
+
+                target.Values = target.Values.ToList();
+                source.Values.Patch(target.Values, comparer, Patch);
+            }
+            else
+            {
+                target.Values = source.Values;
+            }
+        }
+
+        private void Patch(DynamicPropertyObjectValue source, DynamicPropertyObjectValue target)
+        {
+            target.Value = source.Value;
         }
     }
 }

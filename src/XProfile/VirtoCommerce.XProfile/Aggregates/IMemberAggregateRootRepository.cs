@@ -5,7 +5,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile
 {
     public interface IMemberAggregateRootRepository
     {
-        Task<IMemberAggregateRoot> GetMemberAggregateRootByIdAsync(string id);
+        Task<T> GetMemberAggregateRootByIdAsync<T>(string id) where T : class, IMemberAggregateRoot;
         Task SaveAsync(IMemberAggregateRoot aggregate);
         Task DeleteAsync(string id);
     }

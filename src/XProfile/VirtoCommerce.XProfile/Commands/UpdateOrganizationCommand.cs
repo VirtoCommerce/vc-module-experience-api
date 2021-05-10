@@ -13,20 +13,6 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
             MemberType = nameof(Organization);
         }
 
-        public UpdateOrganizationCommand(string id, string name, string memberType, IList<string> phoneNumbers, IList<string> emails, IList<string> phones, IList<string> groups, IList<string> userGroups, IList<Address> addresses, IList<DynamicProperty> dynamicProperties)
-        {
-            Id = id;
-            Name = name;
-            MemberType = memberType;
-            PhoneNumbers = phoneNumbers;
-            Emails = emails;
-            Phones = phones;
-            Groups = groups;
-            UserGroups = userGroups;
-            Addresses = addresses;
-            DynamicProperties = dynamicProperties;
-        }
-
         public string Id { get; set; }
         public string Name { get; set; }
         public string MemberType { get; set; }

@@ -17,7 +17,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 {
     public class OrganizationType : ExtendableGraphType<OrganizationAggregate>
     {
-        public OrganizationType(IMediator mediator, IDynamicPropertySearchService dynamicPropertySearchService, MemberAggregateBuilder builder)
+        public OrganizationType(IMediator mediator, IDynamicPropertySearchService dynamicPropertySearchService, IMemberAggregateFactory factory)
         {
             Name = "Organization";
             Description = "Organization info";
@@ -59,11 +59,11 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                .Unidirectional()
                .PageSize(20);
 
-            connectionBuilder.ResolveAsync(async context => await ResolveConnectionAsync(mediator, builder, context));
+            connectionBuilder.ResolveAsync(async context => await ResolveConnectionAsync(mediator, factory, context));
             AddField(connectionBuilder.FieldType);
         }
 
-        private async Task<object> ResolveConnectionAsync(IMediator mediator, MemberAggregateBuilder builder, IResolveConnectionContext<OrganizationAggregate> context)
+        private async Task<object> ResolveConnectionAsync(IMediator mediator, IMemberAggregateFactory factory, IResolveConnectionContext<OrganizationAggregate> context)
         {
             var first = context.First;
             var skip = Convert.ToInt32(context.After ?? 0.ToString());
@@ -78,7 +78,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 
             var response = await mediator.Send(query);
 
-            return new PagedConnection<ContactAggregate>(response.Results.Select(x => (ContactAggregate)builder.BuildMemberAggregate(x)), query.Skip, query.Take, response.TotalCount);
+            return new PagedConnection<ContactAggregate>(response.Results.Select(x => factory.Create<ContactAggregate>(x)), query.Skip, query.Take, response.TotalCount);
         }
     }
 }

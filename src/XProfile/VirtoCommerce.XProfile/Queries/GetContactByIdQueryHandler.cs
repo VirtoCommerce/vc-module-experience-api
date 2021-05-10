@@ -12,9 +12,10 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Queries
         {
             _contactAggregateRepository = contactAggregateRepository;
         }
-        public async Task<ContactAggregate> Handle(GetContactByIdQuery request, CancellationToken cancellationToken)
+
+        public Task<ContactAggregate> Handle(GetContactByIdQuery request, CancellationToken cancellationToken)
         {
-            return (ContactAggregate) await _contactAggregateRepository.GetMemberAggregateRootByIdAsync(request.ContactId);
+            return _contactAggregateRepository.GetMemberAggregateRootByIdAsync<ContactAggregate>(request.ContactId);
         }
     }
 }
