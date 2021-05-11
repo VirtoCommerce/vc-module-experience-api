@@ -6,14 +6,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
 {
     public class CreateOrganizationCommand : ICommand<OrganizationAggregate>
     {
-        public CreateOrganizationCommand(string name, IList<Address> addresses)
-        {
-            Name = name;
-            Addresses = addresses;
-        }
-
         public string Name { get; set; }
-        public IList<Address> Addresses { get; set; } = new List<Address>();
-        
+        public IList<Address> Addresses { get; set; }
     }
 }

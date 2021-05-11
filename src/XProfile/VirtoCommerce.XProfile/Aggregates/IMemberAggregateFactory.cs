@@ -3,8 +3,8 @@ using VirtoCommerce.ExperienceApiModule.XProfile.Aggregates;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile
 {
-    public class OrganizationAggregate : MemberAggregateRootBase
+    public interface IMemberAggregateFactory
     {
-        public Organization Organization => Member as Organization;
+        T Create<T>(Member member) where T : class, IMemberAggregateRoot;
     }
 }

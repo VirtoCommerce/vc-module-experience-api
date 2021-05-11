@@ -128,6 +128,11 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Authorization
             {
                 result = currentContact.Organizations.Contains(updateOrganizationCommand.Id);
             }
+            else if (context.Resource is UpdateMemberDynamicPropertiesCommand)
+            {
+                //Can be checked only with platform permission
+                result = true;
+            }
             else if (context.Resource is UpdateRoleCommand updateRoleCommand)
             {
                 //Can be checked only with platform permission

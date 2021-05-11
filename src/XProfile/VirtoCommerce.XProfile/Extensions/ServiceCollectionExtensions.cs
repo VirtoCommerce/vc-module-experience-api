@@ -7,6 +7,7 @@ using VirtoCommerce.ExperienceApiModule.Core;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.XProfile.Authorization;
 using VirtoCommerce.ExperienceApiModule.XProfile.Schemas;
+using VirtoCommerce.XPurchase.Validators;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Extensions
 {
@@ -19,7 +20,9 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Extensions
             graphQlbuilder.AddGraphTypes(typeof(XProfileAnchor));
 
             services.AddMediatR(typeof(XProfileAnchor));
+            services.AddSingleton<IMemberAggregateFactory, MemberAggregateFactory>();
             services.AddTransient<IMemberResolver, MemberResolver>();
+            services.AddTransient<NewContactValidator>();
             services.AddTransient<IOrganizationAggregateRepository, OrganizationAggregateRepository>();
             services.AddTransient<IContactAggregateRepository, ContactAggregateRepository>();
             services.AddSingleton<IAuthorizationHandler, ProfileAuthorizationHandler>();

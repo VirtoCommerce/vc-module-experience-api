@@ -8,10 +8,10 @@ using GraphQL.Types;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using VirtoCommerce.CustomerModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
+using VirtoCommerce.ExperienceApiModule.XProfile.Aggregates;
 using VirtoCommerce.ExperienceApiModule.XProfile.Authorization;
 using VirtoCommerce.ExperienceApiModule.XProfile.Commands;
 using VirtoCommerce.ExperienceApiModule.XProfile.Extensions;
@@ -30,12 +30,14 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
         private readonly IMediator _mediator;
         private readonly IAuthorizationService _authorizationService;
         private readonly Func<SignInManager<ApplicationUser>> _signInManagerFactory;
+        private readonly IMemberAggregateFactory _factory;
 
-        public ProfileSchema(IMediator mediator, IAuthorizationService authorizationService, Func<SignInManager<ApplicationUser>> signInManagerFactory)
+        public ProfileSchema(IMediator mediator, IAuthorizationService authorizationService, Func<SignInManager<ApplicationUser>> signInManagerFactory, IMemberAggregateFactory factory)
         {
             _mediator = mediator;
             _authorizationService = authorizationService;
             _signInManagerFactory = signInManagerFactory;
+            _factory = factory;
         }
 
         public void Build(ISchema schema)
@@ -108,7 +110,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                 var query = context.GetSearchMembersQuery<SearchOrganizationsQuery>();
                 var response = await _mediator.Send(query);
 
-                return new PagedConnection<OrganizationAggregate>(response.Results.Select(x => new OrganizationAggregate(x as Organization)), query.Skip, query.Take, response.TotalCount);
+                return new PagedConnection<OrganizationAggregate>(response.Results.Select(x => _factory.Create<OrganizationAggregate>(x)), query.Skip, query.Take, response.TotalCount);
             });
 
             schema.Query.AddField(organizationsConnectionBuilder.FieldType);
@@ -162,7 +164,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                 var query = context.GetSearchMembersQuery<SearchContactsQuery>();
                 var response = await _mediator.Send(query);
 
-                return new PagedConnection<ContactAggregate>(response.Results.Select(x => new ContactAggregate(x as Contact)), query.Skip, query.Take, response.TotalCount);
+                return new PagedConnection<ContactAggregate>(response.Results.Select(x => _factory.Create<ContactAggregate>(x)), query.Skip, query.Take, response.TotalCount);
             });
 
             schema.Query.AddField(contactsConnectionBuilder.FieldType);
@@ -276,6 +278,19 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                               return await _mediator.Send(command);
                           })
                           .FieldType);
+
+            _ = schema.Mutation.AddField(FieldBuilder.Create<object, IMemberAggregateRoot>(GraphTypeExtenstionHelper.GetActualType<MemberType>())
+                        .Name("updateMemberDynamicProperties")
+                        .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputUpdateMemberDynamicPropertiesType>>(), _commandName)
+                        .ResolveAsync(async context =>
+                        {
+                            var type = GenericTypeHelper.GetActualType<UpdateMemberDynamicPropertiesCommand>();
+                            var command = (UpdateMemberDynamicPropertiesCommand)context.GetArgument(type, _commandName);
+                            await CheckAuthAsync(context.GetCurrentUserId(), command, CustomerModule.Core.ModuleConstants.Security.Permissions.Update);
+
+                            return await _mediator.Send(command);
+                        })
+                        .FieldType);
 
             _ = schema.Mutation.AddField(FieldBuilder.Create<object, bool>(typeof(BooleanGraphType))
                         .Name("sendVerifyEmail")
@@ -488,6 +503,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                      .FieldType);
         }
 
+        // PT-1654: Fix Authentication
         private async Task CheckAuthAsync(string userId, object resource, params string[] permissions)
         {
             var signInManager = _signInManagerFactory();
@@ -500,9 +516,9 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 
             var userPrincipal = await signInManager.CreateUserPrincipalAsync(user);
 
-            if (!permissions.IsNullOrEmpty())
+            if (!CanExecuteWithoutPermission(user, resource) && !permissions.IsNullOrEmpty())
             {
-                foreach (var permission in permissions ?? Array.Empty<string>())
+                foreach (var permission in permissions)
                 {
                     var permissionAuthorizationResult = await _authorizationService.AuthorizeAsync(userPrincipal, null, new PermissionAuthorizationRequirement(permission));
                     if (!permissionAuthorizationResult.Succeeded)
@@ -517,6 +533,18 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             {
                 throw new ExecutionError($"Access denied");
             }
+        }
+
+        private bool CanExecuteWithoutPermission(ApplicationUser user, object resource)
+        {
+            var result = false;
+
+            if (resource is UpdateMemberDynamicPropertiesCommand updateMemberDynamicPropertiesCommand)
+            {
+                result = updateMemberDynamicPropertiesCommand.MemberId == user.MemberId;
+            }
+
+            return result;
         }
 
         private async Task<string> GetUserEmailAsync(string userId)
