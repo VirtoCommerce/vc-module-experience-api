@@ -24,7 +24,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile
                 return members.OfType<Organization>().Select(x => _memberAggregateFactory.Create<OrganizationAggregate>(x));
             }
 
-            return null;
+            return Enumerable.Empty<OrganizationAggregate>();
         }
     }
 }
