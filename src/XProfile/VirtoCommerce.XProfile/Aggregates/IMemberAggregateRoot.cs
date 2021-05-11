@@ -8,7 +8,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Aggregates
 {
     public interface IMemberAggregateRoot
     {
-        public Member Member { get; set; }
+        Member Member { get; set; }
 
         MemberAggregateRootBase UpdateAddresses(IList<Address> addresses);
         Task<MemberAggregateRootBase> UpdateDynamicPropertiesAsync(IList<DynamicPropertyValue> values, IDynamicPropertyMetaDataResolver metaDataResolver);
