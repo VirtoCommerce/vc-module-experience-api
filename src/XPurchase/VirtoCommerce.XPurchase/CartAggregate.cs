@@ -44,7 +44,7 @@ namespace VirtoCommerce.XPurchase
             ITaxProviderSearchService taxProviderSearchService,
             ICartProductService cartProductService,
             IMapper mapper
-        )
+            )
         {
             _cartTotalsCalculator = cartTotalsCalculator;
             _marketingEvaluator = marketingEvaluator;
