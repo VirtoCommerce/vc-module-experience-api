@@ -109,11 +109,11 @@ namespace VirtoCommerce.XPurchase
             Inventory = null;
             AllInventories = inventories.Where(x => x.ProductId == Id && availFullfilmentCentersIds.Contains(x.FulfillmentCenterId)).ToList();
 
-            Inventory = inventories.OrderByDescending(x => Math.Max(0, x.InStockQuantity - x.ReservedQuantity)).FirstOrDefault();
+            Inventory = AllInventories.OrderByDescending(x => Math.Max(0, x.InStockQuantity - x.ReservedQuantity)).FirstOrDefault();
 
             if (store.MainFulfillmentCenterId != null)
             {
-                Inventory = AllInventories.FirstOrDefault(x => x.FulfillmentCenterId == store.MainFulfillmentCenterId) ?? Inventory;
+                Inventory = AllInventories.FirstOrDefault(x => x.FulfillmentCenterId == store.MainFulfillmentCenterId && x.InStockQuantity - x.ReservedQuantity > 0) ?? Inventory;
             }
         }
 
