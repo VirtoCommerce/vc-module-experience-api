@@ -13,7 +13,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
         }
         public async Task<bool> Handle(DeleteContactCommand request, CancellationToken cancellationToken)
         {
-            await _contactAggregateRepository.DeleteContactAsync(request.ContactId);
+            await _contactAggregateRepository.DeleteAsync(request.ContactId);
 
             return true;
         }

@@ -8,19 +8,21 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
 {
     public class CreateOrganizationCommandHandler : IRequestHandler<CreateOrganizationCommand, OrganizationAggregate>
     {
-        private readonly IMapper _mapper;
-        private readonly IOrganizationAggregateRepository _organizationAggregateRepository;
+        protected readonly IMapper _mapper;
+        protected readonly IOrganizationAggregateRepository _organizationAggregateRepository;
+        protected readonly IMemberAggregateFactory _memberAggregateFactory;
 
-        public CreateOrganizationCommandHandler(IMapper mapper, IOrganizationAggregateRepository organizationAggregateRepository)
+        public CreateOrganizationCommandHandler(IMapper mapper, IOrganizationAggregateRepository organizationAggregateRepository, IMemberAggregateFactory factory)
         {
             _mapper = mapper;
             _organizationAggregateRepository = organizationAggregateRepository;
+            _memberAggregateFactory = factory;
         }
 
         public async Task<OrganizationAggregate> Handle(CreateOrganizationCommand request, CancellationToken cancellationToken)
         {
             var org = _mapper.Map<Organization>(request);
-            var orgAggr = new OrganizationAggregate(org);
+            var orgAggr = _memberAggregateFactory.Create<OrganizationAggregate>(org);
             await _organizationAggregateRepository.SaveAsync(orgAggr);
 
             return orgAggr;

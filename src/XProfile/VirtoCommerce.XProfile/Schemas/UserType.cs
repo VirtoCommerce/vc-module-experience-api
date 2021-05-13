@@ -42,7 +42,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                 Description = "The associated contact info",
                 Type = GraphTypeExtenstionHelper.GetActualType<ContactType>(),
                 Resolver = new AsyncFieldResolver<ApplicationUser, ContactAggregate>(context =>
-                    contactAggregateRepository.GetContactByIdAsync(context.Source.MemberId))
+                     contactAggregateRepository.GetMemberAggregateRootByIdAsync<ContactAggregate>(context.Source.MemberId))
             });
         }
     }

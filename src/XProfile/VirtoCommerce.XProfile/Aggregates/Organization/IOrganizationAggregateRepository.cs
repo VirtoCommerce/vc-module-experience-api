@@ -3,10 +3,8 @@ using System.Threading.Tasks;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile
 {
-    public interface IOrganizationAggregateRepository
+    public interface IOrganizationAggregateRepository : IMemberAggregateRootRepository
     {
-        Task SaveAsync(OrganizationAggregate organizationAggregate);
-        Task<OrganizationAggregate> GetOrganizationByIdAsync(string organizationId);
         Task<IEnumerable<OrganizationAggregate>> GetOrganizationsByIdsAsync(string[] ids);
     }
 }
