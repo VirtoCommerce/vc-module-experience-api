@@ -30,7 +30,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field<ListGraphType<TaxDetailType>>("taxDetails", resolve: context => context.Source.TaxDetails);
             Field<ListGraphType<DiscountType>>("discounts", resolve: context => context.Source.Discounts);
 
-            ExtendableField<NonNullGraphType<ListGraphType<DynamicPropertyValueType>>>(
+            ExtendableField<ListGraphType<DynamicPropertyValueType>>(
                 "dynamicProperties",
                 "Cart payment dynamic property values",
                 QueryArgumentPresets.GetArgumentForDynamicProperties(),

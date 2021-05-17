@@ -41,7 +41,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field<ListGraphType<DiscountType>>("discounts", resolve: context => context.Source.Discounts);
             Field<CurrencyType>("currency", resolve: context => context.GetCart().Currency);
 
-            ExtendableField<NonNullGraphType<ListGraphType<DynamicPropertyValueType>>>(
+            ExtendableField<ListGraphType<DynamicPropertyValueType>>(
                 "dynamicProperties",
                 "Cart shipment dynamic property values",
                 QueryArgumentPresets.GetArgumentForDynamicProperties(),

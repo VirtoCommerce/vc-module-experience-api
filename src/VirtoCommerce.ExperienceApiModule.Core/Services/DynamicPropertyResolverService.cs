@@ -22,7 +22,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Services
         public async Task<IEnumerable<DynamicPropertyObjectValue>> LoadDynamicPropertyValues(IHasDynamicProperties entity, string cultureName)
         {
             // actual values
-            var result = entity.DynamicProperties.SelectMany(x => x.Values);
+            var result = entity.DynamicProperties?.SelectMany(x => x.Values) ?? Enumerable.Empty<DynamicPropertyObjectValue>();
 
             if (!cultureName.IsNullOrEmpty())
             {
