@@ -1,16 +1,14 @@
 using GraphQL.Types;
 using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
-using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
-using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.XPurchase.Extensions;
 
 namespace VirtoCommerce.XPurchase.Schemas
 {
     public class PaymentType : ExtendableGraphType<Payment>
     {
-        public PaymentType(IDynamicPropertyResolverService dynamicPropertyResolverService)
+        public PaymentType()
         {
             Field(x => x.Id, nullable: true).Description("Payment Id");
             Field(x => x.OuterId, nullable: true).Description("Value of payment outer id");
@@ -29,12 +27,6 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field(x => x.TaxType, nullable: true).Description("Tax type");
             Field<ListGraphType<TaxDetailType>>("taxDetails", resolve: context => context.Source.TaxDetails);
             Field<ListGraphType<DiscountType>>("discounts", resolve: context => context.Source.Discounts);
-
-            ExtendableField<NonNullGraphType<ListGraphType<DynamicPropertyValueType>>>(
-                "dynamicProperties",
-                "Cart payment dynamic property values",
-                QueryArgumentPresets.GetArgumentForDynamicProperties(),
-                context => dynamicPropertyResolverService.LoadDynamicPropertyValues(context.Source, context.GetArgumentOrValue<string>("cultureName")));
         }
     }
 }
