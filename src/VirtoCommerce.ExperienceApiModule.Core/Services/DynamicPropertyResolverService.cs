@@ -8,7 +8,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Services
 {
     public class DynamicPropertyResolverService : IDynamicPropertyResolverService
     {
-        private IDynamicPropertySearchService _dynamicPropertySearchService;
+        private readonly IDynamicPropertySearchService _dynamicPropertySearchService;
 
         public DynamicPropertyResolverService(IDynamicPropertySearchService dynamicPropertySearchService)
         {
