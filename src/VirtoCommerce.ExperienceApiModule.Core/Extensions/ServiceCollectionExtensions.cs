@@ -13,6 +13,7 @@ using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure.Authorization;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure.Internal;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
+using VirtoCommerce.ExperienceApiModule.Core.Services;
 
 namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
 {
@@ -63,6 +64,8 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
             services.AddSchemaBuilder<DynamicPropertySchema>();
             services.AddMediatR(typeof(XCoreAnchor));
             services.AddAutoMapper(typeof(XCoreAnchor));
+
+            services.AddTransient<IDynamicPropertyResolverService, DynamicPropertyResolverService>();
 
             return services;
         }
