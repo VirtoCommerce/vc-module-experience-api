@@ -1,9 +1,7 @@
 using System.Linq;
 using GraphQL.Types;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
-using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
-using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.XPurchase.Services;
 
@@ -11,7 +9,7 @@ namespace VirtoCommerce.XPurchase.Schemas
 {
     public class CartType : ExtendableGraphType<CartAggregate>
     {
-        public CartType(ICartAvailMethodsService cartAvailMethods, IDynamicPropertyResolverService dynamicPropertyResolverService)
+        public CartType(ICartAvailMethodsService cartAvailMethods)
         {
             Field(x => x.Cart.Id, nullable: true).Description("Shopping cart Id");
             Field(x => x.Cart.Name, nullable: false).Description("Shopping cart name");
@@ -115,12 +113,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field<ListGraphType<CouponType>>("coupons", resolve: context => context.Source.Coupons);
 
             // Other
-            ExtendableField<NonNullGraphType<ListGraphType<DynamicPropertyValueType>>>(
-                "dynamicProperties",
-                "Cart dynamic property values",
-                QueryArgumentPresets.GetArgumentForDynamicProperties(),
-                context => dynamicPropertyResolverService.LoadDynamicPropertyValues(context.Source.Cart, context.GetArgumentOrValue<string>("cultureName")));
-
+            //Field<ListGraphType<DynamicPropertyType>>("dynamicProperties", resolve: context => context.Source.DynamicProperties); //todo add dynamic properties
             //TODO:
             Field(x => x.IsValid, nullable: true).Description("Is cart valid");
             Field<ListGraphType<ValidationErrorType>>("validationErrors", resolve: context => context.Source.ValidationErrors.OfType<CartValidationError>());
