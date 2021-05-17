@@ -83,6 +83,8 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field(x => x.Weight, nullable: true).Description("Value of shopping cart weight");
             Field(x => x.WeightUnit, nullable: true).Description("Value of weight unit");
             Field(x => x.Width, nullable: true).Description("Value of width");
+            Field(x => x.FulfillmentCenterId, nullable: true).Description("Value of line item Fulfillment center ID");
+            Field(x => x.FulfillmentCenterName, nullable: true).Description("Value of line item Fulfillment center name");
             Field<ListGraphType<DiscountType>>("discounts", resolve: context => context.Source.Discounts);
             Field<ListGraphType<TaxDetailType>>("taxDetails", resolve: context => context.Source.TaxDetails);
             Field<MoneyType>("discountAmount", resolve: context => context.Source.DiscountAmount.ToMoney(context.GetCart().Currency));

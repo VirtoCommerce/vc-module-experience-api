@@ -60,7 +60,7 @@ namespace VirtoCommerce.XPurchase
                 return await InnerGetCartAggregateFromCartAsync(cart, language ?? Language.InvariantLanguage.CultureName);
             }
             return null;
-        }        
+        }
 
         public Task<CartAggregate> GetCartForShoppingCartAsync(ShoppingCart cart, string language = null)
         {
@@ -132,7 +132,7 @@ namespace VirtoCommerce.XPurchase
             }
 
             var currency = allCurrencies.GetCurrencyForLanguage(cart.Currency, language ?? store.DefaultLanguage);
-          
+
             var member = await _memberResolver.ResolveMemberByIdAsync(cart.CustomerId);
             var aggregate = _cartAggregateFactory();
 
@@ -145,6 +145,12 @@ namespace VirtoCommerce.XPurchase
                 aggregate.CartProducts[cartProduct.Id] = cartProduct;
             }
 
+            foreach (var lineItem in cart.Items)
+            {
+                var cartProduct = aggregate.CartProducts[lineItem.ProductId];
+                await aggregate.SetItemFulfillmentCenterAsync(lineItem, cartProduct);
+            }
+
             await aggregate.RecalculateAsync();
 
             //Run validation
@@ -152,7 +158,7 @@ namespace VirtoCommerce.XPurchase
 
             return aggregate;
         }
-      
+
         protected virtual async Task<IList<CartAggregate>> GetCartsForShoppingCartsAsync(IList<ShoppingCart> carts, string cultureName = null)
         {
             var result = new List<CartAggregate>();
