@@ -9,8 +9,8 @@ namespace VirtoCommerce.XPurchase
         WithPayments = 1,
         WithLineItems = 1 << 1,
         WithShipments = 1 << 2,
-        WithDynamicProperties = 1 << 3,
-        Validate = 1 << 4,
-        Full = WithPayments | WithLineItems | WithShipments | WithDynamicProperties | Validate
+        Validate = 1 << 3,
+        WithDynamicProperties = 1 << 4,
+        Full = WithPayments | WithLineItems | WithShipments | Validate | WithDynamicProperties
     }
 }
