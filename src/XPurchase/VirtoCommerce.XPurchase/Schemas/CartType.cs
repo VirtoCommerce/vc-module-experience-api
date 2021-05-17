@@ -115,7 +115,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field<ListGraphType<CouponType>>("coupons", resolve: context => context.Source.Coupons);
 
             // Other
-            ExtendableField<NonNullGraphType<ListGraphType<DynamicPropertyValueType>>>(
+            ExtendableField<ListGraphType<DynamicPropertyValueType>>(
                 "dynamicProperties",
                 "Cart dynamic property values",
                 QueryArgumentPresets.GetArgumentForDynamicProperties(),
