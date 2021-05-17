@@ -1,14 +1,16 @@
 using GraphQL.Types;
 using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
+using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
+using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.XPurchase.Extensions;
 
 namespace VirtoCommerce.XPurchase.Schemas
 {
     public class ShipmentType : ExtendableGraphType<Shipment>
     {
-        public ShipmentType()
+        public ShipmentType(IDynamicPropertyResolverService dynamicPropertyResolverService)
         {
             Field(x => x.Id, nullable: true).Description("Shipment Id");
             Field(x => x.ShipmentMethodCode, nullable: true).Description("Shipment method code");
@@ -38,6 +40,12 @@ namespace VirtoCommerce.XPurchase.Schemas
             //Field<ListGraphType<ValidationErrorType>>("validationErrors", resolve: context => context.Source.ValidationErrors);
             Field<ListGraphType<DiscountType>>("discounts", resolve: context => context.Source.Discounts);
             Field<CurrencyType>("currency", resolve: context => context.GetCart().Currency);
+
+            ExtendableField<NonNullGraphType<ListGraphType<DynamicPropertyValueType>>>(
+                "dynamicProperties",
+                "Cart shipment dynamic property values",
+                QueryArgumentPresets.GetArgumentForDynamicProperties(),
+                context => dynamicPropertyResolverService.LoadDynamicPropertyValues(context.Source, context.GetArgumentOrValue<string>("cultureName")));
         }
     }
 }
