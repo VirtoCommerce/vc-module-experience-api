@@ -5,11 +5,11 @@ using VirtoCommerce.XPurchase.Services;
 
 namespace VirtoCommerce.XPurchase.Commands
 {
-    public class ChangeCartItemCommentCommandHangler : CartCommandHandler<ChangeCartItemCommentCommand>
+    public class ChangeCartItemCommentCommandHandler : CartCommandHandler<ChangeCartItemCommentCommand>
     {
         private readonly ICartProductService _cartProductService;
 
-        public ChangeCartItemCommentCommandHangler(ICartAggregateRepository cartRepository, ICartProductService cartProductService)
+        public ChangeCartItemCommentCommandHandler(ICartAggregateRepository cartRepository, ICartProductService cartProductService)
             : base(cartRepository)
         {
             _cartProductService = cartProductService;
