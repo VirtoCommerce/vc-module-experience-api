@@ -1,6 +1,4 @@
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using GraphQL.DataLoader;
 using GraphQL.Resolvers;
 using GraphQL.Types;
@@ -16,7 +14,7 @@ using VirtoCommerce.XPurchase.Extensions;
 
 namespace VirtoCommerce.XPurchase.Schemas
 {
-    public class LineItemType : ObjectGraphType<LineItem>
+    public class LineItemType : ExtendableGraphType<LineItem>
     {
         public LineItemType(IMediator mediator, IDataLoaderContextAccessor dataLoader)
         {
@@ -26,7 +24,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                 Type = GraphTypeExtenstionHelper.GetActualType<ProductType>(),
                 Resolver = new FuncFieldResolver<LineItem, IDataLoaderResult<ExpProduct>>(context =>
                 {
-                    var includeFields = context.SubFields.Values.GetAllNodesPaths(); 
+                    var includeFields = context.SubFields.Values.GetAllNodesPaths();
                     var loader = dataLoader.Context.GetOrAddBatchLoader<string, ExpProduct>("order_lineItems_products", async (ids) =>
                     {
                         //Get currencies and store only from one cart.
@@ -84,6 +82,8 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field(x => x.Weight, nullable: true).Description("Value of shopping cart weight");
             Field(x => x.WeightUnit, nullable: true).Description("Value of weight unit");
             Field(x => x.Width, nullable: true).Description("Value of width");
+            Field(x => x.FulfillmentCenterId, nullable: true).Description("Value of line item Fulfillment center ID");
+            Field(x => x.FulfillmentCenterName, nullable: true).Description("Value of line item Fulfillment center name");
             Field<ListGraphType<DiscountType>>("discounts", resolve: context => context.Source.Discounts);
             Field<ListGraphType<TaxDetailType>>("taxDetails", resolve: context => context.Source.TaxDetails);
             Field<MoneyType>("discountAmount", resolve: context => context.Source.DiscountAmount.ToMoney(context.GetCart().Currency));

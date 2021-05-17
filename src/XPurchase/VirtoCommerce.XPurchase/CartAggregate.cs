@@ -162,6 +162,7 @@ namespace VirtoCommerce.XPurchase
                 }
 
                 CartProducts[newCartItem.CartProduct.Id] = newCartItem.CartProduct;
+                await SetItemFulfillmentCenterAsync(lineItem, newCartItem.CartProduct);
                 await InnerAddLineItemAsync(lineItem, newCartItem.CartProduct);
             }
 
@@ -515,6 +516,14 @@ namespace VirtoCommerce.XPurchase
             return this;
         }
 
+        public virtual Task<CartAggregate> SetItemFulfillmentCenterAsync(LineItem lineItem, CartProduct cartProduct)
+        {
+            lineItem.FulfillmentCenterId = cartProduct.Inventory?.FulfillmentCenterId;
+            lineItem.FulfillmentCenterName = cartProduct.Inventory?.FulfillmentCenterName;
+
+            return Task.FromResult(this);
+        }
+
         protected virtual Task<CartAggregate> RemoveExistingPaymentAsync(Payment payment)
         {
             if (payment != null)
@@ -582,6 +591,9 @@ namespace VirtoCommerce.XPurchase
             if (existingLineItem != null)
             {
                 await InnerChangeItemQuantityAsync(existingLineItem, existingLineItem.Quantity + Math.Max(1, lineItem.Quantity), product);
+
+                existingLineItem.FulfillmentCenterId = lineItem.FulfillmentCenterId;
+                existingLineItem.FulfillmentCenterName = lineItem.FulfillmentCenterName;
             }
             else
             {
