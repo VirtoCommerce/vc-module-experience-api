@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using VirtoCommerce.CustomerModule.Core.Model;
-using VirtoCommerce.ExperienceApiModule.XProfile.Schemas;
+using VirtoCommerce.ExperienceApiModule.Core.Models;
 using VirtoCommerce.Platform.Core.DynamicProperties;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Aggregates

@@ -32,6 +32,7 @@
         comment
         taxPercentRate
         taxType
+        dynamicProperties { name value valueType }
         shipments { shipmentMethodCode shipmentMethodOption }
         availableShippingMethods { code optionName optionDescription }
         discounts { amount description }
@@ -112,6 +113,11 @@ Every mutation contains base arguments for working with cart context:
 |15|[removeCart](#removecart)|`!cartId`|Remove cart.|
 |16|[clearShipments](#clearshipments)|-|Clear cart shipments.|
 |17|[clearPayments](#clearpayments)|-|Clear cart payments.|
+|18|[updateCartDynamicProperties](#updatecartdynamicproperties)|`!dynamicProperties`|Updates dynamic properties in cart.|
+|19|[updateCartItemDynamicProperties](#updatecartitemdynamicproperties)|`!lineItemId` `!dynamicProperties`|Updates dynamic properties in cart items.|
+|20|[updateCartShipmentDynamicProperties](#updatecartshipmentdynamicproperties)|`!shipmentId` `!dynamicProperties`|Updates dynamic properties in cart shipment.|
+|21|[updateCartPaymentDynamicProperties](#updatecartpaymentdynamicproperties)|`!paymentId` `!dynamicProperties`|Updates dynamic properties in cart payment.|
+
 
 > [!NOTE]
 > In arguments column we only show additional arguments. if they are marked with an exclamation mark, they are required.
@@ -632,5 +638,228 @@ mutation ($command:InputClearPaymentsType!)
     "cultureName": "en-US",
     "currencyCode": "USD",
     "cartType": "cart"
+}
+```
+
+### UpdateCartDynamicProperties
+This mutation updates dynamic properties in cart
+
+#### Query:
+```
+mutation ($command: InputUpdateCartDynamicPropertiesType!) 
+{
+    updateCartDynamicProperties(command: $command) 
+    {
+        dynamicProperties 
+        {
+            name
+            value
+            valueType
+            dictionaryItem
+            {
+                label
+                name
+                id
+            }
+        }
+    }
+}
+```
+#### Variables:
+```
+"command": {
+    "storeId": "Electronics",
+    "cartName": "default",
+    "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
+    "cultureName": "en-US",
+    "currencyCode": "USD",
+    "cartType": "cart",
+    "dynamicProperties": [
+        {
+            "name": "Example string property",
+            "value": "12345678"
+        },
+        {
+            "name": "Example multilanguage property",
+            "locale":"de-DE",
+            "value": "hallo welt"
+        },
+        {
+            "name": "Example dictionary property",
+            "value": "578fadeb1d2a40b3b08b1daf8db09463"
+        }   
+  	]
+  }
+}
+```
+
+### UpdateCartItemDynamicProperties
+This mutation updates dynamic properties in cart item
+
+#### Query:
+```
+mutation ($command: InputUpdateCartItemDynamicPropertiesType!) 
+{
+    updateCartItemDynamicProperties(command: $command) 
+    {
+        items 
+        {
+            id
+            dynamicProperties 
+            {
+                name 
+                value 
+                valueType
+                dictionaryItem 
+                {
+                    label 
+                    name 
+                    id
+                }
+            }
+        }
+    }
+}
+```
+#### Variables:
+```
+"command": {
+    "storeId": "Electronics",
+    "cartName": "default",
+    "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
+    "cultureName": "en-US",
+    "currencyCode": "USD",
+    "cartType": "cart",
+    "lineItemId": "dab09410-aa1a-4daf-8a32-4e41abee77b8",
+    "dynamicProperties": [
+        {
+            "name": "Example string property",
+            "value": "12345678"
+        },
+        {
+            "name": "Example multilanguage property",
+            "locale":"de-DE",
+            "value": "hallo welt"
+        },
+        {
+            "name": "Example dictionary property",
+            "value": "578fadeb1d2a40b3b08b1daf8db09463"
+        }   
+  	]
+  }
+}
+```
+
+### UpdateCartShipmentDynamicProperties
+This mutation updates dynamic properties in cart shipment
+
+#### Query:
+```
+mutation ($command: InputUpdateCartItemDynamicPropertiesType!) 
+{
+    updateCartShipmentDynamicProperties(command: $command) 
+    {
+        items 
+        {
+            id
+            dynamicProperties 
+            {
+                name 
+                value 
+                valueType
+                dictionaryItem 
+                {
+                    label 
+                    name 
+                    id
+                }
+            }
+        }
+    }
+}
+```
+#### Variables:
+```
+"command": {
+    "storeId": "Electronics",
+    "cartName": "default",
+    "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
+    "cultureName": "en-US",
+    "currencyCode": "USD",
+    "cartType": "cart",
+    "shipmentId": "79b8f095-9740-4353-998b-e1c4dd577ee6",
+    "dynamicProperties": [
+        {
+            "name": "Example string property",
+            "value": "12345678"
+        },
+        {
+            "name": "Example multilanguage property",
+            "locale":"de-DE",
+            "value": "hallo welt"
+        },
+        {
+            "name": "Example dictionary property",
+            "value": "578fadeb1d2a40b3b08b1daf8db09463"
+        }   
+  	]
+  }
+}
+```
+
+### UpdateCartPaymentDynamicProperties
+This mutation updates dynamic properties in cart payment
+
+#### Query:
+```
+mutation ($command: InputUpdateCartItemDynamicPropertiesType!) 
+{
+    updateCartPaymentDynamicProperties(command: $command) 
+    {
+        items 
+        {
+            id
+            dynamicProperties 
+            {
+                name 
+                value 
+                valueType
+                dictionaryItem 
+                {
+                    label 
+                    name 
+                    id
+                }
+            }
+        }
+    }
+}
+```
+#### Variables:
+```
+"command": {
+    "storeId": "Electronics",
+    "cartName": "default",
+    "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
+    "cultureName": "en-US",
+    "currencyCode": "USD",
+    "cartType": "cart",
+    "paymentId": "0859f1e8-16e8-4924-808b-47e03560085d",
+    "dynamicProperties": [
+        {
+            "name": "Example string property",
+            "value": "12345678"
+        },
+        {
+            "name": "Example multilanguage property",
+            "locale":"de-DE",
+            "value": "hallo welt"
+        },
+        {
+            "name": "Example dictionary property",
+            "value": "578fadeb1d2a40b3b08b1daf8db09463"
+        }   
+  	]
+  }
 }
 ```
