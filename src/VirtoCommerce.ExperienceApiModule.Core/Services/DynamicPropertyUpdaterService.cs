@@ -16,6 +16,16 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Services
             _metadataResolver = metadataResolver;
         }
 
+        /// <summary>
+        /// Updates object's dynamic properties by values collection.
+        /// A value object in the collection should have:
+        /// Name, this is the name of a dynamic property (DP metadata will be resolved by it);
+        /// Property value;
+        /// Locale (optional, for a multilanguage property).
+        /// </summary>
+        /// <param name="entity">Object that has dynamic properties.</param>
+        /// <param name="values">Collection on dynamic properties values.</param>
+        /// <returns></returns>
         public virtual async Task UpdateDynamicPropertyValues(IHasDynamicProperties entity, IList<DynamicPropertyValue> values)
         {
             var tasks = values.GroupBy(x => x.Name).Select(async newValuesGroup =>
