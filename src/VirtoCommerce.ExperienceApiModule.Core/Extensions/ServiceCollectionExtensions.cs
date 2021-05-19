@@ -66,6 +66,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
             services.AddAutoMapper(typeof(XCoreAnchor));
 
             services.AddTransient<IDynamicPropertyResolverService, DynamicPropertyResolverService>();
+            services.AddTransient<IDynamicPropertyUpdaterService, DynamicPropertyUpdaterService>();
 
             return services;
         }

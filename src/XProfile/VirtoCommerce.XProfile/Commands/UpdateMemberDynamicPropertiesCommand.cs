@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
+using VirtoCommerce.ExperienceApiModule.Core.Models;
 using VirtoCommerce.ExperienceApiModule.XProfile.Aggregates;
-using VirtoCommerce.ExperienceApiModule.XProfile.Schemas;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
 {

@@ -718,6 +718,38 @@ namespace VirtoCommerce.XPurchase.Schemas
                                                  .FieldType;
 
             schema.Mutation.AddField(addCartAddressField);
+
+            var updateCartDynamicPropertiesField = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<CartType>())
+                                                     .Name("updateCartDynamicProperties")
+                                                     .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputUpdateCartDynamicPropertiesType>>(), _commandName)
+                                                     .ResolveAsync(async context => await _mediator.Send(context.GetCartCommand<UpdateCartDynamicPropertiesCommand>()))
+                                                     .FieldType;
+
+            schema.Mutation.AddField(updateCartDynamicPropertiesField);
+
+            var updateCartItemDynamicPropertiesField = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<CartType>())
+                                                        .Name("updateCartItemDynamicProperties")
+                                                        .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputUpdateCartItemDynamicPropertiesType>>(), _commandName)
+                                                        .ResolveAsync(async context => await _mediator.Send(context.GetCartCommand<UpdateCartItemDynamicPropertiesCommand>()))
+                                                        .FieldType;
+
+            schema.Mutation.AddField(updateCartItemDynamicPropertiesField);
+
+            var updateCartPaymentDynamicPropertiesField = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<CartType>())
+                                                            .Name("updateCartPaymentDynamicProperties")
+                                                            .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputUpdateCartPaymentDynamicPropertiesType>>(), _commandName)
+                                                            .ResolveAsync(async context => await _mediator.Send(context.GetCartCommand<UpdateCartPaymentDynamicPropertiesCommand>()))
+                                                            .FieldType;
+
+            schema.Mutation.AddField(updateCartPaymentDynamicPropertiesField);
+
+            var updateCartShipmentDynamicPropertiesField = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<CartType>())
+                                                               .Name("updateCartShipmentDynamicProperties")
+                                                               .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputUpdateCartShipmentDynamicPropertiesType>>(), _commandName)
+                                                               .ResolveAsync(async context => await _mediator.Send(context.GetCartCommand<UpdateCartShipmentDynamicPropertiesCommand>()))
+                                                               .FieldType;
+
+            schema.Mutation.AddField(updateCartShipmentDynamicPropertiesField);
         }
 
         private async Task<object> ResolveConnectionAsync(IMediator mediator, IResolveConnectionContext<object> context)

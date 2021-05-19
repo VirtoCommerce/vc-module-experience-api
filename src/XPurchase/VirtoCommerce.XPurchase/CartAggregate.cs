@@ -11,6 +11,8 @@ using VirtoCommerce.CartModule.Core.Services;
 using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.CustomerModule.Core.Model;
+using VirtoCommerce.ExperienceApiModule.Core.Models;
+using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.MarketingModule.Core.Model.Promotions;
 using VirtoCommerce.MarketingModule.Core.Services;
 using VirtoCommerce.PaymentModule.Core.Model;
@@ -35,6 +37,7 @@ namespace VirtoCommerce.XPurchase
         private readonly IShoppingCartTotalsCalculator _cartTotalsCalculator;
         private readonly ITaxProviderSearchService _taxProviderSearchService;
         private readonly ICartProductService _cartProductService;
+        private readonly IDynamicPropertyUpdaterService _dynamicPropertyUpdaterService;
 
         private readonly IMapper _mapper;
 
@@ -43,6 +46,7 @@ namespace VirtoCommerce.XPurchase
             IShoppingCartTotalsCalculator cartTotalsCalculator,
             ITaxProviderSearchService taxProviderSearchService,
             ICartProductService cartProductService,
+            IDynamicPropertyUpdaterService dynamicPropertyUpdaterService,
             IMapper mapper
             )
         {
@@ -50,6 +54,7 @@ namespace VirtoCommerce.XPurchase
             _marketingEvaluator = marketingEvaluator;
             _taxProviderSearchService = taxProviderSearchService;
             _cartProductService = cartProductService;
+            _dynamicPropertyUpdaterService = dynamicPropertyUpdaterService;
             _mapper = mapper;
         }
 
@@ -522,6 +527,46 @@ namespace VirtoCommerce.XPurchase
             lineItem.FulfillmentCenterName = cartProduct.Inventory?.FulfillmentCenterName;
 
             return Task.FromResult(this);
+        }
+
+        public virtual async Task<CartAggregate> UpdateCartDynamicProperties(IList<DynamicPropertyValue> dynamicProperties)
+        {
+            await _dynamicPropertyUpdaterService.UpdateDynamicPropertyValues(Cart, dynamicProperties);
+
+            return this;
+        }
+
+        public virtual async Task<CartAggregate> UpdateCartItemDynamicProperties(string lineItemId, IList<DynamicPropertyValue> dynamicProperties)
+        {
+            var lineItem = Cart.Items.FirstOrDefault(x => x.Id == lineItemId);
+            if (lineItem != null)
+            {
+                await _dynamicPropertyUpdaterService.UpdateDynamicPropertyValues(lineItem, dynamicProperties);
+            }
+
+            return this;
+        }
+
+        public virtual async Task<CartAggregate> UpdateCartShipmentDynamicProperties(string shipmentId, IList<DynamicPropertyValue> dynamicProperties)
+        {
+            var shipment = Cart.Shipments.FirstOrDefault(x => x.Id == shipmentId);
+            if (shipment != null)
+            {
+                await _dynamicPropertyUpdaterService.UpdateDynamicPropertyValues(shipment, dynamicProperties);
+            }
+
+            return this;
+        }
+
+        public virtual async Task<CartAggregate> UpdateCartPaymentDynamicProperties(string paymentId, IList<DynamicPropertyValue> dynamicProperties)
+        {
+            var payment = Cart.Payments.FirstOrDefault(x => x.Id == paymentId);
+            if (payment != null)
+            {
+                await _dynamicPropertyUpdaterService.UpdateDynamicPropertyValues(payment, dynamicProperties);
+            }
+
+            return this;
         }
 
         protected virtual Task<CartAggregate> RemoveExistingPaymentAsync(Payment payment)

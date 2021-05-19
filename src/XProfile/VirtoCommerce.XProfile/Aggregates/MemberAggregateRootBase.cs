@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using VirtoCommerce.CustomerModule.Core.Model;
-using VirtoCommerce.ExperienceApiModule.XProfile.Schemas;
+using VirtoCommerce.ExperienceApiModule.Core.Models;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.DynamicProperties;
 
