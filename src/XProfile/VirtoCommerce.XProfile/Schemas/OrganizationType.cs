@@ -9,15 +9,14 @@ using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
-using VirtoCommerce.ExperienceApiModule.XProfile.Extensions;
+using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.XProfile.Queries;
-using VirtoCommerce.Platform.Core.DynamicProperties;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 {
     public class OrganizationType : ExtendableGraphType<OrganizationAggregate>
     {
-        public OrganizationType(IMediator mediator, IDynamicPropertySearchService dynamicPropertySearchService, IMemberAggregateFactory factory)
+        public OrganizationType(IMediator mediator, IDynamicPropertyResolverService dynamicPropertyResolverService, IMemberAggregateFactory factory)
         {
             Name = "Organization";
             Description = "Organization info";
@@ -36,19 +35,11 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             Field(x => x.Organization.Emails, true);
             Field(x => x.Organization.Groups, true);
             Field(x => x.Organization.SeoObjectType).Description("SEO object type");
-            ExtendableField<NonNullGraphType<ListGraphType<Core.Schemas.DynamicPropertyValueType>>>(
+            ExtendableField<NonNullGraphType<ListGraphType<DynamicPropertyValueType>>>(
                "dynamicProperties",
                "Organization's dynamic property values",
-               new QueryArguments(new QueryArgument<StringGraphType>
-               {
-                   Name = "cultureName",
-                   Description = "Filter multilingual dynamic properties to return only values of specified language (\"en-US\")"
-               }),
-               context => context.Source.Organization.LoadMemberDynamicPropertyValues(
-                   dynamicPropertySearchService,
-                   context.GetArgumentOrValue<string>("cultureName")
-                   )
-               );
+                QueryArgumentPresets.GetArgumentForDynamicProperties(),
+                context => dynamicPropertyResolverService.LoadDynamicPropertyValues(context.Source.Organization, context.GetArgumentOrValue<string>("cultureName")));
 
             // TODO:
             //    SeoInfos

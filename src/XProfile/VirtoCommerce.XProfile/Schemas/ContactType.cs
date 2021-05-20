@@ -5,9 +5,8 @@ using GraphQL.Types;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
-using VirtoCommerce.ExperienceApiModule.XProfile.Extensions;
+using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.Platform.Core.DynamicProperties;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 {
@@ -15,7 +14,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
     {
         private readonly IOrganizationAggregateRepository _organizationAggregateRepository;
 
-        public ContactType(IOrganizationAggregateRepository organizationAggregateRepository, IDynamicPropertySearchService dynamicPropertySearchService)
+        public ContactType(IOrganizationAggregateRepository organizationAggregateRepository, IDynamicPropertyResolverService dynamicPropertyResolverService)
         {
             _organizationAggregateRepository = organizationAggregateRepository;
 
@@ -31,19 +30,12 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             Field(x => x.Contact.Name, true);
             Field(x => x.Contact.OuterId, true);
             ExtendableField<ListGraphType<AddressType>>("addresses", resolve: context => context.Source.Contact.Addresses);
-            ExtendableField<NonNullGraphType<ListGraphType<Core.Schemas.DynamicPropertyValueType>>>(
+
+            ExtendableField<NonNullGraphType<ListGraphType<DynamicPropertyValueType>>>(
                 "dynamicProperties",
                 "Contact's dynamic property values",
-                new QueryArguments(new QueryArgument<StringGraphType>
-                {
-                    Name = "cultureName",
-                    Description = "Filter multilingual dynamic properties to return only values of specified language (\"en-US\")"
-                }),
-                context => context.Source.Contact.LoadMemberDynamicPropertyValues(
-                    dynamicPropertySearchService,
-                    context.GetArgumentOrValue<string>("cultureName")
-                    )
-                );
+                QueryArgumentPresets.GetArgumentForDynamicProperties(),
+                context => dynamicPropertyResolverService.LoadDynamicPropertyValues(context.Source.Contact, context.GetArgumentOrValue<string>("cultureName")));
             Field<ListGraphType<UserType>>("securityAccounts", resolve: context => context.Source.Contact.SecurityAccounts);
             //TODO: remove later
             Field<StringGraphType>("organizationId", resolve: context => context.Source.Contact.Organizations?.FirstOrDefault());
