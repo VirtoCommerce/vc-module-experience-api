@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -53,6 +54,11 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Services
                     newValue.PropertyId = result.Id;
                     newValue.PropertyName = result.Name;
                     newValue.ValueType = result.ValueType;
+
+                    if (!result.IsDictionary)
+                    {
+                        newValue.Value = ConvertValue(result.ValueType, newValue.Value);
+                    }
                 }
 
                 result.Values = newValuesGroup.ToArray();
@@ -68,6 +74,25 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Services
 
             entity.DynamicProperties = entity.DynamicProperties.ToList();
             sourceProperties.Patch(entity.DynamicProperties, comparer, Patch);
+        }
+
+        private object ConvertValue(DynamicPropertyValueType valueType, object value)
+        {
+            switch (valueType)
+            {
+                case DynamicPropertyValueType.ShortText:
+                    return (string)value;
+                case DynamicPropertyValueType.Decimal:
+                    return value.ToNullable<decimal>();
+                case DynamicPropertyValueType.DateTime:
+                    return value.ToNullable<DateTime>();
+                case DynamicPropertyValueType.Boolean:
+                    return value.ToNullable<bool>();
+                case DynamicPropertyValueType.Integer:
+                    return value.ToNullable<int>();
+                default:
+                    return (string)value;
+            }
         }
 
         private void Patch(DynamicObjectProperty source, DynamicObjectProperty target)
