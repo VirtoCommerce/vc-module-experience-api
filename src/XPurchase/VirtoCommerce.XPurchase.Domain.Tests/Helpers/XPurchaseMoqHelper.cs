@@ -10,6 +10,7 @@ using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.CustomerModule.Core.Model;
+using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.Tests.Helpers;
 using VirtoCommerce.InventoryModule.Core.Model;
 using VirtoCommerce.MarketingModule.Core.Services;
@@ -39,6 +40,7 @@ namespace VirtoCommerce.XPurchase.Tests.Helpers
         protected readonly Mock<IShoppingCartTotalsCalculator> _shoppingCartTotalsCalculatorMock;
         protected readonly Mock<IStoreService> _storeServiceMock;
         protected readonly Mock<ITaxProviderSearchService> _taxProviderSearchServiceMock;
+        protected readonly Mock<IDynamicPropertyUpdaterService> _dynamicPropertyUpdaterService;
         protected readonly Mock<IMapper> _mapperMock;
 
         protected readonly Randomizer Rand = new Randomizer();
@@ -134,6 +136,8 @@ namespace VirtoCommerce.XPurchase.Tests.Helpers
                 .ReturnsAsync(_fixture.Create<Store>());
 
             _taxProviderSearchServiceMock = new Mock<ITaxProviderSearchService>();
+            _dynamicPropertyUpdaterService = new Mock<IDynamicPropertyUpdaterService>();
+
             _mapperMock = new Mock<IMapper>();
         }
 
@@ -182,6 +186,7 @@ namespace VirtoCommerce.XPurchase.Tests.Helpers
                 _shoppingCartTotalsCalculatorMock.Object,
                 _taxProviderSearchServiceMock.Object,
                 _cartProductServiceMock.Object,
+                _dynamicPropertyUpdaterService.Object,
                 _mapperMock.Object);
 
             aggregate.GrabCart(cart, new Store(), GetMember(), GetCurrency());

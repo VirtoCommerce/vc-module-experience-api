@@ -25,6 +25,7 @@ namespace VirtoCommerce.XPurchase.Tests.Aggregates
                 _shoppingCartTotalsCalculatorMock.Object,
                 _taxProviderSearchServiceMock.Object,
                 _cartProductServiceMock.Object,
+                _dynamicPropertyUpdaterService.Object,
                 _mapperMock.Object);
 
             var cart = GetCart();

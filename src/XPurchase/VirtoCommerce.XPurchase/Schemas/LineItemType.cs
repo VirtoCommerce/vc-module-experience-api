@@ -7,6 +7,7 @@ using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
+using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.XDigitalCatalog;
 using VirtoCommerce.XDigitalCatalog.Queries;
 using VirtoCommerce.XDigitalCatalog.Schemas;
@@ -16,7 +17,7 @@ namespace VirtoCommerce.XPurchase.Schemas
 {
     public class LineItemType : ExtendableGraphType<LineItem>
     {
-        public LineItemType(IMediator mediator, IDataLoaderContextAccessor dataLoader)
+        public LineItemType(IMediator mediator, IDataLoaderContextAccessor dataLoader, IDynamicPropertyResolverService dynamicPropertyResolverService)
         {
             var productField = new FieldType
             {
@@ -99,6 +100,12 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field<MoneyType>("salePrice", resolve: context => context.Source.SalePrice.ToMoney(context.GetCart().Currency));
             Field<MoneyType>("salePriceWithTax", resolve: context => context.Source.SalePriceWithTax.ToMoney(context.GetCart().Currency));
             Field<MoneyType>("taxTotal", resolve: context => context.Source.TaxTotal.ToMoney(context.GetCart().Currency));
+
+            ExtendableField<ListGraphType<DynamicPropertyValueType>>(
+                "dynamicProperties",
+                "Cart line item dynamic property values",
+                QueryArgumentPresets.GetArgumentForDynamicProperties(),
+                context => dynamicPropertyResolverService.LoadDynamicPropertyValues(context.Source, context.GetArgumentOrValue<string>("cultureName")));
         }
     }
 }

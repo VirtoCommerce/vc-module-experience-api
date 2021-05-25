@@ -41,6 +41,10 @@ namespace VirtoCommerce.XPurchase.Queries
             {
                 result |= CartAggregateResponseGroup.WithLineItems;
             }
+            if (IncludeFields.Any(x => x.Contains("dynamicProperties")))
+            {
+                result |= CartAggregateResponseGroup.WithDynamicProperties;
+            }
             if (IncludeFields.Any(x => x.Contains("validationErrors")))
             {
                 //TODO: Need take into account in the repository
