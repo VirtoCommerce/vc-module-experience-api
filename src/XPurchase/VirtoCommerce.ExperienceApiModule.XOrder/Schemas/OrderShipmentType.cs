@@ -1,7 +1,10 @@
 using GraphQL;
 using GraphQL.Types;
 using VirtoCommerce.CoreModule.Core.Currency;
+using VirtoCommerce.ExperienceApiModule.Core.Extensions;
+using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
+using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.XOrder.Extensions;
 using VirtoCommerce.OrdersModule.Core.Model;
 
@@ -9,7 +12,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 {
     public class OrderShipmentType : ExtendableGraphType<Shipment>
     {
-        public OrderShipmentType()
+        public OrderShipmentType(IDynamicPropertyResolverService dynamicPropertyResolverService)
         {
             Field(x => x.Id);
             Field(x => x.OperationType);
@@ -59,6 +62,12 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field<NonNullGraphType<ListGraphType<OrderShipmentPackageType>>>(nameof(Shipment.Packages), resolve: x => x.Source.Packages);
             ExtendableField<NonNullGraphType<ListGraphType<PaymentInType>>>(nameof(Shipment.InPayments), resolve: x => x.Source.InPayments);
             Field<NonNullGraphType<ListGraphType<OrderDiscountType>>>(nameof(Shipment.Discounts), resolve: x => x.Source.Discounts);
+
+            ExtendableField<ListGraphType<DynamicPropertyValueType>>(
+                "dynamicProperties",
+                "Customer order Shipment dynamic property values",
+                QueryArgumentPresets.GetArgumentForDynamicProperties(),
+                context => dynamicPropertyResolverService.LoadDynamicPropertyValues(context.Source, context.GetArgumentOrValue<string>("cultureName")));
         }
     }
 }

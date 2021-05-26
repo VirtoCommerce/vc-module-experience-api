@@ -1,14 +1,17 @@
 using GraphQL;
 using GraphQL.Types;
 using VirtoCommerce.CoreModule.Core.Currency;
+using VirtoCommerce.ExperienceApiModule.Core.Extensions;
+using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
+using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.OrdersModule.Core.Model;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 {
     public class CustomerOrderType : ExtendableGraphType<CustomerOrderAggregate>
     {
-        public CustomerOrderType()
+        public CustomerOrderType(IDynamicPropertyResolverService dynamicPropertyResolverService)
         {
             Field(x => x.Order.Id);
             Field(x => x.Order.OperationType);
@@ -80,8 +83,12 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             ExtendableField<ListGraphType<OrderShipmentType>>(nameof(CustomerOrder.Shipments), resolve: x => x.Source.Order.Shipments);
 
             Field<NonNullGraphType<ListGraphType<OrderTaxDetailType>>>(nameof(CustomerOrder.TaxDetails), resolve: x => x.Source.Order.TaxDetails);
-            //TODO
-            //public ICollection<DynamicObjectProperty> DynamicProperties);
+
+            ExtendableField<ListGraphType<DynamicPropertyValueType>>(
+                "dynamicProperties",
+                "Customer order dynamic property values",
+                QueryArgumentPresets.GetArgumentForDynamicProperties(),
+                context => dynamicPropertyResolverService.LoadDynamicPropertyValues(context.Source.Order, context.GetArgumentOrValue<string>("cultureName")));
         }
     }
 }
