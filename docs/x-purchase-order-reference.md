@@ -1,5 +1,7 @@
 # X-Purchase order
 
+X-Purchase-Cart provides high performance API for order data.
+
 ## Key features
 - Getting and searching orders;
 - Basic order workflow operations;

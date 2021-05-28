@@ -1,4 +1,6 @@
-# X-Purchase cart
+# X-Purchase-Cart
+
+X-Purchase-Cart provides high performance API for shopping cart.
 
 ## Key features
 - Working with shopping cart;
