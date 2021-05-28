@@ -8,6 +8,7 @@ using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
+using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.XOrder.Extensions;
 using VirtoCommerce.OrdersModule.Core.Model;
 using VirtoCommerce.XDigitalCatalog;
@@ -16,9 +17,9 @@ using VirtoCommerce.XDigitalCatalog.Schemas;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 {
-    public class OrderLineItemType : ObjectGraphType<LineItem>
+    public class OrderLineItemType : ExtendableGraphType<LineItem>
     {
-        public OrderLineItemType(IMediator mediator, IDataLoaderContextAccessor dataLoader)
+        public OrderLineItemType(IMediator mediator, IDataLoaderContextAccessor dataLoader, IDynamicPropertyResolverService dynamicPropertyResolverService)
         {
             Field(x => x.Id);
             Field(x => x.ProductType, true);
@@ -41,10 +42,10 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field(x => x.CancelledDate, true);
             Field(x => x.CancelReason, true);
             Field(x => x.ObjectType);
-            
+
             Field(x => x.CategoryId, true);
             Field(x => x.CatalogId);
-            
+
             Field(x => x.Sku);
             Field(x => x.PriceId, true);
             Field<MoneyType>(nameof(LineItem.Price).ToCamelCase(), resolve: context => new Money(context.Source.Price, context.GetOrderCurrency()));
@@ -101,8 +102,12 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                 })
             };
             AddField(productField);
-            //TODO
-            //public ICollection<DynamicObjectProperty> DynamicProperties);
+
+            ExtendableField<ListGraphType<DynamicPropertyValueType>>(
+                "dynamicProperties",
+                "Customer order Line item dynamic property values",
+                QueryArgumentPresets.GetArgumentForDynamicProperties(),
+                context => dynamicPropertyResolverService.LoadDynamicPropertyValues(context.Source, context.GetArgumentOrValue<string>("cultureName")));
         }
     }
 }

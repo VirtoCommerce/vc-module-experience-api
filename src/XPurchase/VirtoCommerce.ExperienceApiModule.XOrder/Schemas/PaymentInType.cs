@@ -1,7 +1,10 @@
 using GraphQL;
 using GraphQL.Types;
 using VirtoCommerce.CoreModule.Core.Currency;
+using VirtoCommerce.ExperienceApiModule.Core.Extensions;
+using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
+using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.XOrder.Extensions;
 using VirtoCommerce.OrdersModule.Core.Model;
 
@@ -9,7 +12,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 {
     public class PaymentInType : ExtendableGraphType<PaymentIn>
     {
-        public PaymentInType()
+        public PaymentInType(IDynamicPropertyResolverService dynamicPropertyResolverService)
         {
             Field(x => x.Id);
             Field(x => x.OrganizationId, true);
@@ -48,7 +51,12 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field<ListGraphType<PaymentTransactionType>>(nameof(PaymentIn.Transactions), resolve: x => x.Source.Transactions);
             //TODO
             //public IList<Operation> ChildrenOperations);
-            //public IList<DynamicProperty> DynamicProperties);
+
+            ExtendableField<ListGraphType<DynamicPropertyValueType>>(
+                "dynamicProperties",
+                "Customer order Payment dynamic property values",
+                QueryArgumentPresets.GetArgumentForDynamicProperties(),
+                context => dynamicPropertyResolverService.LoadDynamicPropertyValues(context.Source, context.GetArgumentOrValue<string>("cultureName")));
         }
     }
 }
