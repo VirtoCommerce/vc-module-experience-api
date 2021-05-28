@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
+using Moq;
 using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.CoreModule.Core.Currency;
+using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.XOrder;
 using VirtoCommerce.OrdersModule.Core.Model;
 using VirtoCommerce.PaymentModule.Core.Model;
@@ -13,14 +15,22 @@ namespace VirtoCommerce.XPurchase.Tests.Aggregates
 {
     public class CustomerOrderAggregateTests : XPurchaseMoqHelper
     {
+        private readonly Mock<IDynamicPropertyUpdaterService> _dynamicPropertyUpdaterServiceMock;
+
+        public CustomerOrderAggregateTests()
+        {
+            _dynamicPropertyUpdaterServiceMock = new Mock<IDynamicPropertyUpdaterService>();
+        }
+
         [Fact]
         public void CancelPaymentTest_PaymentCancelled()
         {
             //Arrange
-            var aggregate = new CustomerOrderAggregate(CreateNewOrder(), new Currency(Language.InvariantLanguage, "USD"));
+            var aggregate = new CustomerOrderAggregate(_dynamicPropertyUpdaterServiceMock.Object);
+            aggregate.GrabCustomerOrder(CreateNewOrder(), new Currency(Language.InvariantLanguage, "USD"));
             var existPayment = new PaymentIn()
             {
-              Number = "92321873-2E99-44B0-A50C-0A0883C9B137"
+                Number = "92321873-2E99-44B0-A50C-0A0883C9B137"
             };
 
             //Act
@@ -38,7 +48,8 @@ namespace VirtoCommerce.XPurchase.Tests.Aggregates
         public void CancelPaymentTest_PaymentNotDuplicate_PaymentNotCancelled()
         {
             //Arrange
-            var aggregate = new CustomerOrderAggregate(CreateNewOrder(), new Currency(Language.InvariantLanguage, "USD"));
+            var aggregate = new CustomerOrderAggregate(_dynamicPropertyUpdaterServiceMock.Object);
+            aggregate.GrabCustomerOrder(CreateNewOrder(), new Currency(Language.InvariantLanguage, "USD"));
             var newPayment = new PaymentIn()
             {
                 Number = "newPaymentNumber"
@@ -59,7 +70,8 @@ namespace VirtoCommerce.XPurchase.Tests.Aggregates
         public void ConfirmPaymentTest_PaymentConfirmed()
         {
             //Arrange
-            var aggregate = new CustomerOrderAggregate(CreateNewOrder(), new Currency(Language.InvariantLanguage, "USD"));
+            var aggregate = new CustomerOrderAggregate(_dynamicPropertyUpdaterServiceMock.Object);
+            aggregate.GrabCustomerOrder(CreateNewOrder(), new Currency(Language.InvariantLanguage, "USD"));
             var existPayment = new PaymentIn()
             {
                 Number = "92321873-2E99-44B0-A50C-0A0883C9B137"
@@ -80,7 +92,8 @@ namespace VirtoCommerce.XPurchase.Tests.Aggregates
         public void ConfirmPaymentTest_PaymentNotDuplicate_PaymentNotConfirmed()
         {
             //Arrange
-            var aggregate = new CustomerOrderAggregate(CreateNewOrder(), new Currency(Language.InvariantLanguage, "USD"));
+            var aggregate = new CustomerOrderAggregate(_dynamicPropertyUpdaterServiceMock.Object);
+            aggregate.GrabCustomerOrder(CreateNewOrder(), new Currency(Language.InvariantLanguage, "USD"));
             var newPayment = new PaymentIn()
             {
                 Number = "newPaymentNumber"

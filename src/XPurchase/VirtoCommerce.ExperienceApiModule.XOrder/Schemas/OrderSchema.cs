@@ -170,6 +170,86 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                                 return await _mediator.Send(command);
                             })
                             .FieldType);
+
+            _ = schema.Mutation.AddField(FieldBuilder.Create<CustomerOrderAggregate, CustomerOrderAggregate>(GraphTypeExtenstionHelper.GetActualType<CustomerOrderType>())
+                            .Name("updateOrderDynamicProperty")
+                            .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputUpdateOrderDynamicPropertiesType>>(), _commandName)
+                            .ResolveAsync(async context =>
+                            {
+                                var type = GenericTypeHelper.GetActualType<UpdateOrderDynamicPropertiesCommand>();
+                                var command = (UpdateOrderDynamicPropertiesCommand)context.GetArgument(type, _commandName);
+                                var order = await _customerOrderService.GetByIdAsync(command.OrderId);
+
+                                var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), order, new CanAccessOrderAuthorizationRequirement());
+
+                                if (!authorizationResult.Succeeded)
+                                {
+                                    throw new ExecutionError($"Access denied");
+                                }
+
+                                return await _mediator.Send(command);
+                            })
+                            .FieldType);
+
+            _ = schema.Mutation.AddField(FieldBuilder.Create<CustomerOrderAggregate, CustomerOrderAggregate>(GraphTypeExtenstionHelper.GetActualType<CustomerOrderType>())
+                            .Name("updateOrderItemDynamicProperty")
+                            .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputUpdateOrderItemDynamicPropertiesType>>(), _commandName)
+                            .ResolveAsync(async context =>
+                            {
+                                var type = GenericTypeHelper.GetActualType<UpdateOrderItemDynamicPropertiesCommand>();
+                                var command = (UpdateOrderItemDynamicPropertiesCommand)context.GetArgument(type, _commandName);
+                                var order = await _customerOrderService.GetByIdAsync(command.OrderId);
+
+                                var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), order, new CanAccessOrderAuthorizationRequirement());
+
+                                if (!authorizationResult.Succeeded)
+                                {
+                                    throw new ExecutionError($"Access denied");
+                                }
+
+                                return await _mediator.Send(command);
+                            })
+                            .FieldType);
+
+            _ = schema.Mutation.AddField(FieldBuilder.Create<CustomerOrderAggregate, CustomerOrderAggregate>(GraphTypeExtenstionHelper.GetActualType<CustomerOrderType>())
+                            .Name("updateOrderPaymentDynamicProperty")
+                            .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputUpdateOrderPaymentDynamicPropertiesType>>(), _commandName)
+                            .ResolveAsync(async context =>
+                            {
+                                var type = GenericTypeHelper.GetActualType<UpdateOrderPaymentDynamicPropertiesCommand>();
+                                var command = (UpdateOrderPaymentDynamicPropertiesCommand)context.GetArgument(type, _commandName);
+                                var order = await _customerOrderService.GetByIdAsync(command.OrderId);
+
+                                var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), order, new CanAccessOrderAuthorizationRequirement());
+
+                                if (!authorizationResult.Succeeded)
+                                {
+                                    throw new ExecutionError($"Access denied");
+                                }
+
+                                return await _mediator.Send(command);
+                            })
+                            .FieldType);
+
+            _ = schema.Mutation.AddField(FieldBuilder.Create<CustomerOrderAggregate, CustomerOrderAggregate>(GraphTypeExtenstionHelper.GetActualType<CustomerOrderType>())
+                            .Name("updateOrderShipmentDynamicProperty")
+                            .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputUpdateOrderShipmentDynamicPropertiesType>>(), _commandName)
+                            .ResolveAsync(async context =>
+                            {
+                                var type = GenericTypeHelper.GetActualType<UpdateOrderShipmentDynamicPropertiesCommand>();
+                                var command = (UpdateOrderShipmentDynamicPropertiesCommand)context.GetArgument(type, _commandName);
+                                var order = await _customerOrderService.GetByIdAsync(command.OrderId);
+
+                                var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), order, new CanAccessOrderAuthorizationRequirement());
+
+                                if (!authorizationResult.Succeeded)
+                                {
+                                    throw new ExecutionError($"Access denied");
+                                }
+
+                                return await _mediator.Send(command);
+                            })
+                            .FieldType);
         }
 
         private async Task<object> ResolveOrdersConnectionAsync(IMediator mediator, IResolveConnectionContext<object> context)
