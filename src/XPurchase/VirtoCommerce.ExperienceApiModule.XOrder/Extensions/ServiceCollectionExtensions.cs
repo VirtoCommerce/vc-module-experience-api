@@ -1,3 +1,4 @@
+using System;
 using AutoMapper;
 using GraphQL.Server;
 using MediatR;
@@ -23,6 +24,9 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Extensions
             services.AddSingleton<IAuthorizationHandler, CanAccessOrderAuthorizationHandler>();
 
             services.AddAutoMapper(typeof(XOrderAnchor));
+
+            services.AddTransient<CustomerOrderAggregate>();
+            services.AddTransient<Func<CustomerOrderAggregate>>(provider => () => provider.CreateScope().ServiceProvider.GetRequiredService<CustomerOrderAggregate>());
 
             return services;
         }
