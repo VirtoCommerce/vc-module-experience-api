@@ -117,15 +117,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                             {
                                 var type = GenericTypeHelper.GetActualType<ChangeOrderStatusCommand>();
                                 var command = (ChangeOrderStatusCommand)context.GetArgument(type, _commandName);
-
-                                var order = await _customerOrderService.GetByIdAsync(command.OrderId);
-
-                                var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), order, new CanAccessOrderAuthorizationRequirement());
-
-                                if (!authorizationResult.Succeeded)
-                                {
-                                    throw new ExecutionError($"Access denied");
-                                }
+                                await CheckAuthAsync(context, command.OrderId);
 
                                 return await _mediator.Send(command);
                             })
@@ -138,14 +130,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                             {
                                 var type = GenericTypeHelper.GetActualType<ConfirmOrderPaymentCommand>();
                                 var command = (ConfirmOrderPaymentCommand)context.GetArgument(type, _commandName);
-                                var order = await _customerOrderService.GetByIdAsync(command.Payment.OrderId);
-
-                                var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), order, new CanAccessOrderAuthorizationRequirement());
-
-                                if (!authorizationResult.Succeeded)
-                                {
-                                    throw new ExecutionError($"Access denied");
-                                }
+                                await CheckAuthAsync(context, command.Payment.OrderId);
 
                                 return await _mediator.Send(command);
                             })
@@ -158,14 +143,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                             {
                                 var type = GenericTypeHelper.GetActualType<CancelOrderPaymentCommand>();
                                 var command = (CancelOrderPaymentCommand)context.GetArgument(type, _commandName);
-                                var order = await _customerOrderService.GetByIdAsync(command.Payment.OrderId);
-
-                                var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), order, new CanAccessOrderAuthorizationRequirement());
-
-                                if (!authorizationResult.Succeeded)
-                                {
-                                    throw new ExecutionError($"Access denied");
-                                }
+                                await CheckAuthAsync(context, command.Payment.OrderId);
 
                                 return await _mediator.Send(command);
                             })
@@ -178,14 +156,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                             {
                                 var type = GenericTypeHelper.GetActualType<UpdateOrderDynamicPropertiesCommand>();
                                 var command = (UpdateOrderDynamicPropertiesCommand)context.GetArgument(type, _commandName);
-                                var order = await _customerOrderService.GetByIdAsync(command.OrderId);
-
-                                var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), order, new CanAccessOrderAuthorizationRequirement());
-
-                                if (!authorizationResult.Succeeded)
-                                {
-                                    throw new ExecutionError($"Access denied");
-                                }
+                                await CheckAuthAsync(context, command.OrderId);
 
                                 return await _mediator.Send(command);
                             })
@@ -198,14 +169,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                             {
                                 var type = GenericTypeHelper.GetActualType<UpdateOrderItemDynamicPropertiesCommand>();
                                 var command = (UpdateOrderItemDynamicPropertiesCommand)context.GetArgument(type, _commandName);
-                                var order = await _customerOrderService.GetByIdAsync(command.OrderId);
-
-                                var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), order, new CanAccessOrderAuthorizationRequirement());
-
-                                if (!authorizationResult.Succeeded)
-                                {
-                                    throw new ExecutionError($"Access denied");
-                                }
+                                await CheckAuthAsync(context, command.OrderId);
 
                                 return await _mediator.Send(command);
                             })
@@ -218,14 +182,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                             {
                                 var type = GenericTypeHelper.GetActualType<UpdateOrderPaymentDynamicPropertiesCommand>();
                                 var command = (UpdateOrderPaymentDynamicPropertiesCommand)context.GetArgument(type, _commandName);
-                                var order = await _customerOrderService.GetByIdAsync(command.OrderId);
-
-                                var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), order, new CanAccessOrderAuthorizationRequirement());
-
-                                if (!authorizationResult.Succeeded)
-                                {
-                                    throw new ExecutionError($"Access denied");
-                                }
+                                await CheckAuthAsync(context, command.OrderId);
 
                                 return await _mediator.Send(command);
                             })
@@ -238,14 +195,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                             {
                                 var type = GenericTypeHelper.GetActualType<UpdateOrderShipmentDynamicPropertiesCommand>();
                                 var command = (UpdateOrderShipmentDynamicPropertiesCommand)context.GetArgument(type, _commandName);
-                                var order = await _customerOrderService.GetByIdAsync(command.OrderId);
-
-                                var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), order, new CanAccessOrderAuthorizationRequirement());
-
-                                if (!authorizationResult.Succeeded)
-                                {
-                                    throw new ExecutionError($"Access denied");
-                                }
+                                await CheckAuthAsync(context, command.OrderId);
 
                                 return await _mediator.Send(command);
                             })
@@ -273,7 +223,6 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             context.SetCurrencies(allCurrencies, query.CultureName);
 
             var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), query, new CanAccessOrderAuthorizationRequirement());
-
             if (!authorizationResult.Succeeded)
             {
                 throw new ExecutionError($"Access denied");
@@ -324,6 +273,18 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             context.SetCurrencies(allCurrencies, query.CultureName);
 
             return new PagedConnection<PaymentIn>(response.Results, query.Skip, query.Take, response.TotalCount);
+        }
+
+        private async Task CheckAuthAsync(IResolveFieldContext context, string orderId)
+        {
+            var order = await _customerOrderService.GetByIdAsync(orderId);
+
+            var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), order, new CanAccessOrderAuthorizationRequirement());
+
+            if (!authorizationResult.Succeeded)
+            {
+                throw new ExecutionError($"Access denied");
+            }
         }
     }
 }
