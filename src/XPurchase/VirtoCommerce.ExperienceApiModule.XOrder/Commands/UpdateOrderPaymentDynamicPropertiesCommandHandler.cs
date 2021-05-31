@@ -20,7 +20,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Commands
         {
             var orderAggregate = await _customerOrderAggregateRepository.GetOrderByIdAsync(request.OrderId);
 
-            await orderAggregate.UpdateItemDynamicProperties(request.PaymentId, request.DynamicProperties);
+            await orderAggregate.UpdatePaymentDynamicProperties(request.PaymentId, request.DynamicProperties);
 
             await _customerOrderService.SaveChangesAsync(new[] { orderAggregate.Order });
 

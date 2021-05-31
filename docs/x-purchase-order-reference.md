@@ -17,10 +17,10 @@
 |2 |[changeOrderStatus](#changeOrderStatus)|`!orderId` `!status`|Changes order status.|
 |3 |[confirmOrderPayment](#confirmOrderPayment)|`payment { id sum caurrency …}`|Confirms order payment.|
 |4 |[cancelOrderPayment](#cancelOrderPayment)|`payment { id sum caurrency …}`|Cancels order payment.|
-|5 |[updateOrderDynamicProperty](#updateOrderDynamicProperty)|`!dynamicProperties`|Updates dynamic properties in order.|
-|6 |[updateOrderItemDynamicProperty](#updateOrderItemDynamicProperty)|`!lineItemId` `!dynamicProperties`|Updates dynamic properties in order items.|
-|7 |[updateOrderShipmentDynamicProperty](#updateOrderShipmentDynamicProperty)|`!shipmentId` `!dynamicProperties`|Updates dynamic properties in order shipment.|
-|8 |[updateOrderPaymentDynamicProperty](#updateOrderPaymentDynamicProperty)|`!paymentId` `!dynamicProperties`|Updates dynamic properties in order payment.|
+|5 |[updateOrderDynamicProperties](#updateOrderDynamicProperties)|`!dynamicProperties`|Updates dynamic properties in order.|
+|6 |[updateOrderItemDynamicProperties](#updateOrderItemDynamicProperties)|`!lineItemId` `!dynamicProperties`|Updates dynamic properties in order items.|
+|7 |[updateOrderShipmentDynamicProperties](#updateOrderShipmentDynamicProperties)|`!shipmentId` `!dynamicProperties`|Updates dynamic properties in order shipment.|
+|8 |[updateOrderPaymentDynamicProperties](#updateOrderPaymentDynamicProperties)|`!paymentId` `!dynamicProperties`|Updates dynamic properties in order payment.|
 
 > [!NOTE]
 > In arguments column we show additional arguments. if they are marked with an exclamation mark, they are required.
@@ -289,14 +289,14 @@ mutation {
 
 ```
 
-### updateOrderDynamicProperty
+### updateOrderDynamicProperties
 This mutation updates dynamic properties in order
 
 #### Query:
 ```
 mutation ($command: InputUpdateOrderDynamicPropertiesType!) 
 {
-    updateOrderDynamicProperty(command: $command) 
+    updateOrderDynamicProperties(command: $command) 
     {
         dynamicProperties 
         {
@@ -336,14 +336,14 @@ mutation ($command: InputUpdateOrderDynamicPropertiesType!)
 }
 ```
 
-### updateOrderItemDynamicProperty
+### updateOrderItemDynamicProperties
 This mutation updates dynamic properties in order item
 
 #### Query:
 ```
 mutation ($command: InputUpdateOrderItemDynamicPropertiesType!) 
 {
-    updateOrderItemDynamicProperty(command: $command) 
+    updateOrderItemDynamicProperties(command: $command) 
     {
         items 
         {
@@ -388,16 +388,16 @@ mutation ($command: InputUpdateOrderItemDynamicPropertiesType!)
 }
 ```
 
-### updateOrderShipmentDynamicProperty
+### updateOrderShipmentDynamicProperties
 This mutation updates dynamic properties in order shipment
 
 #### Query:
 ```
 mutation ($command: InputUpdateOrderShipmentDynamicPropertiesType!) 
 {
-    updateOrderShipmentDynamicProperty(command: $command) 
+    updateOrderShipmentDynamicProperties(command: $command) 
     {
-        items 
+        shipments 
         {
             id
             dynamicProperties 
@@ -440,16 +440,16 @@ mutation ($command: InputUpdateOrderShipmentDynamicPropertiesType!)
 }
 ```
 
-### updateOrderPaymentDynamicProperty
+### updateOrderPaymentDynamicProperties
 This mutation updates dynamic properties in order payment
 
 #### Query:
 ```
 mutation ($command: InputUpdateOrderPaymentDynamicPropertiesType!) 
 {
-    updateOrderPaymentDynamicProperty(command: $command) 
+    updateOrderPaymentDynamicProperties(command: $command) 
     {
-        items 
+        inPayments 
         {
             id
             dynamicProperties 

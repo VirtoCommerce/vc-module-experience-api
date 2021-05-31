@@ -150,7 +150,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                             .FieldType);
 
             _ = schema.Mutation.AddField(FieldBuilder.Create<CustomerOrderAggregate, CustomerOrderAggregate>(GraphTypeExtenstionHelper.GetActualType<CustomerOrderType>())
-                            .Name("updateOrderDynamicProperty")
+                            .Name("updateOrderDynamicProperties")
                             .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputUpdateOrderDynamicPropertiesType>>(), _commandName)
                             .ResolveAsync(async context =>
                             {
@@ -163,7 +163,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                             .FieldType);
 
             _ = schema.Mutation.AddField(FieldBuilder.Create<CustomerOrderAggregate, CustomerOrderAggregate>(GraphTypeExtenstionHelper.GetActualType<CustomerOrderType>())
-                            .Name("updateOrderItemDynamicProperty")
+                            .Name("updateOrderItemDynamicProperties")
                             .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputUpdateOrderItemDynamicPropertiesType>>(), _commandName)
                             .ResolveAsync(async context =>
                             {
@@ -176,7 +176,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                             .FieldType);
 
             _ = schema.Mutation.AddField(FieldBuilder.Create<CustomerOrderAggregate, CustomerOrderAggregate>(GraphTypeExtenstionHelper.GetActualType<CustomerOrderType>())
-                            .Name("updateOrderPaymentDynamicProperty")
+                            .Name("updateOrderPaymentDynamicProperties")
                             .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputUpdateOrderPaymentDynamicPropertiesType>>(), _commandName)
                             .ResolveAsync(async context =>
                             {
@@ -189,7 +189,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                             .FieldType);
 
             _ = schema.Mutation.AddField(FieldBuilder.Create<CustomerOrderAggregate, CustomerOrderAggregate>(GraphTypeExtenstionHelper.GetActualType<CustomerOrderType>())
-                            .Name("updateOrderShipmentDynamicProperty")
+                            .Name("updateOrderShipmentDynamicProperties")
                             .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputUpdateOrderShipmentDynamicPropertiesType>>(), _commandName)
                             .ResolveAsync(async context =>
                             {
