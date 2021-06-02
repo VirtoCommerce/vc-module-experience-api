@@ -54,6 +54,8 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                         CultureName = context.GetArgument<string>(nameof(Currency.CultureName))
                     };
 
+                    context.CopyArgumentsToUserContext();
+
                     var orderAggregate = await _mediator.Send(request);
 
                     var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), orderAggregate.Order, new CanAccessOrderAuthorizationRequirement());
