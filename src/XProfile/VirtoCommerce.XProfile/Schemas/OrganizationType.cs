@@ -39,7 +39,11 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                "dynamicProperties",
                "Organization's dynamic property values",
                 QueryArgumentPresets.GetArgumentForDynamicProperties(),
-                context => dynamicPropertyResolverService.LoadDynamicPropertyValues(context.Source.Organization, context.GetArgumentOrValue<string>("cultureName")));
+                context =>
+                {
+                    context.CopyArgumentsToUserContext();
+                    return dynamicPropertyResolverService.LoadDynamicPropertyValues(context.Source.Organization, context.GetArgumentOrValue<string>("cultureName"));
+                });
 
             // TODO:
             //    SeoInfos
