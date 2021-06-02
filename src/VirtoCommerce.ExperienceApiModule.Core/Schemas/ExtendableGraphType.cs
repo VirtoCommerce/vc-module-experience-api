@@ -2,6 +2,7 @@ using System;
 using GraphQL;
 using GraphQL.Resolvers;
 using GraphQL.Types;
+using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 
 namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
@@ -24,7 +25,11 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
                 Type = GraphTypeExtenstionHelper.GetActualComplexType<TGraphType>(),
                 Arguments = arguments,
                 Resolver = resolve != null
-                    ? new FuncFieldResolver<TSourceType, object>(resolve)
+                    ? new FuncFieldResolver<TSourceType, object>(context =>
+                        {
+                            context.CopyArgumentsToUserContext();
+                            return resolve(context);
+                        })
                     : null
             });
         }
