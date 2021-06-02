@@ -88,11 +88,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                 "dynamicProperties",
                 "Customer order dynamic property values",
                 QueryArgumentPresets.GetArgumentForDynamicProperties(),
-                context =>
-                {
-                    context.CopyArgumentsToUserContext();
-                    return dynamicPropertyResolverService.LoadDynamicPropertyValues(context.Source.Order, context.GetArgumentOrValue<string>("cultureName"));
-                });
+                context => dynamicPropertyResolverService.LoadDynamicPropertyValues(context.Source.Order, context.GetArgumentOrValue<string>("cultureName")));
         }
     }
 }

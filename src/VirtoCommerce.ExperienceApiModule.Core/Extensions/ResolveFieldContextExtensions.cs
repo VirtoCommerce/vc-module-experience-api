@@ -61,6 +61,9 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
         //PT-1606:  Need to check what there is no any alternative way to access to the original request arguments in sub selection
         public static void CopyArgumentsToUserContext(this IResolveFieldContext resolveContext)
         {
+            if (resolveContext.Arguments.IsNullOrEmpty())
+                return;
+
             foreach (var pair in resolveContext.Arguments)
             {
                 resolveContext.UserContext[pair.Key] = pair.Value;
