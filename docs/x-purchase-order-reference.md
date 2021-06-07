@@ -1,5 +1,7 @@
 # X-Purchase order
 
+X-Purchase-Cart provides high performance API for order data.
+
 ## Key features
 - Getting and searching orders;
 - Basic order workflow operations;
@@ -228,7 +230,7 @@ This mutation changes order status.
 mutation {
   changeOrderStatus(
     command: { orderId: "1672428e-52fe-4092-8380-7604c3637f91" status: "Approved"}
-  ) 
+  )
 }
 
 ```
@@ -294,11 +296,11 @@ This mutation updates dynamic properties in order
 
 #### Query:
 ```
-mutation ($command: InputUpdateOrderDynamicPropertiesType!) 
+mutation ($command: InputUpdateOrderDynamicPropertiesType!)
 {
-    updateOrderDynamicProperties(command: $command) 
+    updateOrderDynamicProperties(command: $command)
     {
-        dynamicProperties 
+        dynamicProperties
         {
             name
             value
@@ -330,7 +332,7 @@ mutation ($command: InputUpdateOrderDynamicPropertiesType!)
         {
             "name": "Example dictionary property",
             "value": "578fadeb1d2a40b3b08b1daf8db09463"
-        }   
+        }
   	]
   }
 }
@@ -341,22 +343,22 @@ This mutation updates dynamic properties in order item
 
 #### Query:
 ```
-mutation ($command: InputUpdateOrderItemDynamicPropertiesType!) 
+mutation ($command: InputUpdateOrderItemDynamicPropertiesType!)
 {
-    updateOrderItemDynamicProperties(command: $command) 
+    updateOrderItemDynamicProperties(command: $command)
     {
-        items 
+        items
         {
             id
-            dynamicProperties 
+            dynamicProperties
             {
-                name 
-                value 
+                name
+                value
                 valueType
-                dictionaryItem 
+                dictionaryItem
                 {
-                    label 
-                    name 
+                    label
+                    name
                     id
                 }
             }
@@ -382,7 +384,7 @@ mutation ($command: InputUpdateOrderItemDynamicPropertiesType!)
         {
             "name": "Example dictionary property",
             "value": "578fadeb1d2a40b3b08b1daf8db09463"
-        }   
+        }
   	]
   }
 }
@@ -393,22 +395,22 @@ This mutation updates dynamic properties in order shipment
 
 #### Query:
 ```
-mutation ($command: InputUpdateOrderShipmentDynamicPropertiesType!) 
+mutation ($command: InputUpdateOrderShipmentDynamicPropertiesType!)
 {
-    updateOrderShipmentDynamicProperties(command: $command) 
+    updateOrderShipmentDynamicProperties(command: $command)
     {
-        shipments 
+        shipments
         {
             id
-            dynamicProperties 
+            dynamicProperties
             {
-                name 
-                value 
+                name
+                value
                 valueType
-                dictionaryItem 
+                dictionaryItem
                 {
-                    label 
-                    name 
+                    label
+                    name
                     id
                 }
             }
@@ -434,7 +436,7 @@ mutation ($command: InputUpdateOrderShipmentDynamicPropertiesType!)
         {
             "name": "Example dictionary property",
             "value": "578fadeb1d2a40b3b08b1daf8db09463"
-        }   
+        }
   	]
   }
 }
@@ -445,22 +447,22 @@ This mutation updates dynamic properties in order payment
 
 #### Query:
 ```
-mutation ($command: InputUpdateOrderPaymentDynamicPropertiesType!) 
+mutation ($command: InputUpdateOrderPaymentDynamicPropertiesType!)
 {
-    updateOrderPaymentDynamicProperties(command: $command) 
+    updateOrderPaymentDynamicProperties(command: $command)
     {
-        inPayments 
+        inPayments
         {
             id
-            dynamicProperties 
+            dynamicProperties
             {
-                name 
-                value 
+                name
+                value
                 valueType
-                dictionaryItem 
+                dictionaryItem
                 {
-                    label 
-                    name 
+                    label
+                    name
                     id
                 }
             }
@@ -486,7 +488,7 @@ mutation ($command: InputUpdateOrderPaymentDynamicPropertiesType!)
         {
             "name": "Example dictionary property",
             "value": "578fadeb1d2a40b3b08b1daf8db09463"
-        }   
+        }
   	]
   }
 }

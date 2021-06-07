@@ -1,5 +1,7 @@
 # X-Profile
 
+X-Profiles provides high performance search queries for customer and organization data.
+
 ## Key features
 - CRUD operations with **users**
 - CRUD operations with **organizations**

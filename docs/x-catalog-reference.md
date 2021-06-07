@@ -1,6 +1,8 @@
-# X-Digital-Catalog provides high performance search queries for catalog data directly from search index engine
+# X-Catalog
 
-## X-Digital-Catalog key features:
+X-Catalog provides high performance search queries for catalog data directly from search index engine.
+
+## Key features
 - Full-text search ([→](#full-text-search))
 - Fuzzy search ([→](#fuzzy-search))
 - Filters syntax ([↪](filter-syntax.md))

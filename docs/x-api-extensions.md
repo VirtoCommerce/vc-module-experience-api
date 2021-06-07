@@ -1,3 +1,4 @@
+# How to extend
 The xAPI provides default GraphQL schemas for types,  queries, and mutations. However, each project has its unique requirements, and we can’t foresee all of them and include into the base schema, but thanks to extensions points that the xAPI provides you can change the baseline behavior and data structures. On this article are described the main extension points and techniques that you can use in your custom projects.
 
 At the moment the xAPI project has the following main extensions points in addition to the extension points that platform provides [extensibility basics](https://virtocommerce.com/docs/latest/fundamentals/extensibility-basics/)

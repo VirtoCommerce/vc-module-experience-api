@@ -1,4 +1,6 @@
-# X-Purchase cart
+# X-Purchase-Cart
+
+X-Purchase-Cart provides high performance API for shopping cart.
 
 ## Key features
 - Working with shopping cart;
@@ -88,7 +90,7 @@ With this connection you can get all user's carts/whishlists.
 
 ### CartType Addresses field
 Field `Cart.Addresses` in `CartType` is a functional enabler. Currently it does not participate in any internal business logic and it is separated from `Cart.Billing.Addresses` and `Cart.Shipping.Addresses`. Feel free to add your own business logic to it.
-Address type structure can be found [here](https://github.com/VirtoCommerce/vc-module-experience-api/blob/dev/src/VirtoCommerce.ExperienceApiModule.Core/Schemas/AddressType.cs).  
+Address type structure can be found [here](https://github.com/VirtoCommerce/vc-module-experience-api/blob/dev/src/VirtoCommerce.ExperienceApiModule.Core/Schemas/AddressType.cs).
 
 ## Mutations
 Every mutation contains base arguments for working with cart context:
@@ -652,11 +654,11 @@ This mutation updates dynamic properties in cart
 
 #### Query:
 ```
-mutation ($command: InputUpdateCartDynamicPropertiesType!) 
+mutation ($command: InputUpdateCartDynamicPropertiesType!)
 {
-    updateCartDynamicProperties(command: $command) 
+    updateCartDynamicProperties(command: $command)
     {
-        dynamicProperties 
+        dynamicProperties
         {
             name
             value
@@ -693,7 +695,7 @@ mutation ($command: InputUpdateCartDynamicPropertiesType!)
         {
             "name": "Example dictionary property",
             "value": "578fadeb1d2a40b3b08b1daf8db09463"
-        }   
+        }
   	]
   }
 }
@@ -704,22 +706,22 @@ This mutation updates dynamic properties in cart item
 
 #### Query:
 ```
-mutation ($command: InputUpdateCartItemDynamicPropertiesType!) 
+mutation ($command: InputUpdateCartItemDynamicPropertiesType!)
 {
-    updateCartItemDynamicProperties(command: $command) 
+    updateCartItemDynamicProperties(command: $command)
     {
-        items 
+        items
         {
             id
-            dynamicProperties 
+            dynamicProperties
             {
-                name 
-                value 
+                name
+                value
                 valueType
-                dictionaryItem 
+                dictionaryItem
                 {
-                    label 
-                    name 
+                    label
+                    name
                     id
                 }
             }
@@ -750,7 +752,7 @@ mutation ($command: InputUpdateCartItemDynamicPropertiesType!)
         {
             "name": "Example dictionary property",
             "value": "578fadeb1d2a40b3b08b1daf8db09463"
-        }   
+        }
   	]
   }
 }
@@ -761,22 +763,22 @@ This mutation updates dynamic properties in cart shipment
 
 #### Query:
 ```
-mutation ($command: InputUpdateCartItemDynamicPropertiesType!) 
+mutation ($command: InputUpdateCartItemDynamicPropertiesType!)
 {
-    updateCartShipmentDynamicProperties(command: $command) 
+    updateCartShipmentDynamicProperties(command: $command)
     {
-        items 
+        items
         {
             id
-            dynamicProperties 
+            dynamicProperties
             {
-                name 
-                value 
+                name
+                value
                 valueType
-                dictionaryItem 
+                dictionaryItem
                 {
-                    label 
-                    name 
+                    label
+                    name
                     id
                 }
             }
@@ -807,7 +809,7 @@ mutation ($command: InputUpdateCartItemDynamicPropertiesType!)
         {
             "name": "Example dictionary property",
             "value": "578fadeb1d2a40b3b08b1daf8db09463"
-        }   
+        }
   	]
   }
 }
@@ -818,22 +820,22 @@ This mutation updates dynamic properties in cart payment
 
 #### Query:
 ```
-mutation ($command: InputUpdateCartItemDynamicPropertiesType!) 
+mutation ($command: InputUpdateCartItemDynamicPropertiesType!)
 {
-    updateCartPaymentDynamicProperties(command: $command) 
+    updateCartPaymentDynamicProperties(command: $command)
     {
-        items 
+        items
         {
             id
-            dynamicProperties 
+            dynamicProperties
             {
-                name 
-                value 
+                name
+                value
                 valueType
-                dictionaryItem 
+                dictionaryItem
                 {
-                    label 
-                    name 
+                    label
+                    name
                     id
                 }
             }
@@ -864,7 +866,7 @@ mutation ($command: InputUpdateCartItemDynamicPropertiesType!)
         {
             "name": "Example dictionary property",
             "value": "578fadeb1d2a40b3b08b1daf8db09463"
-        }   
+        }
   	]
   }
 }
