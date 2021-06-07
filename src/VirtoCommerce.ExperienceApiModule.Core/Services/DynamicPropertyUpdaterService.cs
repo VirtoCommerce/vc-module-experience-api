@@ -59,6 +59,11 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Services
                     {
                         newValue.Value = ConvertValue(result.ValueType, newValue.Value);
                     }
+                    else
+                    {
+                        // remove locale for Dictonary values, they should not have it
+                        newValue.Locale = null;
+                    }
                 }
 
                 result.Values = newValuesGroup.ToArray();

@@ -3,26 +3,28 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using VirtoCommerce.CartModule.Core.Model;
-using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.OrdersModule.Core.Model;
 using VirtoCommerce.OrdersModule.Core.Services;
 using VirtoCommerce.OrdersModule.Data.Services;
-using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder
 {
     public class CustomerOrderAggregateRepository : ICustomerOrderAggregateRepository
     {
+        private readonly Func<CustomerOrderAggregate> _customerOrderAggregateFactory;
         private readonly ICustomerOrderService _customerOrderService;
         private readonly ICurrencyService _currencyService;
         private readonly ICustomerOrderBuilder _customerOrderBuilder;
 
-        public CustomerOrderAggregateRepository(ICustomerOrderService customerOrderService,
+        public CustomerOrderAggregateRepository(
+            Func<CustomerOrderAggregate> customerOrderAggregateFactory,
+            ICustomerOrderService customerOrderService,
             ICurrencyService currencyService,
             ICustomerOrderBuilder customerOrderBuilder)
         {
+            _customerOrderAggregateFactory = customerOrderAggregateFactory;
             _customerOrderService = customerOrderService;
             _currencyService = currencyService;
             _customerOrderBuilder = customerOrderBuilder;
@@ -50,7 +52,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder
                 return result.FirstOrDefault();
             }
 
-            return null; 
+            return null;
         }
 
         public async Task<CustomerOrderAggregate> GetAggregateFromOrderAsync(CustomerOrder order)
@@ -62,13 +64,18 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder
         public Task<IList<CustomerOrderAggregate>> GetAggregatesFromOrdersAsync(IList<CustomerOrder> orders, string cultureName = null)
         {
             return InnerGetCustomerOrderAggregatesFromCustomerOrdersAsync(orders, cultureName);
-        }     
+        }
 
         protected virtual async Task<IList<CustomerOrderAggregate>> InnerGetCustomerOrderAggregatesFromCustomerOrdersAsync(IList<CustomerOrder> orders, string cultureName = null)
         {
             var currencies = await _currencyService.GetAllCurrenciesAsync();
-            return orders.Select(x => new CustomerOrderAggregate(x.Clone() as CustomerOrder, currencies.GetCurrencyForLanguage(x.Currency, cultureName ?? x.LanguageCode))).ToList();
+
+            return orders.Select(x =>
+            {
+                var aggregate = _customerOrderAggregateFactory();
+                aggregate.GrabCustomerOrder(x.Clone() as CustomerOrder, currencies.GetCurrencyForLanguage(x.Currency, cultureName ?? x.LanguageCode));
+                return aggregate;
+            }).ToList();
         }
-               
     }
 }

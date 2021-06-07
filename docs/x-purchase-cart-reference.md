@@ -34,6 +34,7 @@ X-Purchase-Cart provides high performance API for shopping cart.
         comment
         taxPercentRate
         taxType
+        addresses { countryName regionName city addressType }
         dynamicProperties { name value valueType }
         shipments { shipmentMethodCode shipmentMethodOption }
         availableShippingMethods { code optionName optionDescription }
@@ -87,6 +88,10 @@ With this connection you can get all user's carts/whishlists.
 ### CartType
 ![CartType schema structure](./media/CartType.jpeg)
 
+### CartType Addresses field
+Field `Cart.Addresses` in `CartType` is a functional enabler. Currently it does not participate in any internal business logic and it is separated from `Cart.Billing.Addresses` and `Cart.Shipping.Addresses`. Feel free to add your own business logic to it.
+Address type structure can be found [here](https://github.com/VirtoCommerce/vc-module-experience-api/blob/dev/src/VirtoCommerce.ExperienceApiModule.Core/Schemas/AddressType.cs).
+
 ## Mutations
 Every mutation contains base arguments for working with cart context:
 - `storeId` - Id of current store
@@ -119,6 +124,7 @@ Every mutation contains base arguments for working with cart context:
 |19|[updateCartItemDynamicProperties](#updatecartitemdynamicproperties)|`!lineItemId` `!dynamicProperties`|Updates dynamic properties in cart items.|
 |20|[updateCartShipmentDynamicProperties](#updatecartshipmentdynamicproperties)|`!shipmentId` `!dynamicProperties`|Updates dynamic properties in cart shipment.|
 |21|[updateCartPaymentDynamicProperties](#updatecartpaymentdynamicproperties)|`!paymentId` `!dynamicProperties`|Updates dynamic properties in cart payment.|
+|22|[addCartAddress](#addcartaddress)|`!address`([type](https://github.com/VirtoCommerce/vc-module-experience-api/blob/dev/src/XPurchase/VirtoCommerce.XPurchase/Schemas/InputAddOrUpdateCartAddressType.cs))|Add address for cart or update it by type
 
 
 > [!NOTE]
@@ -648,11 +654,11 @@ This mutation updates dynamic properties in cart
 
 #### Query:
 ```
-mutation ($command: InputUpdateCartDynamicPropertiesType!) 
+mutation ($command: InputUpdateCartDynamicPropertiesType!)
 {
-    updateCartDynamicProperties(command: $command) 
+    updateCartDynamicProperties(command: $command)
     {
-        dynamicProperties 
+        dynamicProperties
         {
             name
             value
@@ -689,7 +695,7 @@ mutation ($command: InputUpdateCartDynamicPropertiesType!)
         {
             "name": "Example dictionary property",
             "value": "578fadeb1d2a40b3b08b1daf8db09463"
-        }   
+        }
   	]
   }
 }
@@ -700,22 +706,22 @@ This mutation updates dynamic properties in cart item
 
 #### Query:
 ```
-mutation ($command: InputUpdateCartItemDynamicPropertiesType!) 
+mutation ($command: InputUpdateCartItemDynamicPropertiesType!)
 {
-    updateCartItemDynamicProperties(command: $command) 
+    updateCartItemDynamicProperties(command: $command)
     {
-        items 
+        items
         {
             id
-            dynamicProperties 
+            dynamicProperties
             {
-                name 
-                value 
+                name
+                value
                 valueType
-                dictionaryItem 
+                dictionaryItem
                 {
-                    label 
-                    name 
+                    label
+                    name
                     id
                 }
             }
@@ -746,7 +752,7 @@ mutation ($command: InputUpdateCartItemDynamicPropertiesType!)
         {
             "name": "Example dictionary property",
             "value": "578fadeb1d2a40b3b08b1daf8db09463"
-        }   
+        }
   	]
   }
 }
@@ -757,22 +763,22 @@ This mutation updates dynamic properties in cart shipment
 
 #### Query:
 ```
-mutation ($command: InputUpdateCartItemDynamicPropertiesType!) 
+mutation ($command: InputUpdateCartItemDynamicPropertiesType!)
 {
-    updateCartShipmentDynamicProperties(command: $command) 
+    updateCartShipmentDynamicProperties(command: $command)
     {
-        items 
+        items
         {
             id
-            dynamicProperties 
+            dynamicProperties
             {
-                name 
-                value 
+                name
+                value
                 valueType
-                dictionaryItem 
+                dictionaryItem
                 {
-                    label 
-                    name 
+                    label
+                    name
                     id
                 }
             }
@@ -803,7 +809,7 @@ mutation ($command: InputUpdateCartItemDynamicPropertiesType!)
         {
             "name": "Example dictionary property",
             "value": "578fadeb1d2a40b3b08b1daf8db09463"
-        }   
+        }
   	]
   }
 }
@@ -814,22 +820,22 @@ This mutation updates dynamic properties in cart payment
 
 #### Query:
 ```
-mutation ($command: InputUpdateCartItemDynamicPropertiesType!) 
+mutation ($command: InputUpdateCartItemDynamicPropertiesType!)
 {
-    updateCartPaymentDynamicProperties(command: $command) 
+    updateCartPaymentDynamicProperties(command: $command)
     {
-        items 
+        items
         {
             id
-            dynamicProperties 
+            dynamicProperties
             {
-                name 
-                value 
+                name
+                value
                 valueType
-                dictionaryItem 
+                dictionaryItem
                 {
-                    label 
-                    name 
+                    label
+                    name
                     id
                 }
             }
@@ -860,8 +866,68 @@ mutation ($command: InputUpdateCartItemDynamicPropertiesType!)
         {
             "name": "Example dictionary property",
             "value": "578fadeb1d2a40b3b08b1daf8db09463"
-        }   
+        }
   	]
   }
+}
+```
+
+### AddCartAddress
+This mutation adds a new address to cart or updates an existing one by `addressType`
+
+#### Query:
+```
+mutation addOrUpdateCartAddress ($command: InputAddOrUpdateCartAddressType!) {
+    addOrUpdateCartAddress (command: $command) {
+        addresses {
+            addressType
+            city
+            countryCode
+            countryName
+            email
+            firstName
+            id
+            lastName
+            line1
+            line2
+            middleName
+            name
+            organization
+            phone
+            postalCode
+            regionId
+            regionName
+            zip
+        }
+    }
+}
+```
+#### Variables:
+```
+"command": {
+    "storeId": "Electronics",
+    "cartName": "default",
+    "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
+    "cultureName": "en-US",
+    "currencyCode": "USD",
+    "cartType": "cart",
+    "address": {
+      "city": "City name",
+      "countryCode": "CountryCode",
+      "countryName": "Country name",
+      "email": "example@email.com",
+      "firstName": "recipient name",
+      "middleName": "recipient name",
+      "lastName": "recipient name",
+      "line1": "example address line 1",
+      "line2": "example address line 1",
+      "organization": "Organizatoin name",
+      "phone": "77777-77777",
+      "postalCode": "12345",
+      "regionId": "RegionCode",
+      "regionName": "Region name",
+      "zip": "123",
+      "addressType": 3
+    }
 }
 ```

@@ -19,6 +19,10 @@ X-Purchase-Cart provides high performance API for order data.
 |2 |[changeOrderStatus](#changeOrderStatus)|`!orderId` `!status`|Changes order status.|
 |3 |[confirmOrderPayment](#confirmOrderPayment)|`payment { id sum caurrency …}`|Confirms order payment.|
 |4 |[cancelOrderPayment](#cancelOrderPayment)|`payment { id sum caurrency …}`|Cancels order payment.|
+|5 |[updateOrderDynamicProperties](#updateOrderDynamicProperties)|`!dynamicProperties`|Updates dynamic properties in order.|
+|6 |[updateOrderItemDynamicProperties](#updateOrderItemDynamicProperties)|`!lineItemId` `!dynamicProperties`|Updates dynamic properties in order items.|
+|7 |[updateOrderShipmentDynamicProperties](#updateOrderShipmentDynamicProperties)|`!shipmentId` `!dynamicProperties`|Updates dynamic properties in order shipment.|
+|8 |[updateOrderPaymentDynamicProperties](#updateOrderPaymentDynamicProperties)|`!paymentId` `!dynamicProperties`|Updates dynamic properties in order payment.|
 
 > [!NOTE]
 > In arguments column we show additional arguments. if they are marked with an exclamation mark, they are required.
@@ -42,6 +46,7 @@ In this block you can find some examples of queries and mutations.
     customerId
     customerName
     createdDate
+    dynamicProperties { name value valueType }
     addresses {
       postalCode
     }
@@ -225,7 +230,7 @@ This mutation changes order status.
 mutation {
   changeOrderStatus(
     command: { orderId: "1672428e-52fe-4092-8380-7604c3637f91" status: "Approved"}
-  ) 
+  )
 }
 
 ```
@@ -284,4 +289,207 @@ mutation {
   )
 }
 
+```
+
+### updateOrderDynamicProperties
+This mutation updates dynamic properties in order
+
+#### Query:
+```
+mutation ($command: InputUpdateOrderDynamicPropertiesType!)
+{
+    updateOrderDynamicProperties(command: $command)
+    {
+        dynamicProperties
+        {
+            name
+            value
+            valueType
+            dictionaryItem
+            {
+                label
+                name
+                id
+            }
+        }
+    }
+}
+```
+#### Variables:
+```
+"command": {
+    "orderId": "d548c750-5a74-4e54-b72b-f5209f44caa6",
+    "dynamicProperties": [
+        {
+            "name": "Example string property",
+            "value": "12345678"
+        },
+        {
+            "name": "Example multilanguage property",
+            "locale":"de-DE",
+            "value": "hallo welt"
+        },
+        {
+            "name": "Example dictionary property",
+            "value": "578fadeb1d2a40b3b08b1daf8db09463"
+        }
+  	]
+  }
+}
+```
+
+### updateOrderItemDynamicProperties
+This mutation updates dynamic properties in order item
+
+#### Query:
+```
+mutation ($command: InputUpdateOrderItemDynamicPropertiesType!)
+{
+    updateOrderItemDynamicProperties(command: $command)
+    {
+        items
+        {
+            id
+            dynamicProperties
+            {
+                name
+                value
+                valueType
+                dictionaryItem
+                {
+                    label
+                    name
+                    id
+                }
+            }
+        }
+    }
+}
+```
+#### Variables:
+```
+"command": {
+    "orderId": "d548c750-5a74-4e54-b72b-f5209f44caa6",
+    "lineItemId": "dab09410-aa1a-4daf-8a32-4e41abee77b8",
+    "dynamicProperties": [
+        {
+            "name": "Example string property",
+            "value": "12345678"
+        },
+        {
+            "name": "Example multilanguage property",
+            "locale":"de-DE",
+            "value": "hallo welt"
+        },
+        {
+            "name": "Example dictionary property",
+            "value": "578fadeb1d2a40b3b08b1daf8db09463"
+        }
+  	]
+  }
+}
+```
+
+### updateOrderShipmentDynamicProperties
+This mutation updates dynamic properties in order shipment
+
+#### Query:
+```
+mutation ($command: InputUpdateOrderShipmentDynamicPropertiesType!)
+{
+    updateOrderShipmentDynamicProperties(command: $command)
+    {
+        shipments
+        {
+            id
+            dynamicProperties
+            {
+                name
+                value
+                valueType
+                dictionaryItem
+                {
+                    label
+                    name
+                    id
+                }
+            }
+        }
+    }
+}
+```
+#### Variables:
+```
+"command": {
+    "orderId": "d548c750-5a74-4e54-b72b-f5209f44caa6",
+    "shipmentId": "79b8f095-9740-4353-998b-e1c4dd577ee6",
+    "dynamicProperties": [
+        {
+            "name": "Example string property",
+            "value": "12345678"
+        },
+        {
+            "name": "Example multilanguage property",
+            "locale":"de-DE",
+            "value": "hallo welt"
+        },
+        {
+            "name": "Example dictionary property",
+            "value": "578fadeb1d2a40b3b08b1daf8db09463"
+        }
+  	]
+  }
+}
+```
+
+### updateOrderPaymentDynamicProperties
+This mutation updates dynamic properties in order payment
+
+#### Query:
+```
+mutation ($command: InputUpdateOrderPaymentDynamicPropertiesType!)
+{
+    updateOrderPaymentDynamicProperties(command: $command)
+    {
+        inPayments
+        {
+            id
+            dynamicProperties
+            {
+                name
+                value
+                valueType
+                dictionaryItem
+                {
+                    label
+                    name
+                    id
+                }
+            }
+        }
+    }
+}
+```
+#### Variables:
+```
+"command": {
+    "orderId": "d548c750-5a74-4e54-b72b-f5209f44caa6",
+    "paymentId": "0859f1e8-16e8-4924-808b-47e03560085d",
+    "dynamicProperties": [
+        {
+            "name": "Example string property",
+            "value": "12345678"
+        },
+        {
+            "name": "Example multilanguage property",
+            "locale":"de-DE",
+            "value": "hallo welt"
+        },
+        {
+            "name": "Example dictionary property",
+            "value": "578fadeb1d2a40b3b08b1daf8db09463"
+        }
+  	]
+  }
+}
 ```
