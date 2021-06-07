@@ -135,3 +135,11 @@ jobs:
           moduleDescription: ${{ steps.image.outputs.moduleDescription }}
           projectUrl: ${{ steps.image.outputs.projectUrl }}
           iconUrl: ${{ steps.image.outputs.iconUrl }}
+          
+      - name: Invoke Module deployment workflow
+        if: ${{ github.ref == 'refs/heads/master' }}
+        uses: benc-uk/workflow-dispatch@v1
+        with:
+          workflow: VC deployment
+          token: ${{ secrets.REPO_TOKEN }}
+          inputs: '{ "artifactUrl": "${{ steps.blobRelease.outputs.packageUrl }}" }'
