@@ -1,0 +1,13 @@
+{
+    "artifactKey": "VirtoCommerce.ExperienceApi",
+    "deployRepo": "vc-deploy-dev",
+    "main": {
+        "deployAppName": "vcplatform-dev",
+        "deployBranch": "main"
+    },
+    "qa": {
+        "deployAppName": "vcplatform-qa",
+        "deployBranch": "qa"
+    },
+    "cmPath": "platform-dev/resources/deployment-cm.yaml"
+}
