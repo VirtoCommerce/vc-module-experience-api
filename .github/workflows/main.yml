@@ -140,4 +140,5 @@ jobs:
         with:
           workflow: VC deployment
           token: ${{ secrets.REPO_TOKEN }}
-          inputs: '{ "artifactUrl": "${{ steps.blobRelease.outputs.packageUrl }}", "deployBranch": "main" }'
+          inputs: '{ "artifactUrl": "${{ steps.blobRelease.outputs.packageUrl }}", "deployBranch": "dev" }'
+
