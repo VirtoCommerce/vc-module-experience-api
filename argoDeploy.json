@@ -2,7 +2,7 @@
     "artifactKey": "VirtoCommerce.ExperienceApi",
     "deployRepo": "vc-deploy-dev",
     "main": {
-        "deployAppName": "vcplatform-app",
+        "deployAppName": "vcplatform-app",//test
         "deployBranch": "main"
     },
     "qa": {
