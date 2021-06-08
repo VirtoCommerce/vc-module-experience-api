@@ -68,7 +68,6 @@ jobs:
           else
             echo "VERSION_SUFFIX=${{ steps.image.outputs.suffix }}" >> $GITHUB_ENV
           fi;
-
       - name: Add version suffix
         if: ${{ github.ref != 'refs/heads/master' }}
         uses: VirtoCommerce/vc-github-actions/add-version-suffix@master
@@ -142,3 +141,4 @@ jobs:
           workflow: VC deployment
           token: ${{ secrets.REPO_TOKEN }}
           inputs: '{ "artifactUrl": "${{ steps.blobRelease.outputs.packageUrl }}", "deployBranch": "dev" }'
+
