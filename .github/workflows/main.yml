@@ -1,4 +1,4 @@
-# v1.1.3
+# v1.1.4
 name: Module CI
 
 on:
@@ -99,6 +99,7 @@ jobs:
         uses: VirtoCommerce/vc-github-actions/publish-nuget@master
 
       - name: Publish to Blob
+        if: ${{ github.ref == 'refs/heads/dev' || (github.event_name == 'workflow_dispatch' && github.ref != 'refs/heads/master') }}
         id: blobRelease
         uses: VirtoCommerce/vc-github-actions/publish-blob-release@master
         with:
@@ -140,5 +141,4 @@ jobs:
         with:
           workflow: VC deployment
           token: ${{ secrets.REPO_TOKEN }}
-          inputs: '{ "artifactUrl": "${{ steps.blobRelease.outputs.packageUrl }}", "deployBranch": "dev" }'
-
+          inputs: '{ "artifactUrl": "https://github.com/${{ github.repository }}/releases/download/${{ steps.image.outputs.shortVersion }}/${{ steps.image.outputs.moduleId }}_${{ steps.image.outputs.shortVersion }}.zip", "deployBranch": "dev" }'
