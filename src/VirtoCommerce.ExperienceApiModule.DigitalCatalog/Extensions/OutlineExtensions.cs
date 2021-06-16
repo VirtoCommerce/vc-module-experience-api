@@ -140,7 +140,7 @@ namespace VirtoCommerce.XDigitalCatalog.Extensions
                 var breadcrumb = new Breadcrumb(item.SeoObjectType)
                 {
                     ItemId = item.Id,
-                    Title = item.SeoInfos?.FirstOrDefault()?.SemanticUrl ?? item.Name,
+                    Title = item.SeoInfos?.FirstOrDefault()?.PageTitle ?? item.Name,
                     SeoPath = seoPath
                 };
                 breadcrumbs.Insert(0, breadcrumb);
