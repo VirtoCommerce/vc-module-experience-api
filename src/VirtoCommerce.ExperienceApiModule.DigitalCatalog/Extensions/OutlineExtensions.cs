@@ -141,7 +141,7 @@ namespace VirtoCommerce.XDigitalCatalog.Extensions
                 var breadcrumb = new Breadcrumb(item.SeoObjectType)
                 {
                     ItemId = item.Id,
-                    Title = ((SeoInfo)item.SeoInfos?.FirstBestMatchForLanguage(cultureName))?.PageTitle ?? item.Name,
+                    Title = ((SeoInfo)item.SeoInfos?.FirstBestMatchForLanguage(cultureName))?.PageTitle?.EmptyToNull() ?? item.Name,
                     SeoPath = seoPath
                 };
                 breadcrumbs.Insert(0, breadcrumb);
