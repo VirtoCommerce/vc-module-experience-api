@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CoreModule.Core.Outlines;
+using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Settings;
@@ -140,7 +141,7 @@ namespace VirtoCommerce.XDigitalCatalog.Extensions
                 var breadcrumb = new Breadcrumb(item.SeoObjectType)
                 {
                     ItemId = item.Id,
-                    Title = item.SeoInfos?.FirstOrDefault()?.SemanticUrl ?? item.Name,
+                    Title = ((SeoInfo)item.SeoInfos?.FirstBestMatchForLanguage(cultureName))?.PageTitle?.EmptyToNull() ?? item.Name,
                     SeoPath = seoPath
                 };
                 breadcrumbs.Insert(0, breadcrumb);
