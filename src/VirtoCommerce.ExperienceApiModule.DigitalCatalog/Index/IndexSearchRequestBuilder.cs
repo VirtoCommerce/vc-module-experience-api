@@ -73,26 +73,21 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
             }
             return this;
         }
+        public IndexSearchRequestBuilder AddTermsIfNotExists(IEnumerable<string> terms)
+        {
+            if (terms != null)
+            {
+                var termsFields = GetFiltersFromTerm(terms);
+                AddFiltersToSearchRequest(termsFields, skipIfExists: true);
+            }
+            return this;
+        }
 
         public IndexSearchRequestBuilder AddTerms(IEnumerable<string> terms)
         {
             if (terms != null)
             {
-                const string commaEscapeString = "%x2C";
-
-                var nameValueDelimeter = new[] { ':' };
-                var valuesDelimeter = new[] { ',' };
-
-                var termsFields = terms.Select(item => item.Split(nameValueDelimeter, 2))
-                        .Where(item => item.Length == 2)
-                        .Select(item => new TermFilter
-                        {
-                            FieldName = item[0],
-                            Values = item[1].Split(valuesDelimeter, StringSplitOptions.RemoveEmptyEntries)
-                                .Select(x => x?.Replace(commaEscapeString, ","))
-                                .ToArray()
-                        }).ToArray<IFilter>();
-
+                var termsFields = GetFiltersFromTerm(terms);
                 AddFiltersToSearchRequest(termsFields);
             }
 
@@ -307,9 +302,35 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
             return SearchRequest;
         }
 
-        private void AddFiltersToSearchRequest(IFilter[] filters)
+        private void AddFiltersToSearchRequest(IFilter[] filters, bool skipIfExists = false)
         {
-            ((AndFilter)SearchRequest.Filter).ChildFilters.AddRange(filters);
+            var childFilters = ((AndFilter)SearchRequest.Filter).ChildFilters;
+            //Skip adding duplicate filters
+            if (skipIfExists)
+            {                
+                var existsFiltersNames = childFilters.OfType<INamedFilter>().Select(x=>x.FieldName).Distinct().ToArray();
+                filters = filters.Where(x=> !(x is INamedFilter namedFilter && existsFiltersNames.Contains(namedFilter.FieldName, StringComparer.InvariantCultureIgnoreCase))).ToArray();
+            }
+            childFilters.AddRange(filters);
+        }
+
+        private static IFilter[] GetFiltersFromTerm(IEnumerable<string> terms)
+        {
+            const string commaEscapeString = "%x2C";
+
+            var nameValueDelimeter = new[] { ':' };
+            var valuesDelimeter = new[] { ',' };
+
+            var result = terms.Select(item => item.Split(nameValueDelimeter, 2))
+                    .Where(item => item.Length == 2)
+                    .Select(item => new TermFilter
+                    {
+                        FieldName = item[0],
+                        Values = item[1].Split(valuesDelimeter, StringSplitOptions.RemoveEmptyEntries)
+                            .Select(x => x?.Replace(commaEscapeString, ","))
+                            .ToArray()
+                    }).ToArray<IFilter>();
+            return result;
         }
     }
 }

@@ -64,8 +64,9 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
 
             if (request.ObjectIds.IsNullOrEmpty())
             {
-                //filter products only the store catalog and visibility status when search
-                builder.AddTerms(new[] { "status:visible" });//Only visible, exclude variations from search result
+                //by default limit  resulting products,  return only visible products and belongs to store catalog
+                //But user can override this behaviour by passing "status:hidden" in a filter expression
+                builder.AddTermsIfNotExists(new[] { "status:visible" });//Only visible, exclude variations and hidden products  from search result
                 builder.AddTerms(new[] { $"__outline:{store.Catalog}" });
             }
 
