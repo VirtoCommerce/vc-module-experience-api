@@ -64,10 +64,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
 
             if (request.ObjectIds.IsNullOrEmpty())
             {
-                //by default limit  resulting products,  return only visible products and belongs to store catalog
-                //But user can override this behaviour by passing "status:hidden" in a filter expression
-                builder.AddTermsIfNotExists(new[] { "status:visible" });//Only visible, exclude variations and hidden products  from search result
-                builder.AddTerms(new[] { $"__outline:{store.Catalog}" });
+                AddDefaultTerms(builder, store.Catalog);
             }
 
             //Use predefined  facets for store  if the facet filter expression is not set
@@ -122,6 +119,18 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             var result = await Handle(searchRequest, cancellationToken);
 
             return new LoadProductResponse(result.Results);
+        }
+
+        /// <summary>
+        /// By default limit  resulting products, return only visible products and belongs to store catalog,
+        /// but user can override this behaviour by passing "status:hidden" in a filter expression
+        /// </summary>
+        /// <param name="builder">Instance of the request builder</param>
+        /// <param name="catalog">Name of the current catalog</param>
+        protected virtual void AddDefaultTerms(IndexSearchRequestBuilder builder, string catalog)
+        {
+            builder.AddTerms(new[] { "status:visible" }, skipIfExists: true);
+            builder.AddTerms(new[] { $"__outline:{catalog}" });
         }
     }
 }

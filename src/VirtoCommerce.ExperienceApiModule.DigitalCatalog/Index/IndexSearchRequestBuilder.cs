@@ -57,10 +57,12 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
             {
                 SearchRequest.IncludeFields = new List<string>() { };
             }
+
             if (!includeFields.IsNullOrEmpty())
             {
                 SearchRequest.IncludeFields.AddRange(includeFields);
             }
+
             return this;
         }
 
@@ -71,15 +73,7 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
                 AddFiltersToSearchRequest(new IFilter[] { new IdsFilter { Values = ids.ToArray() } });
                 SearchRequest.Take = ids.Count();
             }
-            return this;
-        }
-        public IndexSearchRequestBuilder AddTermsIfNotExists(IEnumerable<string> terms)
-        {
-            if (terms != null)
-            {
-                var termsFields = GetFiltersFromTerm(terms);
-                AddFiltersToSearchRequest(termsFields, skipIfExists: true);
-            }
+
             return this;
         }
 
@@ -89,6 +83,17 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
             {
                 var termsFields = GetFiltersFromTerm(terms);
                 AddFiltersToSearchRequest(termsFields);
+            }
+
+            return this;
+        }
+
+        public IndexSearchRequestBuilder AddTerms(IEnumerable<string> terms, bool skipIfExists)
+        {
+            if (terms != null)
+            {
+                var termsFields = GetFiltersFromTerm(terms);
+                AddFiltersToSearchRequest(termsFields, skipIfExists);
             }
 
             return this;
@@ -158,12 +163,15 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
             return this;
         }
 
-        public IndexSearchRequestBuilder ParseFacets(ISearchPhraseParser phraseParser, string facetPhrase, IList<AggregationRequest> predefinedAggregations = null)
+        public IndexSearchRequestBuilder ParseFacets(ISearchPhraseParser phraseParser,
+            string facetPhrase,
+            IList<AggregationRequest> predefinedAggregations = null)
         {
             if (phraseParser == null)
             {
                 throw new ArgumentNullException(nameof(phraseParser));
             }
+
             SearchRequest.Aggregations = predefinedAggregations ?? new List<AggregationRequest>();
 
             if (string.IsNullOrEmpty(facetPhrase))
@@ -172,7 +180,8 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
             }
 
             // PT-1613: Support aliases for Facet expressions e.g price.usd[TO 200) as price_below_200
-            // PT-1613: Need to create a new  Antlr file with g4-lexer rules and generate parser especially for facets expression that will return proper AggregationRequests objects
+            // PT-1613: Need to create a new  Antlr file with g4-lexer rules and generate parser especially for facets expression
+            // that will return proper AggregationRequests objects
             var parseResult = phraseParser.Parse(facetPhrase);
 
             //Term facets
@@ -292,25 +301,34 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
 
                 aggr.Filter = aggr.Filter == null ? clonedFilter : aggr.Filter.And(clonedFilter);
             }
+
             return this;
         }
 
         public virtual SearchRequest Build()
         {
             //Apply multi-select facet search policy by default
-
             return SearchRequest;
         }
 
         private void AddFiltersToSearchRequest(IFilter[] filters, bool skipIfExists = false)
         {
             var childFilters = ((AndFilter)SearchRequest.Filter).ChildFilters;
+
             //Skip adding duplicate filters
             if (skipIfExists)
-            {                
-                var existsFiltersNames = childFilters.OfType<INamedFilter>().Select(x=>x.FieldName).Distinct().ToArray();
-                filters = filters.Where(x=> !(x is INamedFilter namedFilter && existsFiltersNames.Contains(namedFilter.FieldName, StringComparer.InvariantCultureIgnoreCase))).ToArray();
+            {
+                var existsFiltersNames = childFilters.OfType<INamedFilter>()
+                    .Select(x => x.FieldName)
+                    .Distinct()
+                    .ToArray();
+
+                var comparer = StringComparer.InvariantCultureIgnoreCase;
+                filters = filters
+                    .Where(x => !(x is INamedFilter filter && existsFiltersNames.Contains(filter.FieldName, comparer)))
+                    .ToArray();
             }
+
             childFilters.AddRange(filters);
         }
 
@@ -321,16 +339,15 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
             var nameValueDelimeter = new[] { ':' };
             var valuesDelimeter = new[] { ',' };
 
-            var result = terms.Select(item => item.Split(nameValueDelimeter, 2))
-                    .Where(item => item.Length == 2)
-                    .Select(item => new TermFilter
-                    {
-                        FieldName = item[0],
-                        Values = item[1].Split(valuesDelimeter, StringSplitOptions.RemoveEmptyEntries)
-                            .Select(x => x?.Replace(commaEscapeString, ","))
-                            .ToArray()
-                    }).ToArray<IFilter>();
-            return result;
+            return terms.Select(item => item.Split(nameValueDelimeter, 2))
+                .Where(item => item.Length == 2)
+                .Select(item => new TermFilter
+                {
+                    FieldName = item[0],
+                    Values = item[1].Split(valuesDelimeter, StringSplitOptions.RemoveEmptyEntries)
+                        .Select(x => x?.Replace(commaEscapeString, ","))
+                        .ToArray()
+                }).ToArray<IFilter>();
         }
     }
 }
