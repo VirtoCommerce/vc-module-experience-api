@@ -1,8 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
-using AutoMapper;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
-using VirtoCommerce.OrdersModule.Core.Services;
+using VirtoCommerce.OrdersModule.Core.Search.Indexed;
 using VirtoCommerce.SearchModule.Core.Services;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Queries
@@ -10,16 +9,13 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Queries
     public class SearchOrderQueryHandler : IQueryHandler<SearchOrderQuery, SearchOrderResponse>
     {
         private readonly ICustomerOrderAggregateRepository _customerOrderAggregateRepository;
-        private readonly IMapper _mapper;
         private readonly ISearchPhraseParser _searchPhraseParser;
-        private readonly ICustomerOrderSearchService _customerOrderSearchService;
+        private readonly IIndexedCustomerOrderSearchService _customerOrderSearchService;
 
-        public SearchOrderQueryHandler(IMapper mapper,
-            ISearchPhraseParser searchPhraseParser,
+        public SearchOrderQueryHandler(ISearchPhraseParser searchPhraseParser,
             ICustomerOrderAggregateRepository customerOrderAggregateRepository,
-            ICustomerOrderSearchService customerOrderSearchService)
+            IIndexedCustomerOrderSearchService customerOrderSearchService)
         {
-            _mapper = mapper;
             _searchPhraseParser = searchPhraseParser;
             _customerOrderAggregateRepository = customerOrderAggregateRepository;
             _customerOrderSearchService = customerOrderSearchService;
@@ -27,7 +23,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Queries
 
         public async Task<SearchOrderResponse> Handle(SearchOrderQuery request, CancellationToken cancellationToken)
         {
-            var searchCriteria = new CustomerOrderSearchCriteriaBuilder(_searchPhraseParser, _mapper)
+            var searchCriteria = new CustomerOrderSearchCriteriaBuilder(_searchPhraseParser)
                                         .ParseFilters(request.Filter)
                                         .WithCustomerId(request.CustomerId)
                                         .WithPaging(request.Skip, request.Take)
