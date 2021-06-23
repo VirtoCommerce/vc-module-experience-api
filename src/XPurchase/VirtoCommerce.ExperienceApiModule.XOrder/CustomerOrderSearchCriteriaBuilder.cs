@@ -1,5 +1,4 @@
 using System;
-using AutoMapper;
 using VirtoCommerce.OrdersModule.Core.Model;
 using VirtoCommerce.OrdersModule.Core.Model.Search;
 using VirtoCommerce.Platform.Core.Common;
@@ -10,23 +9,21 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder
     public class CustomerOrderSearchCriteriaBuilder
     {
         private readonly ISearchPhraseParser _phraseParser;
-        private readonly IMapper _mapper;
-        private readonly CustomerOrderSearchCriteria _searchCriteria;
+        private readonly CustomerOrderIndexedSearchCriteria _searchCriteria;
 
-        public CustomerOrderSearchCriteriaBuilder(ISearchPhraseParser phraseParser, IMapper mapper) : this()
+        public CustomerOrderSearchCriteriaBuilder(ISearchPhraseParser phraseParser) : this()
         {
             _phraseParser = phraseParser;
-            _mapper = mapper;
         }
 
         public CustomerOrderSearchCriteriaBuilder()
         {
-            _searchCriteria = AbstractTypeFactory<CustomerOrderSearchCriteria>.TryCreateInstance();
+            _searchCriteria = AbstractTypeFactory<CustomerOrderIndexedSearchCriteria>.TryCreateInstance();
         }
 
-        public virtual CustomerOrderSearchCriteria Build()
+        public virtual CustomerOrderIndexedSearchCriteria Build()
         {
-            return _searchCriteria.Clone() as CustomerOrderSearchCriteria;
+            return _searchCriteria.Clone() as CustomerOrderIndexedSearchCriteria;
         }
 
         public CustomerOrderSearchCriteriaBuilder ParseFilters(string filterPhrase)
@@ -40,15 +37,14 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder
                 throw new OperationCanceledException("phrase parser must be set");
             }
 
-            var parseResult = _phraseParser.Parse(filterPhrase);
-            _mapper.Map(parseResult.Filters, _searchCriteria);
+            _searchCriteria.Keyword = filterPhrase;
 
             return this;
         }
 
         public CustomerOrderSearchCriteriaBuilder WithCustomerId(string customerId)
         {
-            _searchCriteria.CustomerId = customerId ?? _searchCriteria.CustomerId;
+            _searchCriteria.Keyword = $"{_searchCriteria.Keyword} customerId:\"{customerId}\"";
             return this;
         }
 
