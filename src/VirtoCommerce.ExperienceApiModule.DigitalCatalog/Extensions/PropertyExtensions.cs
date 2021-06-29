@@ -2,9 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using VirtoCommerce.CatalogModule.Core.Model;
-using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.Platform.Core.Domain;
 
 namespace VirtoCommerce.XDigitalCatalog.Extensions
 {
@@ -28,11 +26,11 @@ namespace VirtoCommerce.XDigitalCatalog.Extensions
                                 return clonedValue;
                             }).First()
                         )
-                    : property.Values.Where(x => x.LanguageCode.EqualsInvariant(cultureName));
+                    : property.Values.Where(x => x.LanguageCode.EqualsInvariant(cultureName) || x.LanguageCode.IsNullOrEmpty());
 
                 return propertyValues
                     .Select(propertyValue => propertyValue.CopyPropertyWithValue(property))
-                    .DefaultIfEmpty((Property)property.Clone());
+                    .DefaultIfEmpty(property.CopyPropertyWithoutValues());
             }).ToList();
         }
 
@@ -43,5 +41,11 @@ namespace VirtoCommerce.XDigitalCatalog.Extensions
             return clonedProperty;
         }
 
+        private static Property CopyPropertyWithoutValues(this Property property)
+        {
+            var clonedProperty = (Property)property.Clone();
+            clonedProperty.Values = Array.Empty<PropertyValue>();
+            return clonedProperty;
+        }
     }
 }
