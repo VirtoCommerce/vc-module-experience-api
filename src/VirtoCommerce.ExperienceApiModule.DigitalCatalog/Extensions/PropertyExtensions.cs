@@ -8,6 +8,10 @@ namespace VirtoCommerce.XDigitalCatalog.Extensions
 {
     public static class PropertyExtensions
     {
+        /// <summary>
+        /// Flattens the tree-like structure of Property-PropertyValues into flat list of Properties,
+        /// with each Property having a single PropertyValue in its Values collection
+        /// </summary>
         public static IList<Property> ExpandByValues(this IEnumerable<Property> properties, string cultureName)
         {
             return properties.SelectMany(property =>
@@ -28,6 +32,7 @@ namespace VirtoCommerce.XDigitalCatalog.Extensions
                         )
                     : property.Values.Where(x => x.LanguageCode.EqualsInvariant(cultureName) || x.LanguageCode.IsNullOrEmpty());
 
+                // wrap each PropertyValue into a Property
                 return propertyValues
                     .Select(propertyValue => propertyValue.CopyPropertyWithValue(property))
                     .DefaultIfEmpty(property.CopyPropertyWithoutValues());
