@@ -108,7 +108,7 @@ namespace VirtoCommerce.XDigitalCatalog.Tests.Shemas
         }
 
         [Fact]
-        public void ProductType_Properties_SelectedLanguageNotFound_ShouldReturnFlatList()
+        public void ProductType_Properties_SelectedLanguageNotFound_ShouldReturnEmptyList()
         {
             // Arrange
             var propValue = _fixture
@@ -148,7 +148,7 @@ namespace VirtoCommerce.XDigitalCatalog.Tests.Shemas
             // Assert
             result.Should().BeOfType<List<Property>>();
             ((List<Property>)result).Count.Should().Be(1);
-            ((List<Property>)result).First().Values.First().Should().BeEquivalentTo(propValue);
+            ((List<Property>)result).First().Values.Should().BeEmpty();
         }
 
         [Fact]
