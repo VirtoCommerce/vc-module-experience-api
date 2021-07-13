@@ -105,7 +105,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Services
             // override only values of a specific locale for multilingual property. Except dictionary properties.
             if (source.IsMultilingual && !source.IsDictionary)
             {
-                var comparer = AnonymousComparer.Create((DynamicPropertyObjectValue x) => x.Locale);
+                var comparer = AnonymousComparer.Create((DynamicPropertyObjectValue x) => x.Locale ?? string.Empty);
 
                 // fill missing values with the original ones. (That enables single value updates)
                 source.Values = source.Values.Union(target.Values, comparer).ToArray();
