@@ -32,7 +32,6 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
 
             #endregion
 
-
             _ = schema.Query.AddField(new FieldType
             {
                 Name = "countries",
