@@ -21,13 +21,11 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
             #region countries query
 
 #pragma warning disable S125 // Sections of code should not be commented out
-            /*
-                         {
-                          query {
-                                countries
-                            }
-                         }                         
-                         */
+            /*                         
+               query {
+                     countries
+               }                         
+            */
 #pragma warning restore S125 // Sections of code should not be commented out
 
             #endregion
