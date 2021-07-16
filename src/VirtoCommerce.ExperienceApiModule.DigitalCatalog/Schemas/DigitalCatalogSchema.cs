@@ -9,6 +9,7 @@ using GraphQL.Resolvers;
 using GraphQL.Types;
 using GraphQL.Types.Relay;
 using MediatR;
+using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
@@ -127,8 +128,8 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                    var store = await _storeService.GetByIdAsync(context.GetArgument<string>("storeId"));
                    context.UserContext["store"] = store;
 
-                    //PT-1606:  Need to check what there is no any alternative way to access to the original request arguments in sub selection
-                    context.CopyArgumentsToUserContext();
+                   //PT-1606:  Need to check what there is no any alternative way to access to the original request arguments in sub selection
+                   context.CopyArgumentsToUserContext();
 
                    var loader = _dataLoader.Context.GetOrAddBatchLoader<string, ExpCategory>("categoriesLoader", (ids) => LoadCategoriesAsync(_mediator, ids, context));
                    return loader.LoadAsync(context.GetArgument<string>("id"));
@@ -163,6 +164,25 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             });
 
             schema.Query.AddField(categoriesConnectionBuilder.FieldType);
+
+            var propertiesConnectionBuilder = GraphTypeExtenstionHelper.CreateConnection<PropertyType, object>()
+                .Name("properties")
+                .Argument<NonNullGraphType<StringGraphType>>("storeId", "The store id to get binded catalog")
+                .Argument<ListGraphType<PropertyTypeEnum>>("types", "The owner types (Catalog, Category, Product, Variation)")
+                .Unidirectional()
+                .PageSize(20);
+
+            propertiesConnectionBuilder.ResolveAsync(async context =>
+            {
+                var store = await _storeService.GetByIdAsync(context.GetArgument<string>("storeId"));
+                context.UserContext["catalog"] = store.Catalog;
+
+                //PT-1606:  Need to check what there is no any alternative way to access to the original request arguments in sub selection
+                context.CopyArgumentsToUserContext();
+                return await ResolvePropertiesConnectionAsync(_mediator, context);
+            });
+
+            schema.Query.AddField(propertiesConnectionBuilder.FieldType);
         }
 
         private static async Task<IDictionary<string, ExpProduct>> LoadProductsAsync(IMediator mediator, IEnumerable<string> ids, IResolveFieldContext context)
@@ -259,6 +279,26 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             var response = await mediator.Send(query);
 
             return new PagedConnection<ExpCategory>(response.Results, query.Skip, query.Take, response.TotalCount);
+        }
+
+        private static async Task<object> ResolvePropertiesConnectionAsync(IMediator mediator, IResolveConnectionContext<object> context)
+        {
+            var first = context.First;
+
+            var skip = Convert.ToInt32(context.After ?? 0.ToString());
+
+            var query = new SearchPropertiesQuery
+            {
+                Skip = skip,
+                Take = first ?? context.PageSize ?? 10,
+
+                CatalogId = (string)context.UserContext["catalog"],
+                Types = context.GetArgument<object[]>("types")
+            };
+
+            var response = await mediator.Send(query);
+
+            return new PagedConnection<Property>(response.Result.Results, query.Skip, query.Take, response.Result.TotalCount);
         }
     }
 }
