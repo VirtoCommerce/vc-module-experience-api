@@ -7,8 +7,6 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Queries
 {
     public class GetCountriesQueryHandler : IQueryHandler<GetCountriesQuery, GetCountriesResponse>,
         IQueryHandler<GetRegionsQuery, GetRegionsResponse>
-
-
     {
         private readonly ICountriesService _countriesService;
 
