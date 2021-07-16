@@ -7,8 +7,8 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
     {
         public CountryRegionType()
         {
-            Field(x => x.Id);
-            Field(x => x.Name);
+            Field(x => x.Id).Description("Code of country region. For example 'AL'.");
+            Field(x => x.Name).Description("Name of country region. For example 'Alabama'.");
         }
     }
 }
