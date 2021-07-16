@@ -183,6 +183,23 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             });
 
             schema.Query.AddField(propertiesConnectionBuilder.FieldType);
+
+            var propertyField = new FieldType
+            {
+                Name = "property",
+                Arguments = new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id", Description = "id of the property" }
+                ),
+                Type = GraphTypeExtenstionHelper.GetActualType<PropertyType>(),
+                Resolver = new AsyncFieldResolver<PropertyType, IDataLoaderResult<Property>>(context =>
+                {
+                    //PT-1606:  Need to check what there is no any alternative way to access to the original request arguments in sub selection
+                    context.CopyArgumentsToUserContext();
+                    var loader = _dataLoader.Context.GetOrAddBatchLoader<string, Property>("propertiesLoader", (ids) => LoadPropertiesAsync(_mediator, ids));
+                    return Task.FromResult(loader.LoadAsync(context.GetArgument<string>("id")));
+                })
+            };
+            schema.Query.AddField(propertyField);
         }
 
         private static async Task<IDictionary<string, ExpProduct>> LoadProductsAsync(IMediator mediator, IEnumerable<string> ids, IResolveFieldContext context)
@@ -205,6 +222,13 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             var response = await mediator.Send(query);
 
             return response.Categories.ToDictionary(x => x.Id);
+        }
+
+        protected virtual async Task<IDictionary<string, Property>> LoadPropertiesAsync(IMediator mediator, IEnumerable<string> ids)
+        {
+            var result = await mediator.Send(new LoadPropertiesQuery { Ids = ids });
+
+            return result.Properties;
         }
 
         private static async Task<object> ResolveProductsConnectionAsync(IMediator mediator, IResolveConnectionContext<object> context)

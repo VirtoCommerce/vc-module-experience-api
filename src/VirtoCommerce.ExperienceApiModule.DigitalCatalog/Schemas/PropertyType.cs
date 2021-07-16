@@ -59,6 +59,16 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 "valueId",
                 resolve: context => context.Source.Values.Select(x => x.ValueId).FirstOrDefault()
             );
+
+            /*
+            Field<ListGraphType<PropertyDictionaryItemType>>(
+                "PropertyDictItems",
+                resolve: context =>
+                {
+
+                });
+            */
+
         }
     }
 }
