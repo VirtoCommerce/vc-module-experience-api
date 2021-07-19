@@ -169,6 +169,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 .Name("properties")
                 .Argument<NonNullGraphType<StringGraphType>>("storeId", "The store id to get binded catalog")
                 .Argument<ListGraphType<PropertyTypeEnum>>("types", "The owner types (Catalog, Category, Product, Variation)")
+                .Argument<StringGraphType>("cultureName", "The language for which all localized property dictionary items will be returned")
                 .Unidirectional()
                 .PageSize(20);
 
