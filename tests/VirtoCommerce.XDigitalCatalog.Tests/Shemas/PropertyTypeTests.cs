@@ -21,10 +21,10 @@ namespace VirtoCommerce.XDigitalCatalog.Tests.Shemas
         }
 
         [Fact]
-        public void PropertyType_ShouldHavePropperFieldAmount()
+        public void PropertyType_ShouldHaveProperFieldAmount()
         {
             // Assert
-            _propertyType.Fields.Should().HaveCount(9);
+            _propertyType.Fields.Should().HaveCount(10);
         }
 
         [Fact]
