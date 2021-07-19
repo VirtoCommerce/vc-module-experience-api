@@ -1,6 +1,8 @@
 using System.Linq;
+using GraphQL;
 using GraphQL.Types;
 using VirtoCommerce.CatalogModule.Core.Model;
+using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 
 namespace VirtoCommerce.XDigitalCatalog.Schemas
 {
@@ -15,7 +17,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             Field<StringGraphType>("value",
                 resolve: context =>
                 {
-                    var cultureName = context.UserContext["cultureName"].ToString();
+                    var cultureName = context.GetArgumentOrValue<string>("cultureName");
                     return string.IsNullOrEmpty(cultureName) ? context.Source.Alias : context.Source.LocalizedValues.FirstOrDefault(x => x.LanguageCode == cultureName)?.Value ?? context.Source.Alias;
                 },
                 description: "Value alias.");

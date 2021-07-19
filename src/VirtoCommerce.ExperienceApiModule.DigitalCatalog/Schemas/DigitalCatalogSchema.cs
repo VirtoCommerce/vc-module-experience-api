@@ -191,7 +191,8 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             {
                 Name = "property",
                 Arguments = new QueryArguments(
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id", Description = "id of the property" }
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id", Description = "id of the property" },
+                    new QueryArgument<StringGraphType> { Name = "cultureName", Description = "The language for which all localized property dictionary items will be returned" }
                 ),
                 Type = GraphTypeExtenstionHelper.GetActualType<PropertyType>(),
                 Resolver = new AsyncFieldResolver<PropertyType, IDataLoaderResult<Property>>(context =>
