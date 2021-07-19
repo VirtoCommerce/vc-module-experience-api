@@ -22,7 +22,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
 
             return new LoadPropertiesResponse
             {
-                Properties = Properties.ToDictionary(x => x.Id)
+                Properties = properties.ToDictionary(x => x.Id)
             };
         }
     }
