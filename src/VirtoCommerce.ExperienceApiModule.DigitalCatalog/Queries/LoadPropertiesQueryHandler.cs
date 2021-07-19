@@ -17,7 +17,8 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
 
         public virtual async Task<LoadPropertiesResponse> Handle(LoadPropertiesQuery request, CancellationToken cancellationToken)
         {
-            var Properties = await _propertyService.GetByIdsAsync(request.Ids);
+            var properties = await _propertyService.GetByIdsAsync(request.Ids);
+
 
             return new LoadPropertiesResponse
             {
