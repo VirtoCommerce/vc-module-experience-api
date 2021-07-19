@@ -93,7 +93,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             Field<ListGraphType<BreadcrumbType>>("breadcrumbs", resolve: context =>
             {
-                
+
                 var store = context.GetArgumentOrValue<Store>("store");
                 var cultureName = context.GetValue<string>("cultureName");
 
@@ -101,7 +101,13 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             });
 
-            //Field<ListGraphType<PropertyType>>("properties")
+            Field<ListGraphType<PropertyType>>("properties", resolve: context =>
+            {
+
+                context.UserContext["catalog"] = context.GetArgumentOrValue<Store>("store").Catalog;
+                context.UserContext["categoryId"] = context.GetArgumentOrValue<string>("id");
+                return ResolvePropertiesConnectionAsync(mediator, context);
+            });
         }
 
         private static bool TryGetParentId(IResolveFieldContext<ExpCategory> context, out string parentId)
@@ -119,6 +125,20 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             var response = await mediator.Send(loadCategoryQuery);
             return response.Categories.ToDictionary(x => x.Id);
+        }
+
+        private static async Task<object> ResolvePropertiesConnectionAsync(IMediator mediator, IResolveFieldContext<object> context)
+        {
+            var query = new SearchPropertiesQuery
+            {
+                Take = int.MaxValue,
+                CatalogId = (string)context.UserContext["catalog"],
+                CategoryId = context.GetArgumentOrValue<string>("categoryId")
+            };
+
+            var response = await mediator.Send(query);
+
+            return response.Result.Results;
         }
 
     }
