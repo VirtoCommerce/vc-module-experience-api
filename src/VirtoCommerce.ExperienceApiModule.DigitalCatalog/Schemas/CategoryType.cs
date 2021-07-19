@@ -100,6 +100,8 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 return context.Source.Category.Outlines.GetBreadcrumbsFromOutLine(store, cultureName);
 
             });
+
+            //Field<ListGraphType<PropertyType>>("properties")
         }
 
         private static bool TryGetParentId(IResolveFieldContext<ExpCategory> context, out string parentId)
