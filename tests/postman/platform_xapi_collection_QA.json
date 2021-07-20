@@ -1,1 +1,1892 @@
-{"info":{"_postman_id":"cfd3c017-cbad-4e24-a1a1-01efaaac1eae","name":"RegressionXAPI New version","schema":"https://schema.getpostman.com/json/collection/v2.0.0/collection.json"},"item":[{"name":"mutations","item":[{"name":"addCoupon","id":"6cc454c2-4559-4624-a235-a3c2cc5f75fb","request":{"method":"POST","header":[],"body":{"mode":"graphql","graphql":{"query":"mutation addCoupon($command: InputAddCouponType!) {\naddCoupon(command: $command) {\nid\nname\ncustomerName\ncoupons {\ncode\nisAppliedSuccessfully\n}\ndiscounts{\ncoupon\n}\ndiscountTotal {\namount\n}\n}\n}","variables":"{\n\"command\": {\n\"cartId\": \"{{cartId}}\",\n\"storeId\": \"{{storeId}}\",\n\"cartName\": \"{{cartName}}\",\n\"userId\": \"{{userId}}\",\n\"cartType\": \"null\",\n\"currencyCode\": \"{{currencyCode}}\",\n\"cultureName\":\"{{cultureName}}\",\n\"couponCode\": \"Real30\"\n}\n}"}},"url":"{{url}}"},"response":[]},{"name":"addItem","id":"07852970-285e-446a-8016-8091655f5357","request":{"method":"POST","header":[],"body":{"mode":"graphql","graphql":{"query":"mutation addItem($command: InputAddItemType!) {\naddItem(command: $command) {\nid\nitems {\nid\nquantity\nlistPrice{\namount\n}\nnote\n}\ntotal{\namount\n}\ndiscountTotal{\namount\n}\n}\n}","variables":"{\n  \"after\": \"{{after}}\",\n  \"first\": {{first}},\n  \"query\": \"{{query}}\",\n  \"group\": \"\",\n  \"command\": {\n    \"cartId\": \"{{cartId}}\",\n    \"storeId\": \"{{storeId}}\",\n    \"cartName\": \"{{cartName}}\",\n    \"userId\": \"{{userName}}\",\n    \"currencyCode\": \"{{currencyCode}}\",\n    \"cultureName\": \"{{cultureName}}\",\n    \"cartType\": \"{{cartType}}\",\n    \"productId\": \"{{productId}}\",\n    \"quantity\": 50,\n    \"price\": 100.00,\n    \"comment\": \"{{comment}}\"\n  }\n}"}},"url":"{{url}}"},"response":[]},{"name":"addOrUpdateCartAddress","event":[{"listen":"test","script":{"type":"text/javascript","exec":["pm.test(\"Carts\", function () {\r","    var json = pm.response.json();\r","    pm.expect(json.data.addOrUpdateCartAddress).to.be.not.empty;\r","    pm.expect(json.data.addOrUpdateCartAddress.id).to.be.not.empty;\r","    pm.expect(json.errors).to.be.undefined;\r","});"]}}],"id":"d703ea0f-715e-4a7b-a349-07a3bf6a563e","request":{"method":"POST","header":[],"body":{"mode":"graphql","graphql":{"query":"mutation addOrUpdateCartAddress($command: InputAddOrUpdateCartAddressType!) {\naddOrUpdateCartAddress(command: $command) {\nid\naddresses {\naddressType\ncity\ncountryCode\ncountryName\nemail\nfirstName\nid\nlastName\nline1\nline2\nmiddleName\nname\norganization\nphone\npostalCode\nregionId\nregionName\nzip\nid\n}\n}\n}","variables":"{\n\"command\": {\n\"cartId\": \"{{cartId}}\",\n    \"storeId\": \"{{storeId}}\",\n    \"cartName\": \"{{cartName}}\",\n    \"userId\": \"{{userId}}\",\n    \"currencyCode\": \"{{currencyCode}}\",\n    \"cultureName\": \"{{cultureName}}\",\n    \"cartType\": \"{{cartType}}\",\n\"address\": {\n\"city\": \"City 17\",\n\"countryCode\": \"RU\",\n\"countryName\": \"Russia\",\n\"email\": \"3333addressCart email test\",\n\"firstName\": \"First test name\",\n\"key\": \"KeyTest\",\n\"lastName\": \"Last name test\",\n\"line1\": \"Address Line 1\",\n\"line2\": \"Address line 2\",\n\"middleName\": \"Test Middle Name\",\n\"name\": \"First name address\",\n\"organization\": \"OrganizationTestName\",\n\"phone\": \"88005553535\",\n\"postalCode\": \"111111\",\n\"regionId\": \"Test region\",\n\"regionName\": \"Region 15\",\n\"zip\": \"13413\",\n\"addressType\": 1\n}\n}\n}"}},"url":"{{url}}"},"response":[]},{"name":"addOrUpdateCartPayment","id":"b0dc96da-2e2b-4d61-8cf4-84113832fd2e","request":{"method":"POST","header":[],"body":{"mode":"graphql","graphql":{"query":"mutation addOrUpdateCartPayment($command: InputAddOrUpdateCartPaymentType!) {\naddOrUpdateCartPayment(command: $command) {\nid\npayments {\nid\nouterId\npaymentGatewayCode\nprice {\namount\n}\namount {\namount\n}\nbillingAddress {\nid\ncity\ncountryCode\ncountryName\nemail\nfirstName\nlastName\nline1\nline2\nmiddleName\nname\norganization\nphone\npostalCode\nregionId\nregionName\nzip\n}\n}\n}\n}","variables":"{\n\"command\": {\n\"cartId\": \"{{cartId}}\",\n\"storeId\": \"{{storeId}}\",\n\"cartName\": \"{{cartName}}\",\n\"userId\": \"{{userId}}\",\n\"currencyCode\": \"{{currencyCode}}\",\n\"cultureName\":\"{{cultureName}}\",\n\"cartType\": \"null\",\n\"payment\": {\n\"id\": \"paymentid_default_test_1\",\n\"outerId\": \"paymentouterud_default_test_1\",\n\"paymentGatewayCode\": \"DefaultManualPaymentMethod\",\n\"billingAddress\": {\n\"city\": \"City 17\",\n\"countryCode\": \"RU\",\n\"countryName\": \"Russia\",\n\"email\": \"addressCart email test\",\n\"firstName\": \"First test name\",\n\"id\": \"KeyTest\",\n\"key\": \"KeyTest\",\n\"lastName\": \"Last name test\",\n\"line1\": \"Address Line 1\",\n\"line2\": \"Address line 2\",\n\"middleName\": \"Test Middle Name\",\n\"name\": \"First name address\",\n\"organization\": \"OrganizationTestName\",\n\"phone\": \"88005553535\",\n\"postalCode\": \"111111\",\n\"regionId\": \"Test region\",\n\"regionName\": \"Region 15\",\n\"zip\": \"13413\",\n\"addressType\": 1\n},\n\"currency\": \"USD\",\n\"price\": \"1050\",\n\"amount\": \"1050\"\n}\n}\n}"}},"url":"{{url}}"},"response":[]},{"name":"addOrUpdateCartShipment","id":"137d22ea-6343-40c8-ad6b-a77d1ded3ea6","request":{"method":"POST","header":[],"body":{"mode":"graphql","graphql":{"query":"mutation addOrUpdateCartShipment($command:InputAddOrUpdateCartShipmentType!) {addOrUpdateCartShipment(command: $command) {\nshipments {\nid\nshipmentMethodCode\nshipmentMethodOption\nfulfillmentCenterId\nprice{\namount\n}\ndeliveryAddress {\nid\ncity\ncountryCode\ncountryName\nemail\nfirstName\nlastName\nline1\nline2\nmiddleName\nname\norganization\nphone\npostalCode\nregionId\nregionName\nzip\n}\n}\n}\n}","variables":"{\n\"command\": {\n\"cartId\": \"{{cartId}}\",\n\"storeId\": \"{{storeId}}\",\n\"cartName\": \"{{default}}}}\",\n\"userId\": \"{{userId}}\",\n\"currencyCode\": \"{{currencyCode}}\",\n\"cultureName\":\"{{cultureName}}\",\n\"cartType\": \"null\",\n\"shipment\": {\n\"id\": \"shipmentID_1\",\n\"fulfillmentCenterId\": \"142ba5568ae4454aad553ece41b9c3b5\",\n\"height\": \"123\",\n\"length\": \"432\",\n\"measureUnit\": \"mm\",\n\"shipmentMethodCode\": \"FixedRate\",\n\"shipmentMethodOption\": \"Ground\",\n\"volumetricWeight\": \"151\",\n\"weight\": \"15643\",\n\"weightUnit\": \"116\",\n\"width\": \"114\",\n\"deliveryAddress\": {\n\"city\": \"City 17\",\n\"countryCode\": \"RU\",\n\"countryName\": \"Russia\",\n\"email\": \"addressCart email test\",\n\"firstName\": \"First test name\",\n\"key\": \"KeyTest\",\n\"lastName\": \"Last name test\",\n\"line1\": \"Address Line 1\",\n\"line2\": \"Address line 2\",\n\"middleName\": \"Test Middle Name\",\n\"name\": \"First name address\",\n\"organization\": \"OrganizationTestName\",\n\"phone\": \"88005553535\",\n\"postalCode\": \"111111\",\n\"regionId\": \"Test region\",\n\"regionName\": \"Region 15\",\n\"zip\": \"13413\",\n\"addressType\": 1\n},\n\"currency\": \"USD\",\n\"price\": \"10\"\n}\n}\n}"}},"url":"{{url}}"},"response":[]},{"name":"cancelOrderPayment","id":"dd981ceb-1a01-4b4e-8242-08c8cbd2e9b4","request":{"method":"POST","header":[],"body":{"mode":"graphql","graphql":{"query":"mutation cancelOrderPayment ($command: InputCancelOrderPaymentType!) {\n    cancelOrderPayment (command: $command)\n}","variables":"{\n\"command\": {\n\"payment\": {\n\"id\":\"{{orderPaymentId}}\",\n\"operationType\": \"\",\n\"number\": \"{{paymentNumber}}\",\n\"isApproved\": true,\n\"isCancelled\": true,\n\"cancelReason\": \"\",\n\"customerId\": \"{{userId}}\",\n\"orderId\": \"{{orderId}}\",\n\"sum\": \"100\",\n\"taxTotal\": \"120\",\n\"currency\": \"USD\",\n\"paymentStatus\": 02\n}\n}\n}\n\n"}},"url":"{{url}}"},"response":[]},{"name":"changeCartItemComment","event":[{"listen":"test","script":{"type":"text/javascript","exec":["pm.test(\"Check after change lineitems comment\", function () {\r","    var data = pm.response.json();\r","    pm.expect(data.data.cart).to.not.eql(null);\r","    pm.expect(data.data.changeCartItemComment).to.be.an(\"object\");\r","    pm.expect(data.data.changeCartItemComment.id).to.be.a(\"string\");\r","    pm.expect(data.data.changeCartItemComment.items).to.not.empty\r","    pm.expect(data.data.changeCartItemComment.items[0].id).equal(pm.collectionVariables.get(\"lineItemId\"))\r","     pm.expect(data.data.changeCartItemComment.items[0].note).equal(pm.collectionVariables.get(\"lineItemsComment\"))\r","    \r","    pm.expect(data.errors).to.be.undefined;\r","});"]}}],"id":"8f96fe78-c213-4cd2-b613-eaca1cfe38fc","request":{"method":"POST","header":[],"body":{"mode":"graphql","graphql":{"query":"mutation changeCartItemComment($command: InputChangeCartItemCommentType) {\nchangeCartItemComment(command: $command) {\nid\ncomment\nitems {\nid\nlistPrice {\namount\n}\nnote\n}\n}\n}","variables":"{\n\"command\":{\n\"cartId\": \"{{cartId}}\",\n\"storeId\": \"{{storeId}}\",\n\"cartName\": \"{{cartName}}\",\n\"userId\": \"{{userId}}\",\n\"cartType\": \"null\",\n\"currencyCode\": \"{{currencyCode}}\",\n\"cultureName\":\"{{cultureName}}\",\n\"lineItemId\": \"{{lineItemId}}\",\n\"comment\": \"{{lineItemsComment}}\"\n}\n}"}},"url":"{{url}}"},"response":[]},{"name":"changeCartItemPrice","event":[{"listen":"test","script":{"type":"text/javascript","exec":["pm.test(\"Check after change price\", function () {\r","    var data = pm.response.json();\r","    pm.expect(data.data.cart).to.not.eql(null);\r","    pm.expect(data.data.changeCartItemPrice).to.be.an(\"object\");\r","    pm.expect(data.data.changeCartItemPrice.id).to.be.a(\"string\");\r","    pm.expect(data.data.changeCartItemPrice.items).to.not.empty\r","    pm.expect(data.data.changeCartItemPrice.items[0].id).equal(pm.collectionVariables.get(\"lineItemId\"))\r","     pm.expect(data.data.changeCartItemPrice.items[0].listPrice.amount).to.exist\r","    pm.expect(data.errors).to.be.undefined;\r","});"]}}],"id":"654f1abc-5bc3-4f4e-876f-0485fc94720e","request":{"method":"POST","header":[],"body":{"mode":"graphql","graphql":{"query":"mutation changeCartItemPrice($command: InputChangeCartItemPriceType!) {\nchangeCartItemPrice(command: $command) {\n    id\nitemsQuantity\ntotal {\namount\n}\nitems {\nid\nlistPrice{\namount\n}\nsalePrice{\namount\n}\nproduct {\nid\nprice {\nactual {\namount\n}\nlist {\namount\n}\nsale {\namount\n}\n}\n}\ndiscountTotal {\namount\n}\n}\n}\n}","variables":"{\n\"command\":{\n\"cartId\": \"{{cartId}}\",\n\"storeId\": \"{{storeId}}\",\n\"cartName\": \"{{cartName}}\",\n\"userId\": \"{{userId}}\",\n\"cartType\": \"null\",\n\"currencyCode\": \"{{currencyCode}}\",\n\"cultureName\":\"{{cultureName}}\",\n\"lineItemId\": \"{{lineItemId}}\",\n\"price\": {{price}}\n}\n}"}},"url":"{{url}}"},"response":[]},{"name":"changeCartItemQuantity","event":[{"listen":"test","script":{"type":"text/javascript","exec":["pm.test(\"Check after change qty\", function () {\r","    var data = pm.response.json();\r","    pm.expect(data.data.cart).to.not.eql(null);\r","    pm.expect(data.data.changeCartItemQuantity).to.be.an(\"object\");\r","    pm.expect(data.data.changeCartItemQuantity.id).to.be.a(\"string\");\r","    pm.expect(data.data.changeCartItemQuantity.items).to.not.empty\r","    pm.expect(data.data.changeCartItemQuantity.items[0].id).equal(pm.collectionVariables.get(\"lineItemId\"))\r","    pm.expect(data.errors).to.be.undefined;\r","});"]}}],"id":"02c5b66d-8780-4ee0-92e4-847cb21dd04d","request":{"method":"POST","header":[],"body":{"mode":"graphql","graphql":{"query":"mutation changeCartItemQuantity ($command: InputChangeCartItemQuantityType!) {\nchangeCartItemQuantity (command: $command) {\nid\nitems{\nid\nname\nquantity\n}\ntotal{\namount\n}\n}\n}","variables":"{\n\"command\":{\n\"cartId\": \"{{cartId}}\",\n\"storeId\": \"{{storeId}}\",\n\"cartName\": \"{{cartName}}\",\n\"userId\": \"{{userId}}\",\n\"cartType\": \"null\",\n\"currencyCode\": \"{{currencyCode}}\",\n\"cultureName\":\"{{cultureName}}\",\n\"lineItemId\": \"{{lineItemId}}\",\n\"quantity\": 5\n}\n}"}},"url":"{{url}}"},"response":[]},{"name":"changeComment","id":"ca6e30bc-2825-4b5e-b49e-593bd8fc2191","request":{"method":"POST","header":[],"body":{"mode":"graphql","graphql":{"query":"mutation changeComment ($command: InputChangeCommentType) {\nchangeComment (command: $command) {\nid\nname\ncomment\n}\n}","variables":"{\n  \"after\": \"{{after}}\",\n  \"first\": 0,\n  \"query\": \"{{query}}\",\n  \"group\": \"\",\n  \"command\": {\n    \"cartId\": \"{{cartId}}\",\n    \"storeId\": \"{{storeId}}\",\n    \"cartName\": \"{{cartName}}\",\n    \"userId\": \"{{userId}}\",\n    \"currencyCode\": \"{{currencyCode}}\",\n    \"cultureName\": \"{{cultureName}}\",\n    \"cartType\": \"{{cartType}}\",\n    \"comment\": \"Text\"\n  }\n}"}},"url":"{{url}}"},"response":[]},{"name":"changeOrderStatus","id":"6307cb27-6495-479b-91c1-6ec3d27b6f22","request":{"method":"POST","header":[],"body":{"mode":"graphql","graphql":{"query":"mutation changeOrderStatus ($command: InputChangeOrderStatusType!) {\n    changeOrderStatus (command: $command)\n}","variables":"{\n  \"command\": {\n    \"orderId\": \"{{orderId}}\",\n    \"status\": \"Paid\"\n  }\n}"}},"url":"{{url}}"},"response":[]},{"name":"clearCart","id":"75c96946-b8a3-4140-a68a-4c1838ef820c","request":{"method":"POST","header":[],"body":{"mode":"graphql","graphql":{"query":"mutation clearCart ($command: InputClearCartType!) {\nclearCart (command: $command) {\nid\ntotal{\namount\n}\n}\n}","variables":"{\n  \"command\": {\n    \"cartId\": \"{{cartId}}\",\n    \"storeId\": \"{{storeId}}\",\n    \"cartName\": \"{{cartName}}\",\n    \"userId\": \"{{userId}}\",\n    \"currencyCode\": \"{{currencyCode}}\",\n    \"cultureName\": \"{{cultureName}}\",\n    \"cartType\": \"{{cartType}}\"\n  }\n}"}},"url":"{{url}}"},"response":[]},{"name":"clearPayments","id":"ba89f2cd-04e2-4162-8746-2002c7f08fe9","request":{"method":"POST","header":[],"body":{"mode":"graphql","graphql":{"query":"mutation clearPayments ($command: InputClearPaymentsType!) {\nclearPayments (command: $command) {\nid\npayments{\nid\nouterId\namount{\namount\n}\nbillingAddress{\nline1\n}\n}\n}\n}","variables":"{\n  \"after\": \"{{after}}\",\n  \"first\": 0,\n  \"query\": \"{{query}}\",\n  \"group\": \"\",\n  \"command\": {\n    \"cartId\": \"{{cartId}}\",\n    \"storeId\": \"{{storeId}}\",\n    \"cartName\": \"{{cartName}}\",\n    \"userId\": \"{{userId}}\",\n    \"currencyCode\": \"{{currencyCode}}\",\n    \"cultureName\": \"{{cultureName}}\",\n    \"cartType\": \"{{cartType}}\"\n  }\n}"}},"url":"{{url}}"},"response":[]},{"name":"clearShipments","id":"ae9e37b2-d134-4c86-a33d-02152597b4b6","request":{"method":"POST","header":[],"body":{"mode":"graphql","graphql":{"query":"mutation clearShipments ($command: InputClearShipmentsType!) {\nclearShipments (command: $command) {\nid\nshipments{\nid\nshipmentMethodCode\nshipmentMethodOption\ndeliveryAddress{\nid\nline1\nline2\n}\n}\n}\n}","variables":"{\n  \"command\": {\n    \"cartId\": \"{{cartId}}\",\n    \"storeId\": \"{{storeId}}\",\n    \"cartName\": \"{{cartName}}\",\n    \"userId\": \"{{userId}}\",\n    \"currencyCode\": \"{{currencyCode}}\",\n    \"cultureName\": \"{{cultureName}}\",\n    \"cartType\": \"{{cartType}}\"\n  }\n}"}},"url":"{{url}}"},"response":[]},{"name":"confirmOrderPayment","id":"2bb6aa8e-e95e-49fd-bdcd-c65ac4462946","request":{"method":"POST","header":[],"body":{"mode":"graphql","graphql":{"query":"mutation confirmOrderPayment ($command: InputConfirmOrderPaymentType!) {\n    confirmOrderPayment (command: $command)\n}","variables":"{\n\"command\": {\n\"payment\": {\n\"id\":\"{{orderPaymentId}}\",\n\"operationType\": \"\",\n\"number\": \"{{paymentNumber}}\",\n\"isApproved\": true,\n\"isCancelled\": true,\n\"cancelReason\": \"\",\n\"customerId\": \"{{userId}}\",\n\"orderId\": \"{{orderId}}\",\n\"sum\": \"100\",\n\"taxTotal\": \"120\",\n\"currency\": \"USD\",\n\"paymentStatus\": 02\n}\n}\n}\n\n"}},"url":"{{url}}"},"response":[]},{"name":"createContact","id":"12dc2301-3d85-4d7a-97dc-328078a9896e","request":{"method":"POST","header":[],"body":{"mode":"graphql","graphql":{"query":"mutation createContact ($command: InputCreateContactType!) {\ncreateContact (command: $command) {\nfullName\nid\nlastName\nname\n}\n}","variables":"{\n\"command\": {\n\"name\": \"UserA\",\n\"memberType\": \"Contact\",\n\"addresses\": [],\n\"fullName\": \"UserA\",\n\"firstName\": \"UserA\",\n\"lastName\": \"UserA\"\n}\n}\n\n"}},"url":"{{url}}"},"response":[]},{"name":"createOrderFromCart","event":[{"listen":"test","script":{"type":"text/javascript","exec":["pm.test(\"Carts\", function () {\r","    var json = pm.response.json();\r","    pm.expect(json.data.createOrderFromCart).to.be.not.empty;\r","    pm.expect(json.data.createOrderFromCart.id).to.be.not.empty;\r","    pm.expect(json.errors).to.be.undefined;\r","});"]}}],"id":"1a8a2f47-b0cd-464b-acd4-b997c9d52524","request":{"method":"POST","header":[],"body":{"mode":"graphql","graphql":{"query":"mutation createOrderFromCart ($command: InputCreateOrderFromCartType!) {\ncreateOrderFromCart (command: $command) {\nid\nitems{\nid\nname\nquantity\nfulfillmentCenterId\nfulfillmentCenterName\n}\ntotal{\namount\n}\ndiscountTotal{\namount\n}\ntaxTotal{\namount\n}\ntotal{\namount\n}\n}\n}","variables":"{\n  \"after\": \"{{after}}\",\n  \"first\": 0,\n  \"query\": \"{{query}}\",\n  \"group\": \"\",\n  \"command\": {\n    \"cartId\": \"{{cartId}}\"\n  }\n}"}},"url":"{{url}}"},"response":[]},{"name":"createOrganization","id":"5cd4b36a-1c4a-49d4-87c6-295cf2dde473","request":{"method":"POST","header":[],"body":{"mode":"graphql","graphql":{"query":"mutation createOrganization ($command: InputCreateOrganizationType!) {\ncreateOrganization (command: $command) {\nid\nname\n}\n}","variables":"{\n\"command\": {\n\"name\": \"NewOrgADMIN\",\n\"addresses\": []\n}\n}"}},"url":"{{url}}"},"response":[]},{"name":"createUser","id":"bd099d40-8e0f-4a98-9cfe-41c2687feb8f","request":{"method":"POST","header":[],"body":{"mode":"graphql","graphql":{"query":"mutation createUser ($command: InputCreateUserType!) {\n    createUser (command: $command) {\n        errors {\n            code\n            description\n        }\n        succeeded\n      \n    }\n}","variables":"{\n\"command\": {\n\"createdBy\": \"eXp1\",\n\"email\": \"22eXp1@mail.com\",\n\"password\":\"eXp1@mail.com\",\n\"userName\": \"eXp122@mail.com\",\n\"userType\": \"Customer\"\n}\n}\n\n"}},"url":"{{url}}"},"response":[]},{"name":"deleteContact","id":"160d27c6-416d-4c80-94ce-f31a7f578957","request":{"method":"POST","header":[],"body":{"mode":"graphql","graphql":{"query":"mutation deleteContact ($command: InputDeleteContactType!) {\n    deleteContact (command: $command)\n}","variables":"{\n  \"command\": {\n    \"contactId\": \"{{contactId}}\"\n  }\n}"}},"url":"{{url}}"},"response":[]},{"name":"deleteUsers","id":"d6b233ed-7fda-4f60-bf99-564a0b90d079","request":{"method":"POST","header":[],"body":{"mode":"graphql","graphql":{"query":"mutation deleteUsers ($command: InputDeleteUserType!) {\n    deleteUsers (command: $command) {\n        errors {\n            code\n            description\n        }\n        succeeded\n    }\n}","variables":"{\n\"command\": {\n\"userNames\": [\n\"eXp1@mail.com\"\n]\n}\n}"}},"url":"{{url}}"},"response":[]},{"name":"mergeCart","id":"d4b32c47-fc4b-4882-bd34-57d2a533a621","request":{"method":"POST","header":[],"body":{"mode":"graphql","graphql":{"query":"mutation mergeCart ($command: InputMergeCartType!) {\nmergeCart (command: $command) {\nid\nitems{\nid\nname\nquantity\n}\ntotal{\namount\n}\n}\n}","variables":"{\n  \"after\": \"{{after}}\",\n  \"first\": 0,\n  \"query\": \"{{query}}\",\n  \"group\": \"\",\n  \"command\": {\n    \"cartId\": \"{{cartId}}\",\n    \"storeId\": \"{{storeId}}\",\n    \"cartName\": \"{{cartName}}\",\n    \"userId\": \"{{userId}}\",\n    \"currencyCode\": \"{{currencyCode}}\",\n    \"cultureName\": \"{{cultureName}}\",\n    \"cartType\": \"{{cartType}}\",\n    \"secondCartId\":\"{{secondCartId}}\"\n  }\n}"}},"url":"{{url}}"},"response":[]},{"name":"removeCart","id":"6e388699-f78b-423b-83c6-54c46e1a7e28","request":{"method":"POST","header":[],"body":{"mode":"graphql","graphql":{"query":"mutation removeCart ($command: InputRemoveCartType!) {\n    removeCart (command: $command)\n}","variables":"{\n  \"command\": {\n    \"cartId\": \"{{cartId}}\"\n  }\n}"}},"url":"{{url}}"},"response":[]},{"name":"removeCartAddress","id":"bc870ba2-06ad-4234-b2fb-b6e3f9c94338","request":{"method":"POST","header":[],"body":{"mode":"graphql","graphql":{"query":"mutation removeCartAddress ($command: InputRemoveCartAddressType!) {\nremoveCartAddress (command: $command) {\nid\naddresses{\nid\n}\n}\n}","variables":"{\n  \"after\": \"{{after}}\",\n  \"first\": 0,\n  \"query\": \"{{query}}\",\n  \"group\": \"\",\n  \"command\": {\n    \"cartId\": \"{{cartId}}\",\n    \"storeId\": \"{{storeId}}\",\n    \"cartName\": \"{{cartName}}\",\n    \"userId\": \"{{userId}}\",\n    \"currencyCode\": \"{{currencyCode}}\",\n    \"cultureName\": \"{{cultureName}}\",\n    \"cartType\": \"{{cartType}}\",\n    \"addressId\": \"KeyTest\"\n  }\n}"}},"url":"{{url}}"},"response":[]},{"name":"removeCartItem","event":[{"listen":"test","script":{"type":"text/javascript","exec":["pm.test(\"Check after remove lineitems\", function () {\r","    var data = pm.response.json();\r","    pm.expect(data.data.cart).to.not.eql(null);\r","    pm.expect(data.data.removeCartItem).to.be.an(\"object\");\r","    pm.expect(data.data.removeCartItem.items).to.not.empty\r","    pm.expect(data.errors).to.be.undefined;\r","});"]}}],"id":"c5d075bb-e6fd-48de-b786-1863bff90db0","request":{"method":"POST","header":[],"body":{"mode":"graphql","graphql":{"query":"mutation removeCartItem ($command: InputRemoveItemType!) {\nremoveCartItem (command: $command) {\nitems{\nid\nquantity\nproduct{\nid\n}\n}\n}\n}","variables":"{\n\"command\":{\n\"cartId\": \"{{cartId}}\",\n\"storeId\": \"{{storeId}}\",\n\"cartName\": \"{{cartName}}\",\n\"userId\": \"{{userId}}\",\n\"cartType\": \"null\",\n\"currencyCode\": \"{{currencyCode}}\",\n\"cultureName\":\"{{cultureName}}\",\n\"lineItemId\": \"{{lineItemId}}\"\n}\n}"}},"url":"{{url}}"},"response":[]},{"name":"removeCoupon","id":"2378c81a-f377-49f4-a080-188e4982c445","request":{"method":"POST","header":[],"body":{"mode":"graphql","graphql":{"query":"mutation removeCoupon($command: InputRemoveCouponType!) {\nremoveCoupon(command: $command) {\nid\nname\ncustomerName\ncoupons {\ncode\nisAppliedSuccessfully\n}\ndiscounts{\ncoupon\n}\ndiscountTotal {\namount\n}\n}\n}","variables":"{\n\"command\": {\n\"cartId\": \"{{cartId}}\",\n\"storeId\": \"{{storeId}}\",\n\"cartName\": \"{{cartName}}\",\n\"userId\": \"{{userId}}\",\n\"cartType\": \"null\",\n\"currencyCode\": \"{{currencyCode}}\",\n\"cultureName\":\"{{cultureName}}\",\n\"couponCode\": \"Real30\"\n}\n}"}},"url":"{{url}}"},"response":[]},{"name":"removeShipment","id":"016341e9-dc18-415b-bf7d-49d5f49df412","request":{"method":"POST","header":[],"body":{"mode":"graphql","graphql":{"query":"mutation removeShipment ($command: InputRemoveShipmentType!) {\nremoveShipment (command: $command) {\nid\nshipments{\nid\nshipmentMethodCode\nshipmentMethodOption\ndeliveryAddress{\nid\nline1\nline2\n}\n}\n}\n}","variables":"{\n  \"command\": {\n    \"cartId\": \"{{cartId}}\",\n    \"storeId\": \"{{storeId}}\",\n    \"cartName\": \"{{cartName}}\",\n    \"userId\": \"{{userId}}\",\n    \"currencyCode\": \"{{currencyCode}}\",\n    \"cultureName\": \"{{cultureName}}\",\n    \"cartType\": \"{{cartType}}\",\n    \"shipmentId\": \"shipmentID_1\"\n  }\n}"}},"url":"{{url}}"},"response":[]},{"name":"updateAddresses","id":"46b48526-e175-4b04-8919-40445b68105c","request":{"method":"POST","header":[],"body":{"mode":"graphql","graphql":{"query":"mutation updateAddresses ($command: InputUpdateContactAddressType!) {\nupdateAddresses (command: $command) {\nfirstName\nlastName\naddresses { key city countryCode countryName email firstName lastName line1 line2 middleName name phone postalCode regionId regionName zip }\n}\n}","variables":"{\n\"command\": {\n\"contactId\":\"{{contactId}}\",\n\"addresses\": [{\n\"addressType\": 2,\n\"city\": \"1Thousand oaks 25\",\n\"countryCode\": \"USA\",\n\"countryName\": \"United States\",\n\"email\": \"alivemenone@gmail.com\",\n\"firstName\": \"Steven\",\n\"lastName\": \"Woodward\",\n\"line1\": \"1888, colgate dr\",\n\"name\": \"Steven Woodward 1888, colgate dr Thousand oaks California 91360 United States\",\n\"postalCode\": \"91360\",\n\"regionId\": \"CA\",\n\"regionName\": \"California\"\n}]\n}\n}"}},"url":"{{url}}"},"response":[]},{"name":"updateContact","id":"9563f697-2064-4ab9-a56b-cf040399bf17","request":{"method":"POST","header":[],"body":{"mode":"graphql","graphql":{"query":"mutation updateContact ( $command: InputUpdateContactType!) {\nupdateContact (command: $command) {\nfullName\nid\nlastName\nname\n}\n}","variables":"{\n\"command\": {\n\"id\": \"{{contactId}}\",\n\"name\": \"UserA\",\n\"memberType\": \"Contact\",\n\"addresses\": [],\n\"fullName\": \"UserA111\",\n\"firstName\": \"UserA\",\n\"lastName\": \"UserA\"\n}\n}"}},"url":"{{url}}"},"response":[]},{"name":"updateOrganization","id":"f7539317-b58a-4db8-89c4-f38e2384ba20","request":{"method":"POST","header":[],"body":{"mode":"graphql","graphql":{"query":"mutation updateOrganization ($after: String, $first: Int, $searchPhrase: String, $after1: String, $first1: Int, $searchPhrase1: String, $command: InputUpdateOrganizationType!) {\n    updateOrganization (command: $command) {\n        addresses {\n            addressType\n            city\n            countryCode\n            countryName\n            email\n            firstName\n            key\n            lastName\n            line1\n            line2\n            middleName\n            name\n            organization\n            phone\n            postalCode\n            regionId\n            regionName\n            zip\n        }\n        businessCategory\n        contacts (after: $after1, first: $first1, searchPhrase: $searchPhrase1) {\n            edges {\n                cursor\n                node {\n                    addresses {\n                        addressType\n                        city\n                        countryCode\n                        countryName\n                        email\n                        firstName\n                        key\n                        lastName\n                        line1\n                        line2\n                        middleName\n                        name\n                        organization\n                        phone\n                        postalCode\n                        regionId\n                        regionName\n                        zip\n                    }\n                    birthDate\n                    firstName\n                    fullName\n                    id\n                    lastName\n                    memberType\n                    middleName\n                    name\n                    organizationId\n                    organizations {\n                        businessCategory\n                        description\n                        emails\n                        groups\n                        id\n                        memberType\n                        name\n                        outerId\n                        ownerId\n                        parentId\n                        phones\n                        seoObjectType\n                    }\n                    organizationsIds\n                    outerId\n                    phones\n                    securityAccounts {\n                        accessFailedCount\n                        createdBy\n                        createdDate\n                        email\n                        emailConfirmed\n                        id\n                        isAdministrator\n                        lockoutEnabled\n                        lockoutEnd\n                        memberId\n                        modifiedBy\n                        modifiedDate\n                        normalizedEmail\n                        normalizedUserName\n                        passwordExpired\n                        permissions\n                        phoneNumber\n                        phoneNumberConfirmed\n                        photoUrl\n                        securityStamp\n                        storeId\n                        twoFactorEnabled\n                        userName\n                        userType\n                    }\n                }\n            }\n            items {\n                addresses {\n                    addressType\n                    city\n                    countryCode\n                    countryName\n                    email\n                    firstName\n                    key\n                    lastName\n                    line1\n                    line2\n                    middleName\n                    name\n                    organization\n                    phone\n                    postalCode\n                    regionId\n                    regionName\n                    zip\n                }\n                birthDate\n                firstName\n                fullName\n                id\n                lastName\n                memberType\n                middleName\n                name\n                organizationId\n                organizations {\n                    addresses {\n                        addressType\n                        city\n                        countryCode\n                        countryName\n                        email\n                        firstName\n                        key\n                        lastName\n                        line1\n                        line2\n                        middleName\n                        name\n                        organization\n                        phone\n                        postalCode\n                        regionId\n                        regionName\n                        zip\n                    }\n                    businessCategory\n                    contacts (after: $after, first: $first, searchPhrase: $searchPhrase) {\n                        totalCount\n                    }\n                    description\n                    emails\n                    groups\n                    id\n                    memberType\n                    name\n                    outerId\n                    ownerId\n                    parentId\n                    phones\n                    seoObjectType\n                }\n                organizationsIds\n                outerId\n                phones\n                securityAccounts {\n                    accessFailedCount\n                    contact {\n                        birthDate\n                        firstName\n                        fullName\n                        id\n                        lastName\n                        memberType\n                        middleName\n                        name\n                        organizationId\n                        organizationsIds\n                        outerId\n                        phones\n                    }\n                    createdBy\n                    createdDate\n                    email\n                    emailConfirmed\n                    id\n                    isAdministrator\n                    lockoutEnabled\n                    lockoutEnd\n                    memberId\n                    modifiedBy\n                    modifiedDate\n                    normalizedEmail\n                    normalizedUserName\n                    passwordExpired\n                    permissions\n                    phoneNumber\n                    phoneNumberConfirmed\n                    photoUrl\n                    roles {\n                        description\n                        id\n                        name\n                        normalizedName\n                        permissions\n                    }\n                    securityStamp\n                    storeId\n                    twoFactorEnabled\n                    userName\n                    userType\n                }\n            }\n            pageInfo {\n                endCursor\n                hasNextPage\n                hasPreviousPage\n                startCursor\n            }\n            totalCount\n        }\n        description\n        emails\n        groups\n        id\n        memberType\n        name\n        outerId\n        ownerId\n        parentId\n        phones\n        seoObjectType\n    }\n}","variables":"{\n\"command\": {\n\"id\": \"{{organizationId}}\",\n\"name\": \"org2.com\"\n}\n}"}},"url":"{{url}}"},"response":[]},{"name":"updateRole","id":"185c43b6-8db0-4adf-82c4-d16ba63b95d2","request":{"method":"POST","header":[],"body":{"mode":"graphql","graphql":{"query":"mutation updateRole ($command: InputUpdateRoleType!) {\n    updateRole (command: $command) {\n        errors {\n            code\n            description\n        }\n        succeeded\n    }\n}","variables":"{\n\"command\":{\n\"id\": \"d1e0b7f9-32e4-4b2f-98c1-0406a4d48112\",\n\"description\":\"sdfdsfsdfsdf\",\n\"name\": \"CustomerUpdate_test111\",\n\"permissions\": [{\n\"name\": \"customer:update\",\n\"assignedScopes\": [{\n\"scope\": \"USERID\",\n\"type\": \"OnlyOrderResponsibleScope\"\n}]\n}]\n}\n}"}},"url":"{{url}}"},"response":[]},{"name":"updateUser","id":"c18c0955-3800-4ab7-ad03-139106d7a5e6","request":{"method":"POST","header":[],"body":{"mode":"graphql","graphql":{"query":"mutation updateUser ($command: InputUpdateUserType!) {\n    updateUser (command: $command) {\n        errors {\n            code\n            description\n        }\n        succeeded\n    }\n}","variables":"\n{\n\"command\":{\n\"isAdministrator\": false,\n\"userType\": \"Customer\",\n\"roles\": [],\n\"id\": \"1f301327-55d9-493e-91b6-3b4d4b375029\",\n\"userName\": \"eXp122@mail.com\",\n\"email\": \"_loGIN999@gmail.com\",\n\"securityStamp\": \"RandomData\",\n\"storeId\":\"Electronics\",\n\"memberId\":\"0876fd33-d9db-4e01-9118-1b7bc9a8b063\"\n}\n}"}},"url":"{{url}}"},"response":[]},{"name":"validateCoupon","id":"f2935cc8-763b-41d3-baff-7d04171c36e3","request":{"method":"POST","header":[],"body":{"mode":"graphql","graphql":{"query":"mutation validateCoupon ($command: InputValidateCouponType!) {\n    validateCoupon (command: $command)\n}","variables":"{\n  \"command\": {\n    \"cartId\": \"{{cartId}}\",\n    \"storeId\": \"{{storeId}}\",\n    \"cartName\": \"{{cartName}}\",\n    \"userId\": \"{{userId}}\",\n    \"currencyCode\": \"{{currencyCode}}\",\n    \"cultureName\": \"{{cultureName}}\",\n    \"cartType\": \"{{cartType}}\",\n    \"coupon\": \"Real30\"\n  }\n}"}},"url":"{{url}}"},"response":[]},{"name":"Add dynamic property to cart","id":"1eb37d8f-2be4-4726-8b5d-095334ab8382","request":{"method":"POST","header":[],"body":{"mode":"graphql","graphql":{"query":"mutation updateCartDynamicProperties($command: InputUpdateCartDynamicPropertiesType!) {\r\nupdateCartDynamicProperties(command: $command) {\r\nid\r\ndynamicProperties {\r\nname\r\nvalue\r\nvalueType\r\n\r\ndictionaryItem {\r\nlabel\r\nname\r\nid\r\n}\r\n}\r\n}\r\n} ","variables":" {\r\n\"command\": {\r\n\"storeId\": \"{{storeId}}\",\r\n\"userId\": \"{{userId}}\",\r\n\"currencyCode\": \"{{currencyCode}}\",\r\n\"cultureName\": \"{{cultureName}}\",\r\n\"cartName\": \"{{cartName}}\",\r\n\"dynamicProperties\": [\r\n{\r\n\"name\": \"Short Text Property\",\r\n\"value\": \"Test updated value\"\r\n},{\r\n\"name\": \"bool\",\r\n\"value\": \"true\"\r\n},{\r\n\"name\": \"date\",\r\n\"value\": \"2021-06-28\"\r\n},{\r\n\"name\": \"decimal\",\r\n\"value\": \"3.0\"\r\n},{\r\n\"name\": \"html\",\r\n\"value\": \"<a>link</a>\"\r\n},{\r\n\"name\": \"html multilingual\",\r\n\"value\": \"<a>link</a>\",\r\n\"locale\":\"fr-FR\"\r\n},{\r\n\"name\": \"image\",\r\n\"value\": \"link to image\"\r\n},{\r\n\"name\": \"integer\",\r\n\"value\": \"2\"\r\n},{\r\n\"name\": \"integer multivalue\",\r\n\"value\": \"3\"\r\n},{\r\n\"name\": \"integer multivalue\",\r\n\"value\": \"6\"\r\n},{\r\n\"name\": \"long text\",\r\n\"value\": \"Test updated value text\"\r\n},{\r\n\"name\": \"long text multilingual\",\r\n\"value\": \"Test updated value text FR \",\r\n\"locale\":\"fr-FR\"\r\n},{\r\n\"name\": \"short text dictionary\",\r\n\"value\": \"478ad546-be22-4904-be0b-209e85233513\"\r\n},{\r\n\"name\": \"short text multilingual\",\r\n\"value\": \"short text multilingual\",\r\n\"locale\":\"de-DE\"\r\n},{\r\n\"name\": \"short text multilingual multivalue\",\r\n\"value\": \"multivalue and multilingual\",\r\n\"locale\":\"en-US\"\r\n},{\r\n\"name\": \"short text multilingual multivalue\",\r\n\"value\": \"multivalue and multilingual11\",\r\n\"locale\":\"en-US\"\r\n},{\r\n\"name\": \"short text multilingual multivalue\",\r\n\"value\": \"multivalue and multilingual22\",\r\n\"locale\":\"en-US\"\r\n}   ]\r\n}\r\n}  "}},"url":"{{url}}"},"response":[]},{"name":"AddMultipleItems","id":"f86b2bb0-9c5a-4581-afa9-d5a049a9d5b1","request":{"method":"POST","header":[],"body":{"mode":"graphql","graphql":{"query":"mutation ($command: InputAddItemsType!) {\r\naddItemsCart (command: $command)\r\n{\r\nid\r\nitems {\r\nproductId,\r\nquantity\r\n}\r\n}\r\n}","variables":"{\r\n\"command\": {\r\n\"storeId\": \"{{storeId}}\",\r\n\"cartName\": \"{{cartName}}\",\r\n\"userId\": \"{{userId}}\",\r\n\"currencyCode\": \"{{currencyCode}}\",\r\n\"cultureName\": \"{{cultureName}}\",\r\n\"cartType\": \"\",\r\n\"cartId\": \"{{cartId}}\",\r\n\"cartItems\": [{\r\n\"productId\": \"44d62e31a783468fa161bccd1b7de19e\",\r\n\"quantity\": 2\r\n},\r\n{\r\n\"productId\": \"44d6222e31a783468fa161bccd1b7de19e\",\r\n\"quantity\": 5\r\n}]\r\n}\r\n}"}},"url":"{{url}}"},"response":[]},{"name":"Add dynamic properties for lineitems in cart","id":"046bce00-038b-457f-8e2b-bdfdca6bce3a","request":{"method":"POST","header":[],"body":{"mode":"graphql","graphql":{"query":"mutation updateCartItemDynamicProperties($command: InputUpdateCartItemDynamicPropertiesType!) {\r\nupdateCartItemDynamicProperties(command: $command) {\r\nid\r\nitems {\r\nid\r\ndynamicProperties {\r\nname\r\nvalue\r\nvalueType\r\ndictionaryItem {\r\nlabel\r\nname\r\nid\r\n}\r\n}\r\n}\r\n}\r\n}","variables":" {\r\n\"command\": {\r\n\"storeId\": \"{{storeId}}\",\r\n\"userId\": \"{{userId}}\",\r\n\"currencyCode\": \"{{currencyCode}}\",\r\n\"cultureName\": \"{{cultureName}}\",\r\n\"cartName\": \"{{cartName}}\",\r\n\"lineItemId\":\"{{lineItemId}}\",\r\n\"dynamicProperties\": [\r\n{\r\n\"name\": \"Short Text Property\",\r\n\"value\": \"Test updated value\"\r\n},{\r\n\"name\": \"bool\",\r\n\"value\": \"true\"\r\n},{\r\n\"name\": \"date\",\r\n\"value\": \"2021-06-28\"\r\n},{\r\n\"name\": \"decimal\",\r\n\"value\": \"3.0\"\r\n},{\r\n\"name\": \"html\",\r\n\"value\": \"<a>link</a>\"\r\n},{\r\n\"name\": \"html multilingual\",\r\n\"value\": \"<a>link</a>\",\r\n\"locale\":\"fr-FR\"\r\n},{\r\n\"name\": \"image\",\r\n\"value\": \"link to image\"\r\n},{\r\n\"name\": \"integer\",\r\n\"value\": \"2\"\r\n},{\r\n\"name\": \"integer multivalue\",\r\n\"value\": \"3\"\r\n},{\r\n\"name\": \"integer multivalue\",\r\n\"value\": \"6\"\r\n},{\r\n\"name\": \"long text\",\r\n\"value\": \"Test updated value text\"\r\n},{\r\n\"name\": \"long text multilingual\",\r\n\"value\": \"Test updated value text FR \",\r\n\"locale\":\"fr-FR\"\r\n},{\r\n\"name\": \"short text dictionary\",\r\n\"value\": \"beeeed44-18ce-4b93-89ed-308324ab6f0b\"\r\n},{\r\n\"name\": \"short text multilingual\",\r\n\"value\": \"short text multilingual\",\r\n\"locale\":\"de-DE\"\r\n},{\r\n\"name\": \"short text multilingual multivalue\",\r\n\"value\": \"multivalue and multilingual\",\r\n\"locale\":\"en-US\"\r\n},{\r\n\"name\": \"short text multilingual multivalue\",\r\n\"value\": \"multivalue and multilingual11\",\r\n\"locale\":\"en-US\"\r\n},{\r\n\"name\": \"short text multilingual multivalue\",\r\n\"value\": \"multivalue and multilingual22\",\r\n\"locale\":\"en-US\"\r\n}   ]\r\n}\r\n}  "}},"url":"{{url}}"},"response":[]},{"name":"Add dynamic properties for payments in cart","id":"b580f6bc-8c94-43db-b47d-004a81d1122f","request":{"method":"POST","header":[],"body":{"mode":"graphql","graphql":{"query":"mutation updateCartPaymentDynamicProperties($command: InputUpdateCartPaymentDynamicPropertiesType!) {\r\nupdateCartPaymentDynamicProperties(command: $command) {\r\nid\r\npayments {\r\nid\r\ndynamicProperties {\r\nname\r\nvalue\r\nvalueType\r\ndictionaryItem {\r\nlabel\r\nname\r\nid\r\n}\r\n}\r\n}\r\n}\r\n}","variables":" {\r\n\"command\": {\r\n\"storeId\": \"{{storeId}}\",\r\n\"userId\": \"{{userId}}\",\r\n\"currencyCode\": \"{{currencyCode}}\",\r\n\"cultureName\": \"{{cultureName}}\",\r\n\"cartName\": \"{{cartName}}\",\r\n\"paymentId\":\"{{paymentId}}\",\r\n\"dynamicProperties\": [\r\n{\r\n\"name\": \"Short Text Property\",\r\n\"value\": \"Test updated value\"\r\n},{\r\n\"name\": \"bool\",\r\n\"value\": \"true\"\r\n},{\r\n\"name\": \"date\",\r\n\"value\": \"2021-06-28\"\r\n},{\r\n\"name\": \"decimal\",\r\n\"value\": \"3.0\"\r\n},{\r\n\"name\": \"html\",\r\n\"value\": \"<a>link</a>\"\r\n},{\r\n\"name\": \"html multilingual\",\r\n\"value\": \"<a>link</a>\",\r\n\"locale\":\"fr-FR\"\r\n},{\r\n\"name\": \"image\",\r\n\"value\": \"link to image\"\r\n},{\r\n\"name\": \"integer\",\r\n\"value\": \"2\"\r\n},{\r\n\"name\": \"integer multivalue\",\r\n\"value\": \"3\"\r\n},{\r\n\"name\": \"integer multivalue\",\r\n\"value\": \"6\"\r\n},{\r\n\"name\": \"long text\",\r\n\"value\": \"Test updated value text\"\r\n},{\r\n\"name\": \"long text multilingual\",\r\n\"value\": \"Test updated value text FR \",\r\n\"locale\":\"fr-FR\"\r\n},{\r\n\"name\": \"short text dictionary\",\r\n\"value\": \"beeeed44-18ce-4b93-89ed-308324ab6f0b\"\r\n},{\r\n\"name\": \"short text multilingual\",\r\n\"value\": \"short text multilingual\",\r\n\"locale\":\"de-DE\"\r\n},{\r\n\"name\": \"short text multilingual multivalue\",\r\n\"value\": \"multivalue and multilingual\",\r\n\"locale\":\"en-US\"\r\n},{\r\n\"name\": \"short text multilingual multivalue\",\r\n\"value\": \"multivalue and multilingual11\",\r\n\"locale\":\"en-US\"\r\n},{\r\n\"name\": \"short text multilingual multivalue\",\r\n\"value\": \"multivalue and multilingual22\",\r\n\"locale\":\"en-US\"\r\n}   ]\r\n}\r\n}  "}},"url":"{{url}}"},"response":[]},{"name":"Add dynamic properties for shipments in cart","id":"971c0988-d770-45ef-9bdf-838b7b0bc919","request":{"method":"POST","header":[],"body":{"mode":"graphql","graphql":{"query":"mutation updateCartShipmentDynamicProperties($command: InputUpdateCartShipmentDynamicPropertiesType!) {\r\nupdateCartShipmentDynamicProperties(command: $command) {\r\nid\r\nshipments{\r\nid\r\ndynamicProperties {\r\nname\r\nvalue\r\nvalueType\r\ndictionaryItem {\r\nlabel\r\nname\r\nid\r\n}\r\n}\r\n}\r\n}\r\n}","variables":" {\r\n\"command\": {\r\n\"storeId\": \"{{storeId}}\",\r\n\"userId\": \"{{userId}}\",\r\n\"currencyCode\": \"{{currencyCode}}\",\r\n\"cultureName\": \"{{cultureName}}\",\r\n\"cartName\": \"{{cartName}}\",\r\n\"shipmentId\":\"{{shipmentId}}\",\r\n\"dynamicProperties\": [\r\n{\r\n\"name\": \"Short Text Property\",\r\n\"value\": \"Test updated value\"\r\n},{\r\n\"name\": \"bool\",\r\n\"value\": \"true\"\r\n},{\r\n\"name\": \"date\",\r\n\"value\": \"2021-06-28\"\r\n},{\r\n\"name\": \"decimal\",\r\n\"value\": \"3.0\"\r\n},{\r\n\"name\": \"html\",\r\n\"value\": \"<a>link</a>\"\r\n},{\r\n\"name\": \"html multilingual\",\r\n\"value\": \"<a>link</a>\",\r\n\"locale\":\"fr-FR\"\r\n},{\r\n\"name\": \"image\",\r\n\"value\": \"link to image\"\r\n},{\r\n\"name\": \"integer\",\r\n\"value\": \"2\"\r\n},{\r\n\"name\": \"integer multivalue\",\r\n\"value\": \"3\"\r\n},{\r\n\"name\": \"integer multivalue\",\r\n\"value\": \"6\"\r\n},{\r\n\"name\": \"long text\",\r\n\"value\": \"Test updated value text\"\r\n},{\r\n\"name\": \"long text multilingual\",\r\n\"value\": \"Test updated value text FR \",\r\n\"locale\":\"fr-FR\"\r\n},{\r\n\"name\": \"short text dictionary\",\r\n\"value\": \"beeeed44-18ce-4b93-89ed-308324ab6f0b\"\r\n},{\r\n\"name\": \"short text multilingual\",\r\n\"value\": \"short text multilingual\",\r\n\"locale\":\"de-DE\"\r\n},{\r\n\"name\": \"short text multilingual multivalue\",\r\n\"value\": \"multivalue and multilingual\",\r\n\"locale\":\"en-US\"\r\n},{\r\n\"name\": \"short text multilingual multivalue\",\r\n\"value\": \"multivalue and multilingual11\",\r\n\"locale\":\"en-US\"\r\n},{\r\n\"name\": \"short text multilingual multivalue\",\r\n\"value\": \"multivalue and multilingual22\",\r\n\"locale\":\"en-US\"\r\n}   ]\r\n}\r\n}  "}},"url":"{{url}}"},"response":[]},{"name":"Add dynamic properties for order","id":"6788e235-9c16-4d41-95f1-4262ba4f8dde","request":{"method":"POST","header":[],"body":{"mode":"graphql","graphql":{"query":"mutation updateOrderDynamicProperties($command: InputUpdateOrderDynamicPropertiesType!) {   updateOrderDynamicProperties(command: $command) {     \r\nid     \r\nnumber     \r\ndynamicProperties { \r\nname \r\nvalue \r\nvalueType\r\ndynamicProperty {\r\nname\r\nlabel\r\nvalueType\r\n }\r\ndictionaryItem {\r\nlabel \r\nname\r\nid\r\n}}   } }","variables":" {\r\n\"command\": {\r\n\"orderId\": \"{{orderId}}\",\r\n\"dynamicProperties\": [\r\n{\r\n\"name\": \"Short Text Property\",\r\n\"value\": \"Test updated value\"\r\n},{\r\n\"name\": \"bool\",\r\n\"value\": \"true\"\r\n},{\r\n\"name\": \"date\",\r\n\"value\": \"2021-06-28\"\r\n},{\r\n\"name\": \"decimal\",\r\n\"value\": \"3.0\"\r\n},{\r\n\"name\": \"html\",\r\n\"value\": \"<a>link</a>\"\r\n},{\r\n\"name\": \"html multilingual\",\r\n\"value\": \"<a>link</a>\",\r\n\"locale\":\"fr-FR\"\r\n},{\r\n\"name\": \"image\",\r\n\"value\": \"link to image\"\r\n},{\r\n\"name\": \"integer\",\r\n\"value\": \"2\"\r\n},{\r\n\"name\": \"integer multivalue\",\r\n\"value\": \"3\"\r\n},{\r\n\"name\": \"integer multivalue\",\r\n\"value\": \"6\"\r\n},{\r\n\"name\": \"long text\",\r\n\"value\": \"Test updated value text\"\r\n},{\r\n\"name\": \"long text multilingual\",\r\n\"value\": \"Test updated value text FR \",\r\n\"locale\":\"fr-FR\"\r\n},{\r\n\"name\": \"short text dictionary\",\r\n\"value\": \"beeeed44-18ce-4b93-89ed-308324ab6f0b\"\r\n},{\r\n\"name\": \"short text multilingual\",\r\n\"value\": \"short text multilingual\",\r\n\"locale\":\"de-DE\"\r\n},{\r\n\"name\": \"short text multilingual multivalue\",\r\n\"value\": \"multivalue and multilingual\",\r\n\"locale\":\"en-US\"\r\n},{\r\n\"name\": \"short text multilingual multivalue\",\r\n\"value\": \"multivalue and multilingual11\",\r\n\"locale\":\"en-US\"\r\n},{\r\n\"name\": \"short text multilingual multivalue\",\r\n\"value\": \"multivalue and multilingual22\",\r\n\"locale\":\"en-US\"\r\n}   ]\r\n}\r\n}  "}},"url":"{{url}}"},"response":[]},{"name":"Add dynamic properties for shipment in order","id":"0b96b16c-4a12-4419-b599-1bfa9af0f1aa","request":{"method":"POST","header":[],"body":{"mode":"graphql","graphql":{"query":"mutation updateOrderShipmentDynamicProperties($command: InputUpdateOrderShipmentDynamicPropertiesType!) {\r\n\r\n    updateOrderShipmentDynamicProperties(command: $command) {\r\n\r\n        number\r\n\r\n        shipments {\r\n\r\n            id\r\n\r\n            dynamicProperties {\r\n\r\n                name \r\n\r\n                value \r\n\r\n                valueType\r\n\r\n                dictionaryItem {\r\n\r\n                    label \r\n\r\n                    name \r\n\r\n                    id\r\n\r\n                }\r\n\r\n            }\r\n\r\n        }\r\n\r\n    }\r\n\r\n}","variables":" {\r\n\"command\": {\r\n\"orderId\": \"{{orderId}}\",\r\n\"shipmentId\": \"{{orderShipmentId}}\",\r\n\"dynamicProperties\": [\r\n{\r\n\"name\": \"Short Text Property\",\r\n\"value\": \"Test updated value\"\r\n},{\r\n\"name\": \"bool\",\r\n\"value\": \"true\"\r\n},{\r\n\"name\": \"date\",\r\n\"value\": \"2021-06-28\"\r\n},{\r\n\"name\": \"decimal\",\r\n\"value\": \"3.0\"\r\n},{\r\n\"name\": \"html\",\r\n\"value\": \"<a>link</a>\"\r\n},{\r\n\"name\": \"html multilingual\",\r\n\"value\": \"<a>link</a>\",\r\n\"locale\":\"fr-FR\"\r\n},{\r\n\"name\": \"image\",\r\n\"value\": \"link to image\"\r\n},{\r\n\"name\": \"integer\",\r\n\"value\": \"2\"\r\n},{\r\n\"name\": \"integer multivalue\",\r\n\"value\": \"3\"\r\n},{\r\n\"name\": \"integer multivalue\",\r\n\"value\": \"6\"\r\n},{\r\n\"name\": \"long text\",\r\n\"value\": \"Test updated value text\"\r\n},{\r\n\"name\": \"long text multilingual\",\r\n\"value\": \"Test updated value text FR \",\r\n\"locale\":\"fr-FR\"\r\n},{\r\n\"name\": \"short text dictionary\",\r\n\"value\": \"beeeed44-18ce-4b93-89ed-308324ab6f0b\"\r\n},{\r\n\"name\": \"short text multilingual\",\r\n\"value\": \"short text multilingual\",\r\n\"locale\":\"de-DE\"\r\n},{\r\n\"name\": \"short text multilingual multivalue\",\r\n\"value\": \"multivalue and multilingual\",\r\n\"locale\":\"en-US\"\r\n},{\r\n\"name\": \"short text multilingual multivalue\",\r\n\"value\": \"multivalue and multilingual11\",\r\n\"locale\":\"en-US\"\r\n},{\r\n\"name\": \"short text multilingual multivalue\",\r\n\"value\": \"multivalue and multilingual22\",\r\n\"locale\":\"en-US\"\r\n}   ]\r\n}\r\n}  "}},"url":"{{url}}"},"response":[]},{"name":"Add dynamic properties for payments in order","id":"33bd82ca-a9f7-4f65-a4d0-61d2d48d0f9c","request":{"method":"POST","header":[],"body":{"mode":"graphql","graphql":{"query":"mutation updateOrderPaymentDynamicProperties($command: InputUpdateOrderPaymentDynamicPropertiesType!) {\r\n\r\n    updateOrderPaymentDynamicProperties(command: $command) {\r\n\r\n        id\r\n\r\n        number\r\n\r\n        inPayments {\r\n\r\n            id\r\n\r\n            dynamicProperties {\r\n\r\n                name \r\n\r\n                value \r\n\r\n                valueType\r\n\r\n                dynamicProperty {\r\n\r\n                    name \r\n\r\n                    label \r\n\r\n                    valueType\r\n\r\n                } \r\n\r\n                dictionaryItem {\r\n\r\n                    label \r\n\r\n                    name \r\n\r\n                    id\r\n\r\n                }\r\n\r\n            }\r\n\r\n        }\r\n\r\n    }\r\n\r\n}","variables":" {\r\n\"command\": {\r\n\"orderId\": \"{{orderId}}\",\r\n\"paymentId\":\"{{orderPaymentId}}\",\r\n\"dynamicProperties\": [\r\n{\r\n\"name\": \"Short Text Property\",\r\n\"value\": \"Test updated value\"\r\n},{\r\n\"name\": \"bool\",\r\n\"value\": \"true\"\r\n},{\r\n\"name\": \"date\",\r\n\"value\": \"2021-06-28\"\r\n},{\r\n\"name\": \"decimal\",\r\n\"value\": \"3.0\"\r\n},{\r\n\"name\": \"html\",\r\n\"value\": \"<a>link</a>\"\r\n},{\r\n\"name\": \"html multilingual\",\r\n\"value\": \"<a>link</a>\",\r\n\"locale\":\"fr-FR\"\r\n},{\r\n\"name\": \"image\",\r\n\"value\": \"link to image\"\r\n},{\r\n\"name\": \"integer\",\r\n\"value\": \"2\"\r\n},{\r\n\"name\": \"integer multivalue\",\r\n\"value\": \"3\"\r\n},{\r\n\"name\": \"integer multivalue\",\r\n\"value\": \"6\"\r\n},{\r\n\"name\": \"long text\",\r\n\"value\": \"Test updated value text\"\r\n},{\r\n\"name\": \"long text multilingual\",\r\n\"value\": \"Test updated value text FR \",\r\n\"locale\":\"fr-FR\"\r\n},{\r\n\"name\": \"short text dictionary\",\r\n\"value\": \"beeeed44-18ce-4b93-89ed-308324ab6f0b\"\r\n},{\r\n\"name\": \"short text multilingual\",\r\n\"value\": \"short text multilingual\",\r\n\"locale\":\"de-DE\"\r\n},{\r\n\"name\": \"short text multilingual multivalue\",\r\n\"value\": \"multivalue and multilingual\",\r\n\"locale\":\"en-US\"\r\n},{\r\n\"name\": \"short text multilingual multivalue\",\r\n\"value\": \"multivalue and multilingual11\",\r\n\"locale\":\"en-US\"\r\n},{\r\n\"name\": \"short text multilingual multivalue\",\r\n\"value\": \"multivalue and multilingual22\",\r\n\"locale\":\"en-US\"\r\n}   ]\r\n}\r\n}  "}},"url":"{{url}}"},"response":[]},{"name":"Add dynamic properties for order lineitem","id":"874e50ee-b4be-40a5-a918-069a532005b6","request":{"method":"POST","header":[],"body":{"mode":"graphql","graphql":{"query":"mutation updateOrderItemDynamicProperties($command: InputUpdateOrderItemDynamicPropertiesType!) {\r\n\r\n    updateOrderItemDynamicProperties(command: $command) {\r\n\r\n        id\r\n\r\n        items {\r\n\r\n            id\r\n\r\n            dynamicProperties {\r\n\r\n                name \r\n\r\n                value \r\n\r\n                valueType\r\n\r\n                dictionaryItem {\r\n\r\n                    label \r\n\r\n                    name \r\n\r\n                    id\r\n\r\n                }\r\n\r\n            }\r\n\r\n        }\r\n\r\n    }\r\n\r\n}","variables":" {\r\n\"command\": {\r\n\"orderId\": \"{{orderId}}\",\r\n\"lineItemId\":\"{{orderLineItemId}}\",\r\n\"dynamicProperties\": [\r\n{\r\n\"name\": \"Short Text Property\",\r\n\"value\": \"Test updated value\"\r\n},{\r\n\"name\": \"bool\",\r\n\"value\": \"true\"\r\n},{\r\n\"name\": \"date\",\r\n\"value\": \"2021-06-28\"\r\n},{\r\n\"name\": \"decimal\",\r\n\"value\": \"3.0\"\r\n},{\r\n\"name\": \"html\",\r\n\"value\": \"<a>link</a>\"\r\n},{\r\n\"name\": \"html multilingual\",\r\n\"value\": \"<a>link</a>\",\r\n\"locale\":\"fr-FR\"\r\n},{\r\n\"name\": \"image\",\r\n\"value\": \"link to image\"\r\n},{\r\n\"name\": \"integer\",\r\n\"value\": \"2\"\r\n},{\r\n\"name\": \"integer multivalue\",\r\n\"value\": \"3\"\r\n},{\r\n\"name\": \"integer multivalue\",\r\n\"value\": \"6\"\r\n},{\r\n\"name\": \"long text\",\r\n\"value\": \"Test updated value text\"\r\n},{\r\n\"name\": \"long text multilingual\",\r\n\"value\": \"Test updated value text FR \",\r\n\"locale\":\"fr-FR\"\r\n},{\r\n\"name\": \"short text dictionary\",\r\n\"value\": \"beeeed44-18ce-4b93-89ed-308324ab6f0b\"\r\n},{\r\n\"name\": \"short text multilingual\",\r\n\"value\": \"short text multilingual\",\r\n\"locale\":\"de-DE\"\r\n},{\r\n\"name\": \"short text multilingual multivalue\",\r\n\"value\": \"multivalue and multilingual\",\r\n\"locale\":\"en-US\"\r\n},{\r\n\"name\": \"short text multilingual multivalue\",\r\n\"value\": \"multivalue and multilingual11\",\r\n\"locale\":\"en-US\"\r\n},{\r\n\"name\": \"short text multilingual multivalue\",\r\n\"value\": \"multivalue and multilingual22\",\r\n\"locale\":\"en-US\"\r\n}   ]\r\n}\r\n}  "}},"url":"{{url}}"},"response":[]},{"name":"Update organizatiom/contact dynamic property","id":"7442277c-5e89-401e-8b42-14f5407251c7","request":{"method":"POST","header":[],"body":{"mode":"graphql","graphql":{"query":"mutation updateMemberDynamicProperties($command: InputUpdateMemberDynamicPropertiesType!) {\r\n    updateMemberDynamicProperties(command: $command) {\r\n    \t\tname\r\n        dynamicProperties {\r\n          name value\r\n        }\r\n    }\r\n}","variables":"{\r\n  \"command\": {\r\n   \"memberId\":\"d7e2a9cb-0911-4ba5-9a93-f22523859ad9\",\r\n   \"dynamicProperties\": [\r\n         {\r\n          \"name\": \"decimal\",\r\n          \"value\": \"10.00000\"\r\n        },\r\n        {\r\n          \"name\": \"html\",\r\n          \"value\": \"10texthtml\"\r\n        },\r\n        {\r\n          \"name\": \"occupation\",\r\n          \"value\": \"6fba64f496a24317b476b8101fddb57b\"\r\n        },\r\n        {\r\n          \"name\": \"Married\",\r\n          \"value\": \"true\"\r\n        },\r\n        {\r\n          \"name\": \"Default shipping address\",\r\n          \"value\": \"aDefault\"\r\n        },\r\n        {\r\n          \"name\": \"Multilanguage\",\r\n          \"value\": \"fr-value\"\r\n        },\r\n        {\r\n          \"name\": \"occupation\",\r\n          \"value\": \"578fadeb1d2a40b3b08b1daf8db09463\"\r\n        },\r\n        {\r\n          \"name\": \"Sex\",\r\n          \"value\": \"d58bedc559c6420fbde35666adae3251\"\r\n        },\r\n        {\r\n          \"name\": \"integer multivalue\",\r\n          \"value\": \"3\"\r\n        },\r\n        {\r\n          \"name\": \"integer multivalue\",\r\n          \"value\": \"2\"\r\n        },\r\n        {\r\n          \"name\": \"integer multivalue\",\r\n          \"value\": \"10\"\r\n        },\r\n        {\r\n          \"name\": \"html multilingual\",\r\n          \"value\": \"10\"\r\n        },\r\n        {\r\n          \"name\": \"bool\",\r\n          \"value\": \"True\"\r\n        },\r\n        {\r\n          \"name\": \"date\",\r\n          \"value\": \"06/30/2020 00:00:00\"\r\n        },\r\n        {\r\n          \"name\": \"decimal multivalue\",\r\n          \"value\": \"10.00000\"\r\n        },\r\n        {\r\n          \"name\": \"decimal multivalue\",\r\n          \"value\": \"10.50000\"\r\n        },\r\n        {\r\n          \"name\": \"long text\",\r\n          \"value\": \"this is long text\"\r\n        },\r\n        {\r\n          \"name\": \"short text\",\r\n          \"value\": \"test11 short text\"\r\n        },\r\n        {\r\n          \"name\": \"image\",\r\n          \"value\": \"link to image\"\r\n        },\r\n        {\r\n          \"name\": \"long text multilingual\",\r\n          \"value\": \"this is long text for FR languages\"\r\n        },\r\n        {\r\n          \"name\": \"integer\",\r\n          \"value\": \"3\"\r\n        },\r\n        {\r\n          \"name\": \"SEttings New property [CHANGED]\",\r\n          \"value\": null\r\n        },\r\n        {\r\n          \"name\": \"Settings property [Changed]\",\r\n          \"value\": null\r\n        },\r\n        {\r\n          \"name\": \"short text dictionaty\",\r\n          \"value\": null\r\n        },\r\n        {\r\n          \"name\": \"short text multilingual\",\r\n          \"value\": \"text value for en-US\",\r\n\t\t\t\t\t\"locale\": \"en-US\"\r\n        },{\r\n          \"name\": \"short text multilingual\",\r\n           \"value\": \"text value for fr-FR\",\r\n\t\t\t\t\t\"locale\": \"fr-FR\"\r\n        },\r\n        {\r\n          \"name\": \"short text multivalue\",\r\n          \"value\": \"value1\"\r\n        },\r\n {\r\n          \"name\": \"short text multivalue\",\r\n          \"value\": \"value2\"\r\n},\r\n        {\r\n          \"name\": \"short text multivalue&multilingual\",\r\n          \"value\": \"value2\",\r\n\t\t\t\t\t\"locale\": \"en-US\"\r\n        },\r\n    {\r\n          \"name\": \"short text multivalue&multilingual\",\r\n          \"value\": \"value2\",\r\n\t\t\t\t\t\"locale\": \"fr-FR\"\r\n        },\r\n    {\r\n          \"name\": \"short text multivalue&multilingual\",\r\n          \"value\": \"value1\",\r\n\t\t\t\t\t\"locale\": \"en-US\"\r\n        },\r\n        {\r\n          \"name\": \"short text multivaue multilingual dictionary\",\r\n          \"value\": \"88629653-094f-476e-8be7-50bca237e132\",\r\n\t\t    \"locale\": \"en-US\"\r\n        }\r\n  \t]\r\n  }\r\n}"}},"url":"{{url}}"},"response":[]},{"name":"send notification","id":"6745eb55-0199-4712-afbd-1a93a49dbbb7","request":{"method":"POST","header":[],"body":{"mode":"graphql","graphql":{"query":"mutation ($command: InputSendVerifyEmailType){\r\nsendVerifyEmail(command: $command)\r\n}","variables":"{\r\n\"command\": {\r\n\"email\": \"{atz@virtoway.com}\"\r\n}\r\n}"}},"url":"{{url}}"},"response":[]},{"name":"add items","id":"18927e6f-b9c1-4287-9f96-86040c6ec586","request":{"method":"POST","header":[],"body":{"mode":"graphql","graphql":{"query":"mutation ($command: InputAddItemsType!) {\r\naddItemsCart (command: $command)\r\n{\r\nid\r\ncustomerId\r\nitems {\r\nproductId,\r\nquantity\r\n}\r\n}\r\n}","variables":"{\r\n\"command\": {\r\n\"storeId\": \"{{storeId}}\",\r\n\"cartName\": \"{{cartName}}\",\r\n\"userId\": \"{{userId}}\",\r\n\"currencyCode\": \"{{currencyCode}}\",\r\n\"cultureName\": \"{{cultureName}}\",\r\n\"cartType\": \"\",\r\n\"cartId\": \"{{cartId}}\",\r\n\"cartItems\": [{\r\n\"productId\": \"ac8da6c50cef42ad97d6f1effe2abaee\",\r\n\"quantity\": 2\r\n},\r\n{\r\n\"productId\": \"bd8e58948c3648e8b08e1fb4ed4e01bb\",\r\n\"quantity\": 5\r\n}]\r\n}\r\n}"}},"url":"{{url}}"},"response":[]}],"id":"a231c569-a3b9-4213-b26c-3675c868c683"},{"name":"queries","item":[{"name":"cart","event":[{"listen":"test","script":{"type":"text/javascript","exec":["pm.test(\"Check cart by user ID\", function () {\r","    var data = pm.response.json();\r","    pm.expect(data.data.cart).to.not.eql(null);\r","    pm.expect(data.data.cart).to.be.an(\"object\");\r","    pm.expect(data.data.cart.id).to.be.a(\"string\");\r","    pm.expect(data.errors).to.be.undefined;\r","});\r","pm.test(\"Check available payment method\", function () {\r","    var data = pm.response.json();\r","    pm.expect(data.data.cart.availablePaymentMethods).to.not.empty;\r","     pm.expect(data.errors).to.be.undefined;\r","});\r","pm.test(\"Check available shipment method\", function () {\r","    var data = pm.response.json();\r","    pm.expect(data.data.cart.availableShippingMethods).to.not.empty;\r"," pm.expect(data.errors).to.be.undefined;\r","});\r","pm.test(\"Check dynamicProperties in cart\", function () {\r","    var data = pm.response.json();\r","    pm.expect(data.data.cart.dynamicProperties).to.not.empty;\r","     pm.expect(data.errors).to.be.undefined;\r","});\r","pm.test(\"Check items in cart\", function () {\r","    var data = pm.response.json();\r","    pm.expect(data.data.cart.items).to.not.empty\r","    pm.expect(data.errors).to.be.undefined;\r","});\r","pm.test(\"Check dynamic properties for lineitems\", function () {\r","    var data = pm.response.json();\r","     pm.expect(data.data.cart.items[0].dynamicProperties).to.not.empty\r","    pm.expect(data.errors).to.be.undefined;\r","});\r","pm.test(\"Check dynamic properties for payments\", function () {\r","    var data = pm.response.json();\r","     pm.expect(data.data.cart.payments[0].dynamicProperties).to.not.empty\r","    pm.expect(data.errors).to.be.undefined;\r","});pm.test(\"Check dynamic properties for shipmets\", function () {\r","    var data = pm.response.json();\r","     pm.expect(data.data.cart.shipments[0].dynamicProperties).to.not.empty\r","    pm.expect(data.errors).to.be.undefined;\r","});"]}}],"id":"23febb80-63b3-4898-9aba-8cd3bddd845c","request":{"method":"POST","header":[],"body":{"mode":"graphql","graphql":{"query":"{\ncart (\nstoreId:\"{{storeId}}\"\nuserId: \"{{userId}}\"\ncurrencyCode: \"{{currencyCode}}\"\ncultureName: \"{{cultureName}}\"\ncartName: \"{{cartName}}\"\n)\n{\nid\ncoupons{\n    code\n}\ncomment\ndynamicProperties {\nname\nvalue\nvalueType\n  dictionaryItem{\n    id\n    name\n    label\n  }\n}\nitems\n{\nid\nname\nproductId\nfulfillmentCenterId\nfulfillmentCenterName\ndynamicProperties {\nname\nvalue\nvalueType\n  dictionaryItem{\n    id\n    name\n    label\n  }\n}\n\nlistPrice {\namount\n}\n}\navailableShippingMethods {\ncode\noptionName\nlogoUrl\ncurrency {\ncode\n}\ntotal {\namount\n}\noptionDescription\nprice {\namount\n}\npriority\n}\navailablePaymentMethods {\ncode\ncurrency{\ncode\n}\nlogoUrl\nisAvailableForPartial\ntaxTotal{\namount\n}\npaymentMethodGroupType\nprice {\namount\n}\npriority\nisAvailableForPartial\n}\ntaxTotal {\namount\n}\ntotal{\n    amount\n}\npayments\n{\n    id\n    dynamicProperties {\nname\nvalue\nvalueType\n  dictionaryItem{\n    id\n    name\n    label\n  }\n}\n}\n\nshipments\n{\n    id\n    dynamicProperties {\nname\nvalue\nvalueType\n  dictionaryItem{\n    id\n    name\n    label\n  }\n}\n}\n}}","variables":""}},"url":"{{url}}"},"response":[]},{"name":"carts","event":[{"listen":"test","script":{"type":"text/javascript","exec":["pm.test(\"Carts\", function () {\r","    var json = pm.response.json();\r","    pm.expect(json.data.carts.items).to.be.not.empty;\r","    pm.expect(json.errors).to.be.undefined;\r","});"]}}],"id":"38f844b6-4e93-472b-88f4-22387fd05bd4","request":{"method":"POST","header":[],"body":{"mode":"graphql","graphql":{"query":"query carts {\ncarts(storeId: \"{{storeId}}\") {\nitems {\nid\nname\ncustomerName\ncustomerId\n}\n}\n}","variables":""}},"url":"{{url}}"},"response":[]},{"name":"categories","event":[{"listen":"test","script":{"type":"text/javascript","exec":["pm.test(\"Your test name\", function () {\r","    var data = pm.response.json();\r","    pm.expect(data.errors).to.be.undefined;\r","});"]}}],"id":"51e9250e-5f0f-4e12-8c05-8bbd79ea130f","request":{"method":"POST","header":[],"body":{"mode":"graphql","graphql":{"query":"query categories ($after: String, $first: Int, $storeId: String!, $cultureName: String, $userId: String, $currencyCode: String, $filter: String, $fuzzy: Boolean, $fuzzyLevel: Int, $facet: String, $sort: String, $categoryIds: [String]) {\n    categories (after: $after, first: $first, storeId: $storeId, cultureName: $cultureName, userId: $userId, currencyCode: $currencyCode, filter: $filter, fuzzy: $fuzzy, fuzzyLevel: $fuzzyLevel, facet: $facet, sort: $sort, categoryIds: $categoryIds) {\n        edges {\n            cursor\n            node {\n                code\n                hasParent\n                id\n                images {\n                    group\n                    id\n                    name\n                    relativeUrl\n                    sortOrder\n                    url\n                }\n                imgSrc\n                level\n                name\n                outline\n                outlines {\n                    items {\n                        id\n                        name\n                        seoObjectType\n                    }\n                }\n                parent {\n                    code\n                    hasParent\n                    id\n                    images {\n                        group\n                        id\n                        name\n                        relativeUrl\n                        sortOrder\n                        url\n                    }\n                    imgSrc\n                    level\n                    name\n                    outline\n                    parent {\n                        code\n                        hasParent\n                        id\n                        imgSrc\n                        level\n                        name\n                        outline\n                        path\n                        slug\n                    }\n                    path\n                    seoInfo {\n                        id\n                        imageAltDescription\n                        isActive\n                        languageCode\n                        metaDescription\n                        metaKeywords\n                        name\n                        objectId\n                        objectType\n                        pageTitle\n                        semanticUrl\n                        storeId\n                    }\n                    slug\n                }\n                path\n                seoInfo {\n                    id\n                    imageAltDescription\n                    isActive\n                    languageCode\n                    metaDescription\n                    metaKeywords\n                    name\n                    objectId\n                    objectType\n                    pageTitle\n                    semanticUrl\n                    storeId\n                }\n                slug\n            }\n        }\n        items {\n            code\n            hasParent\n            id\n            images {\n                group\n                id\n                name\n                relativeUrl\n                sortOrder\n                url\n            }\n            imgSrc\n            level\n            name\n            outline\n            parent {\n                code\n                hasParent\n                id\n                imgSrc\n                level\n                name\n                outline\n                path\n                slug\n            }\n            path\n            seoInfo {\n                id\n                imageAltDescription\n                isActive\n                languageCode\n                metaDescription\n                metaKeywords\n                name\n                objectId\n                objectType\n                pageTitle\n                semanticUrl\n                storeId\n            }\n            slug\n        }\n        pageInfo {\n            endCursor\n            hasNextPage\n            hasPreviousPage\n            startCursor\n        }\n        totalCount\n    }\n}","variables":"{\n  \"after\": {{after}},\n  \"first\": {{first}},\n  \"storeId\": \"{{storeId}}\",\n  \"cultureName\": \"{{cultureName}}\",\n  \"userId\": \"{{userId}}\",\n  \"currencyCode\": \"{{currencyCode}}\",\n  \"filter\": \"{{filter}}\",\n  \"fuzzy\": true,\n  \"fuzzyLevel\": 0,\n  \"facet\": \"\",\n  \"sort\": \"\"\n }"}},"url":"{{url}}"},"response":[]},{"name":"category","id":"292d7cc9-ff25-4531-8281-ee18e0453add","request":{"method":"POST","header":[],"body":{"mode":"graphql","graphql":{"query":"query {\ncategory(id: \"4b50b398ff584af9b6d69c082c94844b\", storeId: \"Electronics\") {\nname\ncode\n}\n}","variables":"{\n  \"id\": \"{{categoryId}}\",\n  \"storeId\": \"{{storeId}}\",\n  \"userId\": \"{{userId}}\",\n  \"currencyCode\": \"{{currencyCode}}\",\n  \"cultureName\": \"{{cultureName}}\"\n}"}},"url":"{{url}}"},"response":[]},{"name":"contact","event":[{"listen":"test","script":{"type":"text/javascript","exec":["pm.test(\"Your test name\", function () {\r","    var json = pm.response.json();\r","    pm.expect(json.data.contact).to.not.eql(null);\r","    pm.expect(json.data.contact).to.be.an(\"object\");\r","    pm.expect(json.data.contact.id).to.be.a(\"string\");\r","    pm.expect(json.errors).to.be.undefined;\r","});"]}}],"id":"f26092b5-207c-40dd-900a-e4fce6313bb2","request":{"method":"POST","header":[],"body":{"mode":"graphql","graphql":{"query":"query contact ( $id: String!) {\n    contact (id: $id) {\n        addresses {\n            addressType\n            city\n            countryCode\n            countryName\n            email\n            firstName\n            key\n            lastName\n            line1\n            line2\n            middleName\n            name\n            organization\n            phone\n            postalCode\n            regionId\n            regionName\n            zip\n        }\n        birthDate\n        firstName\n        fullName\n        id\n        lastName\n        memberType\n        middleName\n        name\n        organizationId\n        organizations {\n            addresses {\n                addressType\n                city\n                countryCode\n                countryName\n                email\n                firstName\n                key\n                lastName\n                line1\n                line2\n                middleName\n                name\n                organization\n                phone\n                postalCode\n                regionId\n                regionName\n                zip\n            }\n            businessCategory\n            contacts  {\n                edges {\n                    cursor\n                    node {\n                        birthDate\n                        firstName\n                        fullName\n                        id\n                        lastName\n                        memberType\n                        middleName\n                        name\n                        organizationId\n                        organizationsIds\n                        outerId\n                        phones\n                    }\n                }\n                items {\n                    addresses {\n                        addressType\n                        city\n                        countryCode\n                        countryName\n                        email\n                        firstName\n                        key\n                        lastName\n                        line1\n                        line2\n                        middleName\n                        name\n                        organization\n                        phone\n                        postalCode\n                        regionId\n                        regionName\n                        zip\n                    }\n                    birthDate\n                    firstName\n                    fullName\n                    id\n                    lastName\n                    memberType\n                    middleName\n                    name\n                    organizationId\n                    organizations {\n                        businessCategory\n                        description\n                        emails\n                        groups\n                        id\n                        memberType\n                        name\n                        outerId\n                        ownerId\n                        parentId\n                        phones\n                        seoObjectType\n                    }\n                    organizationsIds\n                    outerId\n                    phones\n                    securityAccounts {\n                        accessFailedCount\n                        createdBy\n                        createdDate\n                        email\n                        emailConfirmed\n                        id\n                        isAdministrator\n                        lockoutEnabled\n                        lockoutEnd\n                        memberId\n                        modifiedBy\n                        modifiedDate\n                        normalizedEmail\n                        normalizedUserName\n                        passwordExpired\n                        permissions\n                        phoneNumber\n                        phoneNumberConfirmed\n                        photoUrl\n                        securityStamp\n                        storeId\n                        twoFactorEnabled\n                        userName\n                        userType\n                    }\n                }\n                pageInfo {\n                    endCursor\n                    hasNextPage\n                    hasPreviousPage\n                    startCursor\n                }\n                totalCount\n            }\n            description\n            emails\n            groups\n            id\n            memberType\n            name\n            outerId\n            ownerId\n            parentId\n            phones\n            seoObjectType\n        }\n        organizationsIds\n        outerId\n        phones\n        securityAccounts {\n            accessFailedCount\n            contact {\n                birthDate\n                firstName\n                fullName\n                id\n                lastName\n                memberType\n                middleName\n                name\n                organizationId\n                organizationsIds\n                outerId\n                phones\n            }\n            createdBy\n            createdDate\n            email\n            emailConfirmed\n            id\n            isAdministrator\n            lockoutEnabled\n            lockoutEnd\n            memberId\n            modifiedBy\n            modifiedDate\n            normalizedEmail\n            normalizedUserName\n            passwordExpired\n            permissions\n            phoneNumber\n            phoneNumberConfirmed\n            photoUrl\n            roles {\n                description\n                id\n                name\n                normalizedName\n                permissions\n            }\n            securityStamp\n            storeId\n            twoFactorEnabled\n            userName\n            userType\n        }\n    }\n}","variables":"{\n \"searchPhrase\": \"\",\n  \"id\": \"{{contactId}}\"\n}"}},"url":"{{url}}"},"response":[]},{"name":"me","id":"42f44386-bbb5-49f2-87f1-e2072cf35590","request":{"method":"POST","header":[],"body":{"mode":"graphql","graphql":{"query":"query me  {\n    me {\n        accessFailedCount\n        contact {\n            addresses {\n                addressType\n                city\n                countryCode\n                countryName\n                email\n                firstName\n                key\n                lastName\n                line1\n                line2\n                middleName\n                name\n                organization\n                phone\n                postalCode\n                regionId\n                regionName\n                zip\n            }\n            birthDate\n            firstName\n            fullName\n            id\n            lastName\n            memberType\n            middleName\n            name\n            organizationId\n            organizations {\n                addresses {\n                    addressType\n                    city\n                    countryCode\n                    countryName\n                    email\n                    firstName\n                    key\n                    lastName\n                    line1\n                    line2\n                    middleName\n                    name\n                    organization\n                    phone\n                    postalCode\n                    regionId\n                    regionName\n                    zip\n                }\n                businessCategory\n                contacts  {\n                    edges {\n                        cursor\n                    }\n                    items {\n                        birthDate\n                        firstName\n                        fullName\n                        id\n                        lastName\n                        memberType\n                        middleName\n                        name\n                        organizationId\n                        organizationsIds\n                        outerId\n                        phones\n                    }\n                    pageInfo {\n                        endCursor\n                        hasNextPage\n                        hasPreviousPage\n                        startCursor\n                    }\n                    totalCount\n                }\n                description\n                emails\n                groups\n                id\n                memberType\n                name\n                outerId\n                ownerId\n                parentId\n                phones\n                seoObjectType\n            }\n            organizationsIds\n            outerId\n            phones\n            securityAccounts {\n                accessFailedCount\n                contact {\n                    birthDate\n                    firstName\n                    fullName\n                    id\n                    lastName\n                    memberType\n                    middleName\n                    name\n                    organizationId\n                    organizationsIds\n                    outerId\n                    phones\n                }\n                createdBy\n                createdDate\n                email\n                emailConfirmed\n                id\n                isAdministrator\n                lockoutEnabled\n                lockoutEnd\n                memberId\n                modifiedBy\n                modifiedDate\n                normalizedEmail\n                normalizedUserName\n                passwordExpired\n                permissions\n                phoneNumber\n                phoneNumberConfirmed\n                photoUrl\n                roles {\n                    description\n                    id\n                    name\n                    normalizedName\n                    permissions\n                }\n                securityStamp\n                storeId\n                twoFactorEnabled\n                userName\n                userType\n            }\n        }\n        createdBy\n        createdDate\n        email\n        emailConfirmed\n        id\n        isAdministrator\n        lockoutEnabled\n        lockoutEnd\n        memberId\n        modifiedBy\n        modifiedDate\n        normalizedEmail\n        normalizedUserName\n        passwordExpired\n        permissions\n        phoneNumber\n        phoneNumberConfirmed\n        photoUrl\n        roles {\n            description\n            id\n            name\n            normalizedName\n            permissions\n        }\n        securityStamp\n        storeId\n        twoFactorEnabled\n        userName\n        userType\n    }\n}","variables":""}},"url":"{{url}}"},"response":[]},{"name":"order","event":[{"listen":"test","script":{"type":"text/javascript","exec":["pm.test(\"Your test name\", function () {\r","    var data = pm.response.json();\r","    pm.expect(data.data.order).to.not.eql(null);\r","    pm.expect(data.data.order).to.be.an(\"object\");\r","    pm.expect(data.data.order.id).to.be.a(\"string\");\r","    pm.expect(data.errors).to.be.undefined;\r","});"]}}],"id":"6d1e72da-01b6-43fc-875d-de06a5d9bb5b","request":{"method":"POST","header":[],"body":{"mode":"graphql","graphql":{"query":"query order($id: String, $cultureName: String) {\n  order(id: $id, cultureName: $cultureName) {\n    id\n    number\n     dynamicProperties {\n      name\n      value\n      valueType\n      dynamicProperty {\n        name\n        label\n        valueType\n      }\n      dictionaryItem {\n        label\n        name\n        id\n      }\n    }\n    items {\n      id\n      name\n      dynamicProperties {\n        dictionaryItem {\n          id\n          name\n          label\n        }\n        dynamicProperty {\n          valueType\n          id\n          label\n          name\n        }\n      }\n    }\n    shipments{\n        id\n    dynamicProperties {\n      name\n      value\n      valueType\n      dynamicProperty {\n        name\n        label\n        valueType\n      }\n      dictionaryItem {\n        label\n        name\n        id\n      }\n    }\n    }\n    inPayments{\n        id\n    dynamicProperties {\n      name\n      value\n      valueType\n      dynamicProperty {\n        name\n        label\n        valueType\n      }\n      dictionaryItem {\n        label\n        name\n        id\n      }\n    }\n    }\n  }\n}\n","variables":"{\n  \"id\": \"{{orderId}}\",\n  \"cultureName\": \"{{cultureName}}\"\n}"}},"url":"{{url}}"},"response":[]},{"name":"orders","event":[{"listen":"test","script":{"type":"text/javascript","exec":["pm.test(\"Your test name\", function () {\r","    var data = pm.response.json();\r","\r","    pm.expect(data.errors).to.be.undefined;\r","});"]}}],"id":"58c18b19-d9fa-4e23-8c17-e18e2e0b03de","request":{"method":"POST","header":[],"body":{"mode":"graphql","graphql":{"query":"query orders ($filter: String, $sort: String, $cultureName: String, $userId: String) {\norders (filter: $filter, sort: $sort, cultureName: $cultureName, userId: $userId) {\nitems {\nid\ndynamicProperties {\nname\nvalue\nvalueType\ndynamicProperty {\nname\nlabel\nvalueType\n}\ndictionaryItem {\nlabel\nname\nid\n}\n}\n}\npageInfo {\nendCursor\nhasNextPage\nhasPreviousPage\nstartCursor\n}\ntotalCount\n}\n}","variables":"{\n\"filter\": \"bool:true\",\n\"cultureName\": \"en-US\"\n} "}},"url":"{{url}}"},"response":[]},{"name":"organization","id":"af894034-06d4-46d4-95f7-a19f53abcaad","request":{"auth":{"type":"oauth2","oauth2":{"addTokenTo":"header","accessTokenUrl":"https://localhost:5001/connect/token","username":"admin","password":"store","tokenType":"Bearer"}},"method":"POST","header":[],"body":{"mode":"graphql","graphql":{"query":"query organization ($id: String!, $userId: String) {\n    organization (id: $id, userId: $userId) {\n    dynamicProperties\n    {\n      value\n      valueType\n      name\n      dynamicProperty\n      {\n        valueType\n        id\n        label\n        displayOrder\n      dictionaryItems\n        {\n          items\n          {\n            id\n            name\n            label\n          }\n        }\n      }\n      dictionaryItem\n      {\n        id\n        label\n      name\n      }\n    }\n        addresses {\n            addressType\n            city\n            countryCode\n            countryName\n            email\n            firstName\n            key\n            lastName\n            line1\n            line2\n            middleName\n            name\n            organization\n            phone\n            postalCode\n            regionId\n            regionName\n            zip\n        }\n        businessCategory\n        contacts  {\n            edges {\n                cursor\n                node {\n                    addresses {\n                        addressType\n                        city\n                        countryCode\n                        countryName\n                        email\n                        firstName\n                        key\n                        lastName\n                        line1\n                        line2\n                        middleName\n                        name\n                        organization\n                        phone\n                        postalCode\n                        regionId\n                        regionName\n                        zip\n                    }\n                    birthDate\n                    firstName\n                    fullName\n                    id\n                    lastName\n                    memberType\n                    middleName\n                    name\n                    organizationId\n                    organizations {\n                        businessCategory\n                        description\n                        emails\n                        groups\n                        id\n                        memberType\n                        name\n                        outerId\n                        ownerId\n                        parentId\n                        phones\n                        seoObjectType\n                    }\n                    organizationsIds\n                    outerId\n                    phones\n                    securityAccounts {\n                        accessFailedCount\n                        createdBy\n                        createdDate\n                        email\n                        emailConfirmed\n                        id\n                        isAdministrator\n                        lockoutEnabled\n                        lockoutEnd\n                        memberId\n                        modifiedBy\n                        modifiedDate\n                        normalizedEmail\n                        normalizedUserName\n                        passwordExpired\n                        permissions\n                        phoneNumber\n                        phoneNumberConfirmed\n                        photoUrl\n                        securityStamp\n                        storeId\n                        twoFactorEnabled\n                        userName\n                        userType\n                    }\n                }\n            }\n            items {\n                addresses {\n                    addressType\n                    city\n                    countryCode\n                    countryName\n                    email\n                    firstName\n                    key\n                    lastName\n                    line1\n                    line2\n                    middleName\n                    name\n                    organization\n                    phone\n                    postalCode\n                    regionId\n                    regionName\n                    zip\n                }\n                birthDate\n                firstName\n                fullName\n                id\n                lastName\n                memberType\n                middleName\n                name\n                organizationId\n                organizations {\n                    addresses {\n                        addressType\n                        city\n                        countryCode\n                        countryName\n                        email\n                        firstName\n                        key\n                        lastName\n                        line1\n                        line2\n                        middleName\n                        name\n                        organization\n                        phone\n                        postalCode\n                        regionId\n                        regionName\n                        zip\n                    }\n                    businessCategory\n                    contacts {\n                        totalCount\n                    }\n                    description\n                    emails\n                    groups\n                    id\n                    memberType\n                    name\n                    outerId\n                    ownerId\n                    parentId\n                    phones\n                    seoObjectType\n                }\n                organizationsIds\n                outerId\n                phones\n                securityAccounts {\n                    accessFailedCount\n                    contact {\n                        birthDate\n                        firstName\n                        fullName\n                        id\n                        lastName\n                        memberType\n                        middleName\n                        name\n                        organizationId\n                        organizationsIds\n                        outerId\n                        phones\n                    }\n                    createdBy\n                    createdDate\n                    email\n                    emailConfirmed\n                    id\n                    isAdministrator\n                    lockoutEnabled\n                    lockoutEnd\n                    memberId\n                    modifiedBy\n                    modifiedDate\n                    normalizedEmail\n                    normalizedUserName\n                    passwordExpired\n                    permissions\n                    phoneNumber\n                    phoneNumberConfirmed\n                    photoUrl\n                    roles {\n                        description\n                        id\n                        name\n                        normalizedName\n                        permissions\n                    }\n                    securityStamp\n                    storeId\n                    twoFactorEnabled\n                    userName\n                    userType\n                }\n            }\n            pageInfo {\n                endCursor\n                hasNextPage\n                hasPreviousPage\n                startCursor\n            }\n            totalCount\n        }\n        description\n        emails\n        groups\n        id\n        memberType\n        name\n        outerId\n        ownerId\n        parentId\n        phones\n        seoObjectType\n    }\n}","variables":"{\n \n  \"id\": \"{{organizationId}}\",\n  \"userId\": \"{{userId}}\"\n}"}},"url":"{{url}}"},"response":[]},{"name":"payments","id":"7ae3f839-0939-468b-b2c2-1bff1e802cab","request":{"auth":{"type":"oauth2","oauth2":{"addTokenTo":"header","accessTokenUrl":"https://localhost:5001/connect/token","username":"admin","password":"store","tokenType":"Bearer"}},"method":"POST","header":[],"body":{"mode":"graphql","graphql":{"query":"query payments ($after: String, $first: Int, $filter: String, $sort: String, $cultureName: String, $userId: String!) {\npayments (after: $after, first: $first, filter: $filter, sort: $sort, cultureName: $cultureName, userId: $userId) {\ntotalCount\nitems\n{\nid\norderId\ncustomerId\nstatus\nsum{\namount\n}\n}\n}\n}","variables":"{\n  \"after\": \"{{after}}\",\n  \"first\": {{first}},\n  \"filter\": \"{{filter}}\",\n  \"sort\": \"{{sort}}\",\n  \"cultureName\": \"{{cultureName}}\",\n  \"userId\": \"{{userId}}\"\n}\n\n"}},"url":"{{url}}"},"response":[]},{"name":"product","id":"5522b9b6-d24d-46eb-91f2-0d0038736a0f","request":{"method":"POST","header":[],"body":{"mode":"graphql","graphql":{"query":"query {\nproduct(id: \"6e7a31c35c814fb389dc2574aa142b63\", cultureName: \"de-DE\",storeId: \"Electronics\") {\nid\nname\ncode\nvariations{\nid\ncode\n}\ndescription {\nid\nlanguageCode\nreviewType\ncontent\n}\ndescriptions{\nid\nlanguageCode\nreviewType\ncontent\n}\n\nproperties{\nname\nvalue\nlabel\n}\nimages {\nurl\nrelativeUrl\ncultureName\n}\nassets {\nid\nname\ncultureName\n}\nseoInfo {\nname\nsemanticUrl\nmetaKeywords\nmetaDescription\n}\nprice {\npricelistId\nlist {\namount\n}\nsale {\namount\n}\ndiscountAmount {\namount\n}\n}\n}\n}","variables":"{\n  \"id\": \"{{productId}}\",\n  \"storeId\": \"{{storeId}}\",\n  \"userId\": \"{{userId}}\",\n  \"currencyCode\": \"{{currencyCode}}\",\n  \"cultureName\": \"{{cultureName}}\"\n}"}},"url":"{{url}}"},"response":[]},{"name":"products","id":"304fbdce-3e74-4488-a317-914946ece35f","request":{"method":"POST","header":[],"body":{"mode":"graphql","graphql":{"query":"{\nproducts(\nquery: \"\"\nstoreId: \"Electronics\"\nsort:\"priority:desc\"\nfirst: 20\n) {\ntotalCount\nitems {\nid\nname\nimgSrc\nslug\nprice {\npricelistId\nactual {\namount\n}\nlist {\namount\n}\nsale {\namount\n}\n}\nproperties {\nname\n}\nseoInfo {\nsemanticUrl\nmetaKeywords\nmetaDescription\n}\n}\n}\n}","variables":"{\n  \"after\": \"{{after}}\",\n  \"first\": {{first}},\n  \"storeId\": \"{{storeId}}\",\n  \"userId\": \"{{userId}}\",\n  \"currencyCode\": \"{{currencyCode}}\",\n  \"filter\": \"{{filter}}\",\n  \"fuzzy\": true,\n  \"fuzzyLevel\": 0,\n  \"facet\": \"\",\n  \"sort\": \"{{sort}}\",\n  \"productIds\": [ \n  ]\n}"}},"url":"{{url}}"},"response":[]},{"name":"role","id":"625d2b5a-ba1b-430f-a050-a4640f80585a","request":{"method":"POST","header":[],"body":{"mode":"graphql","graphql":{"query":"query role ($roleName: String!) {\n    role (roleName: $roleName) {\n        description\n        id\n        name\n        normalizedName\n        permissions\n    }\n}","variables":"{\n  \"roleName\": \"Organization maintainer\"\n}"}},"url":"{{url}}"},"response":[]},{"name":"user","event":[{"listen":"test","script":{"type":"text/javascript","exec":["pm.test(\"get user\", function () {\r","    var json = pm.response.json();\r","    pm.expect(json.data.user).to.not.eql(null);\r","    pm.expect(json.data.user).to.be.an(\"object\");\r","    pm.expect(json.data.user.id).to.be.a(\"string\");\r","    pm.expect(json.data.user.email).to.be.not.empty;\r","    pm.expect(json.errors).to.be.undefined;\r","});"]}}],"id":"5c0aa78e-1c1d-4502-92ec-0799c19b1ac0","request":{"method":"POST","header":[],"body":{"mode":"graphql","graphql":{"query":"query user(\n$id: String\n$userName: String\n$email: String\n$loginProvider: String\n$providerKey: String\n) {\nuser(\nid: $id\nuserName: $userName\nemail: $email\nloginProvider: $loginProvider\nproviderKey: $providerKey\n) {\nid\nisAdministrator\nuserName\nemail\nstoreId\nuserName\nuserType\nroles{\nid\nname\ndescription\npermissions\n}\ncontact {\nid\nname\nfirstName\nlastName\nfullName\nname\nmemberType\nphones\naddresses{\nkey\naddressType\ncity\nfirstName\nlastName\nregionId\nregionName\n}\n}\n}\n}","variables":"{\n//\"id\": \"9d30a8a0-9ecf-4dc7-b273-51f6739bec87\",\n//\"userName\": \"Maked2222\",\n\"email\": \"tzykin.alexandr111@gmail.com\",\n\"loginProvider\":\"\",\n\"providerKey\": \"\"\n}"}},"url":"{{url}}"},"response":[]},{"name":"get all orders","id":"7c209601-ea71-49ab-a4a3-18b186825a42","request":{"method":"POST","header":[],"body":{"mode":"graphql","graphql":{"query":"query {\r\norders {\r\ntotalCount\r\nitems {\r\nid\r\nstatus\r\nnumber\r\ncreatedDate\r\nmodifiedDate\r\ncustomerId\r\ncustomerName\r\nshipments {\r\nid\r\nstatus\r\nshipmentMethodCode\r\nshipmentMethodOption\r\ntotal {\r\namount\r\n}\r\n}\r\naddresses {\r\nid\r\nfirstName\r\nlastName\r\nline1\r\ncountryName\r\ncountryCode\r\npostalCode\r\n}\r\ntotal {\r\namount\r\n}\r\nsubTotal {\r\namount\r\n}\r\ndiscountTotal {\r\namount\r\n}\r\n}\r\n}\r\n}","variables":""}},"url":"{{url}}"},"response":[]},{"name":"Check meta information about dynamic property","id":"56903dab-2bac-4c62-8add-072794e9b4ca","request":{"method":"POST","header":[],"body":{"mode":"graphql","graphql":{"query":"query dynamicProperties($filter: String!, $cultureName: String, $dictionaryFilter: String, $dictionaryCultureName: String){\r\ndynamicProperties(filter: $filter, cultureName: $cultureName){\r\ntotalCount\r\nitems{\r\nobjectType\r\nname\r\ndictionaryItems(filter:$dictionaryFilter cultureName: $dictionaryCultureName ) {\r\ntotalCount\r\nitems\r\n{\r\nlabel\r\nname\r\nid\r\n}\r\n\r\n  }\r\n  }\r\n}\r\n}","variables":"{\r\n\"filter\": \"objectType:VirtoCommerce.CustomerModule.Core.Model.Contact\",\r\n\"cultureName\": \"en-US\",\r\n\"dictionaryFilter\": \"keyword:\",\r\n\"dictionaryCultureName\": \"de-DE\"\r\n}"}},"url":"{{url}}"},"response":[]},{"name":"contacts","id":"22527bd0-fd41-4065-a449-a0c6e26553d8","request":{"method":"POST","header":[],"body":{"mode":"graphql","graphql":{"query":"query contacts($filter: String, $cultureName: String, $sort: String, $after: String, $first: Int){\r\ncontacts(filter:$filter, sort: $sort, first: $first, after:$after){\r\ntotalCount items{\r\nid\r\nname\r\ndynamicProperties(cultureName: $cultureName) {\r\nname value valueType\r\ndynamicProperty {\r\nname label valueType\r\ndictionaryItems(cultureName: $cultureName){ items { label name }}\r\n}\r\ndictionaryItem {\r\nlabel name id\r\n}\r\n}\r\n}\r\n}\r\n}","variables":"{\r\n\"filter\":\"\\\"decimal\\\":\\\"3.50000\\\"\",\r\n\"cultureName\": \"en-US\",\r\n\"after\": \"0\",\r\n\"first\": 20,\r\n\"sort\": \"name:desc\"\r\n}  "}},"url":"{{url}}"},"response":[]},{"name":"Organizations","id":"d857bfaf-b47a-4ce1-91ee-fa8ac4cddf5b","request":{"method":"POST","header":[],"body":{"mode":"graphql","graphql":{"query":"query organizations($filter: String, $cultureName: String, $sort: String, $after: String, $first: Int){\r\n  organizations (filter:$filter, sort: $sort, first: $first, after: $after){ \r\n    totalCount items{\r\n      name id\r\n      dynamicProperties(cultureName: $cultureName) {\r\n        name value valueType\r\n        dynamicProperty {\r\n          name label valueType\r\n          dictionaryItems(cultureName: $cultureName){ items { label name }}\r\n        }\r\n        dictionaryItem {\r\n          label name id\r\n        }\r\n      }\r\n    } \r\n  }\r\n}","variables":"{\r\n  \"filter\": \"date:2021-07-04T21:00:00Z\",\r\n  \"cultureName\": \"en-us\",\r\n  \"sort\": \"name asc\",\r\n  \"after\": \"0\",\r\n  \"first\": 20\r\n}"}},"url":"{{url}}"},"response":[]},{"name":"get facet","id":"e92d6e18-20ce-4f80-8403-c774f86ee933","request":{"method":"POST","header":[],"body":{"mode":"graphql","graphql":{"query":"{\r\nproducts(facet: \"__outline_named\", storeId: \"Electronics\") {\r\nterm_facets {\r\nfacetType\r\nname\r\nterms {\r\ncount\r\nterm\r\nlabel\r\n}\r\n}\r\n}\r\n}\r\n\r\n","variables":""}},"url":"{{url}}"},"response":[]}],"id":"d0536ff8-7718-4e0e-975e-c7e97bc2d649"}],"auth":{"type":"oauth2","oauth2":{"tokenType":"","accessToken":"","accessTokenUrl":"https://regression-platform.qa.govirto.com/connect/token","tokenName":"RegressionToke","password":"store","username":"admin","challengeAlgorithm":"S256","grant_type":"password_credentials","addTokenTo":"header","client_authentication":"header"}},"event":[{"listen":"prerequest","script":{"id":"7e213fb2-71f9-4f5b-887c-cea487a46393","type":"text/javascript","exec":[""]}},{"listen":"test","script":{"id":"238f4434-5dfd-4bb7-9059-977fbc6de0f6","type":"text/javascript","exec":[""]}}],"variable":[{"id":"e20e9ba3-88e8-4388-bec1-fb68d6e3d955","key":"url","value":"https://regression-platform.qa.govirto.com/graphql"},{"id":"a8fe4fb4-08ab-41fc-9880-05a51d2094d3","key":"storeId","value":"Electronics"},{"id":"02b24bf8-aa87-4dec-807b-2d8ab4fa66d8","key":"userId","value":"5df8034f-ba2e-4051-a01f-23186b6fd712"},{"id":"6d368bfb-8c80-4de0-ab51-bc220d64a47f","key":"currencyCode","value":"USD"},{"id":"5cb6012a-d5fa-440e-bbc6-6a135b8587b3","key":"cultureName","value":"en-US"},{"id":"d1b0f6bb-629e-4fff-a695-7e1a2b282f00","key":"cartName","value":"default"},{"id":"b3cea7f1-7f24-48a0-a1c0-b172a61296fa","key":"filter","value":"bool:true"},{"id":"a4039dd6-e199-42ae-a939-0c4f99833fcf","key":"categoryId","value":"45d3fc9a913d4610a5c7d0470558c4b2"},{"id":"59f5c380-810e-4a4c-9e54-2cedc1df36cc","key":"contactId","value":"443a84e5-09b3-4017-b314-48058536b3f8"},{"id":"4da069cd-5850-40fc-95fc-b0e562c31b00","key":"orderId","value":"ce1553ab-67f2-4c3c-8fbc-de485331a4bb"},{"id":"8415dc74-8733-4f88-ba65-4aab76f13159","key":"orderNumber","value":"CO210628-00401"},{"id":"9b1f8b54-6f26-48ac-aa4f-6e6436a06ca8","key":"after","value":"0"},{"id":"7cb9c7b7-60f1-4af9-bce0-eb2bd5f81823","key":"first","value":"2"},{"id":"4384f757-ce49-46c9-a813-5981071ba043","key":"sort","value":""},{"id":"6a30edcc-264f-4769-a3ac-26fe3eb82630","key":"organizationId","value":"3b85ef22-f9fa-43bc-83d1-cb6f1be4eb0f"},{"id":"904b6de4-3b7d-46b8-b7ca-b321b3821cda","key":"productId","value":"d154d30d76d548fb8505f5124d18c1f3"},{"id":"d7622aca-97c8-4c47-965a-51153a9c4c4f","key":"userName","value":"admin"},{"id":"efb9b44b-b381-45f6-bbd6-699b90f8b180","key":"price","value":"569.0"},{"id":"b7de886a-951d-4409-97d0-9bcf144e5b24","key":"cartId","value":"0d3256c8-de24-4a96-aee1-1923297f6f3c"},{"id":"cc096547-0886-4851-a3c0-7391479c365d","key":"cartType ","value":"null"},{"id":"cdef3e47-5293-4377-93e1-221ef6bbcd58","key":"lineItemId","value":"054e5622-64e4-4391-881d-3c19911f38cc"},{"id":"0f15733f-4602-47ef-b7ba-a59a62bdda06","key":"lineItemsComment","value":"this text"},{"id":"f8a64370-b03b-4751-a246-1880be3b113a","key":"secondCartId","value":""},{"id":"c9879716-2a88-4d6e-a017-2f6878ea4ef4","key":"paymentId","value":"b0e840a8-c340-4acb-8828-684f029cce25"},{"id":"5a8ad47a-0ccb-44e6-8cc5-1085fba5f5d8","key":"shipmentId","value":"1475d660-a11b-4c91-9525-3ed95bd43539"},{"id":"fb383c2b-33c5-4151-9dea-9b514b635ad9","key":"orderLineItemId","value":"48876932-22e5-4624-af0f-7667d53b9753"},{"id":"e233d7d7-43ee-4993-8df8-d06839502c92","key":"orderPaymentId","value":"dfb38a0c-b9ce-4e4d-b580-85dd80104653"},{"id":"a61c8576-29f0-44fa-a9b0-1cf0dfb740c5","key":"orderShipmentId","value":"5db3dd0f-a2c0-44bb-b100-22600b98e03b"},{"id":"25e9f7f8-456d-47ef-9930-eba2b8dbefe6","key":"paymentNumber","value":"PI210628-00401"}]}
+swagger: "2.0"
+info:
+  title: "User service API"
+  description: "Docs for User service API. All values of filter keys in query can be comma separated list"
+  version: "1.0.0"
+schemes:
+  - "http"
+host: 127.0.0.1
+basePath: /user-service
+
+paths:
+  /status:
+    get:
+      tags:
+        - "Status"
+      summary: "Health-check"
+      description: ""
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: "Successful operation"
+          schema:
+            $ref: "#/definitions/HealthCheckResponse"
+        500:
+          description: "Internal server error"
+
+  /auth/can-register:
+    post:
+      tags:
+        - "Auth"
+      summary: "Check if email can be used for registration"
+      description: ""
+      produces:
+        - "application/json"
+      consumes:
+        - "application/json"
+      parameters:
+        - name: "CheckRegisterEmailRequestBody"
+          in: "body"
+          description: "Body of request for check email"
+          required: true
+          schema:
+            $ref: "#/definitions/CheckRegisterEmailRequestModel"
+      responses:
+        201:
+          description: "Successful operation"
+        422:
+          description: "Validation error"
+        500:
+          description: "Internal server error"
+
+  /auth/register:
+    post:
+      tags:
+        - "Auth"
+      summary: "Register user in service"
+      description: ""
+      produces:
+        - "application/json"
+      consumes:
+        - "application/json"
+      parameters:
+        - name: "RegisterUserRequestBody"
+          in: "body"
+          description: "Body of request for register user"
+          required: true
+          schema:
+            $ref: "#/definitions/RegisterUserRequestModel"
+      responses:
+        201:
+          description: "Resourcve successfully created"
+          schema:
+            $ref: "#/definitions/UserResponseModel"
+        422:
+          description: "Validation error"
+        500:
+          description: "Internal server error"
+
+  /companies:
+    get:
+      tags:
+        - "Companies"
+      summary: "Get companies"
+      description: ""
+      produces:
+        - "application/json"
+      parameters:
+        - in: "query"
+          name: "page[size]"
+          type: "integer"
+          description: "Limit of items in response"
+        - in: "query"
+          name: "page[number]"
+          type: "integer"
+          description: "Page number for pagination items"
+        - in: "query"
+          name: "sort"
+          type: "string"
+          description: 'Sort by column and direction ("-" before column name - DESC direction)'
+          enum:
+            - id
+            - -id
+        - in: "query"
+          name: "filter[id]"
+          type: "string"
+          description: "Filter by id column"
+        - in: "query"
+          name: "filter[user_id]"
+          type: "string"
+          description: "Filter by user"
+        - in: "query"
+          name: "filter[name]"
+          type: "string"
+          description: "Filter by id name"
+        - in: "query"
+          name: "filter[is_host]"
+          type: "string"
+          description: "Filter by is_host column"
+        - in: "query"
+          name: "include"
+          type: "string"
+          description: "Include relations"
+          enum:
+            - logo
+            - users
+            - users_count
+      responses:
+        200:
+          description: "Successful operation"
+          schema:
+            $ref: "#/definitions/CompaniesListResponseModel"
+        401:
+          description: "Incorrect auth credentials"
+        422:
+          description: "Validation error"
+        500:
+          description: "Internal server error"
+    post:
+      tags:
+        - "Companies"
+      summary: "Create companies"
+      description: ""
+      produces:
+        - "application/json"
+      consumes:
+        - "application/json"
+      parameters:
+        - name: "CreateCompanyRequestBody"
+          in: "body"
+          description: "Body of request for creating company"
+          required: true
+          schema:
+            $ref: "#/definitions/CreateCompanyRequestModel"
+      responses:
+        201:
+          description: "Resourcve successfully created"
+          schema:
+            $ref: "#/definitions/CompanyResponseModel"
+        401:
+          description: "Incorrect auth credentials"
+        403:
+          description: "Forbidden"
+        422:
+          description: "Validation error"
+        500:
+          description: "Internal server error"
+
+  /companies/{company}:
+    get:
+      tags:
+        - "Companies"
+      summary: "Get company"
+      description: ""
+      produces:
+        - "application/json"
+      consumes:
+        - "application/json"
+      parameters:
+        - in: "path"
+          name: "company"
+          type: "string"
+          required: true
+          description: "Id of company"
+      responses:
+        200:
+          description: "Successful operation"
+          schema:
+            $ref: "#/definitions/CompanyResponseModel"
+        401:
+          description: "Incorrect auth credentials"
+        500:
+          description: "Internal server error"
+    put:
+      tags:
+        - "Companies"
+      summary: "Updatre company"
+      description: ""
+      produces:
+        - "application/json"
+      consumes:
+        - "application/json"
+      parameters:
+        - in: "path"
+          name: "company"
+          type: "string"
+          required: true
+          description: "Id of company"
+        - name: "UpdateCompanyRequestBody"
+          in: "body"
+          description: "Body of request for updating of company"
+          required: true
+          schema:
+            $ref: "#/definitions/UpdateCompanyRequestModel"
+      responses:
+        200:
+          description: "Resourcve successfully created"
+          schema:
+            $ref: "#/definitions/CompanyResponseModel"
+        401:
+          description: "Incorrect auth credentials"
+        403:
+          description: "Forbidden"
+        422:
+          description: "Validation error"
+        500:
+          description: "Internal server error"
+    delete:
+      tags:
+        - "Companies"
+      summary: "Delete company"
+      description: ""
+      produces:
+        - "application/json"
+      parameters:
+        - in: "path"
+          name: "company"
+          type: "string"
+          required: true
+          description: "Id of company"
+      responses:
+        204:
+          description: "Successful deleted no content response"
+        401:
+          description: "Incorrect auth credentials"
+        403:
+          description: "Forbidden"
+        404:
+          description: "Not found"
+        500:
+          description: "Internal server error"
+
+  /companies/{company}/set-moderator:
+    post:
+      tags:
+        - "Companies"
+      summary: "Set user company moderator"
+      description: ""
+      produces:
+        - "application/json"
+      consumes:
+        - "application/json"
+      parameters:
+        - name: "MakeCompanyModeratorRequestBody"
+          in: "body"
+          description: "Body of request for make user company moderator"
+          required: true
+          schema:
+            $ref: "#/definitions/MakeCompanyModeratorRequestModel"
+      responses:
+        201:
+          description: "Resource successfully created"
+        401:
+          description: "Incorrect auth credentials"
+        403:
+          description: "Forbidden"
+        422:
+          description: "Validation error"
+        500:
+          description: "Internal server error"
+
+  /companies/{company}/unset-moderator:
+    post:
+      tags:
+        - "Companies"
+      summary: "Unset user company moderator"
+      description: ""
+      produces:
+        - "application/json"
+      consumes:
+        - "application/json"
+      parameters:
+        - name: "MakeCompanyModeratorRequestBody"
+          in: "body"
+          description: "Body of request for make user company moderator"
+          required: true
+          schema:
+            $ref: "#/definitions/MakeCompanyModeratorRequestModel"
+      responses:
+        201:
+          description: "Resource successfully created"
+        401:
+          description: "Incorrect auth credentials"
+        403:
+          description: "Forbidden"
+        422:
+          description: "Validation error"
+        500:
+          description: "Internal server error"
+
+  /companies/{company}/users:
+    get:
+      tags:
+        - "Companies"
+      summary: "Get users from company"
+      description: ""
+      produces:
+        - "application/json"
+      consumes:
+        - "application/json"
+      parameters:
+        - in: "query"
+          name: "page[size]"
+          type: "integer"
+          description: "Limit of items in response"
+        - in: "query"
+          name: "page[number]"
+          type: "integer"
+          description: "Page number for pagination items"
+        - in: "query"
+          name: "sort"
+          type: "string"
+          description: 'Sort by column and direction ("-" before column name - DESC direction)'
+          enum:
+            - id
+            - -id
+        - in: "query"
+          name: "include"
+          type: "string"
+          description: "Include resources"
+          enum:
+            - companies
+            - companies_count
+            - avatar
+        - in: "query"
+          name: "filter[id]"
+          type: "string"
+          description: "Filter by id column"
+        - in: "query"
+          name: "filter[is_moderator]"
+          type: "boolean"
+          description: "Filter by user moderator of current company"
+        - in: "query"
+          name: "group"
+          type: "string"
+          description: "Group results"
+          enum:
+            - contacts.type
+            - contacts.group
+      responses:
+        200:
+          description: "Successful operation"
+          schema:
+            $ref: "#/definitions/UsersListResponseModel"
+        401:
+          description: "Incorrect auth credentials"
+        500:
+          description: "Internal server error"
+
+  /companies/{company}/invitations:
+    post:
+      tags:
+        - "Companies"
+      summary: "Invite user to company (API Gateway only)"
+      description: "API Gateway only"
+      produces:
+        - "application/json"
+      consumes:
+        - "application/json"
+      parameters:
+        - in: "query"
+          name: "page[size]"
+          type: "integer"
+          description: "Limit of items in response"
+        - in: "query"
+          name: "page[number]"
+          type: "integer"
+          description: "Page number for pagination items"
+        - in: "query"
+          name: "sort"
+          type: "string"
+          description: 'Sort by column and direction ("-" before column name - DESC direction)'
+          enum:
+            - id
+            - -id
+        - in: "query"
+          name: "filter[id]"
+          type: "string"
+          description: "Filter by id column"
+        - in: "query"
+          name: "filter[from_user_id]"
+          type: "string"
+          description: "Filter by user id who created"
+        - in: "query"
+          name: "filter[to_user_id]"
+          type: "string"
+          description: "Filter by to user id who recieved"
+        - in: "query"
+          name: "filter[email]"
+          type: "string"
+          description: "Filter by email column"
+        - in: "query"
+          name: "filter[status]"
+          type: "string"
+          description: "Filter by status column"
+        - in: "query"
+          name: "include"
+          type: "string"
+          description: "Include resources"
+          enum:
+            - company
+            - to_user
+            - from_user
+      responses:
+        201:
+          description: "Resourcve successfully created"
+        401:
+          description: "Incorrect auth credentials"
+        403:
+          description: "Forbidden"
+        422:
+          description: "Validation error"
+        500:
+          description: "Internal server error"
+
+  /companies/{company}/invitations/approved:
+    get:
+      tags:
+        - "Invitations"
+      summary: "Get approved invitations (API Gateway only)"
+      description: ""
+      produces:
+        - "application/json"
+      parameters:
+        - in: "query"
+          name: "page[size]"
+          type: "integer"
+          description: "Limit of items in response"
+        - in: "query"
+          name: "page[number]"
+          type: "integer"
+          description: "Page number for pagination items"
+        - in: "query"
+          name: "sort"
+          type: "string"
+          description: 'Sort by column and direction ("-" before column name - DESC direction)'
+          enum:
+            - id
+            - -id
+        - in: "query"
+          name: "filter[id]"
+          type: "string"
+          description: "Filter by id column"
+        - in: "query"
+          name: "filter[from_user_id]"
+          type: "string"
+          description: "Filter by user id who created"
+        - in: "query"
+          name: "filter[to_user_id]"
+          type: "string"
+          description: "Filter by to user id who recieved"
+        - in: "query"
+          name: "filter[email]"
+          type: "string"
+          description: "Filter by email column"
+        - in: "query"
+          name: "include"
+          type: "string"
+          description: "Include resources"
+          enum:
+            - company
+            - to_user
+            - from_user
+      responses:
+        200:
+          description: "Successful operation"
+          schema:
+            $ref: "#/definitions/InvitationsListResponseModel"
+        401:
+          description: "Incorrect auth credentials"
+        422:
+          description: "Validation error"
+        500:
+          description: "Internal server error"
+
+  /companies/{company}/invitations/rejected:
+    get:
+      tags:
+        - "Invitations"
+      summary: "Get rejected invitations (API Gateway only)"
+      description: ""
+      produces:
+        - "application/json"
+      parameters:
+        - in: "query"
+          name: "page[size]"
+          type: "integer"
+          description: "Limit of items in response"
+        - in: "query"
+          name: "page[number]"
+          type: "integer"
+          description: "Page number for pagination items"
+        - in: "query"
+          name: "sort"
+          type: "string"
+          description: 'Sort by column and direction ("-" before column name - DESC direction)'
+          enum:
+            - id
+            - -id
+        - in: "query"
+          name: "filter[id]"
+          type: "string"
+          description: "Filter by id column"
+        - in: "query"
+          name: "filter[from_user_id]"
+          type: "string"
+          description: "Filter by user id who created"
+        - in: "query"
+          name: "filter[to_user_id]"
+          type: "string"
+          description: "Filter by to user id who recieved"
+        - in: "query"
+          name: "filter[email]"
+          type: "string"
+          description: "Filter by email column"
+        - in: "query"
+          name: "include"
+          type: "string"
+          description: "Include resources"
+          enum:
+            - company
+            - to_user
+            - from_user
+      responses:
+        200:
+          description: "Successful operation"
+          schema:
+            $ref: "#/definitions/InvitationsListResponseModel"
+        401:
+          description: "Incorrect auth credentials"
+        422:
+          description: "Validation error"
+        500:
+          description: "Internal server error"
+
+  /companies/{company}/invitations/pending:
+    get:
+      tags:
+        - "Invitations"
+      summary: "Get pending invitations (API Gateway only)"
+      description: ""
+      produces:
+        - "application/json"
+      parameters:
+        - in: "query"
+          name: "page[size]"
+          type: "integer"
+          description: "Limit of items in response"
+        - in: "query"
+          name: "page[number]"
+          type: "integer"
+          description: "Page number for pagination items"
+        - in: "query"
+          name: "sort"
+          type: "string"
+          description: 'Sort by column and direction ("-" before column name - DESC direction)'
+          enum:
+            - id
+            - -id
+        - in: "query"
+          name: "filter[id]"
+          type: "string"
+          description: "Filter by id column"
+        - in: "query"
+          name: "filter[from_user_id]"
+          type: "string"
+          description: "Filter by user id who created"
+        - in: "query"
+          name: "filter[to_user_id]"
+          type: "string"
+          description: "Filter by to user id who recieved"
+        - in: "query"
+          name: "filter[email]"
+          type: "string"
+          description: "Filter by email column"
+        - in: "query"
+          name: "include"
+          type: "string"
+          description: "Include resources"
+          enum:
+            - company
+            - to_user
+            - from_user
+      responses:
+        200:
+          description: "Successful operation"
+          schema:
+            $ref: "#/definitions/InvitationsListResponseModel"
+        401:
+          description: "Incorrect auth credentials"
+        422:
+          description: "Validation error"
+        500:
+          description: "Internal server error"
+
+  /companies/{company}/attach-user/{user}:
+    post:
+      tags:
+        - "Users and companies"
+      summary: "Attach user to company (Services Only)"
+      description: "Services Only"
+      produces:
+        - "application/json"
+      consumes:
+        - "application/json"
+      parameters:
+        - in: "path"
+          name: "company"
+          type: "string"
+          required: true
+          description: "Id of company"
+        - in: "path"
+          name: "user"
+          type: "string"
+          required: true
+          description: "Id of user"
+      responses:
+        201:
+          description: "Resourcve successfully created"
+        401:
+          description: "Incorrect auth credentials"
+        403:
+          description: "Forbidden"
+        422:
+          description: "Validation error"
+        500:
+          description: "Internal server error"
+
+  /companies/{company}/detach-user/{user}:
+    delete:
+      tags:
+        - "Users and companies"
+      summary: "Detach user from company (Services Only)"
+      description: "Services Only"
+      produces:
+        - "application/json"
+      consumes:
+        - "application/json"
+      parameters:
+        - in: "path"
+          name: "company"
+          type: "string"
+          required: true
+          description: "Id of company"
+        - in: "path"
+          name: "user"
+          type: "string"
+          required: true
+          description: "Id of user"
+      responses:
+        204:
+          description: "Successful deleted no content response"
+        401:
+          description: "Incorrect auth credentials"
+        403:
+          description: "Forbidden"
+        422:
+          description: "Validation error"
+        500:
+          description: "Internal server error"
+
+  /users:
+    get:
+      tags:
+        - "Users"
+      summary: "Get users"
+      description: ""
+      produces:
+        - "application/json"
+      parameters:
+        - in: "query"
+          name: "page[size]"
+          type: "integer"
+          description: "Limit of items in response"
+        - in: "query"
+          name: "page[number]"
+          type: "integer"
+          description: "Page number for pagination items"
+        - in: "query"
+          name: "sort"
+          type: "string"
+          description: 'Sort by column and direction ("-" before column name - DESC direction)'
+          enum:
+            - id
+            - -id
+        - in: "query"
+          name: "include"
+          type: "string"
+          description: "Include resources"
+          enum:
+            - companies
+            - companies_count
+            - avatar
+        - in: "query"
+          name: "filter[id]"
+          type: "string"
+          description: "Filter by id column"
+        - in: "query"
+          name: "filter[company_id]"
+          type: "string"
+          description: "Filter by company id"
+        - in: "query"
+          name: "filter[email]"
+          type: "string"
+          description: "Filter by email"
+        - in: "query"
+          name: "group"
+          type: "string"
+          description: "Group results"
+          enum:
+            - contacts.type
+            - contacts.group
+      responses:
+        200:
+          description: "Successful operation"
+          schema:
+            $ref: "#/definitions/UsersListResponseModel"
+        401:
+          description: "Incorrect auth credentials"
+        422:
+          description: "Validation error"
+        500:
+          description: "Internal server error"
+
+  /users/{user}:
+    get:
+      tags:
+        - "Users"
+      summary: "Get user"
+      description: ""
+      produces:
+        - "application/json"
+      consumes:
+        - "application/json"
+      parameters:
+        - in: "path"
+          name: "user"
+          type: "string"
+          required: true
+          description: "Id of user"
+        - in: "query"
+          name: "include"
+          type: "string"
+          description: "Include relations"
+          enum:
+            - contacts
+      responses:
+        200:
+          description: "Successful operation"
+          schema:
+            $ref: "#/definitions/UserResponseModel"
+        401:
+          description: "Incorrect auth credentials"
+        500:
+          description: "Internal server error"
+    put:
+      tags:
+        - "Users"
+      summary: "Update user"
+      description: ""
+      produces:
+        - "application/json"
+      consumes:
+        - "application/json"
+      parameters:
+        - in: "path"
+          name: "user"
+          type: "string"
+          required: true
+          description: "Id of user"
+        - name: "UpdateUserRequestBody"
+          in: "body"
+          description: "Body of request for updating of user"
+          required: true
+          schema:
+            $ref: "#/definitions/UpdateUserRequestModel"
+      responses:
+        200:
+          description: "Successful operation"
+        401:
+          description: "Incorrect auth credentials"
+        403:
+          description: "Forbidden"
+        422:
+          description: "Validation error"
+        500:
+          description: "Internal server error"
+    delete:
+      tags:
+        - "Users"
+      summary: "Delete user"
+      description: ""
+      produces:
+        - "application/json"
+      parameters:
+        - in: "path"
+          name: "user"
+          type: "string"
+          required: true
+          description: "Id of user"
+      responses:
+        204:
+          description: "Successful deleted no content response"
+        401:
+          description: "Incorrect auth credentials"
+        403:
+          description: "Forbidden"
+        404:
+          description: "Not found"
+        500:
+          description: "Internal server error"
+
+  /users/{user}/settings:
+    get:
+      tags:
+        - "Users"
+      summary: "Get user settings"
+      description: ""
+      produces:
+        - "application/json"
+      consumes:
+        - "application/json"
+      parameters:
+        - in: "path"
+          name: "user"
+          type: "string"
+          required: true
+          description: "Id of user"
+      responses:
+        200:
+          description: "Successful operation"
+          schema:
+            $ref: "#/definitions/SettingsResponseModel"
+        401:
+          description: "Incorrect auth credentials"
+        500:
+          description: "Internal server error"
+    post:
+      tags:
+        - "Users"
+      summary: "Update user settings"
+      description: ""
+      produces:
+        - "application/json"
+      consumes:
+        - "application/json"
+      parameters:
+        - in: "path"
+          name: "user"
+          type: "string"
+          required: true
+          description: "Id of user"
+        - name: "UpdateUserSettingsRequestBody"
+          in: "body"
+          description: "Body of request for updating of user"
+          required: true
+          schema:
+            $ref: "#/definitions/UpdateUserSettingsRequestModel"
+      responses:
+        200:
+          description: "Successful operation"
+        401:
+          description: "Incorrect auth credentials"
+        403:
+          description: "Forbidden"
+        422:
+          description: "Validation error"
+        500:
+          description: "Internal server error"
+
+  /users/{user}/companies:
+    get:
+      tags:
+        - "User and companies"
+      summary: "Get user companies"
+      description: ""
+      produces:
+        - "application/json"
+      parameters:
+        - in: "query"
+          name: "page[size]"
+          type: "integer"
+          description: "Limit of items in response"
+        - in: "query"
+          name: "page[number]"
+          type: "integer"
+          description: "Page number for pagination items"
+        - in: "query"
+          name: "sort"
+          type: "string"
+          description: 'Sort by column and direction ("-" before column name - DESC direction)'
+          enum:
+            - id
+            - -id
+        - in: "query"
+          name: "filter[id]"
+          type: "string"
+          description: "Filter by id column"
+        - in: "query"
+          name: "filter[name]"
+          type: "string"
+          description: "Filter by name"
+        - in: "query"
+          name: "filter[is_host]"
+          type: "string"
+          description: "Filter by is_host column"
+        - in: "query"
+          name: "include"
+          type: "string"
+          description: "Include relations"
+          enum:
+            - logo
+            - users
+            - users_count
+      responses:
+        200:
+          description: "Successful operation"
+          schema:
+            $ref: "#/definitions/CompaniesListResponseModel"
+        401:
+          description: "Incorrect auth credentials"
+        403:
+          description: "Forbidden"
+        404:
+          description: "Not found"
+        500:
+          description: "Internal server error"
+
+  /invitations:
+    get:
+      tags:
+        - "Invitations"
+      summary: "Get invitations"
+      description: ""
+      produces:
+        - "application/json"
+      parameters:
+        - in: "query"
+          name: "page[size]"
+          type: "integer"
+          description: "Limit of items in response"
+        - in: "query"
+          name: "page[number]"
+          type: "integer"
+          description: "Page number for pagination items"
+        - in: "query"
+          name: "sort"
+          type: "string"
+          description: 'Sort by column and direction ("-" before column name - DESC direction)'
+          enum:
+            - id
+            - -id
+        - in: "query"
+          name: "filter[id]"
+          type: "string"
+          description: "Filter by id column"
+        - in: "query"
+          name: "filter[from_user_id]"
+          type: "string"
+          description: "Filter by user id who created"
+        - in: "query"
+          name: "filter[to_user_id]"
+          type: "string"
+          description: "Filter by to user id who recieved"
+        - in: "query"
+          name: "filter[email]"
+          type: "string"
+          description: "Filter by email column"
+        - in: "query"
+          name: "filter[status]"
+          type: "string"
+          description: "Filter by status column"
+        - in: "query"
+          name: "filter[company_id]"
+          type: "string"
+          description: "Filter by company_id column"
+        - in: "query"
+          name: "include"
+          type: "string"
+          description: "Include resources"
+          enum:
+            - company
+            - to_user
+            - from_user
+      responses:
+        200:
+          description: "Successful operation"
+          schema:
+            $ref: "#/definitions/InvitationsListResponseModel"
+        401:
+          description: "Incorrect auth credentials"
+        422:
+          description: "Validation error"
+        500:
+          description: "Internal server error"
+
+  /invitations/{invitation}/approve:
+    post:
+      tags:
+        - "Invitations"
+      summary: "Approve invitation"
+      description: ""
+      produces:
+        - "application/json"
+      consumes:
+        - "application/json"
+      parameters:
+        - in: "query"
+          name: "approve"
+          type: "boolean"
+          description: "Approve invitation after create"
+        - in: "path"
+          name: "invitation"
+          type: "string"
+          required: true
+          description: "Id of invitation"
+      responses:
+        201:
+          description: "Resourcve successfully created"
+        401:
+          description: "Incorrect auth credentials"
+        403:
+          description: "Forbidden"
+        422:
+          description: "Validation error"
+        500:
+          description: "Internal server error"
+
+  /invitations/{invitation}/reject:
+    delete:
+      tags:
+        - "Invitations"
+      summary: "Reject invitation"
+      description: ""
+      produces:
+        - "application/json"
+      consumes:
+        - "application/json"
+      parameters:
+        - in: "path"
+          name: "invitation"
+          type: "string"
+          required: true
+          description: "Id of invitation"
+      responses:
+        204:
+          description: "Successfully deleted no content"
+        401:
+          description: "Incorrect auth credentials"
+        403:
+          description: "Forbidden"
+        422:
+          description: "Validation error"
+        500:
+          description: "Internal server error"
+
+  /invitations/{invitation}/reinvite:
+    post:
+      tags:
+        - "Invitations"
+      summary: "Reinvite invitation"
+      description: ""
+      produces:
+        - "application/json"
+      consumes:
+        - "application/json"
+      parameters:
+        - in: "path"
+          name: "invitation"
+          type: "string"
+          required: true
+          description: "Id of invitation"
+      responses:
+        200:
+          description: "Successful operation"
+        401:
+          description: "Incorrect auth credentials"
+        403:
+          description: "Forbidden"
+        422:
+          description: "Validation error"
+        500:
+          description: "Internal server error"
+
+  /roles:
+    get:
+      tags:
+        - "Roles"
+      summary: "Get roles (Services Only)"
+      description: ""
+      produces:
+        - "application/json"
+      parameters:
+        - in: "query"
+          name: "page[size]"
+          type: "integer"
+          description: "Limit of items in response"
+        - in: "query"
+          name: "page[number]"
+          type: "integer"
+          description: "Page number for pagination items"
+        - in: "query"
+          name: "sort"
+          type: "string"
+          description: 'Sort by column and direction ("-" before column name - DESC direction)'
+          enum:
+            - id
+            - -id
+        - in: "query"
+          name: "filter[id]"
+          type: "string"
+          description: "Filter by id column"
+        - in: "query"
+          name: "include"
+          type: "string"
+          description: "Include resources"
+          enum:
+            - permissions
+      responses:
+        200:
+          description: "Successful operation"
+          schema:
+            $ref: "#/definitions/RolesListResponseModel"
+        401:
+          description: "Incorrect auth credentials"
+        403:
+          description: "Forbidden"
+        422:
+          description: "Validation error"
+        500:
+          description: "Internal server error"
+
+  /roles/{role}/attach-user/{user}:
+    post:
+      tags:
+        - "Roles"
+      summary: "Attach user to role (Services Only)"
+      description: "Services Only"
+      produces:
+        - "application/json"
+      consumes:
+        - "application/json"
+      parameters:
+        - in: "path"
+          name: "role"
+          type: "string"
+          required: true
+          description: "Id of role"
+        - in: "path"
+          name: "user"
+          type: "string"
+          required: true
+          description: "Id of user"
+      responses:
+        201:
+          description: "Resourcve successfully created"
+        401:
+          description: "Incorrect auth credentials"
+        403:
+          description: "Forbidden"
+        422:
+          description: "Validation error"
+        500:
+          description: "Internal server error"
+
+  /roles/{role}/detach-user/{user}:
+    delete:
+      tags:
+        - "Roles"
+      summary: "Detach user from role (Services Only)"
+      description: "Services Only"
+      produces:
+        - "application/json"
+      consumes:
+        - "application/json"
+      parameters:
+        - in: "path"
+          name: "role"
+          type: "string"
+          required: true
+          description: "Id of role"
+        - in: "path"
+          name: "user"
+          type: "string"
+          required: true
+          description: "Id of user"
+      responses:
+        204:
+          description: "Successful deleted no content response"
+        401:
+          description: "Incorrect auth credentials"
+        403:
+          description: "Forbidden"
+        422:
+          description: "Validation error"
+        500:
+          description: "Internal server error"
+
+  /me:
+    get:
+      tags:
+        - "Me"
+      summary: "Get auth user info"
+      description: ""
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: "Successful operation"
+          schema:
+            $ref: "#/definitions/UserResponseModel"
+        401:
+          description: "Incorrect auth credentials"
+        500:
+          description: "Internal server error"
+
+  /me/avatar:
+    post:
+      tags:
+        - "Me"
+      summary: "Update user avatar (API Gateway only)"
+      description: "API Gateway only"
+      produces:
+        - "application/json"
+      consumes:
+        - "application/json"
+      parameters:
+        - name: "UpdateUserAvatarRequestBody"
+          in: "body"
+          description: "Body of request for updating of user avatar"
+          required: true
+          schema:
+            $ref: "#/definitions/UpdateUserAvatarRequestModel"
+      responses:
+        201:
+          description: "Resourcve successfully created"
+          schema:
+            $ref: "#/definitions/MediaResponseModel"
+        401:
+          description: "Incorrect auth credentials"
+        403:
+          description: "Forbidden"
+        422:
+          description: "Validation error"
+        500:
+          description: "Internal server error"
+
+  /me/companies:
+    get:
+      tags:
+        - "Me"
+      summary: "Get my companies (API Gateway only)"
+      description: "API Gateway only"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "query"
+          name: "page[size]"
+          type: "integer"
+          description: "Limit of items in response"
+        - in: "query"
+          name: "page[number]"
+          type: "integer"
+          description: "Page number for pagination items"
+        - in: "query"
+          name: "sort"
+          type: "string"
+          description: 'Sort by column and direction ("-" before column name - DESC direction)'
+          enum:
+            - id
+            - -id
+        - in: "query"
+          name: "filter[id]"
+          type: "string"
+          description: "Filter by id column"
+        - in: "query"
+          name: "filter[name]"
+          type: "string"
+          description: "Filter by id name"
+        - in: "query"
+          name: "filter[is_host]"
+          type: "string"
+          description: "Filter by is_host column"
+        - in: "query"
+          name: "include"
+          type: "string"
+          description: "Include relations"
+          enum:
+            - logo
+            - users
+            - users_count
+      responses:
+        200:
+          description: "Successful operation"
+          schema:
+            $ref: "#/definitions/CompaniesListResponseModel"
+        401:
+          description: "Incorrect auth credentials"
+        422:
+          description: "Validation error"
+        500:
+          description: "Internal server error"
+    post:
+      tags:
+        - "Me"
+      summary: "Create company (API Gateway only)"
+      description: "API Gateway only"
+      produces:
+        - "application/json"
+      consumes:
+        - "application/json"
+      parameters:
+        - name: "CreateCompanyRequestBody"
+          in: "body"
+          description: "Body of request for creating company"
+          required: true
+          schema:
+            $ref: "#/definitions/CreateCompanyRequestModel"
+      responses:
+        201:
+          description: "Resourcve successfully created"
+          schema:
+            $ref: "#/definitions/CompanyResponseModel"
+        401:
+          description: "Incorrect auth credentials"
+        403:
+          description: "Forbidden"
+        422:
+          description: "Validation error"
+        500:
+          description: "Internal server error"
+
+  /me/companies/{company}:
+    put:
+      tags:
+        - "Me"
+      summary: "Updatre company (API Gateway only)"
+      description: "API Gateway only"
+      produces:
+        - "application/json"
+      consumes:
+        - "application/json"
+      parameters:
+        - in: "path"
+          name: "company"
+          type: "string"
+          required: true
+          description: "Id of company"
+        - name: "UpdateCompanyRequestBody"
+          in: "body"
+          description: "Body of request for updating of company"
+          required: true
+          schema:
+            $ref: "#/definitions/UpdateCompanyRequestModel"
+      responses:
+        200:
+          description: "Resourcve successfully created"
+          schema:
+            $ref: "#/definitions/CompanyResponseModel"
+        401:
+          description: "Incorrect auth credentials"
+        403:
+          description: "Forbidden"
+        422:
+          description: "Validation error"
+        500:
+          description: "Internal server error"
+    delete:
+      tags:
+        - "Me"
+      summary: "Delete my company (API Gateway only)"
+      description: "API Gateway only"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "path"
+          name: "company"
+          type: "string"
+          required: true
+          description: "Id of company"
+      responses:
+        204:
+          description: "Successful deleted no content response"
+        401:
+          description: "Incorrect auth credentials"
+        403:
+          description: "Forbidden"
+        404:
+          description: "Not found"
+        500:
+          description: "Internal server error"
+
+  /me/companies/{company}/logo:
+    post:
+      tags:
+        - "Me"
+      summary: "Update my company logo (API Gateway only)"
+      description: "API Gateway only"
+      produces:
+        - "application/json"
+      consumes:
+        - "application/json"
+      parameters:
+        - in: "path"
+          name: "company"
+          type: "string"
+          required: true
+          description: "Id of company"
+        - name: "UpdateCompanyLogoRequestBody"
+          in: "body"
+          description: "Body of request for updating of company"
+          required: true
+          schema:
+            $ref: "#/definitions/UpdateCompanyLogoRequestModel"
+      responses:
+        201:
+          description: "Resourcve successfully created"
+          schema:
+            $ref: "#/definitions/MediaResponseModel"
+        401:
+          description: "Incorrect auth credentials"
+        403:
+          description: "Forbidden"
+        422:
+          description: "Validation error"
+        500:
+          description: "Internal server error"
+
+  /me/invitations/incoming:
+    get:
+      tags:
+        - "Me"
+      summary: "Get invitations for me (API Gateway only)"
+      description: "API Gateway only"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "query"
+          name: "page[size]"
+          type: "integer"
+          description: "Limit of items in response"
+        - in: "query"
+          name: "page[number]"
+          type: "integer"
+          description: "Page number for pagination items"
+        - in: "query"
+          name: "sort"
+          type: "string"
+          description: 'Sort by column and direction ("-" before column name - DESC direction)'
+          enum:
+            - id
+            - -id
+        - in: "query"
+          name: "filter[id]"
+          type: "string"
+          description: "Filter by id column"
+        - in: "query"
+          name: "filter[from_user_id]"
+          type: "string"
+          description: "Filter by user id who created"
+        - in: "query"
+          name: "filter[email]"
+          type: "string"
+          description: "Filter by email column"
+        - in: "query"
+          name: "filter[status]"
+          type: "string"
+          description: "Filter by status column"
+        - in: "query"
+          name: "filter[company_id]"
+          type: "string"
+          description: "Filter by company_id column"
+        - in: "query"
+          name: "include"
+          type: "string"
+          description: "Include resources"
+          enum:
+            - company
+            - to_user
+            - from_user
+      responses:
+        200:
+          description: "Successful operation"
+          schema:
+            $ref: "#/definitions/InvitationsListResponseModel"
+        401:
+          description: "Incorrect auth credentials"
+        422:
+          description: "Validation error"
+        500:
+          description: "Internal server error"
+
+  /me/invitations/outgoing:
+    get:
+      tags:
+        - "Me"
+      summary: "Get invitations from me (API Gateway only)"
+      description: "API Gateway only"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "query"
+          name: "page[size]"
+          type: "integer"
+          description: "Limit of items in response"
+        - in: "query"
+          name: "page[number]"
+          type: "integer"
+          description: "Page number for pagination items"
+        - in: "query"
+          name: "sort"
+          type: "string"
+          description: 'Sort by column and direction ("-" before column name - DESC direction)'
+          enum:
+            - id
+            - -id
+        - in: "query"
+          name: "filter[id]"
+          type: "string"
+          description: "Filter by id column"
+        - in: "query"
+          name: "filter[to_user_id]"
+          type: "string"
+          description: "Filter by to user id who recieved"
+        - in: "query"
+          name: "filter[email]"
+          type: "string"
+          description: "Filter by email column"
+        - in: "query"
+          name: "filter[status]"
+          type: "string"
+          description: "Filter by status column"
+        - in: "query"
+          name: "filter[company_id]"
+          type: "string"
+          description: "Filter by company_id column"
+        - in: "query"
+          name: "include"
+          type: "string"
+          description: "Include resources"
+          enum:
+            - company
+            - to_user
+            - from_user
+      responses:
+        200:
+          description: "Successful operation"
+          schema:
+            $ref: "#/definitions/InvitationsListResponseModel"
+        401:
+          description: "Incorrect auth credentials"
+        422:
+          description: "Validation error"
+        500:
+          description: "Internal server error"
+
+definitions:
+  DefaultListMeta:
+    type: "object"
+    properties:
+      count:
+        type: "integer"
+      pages_count:
+        type: "integer"
+
+  MediaResponseModel:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+      path:
+        type: "string"
+      url:
+        type: "string"
+      type:
+        type: "string"
+      mime_type:
+        type: "string"
+      human_size:
+        type: "string"
+
+  HealthCheckResponse:
+    type: "object"
+    properties:
+      message:
+        type: "string"
+      locale:
+        type: "string"
+
+  CheckRegisterEmailRequestModel:
+    type: "object"
+    required:
+      - "email"
+    properties:
+      email:
+        type: "string"
+      code:
+        type: "string"
+
+  RegisterUserRequestModel:
+    type: "object"
+    required:
+      - "email"
+    properties:
+      id:
+        type: "string"
+      email:
+        type: "string"
+      name:
+        type: "string"
+        maximum: 50
+      second_name:
+        type: "string"
+        maximum: 50
+      last_name:
+        type: "string"
+        maximum: 50
+
+  CompaniesListResponseModel:
+    type: "object"
+    properties:
+      data:
+        type: "array"
+        items:
+          $ref: "#/definitions/CompanyResponseModel"
+      meta:
+        type: "object"
+        $ref: "#/definitions/DefaultListMeta"
+
+  CompanyResponseModel:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+      name:
+        type: "string"
+      description:
+        type: "string"
+      is_host:
+        type: "boolean"
+      users_count:
+        type: "integer"
+      logo:
+        type: "object"
+        $ref: "#/definitions/MediaResponseModel"
+
+  CompanyInviteUserRequestModel:
+    type: "object"
+    required:
+      - "email"
+    properties:
+      email:
+        type: "string"
+
+  CreateCompanyRequestModel:
+    type: "object"
+    required:
+      - "name"
+    properties:
+      id:
+        type: "string"
+      name:
+        type: "string"
+      description:
+        type: "string"
+
+  MakeCompanyModeratorRequestModel:
+    type: "object"
+    required:
+      - "user_id"
+    properties:
+      user_id:
+        type: "string"
+
+  UpdateCompanyRequestModel:
+    type: "object"
+    required:
+      - "name"
+    properties:
+      name:
+        type: "string"
+      description:
+        type: "string"
+
+  UpdateCompanyLogoRequestModel:
+    type: "object"
+    required:
+      - "logo"
+    properties:
+      logo:
+        type: "string"
+        format: binary
+
+  UpdateUserAvatarRequestModel:
+    type: "object"
+    required:
+      - "avatar"
+    properties:
+      avatar:
+        type: "string"
+        format: binary
+
+  UserResponseModel:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+      cognito_id:
+        type: "string"
+      name:
+        type: "string"
+      email:
+        type: "string"
+      is_host:
+        type: "boolean"
+      second_name:
+        type: "string"
+      last_name:
+        type: "string"
+      full_name:
+        type: "string"
+      short_name:
+        type: "string"
+      secret_register_code:
+        type: "string"
+      companies:
+        type: "array"
+        items:
+          $ref: "#/definitions/CompanyResponseModel"
+      contacts:
+        type: "array"
+        items:
+          $ref: "#/definitions/ContactResponseModel"
+      avatar:
+        type: "object"
+        $ref: "#/definitions/MediaResponseModel"
+      settings:
+        type: "object"
+        $ref: "#/definitions/SettingsResponseModel"
+
+  UsersListResponseModel:
+    type: "object"
+    properties:
+      data:
+        type: "array"
+        items:
+          $ref: "#/definitions/UserResponseModel"
+      meta:
+        type: "object"
+        $ref: "#/definitions/DefaultListMeta"
+
+  UpdateUserRequestModel:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+      second_name:
+        type: "string"
+      last_name:
+        type: "string"
+
+  UpdateUserSettingsRequestModel:
+    type: "object"
+    properties:
+      timezone:
+        type: "string"
+      location:
+        type: "string"
+
+  InvitationsListResponseModel:
+    type: "object"
+    properties:
+      data:
+        type: "array"
+        items:
+          $ref: "#/definitions/InvitationResponseModel"
+
+  InvitationResponseModel:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+      status:
+        type: "string"
+      from_user_id:
+        type: "string"
+      company_id:
+        type: "string"
+      to_user_id:
+        type: "string"
+      from_user:
+        type: "object"
+        $ref: "#/definitions/UserResponseModel"
+      to_user:
+        type: "object"
+        $ref: "#/definitions/UserResponseModel"
+      created_at:
+        type: "string"
+      updated_at:
+        type: "string"
+      change_status_at:
+        type: "string"
+      last_invited_at:
+        type: "string"
+      company:
+        type: "object"
+        $ref: "#/definitions/CompanyResponseModel"
+
+  RolesListResponseModel:
+    type: "object"
+    properties:
+      data:
+        type: "array"
+        items:
+          $ref: "#/definitions/RoleResponseModel"
+
+  RoleResponseModel:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+      name:
+        type: "string"
+      slug:
+        type: "string"
+      permissions:
+        type: "array"
+        items:
+          $ref: "#/definitions/PermissionResponseModel"
+
+  PermissionResponseModel:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+      name:
+        type: "string"
+
+  ContactListResponseModel:
+    type: "object"
+    properties:
+      data:
+        type: "array"
+        items:
+          $ref: "#/definitions/ContactResponseModel"
+
+  ContactResponseModel:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+        format: "uuid"
+      value:
+        type: "string"
+      type:
+        type: "string"
+      resource_id:
+        type: "string"
+        format: "uuid"
+      resource_type:
+        type: "string"
+      contact_group_id:
+        type: "string"
+        format: "uuid"
+
+  SettingsResponseModel:
+    type: "object"
+    properties:
+      timezone:
+        type: "string"
+      location:
+        type: "string"
