@@ -169,10 +169,9 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 .Name("properties")
                 .Argument<NonNullGraphType<StringGraphType>>("storeId", "The store id to get binded catalog")
                 .Argument<ListGraphType<PropertyTypeEnum>>("types", "The owner types (Catalog, Category, Product, Variation)")
-                .Argument<StringGraphType>("keyword", "The keyword to search for specific property names")
-                .Argument<StringGraphType>("categoryId", "The category to filter properties by")
-                .Argument<ListGraphType<StringGraphType>>("names", "Names of the properties searching for")
+                .Argument<StringGraphType>("filter", "This parameter applies a filter to the query results")
                 .Argument<StringGraphType>("cultureName", "The language for which all localized property dictionary items will be returned")
+
                 .Unidirectional()
                 .PageSize(20);
 
@@ -323,9 +322,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
                 CatalogId = (string)context.UserContext["catalog"],
                 Types = context.GetArgument<object[]>("types"),
-                Keyword = context.GetArgument<string>("keyword"),
-                PropertyNames = context.GetArgument<string[]>("names"),
-                CategoryId = context.GetArgument<string>("categoryId")
+                Filter = context.GetArgument<string>("filter")
             };
 
             var response = await mediator.Send(query);

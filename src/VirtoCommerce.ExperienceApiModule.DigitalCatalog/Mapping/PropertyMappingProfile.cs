@@ -1,5 +1,9 @@
+using System.Collections.Generic;
+using System.Linq;
 using AutoMapper;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
+using VirtoCommerce.ExperienceApiModule.Core.Index;
+using VirtoCommerce.SearchModule.Core.Model;
 using VirtoCommerce.XDigitalCatalog.Queries;
 
 namespace VirtoCommerce.XDigitalCatalog.Mapping
@@ -10,6 +14,15 @@ namespace VirtoCommerce.XDigitalCatalog.Mapping
         {
             CreateMap<SearchPropertiesQuery, PropertySearchCriteria>();
             CreateMap<SearchPropertyDictionaryItemQuery, PropertyDictionaryItemSearchCriteria>();
+            CreateMap<IList<IFilter>, PropertySearchCriteria>()
+               .ConvertUsing((terms, criteria, context) =>
+               {
+                   foreach (var term in terms.OfType<TermFilter>())
+                   {
+                       term.MapTo(criteria);
+                   }
+                   return criteria;
+               });
         }
     }
 }
