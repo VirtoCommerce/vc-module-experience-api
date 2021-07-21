@@ -10,6 +10,7 @@ using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
+using VirtoCommerce.ExperienceApiModule.Core.Infrastructure.Authorization;
 using VirtoCommerce.ExperienceApiModule.XOrder.Authorization;
 using VirtoCommerce.ExperienceApiModule.XOrder.Commands;
 using VirtoCommerce.ExperienceApiModule.XOrder.Queries;
@@ -62,7 +63,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 
                     if (!authorizationResult.Succeeded)
                     {
-                        throw new ExecutionError($"Access denied");
+                        throw new AuthorizationException($"Access denied");
                     }
 
                     var allCurrencies = await _currencyService.GetAllCurrenciesAsync();
@@ -227,7 +228,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), query, new CanAccessOrderAuthorizationRequirement());
             if (!authorizationResult.Succeeded)
             {
-                throw new ExecutionError($"Access denied");
+                throw new AuthorizationException($"Access denied");
             }
 
             var response = await mediator.Send(query);
@@ -258,7 +259,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), query, new CanAccessOrderAuthorizationRequirement());
             if (!authorizationResult.Succeeded)
             {
-                throw new ExecutionError($"Access denied");
+                throw new AuthorizationException($"Access denied");
             }
 
             context.UserContext.Add(nameof(Currency.CultureName).ToCamelCase(), query.CultureName);
@@ -285,7 +286,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 
             if (!authorizationResult.Succeeded)
             {
-                throw new ExecutionError($"Access denied");
+                throw new AuthorizationException($"Access denied");
             }
         }
     }
