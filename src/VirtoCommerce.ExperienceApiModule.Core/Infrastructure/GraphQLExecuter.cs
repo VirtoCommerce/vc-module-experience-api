@@ -31,6 +31,8 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Infrastructure
         {
             var options = base.GetOptions(operationName, query, variables, context, requestServices, cancellationToken);
 
+            // need to be set to true to disable handling of custom expections in DocumentExecutor so they can be catched in custom middleware
+            // always false by default becuse it's absent in DefaultGraphQLExecuter
             options.ThrowOnUnhandledException = true;
 
             return options;

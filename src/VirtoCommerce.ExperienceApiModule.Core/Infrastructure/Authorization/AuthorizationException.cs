@@ -2,7 +2,10 @@ using System;
 
 namespace VirtoCommerce.ExperienceApiModule.Core.Infrastructure.Authorization
 {
-    public sealed class AuthorizationException : Exception
+    /// <summary>
+    /// Represents authorization error. Catched and handled in AuthorizationErrorHandlingMiddleware to return 401 error code to client
+    /// </summary>
+    public class AuthorizationException : Exception
     {
         public AuthorizationException()
         {
