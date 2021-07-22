@@ -19,7 +19,7 @@ Read this [article...](./how-to-use.md)
 ## QueryRoot
 ### Product
 This query allows you to get a product by Id and calculate all the fields based on the parameters sent.
-#### Defenition:
+#### Definition:
 `product(id: !string, storeId: !string, userId: !string, currencyCode: string, cultureName: string)`
 #### Arguments:
 |№|Name        |Type           |Description                |
@@ -46,7 +46,7 @@ This query allows you to get a product by Id and calculate all the fields based 
 ```
 ### Products
 This connection allows you to search products.
-#### Defenition:
+#### Definition:
 `products(productIds: string[], storeId: !string, userId: !string, currencyCode: string, cultureName: string, query: string, filter: string, fuzzy: bool, fuzzyLevel: int, facet: string, sort: string)`
 #### Arguments:
 |№ |Name        |Type                     |Description                |
@@ -90,7 +90,7 @@ This connection allows you to search products.
 
 ### Categories
 This connection allows you to search products.
-#### Defenition:
+#### Definition:
 `categories(categoryIds: string[], storeId: !string, userId: !string, currencyCode: string, cultureName: string, query: string, filter: string, fuzzy: bool, fuzzyLevel: int, facet: string, sort: string)`
 #### Arguments:
 |№ |Name        |Type                     |Description                |
