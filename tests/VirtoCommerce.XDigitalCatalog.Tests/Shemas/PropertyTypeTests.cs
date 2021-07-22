@@ -3,7 +3,6 @@ using System.Linq;
 using AutoFixture;
 using FluentAssertions;
 using GraphQL;
-using GraphQL.Types;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.XDigitalCatalog.Tests.Helpers;
@@ -18,14 +17,14 @@ namespace VirtoCommerce.XDigitalCatalog.Tests.Shemas
 
         public PropertyTypeTests()
         {
-            _propertyType = new PropertyType();
+            _propertyType = new PropertyType(null, null);
         }
 
         [Fact]
-        public void PropertyType_ShouldHavePropperFieldAmount()
+        public void PropertyType_ShouldHaveProperFieldAmount()
         {
             // Assert
-            _propertyType.Fields.Should().HaveCount(9);
+            _propertyType.Fields.Should().HaveCount(10);
         }
 
         [Fact]

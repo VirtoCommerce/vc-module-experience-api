@@ -19,7 +19,7 @@ on:
 
 jobs:
   e2e-tests:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04 # katalon action runs correctly on ubuntu-18.04
     env:
       SONAR_TOKEN: ${{secrets.SONAR_TOKEN}}
       GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
@@ -63,7 +63,7 @@ jobs:
     - name: Docker Login
       uses: azure/docker-login@v1
       with:
-        login-server: docker.pkg.github.com
+        login-server: ghcr.io
         username: $GITHUB_ACTOR
         password: ${{ secrets.GITHUB_TOKEN }}
 
@@ -74,16 +74,16 @@ jobs:
         githubToken: ${{ env.GITHUB_TOKEN }}
         platformDockerTag: 'dev-linux-latest'
         storefrontDockerTag: 'dev-linux-latest'
-        platformImage: docker.pkg.github.com/virtocommerce/vc-platform/platform
-        storefrontImage: docker.pkg.github.com/virtocommerce/vc-storefront/storefront
+        platformImage: ghcr.io/virtocommerce/platform
+        storefrontImage: ghcr.io/virtocommerce/storefront
         validateSwagger: 'false'
         installModule: 'true'
         moduleId: ${{ steps.image.outputs.moduleId }}
 
     - name: Katalon Studio Github Action
-      uses: katalon-studio/katalon-studio-github-action@v2.2
+      uses: VirtoCommerce/vc-github-actions/katalon-studio-github-action@master
       with:
-        version: '7.5.5'
+        version: '7.9.1'
         projectPath: '${{ github.workspace }}/vc-quality-gate-katalon/platform_storefront.prj'
         args: '-noSplash -retry=0 -testSuitePath="${{ github.event.inputs.testSuite || env.DEFAULT_TEST_SUITE }}" -browserType="Chrome" -apiKey= ${{ secrets.KATALON_API_KEY }} -g_urlBack="http://localhost:8090" -g_urlFront="http://localhost:8080" -executionProfile="default"'
 

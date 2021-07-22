@@ -15,7 +15,7 @@ using VirtoCommerce.XDigitalCatalog.Queries;
 
 namespace VirtoCommerce.XDigitalCatalog.Schemas
 {
-    public class CategoryType : ObjectGraphType<ExpCategory>
+    public class CategoryType : ExtendableGraphType<ExpCategory>
     {
         public CategoryType(IMediator mediator, IDataLoaderContextAccessor dataLoader)
         {
@@ -93,13 +93,20 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             Field<ListGraphType<BreadcrumbType>>("breadcrumbs", resolve: context =>
             {
-                
+
                 var store = context.GetArgumentOrValue<Store>("store");
                 var cultureName = context.GetValue<string>("cultureName");
 
                 return context.Source.Category.Outlines.GetBreadcrumbsFromOutLine(store, cultureName);
 
             });
+
+            ExtendableField<ListGraphType<PropertyType>>("properties", resolve: context =>
+            {
+                var cultureName = context.GetValue<string>("cultureName");
+                return context.Source.Category.Properties.ExpandByValues(cultureName);
+            });
+
         }
 
         private static bool TryGetParentId(IResolveFieldContext<ExpCategory> context, out string parentId)
@@ -118,6 +125,5 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             var response = await mediator.Send(loadCategoryQuery);
             return response.Categories.ToDictionary(x => x.Id);
         }
-
     }
 }

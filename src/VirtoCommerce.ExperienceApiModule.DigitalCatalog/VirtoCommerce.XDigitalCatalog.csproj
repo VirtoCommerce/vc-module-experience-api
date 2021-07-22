@@ -20,10 +20,10 @@
         <PackageReference Include="VirtoCommerce.CoreModule.Core" Version="3.2.0" />
         <PackageReference Include="VirtoCommerce.InventoryModule.Core" Version="3.3.0" />
         <PackageReference Include="VirtoCommerce.TaxModule.Core" Version="3.2.0" />
-        <PackageReference Include="VirtoCommerce.CatalogModule.Core" Version="3.4.0" />
+        <PackageReference Include="VirtoCommerce.CatalogModule.Core" Version="3.53.0" />
         <PackageReference Include="VirtoCommerce.MarketingModule.Core" Version="3.23.0" />
         <PackageReference Include="VirtoCommerce.PricingModule.Core" Version="3.2.0" />
-        <PackageReference Include="VirtoCommerce.Platform.Core" Version="3.57.0" />
+        <PackageReference Include="VirtoCommerce.Platform.Core" Version="3.66.0" />
         <PackageReference Include="VirtoCommerce.StoreModule.Core" Version="3.14.0" />
         <PackageReference Include="VirtoCommerce.SearchModule.Core" Version="3.13.0" />
         <PackageReference Include="VirtoCommerce.Tools" Version="3.0.0-rc.5" />

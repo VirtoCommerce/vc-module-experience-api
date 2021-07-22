@@ -1,14 +1,20 @@
 using System.Linq;
+using System.Threading.Tasks;
+using GraphQL.Builders;
+using GraphQL.DataLoader;
 using GraphQL.Types;
+using MediatR;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
+using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.XDigitalCatalog.Queries;
 
 namespace VirtoCommerce.XDigitalCatalog.Schemas
 {
     public class PropertyType : ObjectGraphType<Property>
     {
-        public PropertyType()
+        public PropertyType(IMediator mediator, IDataLoaderContextAccessor dataLoader)
         {
             Name = "Property";
             Description = "Products attributes.";
@@ -59,6 +65,34 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 "valueId",
                 resolve: context => context.Source.Values.Select(x => x.ValueId).FirstOrDefault()
             );
+
+            Connection<PropertyDictionaryItemType>()
+              .Name("propertyDictItems")
+              .Unidirectional()
+              .PageSize(20)
+              .ResolveAsync(async context =>
+              {
+                  return await ResolveConnectionAsync(mediator, context);
+              });
+
+        }
+
+        private static async Task<object> ResolveConnectionAsync(IMediator mediator, IResolveConnectionContext<Property> context)
+        {
+            var first = context.First;
+
+            int.TryParse(context.After, out var skip);
+
+            var query = new SearchPropertyDictionaryItemQuery
+            {
+                Skip = skip,
+                Take = first ?? context.PageSize ?? 10,
+                PropertyIds = new[] { context.Source.Id }
+            };
+
+            var response = await mediator.Send(query);
+
+            return new PagedConnection<PropertyDictionaryItem>(response.Result.Results, query.Skip, query.Take, response.Result.TotalCount);
         }
     }
 }
