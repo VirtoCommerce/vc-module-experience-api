@@ -8,7 +8,6 @@ using Microsoft.Extensions.DependencyInjection;
 using VirtoCommerce.ExperienceApiModule.Core;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
-using VirtoCommerce.ExperienceApiModule.Core.Middleware;
 using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
 using VirtoCommerce.ExperienceApiModule.Web.Extensions;
 using VirtoCommerce.ExperienceApiModule.XOrder.Extensions;
@@ -86,11 +85,8 @@ namespace VirtoCommerce.ExperienceApiModule.Web
 
         public void PostInitialize(IApplicationBuilder appBuilder)
         {
-            // middleware that's going to catch unhandled auth errors in GraphQL middleware 
-            appBuilder.UseMiddleware<AuthorizationErrorHandlingMiddleware>();
-
             // add http for Schema at default url /graphql
-            appBuilder.UseGraphQL<ISchema, GraphQLMiddleware<ISchema>>();
+            appBuilder.UseGraphQL<ISchema>();
 
             // use graphql-playground at default url /ui/playground
             appBuilder.UseGraphQLPlayground();

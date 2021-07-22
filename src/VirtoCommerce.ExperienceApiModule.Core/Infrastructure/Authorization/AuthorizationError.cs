@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using GraphQL;
+using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 
 namespace VirtoCommerce.ExperienceApiModule.Core.Infrastructure.Authorization
 {
@@ -11,16 +12,10 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Infrastructure.Authorization
     /// </summary>
     public class AuthorizationError : ExecutionError
     {
-        public AuthorizationError(string message) : base(message)
-        {
-        }
+        public AuthorizationError(string message) : base(message) => Code = Constants.UnauthorizedCode;
 
-        public AuthorizationError(string message, IDictionary data) : base(message, data)
-        {
-        }
+        public AuthorizationError(string message, IDictionary data) : base(message, data) => Code = Constants.UnauthorizedCode;
 
-        public AuthorizationError(string message, Exception exception) : base(message, exception)
-        {
-        }
+        public AuthorizationError(string message, Exception exception) : base(message, exception) => Code = Constants.UnauthorizedCode;
     }
 }
