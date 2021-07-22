@@ -1,7 +1,6 @@
 using System;
 using AutoMapper;
 using GraphQL.Server;
-using GraphQL.Server.Internal;
 using GraphQL.Types;
 using GraphQL.Utilities;
 using Microsoft.AspNetCore.Builder;
@@ -31,9 +30,6 @@ namespace VirtoCommerce.ExperienceApiModule.Web
 
         public void Initialize(IServiceCollection services)
         {
-            // registered first so that DefaultGraphQLExecuter doesn't get registered later
-            services.AddTransient(typeof(IGraphQLExecuter<>), typeof(GraphQLExecuter<>));
-
             //Register .NET GraphQL server
             var graphQlBuilder = services.AddGraphQL(_ =>
             {
@@ -94,7 +90,7 @@ namespace VirtoCommerce.ExperienceApiModule.Web
             appBuilder.UseMiddleware<AuthorizationErrorHandlingMiddleware>();
 
             // add http for Schema at default url /graphql
-            appBuilder.UseGraphQL<ISchema>();
+            appBuilder.UseGraphQL<ISchema, GraphQLMiddleware<ISchema>>();
 
             // use graphql-playground at default url /ui/playground
             appBuilder.UseGraphQLPlayground();

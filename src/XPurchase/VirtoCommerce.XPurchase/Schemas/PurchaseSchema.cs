@@ -771,7 +771,7 @@ namespace VirtoCommerce.XPurchase.Schemas
 
             if (!authorizationResult.Succeeded)
             {
-                throw new AuthorizationException($"Access denied");
+                throw new AuthorizationError($"Access denied");
             }
 
             var response = await mediator.Send(query);

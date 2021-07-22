@@ -524,7 +524,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                     var permissionAuthorizationResult = await _authorizationService.AuthorizeAsync(userPrincipal, null, new PermissionAuthorizationRequirement(permission));
                     if (!permissionAuthorizationResult.Succeeded)
                     {
-                        throw new AuthorizationException($"User doesn't have the required permission '{permission}'.");
+                        throw new AuthorizationError($"User doesn't have the required permission '{permission}'.");
                     }
                 }
             }
@@ -532,7 +532,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 
             if (!authorizationResult.Succeeded)
             {
-                throw new AuthorizationException($"Access denied");
+                throw new AuthorizationError($"Access denied");
             }
         }
 

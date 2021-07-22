@@ -21,7 +21,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Middleware
             {
                 await _next.Invoke(context);
             }
-            catch (AuthorizationException ex) when (context.Request.Path.ToString().Contains("graphql"))
+            catch (AuthorizationError ex) when (context.Request.Path.ToString().Contains("graphql"))
             {
                 var json = JsonConvert.SerializeObject(new { error = ex.Message });
                 context.Response.ContentType = "application/json";
