@@ -6,9 +6,7 @@ using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 namespace VirtoCommerce.ExperienceApiModule.Core.Infrastructure.Authorization
 {
     /// <summary>
-    /// Represents auhorization error
-    /// Thrown in GraphQLMiddleware on auth errors.
-    /// Catched and handled in AuthorizationErrorHandlingMiddleware to return 401 error code to client
+    /// Represents an auhorization error
     /// </summary>
     public class AuthorizationError : ExecutionError
     {
