@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Identity;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
+using VirtoCommerce.ExperienceApiModule.Core.Infrastructure.Authorization;
 using VirtoCommerce.ExperienceApiModule.XProfile.Aggregates;
 using VirtoCommerce.ExperienceApiModule.XProfile.Authorization;
 using VirtoCommerce.ExperienceApiModule.XProfile.Commands;
@@ -523,7 +524,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                     var permissionAuthorizationResult = await _authorizationService.AuthorizeAsync(userPrincipal, null, new PermissionAuthorizationRequirement(permission));
                     if (!permissionAuthorizationResult.Succeeded)
                     {
-                        throw new ExecutionError($"User doesn't have the required permission '{permission}'.");
+                        throw new AuthorizationError($"User doesn't have the required permission '{permission}'.");
                     }
                 }
             }
@@ -531,7 +532,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 
             if (!authorizationResult.Succeeded)
             {
-                throw new ExecutionError($"Access denied");
+                throw new AuthorizationError($"Access denied");
             }
         }
 

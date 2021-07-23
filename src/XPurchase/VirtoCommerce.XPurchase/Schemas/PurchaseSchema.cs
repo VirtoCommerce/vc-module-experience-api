@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
+using VirtoCommerce.ExperienceApiModule.Core.Infrastructure.Authorization;
 using VirtoCommerce.XPurchase.Authorization;
 using VirtoCommerce.XPurchase.Commands;
 using VirtoCommerce.XPurchase.Extensions;
@@ -770,7 +771,7 @@ namespace VirtoCommerce.XPurchase.Schemas
 
             if (!authorizationResult.Succeeded)
             {
-                throw new ExecutionError($"Access denied");
+                throw new AuthorizationError($"Access denied");
             }
 
             var response = await mediator.Send(query);
