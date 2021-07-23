@@ -81,7 +81,6 @@ namespace VirtoCommerce.ExperienceApiModule.Web
                 builder.AddMiddleware(typeof(LoadCartToEvalContextMiddleware));
             });
             #endregion
-
         }
 
         public void PostInitialize(IApplicationBuilder appBuilder)
