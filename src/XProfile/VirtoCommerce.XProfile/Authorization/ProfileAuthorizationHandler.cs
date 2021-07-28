@@ -44,33 +44,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Authorization
             var currentUserId = GetUserId(context);
             var currentContact = await GetCustomerAsync(currentUserId) as Contact;
 
-            if (context.Resource is ContactAggregate contactAggregate && currentContact != null)
-            {
-                result = currentContact.Id == contactAggregate.Contact.Id;
-                if (!result)
-                {
-                    result = await HasSameOrganizationAsync(currentContact, contactAggregate.Contact.Id);
-                }
-            }
-            else if (context.Resource is ApplicationUser applicationUser)
-            {
-                result = currentUserId == applicationUser.Id;
-                if (!result)
-                {
-                    result = await HasSameOrganizationAsync(currentContact, applicationUser.Id);
-                }
-            }
-            else if (context.Resource is OrganizationAggregate organizationAggregate && currentContact != null)
-            {
-                result = currentContact.Organizations.Contains(organizationAggregate.Organization.Id);
-            }
-
-            else if (context.Resource is Role role)
-            {
-                //Can be checked only with platform permission
-                result = true;
-            }
-            else if (context.Resource is CreateContactCommand createContactCommand)
+            if (context.Resource is CreateContactCommand createContactCommand)
             {
                 //Anonymous user can create contact
                 result = true;
@@ -149,6 +123,32 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Authorization
             else if (context.Resource is UpdatePersonalDataCommand updatePersonalDataCommand)
             {
                 updatePersonalDataCommand.UserId = currentUserId;
+                result = true;
+            }
+            else if (context.Resource is ContactAggregate contactAggregate && currentContact != null)
+            {
+                result = currentContact.Id == contactAggregate.Contact.Id;
+                if (!result)
+                {
+                    result = await HasSameOrganizationAsync(currentContact, contactAggregate.Contact.Id);
+                }
+            }
+            else if (context.Resource is ApplicationUser applicationUser)
+            {
+                result = currentUserId == applicationUser.Id;
+                if (!result)
+                {
+                    result = await HasSameOrganizationAsync(currentContact, applicationUser.Id);
+                }
+            }
+            else if (context.Resource is OrganizationAggregate organizationAggregate && currentContact != null)
+            {
+                result = currentContact.Organizations.Contains(organizationAggregate.Organization.Id);
+            }
+
+            else if (context.Resource is Role role)
+            {
+                //Can be checked only with platform permission
                 result = true;
             }
             if (result)
