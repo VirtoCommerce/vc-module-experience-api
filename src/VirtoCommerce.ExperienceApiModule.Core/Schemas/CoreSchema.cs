@@ -78,7 +78,8 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
             _ = schema.Query.AddField(new FieldType
             {
                 Name = "validatePassword",
-                Arguments = new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "password" }),
+                Arguments =
+                    new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "password" }),
                 Type = GraphTypeExtenstionHelper.GetActualType<PasswordValidationResult>(),
                 Resolver = new AsyncFieldResolver<object>(async context =>
                 {
@@ -88,7 +89,31 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
                     });
 
                     return result;
-                }),
+                })
+            });
+
+#pragma warning disable S125 // Sections of code should not be commented out
+            /*                         
+               query {
+                     checkUsernameUniqueness(username: "testUser")
+               }                         
+            */
+#pragma warning restore S125 // Sections of code should not be commented out
+
+            _ = schema.Query.AddField(new FieldType
+            {
+                Name = "checkUsernameUniqueness",
+                Arguments = new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "username" }),
+                Type = GraphTypeExtenstionHelper.GetActualType<CheckUsernameUniquenessResult>(),
+                Resolver = new AsyncFieldResolver<object>(async context =>
+                {
+                    var result = await _mediator.Send(new CheckUsernameUniquenessQuery
+                    {
+                        Username = context.GetArgument<string>("username"),
+                    });
+
+                    return result;
+                })
             });
         }
     }
