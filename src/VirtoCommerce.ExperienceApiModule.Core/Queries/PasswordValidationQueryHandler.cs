@@ -20,9 +20,10 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Queries
 
         public async Task<PasswordValidationResponse> Handle(PasswordValidationQuery request, CancellationToken cancellationToken)
         {
+            var errorCodes = new List<string>();
             var result = new PasswordValidationResponse
             {
-                ErrorCodes = new List<string>(),
+                ErrorCodes = errorCodes,
                 Succeeded = true,
             };
 
@@ -32,14 +33,8 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Queries
             {
                 var validationResult = await passwordValidator.ValidateAsync(userManager, null, request.Password);
 
-                // If at least one validator fails, result should be failed
-                if (!validationResult.Succeeded)
-                {
-                    result.Succeeded = validationResult.Succeeded;
-                }
-
-                ((List<string>)result.ErrorCodes).AddRange(validationResult.Errors.Select(x => x.Code));
-
+                result.Succeeded &= validationResult.Succeeded;
+                errorCodes.AddRange(validationResult.Errors.Select(x => x.Code));
             }
 
             return result;
