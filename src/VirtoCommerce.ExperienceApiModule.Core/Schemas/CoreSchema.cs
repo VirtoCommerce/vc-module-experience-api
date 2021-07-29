@@ -78,8 +78,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
             _ = schema.Query.AddField(new FieldType
             {
                 Name = "validatePassword",
-                Arguments =
-                    new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "password" }),
+                Arguments = new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "password" }),
                 Type = GraphTypeExtenstionHelper.GetActualType<PasswordValidationResult>(),
                 Resolver = new AsyncFieldResolver<object>(async context =>
                 {
