@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,28 +12,35 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Queries
     public class PasswordValidationQueryHandler : IQueryHandler<PasswordValidationQuery, PasswordValidationResponse>
     {
         private readonly Func<UserManager<ApplicationUser>> _userManagerFactory;
-        private readonly Func<IPasswordValidator<ApplicationUser>> _passwordValidatorFactory;
 
-        public PasswordValidationQueryHandler(
-            Func<IPasswordValidator<ApplicationUser>> passwordValidatorFactory,
-            Func<UserManager<ApplicationUser>> userManagerFactory)
+        public PasswordValidationQueryHandler(Func<UserManager<ApplicationUser>> userManagerFactory)
         {
-            _passwordValidatorFactory = passwordValidatorFactory;
             _userManagerFactory = userManagerFactory;
         }
 
         public async Task<PasswordValidationResponse> Handle(PasswordValidationQuery request, CancellationToken cancellationToken)
         {
-            using var userManager = _userManagerFactory();
-            var passwordValidator = _passwordValidatorFactory();
-
-            var validationResult = await passwordValidator.ValidateAsync(userManager, null, request.Password);
-
             var result = new PasswordValidationResponse
             {
-                Succeeded = validationResult.Succeeded,
-                ErrorCodes = validationResult.Errors.Select(x => x.Code).ToArray(),
+                ErrorCodes = new List<string>(),
+                Succeeded = true,
             };
+
+            using var userManager = _userManagerFactory();
+
+            foreach (var passwordValidator in userManager.PasswordValidators)
+            {
+                var validationResult = await passwordValidator.ValidateAsync(userManager, null, request.Password);
+
+                // If at least one validator fails, result should be failed
+                if (!validationResult.Succeeded)
+                {
+                    result.Succeeded = validationResult.Succeeded;
+                }
+
+                ((List<string>)result.ErrorCodes).AddRange(validationResult.Errors.Select(x => x.Code));
+
+            }
 
             return result;
         }
