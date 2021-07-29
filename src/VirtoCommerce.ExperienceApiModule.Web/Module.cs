@@ -6,6 +6,7 @@ using GraphQL.Utilities;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
@@ -63,7 +64,7 @@ namespace VirtoCommerce.ExperienceApiModule.Web
 
 
             services.AddSingleton<IStoreCurrencyResolver, StoreCurrencyResolver>();
-            services.AddSingleton<Func<IPasswordValidator<ApplicationUser>>>(provider => () => provider.CreateScope().ServiceProvider.GetService<IPasswordValidator<ApplicationUser>>());
+            services.TryAddSingleton<Func<IPasswordValidator<ApplicationUser>>>(provider => () => provider.CreateScope().ServiceProvider.GetService<IPasswordValidator<ApplicationUser>>());
 
             services.AddAutoMapper(ModuleInfo.Assembly);
 
