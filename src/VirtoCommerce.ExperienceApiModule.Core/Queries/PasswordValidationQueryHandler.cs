@@ -10,20 +10,23 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Queries
 {
     public class PasswordValidationQueryHandler : IQueryHandler<PasswordValidationQuery, PasswordValidationResponse>
     {
-        private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly IPasswordValidator<ApplicationUser> _passwordValidator;
+        private readonly Func<UserManager<ApplicationUser>> _userManagerFactory;
+        private readonly Func<IPasswordValidator<ApplicationUser>> _passwordValidatorFactory;
 
         public PasswordValidationQueryHandler(
-            Func<IPasswordValidator<ApplicationUser>> passwordValidator,
-            Func<SignInManager<ApplicationUser>> signInManager)
+            Func<IPasswordValidator<ApplicationUser>> passwordValidatorFactory,
+            Func<UserManager<ApplicationUser>> userManagerFactory)
         {
-            _signInManager = signInManager();
-            _passwordValidator = passwordValidator();
+            _passwordValidatorFactory = passwordValidatorFactory;
+            _userManagerFactory = userManagerFactory;
         }
 
         public async Task<PasswordValidationResponse> Handle(PasswordValidationQuery request, CancellationToken cancellationToken)
         {
-            var validationResult = await _passwordValidator.ValidateAsync(_signInManager.UserManager, null, request.Password);
+            using var userManager = _userManagerFactory();
+            var passwordValidator = _passwordValidatorFactory();
+
+            var validationResult = await passwordValidator.ValidateAsync(userManager, null, request.Password);
 
             var result = new PasswordValidationResponse
             {
