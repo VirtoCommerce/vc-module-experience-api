@@ -103,7 +103,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
             {
                 Name = "checkUsernameUniqueness",
                 Arguments = new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "username" }),
-                Type = GraphTypeExtenstionHelper.GetActualType<CheckUsernameUniquenessResult>(),
+                Type = GraphTypeExtenstionHelper.GetActualType<BooleanGraphType>(),
                 Resolver = new AsyncFieldResolver<object>(async context =>
                 {
                     var result = await _mediator.Send(new CheckUsernameUniquenessQuery
@@ -111,7 +111,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
                         Username = context.GetArgument<string>("username"),
                     });
 
-                    return result;
+                    return result.IsUnique;
                 })
             });
 
@@ -127,7 +127,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
             {
                 Name = "checkEmailUniqueness",
                 Arguments = new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "email" }),
-                Type = GraphTypeExtenstionHelper.GetActualType<CheckEmailUniquenessResult>(),
+                Type = GraphTypeExtenstionHelper.GetActualType<BooleanGraphType>(),
                 Resolver = new AsyncFieldResolver<object>(async context =>
                 {
                     var result = await _mediator.Send(new CheckEmailUniquenessQuery
@@ -135,7 +135,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
                         Email = context.GetArgument<string>("email"),
                     });
 
-                    return result;
+                    return result.IsUnique;
                 })
             });
         }
