@@ -18,7 +18,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Queries
             _userManagerFactory = userManagerFactory;
         }
 
-        public async Task<PasswordValidationResponse> Handle(PasswordValidationQuery request, CancellationToken cancellationToken)
+        public virtual async Task<PasswordValidationResponse> Handle(PasswordValidationQuery request, CancellationToken cancellationToken)
         {
             var errorCodes = new List<string>();
             var result = new PasswordValidationResponse

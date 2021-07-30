@@ -79,7 +79,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
             {
                 Name = "validatePassword",
                 Arguments = new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "password" }),
-                Type = GraphTypeExtenstionHelper.GetActualType<PasswordValidationResult>(),
+                Type = GraphTypeExtenstionHelper.GetActualType<PasswordValidationType>(),
                 Resolver = new AsyncFieldResolver<object>(async context =>
                 {
                     var result = await _mediator.Send(new PasswordValidationQuery
@@ -88,7 +88,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
                     });
 
                     return result;
-                }),
+                })
             });
         }
     }
