@@ -17,7 +17,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Queries
             _userManagerFactory = userManagerFactory;
         }
 
-        public async Task<CheckEmailUniquenessResponse> Handle(CheckEmailUniquenessQuery request, CancellationToken cancellationToken)
+        public virtual async Task<CheckEmailUniquenessResponse> Handle(CheckEmailUniquenessQuery request, CancellationToken cancellationToken)
         {
             var result = new CheckEmailUniquenessResponse();
 
