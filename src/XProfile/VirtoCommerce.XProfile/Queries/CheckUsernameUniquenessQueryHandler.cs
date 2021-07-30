@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.Platform.Core.Security;
 
-namespace VirtoCommerce.ExperienceApiModule.Core.Queries
+namespace VirtoCommerce.ExperienceApiModule.XProfile.Queries
 {
     public class CheckUsernameUniquenessQueryHandler : IQueryHandler<CheckUsernameUniquenessQuery, CheckUsernameUniquenessResponse>
     {

@@ -1,4 +1,4 @@
-namespace VirtoCommerce.ExperienceApiModule.Core.Queries
+namespace VirtoCommerce.ExperienceApiModule.XProfile.Queries
 {
     public class CheckUsernameUniquenessResponse
     {
