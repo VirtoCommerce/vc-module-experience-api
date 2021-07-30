@@ -114,6 +114,30 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
                     return result;
                 })
             });
+
+#pragma warning disable S125 // Sections of code should not be commented out
+            /*                         
+               query {
+                     checkEmailUniqueness(email: "user@email")
+               }                         
+            */
+#pragma warning restore S125 // Sections of code should not be commented out
+
+            _ = schema.Query.AddField(new FieldType
+            {
+                Name = "checkEmailUniqueness",
+                Arguments = new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "email" }),
+                Type = GraphTypeExtenstionHelper.GetActualType<CheckEmailUniquenessResult>(),
+                Resolver = new AsyncFieldResolver<object>(async context =>
+                {
+                    var result = await _mediator.Send(new CheckEmailUniquenessQuery
+                    {
+                        Email = context.GetArgument<string>("email"),
+                    });
+
+                    return result;
+                })
+            });
         }
     }
 }
