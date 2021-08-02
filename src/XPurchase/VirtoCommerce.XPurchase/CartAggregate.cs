@@ -682,7 +682,7 @@ namespace VirtoCommerce.XPurchase
             result.Cart = Cart?.Clone() as ShoppingCart;
             result.CartProducts = CartProducts.ToDictionary(kvp => kvp.Key, kvp => kvp.Value?.Clone() as CartProduct);
             result.Currency = Currency.Clone() as Currency;
-            result.Member = Member.Clone() as Member;
+            result.Member = Member?.Clone() as Member;
             result.Store = Store.Clone() as Store;
 
             return result;
