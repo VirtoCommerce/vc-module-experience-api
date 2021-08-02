@@ -132,6 +132,92 @@ This connection allows you to search products.
     }
 }
 ```
+### Properties
+This connection allows you to search catalog properties metadata.
+#### Definition:
+`properties(storeId: !string, types: [PropertyType], filter: string, cultureName: string)`
+#### Arguments:
+|№ |Name        |Type                     |Description                |
+|--|------------|-------------------------|---------------------------|
+| 1|storeId      |Non null StringGraphType |Store Id            |
+| 2|types      |ListGraphType of PropertyTypeEnum's |The owner types (Catalog, Category, Product, Variation or combinations)            |
+| 3|filter      |StringGraphType |This parameter applies a filter to the query results           |
+| 4|cultureName      |StringGraphType |Culture name (e.g. "en-US")            |
+
+#### Example 1:
+Enlist properties metadata with dictionary items, specified culture, specific name and types:
+```
+{
+  properties (storeId:"Electronics", cultureName:"de-DE", filter:"keyword:Brand", types:[PRODUCT, VARIATION])
+  {
+    items
+    {
+      name
+      type
+      id
+      multivalue
+      propertyDictItems
+      {
+        totalCount
+        items
+        {
+          value
+        }
+      }
+    }
+  }
+}
+```
+#### Example 2:
+Get properties for specific category:
+```
+{
+  properties (storeId:"Electronics", filter:"categoryId:53e239451c844442a3b2fe9aa82d95c8")
+  {
+    items
+    {
+      name
+      type
+      id
+      multivalue
+      propertyDictItems
+      {
+        totalCount
+        items
+        {
+          value
+        }
+      }
+    }
+  }
+}
+```
+### Property
+This connection allows you to get metadata for specific catalog property.
+#### Definition:
+`property(id: !string, cultureName: string)`
+#### Arguments:
+|№ |Name        |Type                     |Description                |
+|--|------------|-------------------------|---------------------------|
+| 1|id      |Non null StringGraphType |Property id            |
+| 4|cultureName      |StringGraphType |Culture name (e.g. "en-US")            |
+
+#### Example:
+Get one property with dictionary items for specific culture:
+```
+{
+  property (id:"43d14478-d142-4a65-956f-0a308d0c4ee8", cultureName:"de-DE")
+  {
+    propertyDictItems
+    {
+      items
+      {
+        value
+      }
+    }
+  }
+}
+```
 
 ## Queriable objects
 ### ProductType
@@ -178,6 +264,7 @@ This connection allows you to search products.
 |7|images    |List of ImageType      |Category images|
 |8|outlines  |List of OutlineType    |Category outlines|
 |9|seoInfos  |List of SeoInfoType    |SEO information of the category|
+|9|properties  |List of PropertyType    |Properties of the category|
 
 ## Syntax
 ### Full-Text Search
