@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using VirtoCommerce.ExperienceApiModule.Core.Models;
 
 namespace VirtoCommerce.ExperienceApiModule.Core.Queries
 {
@@ -6,6 +7,6 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Queries
     {
         public bool Succeeded { get; set; }
 
-        public IList<string> ErrorCodes { get; set; }
+        public IList<IdentityErrorInfo> Errors { get; set; }
     }
 }
