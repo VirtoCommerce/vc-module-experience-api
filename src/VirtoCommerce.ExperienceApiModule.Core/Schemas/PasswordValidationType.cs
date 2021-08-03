@@ -5,10 +5,12 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
 {
     public class PasswordValidationType : ObjectGraphType<PasswordValidationResponse>
     {
+
+
         public PasswordValidationType()
         {
             Field(x => x.Succeeded).Description("Validation result status");
-            Field(x => x.ErrorCodes).Description("Error codes");
+            Field<ListGraphType<PasswordValidationErrorType>>("Errors", description: "Validation errors", resolve: fieldContext => fieldContext.Source.Errors);
         }
     }
 }
