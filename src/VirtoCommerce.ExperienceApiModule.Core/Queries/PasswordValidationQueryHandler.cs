@@ -36,20 +36,21 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Queries
                 var validationResult = await passwordValidator.ValidateAsync(userManager, null, request.Password);
                 result.Succeeded &= validationResult.Succeeded;
 
-                result.Errors.AddRange(validationResult.Errors.Select(x =>
-                {
-
-                    var error = new IdentityErrorInfo { Code = x.Code, Description = x.Description };
-                    if (x is CustomIdentityError customIdentityError)
-                    {
-                        error.ErrorParameter = customIdentityError.ErrorParameter;
-                    }
-
-                    return error;
-                }));
+                result.Errors.AddRange(validationResult.Errors.Select(MapToIdentityErrorInfo));
             }
 
             return result;
+        }
+
+        protected virtual IdentityErrorInfo MapToIdentityErrorInfo(IdentityError x)
+        {
+            var error = new IdentityErrorInfo { Code = x.Code, Description = x.Description };
+            if (x is CustomIdentityError customIdentityError)
+            {
+                error.ErrorParameter = customIdentityError.ErrorParameter;
+            }
+
+            return error;
         }
     }
 }
