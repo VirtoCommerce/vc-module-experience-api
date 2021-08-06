@@ -14,7 +14,7 @@ X-Catalog provides high performance search queries for catalog data directly fro
 - Multi-select faceting search ([→](#muti-select-faceting-search))
 
 ## How to use
-Read this [article...](./how-to-use.md)
+Read this [article...](index.md)
 
 ## QueryRoot
 ### Product
