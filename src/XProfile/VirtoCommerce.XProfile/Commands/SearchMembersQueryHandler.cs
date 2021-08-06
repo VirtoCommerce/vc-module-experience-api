@@ -19,14 +19,14 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
             _memberSearchService = memberSearchService;
         }
 
-        public Task<MemberSearchResult> Handle(SearchContactsQuery request, CancellationToken cancellationToken)
+        public virtual Task<MemberSearchResult> Handle(SearchContactsQuery request, CancellationToken cancellationToken)
         {
             var searchCriteria = BuildMembersSearchCriteria(request, nameof(Contact));
 
             return _memberSearchService.SearchMembersAsync(searchCriteria);
         }
 
-        public Task<MemberSearchResult> Handle(SearchOrganizationsQuery request, CancellationToken cancellationToken)
+        public virtual Task<MemberSearchResult> Handle(SearchOrganizationsQuery request, CancellationToken cancellationToken)
         {
             var searchCriteria = BuildMembersSearchCriteria(request, nameof(Organization));
 

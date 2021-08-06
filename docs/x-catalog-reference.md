@@ -14,12 +14,12 @@ X-Catalog provides high performance search queries for catalog data directly fro
 - Multi-select faceting search ([→](#muti-select-faceting-search))
 
 ## How to use
-Read this [article...](./how-to-use.md)
+Read this [article...](index.md)
 
 ## QueryRoot
 ### Product
 This query allows you to get a product by Id and calculate all the fields based on the parameters sent.
-#### Defenition:
+#### Definition:
 `product(id: !string, storeId: !string, userId: !string, currencyCode: string, cultureName: string)`
 #### Arguments:
 |№|Name        |Type           |Description                |
@@ -46,7 +46,7 @@ This query allows you to get a product by Id and calculate all the fields based 
 ```
 ### Products
 This connection allows you to search products.
-#### Defenition:
+#### Definition:
 `products(productIds: string[], storeId: !string, userId: !string, currencyCode: string, cultureName: string, query: string, filter: string, fuzzy: bool, fuzzyLevel: int, facet: string, sort: string)`
 #### Arguments:
 |№ |Name        |Type                     |Description                |
@@ -90,7 +90,7 @@ This connection allows you to search products.
 
 ### Categories
 This connection allows you to search products.
-#### Defenition:
+#### Definition:
 `categories(categoryIds: string[], storeId: !string, userId: !string, currencyCode: string, cultureName: string, query: string, filter: string, fuzzy: bool, fuzzyLevel: int, facet: string, sort: string)`
 #### Arguments:
 |№ |Name        |Type                     |Description                |
@@ -130,6 +130,92 @@ This connection allows you to search products.
             startCursor
         }
     }
+}
+```
+### Properties
+This connection allows you to search catalog properties metadata.
+#### Definition:
+`properties(storeId: !string, types: [PropertyType], filter: string, cultureName: string)`
+#### Arguments:
+|№ |Name        |Type                     |Description                |
+|--|------------|-------------------------|---------------------------|
+| 1|storeId      |Non null StringGraphType |Store Id            |
+| 2|types      |ListGraphType of PropertyTypeEnum's |The owner types (Catalog, Category, Product, Variation or combinations)            |
+| 3|filter      |StringGraphType |This parameter applies a filter to the query results           |
+| 4|cultureName      |StringGraphType |Culture name (e.g. "en-US")            |
+
+#### Example 1:
+Enlist properties metadata with dictionary items, specified culture, specific name and types:
+```
+{
+  properties (storeId:"Electronics", cultureName:"de-DE", filter:"keyword:Brand", types:[PRODUCT, VARIATION])
+  {
+    items
+    {
+      name
+      type
+      id
+      multivalue
+      propertyDictItems
+      {
+        totalCount
+        items
+        {
+          value
+        }
+      }
+    }
+  }
+}
+```
+#### Example 2:
+Get properties for specific category:
+```
+{
+  properties (storeId:"Electronics", filter:"categoryId:53e239451c844442a3b2fe9aa82d95c8")
+  {
+    items
+    {
+      name
+      type
+      id
+      multivalue
+      propertyDictItems
+      {
+        totalCount
+        items
+        {
+          value
+        }
+      }
+    }
+  }
+}
+```
+### Property
+This connection allows you to get metadata for specific catalog property.
+#### Definition:
+`property(id: !string, cultureName: string)`
+#### Arguments:
+|№ |Name        |Type                     |Description                |
+|--|------------|-------------------------|---------------------------|
+| 1|id      |Non null StringGraphType |Property id            |
+| 4|cultureName      |StringGraphType |Culture name (e.g. "en-US")            |
+
+#### Example:
+Get one property with dictionary items for specific culture:
+```
+{
+  property (id:"43d14478-d142-4a65-956f-0a308d0c4ee8", cultureName:"de-DE")
+  {
+    propertyDictItems
+    {
+      items
+      {
+        value
+      }
+    }
+  }
 }
 ```
 
@@ -178,6 +264,7 @@ This connection allows you to search products.
 |7|images    |List of ImageType      |Category images|
 |8|outlines  |List of OutlineType    |Category outlines|
 |9|seoInfos  |List of SeoInfoType    |SEO information of the category|
+|9|properties  |List of PropertyType    |Properties of the category|
 
 ## Syntax
 ### Full-Text Search

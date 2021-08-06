@@ -15,7 +15,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             _storeService = storeService;
         }
 
-        public async Task<LoadRelatedCatalogOutlineResponse> Handle(LoadRelatedCatalogOutlineQuery request, CancellationToken cancellationToken)
+        public virtual async Task<LoadRelatedCatalogOutlineResponse> Handle(LoadRelatedCatalogOutlineQuery request, CancellationToken cancellationToken)
         {
             var store = await _storeService.GetByIdAsync(request.StoreId);
             if (store is null) return new LoadRelatedCatalogOutlineResponse();

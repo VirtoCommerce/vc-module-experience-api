@@ -14,7 +14,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
             _contactAggregateRepository = contactAggregateRepository;
             _memberAggregateFactory = factory;
         }
-        public async Task<ContactAggregate> Handle(UpdateContactCommand request, CancellationToken cancellationToken)
+        public virtual async Task<ContactAggregate> Handle(UpdateContactCommand request, CancellationToken cancellationToken)
         {
             var contactAggregate = _memberAggregateFactory.Create<ContactAggregate>(request);
 

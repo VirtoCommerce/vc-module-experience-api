@@ -1,3 +1,4 @@
+using GraphQL;
 using GraphQL.Resolvers;
 using GraphQL.Types;
 using MediatR;
@@ -64,6 +65,29 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
                     var result = await _mediator.Send(new GetCountriesQuery());
 
                     return result.Countries;
+                })
+            });
+
+#pragma warning disable S125 // Sections of code should not be commented out
+            /*                         
+               query {
+                     validatePassword(password: "pswd")
+               }                         
+            */
+#pragma warning restore S125 // Sections of code should not be commented out
+            _ = schema.Query.AddField(new FieldType
+            {
+                Name = "validatePassword",
+                Arguments = new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "password" }),
+                Type = GraphTypeExtenstionHelper.GetActualType<PasswordValidationType>(),
+                Resolver = new AsyncFieldResolver<object>(async context =>
+                {
+                    var result = await _mediator.Send(new PasswordValidationQuery
+                    {
+                        Password = context.GetArgument<string>("password"),
+                    });
+
+                    return result;
                 })
             });
         }

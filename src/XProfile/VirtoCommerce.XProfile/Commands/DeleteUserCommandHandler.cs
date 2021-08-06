@@ -18,7 +18,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
         {
         }
 
-        public async Task<IdentityResult> Handle(DeleteUserCommand request, CancellationToken cancellationToken)
+        public virtual async Task<IdentityResult> Handle(DeleteUserCommand request, CancellationToken cancellationToken)
         {
             if (request.UserNames.Any(x => !IsUserEditable(x)))
             {

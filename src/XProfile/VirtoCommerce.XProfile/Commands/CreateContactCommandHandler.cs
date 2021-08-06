@@ -20,7 +20,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
             _validator = validator;
         }
 
-        public async Task<ContactAggregate> Handle(CreateContactCommand request, CancellationToken cancellationToken)
+        public virtual async Task<ContactAggregate> Handle(CreateContactCommand request, CancellationToken cancellationToken)
         {
             request.MemberType = nameof(Contact);
 

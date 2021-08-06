@@ -20,7 +20,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
             _storeNotificationSender = storeNotificationSender;
         }
 
-        public async Task<IdentityResult> Handle(CreateUserCommand request, CancellationToken cancellationToken)
+        public virtual async Task<IdentityResult> Handle(CreateUserCommand request, CancellationToken cancellationToken)
         {
             using (var userManager = _userManagerFactory())
             {

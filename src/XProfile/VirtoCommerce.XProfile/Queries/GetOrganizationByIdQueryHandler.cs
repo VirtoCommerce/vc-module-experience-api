@@ -13,7 +13,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Queries
             _organizationAggregateRepository = organizationAggregateRepository;
         }
 
-        public Task<OrganizationAggregate> Handle(GetOrganizationByIdQuery request, CancellationToken cancellationToken)
+        public virtual Task<OrganizationAggregate> Handle(GetOrganizationByIdQuery request, CancellationToken cancellationToken)
         {
             return _organizationAggregateRepository.GetMemberAggregateRootByIdAsync<OrganizationAggregate>(request.OrganizationId);
         }
