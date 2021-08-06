@@ -13,7 +13,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Queries
             _contactAggregateRepository = contactAggregateRepository;
         }
 
-        public Task<ContactAggregate> Handle(GetContactByIdQuery request, CancellationToken cancellationToken)
+        public virtual Task<ContactAggregate> Handle(GetContactByIdQuery request, CancellationToken cancellationToken)
         {
             return _contactAggregateRepository.GetMemberAggregateRootByIdAsync<ContactAggregate>(request.ContactId);
         }

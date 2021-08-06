@@ -16,7 +16,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Commands
             _customerOrderAggregateRepository = customerOrderAggregateRepository;
         }
 
-        public async Task<bool> Handle(CancelOrderPaymentCommand request, CancellationToken cancellationToken)
+        public virtual async Task<bool> Handle(CancelOrderPaymentCommand request, CancellationToken cancellationToken)
         {
             var orderAggregate = await _customerOrderAggregateRepository.GetOrderByIdAsync(request.Payment.OrderId);
             var paymentCancelledSuccessful = orderAggregate.CancelOrderPayment(request.Payment);
@@ -28,7 +28,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Commands
             return paymentCancelledSuccessful;
         }
 
-        public async Task<bool> Handle(ConfirmOrderPaymentCommand request, CancellationToken cancellationToken)
+        public virtual async Task<bool> Handle(ConfirmOrderPaymentCommand request, CancellationToken cancellationToken)
         {
             var orderAggregate = await _customerOrderAggregateRepository.GetOrderByIdAsync(request.Payment.OrderId);
             var paymentConfirmedSuccessful = orderAggregate.ConfirmOrderPayment(request.Payment);

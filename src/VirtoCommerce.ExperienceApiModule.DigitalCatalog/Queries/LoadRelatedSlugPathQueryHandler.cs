@@ -15,7 +15,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             _storeService = storeService;
         }
 
-        public async Task<LoadRelatedSlugPathResponse> Handle(LoadRelatedSlugPathQuery request, CancellationToken cancellationToken)
+        public virtual async Task<LoadRelatedSlugPathResponse> Handle(LoadRelatedSlugPathQuery request, CancellationToken cancellationToken)
         {
             var store = await _storeService.GetByIdAsync(request.StoreId);
             if (store is null) return new LoadRelatedSlugPathResponse();

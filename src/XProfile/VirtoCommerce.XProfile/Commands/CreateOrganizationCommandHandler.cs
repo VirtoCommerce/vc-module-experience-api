@@ -19,7 +19,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
             _memberAggregateFactory = factory;
         }
 
-        public async Task<OrganizationAggregate> Handle(CreateOrganizationCommand request, CancellationToken cancellationToken)
+        public virtual async Task<OrganizationAggregate> Handle(CreateOrganizationCommand request, CancellationToken cancellationToken)
         {
             var org = _mapper.Map<Organization>(request);
             var orgAggr = _memberAggregateFactory.Create<OrganizationAggregate>(org);

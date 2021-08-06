@@ -19,7 +19,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Queries
             _userManagerFactory = userManager;
         }
 
-        public async Task<ApplicationUser> Handle(GetUserQuery request, CancellationToken cancellationToken)
+        public virtual async Task<ApplicationUser> Handle(GetUserQuery request, CancellationToken cancellationToken)
         {
             ApplicationUser result = default;
 

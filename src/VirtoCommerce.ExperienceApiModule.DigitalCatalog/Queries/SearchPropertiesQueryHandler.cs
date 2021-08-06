@@ -22,7 +22,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             _propertySearchService = propertySearchService;
         }
 
-        public async Task<SearchPropertiesResponse> Handle(SearchPropertiesQuery request, CancellationToken cancellationToken)
+        public virtual async Task<SearchPropertiesResponse> Handle(SearchPropertiesQuery request, CancellationToken cancellationToken)
         {
             var searchCriteria = new PropertySearchCriteriaBuilder(_searchPhraseParser, _mapper)
                             .ParseFilters(request.Filter)

@@ -18,7 +18,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             _productAssociationSearchService = productAssociationSearchService;
         }
 
-        public async Task<SearchProductAssociationsResponse> Handle(SearchProductAssociationsQuery request, CancellationToken cancellationToken)
+        public virtual async Task<SearchProductAssociationsResponse> Handle(SearchProductAssociationsQuery request, CancellationToken cancellationToken)
         {
             var result = await _productAssociationSearchService.SearchProductAssociationsAsync(_mapper.Map<ProductAssociationSearchCriteria>(request));
 
