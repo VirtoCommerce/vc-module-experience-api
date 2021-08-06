@@ -13,7 +13,7 @@ namespace VirtoCommerce.XPurchase.Commands
 
         private ICartAggregateRepository CartAggrRepository { get; set; }
 
-        public async Task<bool> Handle(ValidateCouponCommand request, CancellationToken cancellationToken)
+        public virtual async Task<bool> Handle(ValidateCouponCommand request, CancellationToken cancellationToken)
         {
             var cartAggregate = await GetCartAggregateFromCommandAsync(request);
 
@@ -28,7 +28,7 @@ namespace VirtoCommerce.XPurchase.Commands
             return false;
         }
 
-        protected Task<CartAggregate> GetCartAggregateFromCommandAsync(ValidateCouponCommand request)
+        protected virtual Task<CartAggregate> GetCartAggregateFromCommandAsync(ValidateCouponCommand request)
         {
             return CartAggrRepository.GetCartAsync(request.CartName, request.StoreId, request.UserId, request.CultureName, request.CurrencyCode, request.CartType);
         }

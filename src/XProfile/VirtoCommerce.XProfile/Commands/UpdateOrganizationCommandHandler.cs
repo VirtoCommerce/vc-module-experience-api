@@ -16,7 +16,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
             _organizationAggregateRepository = organizationAggregateRepository;
         }
 
-        public async Task<OrganizationAggregate> Handle(UpdateOrganizationCommand request, CancellationToken cancellationToken)
+        public virtual async Task<OrganizationAggregate> Handle(UpdateOrganizationCommand request, CancellationToken cancellationToken)
         {
             var organizationAggregate = await _organizationAggregateRepository.GetMemberAggregateRootByIdAsync<OrganizationAggregate>(request.Id);
             _mapper.Map(request, organizationAggregate.Organization);

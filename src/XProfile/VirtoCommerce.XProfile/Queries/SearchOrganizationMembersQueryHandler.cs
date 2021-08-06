@@ -16,7 +16,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Queries
             _memberSearchService = memberSearchService;
         }
 
-        public async Task<MemberSearchResult> Handle(SearchOrganizationMembersQuery request, CancellationToken cancellationToken)
+        public virtual async Task<MemberSearchResult> Handle(SearchOrganizationMembersQuery request, CancellationToken cancellationToken)
         {
             var criteria = new MembersSearchCriteria
             {

@@ -18,7 +18,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
             _services = services;
         }
 
-        public async Task<IdentityResult> Handle(UpdateRoleCommand request, CancellationToken cancellationToken)
+        public virtual async Task<IdentityResult> Handle(UpdateRoleCommand request, CancellationToken cancellationToken)
         {
             IdentityResult result;
 

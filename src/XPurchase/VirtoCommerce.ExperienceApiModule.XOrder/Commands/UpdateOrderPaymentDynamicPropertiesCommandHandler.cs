@@ -16,7 +16,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Commands
             _customerOrderAggregateRepository = customerOrderAggregateRepository;
         }
 
-        public async Task<CustomerOrderAggregate> Handle(UpdateOrderPaymentDynamicPropertiesCommand request, CancellationToken cancellationToken)
+        public virtual async Task<CustomerOrderAggregate> Handle(UpdateOrderPaymentDynamicPropertiesCommand request, CancellationToken cancellationToken)
         {
             var orderAggregate = await _customerOrderAggregateRepository.GetOrderByIdAsync(request.OrderId);
 

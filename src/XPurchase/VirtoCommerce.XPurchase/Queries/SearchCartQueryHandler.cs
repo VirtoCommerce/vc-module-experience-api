@@ -24,7 +24,7 @@ namespace VirtoCommerce.XPurchase.Queries
             _searchPhraseParser = searchPhraseParser;
         }
 
-        public Task<SearchCartResponse> Handle(SearchCartQuery request, CancellationToken cancellationToken)
+        public virtual Task<SearchCartResponse> Handle(SearchCartQuery request, CancellationToken cancellationToken)
         {
             var searchCriteria = new CartSearchCriteriaBuilder(_searchPhraseParser, _mapper)
                                      .ParseFilters(request.Filter)
