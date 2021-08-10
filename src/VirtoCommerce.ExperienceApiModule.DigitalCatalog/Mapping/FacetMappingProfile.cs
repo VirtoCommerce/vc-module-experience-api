@@ -48,7 +48,8 @@ namespace VirtoCommerce.XDigitalCatalog.Mapping
                     },
                     _ => null
                 };
-
+                if (result != null)
+                    result.Label = request.Labels != null && cultureName != null ? request.Labels.FirstOrDefault(x => x.Language == cultureName.ToString())?.Label ?? result.Name : result.Name;
                 return result;
             });
         }
