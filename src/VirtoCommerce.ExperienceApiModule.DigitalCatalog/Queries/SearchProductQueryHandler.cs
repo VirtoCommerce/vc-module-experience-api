@@ -73,7 +73,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                 var predefinedAggregations = await _aggregationConverter.GetAggregationRequestsAsync(new ProductIndexedSearchCriteria
                 {
                     StoreId = request.StoreId,
-                    Currency = request.CurrencyCode,
+                    Currency = request.CurrencyCode
                 }, new FiltersContainer());
 
                 builder.ParseFacets(_phraseParser, request.Facet, predefinedAggregations)
@@ -87,6 +87,8 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             {
                 StoreId = request.StoreId,
                 Currency = request.CurrencyCode,
+                LanguageCode = request.CultureName,
+                CatalogId = request.CatalogId
             };
             //TODO: move later to own implementation
             //Call the catalog aggregation converter service to convert AggregationResponse to proper Aggregation type (term, range, filter)
@@ -103,7 +105,10 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                 Currency = currency,
                 Store = store,
                 Results = products,
-                Facets = resultAggregations?.Select(x => _mapper.Map<FacetResult>(x)).ToList(),
+                Facets = resultAggregations?.Select(x => _mapper.Map<FacetResult>(x, options =>
+                {
+                    options.Items["cultureName"] = request.CultureName;
+                })).ToList(),
                 TotalCount = (int)searchResult.TotalCount
             };
 

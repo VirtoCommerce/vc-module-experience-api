@@ -14,34 +14,35 @@ namespace VirtoCommerce.XDigitalCatalog.Mapping
 
             CreateMap<Aggregation, FacetResult>().ConvertUsing((request, facet, context) =>
             {
+                context.Items.TryGetValue("cultureName", out var cultureName);
                 FacetResult result = request.AggregationType switch
                 {
                     "attr" => new TermFacetResult
                     {
                         Terms = request.Items.Select(x => new FacetTerm
-                            {
-                                Count = x.Count,
-                                IsSelected = x.IsApplied,
-                                Term = x.Value.ToString(),
-                                Label = x.Labels != null ? string.Join(' ', x.Labels.Select(l => l.Label)) : x.Value.ToString(),
-                            })
+                        {
+                            Count = x.Count,
+                            IsSelected = x.IsApplied,
+                            Term = x.Value.ToString(),
+                            Label = x.Labels != null && cultureName != null ? x.Labels.FirstOrDefault(x => x.Language == cultureName.ToString())?.Label ?? x.Value.ToString() : x.Value.ToString(),
+                        })
                             .ToArray(),
                         Name = request.Field
                     },
                     "pricerange" => new RangeFacetResult
                     {
                         Ranges = request.Items.Select(x => new FacetRange
-                            {
-                                Count = x.Count,
-                                From = Convert.ToInt64(x.RequestedLowerBound),
-                                IncludeFrom = !string.IsNullOrEmpty(x.RequestedLowerBound),
-                                FromStr = x.RequestedLowerBound,
-                                To = Convert.ToInt64(x.RequestedUpperBound),
-                                IncludeTo = !string.IsNullOrEmpty(x.RequestedUpperBound),
-                                ToStr = x.RequestedUpperBound,
-                                IsSelected = x.IsApplied,
-                                Label = x.Value.ToString(),
-                            })
+                        {
+                            Count = x.Count,
+                            From = Convert.ToInt64(x.RequestedLowerBound),
+                            IncludeFrom = !string.IsNullOrEmpty(x.RequestedLowerBound),
+                            FromStr = x.RequestedLowerBound,
+                            To = Convert.ToInt64(x.RequestedUpperBound),
+                            IncludeTo = !string.IsNullOrEmpty(x.RequestedUpperBound),
+                            ToStr = x.RequestedUpperBound,
+                            IsSelected = x.IsApplied,
+                            Label = x.Value.ToString(),
+                        })
                             .ToArray(),
                         Name = request.Field,
                     },

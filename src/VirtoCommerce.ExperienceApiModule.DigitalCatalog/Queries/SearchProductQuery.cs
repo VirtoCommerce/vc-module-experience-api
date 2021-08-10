@@ -6,6 +6,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
 {
     public class SearchProductQuery : CatalogQueryBase<SearchProductResponse>
     {
+        public string CatalogId { get; set; }
         public string Query { get; set; }
         public bool Fuzzy { get; set; }
         public int? FuzzyLevel { get; set; }
