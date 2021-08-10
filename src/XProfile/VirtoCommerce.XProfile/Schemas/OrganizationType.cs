@@ -5,6 +5,7 @@ using GraphQL;
 using GraphQL.Builders;
 using GraphQL.Types;
 using MediatR;
+using VirtoCommerce.CustomerModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
@@ -81,14 +82,14 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             return new PagedConnection<ContactAggregate>(response.Results.Select(x => factory.Create<ContactAggregate>(x)), query.Skip, query.Take, response.TotalCount);
         }
 
-        private object ResolveAddressesConnection(IResolveConnectionContext<OrganizationAggregate> context)
+        private static object ResolveAddressesConnection(IResolveConnectionContext<OrganizationAggregate> context)
         {
             var take = context.First ?? 20;
             var skip = Convert.ToInt32(context.After ?? 0.ToString());
 
             var addresses = context.Source.Organization.Addresses;
 
-            return new PagedConnection<AddressAggregate>(addresses.Skip(skip).Take(take).Select(x => new AddressAggregate { Address = x }), skip, take, addresses.Count);
+            return new PagedConnection<Address>(addresses.Skip(skip).Take(take), skip, take, addresses.Count);
         }
     }
 }
