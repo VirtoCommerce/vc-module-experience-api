@@ -30,7 +30,6 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             Field(x => x.Organization.Name, true).Description("Name");
             Field(x => x.Organization.MemberType).Description("Member type");
             Field(x => x.Organization.OuterId, true).Description("Outer id");
-            ExtendableField<NonNullGraphType<ListGraphType<AddressType>>>("addresses", resolve: x => x.Source.Organization.Addresses);
             Field(x => x.Organization.Phones, true);
             Field(x => x.Organization.Emails, true);
             Field(x => x.Organization.Groups, true);
@@ -47,12 +46,21 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             var connectionBuilder = GraphTypeExtenstionHelper.CreateConnection<ContactType, OrganizationAggregate>()
                .Name("contacts")
                .Argument<StringGraphType>("searchPhrase", "Free text search")
+               .Argument<StringGraphType>("sort", "Sort expression")
                .Unidirectional()
                .PageSize(20);
 
             connectionBuilder.ResolveAsync(async context => await ResolveConnectionAsync(mediator, factory, context));
             AddField(connectionBuilder.FieldType);
+
+            var addressesConnectionBuilder = GraphTypeExtenstionHelper.CreateConnection<AddressType, OrganizationAggregate>()
+                .Name("addresses")
+                .Unidirectional()
+                .PageSize(20);
+            addressesConnectionBuilder.Resolve(ResolveAddressesConnection);
+            AddField(addressesConnectionBuilder.FieldType);
         }
+
 
         private async Task<object> ResolveConnectionAsync(IMediator mediator, IMemberAggregateFactory factory, IResolveConnectionContext<OrganizationAggregate> context)
         {
@@ -64,12 +72,23 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                 OrganizationId = context.Source.Organization.Id,
                 Take = first ?? 20,
                 Skip = skip,
-                SearchPhrase = context.GetArgument<string>("searchPhrase")
+                SearchPhrase = context.GetArgument<string>("searchPhrase"),
+                Sort = context.GetArgument<string>("sort"),
             };
 
             var response = await mediator.Send(query);
 
             return new PagedConnection<ContactAggregate>(response.Results.Select(x => factory.Create<ContactAggregate>(x)), query.Skip, query.Take, response.TotalCount);
+        }
+
+        private object ResolveAddressesConnection(IResolveConnectionContext<OrganizationAggregate> context)
+        {
+            var take = context.First ?? 20;
+            var skip = Convert.ToInt32(context.After ?? 0.ToString());
+
+            var addresses = context.Source.Organization.Addresses;
+
+            return new PagedConnection<AddressAggregate>(addresses.Skip(skip).Take(take).Select(x => new AddressAggregate { Address = x }), skip, take, addresses.Count);
         }
     }
 }
