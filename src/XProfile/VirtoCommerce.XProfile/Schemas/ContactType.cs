@@ -1,9 +1,14 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using GraphQL;
+using GraphQL.Builders;
 using GraphQL.Resolvers;
 using GraphQL.Types;
+using VirtoCommerce.CustomerModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
+using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
 using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.Platform.Core.Common;
@@ -29,7 +34,6 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             Field(x => x.Contact.MiddleName, true);
             Field(x => x.Contact.Name, true);
             Field(x => x.Contact.OuterId, true);
-            ExtendableField<ListGraphType<AddressType>>("addresses", resolve: context => context.Source.Contact.Addresses);
 
             ExtendableField<NonNullGraphType<ListGraphType<DynamicPropertyValueType>>>(
                 "dynamicProperties",
@@ -60,6 +64,34 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                     }
                 })
             });
+
+            var addressesConnectionBuilder = GraphTypeExtenstionHelper.CreateConnection<AddressType, ContactAggregate>()
+                .Name("addresses")
+                .Argument<StringGraphType>("sort", "Sort expression")
+                .Unidirectional()
+                .PageSize(20);
+
+            addressesConnectionBuilder.Resolve(ResolveAddressesConnection);
+            AddField(addressesConnectionBuilder.FieldType);
+        }
+
+
+        private static object ResolveAddressesConnection(IResolveConnectionContext<ContactAggregate> context)
+        {
+            var take = context.First ?? 20;
+            var skip = Convert.ToInt32(context.After ?? 0.ToString());
+            var sort = context.GetArgument<string>("sort");
+            var addresses = context.Source.Contact.Addresses.AsEnumerable();
+
+            if (!string.IsNullOrEmpty(sort))
+            {
+                var sortInfos = SortInfo.Parse(sort);
+                addresses = addresses
+                    .AsQueryable()
+                    .OrderBySortInfos(sortInfos);
+            }
+
+            return new PagedConnection<Address>(addresses.Skip(skip).Take(take), skip, take, addresses.Count());
         }
     }
 }
