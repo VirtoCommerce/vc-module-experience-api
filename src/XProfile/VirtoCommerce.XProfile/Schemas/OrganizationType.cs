@@ -94,7 +94,8 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             if (!string.IsNullOrEmpty(sort))
             {
                 var sortInfos = SortInfo.Parse(sort);
-                addresses = addresses.AsQueryable()
+                addresses = addresses
+                    .AsQueryable()
                     .OrderBySortInfos(sortInfos);
             }
 
