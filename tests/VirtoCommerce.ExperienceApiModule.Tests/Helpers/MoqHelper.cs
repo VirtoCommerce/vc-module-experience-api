@@ -29,7 +29,10 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Helpers
         public MoqHelper()
         {
             _fixture.Register(() => new Language(CULTURE_NAME));
-            _fixture.Register(() => new Currency(_fixture.Create<Language>(), CURRENCY_CODE));
+            _fixture.Register(() => new Currency(_fixture.Create<Language>(), CURRENCY_CODE)
+            {
+                RoundingPolicy = new DefaultMoneyRoundingPolicy()
+            });
         }
 
         protected Discount GetDiscount() => _fixture.Create<Discount>();
