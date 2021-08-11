@@ -12,6 +12,7 @@ using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
 using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.XProfile.Queries;
+using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 {
@@ -56,6 +57,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 
             var addressesConnectionBuilder = GraphTypeExtenstionHelper.CreateConnection<AddressType, OrganizationAggregate>()
                 .Name("addresses")
+                .Argument<StringGraphType>("sort", "Sort expression")
                 .Unidirectional()
                 .PageSize(20);
             addressesConnectionBuilder.Resolve(ResolveAddressesConnection);
@@ -86,10 +88,17 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
         {
             var take = context.First ?? 20;
             var skip = Convert.ToInt32(context.After ?? 0.ToString());
+            var sort = context.GetArgument<string>("sort");
+            var addresses = context.Source.Organization.Addresses.AsEnumerable();
 
-            var addresses = context.Source.Organization.Addresses;
+            if (!string.IsNullOrEmpty(sort))
+            {
+                var sortInfos = SortInfo.Parse(sort);
+                addresses = addresses.AsQueryable()
+                    .OrderBySortInfos(sortInfos);
+            }
 
-            return new PagedConnection<Address>(addresses.Skip(skip).Take(take), skip, take, addresses.Count);
+            return new PagedConnection<Address>(addresses.Skip(skip).Take(take), skip, take, addresses.Count());
         }
     }
 }
