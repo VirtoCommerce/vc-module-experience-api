@@ -60,6 +60,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                 .Argument<StringGraphType>("sort", "Sort expression")
                 .Unidirectional()
                 .PageSize(20);
+
             addressesConnectionBuilder.Resolve(ResolveAddressesConnection);
             AddField(addressesConnectionBuilder.FieldType);
         }
