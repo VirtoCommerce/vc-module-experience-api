@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using VirtoCommerce.ExperienceApiModule.Core;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
+using VirtoCommerce.ExperienceApiModule.XProfile.Aggregates;
 using VirtoCommerce.ExperienceApiModule.XProfile.Authorization;
 using VirtoCommerce.ExperienceApiModule.XProfile.Schemas;
 using VirtoCommerce.XPurchase.Validators;
@@ -23,6 +24,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Extensions
             services.AddSingleton<IMemberAggregateFactory, MemberAggregateFactory>();
             services.AddTransient<IMemberResolver, MemberResolver>();
             services.AddTransient<NewContactValidator>();
+            services.AddTransient<IMemberAggregateRootRepository, MemberAggregateRootRepository>();
             services.AddTransient<IOrganizationAggregateRepository, OrganizationAggregateRepository>();
             services.AddTransient<IContactAggregateRepository, ContactAggregateRepository>();
             services.AddSingleton<IAuthorizationHandler, ProfileAuthorizationHandler>();

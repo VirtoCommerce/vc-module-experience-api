@@ -242,13 +242,13 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 #pragma warning restore S125 // Sections of code should not be commented out
 
             #endregion
-            _ = schema.Mutation.AddField(FieldBuilder.Create<ContactAggregate, ContactAggregate>(GraphTypeExtenstionHelper.GetActualType<ContactType>())
-                            .Name("updateAddresses")
-                            .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputUpdateContactAddressType>>(), _commandName)
+            _ = schema.Mutation.AddField(FieldBuilder.Create<ContactAggregate, MemberAggregateRootBase>(GraphTypeExtenstionHelper.GetActualType<MemberType>())
+                            .Name("updateMemberAddresses")
+                            .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputUpdateMemberAddressType>>(), _commandName)
                             .ResolveAsync(async context =>
                             {
-                                var type = GenericTypeHelper.GetActualType<UpdateContactAddressesCommand>();
-                                var command = (UpdateContactAddressesCommand)context.GetArgument(type, _commandName);
+                                var type = GenericTypeHelper.GetActualType<UpdateMemberAddressesCommand>();
+                                var command = (UpdateMemberAddressesCommand)context.GetArgument(type, _commandName);
                                 await CheckAuthAsync(context.GetCurrentUserId(), command);
                                 return await _mediator.Send(command);
                             })

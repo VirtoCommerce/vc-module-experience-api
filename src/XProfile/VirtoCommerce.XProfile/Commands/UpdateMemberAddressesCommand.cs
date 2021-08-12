@@ -1,18 +1,19 @@
 using System.Collections.Generic;
 using VirtoCommerce.CustomerModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
+using VirtoCommerce.ExperienceApiModule.XProfile.Aggregates;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
 {
-    public class UpdateContactAddressesCommand : ICommand<ContactAggregate>
+    public class UpdateMemberAddressesCommand : ICommand<MemberAggregateRootBase>
     {
-        public UpdateContactAddressesCommand(string contactId, IList<Address> addresses)
+        public UpdateMemberAddressesCommand(string memberId, IList<Address> addresses)
         {
-            ContactId = contactId;
+            MemberId = memberId;
             Addresses = addresses;
         }
 
-        public string ContactId { get; set; }
+        public string MemberId { get; set; }
         public IList<Address> Addresses { get; set; }
     }
 }
