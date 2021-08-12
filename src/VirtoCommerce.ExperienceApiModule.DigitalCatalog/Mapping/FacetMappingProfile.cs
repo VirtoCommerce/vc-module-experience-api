@@ -14,7 +14,8 @@ namespace VirtoCommerce.XDigitalCatalog.Mapping
 
             CreateMap<Aggregation, FacetResult>().ConvertUsing((request, facet, context) =>
             {
-                context.Items.TryGetValue("cultureName", out var cultureName);
+                context.Items.TryGetValue("cultureName", out var cultureNameObj);
+                var cultureName = cultureNameObj as string;
                 FacetResult result = request.AggregationType switch
                 {
                     "attr" => new TermFacetResult
@@ -24,7 +25,8 @@ namespace VirtoCommerce.XDigitalCatalog.Mapping
                             Count = x.Count,
                             IsSelected = x.IsApplied,
                             Term = x.Value.ToString(),
-                            Label = x.Labels != null && cultureName != null ? x.Labels.FirstOrDefault(x => x.Language == cultureName.ToString())?.Label ?? x.Value.ToString() : x.Value.ToString(),
+
+                            Label = x.Labels?.FirstOrDefault(x => x.Language == cultureName)?.Label ?? x.Value.ToString(),
                         })
                             .ToArray(),
                         Name = request.Field
@@ -49,7 +51,7 @@ namespace VirtoCommerce.XDigitalCatalog.Mapping
                     _ => null
                 };
                 if (result != null)
-                    result.Label = request.Labels != null && cultureName != null ? request.Labels.FirstOrDefault(x => x.Language == cultureName.ToString())?.Label ?? result.Name : result.Name;
+                    result.Label = request.Labels?.FirstOrDefault(x => x.Language == cultureName)?.Label ?? result.Name;
                 return result;
             });
         }

@@ -67,14 +67,18 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                 AddDefaultTerms(builder, store.Catalog);
             }
 
+            var criteria = new ProductIndexedSearchCriteria
+            {
+                StoreId = request.StoreId,
+                Currency = request.CurrencyCode,
+                LanguageCode = store.Languages.Contains(request.CultureName) ? request.CultureName : store.DefaultLanguage,
+                CatalogId = store.Catalog
+            };
+
             //Use predefined  facets for store  if the facet filter expression is not set
             if (responseGroup.HasFlag(ExpProductResponseGroup.LoadFacets))
             {
-                var predefinedAggregations = await _aggregationConverter.GetAggregationRequestsAsync(new ProductIndexedSearchCriteria
-                {
-                    StoreId = request.StoreId,
-                    Currency = request.CurrencyCode
-                }, new FiltersContainer());
+                var predefinedAggregations = await _aggregationConverter.GetAggregationRequestsAsync(criteria, new FiltersContainer());
 
                 builder.ParseFacets(_phraseParser, request.Facet, predefinedAggregations)
                        .ApplyMultiSelectFacetSearch();
@@ -83,18 +87,31 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             var searchRequest = builder.Build();
             var searchResult = await _searchProvider.SearchAsync(KnownDocumentTypes.Product, searchRequest);
 
-            var criteria = new ProductIndexedSearchCriteria
-            {
-                StoreId = request.StoreId,
-                Currency = request.CurrencyCode,
-                LanguageCode = request.CultureName,
-                CatalogId = request.CatalogId
-            };
             //TODO: move later to own implementation
             //Call the catalog aggregation converter service to convert AggregationResponse to proper Aggregation type (term, range, filter)
-            var resultAggregations = await _aggregationConverter.ConvertAggregationsAsync(searchResult.Aggregations, criteria);
+            var resultAggregationsDraft = await _aggregationConverter.ConvertAggregationsAsync(searchResult.Aggregations, criteria);
 
-            searchRequest.SetAppliedAggregations(resultAggregations);
+            // Apply language-specific result if exist and drop non-specific
+            var resultAggregations = new List<Aggregation>();
+            var skipAggregationNames = new List<string>();
+
+            foreach (var aggregation in resultAggregationsDraft)
+            {
+                var languageSpecificAggregation = resultAggregationsDraft.FirstOrDefault(x => x.Field == $"{aggregation.Field}_{criteria.LanguageCode.ToLowerInvariant()}");
+                if (languageSpecificAggregation != null)
+                {
+                    resultAggregations.Add(languageSpecificAggregation);
+                    languageSpecificAggregation.Field = aggregation.Field;
+                    languageSpecificAggregation.Labels = aggregation.Labels;
+                    skipAggregationNames.Add(aggregation.Field);
+                }
+                if (!skipAggregationNames.Any(x => aggregation.Field.StartsWith(x)))
+                {
+                    resultAggregations.Add(aggregation);
+                }
+            }
+
+            searchRequest.SetAppliedAggregations(resultAggregations.ToArray());
 
             var products = searchResult.Documents?.Select(x => _mapper.Map<ExpProduct>(x)).ToList() ?? new List<ExpProduct>();
 
@@ -107,7 +124,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                 Results = products,
                 Facets = resultAggregations?.Select(x => _mapper.Map<FacetResult>(x, options =>
                 {
-                    options.Items["cultureName"] = request.CultureName;
+                    options.Items["cultureName"] = criteria.LanguageCode;
                 })).ToList(),
                 TotalCount = (int)searchResult.TotalCount
             };

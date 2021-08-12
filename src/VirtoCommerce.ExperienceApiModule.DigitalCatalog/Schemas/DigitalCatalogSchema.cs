@@ -246,7 +246,6 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             var query = context.GetCatalogQuery<SearchProductQuery>();            
             query.IncludeFields = includeFields;
 
-            query.CatalogId = (string)context.UserContext["catalog"];
             var productIds = context.GetArgument<List<string>>("productIds");
             if (productIds.IsNullOrEmpty())
             {
