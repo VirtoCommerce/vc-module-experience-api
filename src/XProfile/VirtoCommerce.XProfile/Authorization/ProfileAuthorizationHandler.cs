@@ -8,6 +8,7 @@ using VirtoCommerce.CustomerModule.Core.Model;
 using VirtoCommerce.CustomerModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.XProfile.Commands;
 using VirtoCommerce.Platform.Core;
+using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Security;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Authorization
@@ -108,12 +109,22 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Authorization
 
                 result = allowDelete;
             }
-            else if (context.Resource is UpdateContactAddressesCommand updateContactAddressesCommand)
+            else if (context.Resource is UpdateMemberAddressesCommand updateMemberAddressesCommand)
             {
-                result = updateContactAddressesCommand.ContactId == currentUserId;
+                result = updateMemberAddressesCommand.MemberId == currentUserId;
                 if (!result && currentContact != null)
                 {
-                    result = await HasSameOrganizationAsync(currentContact, updateContactAddressesCommand.ContactId);
+                    var memberId = updateMemberAddressesCommand.MemberId;
+                    var member = await _memberService.GetByIdAsync(memberId);
+
+                    if (member.MemberType.EqualsInvariant("Organization") && currentContact.Organizations.Any(x => x.EqualsInvariant(member.Id)))
+                    {
+                        result = true;
+                    }
+                    else
+                    {
+                        result = await HasSameOrganizationAsync(currentContact, memberId);
+                    }
                 }
             }
             else if (context.Resource is UpdateContactCommand updateContactCommand && currentContact != null)
