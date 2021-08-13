@@ -223,8 +223,8 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             /// sample code for updating addresses:
 #pragma warning disable S125 // Sections of code should not be commented out
             /*
-                        mutation updateAddresses($command: InputUpdateContactAddressType!){
-                        contact: updateAddresses(command: $command)
+                        mutation updateMemberAddresses($command: UpdateMemberAddressesCommand!){
+                          updateMemberAddresses(command: $command)
                           {
                             firstName lastName
                             addresses { key city countryCode countryName email firstName  lastName line1 line2 middleName name phone postalCode regionId regionName zip }
@@ -233,7 +233,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                         query variables:
                         {
                             "command": {
-                              "contactId": "acc3b262-a21e-45f9-a612-b4b1530d27ef",
+                              "memberId": "any-member-id",
                               "addresses": [{"addressType": "Shipping", "name": "string", "countryCode": "string", "countryName": "string", "city": "string", "postalCode": "string", "line1": "string", "regionId": "string", "regionName": "string", "firstName": "string", "lastName": "string", "phone": "string", "email": "string", "regionId": "string"
                                 }]
                             }
@@ -242,7 +242,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 #pragma warning restore S125 // Sections of code should not be commented out
 
             #endregion
-            _ = schema.Mutation.AddField(FieldBuilder.Create<ContactAggregate, MemberAggregateRootBase>(GraphTypeExtenstionHelper.GetActualType<MemberType>())
+            _ = schema.Mutation.AddField(FieldBuilder.Create<object, MemberAggregateRootBase>(GraphTypeExtenstionHelper.GetActualType<MemberType>())
                             .Name("updateMemberAddresses")
                             .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputUpdateMemberAddressType>>(), _commandName)
                             .ResolveAsync(async context =>
