@@ -8,6 +8,8 @@ using GraphQL.Types;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using VirtoCommerce.CustomerModule.Core.Model;
+using VirtoCommerce.CustomerModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
@@ -32,13 +34,20 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
         private readonly IAuthorizationService _authorizationService;
         private readonly Func<SignInManager<ApplicationUser>> _signInManagerFactory;
         private readonly IMemberAggregateFactory _factory;
+        private readonly IMemberService _memberService;
 
-        public ProfileSchema(IMediator mediator, IAuthorizationService authorizationService, Func<SignInManager<ApplicationUser>> signInManagerFactory, IMemberAggregateFactory factory)
+        public ProfileSchema(
+            IMediator mediator,
+            IAuthorizationService authorizationService,
+            Func<SignInManager<ApplicationUser>> signInManagerFactory,
+            IMemberAggregateFactory factory,
+            IMemberService memberService)
         {
             _mediator = mediator;
             _authorizationService = authorizationService;
             _signInManagerFactory = signInManagerFactory;
             _factory = factory;
+            _memberService = memberService;
         }
 
         public void Build(ISchema schema)
@@ -565,7 +574,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 
             var userPrincipal = await signInManager.CreateUserPrincipalAsync(user);
 
-            if (!CanExecuteWithoutPermission(user, resource) && !permissions.IsNullOrEmpty())
+            if (!await CanExecuteWithoutPermissionAsync(user, resource) && !permissions.IsNullOrEmpty())
             {
                 foreach (var permission in permissions)
                 {
@@ -584,13 +593,18 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             }
         }
 
-        private bool CanExecuteWithoutPermission(ApplicationUser user, object resource)
+        private async Task<bool> CanExecuteWithoutPermissionAsync(ApplicationUser user, object resource)
         {
             var result = false;
 
             if (resource is UpdateMemberDynamicPropertiesCommand updateMemberDynamicPropertiesCommand)
             {
                 result = updateMemberDynamicPropertiesCommand.MemberId == user.MemberId;
+            }
+            else if (resource is UpdateOrganizationCommand updateOrganizationCommand)
+            {
+                var member = await _memberService.GetByIdAsync(user.MemberId) as Contact;
+                result = member?.Organizations.Any(x => x.EqualsInvariant(updateOrganizationCommand.Id)) ?? false;
             }
 
             return result;
