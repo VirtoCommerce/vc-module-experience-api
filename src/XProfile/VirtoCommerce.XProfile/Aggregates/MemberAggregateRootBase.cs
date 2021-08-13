@@ -21,10 +21,12 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Aggregates
                 }
                 else
                 {
+                    // If we adding new entry, we shouldn't manage the ids.
                     address.Key = null;
                     Member.Addresses.Add(address);
                 }
             }
+
             return this;
         }
     }
