@@ -80,7 +80,9 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             {
                 var predefinedAggregations = await _aggregationConverter.GetAggregationRequestsAsync(criteria, new FiltersContainer());
 
-                builder.ParseFacets(_phraseParser, request.Facet, predefinedAggregations)
+                // Note: Add to the facet phrase language-specific facet name in a hope the sought facet can be made by non-dictionary, multivalue and multilanguage property.
+                // See details: PT-3517
+                builder.ParseFacets(_phraseParser, $"{request.Facet} {request.Facet}_{criteria.LanguageCode.ToLowerInvariant()}", predefinedAggregations)
                        .ApplyMultiSelectFacetSearch();
             }
 
