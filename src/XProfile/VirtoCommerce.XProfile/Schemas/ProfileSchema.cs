@@ -226,7 +226,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                         mutation updateMemberAddresses($command: UpdateMemberAddressesCommand!){
                           updateMemberAddresses(command: $command)
                           {
-                            firstName lastName
+                            memberType
                             addresses { key city countryCode countryName email firstName  lastName line1 line2 middleName name phone postalCode regionId regionName zip }
                           }
                         }
