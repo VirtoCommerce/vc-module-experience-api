@@ -82,8 +82,14 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
 
                 // Note: Add to the facet phrase language-specific facet name in a hope the sought facet can be made by non-dictionary, multivalue and multilanguage property.
                 // See details: PT-3517
-                builder.ParseFacets(_phraseParser, $"{request.Facet} {request.Facet}_{criteria.LanguageCode.ToLowerInvariant()}", predefinedAggregations)
-                       .ApplyMultiSelectFacetSearch();
+                var facets = string.Empty;
+                foreach (var facet in request.Facet.Split(" "))
+                {
+                    facets = $"{facets} {facet} {facet}_{criteria.LanguageCode.ToLowerInvariant()}";
+                }
+                builder.ParseFacets(_phraseParser, facets, predefinedAggregations)
+                   .ApplyMultiSelectFacetSearch();
+
             }
 
             var searchRequest = builder.Build();
