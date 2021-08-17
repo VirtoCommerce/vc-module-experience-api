@@ -17,7 +17,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
             _dynamicPropertyUpdater = dynamicPropertyUpdater;
         }
 
-        public async Task<IMemberAggregateRoot> Handle(UpdateMemberDynamicPropertiesCommand request, CancellationToken cancellationToken)
+        public virtual async Task<IMemberAggregateRoot> Handle(UpdateMemberDynamicPropertiesCommand request, CancellationToken cancellationToken)
         {
             var memberAggregate = await _contactAggregateRepository.GetMemberAggregateRootByIdAsync<MemberAggregateRootBase>(request.MemberId);
 

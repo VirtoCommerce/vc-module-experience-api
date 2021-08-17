@@ -17,7 +17,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Queries
             _services = services;
         }
 
-        public async Task<Role> Handle(GetRoleQuery request, CancellationToken cancellationToken)
+        public virtual async Task<Role> Handle(GetRoleQuery request, CancellationToken cancellationToken)
         {
             using var scope = _services.CreateScope();
             var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<Role>>();

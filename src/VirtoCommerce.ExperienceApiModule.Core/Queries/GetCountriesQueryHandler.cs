@@ -18,7 +18,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Queries
         /// <summary>
         /// Return countries list
         /// </summary>
-        public async Task<GetCountriesResponse> Handle(GetCountriesQuery request, CancellationToken cancellationToken)
+        public virtual async Task<GetCountriesResponse> Handle(GetCountriesQuery request, CancellationToken cancellationToken)
         {
             var countries = await _countriesService.GetCountriesAsync();
             var result = new GetCountriesResponse { Countries = countries };
@@ -29,7 +29,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Queries
         /// <summary>
         /// Return regions of the country
         /// </summary>
-        public async Task<GetRegionsResponse> Handle(GetRegionsQuery request, CancellationToken cancellationToken)
+        public virtual async Task<GetRegionsResponse> Handle(GetRegionsQuery request, CancellationToken cancellationToken)
         {
             var regions = await _countriesService.GetCountryRegionsAsync(request.CountryId);
             var result = new GetRegionsResponse() { Regions = regions };

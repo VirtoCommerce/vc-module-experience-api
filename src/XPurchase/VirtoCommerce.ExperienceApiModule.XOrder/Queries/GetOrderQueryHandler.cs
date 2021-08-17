@@ -18,7 +18,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Queries
             _customerOrderSearchService = customerOrderSearchService;
         }
 
-        public async Task<CustomerOrderAggregate> Handle(GetOrderQuery request, CancellationToken cancellationToken)
+        public virtual async Task<CustomerOrderAggregate> Handle(GetOrderQuery request, CancellationToken cancellationToken)
         {
             CustomerOrderAggregate result;
             if (!string.IsNullOrEmpty(request.OrderId))

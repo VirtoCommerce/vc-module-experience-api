@@ -22,7 +22,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
             _contactAggregateRepository = contactAggregateRepository;
         }
 
-        public async Task<IdentityResult> Handle(UpdatePersonalDataCommand request, CancellationToken cancellationToken)
+        public virtual async Task<IdentityResult> Handle(UpdatePersonalDataCommand request, CancellationToken cancellationToken)
         {
             var result = IdentityResult.Success;
             using (var userManager = _userManagerFactory())
