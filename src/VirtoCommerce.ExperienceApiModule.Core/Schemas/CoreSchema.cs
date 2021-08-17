@@ -59,12 +59,15 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
             {
                 Name = "regions",
                 Arguments = new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "countryId" }),
-                Type = GraphTypeExtenstionHelper.GetActualType<ListGraphType<CountryType>>(),
+                Type = GraphTypeExtenstionHelper.GetActualType<ListGraphType<CountryRegionType>>(),
                 Resolver = new AsyncFieldResolver<object>(async context =>
                 {
-                    var result = await _mediator.Send(new GetCountriesQuery());
+                    var result = await _mediator.Send(new GetRegionsQuery
+                    {
+                        CountryId = context.GetArgument<string>("countryId"),
+                    });
 
-                    return result.Countries;
+                    return result.Regions;
                 })
             });
 
