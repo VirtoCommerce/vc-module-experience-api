@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using AutoMapper;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
+using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.XDigitalCatalog.Facets;
 
 namespace VirtoCommerce.XDigitalCatalog.Mapping
@@ -26,7 +27,7 @@ namespace VirtoCommerce.XDigitalCatalog.Mapping
                             IsSelected = x.IsApplied,
                             Term = x.Value.ToString(),
 
-                            Label = x.Labels?.FirstOrDefault(x => x.Language == cultureName)?.Label ?? x.Value.ToString(),
+                            Label = x.Labels?.FirstBestMatchForLanguage(x => x.Language, cultureName)?.Label ?? x.Value.ToString(),
                         })
                             .ToArray(),
                         Name = request.Field
@@ -51,7 +52,7 @@ namespace VirtoCommerce.XDigitalCatalog.Mapping
                     _ => null
                 };
                 if (result != null)
-                    result.Label = request.Labels?.FirstOrDefault(x => x.Language == cultureName)?.Label ?? result.Name;
+                    result.Label = request.Labels?.FirstBestMatchForLanguage(x => x.Language, cultureName)?.Label ?? result.Name;
                 return result;
             });
         }

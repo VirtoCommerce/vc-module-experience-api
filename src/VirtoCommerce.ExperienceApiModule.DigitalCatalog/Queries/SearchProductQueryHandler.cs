@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -83,7 +84,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                 // Note: Add to the facet phrase language-specific facet name in a hope the sought facet can be made by non-dictionary, multivalue and multilanguage property.
                 // See details: PT-3517
                 var facets = string.Empty;
-                foreach (var facet in request.Facet.Split(" "))
+                foreach (var facet in request.Facet?.Split(" ") ?? new string[0])
                 {
                     facets = $"{facets} {facet} {facet}_{criteria.LanguageCode.ToLowerInvariant()}";
                 }
@@ -97,27 +98,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
 
             //TODO: move later to own implementation
             //Call the catalog aggregation converter service to convert AggregationResponse to proper Aggregation type (term, range, filter)
-            var resultAggregationsDraft = await _aggregationConverter.ConvertAggregationsAsync(searchResult.Aggregations, criteria);
-
-            // Apply language-specific result if exist and drop non-specific
-            var resultAggregations = new List<Aggregation>();
-            var skipAggregationNames = new List<string>();
-
-            foreach (var aggregation in resultAggregationsDraft)
-            {
-                var languageSpecificAggregation = resultAggregationsDraft.FirstOrDefault(x => x.Field == $"{aggregation.Field}_{criteria.LanguageCode.ToLowerInvariant()}");
-                if (languageSpecificAggregation != null)
-                {
-                    resultAggregations.Add(languageSpecificAggregation);
-                    languageSpecificAggregation.Field = aggregation.Field;
-                    languageSpecificAggregation.Labels = aggregation.Labels;
-                    skipAggregationNames.Add(aggregation.Field);
-                }
-                if (!skipAggregationNames.Any(x => aggregation.Field.StartsWith(x)))
-                {
-                    resultAggregations.Add(aggregation);
-                }
-            }
+            var resultAggregations = await _aggregationConverter.ConvertAggregationsAsync(searchResult.Aggregations, criteria);
 
             searchRequest.SetAppliedAggregations(resultAggregations.ToArray());
 
@@ -130,10 +111,20 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                 Currency = currency,
                 Store = store,
                 Results = products,
-                Facets = resultAggregations?.Select(x => _mapper.Map<FacetResult>(x, options =>
-                {
-                    options.Items["cultureName"] = criteria.LanguageCode;
-                })).ToList(),
+                Facets = resultAggregations?.Select(x =>
+                    {
+                        // Apply language-specific facet result
+                        // To do this, copy facet items from the fake language-specific facet to the real facet
+                        var languageSpecificAggregation = resultAggregations.FirstOrDefault(y => y.Field == $"{x.Field}_{criteria.LanguageCode.ToLowerInvariant()}");
+                        if (languageSpecificAggregation != null)
+                            x.Items = languageSpecificAggregation.Items;
+                        return x;
+                    })
+                    .Where(x => !Regex.IsMatch(x.Field, @"_\w\w-\w\w$", RegexOptions.IgnoreCase)) // Drop fake language-specific facets from results
+                    .Select(x => _mapper.Map<FacetResult>(x, options =>
+                    {
+                        options.Items["cultureName"] = criteria.LanguageCode;
+                    })).ToList(),
                 TotalCount = (int)searchResult.TotalCount
             };
 
