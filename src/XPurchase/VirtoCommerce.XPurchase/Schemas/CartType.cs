@@ -100,6 +100,12 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field<MoneyType>("discountTotalWithTax", resolve: context => context.Source.Cart.DiscountTotalWithTax.ToMoney(context.Source.Currency));
             Field<ListGraphType<DiscountType>>("discounts", resolve: context => context.Source.Cart.Discounts);
 
+            // available gifts
+            FieldAsync<ListGraphType<GiftItemType>>("availableGifts", resolve: async context =>
+            {
+                return await cartAvailMethods.GetAvailableGiftsAsync(context.Source);
+            });
+
             // Addresses
             ExtendableField<ListGraphType<AddressType>>("addresses", resolve: context => context.Source.Cart.Addresses);
 

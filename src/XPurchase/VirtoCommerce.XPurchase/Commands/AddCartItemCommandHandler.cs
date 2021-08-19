@@ -19,9 +19,21 @@ namespace VirtoCommerce.XPurchase.Commands
         {
             var cartAggregate = await GetOrCreateCartFromCommandAsync(request);
             var product = (await _cartProductService.GetCartProductsByIdsAsync(cartAggregate, new[] { request.ProductId })).FirstOrDefault();
+
+            if (request.IsGift)
+            {
+                // reset the price to 0
+                product.ApplyPrices(new[] { new PricingModule.Core.Model.Price() {
+                    Currency = cartAggregate.Currency.Code,
+                    ProductId = product.Id,
+                    List = 0 }
+                }, cartAggregate.Currency);
+            }
+
             await cartAggregate.AddItemAsync(new NewCartItem(request.ProductId, request.Quantity)
             {
                 Comment = request.Comment,
+                IsGift = request.IsGift,
                 DynamicProperties = request.DynamicProperties,
                 Price = request.Price,
                 CartProduct = product

@@ -27,6 +27,11 @@ namespace VirtoCommerce.XPurchase
         public string Comment { get; set; }
 
         /// <summary>
+        /// Is this item is a gift
+        /// </summary>
+        public bool IsGift { get; set; }
+
+        /// <summary>
         /// Dynamic properties
         /// </summary>
         public Dictionary<string, string> DynamicProperties { get; set; }

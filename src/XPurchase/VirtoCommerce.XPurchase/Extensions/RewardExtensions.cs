@@ -53,6 +53,15 @@ namespace VirtoCommerce.XPurchase.Extensions
                 shoppingCart.DiscountAmount += discount.DiscountAmount;
             }
 
+            // remove the (added) gifts, if corresponding reward is missing
+            foreach (var lineItem in (shoppingCart.Items ?? Enumerable.Empty<LineItem>()).Where(li => li.IsGift).ToArray())
+            {
+                if (!rewards.OfType<GiftReward>().Any(re => re.ProductId == lineItem.ProductId))
+                {
+                    shoppingCart.Items.Remove(lineItem);
+                }
+            }
+
             var lineItemRewards = rewards.OfType<CatalogItemAmountReward>();
             foreach (var lineItem in shoppingCart.Items ?? Enumerable.Empty<LineItem>())
             {

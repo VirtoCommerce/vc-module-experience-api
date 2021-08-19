@@ -145,6 +145,7 @@ namespace VirtoCommerce.XPurchase
             {
                 var lineItem = _mapper.Map<LineItem>(newCartItem.CartProduct);
                 lineItem.Quantity = newCartItem.Quantity;
+                lineItem.IsGift = newCartItem.IsGift;
 
                 if (newCartItem.Price != null)
                 {
@@ -191,6 +192,7 @@ namespace VirtoCommerce.XPurchase
                     await AddItemAsync(new NewCartItem(item.ProductId, item.Quantity)
                     {
                         Comment = item.Comment,
+                        IsGift = item.IsGift,
                         DynamicProperties = item.DynamicProperties,
                         Price = item.Price,
                         CartProduct = product
@@ -489,9 +491,9 @@ namespace VirtoCommerce.XPurchase
             return promotionResult;
         }
 
-        public virtual async Task<PromotionResult> EvaluatePromotionsAsync(PromotionEvaluationContext evalContext)
+        public virtual Task<PromotionResult> EvaluatePromotionsAsync(PromotionEvaluationContext evalContext)
         {
-            return await _marketingEvaluator.EvaluatePromotionAsync(evalContext);
+            return _marketingEvaluator.EvaluatePromotionAsync(evalContext);
         }
 
         protected async Task<IEnumerable<TaxRate>> EvaluateTaxesAsync()

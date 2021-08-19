@@ -2,12 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
-using GraphQL;
 using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.CartModule.Core.Model.Search;
 using VirtoCommerce.CoreModule.Core.Outlines;
 using VirtoCommerce.CoreModule.Core.Seo;
-using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Index;
 using VirtoCommerce.MarketingModule.Core.Model.Promotions;
 using VirtoCommerce.PaymentModule.Core.Model;
@@ -25,6 +23,7 @@ namespace VirtoCommerce.XPurchase.Mapping
         public CartMappingProfile()
         {
             CreateMap<CartModule.Core.Model.Address, TaxModule.Core.Model.Address>();
+            CreateMap<LineItem, CartGiftItem>();
             CreateMap<CartProduct, LineItem>().ConvertUsing((cartProduct, lineItem, context) =>
             {
                 if (lineItem == null)
@@ -45,6 +44,7 @@ namespace VirtoCommerce.XPurchase.Mapping
                     lineItem.Currency = cartProduct.Price.Currency.Code;
                     lineItem.DiscountAmount = cartProduct.Price.DiscountAmount.InternalAmount;
                     lineItem.PriceId = cartProduct.Price.PricelistId;
+                    lineItem.ListPrice = cartProduct.Price.ListPrice.InternalAmount;
                     lineItem.SalePrice = cartProduct.Price.SalePrice.InternalAmount;
                     lineItem.TaxDetails = cartProduct.Price.TaxDetails;
                     lineItem.TaxPercentRate = cartProduct.Price.TaxPercentRate;
@@ -54,7 +54,6 @@ namespace VirtoCommerce.XPurchase.Mapping
                 lineItem.Height = cartProduct.Product.Height;
                 lineItem.ImageUrl = cartProduct.Product.ImgSrc;
                 lineItem.Length = cartProduct.Product.Length;
-                lineItem.ListPrice = cartProduct.Price.ListPrice.InternalAmount;
                 lineItem.MeasureUnit = cartProduct.Product.MeasureUnit;
                 lineItem.Name = cartProduct.Product.Name;
                 lineItem.ProductId = cartProduct.Product.Id;

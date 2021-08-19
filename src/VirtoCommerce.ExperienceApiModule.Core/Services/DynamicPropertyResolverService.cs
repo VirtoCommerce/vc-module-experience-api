@@ -35,7 +35,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Services
             criteria.Take = int.MaxValue;
             var searchResult = await _dynamicPropertySearchService.SearchDynamicPropertiesAsync(criteria);
 
-            var propertiesWithoutValue = searchResult.Results.Where(p => entity.DynamicProperties.All(x => x.Id != p.Id));
+            var propertiesWithoutValue = searchResult.Results.Where(p => entity.DynamicProperties?.All(x => x.Id != p.Id) ?? true);
             var emptyValues = propertiesWithoutValue.Select(x =>
             {
                 var newValue = AbstractTypeFactory<DynamicPropertyObjectValue>.TryCreateInstance();

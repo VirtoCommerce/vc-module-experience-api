@@ -86,14 +86,14 @@ namespace VirtoCommerce.XPurchase.Schemas
             /// <example>
             /// This is an example JSON request for a mutation
             /// {
-            ///   "query": "mutation ($command:InputAddItemType!){ addItem(command: $command) {  total { formatedAmount } } }",
+            ///   "query": "mutation ($command:InputAddItemType!){ addItem(command: $command) {  total { formattedAmount } } }",
             ///   "variables": {
             ///      "command": {
             ///          "storeId": "Electronics",
             ///          "cartName": "default",
             ///          "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
-            ///          "language": "en-US",
-            ///          "currency": "USD",
+            ///          "cultureName": "en-US",
+            ///          "currencyCode": "USD",
             ///          "cartType": "cart",
             ///          "productId": "9cbd8f316e254a679ba34a900fccb076",
             ///          "quantity": 1
@@ -121,7 +121,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             /// <example>
             /// This is an example JSON request for a mutation
             /// {
-            ///   "query": "mutation ($command:InputClearCartType!){ clearCart(command: $command) {  total { formatedAmount } } }",
+            ///   "query": "mutation ($command:InputClearCartType!){ clearCart(command: $command) {  total { formattedAmount } } }",
             ///   "variables": {
             ///      "command": {
             ///          "storeId": "Electronics",
@@ -152,7 +152,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             /// <example>
             /// This is an example JSON request for a mutation
             /// {
-            ///   "query": "mutation ($command:InputChangeCommentType!){ changeComment(command: $command) {  total { formatedAmount } } }",
+            ///   "query": "mutation ($command:InputChangeCommentType!){ changeComment(command: $command) {  total { formattedAmount } } }",
             ///   "variables": {
             ///      "command": {
             ///          "storeId": "Electronics",
@@ -185,7 +185,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             /// <example>
             /// This is an example JSON request for a mutation
             /// {
-            ///   "query": "mutation ($command:InputChangeCartItemPriceType!){ changeCartItemPrice(command: $command) {  total { formatedAmount } } }",
+            ///   "query": "mutation ($command:InputChangeCartItemPriceType!){ changeCartItemPrice(command: $command) {  total { formattedAmount } } }",
             ///   "variables": {
             ///      "command": {
             ///          "storeId": "Electronics",
@@ -218,7 +218,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             /// <example>
             /// This is an example JSON request for a mutation
             /// {
-            ///   "query": "mutation ($command:InputChangeCartItemQuantityType!){ changeCartItemQuantity(command: $command) {  total { formatedAmount } } }",
+            ///   "query": "mutation ($command:InputChangeCartItemQuantityType!){ changeCartItemQuantity(command: $command) {  total { formattedAmount } } }",
             ///   "variables": {
             ///      "command": {
             ///          "storeId": "Electronics",
@@ -251,7 +251,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             /// <example>
             /// This is an example JSON request for a mutation
             /// {
-            ///   "query": "mutation ($command:InputChangeCartItemCommentType!){ changeCartItemComment(command: $command) {  total { formatedAmount } } }",
+            ///   "query": "mutation ($command:InputChangeCartItemCommentType!){ changeCartItemComment(command: $command) {  total { formattedAmount } } }",
             ///   "variables": {
             ///      "command": {
             ///          "storeId": "Electronics",
@@ -284,7 +284,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             /// <example>
             /// This is an example JSON request for a mutation
             /// {
-            ///   "query": "mutation ($command:InputRemoveItemType!){ removeCartItem(command: $command) {  total { formatedAmount } } }",
+            ///   "query": "mutation ($command:InputRemoveItemType!){ removeCartItem(command: $command) {  total { formattedAmount } } }",
             ///   "variables": {
             ///      "command": {
             ///          "storeId": "Electronics",
@@ -316,7 +316,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             /// <example>
             /// This is an example JSON request for a mutation
             /// {
-            ///   "query": "mutation ($command:InputAddCouponType!){ addCoupon(command: $command) {  total { formatedAmount } } }",
+            ///   "query": "mutation ($command:InputAddCouponType!){ addCoupon(command: $command) {  total { formattedAmount } } }",
             ///   "variables": {
             ///      "command": {
             ///          "storeId": "Electronics",
@@ -348,7 +348,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             /// <example>
             /// This is an example JSON request for a mutation
             /// {
-            ///   "query": "mutation ($command:InputRemoveCouponType!){ removeCoupon(command: $command) {  total { formatedAmount } } }",
+            ///   "query": "mutation ($command:InputRemoveCouponType!){ removeCoupon(command: $command) {  total { formattedAmount } } }",
             ///   "variables": {
             ///      "command": {
             ///          "storeId": "Electronics",
@@ -380,7 +380,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             /// <example>
             /// This is an example JSON request for a mutation
             /// {
-            ///   "query": "mutation ($command:InputRemoveShipmentType!){ removeShipment(command: $command) {  total { formatedAmount } } }",
+            ///   "query": "mutation ($command:InputRemoveShipmentType!){ removeShipment(command: $command) {  total { formattedAmount } } }",
             ///   "variables": {
             ///      "command": {
             ///          "storeId": "Electronics",
@@ -413,7 +413,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             /// <example>
             /// This is an example JSON request for a mutation
             /// {
-            ///   "query": "mutation ($command:InputAddOrUpdateCartShipmentType!){ addOrUpdateCartShipment(command: $command) {  total { formatedAmount } } }",
+            ///   "query": "mutation ($command:InputAddOrUpdateCartShipmentType!){ addOrUpdateCartShipment(command: $command) {  total { formattedAmount } } }",
             ///   "variables": {
             ///      "command": {
             ///          "storeId": "Electronics",
@@ -446,7 +446,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             /// <example>
             /// This is an example JSON request for a mutation
             /// {
-            ///   "query": "mutation ($command:InputAddOrUpdateCartPaymentType!){ addOrUpdateCartPayment(command: $command) {  total { formatedAmount } } }",
+            ///   "query": "mutation ($command:InputAddOrUpdateCartPaymentType!){ addOrUpdateCartPayment(command: $command) {  total { formattedAmount } } }",
             ///   "variables": {
             ///      "command": {
             ///          "storeId": "Electronics",
@@ -505,7 +505,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             /// <example>
             /// This is an example JSON request for a mutation
             /// {
-            ///   "query": "mutation ($command:MergeCartType!){ mergeCart(command: $command) {  total { formatedAmount } } }",
+            ///   "query": "mutation ($command:MergeCartType!){ mergeCart(command: $command) {  total { formattedAmount } } }",
             ///   "variables": {
             ///      "command": {
             ///          "storeId": "Electronics",
@@ -537,7 +537,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             /// <example>
             /// This is an example JSON request for a mutation
             /// {
-            ///   "query": "mutation ($command:InputRemoveCartType!){ removeCart(command: $command) {  total { formatedAmount } } }",
+            ///   "query": "mutation ($command:InputRemoveCartType!){ removeCart(command: $command) {  total { formattedAmount } } }",
             ///   "variables": {
             ///      "command": {
             ///          "cartId": "7777-7777-7777-7777"
@@ -556,7 +556,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             /// <example>
             /// This is an example JSON request for a mutation
             /// {
-            ///   "query": "mutation ($command:InputClearShipmentsType!){ clearShipments(command: $command) {  total { formatedAmount } } }",
+            ///   "query": "mutation ($command:InputClearShipmentsType!){ clearShipments(command: $command) {  total { formattedAmount } } }",
             ///   "variables": {
             ///      "command": {
             ///          "cartId": "7777-7777-7777-7777"
@@ -583,7 +583,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             /// <example>
             /// This is an example JSON request for a mutation
             /// {
-            ///   "query": "mutation ($command:InputClearPaymentsType!){ clearPayments(command: $command) {  total { formatedAmount } } }",
+            ///   "query": "mutation ($command:InputClearPaymentsType!){ clearPayments(command: $command) {  total { formattedAmount } } }",
             ///   "variables": {
             ///      "command": {
             ///          "cartId": "7777-7777-7777-7777"
@@ -610,7 +610,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             /// <example>
             /// This is an example JSON request for a mutation
             /// {
-            ///   "query": "mutation ($command:InputAddOrUpdateCartAddressType!){ addOrUpdateCartAddress(command: $command) {  total { formatedAmount } } }",
+            ///   "query": "mutation ($command:InputAddOrUpdateCartAddressType!){ addOrUpdateCartAddress(command: $command) {  total { formattedAmount } } }",
             ///   "variables": {
             ///      "command": {
             ///          "storeId": "Electronics",
@@ -645,7 +645,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             /// <example>
             /// This is an example JSON request for a mutation
             /// {
-            ///   "query": "mutation ($command:InputRemoveCartAddressType!){ removeCartAddress(command: $command) {  total { formatedAmount } } }",
+            ///   "query": "mutation ($command:InputRemoveCartAddressType!){ removeCartAddress(command: $command) {  total { formattedAmount } } }",
             ///   "variables": {
             ///      "command": {
             ///          "cartId": "7777-7777-7777-7777",

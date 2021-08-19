@@ -15,6 +15,7 @@ namespace VirtoCommerce.XPurchase.Tests.Services
         private readonly Mock<IPaymentMethodsSearchService> _paymentMethodsSearchServiceMock;
         private readonly Mock<ITaxProviderSearchService> _taxProviderSearchServiceMock;
         private readonly Mock<IShippingMethodsSearchService> _shippingMethodsSearchServiceMock;
+        private readonly Mock<ICartProductService> _cartProductServiceMock;
 
         private readonly CartAvailMethodsService service;
 
@@ -23,11 +24,13 @@ namespace VirtoCommerce.XPurchase.Tests.Services
             _paymentMethodsSearchServiceMock = new Mock<IPaymentMethodsSearchService>();
             _taxProviderSearchServiceMock = new Mock<ITaxProviderSearchService>();
             _shippingMethodsSearchServiceMock = new Mock<IShippingMethodsSearchService>();
+            _cartProductServiceMock = new Mock<ICartProductService>();
 
             service = new CartAvailMethodsService(
                 _paymentMethodsSearchServiceMock.Object,
                 _shippingMethodsSearchServiceMock.Object,
                 _taxProviderSearchServiceMock.Object,
+                _cartProductServiceMock.Object,
                 _mapperMock.Object);
         }
 
