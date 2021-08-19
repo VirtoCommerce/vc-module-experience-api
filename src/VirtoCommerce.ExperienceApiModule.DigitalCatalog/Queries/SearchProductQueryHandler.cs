@@ -81,13 +81,8 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             {
                 var predefinedAggregations = await _aggregationConverter.GetAggregationRequestsAsync(criteria, new FiltersContainer());
 
-                // Note: Add to the facet phrase language-specific facet name in a hope the sought facet can be made by non-dictionary, multivalue and multilanguage property.
-                // See details: PT-3517
-                var facets = string.Empty;
-                foreach (var facet in request.Facet?.Split(" ") ?? new string[0])
-                {
-                    facets = $"{facets} {facet} {facet}_{criteria.LanguageCode.ToLowerInvariant()}";
-                }
+                var facets = request.Facet.AddLanguageSpecificFacets(criteria.LanguageCode);
+
                 builder.ParseFacets(_phraseParser, facets, predefinedAggregations)
                    .ApplyMultiSelectFacetSearch();
 
@@ -111,16 +106,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                 Currency = currency,
                 Store = store,
                 Results = products,
-                Facets = resultAggregations?.Select(x =>
-                    {
-                        // Apply language-specific facet result
-                        // To do this, copy facet items from the fake language-specific facet to the real facet
-                        var languageSpecificAggregation = resultAggregations.FirstOrDefault(y => y.Field == $"{x.Field}_{criteria.LanguageCode.ToLowerInvariant()}");
-                        if (languageSpecificAggregation != null)
-                            x.Items = languageSpecificAggregation.Items;
-                        return x;
-                    })
-                    .Where(x => !Regex.IsMatch(x.Field, @"_\w\w-\w\w$", RegexOptions.IgnoreCase)) // Drop fake language-specific facets from results
+                Facets = resultAggregations?.ApplyLanguageSpecificFacetResult(criteria.LanguageCode)
                     .Select(x => _mapper.Map<FacetResult>(x, options =>
                     {
                         options.Items["cultureName"] = criteria.LanguageCode;
