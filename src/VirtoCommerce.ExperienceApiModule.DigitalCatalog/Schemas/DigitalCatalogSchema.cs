@@ -102,6 +102,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 var cultureName = context.GetArgument<string>("cultureName");
                 var store = await _storeService.GetByIdAsync(context.GetArgument<string>("storeId"));
                 context.UserContext["store"] = store;
+                context.UserContext["catalog"] = store.Catalog;
 
                 var allCurrencies = await _currencyService.GetAllCurrenciesAsync();
                 //Store all currencies in the user context for future resolve in the schema types
@@ -242,7 +243,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             var includeFields = context.SubFields.Values.GetAllNodesPaths();
 
             //TODO: Need to be able get entire query from context and read all arguments to the query properties
-            var query = context.GetCatalogQuery<SearchProductQuery>();
+            var query = context.GetCatalogQuery<SearchProductQuery>();            
             query.IncludeFields = includeFields;
 
             var productIds = context.GetArgument<List<string>>("productIds");

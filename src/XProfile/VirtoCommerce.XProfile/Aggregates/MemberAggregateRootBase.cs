@@ -10,7 +10,22 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Aggregates
 
         public virtual MemberAggregateRootBase UpdateAddresses(IList<Address> addresses)
         {
-            Member.Addresses = addresses.ToList();
+            foreach (var address in addresses)
+            {
+                var addressForReplacement = Member.Addresses.FirstOrDefault(x => x.Key == address.Key);
+
+                if (addressForReplacement != null)
+                {
+                    var index = Member.Addresses.IndexOf(addressForReplacement);
+                    Member.Addresses[index] = address;
+                }
+                else
+                {
+                    // If we adding new entry, we shouldn't manage the ids.
+                    address.Key = null;
+                    Member.Addresses.Add(address);
+                }
+            }
 
             return this;
         }

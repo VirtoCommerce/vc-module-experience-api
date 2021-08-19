@@ -8,6 +8,8 @@ using GraphQL.Types;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using VirtoCommerce.CustomerModule.Core.Model;
+using VirtoCommerce.CustomerModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
@@ -32,13 +34,20 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
         private readonly IAuthorizationService _authorizationService;
         private readonly Func<SignInManager<ApplicationUser>> _signInManagerFactory;
         private readonly IMemberAggregateFactory _factory;
+        private readonly IMemberService _memberService;
 
-        public ProfileSchema(IMediator mediator, IAuthorizationService authorizationService, Func<SignInManager<ApplicationUser>> signInManagerFactory, IMemberAggregateFactory factory)
+        public ProfileSchema(
+            IMediator mediator,
+            IAuthorizationService authorizationService,
+            Func<SignInManager<ApplicationUser>> signInManagerFactory,
+            IMemberAggregateFactory factory,
+            IMemberService memberService)
         {
             _mediator = mediator;
             _authorizationService = authorizationService;
             _signInManagerFactory = signInManagerFactory;
             _factory = factory;
+            _memberService = memberService;
         }
 
         public void Build(ISchema schema)
@@ -223,17 +232,17 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             /// sample code for updating addresses:
 #pragma warning disable S125 // Sections of code should not be commented out
             /*
-                        mutation updateAddresses($command: InputUpdateContactAddressType!){
-                        contact: updateAddresses(command: $command)
+                        mutation updateMemberAddresses($command: UpdateMemberAddressesCommand!){
+                          updateMemberAddresses(command: $command)
                           {
-                            firstName lastName
+                            memberType
                             addresses { key city countryCode countryName email firstName  lastName line1 line2 middleName name phone postalCode regionId regionName zip }
                           }
                         }
                         query variables:
                         {
                             "command": {
-                              "contactId": "acc3b262-a21e-45f9-a612-b4b1530d27ef",
+                              "memberId": "any-member-id",
                               "addresses": [{"addressType": "Shipping", "name": "string", "countryCode": "string", "countryName": "string", "city": "string", "postalCode": "string", "line1": "string", "regionId": "string", "regionName": "string", "firstName": "string", "lastName": "string", "phone": "string", "email": "string", "regionId": "string"
                                 }]
                             }
@@ -242,13 +251,13 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 #pragma warning restore S125 // Sections of code should not be commented out
 
             #endregion
-            _ = schema.Mutation.AddField(FieldBuilder.Create<ContactAggregate, ContactAggregate>(GraphTypeExtenstionHelper.GetActualType<ContactType>())
-                            .Name("updateAddresses")
-                            .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputUpdateContactAddressType>>(), _commandName)
+            _ = schema.Mutation.AddField(FieldBuilder.Create<object, MemberAggregateRootBase>(GraphTypeExtenstionHelper.GetActualType<MemberType>())
+                            .Name("updateMemberAddresses")
+                            .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputUpdateMemberAddressType>>(), _commandName)
                             .ResolveAsync(async context =>
                             {
-                                var type = GenericTypeHelper.GetActualType<UpdateContactAddressesCommand>();
-                                var command = (UpdateContactAddressesCommand)context.GetArgument(type, _commandName);
+                                var type = GenericTypeHelper.GetActualType<UpdateMemberAddressesCommand>();
+                                var command = (UpdateMemberAddressesCommand)context.GetArgument(type, _commandName);
                                 await CheckAuthAsync(context.GetCurrentUserId(), command);
                                 return await _mediator.Send(command);
                             })
@@ -565,7 +574,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 
             var userPrincipal = await signInManager.CreateUserPrincipalAsync(user);
 
-            if (!CanExecuteWithoutPermission(user, resource) && !permissions.IsNullOrEmpty())
+            if (!await CanExecuteWithoutPermissionAsync(user, resource) && !permissions.IsNullOrEmpty())
             {
                 foreach (var permission in permissions)
                 {
@@ -584,13 +593,18 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             }
         }
 
-        private bool CanExecuteWithoutPermission(ApplicationUser user, object resource)
+        private async Task<bool> CanExecuteWithoutPermissionAsync(ApplicationUser user, object resource)
         {
             var result = false;
 
             if (resource is UpdateMemberDynamicPropertiesCommand updateMemberDynamicPropertiesCommand)
             {
                 result = updateMemberDynamicPropertiesCommand.MemberId == user.MemberId;
+            }
+            else if (resource is UpdateOrganizationCommand updateOrganizationCommand && !string.IsNullOrEmpty(user.MemberId))
+            {
+                var member = await _memberService.GetByIdAsync(user.MemberId) as Contact;
+                result = member?.Organizations.Any(x => x.EqualsInvariant(updateOrganizationCommand.Id)) ?? false;
             }
 
             return result;
