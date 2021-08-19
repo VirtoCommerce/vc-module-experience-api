@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -108,12 +107,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                     seoInfo = source.IndexedProduct.SeoInfos.GetBestMatchingSeoInfo(storeId, cultureName);
                 }
 
-                var fallbackSeoInfo = AbstractTypeFactory<SeoInfo>.TryCreateInstance();
-                fallbackSeoInfo.SemanticUrl = source.Id;
-                fallbackSeoInfo.LanguageCode = cultureName;
-                fallbackSeoInfo.Name = source.IndexedProduct.Name;
-
-                return seoInfo ?? fallbackSeoInfo;
+                return seoInfo ?? GetFallbackSeoInfo(source, cultureName);
             }, description: "Request related SEO info");
 
             Field<ListGraphType<DescriptionType>>("descriptions",
@@ -286,6 +280,15 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
               {
                   return await ResolveConnectionAsync(mediator, context);
               });
+        }
+
+        private static SeoInfo GetFallbackSeoInfo(ExpProduct source, string cultureName)
+        {
+            var result = AbstractTypeFactory<SeoInfo>.TryCreateInstance();
+            result.SemanticUrl = source.Id;
+            result.LanguageCode = cultureName;
+            result.Name = source.IndexedProduct.Name;
+            return result;
         }
 
         private static async Task<object> ResolveConnectionAsync(IMediator mediator, IResolveConnectionContext<ExpProduct> context)
