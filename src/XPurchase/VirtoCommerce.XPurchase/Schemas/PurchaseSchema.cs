@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GraphQL;
@@ -109,7 +110,17 @@ namespace VirtoCommerce.XPurchase.Schemas
                                            {
                                                //TODO: Need to refactor later to prevent ugly code duplication
                                                //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
-                                               var cartAggregate = await _mediator.Send(context.GetCartCommand<AddCartItemCommand>());
+                                               var command = context.GetCartCommand<AddCartItemCommand>();
+
+                                               // Passing "isGift" argument to AddCartItemCommand.
+                                               // workaround to avoid breaking change in AddCartItemCommand constructor
+                                               var argumentDictionary = context.GetArgument<Dictionary<string, object>>(_commandName);
+                                               if (argumentDictionary.ContainsKey("isGift"))
+                                               {
+                                                   command.IsGift = bool.Parse(argumentDictionary["isGift"].ToString());
+                                               }
+
+                                               var cartAggregate = await _mediator.Send(command);
                                                //store cart aggregate in the user context for future usage in the graph types resolvers
                                                context.SetExpandedObjectGraph(cartAggregate);
                                                return cartAggregate;

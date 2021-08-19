@@ -8,13 +8,12 @@ namespace VirtoCommerce.XPurchase.Commands
         {
         }
 
-        public AddCartItemCommand(string storeId, string cartType, string cartName, string userId, string currencyCode, string cultureName, string productId, int quantity, decimal? price, string comment, bool isGift)
+        public AddCartItemCommand(string storeId, string cartType, string cartName, string userId, string currencyCode, string cultureName, string productId, int quantity, decimal? price, string comment)
             : base(storeId, cartType, cartName, userId, currencyCode, cultureName)
         {
             ProductId = productId;
             Quantity = quantity;
             Comment = comment;
-            IsGift = isGift;
             Price = price;
         }
 

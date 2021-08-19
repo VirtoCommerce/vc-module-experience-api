@@ -54,7 +54,7 @@ namespace VirtoCommerce.XPurchase.Extensions
             }
 
             // remove the (added) gifts, if corresponding reward is missing
-            foreach (var lineItem in shoppingCart?.Items.Where(li => li.IsGift) ?? Enumerable.Empty<LineItem>())
+            foreach (var lineItem in shoppingCart.Items?.Where(li => li.IsGift).ToArray() ?? Enumerable.Empty<LineItem>())
             {
                 if (!rewards.OfType<GiftReward>().Any(re => re.ProductId == lineItem.ProductId))
                 {
