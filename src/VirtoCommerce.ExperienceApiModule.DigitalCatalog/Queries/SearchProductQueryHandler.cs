@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -67,32 +68,34 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                 AddDefaultTerms(builder, store.Catalog);
             }
 
+            var criteria = new ProductIndexedSearchCriteria
+            {
+                StoreId = request.StoreId,
+                Currency = request.CurrencyCode,
+                LanguageCode = store.Languages.Contains(request.CultureName) ? request.CultureName : store.DefaultLanguage,
+                CatalogId = store.Catalog
+            };
+
             //Use predefined  facets for store  if the facet filter expression is not set
             if (responseGroup.HasFlag(ExpProductResponseGroup.LoadFacets))
             {
-                var predefinedAggregations = await _aggregationConverter.GetAggregationRequestsAsync(new ProductIndexedSearchCriteria
-                {
-                    StoreId = request.StoreId,
-                    Currency = request.CurrencyCode,
-                }, new FiltersContainer());
+                var predefinedAggregations = await _aggregationConverter.GetAggregationRequestsAsync(criteria, new FiltersContainer());
 
-                builder.ParseFacets(_phraseParser, request.Facet, predefinedAggregations)
-                       .ApplyMultiSelectFacetSearch();
+                var facets = request.Facet.AddLanguageSpecificFacets(criteria.LanguageCode);
+
+                builder.ParseFacets(_phraseParser, facets, predefinedAggregations)
+                   .ApplyMultiSelectFacetSearch();
+
             }
 
             var searchRequest = builder.Build();
             var searchResult = await _searchProvider.SearchAsync(KnownDocumentTypes.Product, searchRequest);
 
-            var criteria = new ProductIndexedSearchCriteria
-            {
-                StoreId = request.StoreId,
-                Currency = request.CurrencyCode,
-            };
             //TODO: move later to own implementation
             //Call the catalog aggregation converter service to convert AggregationResponse to proper Aggregation type (term, range, filter)
             var resultAggregations = await _aggregationConverter.ConvertAggregationsAsync(searchResult.Aggregations, criteria);
 
-            searchRequest.SetAppliedAggregations(resultAggregations);
+            searchRequest.SetAppliedAggregations(resultAggregations.ToArray());
 
             var products = searchResult.Documents?.Select(x => _mapper.Map<ExpProduct>(x)).ToList() ?? new List<ExpProduct>();
 
@@ -103,7 +106,11 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                 Currency = currency,
                 Store = store,
                 Results = products,
-                Facets = resultAggregations?.Select(x => _mapper.Map<FacetResult>(x)).ToList(),
+                Facets = resultAggregations?.ApplyLanguageSpecificFacetResult(criteria.LanguageCode)
+                    .Select(x => _mapper.Map<FacetResult>(x, options =>
+                    {
+                        options.Items["cultureName"] = criteria.LanguageCode;
+                    })).ToList(),
                 TotalCount = (int)searchResult.TotalCount
             };
 
