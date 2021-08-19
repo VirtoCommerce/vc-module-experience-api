@@ -66,12 +66,12 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                     seoInfo = source.Category.SeoInfos.GetBestMatchingSeoInfo(storeId, cultureName);
                 }
 
-                return seoInfo ?? new SeoInfo
-                {
-                    SemanticUrl = source.Id,
-                    LanguageCode = cultureName,
-                    Name = source.Category.Name
-                };
+                var fallbackSeoInfo = AbstractTypeFactory<SeoInfo>.TryCreateInstance();
+                fallbackSeoInfo.SemanticUrl = source.Id;
+                fallbackSeoInfo.LanguageCode = cultureName;
+                fallbackSeoInfo.Name = source.Category.Name;
+
+                return seoInfo ?? fallbackSeoInfo;
             }, description: "Request related SEO info");
 
 
