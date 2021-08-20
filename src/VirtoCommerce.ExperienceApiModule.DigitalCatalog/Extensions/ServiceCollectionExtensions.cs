@@ -23,6 +23,7 @@ namespace VirtoCommerce.XDigitalCatalog.Extensions
             services.AddPipeline<SearchProductResponse>(builder =>
             {
                 builder.AddMiddleware(typeof(EnsureCatalogProductLoadedMiddleware));
+                builder.AddMiddleware(typeof(RemoveNullCatalogProductsMiddleware));
                 builder.AddMiddleware(typeof(EvalProductsPricesMiddleware));
                 builder.AddMiddleware(typeof(EvalProductsDiscountsMiddleware));
                 builder.AddMiddleware(typeof(EvalProductsTaxMiddleware));
