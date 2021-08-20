@@ -66,12 +66,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                     seoInfo = source.Category.SeoInfos.GetBestMatchingSeoInfo(storeId, cultureName);
                 }
 
-                return seoInfo ?? new SeoInfo
-                {
-                    SemanticUrl = source.Id,
-                    LanguageCode = cultureName,
-                    Name = source.Category.Name
-                };
+                return seoInfo ?? GetFallbackSeoInfo(source, cultureName);
             }, description: "Request related SEO info");
 
 
@@ -107,6 +102,15 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 return context.Source.Category.Properties.ExpandByValues(cultureName);
             });
 
+        }
+
+        private static SeoInfo GetFallbackSeoInfo(ExpCategory source, string cultureName)
+        {
+            var result = AbstractTypeFactory<SeoInfo>.TryCreateInstance();
+            result.SemanticUrl = source.Id;
+            result.LanguageCode = cultureName;
+            result.Name = source.Category.Name;
+            return result;
         }
 
         private static bool TryGetParentId(IResolveFieldContext<ExpCategory> context, out string parentId)
