@@ -2,12 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
-using GraphQL;
 using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.CartModule.Core.Model.Search;
 using VirtoCommerce.CoreModule.Core.Outlines;
 using VirtoCommerce.CoreModule.Core.Seo;
-using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Index;
 using VirtoCommerce.MarketingModule.Core.Model.Promotions;
 using VirtoCommerce.PaymentModule.Core.Model;
@@ -125,6 +123,7 @@ namespace VirtoCommerce.XPurchase.Mapping
                 priceEvalContext.Language = cartAggr.Cart.LanguageCode;
                 priceEvalContext.StoreId = cartAggr.Cart.StoreId;
                 priceEvalContext.CatalogId = cartAggr.Store.Catalog;
+                priceEvalContext.Currency = cartAggr.Cart.Currency;
 
                 var contact = cartAggr.Member;
                 if (contact != null)
