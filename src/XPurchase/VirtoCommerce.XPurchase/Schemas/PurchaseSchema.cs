@@ -27,9 +27,9 @@ namespace VirtoCommerce.XPurchase.Schemas
 
         public const string _commandName = "command";
 
-        public PurchaseSchema(IMediator mediator
-            , IAuthorizationService authorizationService
-            , ICurrencyService currencyService)
+        public PurchaseSchema(IMediator mediator,
+            IAuthorizationService authorizationService,
+            ICurrencyService currencyService)
         {
             _mediator = mediator;
             _authorizationService = authorizationService;
