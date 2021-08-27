@@ -114,9 +114,13 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
                 throw new ArgumentNullException(nameof(currencies));
             }
 
-            var currenciesWithCulture = currencies.Select(x => new Currency(cultureName != null ? new Language(cultureName) : Language.InvariantLanguage, x.Code, x.Name, x.Symbol, x.ExchangeRate)
+            var currenciesWithCulture = currencies.Select(x =>
+            new Currency(cultureName != null ? new Language(cultureName) : Language.InvariantLanguage, x.Code, x.Name, x.Symbol, x.ExchangeRate)
             {
-                CustomFormatting = x.CustomFormatting
+                CustomFormatting = x.CustomFormatting,
+                RoundingPolicy = x.RoundingPolicy,
+                RoundingType = x.RoundingType,
+                MidpointRounding = x.MidpointRounding
             }).ToArray();
 
             context.UserContext["allCurrencies"] = currenciesWithCulture;
