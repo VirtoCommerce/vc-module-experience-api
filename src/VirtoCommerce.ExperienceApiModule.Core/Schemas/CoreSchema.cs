@@ -1,10 +1,15 @@
+using System.Threading.Tasks;
 using GraphQL;
+using GraphQL.Builders;
 using GraphQL.Resolvers;
 using GraphQL.Types;
 using MediatR;
+using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.Core.Queries;
+using VirtoCommerce.PaymentModule.Core.Model;
+using VirtoCommerce.ShippingModule.Core.Model;
 
 namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
 {
@@ -93,6 +98,58 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
                     return result;
                 })
             });
+
+            var shippingMethodsConnectionBuilder = GraphTypeExtenstionHelper.CreateConnection<CoreShippingMethodType, object>()
+                .Name("shippingMethods")
+                .Argument<StringGraphType>("filter", "This parameter applies a filter to the query results")
+                .Argument<NonNullGraphType<StringGraphType>>("storeId", "")
+                .Unidirectional()
+                .PageSize(50);
+            shippingMethodsConnectionBuilder.ResolveAsync(async context => await ResolveShipmentMethodsConnectionAsync(_mediator, context));
+            schema.Query.AddField(shippingMethodsConnectionBuilder.FieldType);
+
+            var paymentMethodsConnectionBuilder = GraphTypeExtenstionHelper.CreateConnection<CorePaymentMethodType, object>()
+                .Name("paymentMethods")
+                .Argument<StringGraphType>("filter", "This parameter applies a filter to the query results")
+                .Argument<NonNullGraphType<StringGraphType>>("storeId", "")
+                .Unidirectional()
+                .PageSize(50);
+            paymentMethodsConnectionBuilder.ResolveAsync(async context => await ResolvePaymentMethodsConnectionAsync(_mediator, context));
+            schema.Query.AddField(paymentMethodsConnectionBuilder.FieldType);
+        }
+
+        private async Task<object> ResolveShipmentMethodsConnectionAsync(IMediator mediator, IResolveConnectionContext<object> context)
+        {
+            int.TryParse(context.After, out var skip);
+
+            var query = new SearchShippingMethodsQuery
+            {
+                Skip = skip,
+                Take = context.First ?? context.PageSize ?? 50,
+                StoreId = context.GetArgumentOrValue<string>("storeId"),
+            };
+
+            //context.CopyArgumentsToUserContext();
+
+            var response = await mediator.Send(query);
+
+            return new PagedConnection<ShippingMethod>(response.Results, query.Skip, query.Take, response.TotalCount);
+        }
+
+        private async Task<object> ResolvePaymentMethodsConnectionAsync(IMediator mediator, IResolveConnectionContext<object> context)
+        {
+            int.TryParse(context.After, out var skip);
+
+            var query = new SearchPaymentMethodsQuery
+            {
+                Skip = skip,
+                Take = context.First ?? context.PageSize ?? 50,
+                StoreId = context.GetArgumentOrValue<string>("storeId"),
+            };
+
+            var response = await mediator.Send(query);
+
+            return new PagedConnection<PaymentMethod>(response.Results, query.Skip, query.Take, response.TotalCount);
         }
     }
 }
