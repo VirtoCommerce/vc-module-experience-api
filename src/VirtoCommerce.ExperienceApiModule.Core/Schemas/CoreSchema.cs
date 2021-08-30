@@ -129,8 +129,6 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
                 StoreId = context.GetArgumentOrValue<string>("storeId"),
             };
 
-            //context.CopyArgumentsToUserContext();
-
             var response = await mediator.Send(query);
 
             return new PagedConnection<ShippingMethod>(response.Results, query.Skip, query.Take, response.TotalCount);
