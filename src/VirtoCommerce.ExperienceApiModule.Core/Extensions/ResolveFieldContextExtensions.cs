@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using GraphQL;
-using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.Core.Queries;
@@ -114,10 +113,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
                 throw new ArgumentNullException(nameof(currencies));
             }
 
-            var currenciesWithCulture = currencies.Select(x => new Currency(cultureName != null ? new Language(cultureName) : Language.InvariantLanguage, x.Code, x.Name, x.Symbol, x.ExchangeRate)
-            {
-                CustomFormatting = x.CustomFormatting
-            }).ToArray();
+            var currenciesWithCulture = currencies.Select(x => currencies.GetCurrencyForLanguage(x.Code, cultureName)).ToArray();
 
             context.UserContext["allCurrencies"] = currenciesWithCulture;
         }
