@@ -12,7 +12,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 {
     public class PaymentInType : ExtendableGraphType<PaymentIn>
     {
-        public PaymentInType(IDynamicPropertyResolverService dynamicPropertyResolverService)
+        public PaymentInType(IDynamicPropertyResolverService dynamicPropertyResolverService, ICustomerOrderAggregateRepository customerOrderAggregateRepository)
         {
             Field(x => x.Id);
             Field(x => x.OrganizationId, true);
@@ -42,6 +42,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field(x => x.VoidedDate, true);
             Field(x => x.OrderId, true);
 
+            Field<MoneyType>(nameof(PaymentIn.Price).ToCamelCase(), resolve: context => new Money(context.Source.Price, context.GetOrderCurrencyByCode(context.Source.Currency)));
             Field<MoneyType>(nameof(PaymentIn.Sum).ToCamelCase(), resolve: context => new Money(context.Source.Sum, context.GetOrderCurrencyByCode(context.Source.Currency)));
             Field<MoneyType>("tax", resolve: context => new Money(context.Source.TaxTotal, context.GetOrderCurrencyByCode(context.Source.Currency)));
             ExtendableField<OrderPaymentMethodType>(nameof(PaymentIn.PaymentMethod), resolve: context => context.Source.PaymentMethod);
@@ -51,6 +52,21 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field<ListGraphType<PaymentTransactionType>>(nameof(PaymentIn.Transactions), resolve: x => x.Source.Transactions);
             //TODO
             //public IList<Operation> ChildrenOperations);
+
+            ExtendableField<NonNullGraphType<CustomerOrderType>>(
+                "order",
+                "Associated Order",
+                null,
+                context =>
+                {
+                    if (!string.IsNullOrEmpty(context.Source.OrderId))
+                    {
+                        return customerOrderAggregateRepository.GetOrderByIdAsync(context.Source.OrderId);
+                    }
+
+                    return null;
+                }
+            );
 
             ExtendableField<ListGraphType<DynamicPropertyValueType>>(
                 "dynamicProperties",
