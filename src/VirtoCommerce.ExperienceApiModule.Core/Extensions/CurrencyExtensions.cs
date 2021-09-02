@@ -22,7 +22,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
                 throw new OperationCanceledException($"currency with code: {currencyCode} is not registered in the system");
             }
 
-            //Clone  currency with cart language
+            //Clone currency with specified language
             return new Currency(
                 cultureName != null ? new Language(cultureName) : Language.InvariantLanguage,
                 currency.Code,
