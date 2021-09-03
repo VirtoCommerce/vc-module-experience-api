@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -96,10 +97,18 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             });
 
-            ExtendableField<ListGraphType<PropertyType>>("properties", resolve: context =>
+            ExtendableField<ListGraphType<PropertyType>>("properties",
+                arguments: new QueryArguments(new QueryArgument<ListGraphType<StringGraphType>> { Name = "names" }),
+                resolve: context =>
             {
+                var names = context.GetArgument<string[]>("names");
                 var cultureName = context.GetValue<string>("cultureName");
-                return context.Source.Category.Properties.ExpandByValues(cultureName);
+                var result = context.Source.Category.Properties.ExpandByValues(cultureName);
+                if (!names.IsNullOrEmpty())
+                {
+                    result = result.Where(x => names.Contains(x.Name, StringComparer.InvariantCultureIgnoreCase)).ToList();
+                }
+                return result;
             });
 
         }
