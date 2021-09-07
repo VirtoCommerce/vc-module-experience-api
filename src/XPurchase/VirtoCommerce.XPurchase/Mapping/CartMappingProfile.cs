@@ -124,6 +124,7 @@ namespace VirtoCommerce.XPurchase.Mapping
                 priceEvalContext.Language = cartAggr.Cart.LanguageCode;
                 priceEvalContext.StoreId = cartAggr.Cart.StoreId;
                 priceEvalContext.CatalogId = cartAggr.Store.Catalog;
+                priceEvalContext.Currency = cartAggr.Cart.Currency;
 
                 var contact = cartAggr.Member;
                 if (contact != null)

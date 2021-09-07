@@ -126,7 +126,10 @@ namespace VirtoCommerce.XDigitalCatalog.Tests.Middlewares
         public void EvalProductsTaxMiddleware_TaxesApply_Success()
         {
             // Arrange
-            var currency = new Currency(Language.InvariantLanguage, "USD");
+            var currency = new Currency(Language.InvariantLanguage, "USD")
+            {
+                RoundingPolicy = new DefaultMoneyRoundingPolicy()
+            };
 
             var productPrice = new Mock<ProductPrice>(currency).Object;
             productPrice.TaxPercentRate = 0;

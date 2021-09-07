@@ -8,6 +8,7 @@ using GraphQL.Resolvers;
 using GraphQL.Types;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
@@ -23,13 +24,17 @@ namespace VirtoCommerce.XPurchase.Schemas
     {
         private readonly IMediator _mediator;
         private readonly IAuthorizationService _authorizationService;
+        private readonly ICurrencyService _currencyService;
 
         public const string _commandName = "command";
 
-        public PurchaseSchema(IMediator mediator, IAuthorizationService authorizationService)
+        public PurchaseSchema(IMediator mediator,
+            IAuthorizationService authorizationService,
+            ICurrencyService currencyService)
         {
             _mediator = mediator;
             _authorizationService = authorizationService;
+            _currencyService = currencyService;
         }
 
         public void Build(ISchema schema)
@@ -53,6 +58,13 @@ namespace VirtoCommerce.XPurchase.Schemas
                     var getCartQuery = context.GetCartQuery<GetCartQuery>();
                     getCartQuery.IncludeFields = context.SubFields.Values.GetAllNodesPaths().ToArray();
                     context.CopyArgumentsToUserContext();
+
+                    var allCurrencies = await _currencyService.GetAllCurrenciesAsync();
+
+                    //Store all currencies in the user context for future resolve in the schema types
+                    //this is required to resolve Currency in DiscountType
+                    context.SetCurrencies(allCurrencies, getCartQuery.CultureName);
+
                     var cartAggregate = await _mediator.Send(getCartQuery);
                     if (cartAggregate == null)
                     {
@@ -777,6 +789,12 @@ namespace VirtoCommerce.XPurchase.Schemas
             query.IncludeFields = context.SubFields.Values.GetAllNodesPaths().ToArray();
 
             context.CopyArgumentsToUserContext();
+
+            var allCurrencies = await _currencyService.GetAllCurrenciesAsync();
+
+            //Store all currencies in the user context for future resolve in the schema types
+            //this is required to resolve Currency in DiscountType
+            context.SetCurrencies(allCurrencies, query.CultureName);
 
             var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), query, new CanAccessCartAuthorizationRequirement());
 

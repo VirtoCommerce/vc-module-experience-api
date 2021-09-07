@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <module xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <id>VirtoCommerce.ExperienceApi</id>
-  <version>1.25.0</version>
+  <version>1.29.0</version>
   <version-tag />
   <platformVersion>3.66.0</platformVersion>
   <title>Commerce experience API module</title>
@@ -29,6 +29,7 @@
   <assemblyFile>VirtoCommerce.ExperienceApiModule.Web.dll</assemblyFile>
   <moduleType>VirtoCommerce.ExperienceApiModule.Web.Module, VirtoCommerce.ExperienceApiModule.Web</moduleType>
   <dependencies>
+    <dependency id="VirtoCommerce.Core" version="3.20.0" />
     <dependency id="VirtoCommerce.Cart" version="3.17.0" />
     <dependency id="VirtoCommerce.Marketing" version="3.23.0" />
     <dependency id="VirtoCommerce.Inventory" version="3.2.0" />
@@ -36,7 +37,7 @@
     <dependency id="VirtoCommerce.Shipping" version="3.1.0" />
     <dependency id="VirtoCommerce.Customer" version="3.1.0" />
     <dependency id="VirtoCommerce.Orders" version="3.33.0" />
-    <dependency id="VirtoCommerce.Store" version="3.14.0" />
+    <dependency id="VirtoCommerce.Store" version="3.21.0" />
     <dependency id="VirtoCommerce.Catalog" version="3.55.0" />
   </dependencies>
   <incompatibilities />
