@@ -39,7 +39,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Queries
                     ? request.CallbackUrl[..^1]
                     : request.CallbackUrl;
 
-                var notification = (ResetPasswordEmailNotification)await _notificationSearchService.GetNotificationAsync(nameof(ResetPasswordEmailNotification));
+                var notification = await _notificationSearchService.GetNotificationAsync<ResetPasswordEmailNotification>();
                 notification.Url = $"{callbackUrlWithoutLastSlash}/{user.Id}/{token}";
                 notification.To = user.Email;
                 notification.From = "noreply@gmail.com";
