@@ -227,6 +227,25 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                 })
             });
 
+            _ = schema.Query.AddField(new FieldType
+            {
+                Name = "requestPasswordReset",
+                Arguments = new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "loginOrEmail" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "callbackUrl" }),
+                Type = GraphTypeExtenstionHelper.GetActualType<BooleanGraphType>(),
+                Resolver = new AsyncFieldResolver<object>(async context =>
+                {
+                    var result = await _mediator.Send(new RequestPasswordResetQuery
+                    {
+                        LoginOrEmail = context.GetArgument<string>("loginOrEmail"),
+                        CallbackUrl = context.GetArgument<string>("callbackUrl"),
+                    });
+
+                    return result;
+                })
+            });
+
             #region updateAddressMutation
 
             /// sample code for updating addresses:
