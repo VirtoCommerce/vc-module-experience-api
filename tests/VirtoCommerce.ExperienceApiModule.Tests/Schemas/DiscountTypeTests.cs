@@ -16,13 +16,7 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Schemas
 
         public DiscountTypeTests() => _discountType = new DiscountType();
 
-        [Fact]
-        public void DiscountType_ShouldHavePropperFieldAmount()
-        {
-            // Assert
-            _discountType.Fields.Should().HaveCount(5);
-        }
-
+     
         [Fact]
         public void DiscountType_Coupon_ShouldResolve()
         {
