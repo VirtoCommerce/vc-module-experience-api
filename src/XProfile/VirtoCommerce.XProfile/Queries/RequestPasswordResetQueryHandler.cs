@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
@@ -31,7 +32,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Queries
             _storeService = storeService;
         }
 
-        public async Task<bool> Handle(RequestPasswordResetQuery request, CancellationToken cancellationToken)
+        public virtual async Task<bool> Handle(RequestPasswordResetQuery request, CancellationToken cancellationToken)
         {
             var user = await _userManager.FindByNameAsync(request.LoginOrEmail)
                        ?? await _userManager.FindByEmailAsync(request.LoginOrEmail);
@@ -44,9 +45,10 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Queries
                 var callbackUrlWithoutLastSlash = store.Url.EndsWith("/")
                     ? store.Url[..^1]
                     : store.Url;
+                var urlSuffix = NormalizeUrlSuffix(request.UrlSuffix);
 
                 var notification = await _notificationSearchService.GetNotificationAsync<ResetPasswordEmailNotification>();
-                notification.Url = $"{callbackUrlWithoutLastSlash}/{request.UrlSuffix}/{user.Id}/{token}";
+                notification.Url = $"{callbackUrlWithoutLastSlash}{urlSuffix}/{user.Id}/{token}";
                 notification.To = user.Email;
                 notification.From = store.Email;
 
@@ -54,6 +56,29 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Queries
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// Normalize values like "/reset/" and "reset"
+        /// to "/reset"
+        /// </summary>
+        /// <param name="urlSuffix"></param>
+        /// <returns></returns>
+        protected virtual string NormalizeUrlSuffix(string urlSuffix)
+        {
+            var result = new StringBuilder(urlSuffix);
+
+            if (!urlSuffix.StartsWith("/"))
+            {
+                result.Insert(0, "/");
+            }
+
+            if (urlSuffix.EndsWith("/"))
+            {
+                result.Remove(result.Length - 1, 1);
+            }
+
+            return result.ToString();
         }
     }
 }
