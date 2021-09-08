@@ -70,14 +70,17 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Queries
         {
             var result = new StringBuilder(urlSuffix);
 
-            if (!urlSuffix.StartsWith("/"))
+            if (!string.IsNullOrEmpty(urlSuffix))
             {
-                result.Insert(0, "/");
-            }
+                if (!urlSuffix.StartsWith("/"))
+                {
+                    result.Insert(0, "/");
+                }
 
-            if (urlSuffix.EndsWith("/"))
-            {
-                result.Remove(result.Length - 1, 1);
+                if (urlSuffix.EndsWith("/"))
+                {
+                    result.Remove(result.Length - 1, 1);
+                }
             }
 
             return result.ToString();
