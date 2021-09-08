@@ -6,6 +6,6 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Queries
     {
         public string LoginOrEmail { get; set; }
 
-        public string CallbackUrl { get; set; }
+        public string UrlSuffix { get; set; }
     }
 }

@@ -232,14 +232,14 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                 Name = "requestPasswordReset",
                 Arguments = new QueryArguments(
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "loginOrEmail" },
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "callbackUrl" }),
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "urlSuffix" }),
                 Type = GraphTypeExtenstionHelper.GetActualType<BooleanGraphType>(),
                 Resolver = new AsyncFieldResolver<object>(async context =>
                 {
                     var result = await _mediator.Send(new RequestPasswordResetQuery
                     {
                         LoginOrEmail = context.GetArgument<string>("loginOrEmail"),
-                        CallbackUrl = context.GetArgument<string>("callbackUrl"),
+                        UrlSuffix = context.GetArgument<string>("urlSuffix"),
                     });
 
                     return result;
