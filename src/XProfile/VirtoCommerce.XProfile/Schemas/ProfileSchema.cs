@@ -227,12 +227,20 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                 })
             });
 
+#pragma warning disable S125 // Sections of code should not be commented out
+            /*                         
+               query {
+                     requestPasswordReset(loginOrEmail: "user@email")
+               }                         
+            */
+#pragma warning restore S125 // Sections of code should not be commented out
+
             _ = schema.Query.AddField(new FieldType
             {
                 Name = "requestPasswordReset",
                 Arguments = new QueryArguments(
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "loginOrEmail" },
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "urlSuffix" }),
+                    new QueryArgument<StringGraphType> { Name = "urlSuffix" }),
                 Type = GraphTypeExtenstionHelper.GetActualType<BooleanGraphType>(),
                 Resolver = new AsyncFieldResolver<object>(async context =>
                 {
