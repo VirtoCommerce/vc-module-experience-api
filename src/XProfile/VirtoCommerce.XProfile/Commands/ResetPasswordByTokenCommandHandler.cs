@@ -14,14 +14,14 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
 {
     public class ResetPasswordByTokenCommandHandler : IRequestHandler<ResetPasswordByTokenCommand, IdentityResultResponse>
     {
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly Func<UserManager<ApplicationUser>> _userManagerFactory;
         private readonly AuthorizationOptions _securityOptions;
 
         public ResetPasswordByTokenCommandHandler(
             Func<UserManager<ApplicationUser>> userManagerFactory,
             IOptions<AuthorizationOptions> securityOptions)
         {
-            _userManager = userManagerFactory();
+            _userManagerFactory = userManagerFactory;
             _securityOptions = securityOptions.Value;
         }
 
@@ -29,7 +29,10 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
         {
             var result = new IdentityResultResponse();
             IdentityResult identityResult;
-            var user = await _userManager.FindByIdAsync(request.UserId);
+
+            using var userManager = _userManagerFactory();
+
+            var user = await userManager.FindByIdAsync(request.UserId);
 
             if (user is null)
             {
@@ -41,12 +44,12 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
             }
             else
             {
-                identityResult = await _userManager.ResetPasswordAsync(user, request.Token, request.NewPassword);
+                identityResult = await userManager.ResetPasswordAsync(user, request.Token, request.NewPassword);
 
                 if (identityResult.Succeeded && user.PasswordExpired)
                 {
                     user.PasswordExpired = false;
-                    await _userManager.UpdateAsync(user);
+                    await userManager.UpdateAsync(user);
                 }
             }
 

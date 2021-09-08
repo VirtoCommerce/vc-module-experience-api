@@ -14,19 +14,19 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Queries
 {
     public class RequestPasswordResetQueryHandler : IQueryHandler<RequestPasswordResetQuery, bool>
     {
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly Func<UserManager<ApplicationUser>> _userManagerFactory;
         private readonly INotificationSearchService _notificationSearchService;
         private readonly INotificationSender _notificationSender;
         private readonly IStoreService _storeService;
 
         public RequestPasswordResetQueryHandler(
-            Func<SignInManager<ApplicationUser>> signInManagerFactory,
+            Func<UserManager<ApplicationUser>> userManagerFactory,
             INotificationSearchService notificationSearchService,
             INotificationSender notificationSender,
             IStoreService storeService
             )
         {
-            _userManager = signInManagerFactory().UserManager;
+            _userManagerFactory = userManagerFactory;
             _notificationSearchService = notificationSearchService;
             _notificationSender = notificationSender;
             _storeService = storeService;
@@ -34,14 +34,16 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Queries
 
         public virtual async Task<bool> Handle(RequestPasswordResetQuery request, CancellationToken cancellationToken)
         {
-            var user = await _userManager.FindByNameAsync(request.LoginOrEmail)
-                       ?? await _userManager.FindByEmailAsync(request.LoginOrEmail);
+            using var userManager = _userManagerFactory();
+
+            var user = await userManager.FindByNameAsync(request.LoginOrEmail)
+                       ?? await userManager.FindByEmailAsync(request.LoginOrEmail);
 
             if (!string.IsNullOrEmpty(user?.Email) && !string.IsNullOrEmpty(user.StoreId))
             {
                 var store = await _storeService.GetByIdAsync(user.StoreId);
 
-                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+                var token = await userManager.GeneratePasswordResetTokenAsync(user);
                 var callbackUrlWithoutLastSlash = store.Url.EndsWith("/")
                     ? store.Url[..^1]
                     : store.Url;
