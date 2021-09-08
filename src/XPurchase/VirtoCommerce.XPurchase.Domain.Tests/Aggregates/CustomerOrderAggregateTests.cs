@@ -22,93 +22,9 @@ namespace VirtoCommerce.XPurchase.Tests.Aggregates
             _dynamicPropertyUpdaterServiceMock = new Mock<IDynamicPropertyUpdaterService>();
         }
 
-        [Fact]
-        public void CancelPaymentTest_PaymentCancelled()
-        {
-            //Arrange
-            var aggregate = new CustomerOrderAggregate(_dynamicPropertyUpdaterServiceMock.Object);
-            aggregate.GrabCustomerOrder(CreateNewOrder(), new Currency(Language.InvariantLanguage, "USD"));
-            var existPayment = new PaymentIn()
-            {
-                Number = "92321873-2E99-44B0-A50C-0A0883C9B137"
-            };
 
-            //Act
-            var result = aggregate.CancelOrderPayment(existPayment);
 
-            //Assert
-            result.Should().BeTrue();
-            aggregate.Order.InPayments.Should().HaveCount(1);
-            aggregate.Order.InPayments.First().PaymentStatus.Should().Be(PaymentStatus.Cancelled);
-            aggregate.Order.InPayments.First().Status.Should().Be(PaymentStatus.Cancelled.ToString());
-            aggregate.Order.InPayments.First().IsCancelled.Should().BeTrue();
-        }
 
-        [Fact]
-        public void CancelPaymentTest_PaymentNotDuplicate_PaymentNotCancelled()
-        {
-            //Arrange
-            var aggregate = new CustomerOrderAggregate(_dynamicPropertyUpdaterServiceMock.Object);
-            aggregate.GrabCustomerOrder(CreateNewOrder(), new Currency(Language.InvariantLanguage, "USD"));
-            var newPayment = new PaymentIn()
-            {
-                Number = "newPaymentNumber"
-            };
-
-            //Act
-            var result = aggregate.CancelOrderPayment(newPayment);
-
-            //Assert
-            result.Should().BeFalse();
-            aggregate.Order.InPayments.Should().HaveCount(1);
-            aggregate.Order.InPayments.First().PaymentStatus.Should().Be(PaymentStatus.New);
-            aggregate.Order.InPayments.First().Status.Should().Be(PaymentStatus.New.ToString());
-            aggregate.Order.InPayments.First().IsCancelled.Should().BeFalse();
-        }
-
-        [Fact]
-        public void ConfirmPaymentTest_PaymentConfirmed()
-        {
-            //Arrange
-            var aggregate = new CustomerOrderAggregate(_dynamicPropertyUpdaterServiceMock.Object);
-            aggregate.GrabCustomerOrder(CreateNewOrder(), new Currency(Language.InvariantLanguage, "USD"));
-            var existPayment = new PaymentIn()
-            {
-                Number = "92321873-2E99-44B0-A50C-0A0883C9B137"
-            };
-
-            //Act
-            var result = aggregate.ConfirmOrderPayment(existPayment);
-
-            //Assert
-            result.Should().BeTrue();
-            aggregate.Order.InPayments.Should().HaveCount(1);
-            aggregate.Order.InPayments.First().PaymentStatus.Should().Be(PaymentStatus.Paid);
-            aggregate.Order.InPayments.First().Status.Should().Be(PaymentStatus.Paid.ToString());
-            aggregate.Order.InPayments.First().IsApproved.Should().BeTrue();
-        }
-
-        [Fact]
-        public void ConfirmPaymentTest_PaymentNotDuplicate_PaymentNotConfirmed()
-        {
-            //Arrange
-            var aggregate = new CustomerOrderAggregate(_dynamicPropertyUpdaterServiceMock.Object);
-            aggregate.GrabCustomerOrder(CreateNewOrder(), new Currency(Language.InvariantLanguage, "USD"));
-            var newPayment = new PaymentIn()
-            {
-                Number = "newPaymentNumber"
-            };
-
-            //Act
-            var result = aggregate.ConfirmOrderPayment(newPayment);
-
-            //Assert
-            result.Should().BeFalse();
-            aggregate.Order.InPayments.Should().HaveCount(1);
-            aggregate.Order.InPayments.First().PaymentStatus.Should().Be(PaymentStatus.New);
-            aggregate.Order.InPayments.First().Status.Should().Be(PaymentStatus.New.ToString());
-            aggregate.Order.InPayments.First().IsApproved.Should().BeFalse();
-        }
 
         public CustomerOrder CreateNewOrder()
         {

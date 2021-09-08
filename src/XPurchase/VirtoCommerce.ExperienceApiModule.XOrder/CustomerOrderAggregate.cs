@@ -5,8 +5,10 @@ using System.Threading.Tasks;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.ExperienceApiModule.Core.Models;
 using VirtoCommerce.ExperienceApiModule.Core.Services;
+using VirtoCommerce.ExperienceApiModule.XOrder.Validators;
 using VirtoCommerce.OrdersModule.Core.Model;
 using VirtoCommerce.PaymentModule.Core.Model;
+using VirtoCommerce.PaymentModule.Model.Requests;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Domain;
 
@@ -37,36 +39,44 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder
             Order.Status = status;
         }
 
-        public bool CancelOrderPayment(PaymentIn payment)
+        public ProcessPaymentRequestResult ProcessOrderPayment(ProcessPaymentRequest request)
         {
-            var paymentOrder = Order.InPayments.FirstOrDefault(x => x.Number.EqualsInvariant(payment.Number));
-            if (paymentOrder != null)
+            var result = new ProcessPaymentRequestResult();
+
+            //Do not allow to mutate order internal state in a payment gateway code
+            request.Order = Order.Clone() as CustomerOrder;
+            var inPayment = Order.InPayments.FirstOrDefault(x => x.Id == request.PaymentId);
+            if (inPayment != null)
             {
-                paymentOrder.IsCancelled = true;
-                paymentOrder.CancelReason = payment.CancelReason ?? paymentOrder.CancelReason;
-                paymentOrder.CancelledDate = payment.CancelledDate ?? DateTime.Now;
-                paymentOrder.Status = PaymentStatus.Cancelled.ToString();
-                paymentOrder.PaymentStatus = PaymentStatus.Cancelled;
-                return true;
+                // Do not allow to mutate payment internal state in a payment gateway code
+                request.Payment = inPayment.Clone() as PaymentIn;
             }
 
-            return false;
-        }
-
-        public bool ConfirmOrderPayment(PaymentIn payment)
-        {
-            var paymentOrder = Order.InPayments.FirstOrDefault(x => x.Number.EqualsInvariant(payment.Number));
-            if (paymentOrder != null)
+            var validationResult = AbstractTypeFactory<ProcessPaymentRequestVaidator>.TryCreateInstance().Validate(request);
+            if (!validationResult.IsValid)
             {
-                paymentOrder.BillingAddress = payment.BillingAddress;
-                paymentOrder.IsApproved = true;
-                paymentOrder.IsCancelled = false;
-                paymentOrder.PaymentStatus = PaymentStatus.Paid;
-                paymentOrder.Status = PaymentStatus.Paid.ToString();
-                return true;
+                return new ProcessPaymentRequestResult
+                {
+                    IsSuccess = false,
+                    ErrorMessage = string.Join(' ', validationResult.Errors)
+                };
             }
 
-            return false;
+            if (inPayment != null)
+            {
+                //This is definetelly bad that we execute external business logic here, it must be done via domain events or in the event handler
+                //inside this aggregate we should do only related to order entities changes and shoud avoid of execution of external logic
+                result = inPayment.PaymentMethod.ProcessPayment(request);
+                if (result.OuterId != null)
+                {
+                    inPayment.OuterId = result.OuterId;
+                }
+                //Update internal state with data from results
+                inPayment.Status = result.NewPaymentStatus.ToString();
+                inPayment.Transactions = ((PaymentIn)request.Payment).Transactions;
+            }
+
+            return result;
         }
 
         public virtual async Task<CustomerOrderAggregate> UpdateOrderDynamicProperties(IList<DynamicPropertyValue> dynamicProperties)
