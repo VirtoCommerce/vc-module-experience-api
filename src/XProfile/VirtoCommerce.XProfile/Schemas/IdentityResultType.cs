@@ -1,16 +1,14 @@
 using GraphQL.Types;
-using VirtoCommerce.ExperienceApiModule.XProfile.Queries;
+using Microsoft.AspNetCore.Identity;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 {
-    public class IdentityResultType : ObjectGraphType<IdentityResultResponse>
+    public class IdentityResultType : ObjectGraphType<IdentityResult>
     {
-
-
         public IdentityResultType()
         {
-            Field(x => x.Succeeded).Description("Identity result successful status");
-            Field<ListGraphType<IdentityErrorInfoType>>("Errors", description: "Identity result errors", resolve: fieldContext => fieldContext.Source.Errors);
+            Field(x => x.Succeeded);
+            Field<ListGraphType<IdentityErrorType>>("errors", "The errors that occurred during the identity operation.", resolve: context => context.Source.Errors);
         }
     }
 }

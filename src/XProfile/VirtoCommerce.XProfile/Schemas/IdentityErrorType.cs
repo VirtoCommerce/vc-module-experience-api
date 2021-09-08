@@ -9,7 +9,6 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
         {
             Field(x => x.Code, true);
             Field(x => x.Description, true);
-            Field<StringGraphType>("ErrorParameter", "");
         }
     }
 }
