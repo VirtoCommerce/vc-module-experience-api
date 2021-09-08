@@ -409,7 +409,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                         })
                         .FieldType);
 
-            _ = schema.Mutation.AddField(FieldBuilder.Create<object, IdentityResultResponse>(GraphTypeExtenstionHelper.GetActualType<IdentityResultType>())
+            _ = schema.Mutation.AddField(FieldBuilder.Create<object, IdentityResultResponse>(GraphTypeExtenstionHelper.GetActualType<CustomIdentityResultType>())
                 .Name("resetPasswordByToken")
                 .Argument(GraphTypeExtenstionHelper.GetActualComplexType<InputResetPasswordByTokenType>(), _commandName)
                 .ResolveAsync(async context =>
