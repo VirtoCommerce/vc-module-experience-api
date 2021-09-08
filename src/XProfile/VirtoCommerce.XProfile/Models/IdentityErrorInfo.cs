@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 
-namespace VirtoCommerce.ExperienceApiModule.Core.Models
+namespace VirtoCommerce.ExperienceApiModule.XProfile.Models
 {
     public class IdentityErrorInfo : IdentityError
     {

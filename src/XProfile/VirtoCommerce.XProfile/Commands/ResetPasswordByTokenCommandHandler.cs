@@ -5,13 +5,14 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
+using VirtoCommerce.ExperienceApiModule.XProfile.Extensions;
+using VirtoCommerce.ExperienceApiModule.XProfile.Queries;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.Platform.Core.Extensions;
 using VirtoCommerce.Platform.Core.Security;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
 {
-    public class ResetPasswordByTokenCommandHandler : IRequestHandler<ResetPasswordByTokenCommand, IdentityResult>
+    public class ResetPasswordByTokenCommandHandler : IRequestHandler<ResetPasswordByTokenCommand, IdentityResultResponse>
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly AuthorizationOptions _securityOptions;
@@ -24,29 +25,33 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
             _securityOptions = securityOptions.Value;
         }
 
-        public virtual async Task<IdentityResult> Handle(ResetPasswordByTokenCommand request, CancellationToken cancellationToken)
+        public virtual async Task<IdentityResultResponse> Handle(ResetPasswordByTokenCommand request, CancellationToken cancellationToken)
         {
-            IdentityResult result;
+            var result = new IdentityResultResponse();
+            IdentityResult identityResult;
             var user = await _userManager.FindByIdAsync(request.UserId);
 
             if (user is null)
             {
-                result = IdentityResult.Failed(new IdentityError { Description = "User not found" });
+                identityResult = IdentityResult.Failed(new IdentityError { Description = "User not found" });
             }
             else if (!IsUserEditable(user.UserName))
             {
-                result = IdentityResult.Failed(new IdentityError { Description = "It is forbidden to edit this user." });
+                identityResult = IdentityResult.Failed(new IdentityError { Description = "It is forbidden to edit this user." });
             }
             else
             {
-                result = await _userManager.ResetPasswordAsync(user, request.Token, request.NewPassword);
+                identityResult = await _userManager.ResetPasswordAsync(user, request.Token, request.NewPassword);
 
-                if (result.Succeeded && user.PasswordExpired)
+                if (identityResult.Succeeded && user.PasswordExpired)
                 {
                     user.PasswordExpired = false;
                     await _userManager.UpdateAsync(user);
                 }
             }
+
+            result.Errors = identityResult?.Errors.Select(x => x.MapToIdentityErrorInfo()).ToArray();
+            result.Succeeded = identityResult?.Succeeded ?? false;
 
             return result;
         }
