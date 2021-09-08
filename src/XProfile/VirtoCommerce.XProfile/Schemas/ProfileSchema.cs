@@ -387,6 +387,18 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                         })
                         .FieldType);
 
+            _ = schema.Mutation.AddField(FieldBuilder.Create<object, IdentityResult>(GraphTypeExtenstionHelper.GetActualType<IdentityResultType>())
+                .Name("resetPasswordByToken")
+                .Argument(GraphTypeExtenstionHelper.GetActualComplexType<InputResetPasswordByTokenType>(), _commandName)
+                .ResolveAsync(async context =>
+                {
+                    var type = GenericTypeHelper.GetActualType<ResetPasswordByTokenCommand>();
+                    var command = (ResetPasswordByTokenCommand)context.GetArgument(type, _commandName);
+
+                    return await _mediator.Send(command);
+                })
+                .FieldType);
+
             // Security API fields
 
             #region user query
