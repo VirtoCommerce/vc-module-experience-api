@@ -78,7 +78,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             };
             schema.Query.AddField(cartField);
 
-            var orderConnectionBuilder = GraphTypeExtenstionHelper.CreateConnection<CartType, object>()
+            var cartConnectionBuilder = GraphTypeExtenstionHelper.CreateConnection<CartType, object>()
                 .Name("carts")
                 .Argument<StringGraphType>("storeId", "")
                 .Argument<StringGraphType>("userId", "")
@@ -90,9 +90,19 @@ namespace VirtoCommerce.XPurchase.Schemas
                 .Unidirectional()
                 .PageSize(20);
 
-            orderConnectionBuilder.ResolveAsync(async context => await ResolveConnectionAsync(_mediator, context));
+            cartConnectionBuilder.ResolveAsync(async context => await ResolveCartsConnectionAsync(_mediator, context));
+            schema.Query.AddField(cartConnectionBuilder.FieldType);
 
-            schema.Query.AddField(orderConnectionBuilder.FieldType);
+
+            //var availableGiftsConnectionBuilder = GraphTypeExtenstionHelper.CreateConnection<CartGiftItemType, object>()
+            //    .Name("availableGifts")
+            //    .Argument<StringGraphType>("cartId", "")
+            //    .Argument<StringGraphType>("sort", "")
+            //    .Unidirectional()
+            //    .PageSize(20);
+
+            //availableGiftsConnectionBuilder.ResolveAsync(async context => await ResolveGiftsConnectionAsync(_mediator, context));
+            //schema.Query.AddField(availableGiftsConnectionBuilder.FieldType);
 
             //Mutations
             /// <example>
@@ -129,6 +139,34 @@ namespace VirtoCommerce.XPurchase.Schemas
                                            .FieldType;
 
             schema.Mutation.AddField(addItemField);
+
+            schema.Mutation.AddField(FieldBuilder
+                .Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<CartType>())
+                .Name("addGiftItem")
+                .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputAddGiftItemsType>>(), _commandName)
+                .ResolveAsync(async context =>
+                {
+                    var cartAggregate = await _mediator.Send(context.GetCartCommand<AddGiftItemsCommand>());
+                    //store cart aggregate in the user context for future usage in the graph types resolvers
+                    context.SetExpandedObjectGraph(cartAggregate);
+                    return cartAggregate;
+                })
+                .FieldType
+            );
+
+            schema.Mutation.AddField(FieldBuilder
+                .Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<CartType>())
+                .Name("rejectItem")
+                .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputRejectGiftItemsType>>(), _commandName)
+                .ResolveAsync(async context =>
+                {
+                    var cartAggregate = await _mediator.Send(context.GetCartCommand<RejectCartItemsCommand>());
+                    //store cart aggregate in the user context for future usage in the graph types resolvers
+                    context.SetExpandedObjectGraph(cartAggregate);
+                    return cartAggregate;
+                })
+                .FieldType
+            );
 
             /// <example>
             /// This is an example JSON request for a mutation
@@ -765,7 +803,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             schema.Mutation.AddField(updateCartShipmentDynamicPropertiesField);
         }
 
-        private async Task<object> ResolveConnectionAsync(IMediator mediator, IResolveConnectionContext<object> context)
+        private async Task<object> ResolveCartsConnectionAsync(IMediator mediator, IResolveConnectionContext<object> context)
         {
             var first = context.First;
             var skip = Convert.ToInt32(context.After ?? 0.ToString());
@@ -800,5 +838,33 @@ namespace VirtoCommerce.XPurchase.Schemas
 
             return new PagedConnection<CartAggregate>(response.Results, query.Skip, query.Take, response.TotalCount);
         }
+
+        //private async Task<object> ResolveGiftsConnectionAsync(IMediator mediator, IResolveConnectionContext<object> context)
+        //{
+        //    var query = new SearchGiftQuery
+        //    {
+        //        CartId = context.GetArgument<string>(nameof(SearchGiftQuery.CartId).ToCamelCase()),
+        //        Sort = context.GetArgument<string>(nameof(SearchGiftQuery.Sort).ToCamelCase()),
+        //        Skip = Convert.ToInt32(context.After ?? 0.ToString()),
+        //        Take = context.First ?? context.PageSize ?? 10
+        //    };
+
+        //    context.CopyArgumentsToUserContext();
+
+        //    var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), query, new CanAccessCartAuthorizationRequirement());
+
+        //    if (!authorizationResult.Succeeded)
+        //    {
+        //        throw new AuthorizationError($"Access denied");
+        //    }
+
+        //    var response = await mediator.Send(query);
+        //    foreach (var item in response.Results)
+        //    {
+        //        context.SetExpandedObjectGraph(item);
+        //    }
+
+        //    return new PagedConnection<LineItem>(response.Results, query.Skip, query.Take, response.TotalCount);
+        //}
     }
 }

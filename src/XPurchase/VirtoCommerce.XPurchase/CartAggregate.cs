@@ -201,6 +201,64 @@ namespace VirtoCommerce.XPurchase
             return this;
         }
 
+        public virtual async Task<CartAggregate> AddGiftItemsAsync(IEnumerable<string> productIds, IEnumerable<LineItem> availableGifts)
+        {
+            EnsureCartExists();
+
+            if (productIds.IsNullOrEmpty())
+            {
+                return this;
+            }
+
+            var giftsInCart = Cart.Items.Where(x => x.IsGift).ToList();
+
+            var productsToAdd = await _cartProductService.GetProductsByIdsAsync(this, productIds.ToArray());
+
+            foreach (var productToAdd in productsToAdd)
+            {
+                var availableGift = availableGifts.FirstOrDefault(x => x.ProductId == productToAdd.Id);
+                if (availableGift == null)
+                {
+                    // ignore the product, if it's not available as gift
+                    continue;
+                }
+
+                var giftItem = giftsInCart.FirstOrDefault(x => x.ProductId == productToAdd.Id);
+                if (giftItem == null)
+                {
+                    giftItem = (LineItem)availableGift.Clone();
+                    giftItem.Id = null;
+                    Cart.Items.Add(giftItem);
+                }
+
+                giftItem.IsGift = true;
+                giftItem.IsRejected = false;
+            }
+
+            return this;
+        }
+
+        public virtual CartAggregate RejectCartItems(IEnumerable<string> cartItemIds)
+        {
+            EnsureCartExists();
+
+            if (cartItemIds.IsNullOrEmpty())
+            {
+                return this;
+            }
+
+            foreach (var cartItemId in cartItemIds)
+            {
+                var giftItem = Cart.Items.FirstOrDefault(x => x.IsGift && x.Id == cartItemId);
+                if (giftItem != null)
+                {
+                    giftItem.IsRejected = true;
+                }
+            }
+
+            return this;
+        }
+
         public virtual async Task<CartAggregate> ChangeItemPriceAsync(PriceAdjustment priceAdjustment)
         {
             EnsureCartExists();
@@ -489,9 +547,9 @@ namespace VirtoCommerce.XPurchase
             return promotionResult;
         }
 
-        public virtual async Task<PromotionResult> EvaluatePromotionsAsync(PromotionEvaluationContext evalContext)
+        public virtual Task<PromotionResult> EvaluatePromotionsAsync(PromotionEvaluationContext evalContext)
         {
-            return await _marketingEvaluator.EvaluatePromotionAsync(evalContext);
+            return _marketingEvaluator.EvaluatePromotionAsync(evalContext);
         }
 
         protected async Task<IEnumerable<TaxRate>> EvaluateTaxesAsync()

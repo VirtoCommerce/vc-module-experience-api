@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -24,20 +23,22 @@ namespace VirtoCommerce.XPurchase.Services
         private readonly IPaymentMethodsSearchService _paymentMethodsSearchService;
         private readonly ITaxProviderSearchService _taxProviderSearchService;
         private readonly IShippingMethodsSearchService _shippingMethodsSearchService;
+        private readonly ICartProductService _cartProductService;
 
         private readonly IMapper _mapper;
 
         private readonly int _takeOnSearch = 20;
 
-        public CartAvailMethodsService(
-            IPaymentMethodsSearchService paymentMethodsSearchService
-            , IShippingMethodsSearchService shippingMethodsSearchService
-            , ITaxProviderSearchService taxProviderSearchService
-            , IMapper mapper)
+        public CartAvailMethodsService(IPaymentMethodsSearchService paymentMethodsSearchService,
+            IShippingMethodsSearchService shippingMethodsSearchService,
+            ITaxProviderSearchService taxProviderSearchService,
+            ICartProductService cartProductService,
+            IMapper mapper)
         {
             _paymentMethodsSearchService = paymentMethodsSearchService;
             _shippingMethodsSearchService = shippingMethodsSearchService;
             _taxProviderSearchService = taxProviderSearchService;
+            _cartProductService = cartProductService;
             _mapper = mapper;
         }
 
@@ -137,6 +138,25 @@ namespace VirtoCommerce.XPurchase.Services
             }
 
             return result.Results;
+        }
+
+        public async Task<IEnumerable<LineItem>> GetAvailableGiftsAsync(CartAggregate cartAggr)
+        {
+            var promotionEvalResult = await cartAggr.EvaluatePromotionsAsync();
+
+            var giftRewards = promotionEvalResult.Rewards
+                .OfType<GiftReward>()
+                .Where(reward => reward.IsValid)
+                .Distinct();
+            var productIds = giftRewards.Select(x => x.ProductId).Distinct().ToArray();
+            var productsByIds = (await _cartProductService.GetCartProductsByIdsAsync(cartAggr, productIds)).ToDictionary(x => x.Id);
+
+            return giftRewards.Where(reward => productsByIds.ContainsKey(reward.ProductId))
+                .Select(reward =>
+                {
+                    var product = productsByIds[reward.ProductId];
+                    return _mapper.Map<LineItem>(product);
+                }).ToArray();
         }
 
         protected async Task<TaxProvider> GetActiveTaxProviderAsync(string storeId)
