@@ -6,9 +6,9 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
     {
         public InputResetPasswordByTokenType()
         {
-            Field<NonNullGraphType<StringGraphType>>("token");
-            Field<NonNullGraphType<StringGraphType>>("userId");
-            Field<NonNullGraphType<StringGraphType>>("newPassword");
+            Field<NonNullGraphType<StringGraphType>>("token", "User password reset token");
+            Field<NonNullGraphType<StringGraphType>>("userId", "User identifier");
+            Field<NonNullGraphType<StringGraphType>>("newPassword", "New password according with system security policy");
         }
     }
 }
