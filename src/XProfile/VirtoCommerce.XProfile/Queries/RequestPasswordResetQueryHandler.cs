@@ -1,9 +1,9 @@
 using System;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
+using VirtoCommerce.ExperienceApiModule.XProfile.Extensions;
 using VirtoCommerce.NotificationsModule.Core.Extensions;
 using VirtoCommerce.NotificationsModule.Core.Services;
 using VirtoCommerce.NotificationsModule.Core.Types;
@@ -44,13 +44,9 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Queries
                 var store = await _storeService.GetByIdAsync(user.StoreId);
 
                 var token = await userManager.GeneratePasswordResetTokenAsync(user);
-                var callbackUrlWithoutLastSlash = store.Url.EndsWith("/")
-                    ? store.Url[..^1]
-                    : store.Url;
-                var urlSuffix = NormalizeUrlSuffix(request.UrlSuffix);
 
                 var notification = await _notificationSearchService.GetNotificationAsync<ResetPasswordEmailNotification>();
-                notification.Url = $"{callbackUrlWithoutLastSlash}{urlSuffix}/{user.Id}/{token}";
+                notification.Url = $"{store.Url.TrimLastSlash()}{request.UrlSuffix.NormalizeUrlSuffix()}/{user.Id}/{token}";
                 notification.To = user.Email;
                 notification.From = store.Email;
 
@@ -58,32 +54,6 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Queries
             }
 
             return true;
-        }
-
-        /// <summary>
-        /// Normalize values like "/reset/" and "reset"
-        /// to "/reset"
-        /// </summary>
-        /// <param name="urlSuffix"></param>
-        /// <returns></returns>
-        protected virtual string NormalizeUrlSuffix(string urlSuffix)
-        {
-            var result = new StringBuilder(urlSuffix);
-
-            if (!string.IsNullOrEmpty(urlSuffix))
-            {
-                if (!urlSuffix.StartsWith("/"))
-                {
-                    result.Insert(0, "/");
-                }
-
-                if (urlSuffix.EndsWith("/"))
-                {
-                    result.Remove(result.Length - 1, 1);
-                }
-            }
-
-            return result.ToString();
         }
     }
 }
