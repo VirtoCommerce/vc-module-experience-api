@@ -12,6 +12,6 @@ namespace VirtoCommerce.XPurchase.Commands
             GiftItemIds = giftItemIds;
         }
 
-        public string[] GiftItemIds { get; set; }
+        public IList<string> GiftItemIds { get; set; }
     }
 }

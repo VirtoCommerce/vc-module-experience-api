@@ -201,7 +201,8 @@ namespace VirtoCommerce.XPurchase
             return this;
         }
 
-        public virtual async Task<CartAggregate> AddGiftItemsAsync(IEnumerable<string> productIds, IEnumerable<LineItem> availableGifts)
+        public virtual async Task<CartAggregate> AddGiftItemsAsync(IReadOnlyCollection<string> productIds, IReadOnlyCollection<LineItem> availableGifts)
+
         {
             EnsureCartExists();
 

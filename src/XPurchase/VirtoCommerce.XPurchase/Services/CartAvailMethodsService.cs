@@ -148,7 +148,7 @@ namespace VirtoCommerce.XPurchase.Services
                 .OfType<GiftReward>()
                 .Where(reward => reward.IsValid)
                 .Distinct();
-            var productIds = giftRewards.Select(x => x.ProductId).Distinct().ToArray();
+            var productIds = giftRewards.Select(x => x.ProductId).Distinct().ToList();
             var productsByIds = (await _cartProductService.GetCartProductsByIdsAsync(cartAggr, productIds)).ToDictionary(x => x.Id);
 
             return giftRewards.Where(reward => productsByIds.ContainsKey(reward.ProductId))
@@ -156,7 +156,7 @@ namespace VirtoCommerce.XPurchase.Services
                 {
                     var product = productsByIds[reward.ProductId];
                     return _mapper.Map<LineItem>(product);
-                }).ToArray();
+                }).ToList();
         }
 
         protected async Task<TaxProvider> GetActiveTaxProviderAsync(string storeId)

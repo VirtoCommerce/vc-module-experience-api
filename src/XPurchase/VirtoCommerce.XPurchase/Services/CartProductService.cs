@@ -67,14 +67,20 @@ namespace VirtoCommerce.XPurchase.Services
 
         public async Task<IEnumerable<CartProduct>> GetProductsByIdsAsync(CartAggregate cartAggr, string[] ids, string additionalResponseGroups = null)
         {
+            var tcs = new TaskCompletionSource<IEnumerable<CartProduct>>();
+           
             if (cartAggr == null)
             {
-                throw new ArgumentNullException(nameof(cartAggr));
+                tcs.SetException(new ArgumentNullException(nameof(cartAggr)));
+                return tcs.Task;
             }
+
             if (ids == null)
             {
-                throw new ArgumentNullException(nameof(ids));
+                tcs.SetException(new ArgumentNullException(nameof(ids)));
+                return tcs.Task;
             }
+
 
             var defaultResponseGroups = ItemResponseGroup.ItemAssets | ItemResponseGroup.ItemInfo | ItemResponseGroup.Outlines | ItemResponseGroup.Seo;
             var products = await _productService.GetByIdsAsync(ids, (defaultResponseGroups | EnumUtility.SafeParseFlags(additionalResponseGroups, ItemResponseGroup.None)).ToString());
