@@ -43,7 +43,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Queries
             {
                 var store = await _storeService.GetByIdAsync(user.StoreId);
 
-                if (!string.IsNullOrEmpty(store.Url))
+                if (!string.IsNullOrEmpty(store?.Url) || !string.IsNullOrEmpty(store?.Email))
                 {
                     var token = await userManager.GeneratePasswordResetTokenAsync(user);
 
