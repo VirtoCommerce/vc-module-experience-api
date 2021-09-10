@@ -43,14 +43,17 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Queries
             {
                 var store = await _storeService.GetByIdAsync(user.StoreId);
 
-                var token = await userManager.GeneratePasswordResetTokenAsync(user);
+                if (!string.IsNullOrEmpty(store.Url))
+                {
+                    var token = await userManager.GeneratePasswordResetTokenAsync(user);
 
-                var notification = await _notificationSearchService.GetNotificationAsync<ResetPasswordEmailNotification>();
-                notification.Url = $"{store.Url.TrimLastSlash()}{request.UrlSuffix.NormalizeUrlSuffix()}/{user.Id}/{token}";
-                notification.To = user.Email;
-                notification.From = store.Email;
+                    var notification = await _notificationSearchService.GetNotificationAsync<ResetPasswordEmailNotification>();
+                    notification.Url = $"{store.Url.TrimLastSlash()}{request.UrlSuffix.NormalizeUrlSuffix()}/{user.Id}/{token}";
+                    notification.To = user.Email;
+                    notification.From = store.Email;
 
-                await _notificationSender.ScheduleSendNotificationAsync(notification);
+                    await _notificationSender.ScheduleSendNotificationAsync(notification);
+                }
             }
 
             return true;
