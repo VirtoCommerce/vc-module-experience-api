@@ -1,22 +1,22 @@
-using System.Collections.Generic;
 using System.Linq;
 using FluentValidation;
-using VirtoCommerce.CartModule.Core.Model;
-using VirtoCommerce.PaymentModule.Core.Model;
 using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.XPurchase.Validators
 {
-    public class CartPaymentValidator : AbstractValidator<Payment>
+    public class CartPaymentValidator : AbstractValidator<PaymentValidationContext>
     {
-        public CartPaymentValidator(IEnumerable<PaymentMethod> availPaymentMethods)
+        public CartPaymentValidator()
         {
             //To support the use case for partial payment update when user sets the address first.
             //RuleFor(x => x.PaymentGatewayCode).NotNull().NotEmpty();
             RuleSet("strict", () =>
             {
-                RuleFor(x => x).Custom((payment, context) =>
+                RuleFor(x => x).Custom((paymentContext, context) =>
                 {
+                    var availPaymentMethods = paymentContext.AvailPaymentMethods;
+                    var payment = paymentContext.Payment;
+
                     if (availPaymentMethods != null && !string.IsNullOrEmpty(payment.PaymentGatewayCode))
                     {
                         var paymentMethod = availPaymentMethods.FirstOrDefault(x => payment.PaymentGatewayCode.EqualsInvariant(x.Code));

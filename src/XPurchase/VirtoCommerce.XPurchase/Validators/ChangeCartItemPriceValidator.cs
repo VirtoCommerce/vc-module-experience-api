@@ -5,7 +5,7 @@ namespace VirtoCommerce.XPurchase.Validators
 {
     public class ChangeCartItemPriceValidator : AbstractValidator<PriceAdjustment>
     {
-        public ChangeCartItemPriceValidator(CartAggregate cartAggr)
+        public ChangeCartItemPriceValidator()
         {
             RuleFor(x => x.NewPrice).GreaterThanOrEqualTo(0);
             RuleFor(x => x.LineItemId).NotNull().NotEmpty();
@@ -13,13 +13,12 @@ namespace VirtoCommerce.XPurchase.Validators
             {
                 RuleFor(x => x).Custom((newPriceRequest, context) =>
                 {
-                    var lineItem = cartAggr.Cart.Items.FirstOrDefault(x => x.Id == newPriceRequest.LineItemId);
-                    if (lineItem != null)
+                    if (newPriceRequest.LineItem != null)
                     {
                         var newSalePrice = newPriceRequest.NewPrice;
-                        if (lineItem.SalePrice > newSalePrice)
+                        if (newPriceRequest.LineItem.SalePrice > newSalePrice)
                         {
-                            context.AddFailure(CartErrorDescriber.UnableToSetLessPrice(lineItem));
+                            context.AddFailure(CartErrorDescriber.UnableToSetLessPrice(newPriceRequest.LineItem));
                         }
                     }
                 });

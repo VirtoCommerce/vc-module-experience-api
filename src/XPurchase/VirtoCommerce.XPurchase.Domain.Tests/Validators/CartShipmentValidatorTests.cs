@@ -40,8 +40,12 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             };
 
             // Act
-            var validator = new CartShipmentValidator(_context.AvailShippingRates);
-            var result = await validator.ValidateAsync(shipment, ruleSet: "default");
+            var validator = new CartShipmentValidator();
+            var result = await validator.ValidateAsync(new ShipmentValidationContext
+            {
+                Shipment = shipment,
+                AvailShippingRates = _context.AvailShippingRates
+            }, ruleSet: "default");
 
             // Assert
             result.IsValid.Should().BeTrue();
@@ -58,8 +62,12 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             };
 
             // Act
-            var validator = new CartShipmentValidator(_context.AvailShippingRates);
-            var result = await validator.ValidateAsync(shipment, ruleSet: "default");
+            var validator = new CartShipmentValidator();
+            var result = await validator.ValidateAsync(new ShipmentValidationContext
+            {
+                Shipment = shipment,
+                AvailShippingRates = _context.AvailShippingRates
+            }, ruleSet: "default");
 
             // Assert
             result.IsValid.Should().BeTrue();
@@ -76,8 +84,12 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             };
 
             // Act
-            var validator = new CartShipmentValidator(_context.AvailShippingRates);
-            var result = await validator.ValidateAsync(shipment, ruleSet: "default");
+            var validator = new CartShipmentValidator();
+            var result = await validator.ValidateAsync(new ShipmentValidationContext
+            {
+                Shipment = shipment,
+                AvailShippingRates = _context.AvailShippingRates
+            }, ruleSet: "default");
 
             // Assert
             result.IsValid.Should().BeTrue();
@@ -94,8 +106,12 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             };
 
             // Act
-            var validator = new CartShipmentValidator(_context.AvailShippingRates);
-            var result = await validator.ValidateAsync(shipment, ruleSet: "strict");
+            var validator = new CartShipmentValidator();
+            var result = await validator.ValidateAsync(new ShipmentValidationContext
+            {
+                Shipment = shipment,
+                AvailShippingRates = _context.AvailShippingRates
+            }, ruleSet: "strict");
 
             // Assert
             result.IsValid.Should().BeFalse();
@@ -117,8 +133,12 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             shipment.Price = _shippingRate.Rate + 1;
 
             // Act
-            var validator = new CartShipmentValidator(_context.AvailShippingRates);
-            var result = await validator.ValidateAsync(shipment, ruleSet: "strict");
+            var validator = new CartShipmentValidator();
+            var result = await validator.ValidateAsync(new ShipmentValidationContext
+            {
+                Shipment = shipment,
+                AvailShippingRates = _context.AvailShippingRates
+            }, ruleSet: "strict");
 
             // Assert
             result.IsValid.Should().BeFalse();

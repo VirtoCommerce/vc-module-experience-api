@@ -22,6 +22,7 @@ namespace VirtoCommerce.XPurchase.Validators
 
             return new CartValidationContext
             {
+                CartAggregate = cartAggr,
                 AllCartProducts = cartProductsTask.Result,
                 AvailPaymentMethods = availPaymentsTask.Result,
                 AvailShippingRates = availShippingRatesTask.Result

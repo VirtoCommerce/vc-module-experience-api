@@ -1,22 +1,21 @@
-using System.Collections.Generic;
 using System.Linq;
 using FluentValidation;
-using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.ShippingModule.Core.Model;
 
 namespace VirtoCommerce.XPurchase.Validators
 {
-    public class CartShipmentValidator : AbstractValidator<Shipment>
+    public class CartShipmentValidator : AbstractValidator<ShipmentValidationContext>
     {
-        public CartShipmentValidator(IEnumerable<ShippingRate> availShippingRates)
+        public CartShipmentValidator()
         {
             //To support the use case for partial shipment update when user sets the address first.
             //RuleFor(x => x.ShipmentMethodCode).NotNull().NotEmpty();
             RuleSet("strict", () =>
             {
-                RuleFor(x => x).Custom((shipment, context) =>
+                RuleFor(x => x).Custom((shipmentContext, context) =>
                 {
+                    var availShippingRates = shipmentContext.AvailShippingRates;
+                    var shipment = shipmentContext.Shipment;
                     if (availShippingRates != null && !string.IsNullOrEmpty(shipment.ShipmentMethodCode))
                     {
                         var shipmentShippingMethod = availShippingRates.FirstOrDefault(sm => shipment.ShipmentMethodCode.EqualsInvariant(sm.ShippingMethod.Code) && shipment.ShipmentMethodOption.EqualsInvariant(sm.OptionName));
