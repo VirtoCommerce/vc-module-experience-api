@@ -264,7 +264,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             {
                 Name = "validatePassword",
                 Arguments = new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "password" }),
-                Type = GraphTypeExtenstionHelper.GetActualType<IdentityResultType>(),
+                Type = GraphTypeExtenstionHelper.GetActualType<CustomIdentityResultType>(),
                 Resolver = new AsyncFieldResolver<object>(async context =>
                 {
                     var result = await _mediator.Send(new PasswordValidationQuery
