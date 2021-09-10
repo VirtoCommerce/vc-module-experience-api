@@ -147,15 +147,18 @@ namespace VirtoCommerce.XPurchase.Services
             var giftRewards = promotionEvalResult.Rewards
                 .OfType<GiftReward>()
                 .Where(reward => reward.IsValid)
+                // .Distinct() is needed as multiplied gifts would be returned otherwise.
                 .Distinct();
-            var productIds = giftRewards.Select(x => x.ProductId).Distinct().ToList();
+            var productIds = giftRewards.Select(x => x.ProductId).Distinct().ToArray();
             var productsByIds = (await _cartProductService.GetCartProductsByIdsAsync(cartAggr, productIds)).ToDictionary(x => x.Id);
 
             return giftRewards.Where(reward => productsByIds.ContainsKey(reward.ProductId))
                 .Select(reward =>
                 {
                     var product = productsByIds[reward.ProductId];
-                    return _mapper.Map<LineItem>(product);
+                    var giftItem = _mapper.Map<LineItem>(product);
+                    giftItem.Quantity = reward.Quantity;
+                    return giftItem;
                 }).ToList();
         }
 

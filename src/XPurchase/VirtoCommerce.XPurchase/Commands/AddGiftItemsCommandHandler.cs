@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using VirtoCommerce.XPurchase.Services;
@@ -19,7 +20,7 @@ namespace VirtoCommerce.XPurchase.Commands
         {
             var cartAggregate = await GetOrCreateCartFromCommandAsync(request);
 
-            await cartAggregate.AddGiftItemsAsync(request.GiftItemIds, await _cartAvailMethodsService.GetAvailableGiftsAsync(cartAggregate));
+            await cartAggregate.AddGiftItemsAsync(request.GiftItemIds, (await _cartAvailMethodsService.GetAvailableGiftsAsync(cartAggregate)).ToList());
 
             return await SaveCartAsync(cartAggregate);
         }

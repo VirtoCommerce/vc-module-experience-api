@@ -211,20 +211,18 @@ namespace VirtoCommerce.XPurchase
                 return this;
             }
 
-            var giftsInCart = Cart.Items.Where(x => x.IsGift).ToList();
+            var giftsInCart = Cart.Items.Where(x => x.IsGift).ToArray();
 
-            var productsToAdd = await _cartProductService.GetProductsByIdsAsync(this, productIds.ToArray());
-
-            foreach (var productToAdd in productsToAdd)
+            foreach (var productId in productIds)
             {
-                var availableGift = availableGifts.FirstOrDefault(x => x.ProductId == productToAdd.Id);
+                var availableGift = availableGifts.FirstOrDefault(x => x.ProductId == productId);
                 if (availableGift == null)
                 {
                     // ignore the product, if it's not available as gift
                     continue;
                 }
 
-                var giftItem = giftsInCart.FirstOrDefault(x => x.ProductId == productToAdd.Id);
+                var giftItem = giftsInCart.FirstOrDefault(x => x.ProductId == productId);
                 if (giftItem == null)
                 {
                     giftItem = (LineItem)availableGift.Clone();
@@ -239,7 +237,7 @@ namespace VirtoCommerce.XPurchase
             return this;
         }
 
-        public virtual CartAggregate RejectCartItems(IEnumerable<string> cartItemIds)
+        public virtual CartAggregate RejectCartItems(IReadOnlyCollection<string> cartItemIds)
         {
             EnsureCartExists();
 
@@ -691,7 +689,7 @@ namespace VirtoCommerce.XPurchase
 
         protected virtual async Task<CartAggregate> InnerAddLineItemAsync(LineItem lineItem, CartProduct product = null)
         {
-            var existingLineItem = Cart.Items.FirstOrDefault(li => li.ProductId == lineItem.ProductId);
+            var existingLineItem = Cart.Items.FirstOrDefault(li => !li.IsGift && li.ProductId == lineItem.ProductId);
             if (existingLineItem != null)
             {
                 await InnerChangeItemQuantityAsync(existingLineItem, existingLineItem.Quantity + Math.Max(1, lineItem.Quantity), product);

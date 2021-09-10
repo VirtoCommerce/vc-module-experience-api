@@ -94,16 +94,6 @@ namespace VirtoCommerce.XPurchase.Schemas
             schema.Query.AddField(cartConnectionBuilder.FieldType);
 
 
-            //var availableGiftsConnectionBuilder = GraphTypeExtenstionHelper.CreateConnection<CartGiftItemType, object>()
-            //    .Name("availableGifts")
-            //    .Argument<StringGraphType>("cartId", "")
-            //    .Argument<StringGraphType>("sort", "")
-            //    .Unidirectional()
-            //    .PageSize(20);
-
-            //availableGiftsConnectionBuilder.ResolveAsync(async context => await ResolveGiftsConnectionAsync(_mediator, context));
-            //schema.Query.AddField(availableGiftsConnectionBuilder.FieldType);
-
             //Mutations
             /// <example>
             /// This is an example JSON request for a mutation
@@ -838,33 +828,5 @@ namespace VirtoCommerce.XPurchase.Schemas
 
             return new PagedConnection<CartAggregate>(response.Results, query.Skip, query.Take, response.TotalCount);
         }
-
-        //private async Task<object> ResolveGiftsConnectionAsync(IMediator mediator, IResolveConnectionContext<object> context)
-        //{
-        //    var query = new SearchGiftQuery
-        //    {
-        //        CartId = context.GetArgument<string>(nameof(SearchGiftQuery.CartId).ToCamelCase()),
-        //        Sort = context.GetArgument<string>(nameof(SearchGiftQuery.Sort).ToCamelCase()),
-        //        Skip = Convert.ToInt32(context.After ?? 0.ToString()),
-        //        Take = context.First ?? context.PageSize ?? 10
-        //    };
-
-        //    context.CopyArgumentsToUserContext();
-
-        //    var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), query, new CanAccessCartAuthorizationRequirement());
-
-        //    if (!authorizationResult.Succeeded)
-        //    {
-        //        throw new AuthorizationError($"Access denied");
-        //    }
-
-        //    var response = await mediator.Send(query);
-        //    foreach (var item in response.Results)
-        //    {
-        //        context.SetExpandedObjectGraph(item);
-        //    }
-
-        //    return new PagedConnection<LineItem>(response.Results, query.Skip, query.Take, response.TotalCount);
-        //}
     }
 }

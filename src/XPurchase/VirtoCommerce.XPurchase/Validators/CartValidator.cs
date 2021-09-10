@@ -1,3 +1,4 @@
+using System.Linq;
 using FluentValidation;
 
 namespace VirtoCommerce.XPurchase.Validators

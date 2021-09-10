@@ -192,7 +192,7 @@ namespace VirtoCommerce.XPurchase.Mapping
 
                 promoEvalcontext.CartPromoEntries = new List<ProductPromoEntry>();
 
-                foreach (var lineItem in cartAggr.Cart.Items)
+                foreach (var lineItem in cartAggr.Cart.Items.Where(li => !li.IsGift))
                 {
                     var promoEntry = context.Mapper.Map<ProductPromoEntry>(lineItem);
                     var cartProduct = cartAggr.CartProducts[lineItem.ProductId];
