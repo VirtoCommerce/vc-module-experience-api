@@ -74,7 +74,7 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             {
                 LineItem = item,
                 AllCartProducts = _context.AllCartProducts
-            }, ruleSet: "strict");
+            });
 
             // Assert
             result.IsValid.Should().BeFalse();
@@ -98,7 +98,7 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             {
                 LineItem = item,
                 AllCartProducts = _context.AllCartProducts
-            }, ruleSet: "strict");
+            });
 
             // Assert
             result.IsValid.Should().BeFalse();
@@ -121,7 +121,7 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             {
                 LineItem = item,
                 AllCartProducts = _context.AllCartProducts
-            }, ruleSet: "strict");
+            });
 
             // Assert
             result.IsValid.Should().BeFalse();

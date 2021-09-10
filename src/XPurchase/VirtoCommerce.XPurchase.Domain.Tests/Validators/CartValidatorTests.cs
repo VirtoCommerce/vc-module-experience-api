@@ -33,24 +33,7 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
         }
 
         [Fact]
-        public async Task ValidateCart_RuleSetDefault_Valid()
-        {
-            // Arrange
-            var aggregate = GetValidCartAggregate();
-
-            // Act
-            var result = await _validator.ValidateAsync(new CartValidationContext
-            {
-                CartAggregate = aggregate
-            }, ruleSet: "default,strict");
-
-            // Assert
-            result.IsValid.Should().BeTrue();
-            result.Errors.Should().BeEmpty();
-        }
-
-        [Fact]
-        public async Task ValidateCart_RuleSetDefault_Invalid()
+        public async Task ValidateCart_RuleSetStrict_Invalid()
         {
             // Arrange
             var aggregate = GetValidCartAggregate();
@@ -65,11 +48,24 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
 
             // Assert
             result.IsValid.Should().BeFalse();
-            result.Errors.Should().HaveCount(4);
-            result.Errors.Should().Contain(x => x.PropertyName == "CartAggregate.Cart.Name" && x.ErrorCode == nameof(NotNullValidator));
-            result.Errors.Should().Contain(x => x.PropertyName == "CartAggregate.Cart.Name" && x.ErrorCode == nameof(NotEmptyValidator));
-            result.Errors.Should().Contain(x => x.PropertyName == "CartAggregate.Cart.CustomerId" && x.ErrorCode == nameof(NotNullValidator));
-            result.Errors.Should().Contain(x => x.PropertyName == "CartAggregate.Cart.CustomerId" && x.ErrorCode == nameof(NotEmptyValidator));
+            result.Errors.Should().HaveCount(8);
+        }
+
+        [Fact]
+        public async Task ValidateCart_RuleSetDefault_Valid()
+        {
+            // Arrange
+            var aggregate = GetValidCartAggregate();
+
+            // Act
+            var result = await _validator.ValidateAsync(new CartValidationContext
+            {
+                CartAggregate = aggregate
+            }, ruleSet: "default");
+
+            // Assert
+            result.IsValid.Should().BeTrue();
+            result.Errors.Should().BeEmpty();
         }
     }
 }

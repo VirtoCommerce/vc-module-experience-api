@@ -102,6 +102,7 @@ namespace VirtoCommerce.XPurchase
 
         public bool IsValid => !ValidationErrors.Any();
         public IList<ValidationFailure> ValidationErrors { get; protected set; } = new List<ValidationFailure>();
+        public bool IsValidated { get; private set; } = false;
 
         public virtual CartAggregate GrabCart(ShoppingCart cart, Store store, Member member, Currency currency)
         {
@@ -471,6 +472,7 @@ namespace VirtoCommerce.XPurchase
             {
                 ValidationErrors.AddRange(result.Errors);
             }
+            IsValidated = true;
             return result.Errors;
         }
 

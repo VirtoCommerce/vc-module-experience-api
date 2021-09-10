@@ -10,22 +10,19 @@ namespace VirtoCommerce.XPurchase.Validators
         {
             //To support the use case for partial payment update when user sets the address first.
             //RuleFor(x => x.PaymentGatewayCode).NotNull().NotEmpty();
-            RuleSet("strict", () =>
+            RuleFor(x => x).Custom((paymentContext, context) =>
             {
-                RuleFor(x => x).Custom((paymentContext, context) =>
-                {
-                    var availPaymentMethods = paymentContext.AvailPaymentMethods;
-                    var payment = paymentContext.Payment;
+                var availPaymentMethods = paymentContext.AvailPaymentMethods;
+                var payment = paymentContext.Payment;
 
-                    if (availPaymentMethods != null && !string.IsNullOrEmpty(payment.PaymentGatewayCode))
+                if (availPaymentMethods != null && !string.IsNullOrEmpty(payment.PaymentGatewayCode))
+                {
+                    var paymentMethod = availPaymentMethods.FirstOrDefault(x => payment.PaymentGatewayCode.EqualsInvariant(x.Code));
+                    if (paymentMethod == null)
                     {
-                        var paymentMethod = availPaymentMethods.FirstOrDefault(x => payment.PaymentGatewayCode.EqualsInvariant(x.Code));
-                        if (paymentMethod == null)
-                        {
-                            context.AddFailure(CartErrorDescriber.PaymentMethodUnavailable(payment, payment.PaymentGatewayCode));
-                        }
+                        context.AddFailure(CartErrorDescriber.PaymentMethodUnavailable(payment, payment.PaymentGatewayCode));
                     }
-                });
+                }
             });
         }
     }

@@ -29,28 +29,7 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
                 _shippingRate
             };
         }
-
-        [Fact]
-        public async Task ValidateShipment_RuleSetDefault_Valid()
-        {
-            // Arrange
-            var shipment = new CartModule.Core.Model.Shipment
-            {
-                ShipmentMethodCode = _fixture.Create<string>()
-            };
-
-            // Act
-            var validator = new CartShipmentValidator();
-            var result = await validator.ValidateAsync(new ShipmentValidationContext
-            {
-                Shipment = shipment,
-                AvailShippingRates = _context.AvailShippingRates
-            }, ruleSet: "default");
-
-            // Assert
-            result.IsValid.Should().BeTrue();
-            result.Errors.Should().BeEmpty();
-        }
+               
 
         [Fact]
         public async Task ValidateShipment_RuleSetDefault_ShipmentMethodCodeIsNull_Valid()
@@ -67,7 +46,7 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             {
                 Shipment = shipment,
                 AvailShippingRates = _context.AvailShippingRates
-            }, ruleSet: "default");
+            });
 
             // Assert
             result.IsValid.Should().BeTrue();
@@ -89,7 +68,7 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             {
                 Shipment = shipment,
                 AvailShippingRates = _context.AvailShippingRates
-            }, ruleSet: "default");
+            });
 
             // Assert
             result.IsValid.Should().BeTrue();
@@ -97,7 +76,7 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
         }
 
         [Fact]
-        public async Task ValidateShipment_RuleSetStrict_UnavailableMethodError()
+        public async Task ValidateShipment_RuleSetDefault_UnavailableMethodError()
         {
             // Arrange
             var shipment = new CartModule.Core.Model.Shipment
@@ -111,7 +90,7 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             {
                 Shipment = shipment,
                 AvailShippingRates = _context.AvailShippingRates
-            }, ruleSet: "strict");
+            });
 
             // Assert
             result.IsValid.Should().BeFalse();
@@ -121,7 +100,7 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
         }
 
         [Fact]
-        public async Task ValidateShipment_RuleSetStrict_PriceError()
+        public async Task ValidateShipment_RuleSetDefault_PriceError()
         {
             // Arrange
             var shipment = new CartModule.Core.Model.Shipment
@@ -138,7 +117,7 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             {
                 Shipment = shipment,
                 AvailShippingRates = _context.AvailShippingRates
-            }, ruleSet: "strict");
+            });
 
             // Assert
             result.IsValid.Should().BeFalse();

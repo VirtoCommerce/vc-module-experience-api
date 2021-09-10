@@ -44,7 +44,7 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             var result = await validator.ValidateAsync(new PaymentValidationContext
             {
                  Payment = item
-            }, ruleSet: "strict");
+            });
 
             // Assert
             result.Errors.Should().BeEmpty();
@@ -64,7 +64,7 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             {
                 Payment = item,
                 AvailPaymentMethods = _context.AvailPaymentMethods
-            }, ruleSet: "strict");
+            });
 
             // Assert
             result.Errors.Should().BeEmpty();
@@ -87,7 +87,7 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             {
                 Payment = item,
                 AvailPaymentMethods = _context.AvailPaymentMethods
-            }, ruleSet: "strict");
+            });
 
             // Assert
             result.Errors.Should().BeEmpty();
@@ -107,7 +107,7 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             {
                 Payment = item,
                 AvailPaymentMethods = _context.AvailPaymentMethods
-            }, ruleSet: "strict");
+            });
 
             // Assert
             var expected = CartErrorDescriber.PaymentMethodUnavailable(item, item.PaymentGatewayCode);

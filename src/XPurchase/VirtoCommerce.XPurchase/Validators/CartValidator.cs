@@ -5,14 +5,22 @@ namespace VirtoCommerce.XPurchase.Validators
 {
     public class CartValidator : AbstractValidator<CartValidationContext>
     {
+        protected virtual CartLineItemValidator LineItemValidator { get; set; }
+        protected virtual CartShipmentValidator ShipmentValidator { get; set; }
+        protected virtual CartPaymentValidator PaymentValidator { get; set; }
+
         public CartValidator()
         {
+            LineItemValidator = AbstractTypeFactory<CartLineItemValidator>.TryCreateInstance();
+            ShipmentValidator = AbstractTypeFactory<CartShipmentValidator>.TryCreateInstance();
+            PaymentValidator = AbstractTypeFactory<CartPaymentValidator>.TryCreateInstance();
+
             RuleFor(x => x.CartAggregate.Cart).NotNull();
             When(x => x.CartAggregate.Cart != null, () =>
             {
-                RuleFor(x => x.CartAggregate.Cart.Name).NotNull().NotEmpty();
-                RuleFor(x => x.CartAggregate.Cart.Currency).NotNull();
-                RuleFor(x => x.CartAggregate.Cart.CustomerId).NotNull().NotEmpty();
+                RuleFor(x => x.CartAggregate.Cart.Name).NotEmpty();
+                RuleFor(x => x.CartAggregate.Cart.Currency).NotEmpty();
+                RuleFor(x => x.CartAggregate.Cart.CustomerId).NotEmpty();
 
                 RuleSet("strict", () =>
                 {
@@ -25,7 +33,7 @@ namespace VirtoCommerce.XPurchase.Validators
                                 LineItem = item,
                                 AllCartProducts = cartContext.AllCartProducts ?? cartContext.CartAggregate.CartProducts.Values
                             };
-                            var result = AbstractTypeFactory<CartLineItemValidator>.TryCreateInstance().Validate(lineItemContext);
+                            var result = LineItemValidator.Validate(lineItemContext);
                             result.Errors.Apply(x => context.AddFailure(x));
                         });
 
@@ -36,7 +44,7 @@ namespace VirtoCommerce.XPurchase.Validators
                                 Shipment = shipment,
                                 AvailShippingRates = cartContext.AvailShippingRates
                             };
-                            var result = AbstractTypeFactory<CartShipmentValidator>.TryCreateInstance().Validate(shipmentContext);
+                            var result = ShipmentValidator.Validate(shipmentContext);
                             result.Errors.Apply(x => context.AddFailure(x));
                         });
 
@@ -47,7 +55,7 @@ namespace VirtoCommerce.XPurchase.Validators
                                 Payment = payment,
                                 AvailPaymentMethods = cartContext.AvailPaymentMethods
                             };
-                            var result = AbstractTypeFactory<CartPaymentValidator>.TryCreateInstance().Validate(paymentContext);
+                            var result = PaymentValidator.Validate(paymentContext);
                             result.Errors.Apply(x => context.AddFailure(x));
                         });
                     });
