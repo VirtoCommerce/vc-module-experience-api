@@ -44,7 +44,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
             }
             else
             {
-                identityResult = await userManager.ResetPasswordAsync(user, request.Token, request.NewPassword);
+                identityResult = await userManager.ResetPasswordAsync(user, Uri.UnescapeDataString(request.Token), request.NewPassword);
 
                 if (identityResult.Succeeded && user.PasswordExpired)
                 {
