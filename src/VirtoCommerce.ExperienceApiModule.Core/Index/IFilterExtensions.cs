@@ -38,7 +38,12 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Index
             return obj;
         }
 
-        public static string Stringify(this IFilter filter, bool skipCurrency = false)
+        public static string Stringify(this IFilter filter)
+        {
+            return filter.Stringify(false);
+        }
+
+        public static string Stringify(this IFilter filter, bool skipCurrency)
         {
             var result = filter.ToString();
             if (filter is RangeFilter rangeFilter)

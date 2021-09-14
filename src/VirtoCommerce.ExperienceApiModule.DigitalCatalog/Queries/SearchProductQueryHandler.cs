@@ -80,7 +80,8 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             {
                 var predefinedAggregations = await _aggregationConverter.GetAggregationRequestsAsync(criteria, new FiltersContainer());
 
-                builder.ParseFacets(_phraseParser, request.Facet, criteria.LanguageCode, predefinedAggregations)
+                builder.WithCultureName(criteria.LanguageCode);
+                builder.ParseFacets(_phraseParser, request.Facet, predefinedAggregations)
                    .ApplyMultiSelectFacetSearch();
 
             }

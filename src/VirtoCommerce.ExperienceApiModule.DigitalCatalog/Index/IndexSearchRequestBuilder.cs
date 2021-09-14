@@ -14,6 +14,7 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
     {
         private const string ScoreSortingFieldName = "score";
         private SearchRequest SearchRequest { get; set; }
+        private string _cultureName { get; set; }
 
         public IndexSearchRequestBuilder()
         {
@@ -49,6 +50,12 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
         public IndexSearchRequestBuilder WithSearchPhrase(string searchPhrase)
         {
             SearchRequest.SearchKeywords = searchPhrase;
+            return this;
+        }
+
+        public IndexSearchRequestBuilder WithCultureName(string cultureName)
+        {
+            _cultureName = cultureName;
             return this;
         }
 
@@ -166,7 +173,6 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
 
         public IndexSearchRequestBuilder ParseFacets(ISearchPhraseParser phraseParser,
             string facetPhrase,
-            string languageCode = null,
             IList<AggregationRequest> predefinedAggregations = null)
         {
             if (phraseParser == null)
@@ -189,7 +195,7 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
             //Term facets
             if (!string.IsNullOrEmpty(parseResult.Keyword))
             {
-                parseResult.Keyword = parseResult.Keyword.AddLanguageSpecificFacets(languageCode);
+                parseResult.Keyword = parseResult.Keyword.AddLanguageSpecificFacets(_cultureName);
                 var termFacetExpressions = parseResult.Keyword.Split(" ");
                 parseResult.Filters.AddRange(termFacetExpressions.Select(x => new TermFilter
                 {
