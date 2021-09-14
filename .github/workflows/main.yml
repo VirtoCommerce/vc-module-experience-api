@@ -83,13 +83,11 @@ jobs:
         uses: VirtoCommerce/vc-github-actions/sonar-scanner-end@master
 
       - name: Quality Gate
-        if: ${{ success() }}
         uses: VirtoCommerce/vc-github-actions/sonar-quality-gate@master
         with:
           login: ${{secrets.SONAR_TOKEN}}
 
       - name: Packaging
-        if: ${{ always() }}
         run: vc-build Compress -skip Clean+Restore+Compile+Test
       
       - name: Publish Nuget
