@@ -16,15 +16,17 @@ namespace VirtoCommerce.XDigitalCatalog.Extensions
         /// <returns></returns>
         public static string AddLanguageSpecificFacets(this string requestFacets, string cultureName)
         {
-            var facets = string.Empty;
+            var result = requestFacets;
             if (cultureName != null)
             {
+                var facets = string.Empty;
                 foreach (var facet in requestFacets?.Split(" ") ?? new string[0])
                 {
                     facets = $"{facets} {facet} {facet}_{cultureName.ToLowerInvariant()}";
                 }
+                result = facets;
             }
-            return facets.Trim();
+            return result.Trim();
         }
 
         /// <summary>
