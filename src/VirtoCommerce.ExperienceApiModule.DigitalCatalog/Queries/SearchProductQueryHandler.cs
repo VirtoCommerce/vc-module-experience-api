@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -71,7 +70,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             var criteria = new ProductIndexedSearchCriteria
             {
                 StoreId = request.StoreId,
-                Currency = request.CurrencyCode,
+                Currency = request.CurrencyCode ?? store.DefaultCurrency,
                 LanguageCode = store.Languages.Contains(request.CultureName) ? request.CultureName : store.DefaultLanguage,
                 CatalogId = store.Catalog
             };
@@ -81,9 +80,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             {
                 var predefinedAggregations = await _aggregationConverter.GetAggregationRequestsAsync(criteria, new FiltersContainer());
 
-                var facets = request.Facet.AddLanguageSpecificFacets(criteria.LanguageCode);
-
-                builder.ParseFacets(_phraseParser, facets, predefinedAggregations)
+                builder.ParseFacets(_phraseParser, request.Facet, criteria.LanguageCode, predefinedAggregations)
                    .ApplyMultiSelectFacetSearch();
 
             }

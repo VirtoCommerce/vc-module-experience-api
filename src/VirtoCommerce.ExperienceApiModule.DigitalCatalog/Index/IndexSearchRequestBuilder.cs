@@ -6,6 +6,7 @@ using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.SearchModule.Core.Extenstions;
 using VirtoCommerce.SearchModule.Core.Model;
 using VirtoCommerce.SearchModule.Core.Services;
+using VirtoCommerce.XDigitalCatalog.Extensions;
 
 namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
 {
@@ -165,6 +166,7 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
 
         public IndexSearchRequestBuilder ParseFacets(ISearchPhraseParser phraseParser,
             string facetPhrase,
+            string languageCode = null,
             IList<AggregationRequest> predefinedAggregations = null)
         {
             if (phraseParser == null)
@@ -187,6 +189,7 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
             //Term facets
             if (!string.IsNullOrEmpty(parseResult.Keyword))
             {
+                parseResult.Keyword = parseResult.Keyword.AddLanguageSpecificFacets(languageCode);
                 var termFacetExpressions = parseResult.Keyword.Split(" ");
                 parseResult.Filters.AddRange(termFacetExpressions.Select(x => new TermFilter
                 {
@@ -204,7 +207,7 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
                     {
                         RangeFilter rangeFilter => new RangeAggregationRequest
                         {
-                            Id = filter.Stringify(),
+                            Id = filter.Stringify(true),
                             FieldName = rangeFilter.FieldName,
                             Values = rangeFilter.Values.Select(x => new RangeAggregationRequestValue
                             {

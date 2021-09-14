@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 using GraphQL;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.Platform.Core.Common;
@@ -37,12 +38,17 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Index
             return obj;
         }
 
-        public static string Stringify(this IFilter filter)
+        public static string Stringify(this IFilter filter, bool skipCurrency = false)
         {
             var result = filter.ToString();
             if (filter is RangeFilter rangeFilter)
             {
-                result = rangeFilter.FieldName + "_" + string.Join("_", rangeFilter.Values.Select(Stringify));
+                var fieldName = rangeFilter.FieldName;
+                if (skipCurrency)
+                {
+                    fieldName = new Regex(@"^(?<fieldName>[A-Za-z]+)(_[A-Za-z]{3})?$", RegexOptions.IgnoreCase).Match(fieldName).Groups["fieldName"].Value;
+                }
+                result = fieldName.Replace("_", "-") + "-" + string.Join("-", rangeFilter.Values.Select(Stringify));
             }
             else if (filter is TermFilter termFilter)
             {
