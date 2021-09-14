@@ -51,7 +51,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Index
                 var fieldName = rangeFilter.FieldName;
                 if (skipCurrency)
                 {
-                    fieldName = new Regex(@"^(?<fieldName>[A-Za-z]+)(_[A-Za-z]{3})?$", RegexOptions.IgnoreCase).Match(fieldName).Groups["fieldName"].Value;
+                    fieldName = new Regex(@"^(?<fieldName>[A-Za-z0-9\-]+)(_[A-Za-z]{3})?$", RegexOptions.IgnoreCase).Match(fieldName).Groups["fieldName"].Value;
                 }
                 result = fieldName.Replace("_", "-") + "-" + string.Join("-", rangeFilter.Values.Select(Stringify));
             }
