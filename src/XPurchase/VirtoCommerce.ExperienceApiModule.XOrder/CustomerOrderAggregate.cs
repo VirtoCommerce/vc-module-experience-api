@@ -14,7 +14,7 @@ using VirtoCommerce.Platform.Core.Domain;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder
 {
-    public class CustomerOrderAggregate : Entity, IAggregateRoot
+    public class CustomerOrderAggregate : Entity, IAggregateRoot, ICloneable
     {
         private readonly IDynamicPropertyUpdaterService _dynamicPropertyUpdaterService;
 
@@ -117,6 +117,14 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder
             }
 
             return this;
+        }
+
+        public object Clone()
+        {
+            var result = MemberwiseClone() as CustomerOrderAggregate;
+            result.Order = Order?.Clone() as CustomerOrder;
+            result.Currency = Currency?.Clone() as Currency;
+            return result;
         }
     }
 }
