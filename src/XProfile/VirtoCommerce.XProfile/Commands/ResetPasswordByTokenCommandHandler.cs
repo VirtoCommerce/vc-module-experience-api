@@ -40,7 +40,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
             }
             else if (!IsUserEditable(user.UserName))
             {
-                identityResult = IdentityResult.Failed(new IdentityError { Code = "UserIsNotEditable", Description = "It is forbidden to edit this user." });
+                identityResult = IdentityResult.Failed(new IdentityError { Code = "UserNotEditable", Description = "It is forbidden to edit this user." });
             }
             else
             {
