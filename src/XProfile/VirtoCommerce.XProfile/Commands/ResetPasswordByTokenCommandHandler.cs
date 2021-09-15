@@ -36,11 +36,11 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
 
             if (user is null)
             {
-                identityResult = IdentityResult.Failed(new IdentityError { Description = "User not found" });
+                identityResult = IdentityResult.Failed(new IdentityError { Code = "UserNotFound", Description = "User not found" });
             }
             else if (!IsUserEditable(user.UserName))
             {
-                identityResult = IdentityResult.Failed(new IdentityError { Description = "It is forbidden to edit this user." });
+                identityResult = IdentityResult.Failed(new IdentityError { Code = "UserIsNotEditable", Description = "It is forbidden to edit this user." });
             }
             else
             {
