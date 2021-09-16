@@ -16,6 +16,11 @@ namespace VirtoCommerce.XPurchase.Validators
                     var lineItem = cartAggr.Cart.Items.FirstOrDefault(x => x.Id == newPriceRequest.LineItemId);
                     if (lineItem != null)
                     {
+                        if (lineItem.IsGift)
+                        {
+                            context.AddFailure(CartErrorDescriber.LineItemIsReadOnly(lineItem));
+                        }
+
                         var newSalePrice = newPriceRequest.NewPrice;
                         if (lineItem.SalePrice > newSalePrice)
                         {

@@ -150,7 +150,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                 .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputRejectGiftItemsType>>(), _commandName)
                 .ResolveAsync(async context =>
                 {
-                    var cartAggregate = await _mediator.Send(context.GetCartCommand<RejectCartItemsCommand>());
+                    var cartAggregate = await _mediator.Send(context.GetCartCommand<RejectGiftCartItemsCommand>());
                     //store cart aggregate in the user context for future usage in the graph types resolvers
                     context.SetExpandedObjectGraph(cartAggregate);
                     return cartAggregate;

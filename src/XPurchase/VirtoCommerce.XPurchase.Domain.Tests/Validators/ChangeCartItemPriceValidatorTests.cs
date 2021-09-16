@@ -56,6 +56,7 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             // Arrange
             var aggregate = GetValidCartAggregate();
             var item = _fixture.Create<LineItem>();
+            item.IsGift = false;
             aggregate.Cart.Items = new List<LineItem> { item };
 
             var newItemPrice = new PriceAdjustment(item.Id, item.ListPrice + _fixture.Create<decimal>());
@@ -75,6 +76,7 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             // Arrange
             var aggregate = GetValidCartAggregate();
             var item = _fixture.Create<LineItem>();
+            item.IsGift = false;
             aggregate.Cart.Items = new List<LineItem> { item };
 
             var newItemPrice = new PriceAdjustment(item.Id, item.ListPrice - _fixture.Create<decimal>());

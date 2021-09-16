@@ -20,7 +20,7 @@ namespace VirtoCommerce.XPurchase.Commands
         {
             var cartAggregate = await GetOrCreateCartFromCommandAsync(request);
 
-            await cartAggregate.AddGiftItemsAsync(request.GiftItemIds, (await _cartAvailMethodsService.GetAvailableGiftsAsync(cartAggregate)).ToList());
+            await cartAggregate.AddGiftItemsAsync(request.Ids, (await _cartAvailMethodsService.GetAvailableGiftsAsync(cartAggregate)).ToList());
 
             return await SaveCartAsync(cartAggregate);
         }

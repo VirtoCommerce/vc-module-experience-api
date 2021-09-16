@@ -3,27 +3,53 @@ using GraphQL.DataLoader;
 using GraphQL.Resolvers;
 using GraphQL.Types;
 using MediatR;
-using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
 using VirtoCommerce.ExperienceApiModule.Core.Services;
+using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.XDigitalCatalog;
 using VirtoCommerce.XDigitalCatalog.Queries;
 using VirtoCommerce.XDigitalCatalog.Schemas;
 
 namespace VirtoCommerce.XPurchase.Schemas
 {
-    public class GiftItemType : ExtendableGraphType<LineItem>
+    public class GiftItemType : ExtendableGraphType<GiftItem>
     {
         public GiftItemType(IMediator mediator, IDataLoaderContextAccessor dataLoader, IDynamicPropertyResolverService dynamicPropertyResolverService)
         {
-            var productField = new FieldType
+            Field(x => x.PromotionId).Description("Promotion Id");
+            Field(x => x.Quantity).Description("Quantity of gifts in the reward");
+            Field(x => x.ProductId, true).Description("Product id");
+            Field(x => x.CategoryId, true).Description("Product Category Id");
+            Field(x => x.ImageUrl, true).Description("Value of reward image absolute URL");
+            Field(x => x.Name).Description("Name of the reward");
+            Field(x => x.MeasureUnit, true).Description("Measure Unit");
+            Field(x => x.LineItemId, true).Description("ID of lineItem if gift is in cart. Otherwise null");
+
+            AddField(new FieldType
+            {
+                Name = "id",
+                Description = "Artificial ID for this value object",
+                Type = GraphTypeExtenstionHelper.GetActualType<NonNullGraphType<StringGraphType>>(),
+                Resolver = new FuncFieldResolver<string>(context =>
+                {
+                    // return value object hash as Id
+                    return context.Source.GetHashCode().ToString();
+                })
+            });
+
+            AddField(new FieldType
             {
                 Name = "product",
                 Type = GraphTypeExtenstionHelper.GetActualType<ProductType>(),
-                Resolver = new FuncFieldResolver<LineItem, IDataLoaderResult<ExpProduct>>(context =>
+                Resolver = new FuncFieldResolver<GiftItem, IDataLoaderResult<ExpProduct>>(context =>
                 {
+                    if (context.Source.ProductId.IsNullOrEmpty())
+                    {
+                        return default;
+                    }
+
                     var includeFields = context.SubFields.Values.GetAllNodesPaths();
                     var loader = dataLoader.Context.GetOrAddBatchLoader<string, ExpProduct>("order_lineItems_products", async (ids) =>
                     {
@@ -42,15 +68,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                     });
                     return loader.LoadAsync(context.Source.ProductId);
                 })
-            };
-            AddField(productField);
-
-            Field(x => x.ImageUrl, nullable: true).Description("Value of line item image absolute URL");
-            Field(x => x.Name, nullable: true).Description("Value of line item name");
-            Field(x => x.ProductId, nullable: true).Description("Value of product id");
-            Field(x => x.Quantity, nullable: true).Description("Value of line item quantity");
-            Field(x => x.Sku, nullable: true).Description("Value of product SKU");
-            Field(x => x.ThumbnailImageUrl, nullable: true).Description("Value of line item thumbnail image absolute URL");
+            });
         }
     }
 }

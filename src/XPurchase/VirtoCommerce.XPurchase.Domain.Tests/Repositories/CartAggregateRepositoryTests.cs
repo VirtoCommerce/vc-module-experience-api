@@ -7,9 +7,7 @@ using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.CartModule.Core.Model.Search;
 using VirtoCommerce.CartModule.Core.Services;
 using VirtoCommerce.CoreModule.Core.Currency;
-using VirtoCommerce.CustomerModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.Core;
-using VirtoCommerce.Platform.Core.Security;
 using VirtoCommerce.StoreModule.Core.Services;
 using VirtoCommerce.XPurchase.Tests.Helpers;
 using VirtoCommerce.XPurchase.Validators;
@@ -23,7 +21,6 @@ namespace VirtoCommerce.XPurchase.Tests.Repositories
         private readonly Mock<IShoppingCartSearchService> _shoppingCartSearchService;
         private readonly Mock<IShoppingCartService> _shoppingCartService;
         private readonly Mock<ICurrencyService> _currencyService;
-        private readonly Mock<IMemberService> _memberService;
         private readonly Mock<IStoreService> _storeService;
         private readonly Mock<IMemberResolver> _memberResolver;
 
@@ -40,7 +37,6 @@ namespace VirtoCommerce.XPurchase.Tests.Repositories
             _shoppingCartService = new Mock<IShoppingCartService>();
             _currencyService = new Mock<ICurrencyService>();
             _currencyService = new Mock<ICurrencyService>();
-            _memberService = new Mock<IMemberService>();
             _storeService = new Mock<IStoreService>();
             _memberResolver = new Mock<IMemberResolver>();
 

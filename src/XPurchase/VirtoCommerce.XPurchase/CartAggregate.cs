@@ -87,6 +87,8 @@ namespace VirtoCommerce.XPurchase
         }
 
         public ShoppingCart Cart { get; protected set; }
+        public IEnumerable<LineItem> GiftItems => Cart?.Items.Where(x => x.IsGift);
+        public IEnumerable<LineItem> LineItems => Cart?.Items.Where(x => !x.IsGift);
 
         /// <summary>
         /// Represents the dictionary of all CartProducts data for each  existing cart line item
@@ -201,40 +203,39 @@ namespace VirtoCommerce.XPurchase
             return this;
         }
 
-        public virtual async Task<CartAggregate> AddGiftItemsAsync(IReadOnlyCollection<string> productIds, IReadOnlyCollection<LineItem> availableGifts)
-
+        public virtual Task<CartAggregate> AddGiftItemsAsync(IReadOnlyCollection<string> giftIds, IReadOnlyCollection<GiftItem> availableGifts)
         {
             EnsureCartExists();
 
-            if (productIds.IsNullOrEmpty())
+            if (!giftIds.IsNullOrEmpty())
             {
-                return this;
+                foreach (var giftId in giftIds)
+                {
+                    var availableGift = availableGifts.FirstOrDefault(x => x.Id == giftId);
+                    if (availableGift == null)
+                    {
+                        // ignore the gift, if it's not in available gifts list
+                        continue;
+                    }
+
+                    var giftItem = GiftItems.FirstOrDefault(x => x.EqualsReward(availableGift));
+                    if (giftItem == null)
+                    {
+                        giftItem = _mapper.Map<LineItem>(availableGift);
+                        giftItem.Id = null;
+                        giftItem.IsGift = true;
+                        giftItem.CatalogId ??= "";
+                        giftItem.ProductId ??= "";
+                        giftItem.Sku ??= "";
+                        giftItem.Currency = Currency.Code;
+                        Cart.Items.Add(giftItem);
+                    }
+
+                    giftItem.IsRejected = false;
+                }
             }
 
-            var giftsInCart = Cart.Items.Where(x => x.IsGift).ToArray();
-
-            foreach (var productId in productIds)
-            {
-                var availableGift = availableGifts.FirstOrDefault(x => x.ProductId == productId);
-                if (availableGift == null)
-                {
-                    // ignore the product, if it's not available as gift
-                    continue;
-                }
-
-                var giftItem = giftsInCart.FirstOrDefault(x => x.ProductId == productId);
-                if (giftItem == null)
-                {
-                    giftItem = (LineItem)availableGift.Clone();
-                    giftItem.Id = null;
-                    Cart.Items.Add(giftItem);
-                }
-
-                giftItem.IsGift = true;
-                giftItem.IsRejected = false;
-            }
-
-            return this;
+            return Task.FromResult(this);
         }
 
         public virtual CartAggregate RejectCartItems(IReadOnlyCollection<string> cartItemIds)
@@ -248,10 +249,10 @@ namespace VirtoCommerce.XPurchase
 
             foreach (var cartItemId in cartItemIds)
             {
-                var giftItem = Cart.Items.FirstOrDefault(x => x.IsGift && x.Id == cartItemId);
+                var giftItem = GiftItems.FirstOrDefault(x => x.Id == cartItemId);
                 if (giftItem != null)
                 {
-                    giftItem.IsRejected = true;
+                    RemoveItemAsync(giftItem.Id);
                 }
             }
 
@@ -537,7 +538,7 @@ namespace VirtoCommerce.XPurchase
             EnsureCartExists();
 
             var promotionResult = new PromotionResult();
-            if (!Cart.Items.IsNullOrEmpty() && !Cart.Items.Any(i => i.IsReadOnly))
+            if (!LineItems.IsNullOrEmpty() && !LineItems.Any(i => i.IsReadOnly))
             {
                 var evalContext = _mapper.Map<PromotionEvaluationContext>(this);
                 promotionResult = await EvaluatePromotionsAsync(evalContext);
@@ -569,7 +570,7 @@ namespace VirtoCommerce.XPurchase
             EnsureCartExists();
 
             var promotionEvalResult = await EvaluatePromotionsAsync();
-            Cart.ApplyRewards(promotionEvalResult.Rewards);
+            this.ApplyRewards(promotionEvalResult.Rewards);
 
             var taxRates = await EvaluateTaxesAsync();
             Cart.ApplyTaxRates(taxRates);
@@ -689,7 +690,7 @@ namespace VirtoCommerce.XPurchase
 
         protected virtual async Task<CartAggregate> InnerAddLineItemAsync(LineItem lineItem, CartProduct product = null)
         {
-            var existingLineItem = Cart.Items.FirstOrDefault(li => !li.IsGift && li.ProductId == lineItem.ProductId);
+            var existingLineItem = LineItems.FirstOrDefault(li => li.ProductId == lineItem.ProductId);
             if (existingLineItem != null)
             {
                 await InnerChangeItemQuantityAsync(existingLineItem, existingLineItem.Quantity + Math.Max(1, lineItem.Quantity), product);

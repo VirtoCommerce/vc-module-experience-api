@@ -145,7 +145,7 @@ namespace VirtoCommerce.XPurchase
                 aggregate.CartProducts[cartProduct.Id] = cartProduct;
             }
 
-            foreach (var lineItem in cart.Items)
+            foreach (var lineItem in aggregate.LineItems)
             {
                 var cartProduct = aggregate.CartProducts[lineItem.ProductId];
                 await aggregate.SetItemFulfillmentCenterAsync(lineItem, cartProduct);

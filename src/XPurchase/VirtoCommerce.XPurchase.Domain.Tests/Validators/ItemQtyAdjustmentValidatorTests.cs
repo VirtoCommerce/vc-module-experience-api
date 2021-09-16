@@ -158,6 +158,7 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             var aggregate = GetValidCartAggregate();
 
             var lineItem = _fixture.Create<LineItem>();
+            lineItem.IsGift = false;
 
             aggregate.Cart.Items = new List<LineItem> { lineItem };
 
