@@ -132,7 +132,7 @@ namespace VirtoCommerce.XPurchase.Schemas
 
             schema.Mutation.AddField(FieldBuilder
                 .Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<CartType>())
-                .Name("addGiftItem")
+                .Name("addGiftItems")
                 .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputAddGiftItemsType>>(), _commandName)
                 .ResolveAsync(async context =>
                 {
@@ -146,7 +146,7 @@ namespace VirtoCommerce.XPurchase.Schemas
 
             schema.Mutation.AddField(FieldBuilder
                 .Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<CartType>())
-                .Name("rejectItem")
+                .Name("rejectGiftItems")
                 .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputRejectGiftItemsType>>(), _commandName)
                 .ResolveAsync(async context =>
                 {
