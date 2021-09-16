@@ -227,6 +227,56 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                 })
             });
 
+#pragma warning disable S125 // Sections of code should not be commented out
+            /*                         
+               query {
+                     requestPasswordReset(loginOrEmail: "user@email")
+               }                         
+            */
+#pragma warning restore S125 // Sections of code should not be commented out
+
+            _ = schema.Query.AddField(new FieldType
+            {
+                Name = "requestPasswordReset",
+                Arguments = new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "loginOrEmail" },
+                    new QueryArgument<StringGraphType> { Name = "urlSuffix" }),
+                Type = GraphTypeExtenstionHelper.GetActualType<BooleanGraphType>(),
+                Resolver = new AsyncFieldResolver<object>(async context =>
+                {
+                    var result = await _mediator.Send(new RequestPasswordResetQuery
+                    {
+                        LoginOrEmail = context.GetArgument<string>("loginOrEmail"),
+                        UrlSuffix = context.GetArgument<string>("urlSuffix"),
+                    });
+
+                    return result;
+                })
+            });
+
+#pragma warning disable S125 // Sections of code should not be commented out
+            /*                         
+               query {
+                     validatePassword(password: "pswd")
+               }                         
+            */
+#pragma warning restore S125 // Sections of code should not be commented out
+            _ = schema.Query.AddField(new FieldType
+            {
+                Name = "validatePassword",
+                Arguments = new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "password" }),
+                Type = GraphTypeExtenstionHelper.GetActualType<CustomIdentityResultType>(),
+                Resolver = new AsyncFieldResolver<object>(async context =>
+                {
+                    var result = await _mediator.Send(new PasswordValidationQuery
+                    {
+                        Password = context.GetArgument<string>("password"),
+                    });
+
+                    return result;
+                })
+            });
+
             #region updateAddressMutation
 
             /// sample code for updating addresses:
@@ -367,6 +417,18 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                             return await _mediator.Send(command);
                         })
                         .FieldType);
+
+            _ = schema.Mutation.AddField(FieldBuilder.Create<object, IdentityResultResponse>(GraphTypeExtenstionHelper.GetActualType<CustomIdentityResultType>())
+                .Name("resetPasswordByToken")
+                .Argument(GraphTypeExtenstionHelper.GetActualComplexType<InputResetPasswordByTokenType>(), _commandName)
+                .ResolveAsync(async context =>
+                {
+                    var type = GenericTypeHelper.GetActualType<ResetPasswordByTokenCommand>();
+                    var command = (ResetPasswordByTokenCommand)context.GetArgument(type, _commandName);
+
+                    return await _mediator.Send(command);
+                })
+                .FieldType);
 
             // Security API fields
 
