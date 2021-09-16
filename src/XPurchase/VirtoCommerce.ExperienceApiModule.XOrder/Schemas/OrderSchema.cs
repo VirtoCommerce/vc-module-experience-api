@@ -16,6 +16,7 @@ using VirtoCommerce.ExperienceApiModule.XOrder.Commands;
 using VirtoCommerce.ExperienceApiModule.XOrder.Queries;
 using VirtoCommerce.OrdersModule.Core.Model;
 using VirtoCommerce.OrdersModule.Core.Services;
+using VirtoCommerce.PaymentModule.Model.Requests;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 {
@@ -126,31 +127,19 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                             })
                             .FieldType);
 
-            _ = schema.Mutation.AddField(FieldBuilder.Create<object, bool>(typeof(BooleanGraphType))
-                            .Name("confirmOrderPayment")
-                            .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputConfirmOrderPaymentType>>(), _commandName)
+            _ = schema.Mutation.AddField(FieldBuilder.Create<object, ProcessPaymentRequestResult>(typeof(ProcessPaymentRequestResultType))
+                            .Name("processOrderPayment")
+                            .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputProcessOrderPaymentType>>(), _commandName)
                             .ResolveAsync(async context =>
                             {
-                                var type = GenericTypeHelper.GetActualType<ConfirmOrderPaymentCommand>();
-                                var command = (ConfirmOrderPaymentCommand)context.GetArgument(type, _commandName);
-                                await CheckAuthAsync(context, command.Payment.OrderId);
+                                var type = GenericTypeHelper.GetActualType<ProcessOrderPaymentCommand>();
+                                var command = (ProcessOrderPaymentCommand)context.GetArgument(type, _commandName);
+                                await CheckAuthAsync(context, command.OrderId);
 
                                 return await _mediator.Send(command);
                             })
                             .FieldType);
 
-            _ = schema.Mutation.AddField(FieldBuilder.Create<object, bool>(typeof(BooleanGraphType))
-                            .Name("cancelOrderPayment")
-                            .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputCancelOrderPaymentType>>(), _commandName)
-                            .ResolveAsync(async context =>
-                            {
-                                var type = GenericTypeHelper.GetActualType<CancelOrderPaymentCommand>();
-                                var command = (CancelOrderPaymentCommand)context.GetArgument(type, _commandName);
-                                await CheckAuthAsync(context, command.Payment.OrderId);
-
-                                return await _mediator.Send(command);
-                            })
-                            .FieldType);
 
             _ = schema.Mutation.AddField(FieldBuilder.Create<CustomerOrderAggregate, CustomerOrderAggregate>(GraphTypeExtenstionHelper.GetActualType<CustomerOrderType>())
                             .Name("updateOrderDynamicProperties")
