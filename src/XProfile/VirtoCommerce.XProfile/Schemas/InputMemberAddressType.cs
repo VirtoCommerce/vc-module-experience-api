@@ -25,6 +25,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             Field(x => x.RegionId, true).Description("Region id");
             Field(x => x.RegionName, true).Description("Region name");
             Field(x => x.Zip, true).Description("Zip");
+            Field(x => x.OuterId, true).Description("Outer id");
             Field<IntGraphType>(nameof(Address.AddressType));
         }
     }

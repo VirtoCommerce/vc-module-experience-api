@@ -5,14 +5,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
-using VirtoCommerce.ExperienceApiModule.Core.Models;
+using VirtoCommerce.ExperienceApiModule.XProfile.Extensions;
+using VirtoCommerce.ExperienceApiModule.XProfile.Models;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Security;
-using VirtoCommerce.Platform.Security;
 
-namespace VirtoCommerce.ExperienceApiModule.Core.Queries
+namespace VirtoCommerce.ExperienceApiModule.XProfile.Queries
 {
-    public class PasswordValidationQueryHandler : IQueryHandler<PasswordValidationQuery, PasswordValidationResponse>
+    public class PasswordValidationQueryHandler : IQueryHandler<PasswordValidationQuery, IdentityResultResponse>
     {
         private readonly Func<UserManager<ApplicationUser>> _userManagerFactory;
 
@@ -21,9 +21,9 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Queries
             _userManagerFactory = userManagerFactory;
         }
 
-        public virtual async Task<PasswordValidationResponse> Handle(PasswordValidationQuery request, CancellationToken cancellationToken)
+        public virtual async Task<IdentityResultResponse> Handle(PasswordValidationQuery request, CancellationToken cancellationToken)
         {
-            var result = new PasswordValidationResponse
+            var result = new IdentityResultResponse
             {
                 Errors = new List<IdentityErrorInfo>(),
                 Succeeded = true,
@@ -36,21 +36,10 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Queries
                 var validationResult = await passwordValidator.ValidateAsync(userManager, null, request.Password);
                 result.Succeeded &= validationResult.Succeeded;
 
-                result.Errors.AddRange(validationResult.Errors.Select(MapToIdentityErrorInfo));
+                result.Errors.AddRange(validationResult.Errors.Select(x => x.MapToIdentityErrorInfo()));
             }
 
             return result;
-        }
-
-        protected virtual IdentityErrorInfo MapToIdentityErrorInfo(IdentityError x)
-        {
-            var error = new IdentityErrorInfo { Code = x.Code, Description = x.Description };
-            if (x is CustomIdentityError customIdentityError)
-            {
-                error.ErrorParameter = customIdentityError.ErrorParameter;
-            }
-
-            return error;
         }
     }
 }

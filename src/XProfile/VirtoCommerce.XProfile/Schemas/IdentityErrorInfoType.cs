@@ -1,11 +1,11 @@
 using GraphQL.Types;
-using VirtoCommerce.ExperienceApiModule.Core.Models;
+using VirtoCommerce.ExperienceApiModule.XProfile.Models;
 
-namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
+namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 {
-    public class PasswordValidationErrorType : ObjectGraphType<IdentityErrorInfo>
+    public class IdentityErrorInfoType : ObjectGraphType<IdentityErrorInfo>
     {
-        public PasswordValidationErrorType()
+        public IdentityErrorInfoType()
         {
             Field(x => x.Code).Description("Error code");
             Field(x => x.ErrorParameter, nullable: true).Description("Error parameter");

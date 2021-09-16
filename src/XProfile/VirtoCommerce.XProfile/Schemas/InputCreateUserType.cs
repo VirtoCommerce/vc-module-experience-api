@@ -25,6 +25,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             Field(x => x.TwoFactorEnabled, true);
             Field(x => x.UserName);
             Field(x => x.UserType); // Manager, Customer
+            Field(x => x.PasswordExpired, true);
         }
     }
 }

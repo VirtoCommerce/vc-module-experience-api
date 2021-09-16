@@ -17,20 +17,19 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
         public string Name { get; set; }
         public string MemberType { get; set; }
 
-        public IList<string> PhoneNumbers { get; set; } = new List<string>();
+        public IList<string> PhoneNumbers { get; set; }
         /// <summary>
         /// Returns the email address of the customer.
         /// </summary>
-        public IList<string> Emails { get; set; } = new List<string>();
-        public IList<string> Phones { get; set; } = new List<string>();
-        public IList<string> Groups { get; set; } = new List<string>();
+        public IList<string> Emails { get; set; }
+        public IList<string> Phones { get; set; }
+        public IList<string> Groups { get; set; }
         /// <summary>
         /// User groups such as VIP, Wholesaler etc
         /// </summary>
-        public IList<string> UserGroups { get; set; } = new List<string>();
+        public IList<string> UserGroups { get; set; }
 
-        public IList<Address> Addresses { get; set; } = new List<Address>();
-        public IList<DynamicProperty> DynamicProperties { get; set; } = new List<DynamicProperty>(Enumerable.Empty<DynamicProperty>());
+        public IList<Address> Addresses { get; set; }
         public string UserId { get; set; }
     }
 }
