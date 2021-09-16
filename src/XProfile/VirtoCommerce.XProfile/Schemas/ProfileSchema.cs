@@ -254,6 +254,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                 })
             });
 
+#pragma warning disable S125 // Sections of code should not be commented out
             /*                         
                query {
                      validatePassword(password: "pswd")
