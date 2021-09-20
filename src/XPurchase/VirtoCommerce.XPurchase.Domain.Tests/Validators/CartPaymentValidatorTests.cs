@@ -20,9 +20,13 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             var item = _fixture.Create<Payment>();
 
             // Act
-            var validator = new CartPaymentValidator(_context.AvailPaymentMethods);
+            var validator = new CartPaymentValidator();
             var randomRuleSet = _fixture.Create<string>();
-            var result = await validator.ValidateAsync(item, ruleSet: randomRuleSet);
+            var result = await validator.ValidateAsync(new PaymentValidationContext
+            {
+                Payment = item,
+                AvailPaymentMethods = _context.AvailPaymentMethods
+            }, ruleSet: randomRuleSet);
 
             // Assert
             result.Errors.Should().BeEmpty();
@@ -36,8 +40,11 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             var item = _fixture.Create<Payment>();
 
             // Act
-            var validator = new CartPaymentValidator(null);
-            var result = await validator.ValidateAsync(item, ruleSet: "strict");
+            var validator = new CartPaymentValidator();
+            var result = await validator.ValidateAsync(new PaymentValidationContext
+            {
+                 Payment = item
+            });
 
             // Assert
             result.Errors.Should().BeEmpty();
@@ -52,8 +59,12 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             item.PaymentGatewayCode = null;
 
             // Act
-            var validator = new CartPaymentValidator(_context.AvailPaymentMethods);
-            var result = await validator.ValidateAsync(item, ruleSet: "strict");
+            var validator = new CartPaymentValidator();
+            var result = await validator.ValidateAsync(new PaymentValidationContext
+            {
+                Payment = item,
+                AvailPaymentMethods = _context.AvailPaymentMethods
+            });
 
             // Assert
             result.Errors.Should().BeEmpty();
@@ -71,8 +82,12 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
                 .Create();
 
             // Act
-            var validator = new CartPaymentValidator(_context.AvailPaymentMethods);
-            var result = await validator.ValidateAsync(item, ruleSet: "strict");
+            var validator = new CartPaymentValidator();
+            var result = await validator.ValidateAsync(new PaymentValidationContext
+            {
+                Payment = item,
+                AvailPaymentMethods = _context.AvailPaymentMethods
+            });
 
             // Assert
             result.Errors.Should().BeEmpty();
@@ -87,8 +102,12 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             var item = _fixture.Create<Payment>();
 
             // Act
-            var validator = new CartPaymentValidator(_context.AvailPaymentMethods);
-            var result = await validator.ValidateAsync(item, ruleSet: "strict");
+            var validator = new CartPaymentValidator();
+            var result = await validator.ValidateAsync(new PaymentValidationContext
+            {
+                Payment = item,
+                AvailPaymentMethods = _context.AvailPaymentMethods
+            });
 
             // Assert
             var expected = CartErrorDescriber.PaymentMethodUnavailable(item, item.PaymentGatewayCode);

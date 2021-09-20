@@ -11,7 +11,6 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             Field(x => x.CreatedDate, true);
             Field(x => x.Email);
             Field(x => x.Id, true);
-            Field(x => x.IsAdministrator, true);
             Field(x => x.LockoutEnabled, true);
             Field(x => x.LockoutEnd, true);
             Field<ListGraphType<InputApplicationUserLoginType>>(nameof(ApplicationUser.Logins));
