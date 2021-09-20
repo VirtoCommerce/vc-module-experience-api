@@ -19,7 +19,7 @@ namespace VirtoCommerce.XPurchase.Commands
             {
                 var tcs = new TaskCompletionSource<CartAggregate>();
                 tcs.SetException(new OperationCanceledException("Cart not found!"));
-                return tcs.Task;
+                return await tcs.Task;
             }
 
             var lineItem = cartAggregate.Cart.Items.FirstOrDefault(x => x.Id.Equals(request.LineItemId));
