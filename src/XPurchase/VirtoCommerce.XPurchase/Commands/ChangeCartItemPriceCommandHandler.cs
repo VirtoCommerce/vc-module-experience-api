@@ -17,8 +17,11 @@ namespace VirtoCommerce.XPurchase.Commands
             var cartAggregate = await GetOrCreateCartFromCommandAsync(request);
             if (cartAggregate == null)
             {
-                throw new OperationCanceledException("cart not found");
+                var tcs = new TaskCompletionSource<CartAggregate>();
+                tcs.SetException(new OperationCanceledException("Cart not found!"));
+                return tcs.Task;
             }
+
             var lineItem = cartAggregate.Cart.Items.FirstOrDefault(x => x.Id.Equals(request.LineItemId));
             var priceAdjustment = new PriceAdjustment
             {
@@ -26,6 +29,7 @@ namespace VirtoCommerce.XPurchase.Commands
                 LineItemId = request.LineItemId,
                 NewPrice = request.Price
             };
+
             await cartAggregate.ChangeItemPriceAsync(priceAdjustment);
 
             return await SaveCartAsync(cartAggregate);
