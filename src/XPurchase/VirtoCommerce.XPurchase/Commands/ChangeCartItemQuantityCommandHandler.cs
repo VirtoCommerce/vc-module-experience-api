@@ -27,6 +27,7 @@ namespace VirtoCommerce.XPurchase.Commands
 
             await cartAggregate.ChangeItemQuantityAsync(new ItemQtyAdjustment
             {
+                LineItem = lineItem,
                 LineItemId = request.LineItemId,
                 NewQuantity = request.Quantity,
                 CartProduct = product

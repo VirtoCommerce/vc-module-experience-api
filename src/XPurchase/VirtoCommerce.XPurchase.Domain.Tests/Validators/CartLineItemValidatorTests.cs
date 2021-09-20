@@ -30,8 +30,12 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             item.ProductId = lineItem.Id;
 
             // Act
-            var validator = new CartLineItemValidator(_context.AllCartProducts);
-            var result = await validator.ValidateAsync(item, ruleSet: "strict");
+            var validator = new CartLineItemValidator();
+            var result = await validator.ValidateAsync(new LineItemValidationContext
+            {
+                AllCartProducts = _context.AllCartProducts,
+                LineItem = item
+            }, ruleSet: "strict");
 
             // Assert
             result.Errors.Should().BeEmpty();
@@ -65,8 +69,12 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             }
 
             // Act
-            var validator = new CartLineItemValidator(_context.AllCartProducts);
-            var result = await validator.ValidateAsync(item, ruleSet: "strict");
+            var validator = new CartLineItemValidator();
+            var result = await validator.ValidateAsync(new LineItemValidationContext
+            {
+                LineItem = item,
+                AllCartProducts = _context.AllCartProducts
+            });
 
             // Assert
             result.IsValid.Should().BeFalse();
@@ -85,8 +93,12 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             item.Quantity = InStockQuantity * 2;
 
             // Act
-            var validator = new CartLineItemValidator(_context.AllCartProducts);
-            var result = await validator.ValidateAsync(item, ruleSet: "strict");
+            var validator = new CartLineItemValidator();
+            var result = await validator.ValidateAsync(new LineItemValidationContext
+            {
+                LineItem = item,
+                AllCartProducts = _context.AllCartProducts
+            });
 
             // Assert
             result.IsValid.Should().BeFalse();
@@ -104,8 +116,12 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             item.SalePrice /= 2m;
 
             // Act
-            var validator = new CartLineItemValidator(_context.AllCartProducts);
-            var result = await validator.ValidateAsync(item, ruleSet: "strict");
+            var validator = new CartLineItemValidator();
+            var result = await validator.ValidateAsync(new LineItemValidationContext
+            {
+                LineItem = item,
+                AllCartProducts = _context.AllCartProducts
+            });
 
             // Assert
             result.IsValid.Should().BeFalse();
