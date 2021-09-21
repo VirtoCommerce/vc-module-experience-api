@@ -34,7 +34,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                 Type = GraphTypeExtenstionHelper.GetActualType<NonNullGraphType<StringGraphType>>(),
                 Resolver = new FuncFieldResolver<string>(context =>
                 {
-                    // return value object hash as Id
+                    // As GiftItem is ValueObject, it's HashCode is determined by the values returned form GetEqualityComponents(). Always the same value for same Equality Components.
                     return context.Source.GetHashCode().ToString();
                 })
             });

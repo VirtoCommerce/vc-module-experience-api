@@ -170,7 +170,10 @@ namespace VirtoCommerce.XPurchase.Services
                 }
 
                 var giftInCart = cartAggr.GiftItems.FirstOrDefault(x => x.EqualsReward(result));
+                // non-null LineItemId indicates that this GiftItem was added to the cart
                 result.LineItemId = giftInCart?.Id;
+
+                // As GiftItem is ValueObject, it's HashCode is determined by the values returned form GetEqualityComponents(). Always the same value for same Equality Components.
                 result.Id = result.GetHashCode().ToString();
                 return result;
             }).ToList();

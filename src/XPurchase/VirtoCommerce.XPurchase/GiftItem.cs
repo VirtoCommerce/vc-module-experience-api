@@ -9,6 +9,8 @@ namespace VirtoCommerce.XPurchase
         public string CatalogId { get; set; }
         // Sku to pass to lineItem
         public string Sku { get; set; }
+
+        // The Id of Cart LineItem, if this gift is added to a Cart. Otherwise null
         public string LineItemId { get; set; }
 
 
