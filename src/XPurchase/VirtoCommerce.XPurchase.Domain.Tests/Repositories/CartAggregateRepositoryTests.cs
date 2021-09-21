@@ -47,7 +47,8 @@ namespace VirtoCommerce.XPurchase.Tests.Repositories
                 _currencyService.Object,
                 _memberResolver.Object,
                 _storeService.Object,
-                _cartValidationContextFactory.Object
+                _cartValidationContextFactory.Object,
+                null
                 );
         }
 

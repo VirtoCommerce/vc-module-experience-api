@@ -12,7 +12,6 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             Field(x => x.AccessFailedCount, true);
             Field(x => x.Email);
             Field(x => x.Id);
-            Field(x => x.IsAdministrator, true);
             Field(x => x.LockoutEnabled, true);
             Field(x => x.LockoutEnd, true);
             Field(x => x.MemberId, true);

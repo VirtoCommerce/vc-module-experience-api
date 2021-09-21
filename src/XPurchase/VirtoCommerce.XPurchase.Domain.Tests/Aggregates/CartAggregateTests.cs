@@ -160,10 +160,12 @@ namespace VirtoCommerce.XPurchase.Tests.Aggregates
             cartAggregate.Cart.Items = new List<LineItem> { lineItem };
 
             // Act
-            await cartAggregate.ChangeItemPriceAsync(new PriceAdjustment(
-                _fixture.Create<string>(),
-                _fixture.Create<decimal>()
-            ));
+            await cartAggregate.ChangeItemPriceAsync(new PriceAdjustment
+            {
+                LineItemId = _fixture.Create<string>(),
+                LineItem = _fixture.Create<LineItem>(),
+                 NewPrice = _fixture.Create<decimal>()
+             });
 
             // Assert
             cartAggregate.Cart.Items.Should().Contain(x => x.ListPrice == lineItem.ListPrice && x.SalePrice == lineItem.SalePrice);
@@ -179,7 +181,12 @@ namespace VirtoCommerce.XPurchase.Tests.Aggregates
             var newPrice = _fixture.Create<decimal>();
 
             // Act
-            await cartAggregate.ChangeItemPriceAsync(new PriceAdjustment(lineItem.Id, newPrice));
+            await cartAggregate.ChangeItemPriceAsync(new PriceAdjustment
+            {
+                 LineItem = lineItem,
+                 LineItemId = lineItem.Id,
+                 NewPrice = newPrice
+            });
 
             // Assert
             cartAggregate.Cart.Items.Should().Contain(x => x.ListPrice == newPrice && x.SalePrice == newPrice);

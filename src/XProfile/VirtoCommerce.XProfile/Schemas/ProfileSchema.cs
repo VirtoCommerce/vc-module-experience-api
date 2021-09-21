@@ -537,7 +537,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                         Query variables:
                         {
                          "command":{
-                          "isAdministrator": false,
+                          "securityStamp": ...,
                           "userType": "Customer",
                           "roles": [],
                           "id": "b5d28a83-c296-4212-b89e-046fca3866be",

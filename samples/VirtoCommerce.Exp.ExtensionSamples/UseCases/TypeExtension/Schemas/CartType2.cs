@@ -8,7 +8,7 @@ namespace VirtoCommerce.Exp.ExtensionSamples
     public class CartType2 : CartType
     {
         public CartType2(ICartAvailMethodsService cartAvailMethods, IDynamicPropertyResolverService dynamicPropertyResolver)
-            : base(cartAvailMethods, dynamicPropertyResolver)
+            : base(cartAvailMethods, dynamicPropertyResolver, null)
         {
             Field<StringGraphType>("myCoolScalarProperty", resolve: context => "my cool value");
         }

@@ -12,6 +12,7 @@ using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.StoreModule.Core.Services;
 using VirtoCommerce.XPurchase.Queries;
+using VirtoCommerce.XPurchase.Services;
 using VirtoCommerce.XPurchase.Validators;
 
 namespace VirtoCommerce.XPurchase
@@ -19,7 +20,7 @@ namespace VirtoCommerce.XPurchase
     public class CartAggregateRepository : ICartAggregateRepository
     {
         private readonly Func<CartAggregate> _cartAggregateFactory;
-        private readonly ICartValidationContextFactory _cartValidationContextFactory;
+        private readonly ICartProductService _cartProductsService;
         private readonly IShoppingCartSearchService _shoppingCartSearchService;
         private readonly IShoppingCartService _shoppingCartService;
         private readonly ICurrencyService _currencyService;
@@ -27,14 +28,14 @@ namespace VirtoCommerce.XPurchase
         private readonly IStoreService _storeService;
 
         public CartAggregateRepository(
-            Func<CartAggregate> cartAggregateFactory
-            , IShoppingCartSearchService shoppingCartSearchService
-            , IShoppingCartService shoppingCartService
-            , ICurrencyService currencyService
-            , IMemberResolver memberResolver
-            , IStoreService storeService
-            , ICartValidationContextFactory cartValidationContextFactory
-            )
+            Func<CartAggregate> cartAggregateFactory,
+            IShoppingCartSearchService shoppingCartSearchService,
+            IShoppingCartService shoppingCartService,
+            ICurrencyService currencyService,
+            IMemberResolver memberResolver,
+            IStoreService storeService,
+            ICartValidationContextFactory cartValidationContextFactory,
+            ICartProductService cartProductsService)
         {
             _cartAggregateFactory = cartAggregateFactory;
             _shoppingCartSearchService = shoppingCartSearchService;
@@ -42,13 +43,12 @@ namespace VirtoCommerce.XPurchase
             _currencyService = currencyService;
             _memberResolver = memberResolver;
             _storeService = storeService;
-            _cartValidationContextFactory = cartValidationContextFactory;
+            _cartProductsService = cartProductsService;
         }
 
         public async Task SaveAsync(CartAggregate cartAggregate)
         {
             await cartAggregate.RecalculateAsync();
-            await cartAggregate.ValidateAsync(await _cartValidationContextFactory.CreateValidationContextAsync(cartAggregate));
             await _shoppingCartService.SaveChangesAsync(new ShoppingCart[] { cartAggregate.Cart });
         }
 
@@ -107,7 +107,7 @@ namespace VirtoCommerce.XPurchase
 
         public virtual Task RemoveCartAsync(string cartId) => _shoppingCartService.DeleteAsync(new[] { cartId }, softDelete: true);
 
-        protected virtual async Task<CartAggregate> InnerGetCartAggregateFromCartAsync(ShoppingCart cart, string language)
+        protected virtual async Task<CartAggregate> InnerGetCartAggregateFromCartAsync(ShoppingCart cart, string language, CartAggregateResponseGroup responseGroup = CartAggregateResponseGroup.Full)
         {
             if (cart == null)
             {
@@ -138,9 +138,11 @@ namespace VirtoCommerce.XPurchase
 
             aggregate.GrabCart(cart, store, member, currency);
 
-            var validationContext = await _cartValidationContextFactory.CreateValidationContextAsync(aggregate);
+
+            //Load cart products explicitly if no validation is requested
+            var cartProducts = await _cartProductsService.GetCartProductsByIdsAsync(aggregate, aggregate.Cart.Items.Select(x => x.ProductId).ToArray());
             //Populate aggregate.CartProducts with the  products data for all cart  line items
-            foreach (var cartProduct in validationContext.AllCartProducts)
+            foreach (var cartProduct in cartProducts)
             {
                 aggregate.CartProducts[cartProduct.Id] = cartProduct;
             }
@@ -152,9 +154,6 @@ namespace VirtoCommerce.XPurchase
             }
 
             await aggregate.RecalculateAsync();
-
-            //Run validation
-            await aggregate.ValidateAsync(validationContext);
 
             return aggregate;
         }

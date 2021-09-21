@@ -22,8 +22,7 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             var item = _fixture.Create<ItemQtyAdjustment>();
             item.NewQuantity = newQuantity;
 
-            var aggregate = GetValidCartAggregate();
-            var validator = new ItemQtyAdjustmentValidator(aggregate);
+            var validator = new ItemQtyAdjustmentValidator();
 
             // Act
             var result = await validator.ValidateAsync(item);
@@ -40,8 +39,7 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             var item = _fixture.Create<ItemQtyAdjustment>();
             item.LineItemId = null;
 
-            var aggregate = GetValidCartAggregate();
-            var validator = new ItemQtyAdjustmentValidator(aggregate);
+            var validator = new ItemQtyAdjustmentValidator();
 
             // Act
             var result = await validator.ValidateAsync(item);
@@ -58,8 +56,7 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             var item = _fixture.Create<ItemQtyAdjustment>();
             item.CartProduct = null;
 
-            var aggregate = GetValidCartAggregate();
-            var validator = new ItemQtyAdjustmentValidator(aggregate);
+            var validator = new ItemQtyAdjustmentValidator();
 
             // Act
             var result = await validator.ValidateAsync(item);
@@ -74,9 +71,8 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
         {
             // Arrange
             var item = _fixture.Create<ItemQtyAdjustment>();
-            var aggregate = GetValidCartAggregate();
-            aggregate.Cart.Items = Enumerable.Empty<LineItem>().ToList();
-            var validator = new ItemQtyAdjustmentValidator(aggregate);
+            item.LineItem = null;
+            var validator = new ItemQtyAdjustmentValidator();
 
             // Act
             var result = await validator.ValidateAsync(item);
@@ -107,9 +103,10 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             var item = _fixture
                 .Build<ItemQtyAdjustment>()
                 .With(x => x.LineItemId, lineItem.Id)
+                .With(x => x.LineItem, lineItem)
                 .Create();
 
-            var validator = new ItemQtyAdjustmentValidator(aggregate);
+            var validator = new ItemQtyAdjustmentValidator();
 
             // Act
             var result = await validator.ValidateAsync(item);
@@ -136,7 +133,7 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
                 .With(x => x.LineItemId, lineItem.Id)
                 .Create();
 
-            var validator = new ItemQtyAdjustmentValidator(aggregate);
+            var validator = new ItemQtyAdjustmentValidator();
 
             // Act
             var result = await validator.ValidateAsync(item);
@@ -168,7 +165,7 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
                 .With(x => x.NewQuantity, lineItem.Quantity) // Request max quantity of line item
                 .Create();
 
-            var validator = new ItemQtyAdjustmentValidator(aggregate);
+            var validator = new ItemQtyAdjustmentValidator();
 
             // Act
             var result = await validator.ValidateAsync(item);

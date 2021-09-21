@@ -104,6 +104,7 @@ namespace VirtoCommerce.XPurchase
 
         public bool IsValid => !ValidationErrors.Any();
         public IList<ValidationFailure> ValidationErrors { get; protected set; } = new List<ValidationFailure>();
+        public bool IsValidated { get; private set; } = false;
 
         public virtual CartAggregate GrabCart(ShoppingCart cart, Store store, Member member, Currency currency)
         {
@@ -138,7 +139,7 @@ namespace VirtoCommerce.XPurchase
                 throw new ArgumentNullException(nameof(newCartItem));
             }
 
-            var validationResult = await new NewCartItemValidator().ValidateAsync(newCartItem, ruleSet: ValidationRuleSet);
+            var validationResult = await AbstractTypeFactory<NewCartItemValidator>.TryCreateInstance().ValidateAsync(newCartItem, ruleSet: ValidationRuleSet);
             if (!validationResult.IsValid)
             {
                 ValidationErrors.AddRange(validationResult.Errors);
@@ -266,7 +267,7 @@ namespace VirtoCommerce.XPurchase
             var lineItem = Cart.Items.FirstOrDefault(x => x.Id == priceAdjustment.LineItemId);
             if (lineItem != null)
             {
-                await new ChangeCartItemPriceValidator(this).ValidateAndThrowAsync(priceAdjustment, ruleSet: ValidationRuleSet);
+                await AbstractTypeFactory<ChangeCartItemPriceValidator>.TryCreateInstance().ValidateAndThrowAsync(priceAdjustment, ruleSet: ValidationRuleSet);
                 lineItem.ListPrice = priceAdjustment.NewPrice;
                 lineItem.SalePrice = priceAdjustment.NewPrice;
             }
@@ -278,7 +279,7 @@ namespace VirtoCommerce.XPurchase
         {
             EnsureCartExists();
 
-            var validationResult = await new ItemQtyAdjustmentValidator(this).ValidateAsync(qtyAdjustment, ruleSet: ValidationRuleSet);
+            var validationResult = await AbstractTypeFactory<ItemQtyAdjustmentValidator>.TryCreateInstance().ValidateAsync(qtyAdjustment, ruleSet: ValidationRuleSet);
             if (!validationResult.IsValid)
             {
                 ValidationErrors.AddRange(validationResult.Errors);
@@ -370,7 +371,12 @@ namespace VirtoCommerce.XPurchase
         {
             EnsureCartExists();
 
-            await new CartShipmentValidator(availRates).ValidateAndThrowAsync(shipment, ruleSet: ValidationRuleSet);
+            var validationContext = new ShipmentValidationContext
+            {
+                Shipment = shipment,
+                AvailShippingRates = availRates
+            };
+            await AbstractTypeFactory<CartShipmentValidator>.TryCreateInstance().ValidateAndThrowAsync(validationContext, ruleSet: ValidationRuleSet);
 
             await RemoveExistingShipmentAsync(shipment);
 
@@ -428,8 +434,12 @@ namespace VirtoCommerce.XPurchase
         public virtual async Task<CartAggregate> AddPaymentAsync(Payment payment, IEnumerable<PaymentMethod> availPaymentMethods)
         {
             EnsureCartExists();
-
-            await new CartPaymentValidator(availPaymentMethods).ValidateAndThrowAsync(payment, ruleSet: ValidationRuleSet);
+            var validationContext = new PaymentValidationContext
+            {
+                 Payment = payment,
+                 AvailPaymentMethods = availPaymentMethods
+            };
+            await AbstractTypeFactory<CartPaymentValidator>.TryCreateInstance().ValidateAndThrowAsync(validationContext, ruleSet: ValidationRuleSet);
 
             if (payment.Currency == null)
             {
@@ -506,19 +516,25 @@ namespace VirtoCommerce.XPurchase
             return this;
         }
 
-        public async Task<IList<ValidationFailure>> ValidateAsync(CartValidationContext validationContext)
+        public virtual async Task<IList<ValidationFailure>> ValidateAsync(CartValidationContext validationContext)
         {
-            EnsureCartExists();
+            if (validationContext == null)
+            {
+                throw new ArgumentNullException(nameof(validationContext));
+            }
+            validationContext.CartAggregate = this;
 
-            var result = await new CartValidator(validationContext).ValidateAsync(this, ruleSet: ValidationRuleSet);
+            EnsureCartExists();
+            var result = await AbstractTypeFactory<CartValidator>.TryCreateInstance().ValidateAsync(validationContext, ruleSet: ValidationRuleSet);
             if (!result.IsValid)
             {
                 ValidationErrors.AddRange(result.Errors);
             }
+            IsValidated = true;
             return result.Errors;
         }
 
-        public async Task<bool> ValidateCouponAsync(string coupon)
+        public virtual async Task<bool> ValidateCouponAsync(string coupon)
         {
             EnsureCartExists();
 
@@ -552,7 +568,7 @@ namespace VirtoCommerce.XPurchase
             return _marketingEvaluator.EvaluatePromotionAsync(evalContext);
         }
 
-        protected async Task<IEnumerable<TaxRate>> EvaluateTaxesAsync()
+        protected virtual async Task<IEnumerable<TaxRate>> EvaluateTaxesAsync()
         {
             EnsureCartExists();
             var result = Enumerable.Empty<TaxRate>();
