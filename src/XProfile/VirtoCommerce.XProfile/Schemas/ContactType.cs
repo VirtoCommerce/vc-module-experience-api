@@ -1,16 +1,17 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Builders;
-using GraphQL.Resolvers;
 using GraphQL.Types;
+using MediatR;
 using VirtoCommerce.CustomerModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
 using VirtoCommerce.ExperienceApiModule.Core.Services;
+using VirtoCommerce.ExperienceApiModule.XProfile.Queries;
 using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
@@ -19,7 +20,11 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
     {
         private readonly IOrganizationAggregateRepository _organizationAggregateRepository;
 
-        public ContactType(IOrganizationAggregateRepository organizationAggregateRepository, IDynamicPropertyResolverService dynamicPropertyResolverService)
+        public ContactType(
+            IOrganizationAggregateRepository organizationAggregateRepository,
+            IDynamicPropertyResolverService dynamicPropertyResolverService,
+            IMediator mediator,
+            IMemberAggregateFactory memberAggregateFactory)
         {
             _organizationAggregateRepository = organizationAggregateRepository;
 
@@ -46,24 +51,15 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             Field("organizationsIds", x => x.Contact.Organizations);
             Field("phones", x => x.Contact.Phones);
 
-            AddField(new FieldType
-            {
-                Name = "Organizations",
-                Description = "All contact's organizations",
-                Type = GraphTypeExtenstionHelper.GetActualType<ListGraphType<OrganizationType>>(),
-                Resolver = new AsyncFieldResolver<ContactAggregate, IEnumerable<OrganizationAggregate>>(async context =>
-                {
-                    if (context.Source.Contact.Organizations.IsNullOrEmpty())
-                    {
-                        return default;
-                    }
-                    else
-                    {
-                        var idsToTake = context.Source.Contact.Organizations.ToArray();
-                        return await _organizationAggregateRepository.GetOrganizationsByIdsAsync(idsToTake);
-                    }
-                })
-            });
+            var organizationsConnectionBuilder = GraphTypeExtenstionHelper.CreateConnection<OrganizationType, ContactAggregate>()
+                .Name("organizations")
+                .Argument<StringGraphType>("searchPhrase", "Free text search")
+                .Argument<StringGraphType>("sort", "Sort expression")
+                .Unidirectional()
+                .PageSize(20);
+
+            organizationsConnectionBuilder.ResolveAsync(async context => await ResolveOrganizationsConnectionAsync(mediator, memberAggregateFactory, context));
+            AddField(organizationsConnectionBuilder.FieldType);
 
             var addressesConnectionBuilder = GraphTypeExtenstionHelper.CreateConnection<AddressType, ContactAggregate>()
                 .Name("addresses")
@@ -75,6 +71,26 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             AddField(addressesConnectionBuilder.FieldType);
         }
 
+
+        private static async Task<object> ResolveOrganizationsConnectionAsync(IMediator mediator, IMemberAggregateFactory factory, IResolveConnectionContext<ContactAggregate> context)
+        {
+            var first = context.First;
+            var skip = Convert.ToInt32(context.After ?? 0.ToString());
+
+            var query = new SearchMembersQuery
+            {
+                ObjectIds = context.Source.Contact.Organizations,
+                Take = first ?? 20,
+                Skip = skip,
+                SearchPhrase = context.GetArgument<string>("searchPhrase"),
+                Sort = context.GetArgument<string>("sort"),
+                MemberType = nameof(Organization),
+            };
+
+            var response = await mediator.Send(query);
+
+            return new PagedConnection<OrganizationAggregate>(response.Results.Select(x => factory.Create<OrganizationAggregate>(x)), query.Skip, query.Take, response.TotalCount);
+        }
 
         private static object ResolveAddressesConnection(IResolveConnectionContext<ContactAggregate> context)
         {
