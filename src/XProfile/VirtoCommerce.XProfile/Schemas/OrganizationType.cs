@@ -55,9 +55,9 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 
             connectionBuilder.ResolveAsync(async context =>
             {
-                var query = context.GetSearchMembersQuery<SearchContactsQuery>(deepSearch: false);
+                var query = context.GetSearchMembersQuery<SearchContactsQuery>();
                 query.MemberId = context.Source.Organization.Id;
-                query.Keyword = context.GetArgument<string>("searchPhrase");
+                query.DeepSearch = false;
 
                 var response = await mediator.Send(query);
 
