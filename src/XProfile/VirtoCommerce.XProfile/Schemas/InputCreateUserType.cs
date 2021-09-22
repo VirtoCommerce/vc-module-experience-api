@@ -3,29 +3,29 @@ using VirtoCommerce.Platform.Core.Security;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 {
-    public class InputCreateUserType : InputObjectGraphType<ApplicationUser>
+    public class InputCreateUserType : InputObjectGraphType
     {
         public InputCreateUserType()
         {
-            Field(x => x.CreatedBy, true);
-            Field(x => x.CreatedDate, true);
-            Field(x => x.Email);
-            Field(x => x.Id, true);
-            Field(x => x.IsAdministrator, true);
-            Field(x => x.LockoutEnabled, true);
-            Field(x => x.LockoutEnd, true);
+            Field<StringGraphType>("createdBy");
+            Field<DateTimeGraphType>("createdDate");
+            Field<NonNullGraphType<StringGraphType>>("email");
+            Field<StringGraphType>("id");
+            Field<BooleanGraphType>("isAdministrator");
+            Field<BooleanGraphType>("lockoutEnabled");
+            Field<DateTimeGraphType>("LockoutEnd");
             Field<ListGraphType<InputApplicationUserLoginType>>(nameof(ApplicationUser.Logins));
-            Field(x => x.MemberId, true);
-            Field(x => x.Password, true); // nullable, for external logins
-            Field(x => x.PhoneNumber, true);
-            Field(x => x.PhoneNumberConfirmed, true);
-            Field(x => x.PhotoUrl, true);
+            Field<StringGraphType>("MemberId");
+            Field<StringGraphType>("Password"); // nullable, for external logins
+            Field<StringGraphType>("PhoneNumber");
+            Field<BooleanGraphType>("PhoneNumberConfirmed");
+            Field<StringGraphType>("PhotoUrl");
             Field<ListGraphType<InputAssignRoleType>>(nameof(ApplicationUser.Roles));
-            Field(x => x.StoreId, true);
-            Field(x => x.TwoFactorEnabled, true);
-            Field(x => x.UserName);
-            Field(x => x.UserType); // Manager, Customer
-            Field(x => x.PasswordExpired, true);
+            Field<StringGraphType>("StoreId");
+            Field<BooleanGraphType>("TwoFactorEnabled");
+            Field<NonNullGraphType<StringGraphType>>("UserName");
+            Field<NonNullGraphType<StringGraphType>>("UserType"); // Manager, Customer
+            Field<BooleanGraphType>("PasswordExpired");
         }
     }
 }
