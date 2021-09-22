@@ -60,8 +60,6 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 
             organizationsConnectionBuilder.ResolveAsync(async context =>
             {
-                context.CopyArgumentsToUserContext();
-
                 var query = context.GetSearchMembersQuery<SearchOrganizationsQuery>(deepSearch: false, context.Source.Contact.Organizations);
                 var respose = await mediator.Send(query);
 
