@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Builders;
 using GraphQL.Types;
@@ -11,7 +10,8 @@ using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
 using VirtoCommerce.ExperienceApiModule.Core.Services;
-using VirtoCommerce.ExperienceApiModule.XProfile.Queries;
+using VirtoCommerce.ExperienceApiModule.XProfile.Commands;
+using VirtoCommerce.ExperienceApiModule.XProfile.Extensions;
 using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
@@ -53,12 +53,20 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 
             var organizationsConnectionBuilder = GraphTypeExtenstionHelper.CreateConnection<OrganizationType, ContactAggregate>()
                 .Name("organizations")
-                .Argument<StringGraphType>("searchPhrase", "Free text search")
+                .Argument<StringGraphType>("filter", "Free text search")
                 .Argument<StringGraphType>("sort", "Sort expression")
                 .Unidirectional()
                 .PageSize(20);
 
-            organizationsConnectionBuilder.ResolveAsync(async context => await ResolveOrganizationsConnectionAsync(mediator, memberAggregateFactory, context));
+            organizationsConnectionBuilder.ResolveAsync(async context =>
+            {
+                context.CopyArgumentsToUserContext();
+
+                var query = context.GetSearchMembersQuery<SearchOrganizationsQuery>(deepSearch: false, context.Source.Contact.Organizations);
+                var respose = await mediator.Send(query);
+
+                return new PagedConnection<OrganizationAggregate>(respose.Results.Select(x => memberAggregateFactory.Create<OrganizationAggregate>(x)), query.Skip, query.Take, respose.TotalCount);
+            });
             AddField(organizationsConnectionBuilder.FieldType);
 
             var addressesConnectionBuilder = GraphTypeExtenstionHelper.CreateConnection<AddressType, ContactAggregate>()
@@ -69,27 +77,6 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 
             addressesConnectionBuilder.Resolve(ResolveAddressesConnection);
             AddField(addressesConnectionBuilder.FieldType);
-        }
-
-
-        private static async Task<object> ResolveOrganizationsConnectionAsync(IMediator mediator, IMemberAggregateFactory factory, IResolveConnectionContext<ContactAggregate> context)
-        {
-            var first = context.First;
-            var skip = Convert.ToInt32(context.After ?? 0.ToString());
-
-            var query = new SearchMembersQuery
-            {
-                ObjectIds = context.Source.Contact.Organizations,
-                Take = first ?? 20,
-                Skip = skip,
-                SearchPhrase = context.GetArgument<string>("searchPhrase"),
-                Sort = context.GetArgument<string>("sort"),
-                MemberType = nameof(Organization),
-            };
-
-            var response = await mediator.Send(query);
-
-            return new PagedConnection<OrganizationAggregate>(response.Results.Select(x => factory.Create<OrganizationAggregate>(x)), query.Skip, query.Take, response.TotalCount);
         }
 
         private static object ResolveAddressesConnection(IResolveConnectionContext<ContactAggregate> context)

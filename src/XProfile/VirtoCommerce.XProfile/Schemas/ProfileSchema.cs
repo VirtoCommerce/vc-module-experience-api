@@ -117,7 +117,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             {
                 context.CopyArgumentsToUserContext();
 
-                var query = context.GetSearchMembersQuery<SearchOrganizationsQuery>();
+                var query = context.GetSearchMembersQuery<SearchOrganizationsQuery>(deepSearch: true);
                 var response = await _mediator.Send(query);
 
                 return new PagedConnection<OrganizationAggregate>(response.Results.Select(x => _factory.Create<OrganizationAggregate>(x)), query.Skip, query.Take, response.TotalCount);
@@ -171,7 +171,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             {
                 context.CopyArgumentsToUserContext();
 
-                var query = context.GetSearchMembersQuery<SearchContactsQuery>();
+                var query = context.GetSearchMembersQuery<SearchContactsQuery>(deepSearch: true);
                 var response = await _mediator.Send(query);
 
                 return new PagedConnection<ContactAggregate>(response.Results.Select(x => _factory.Create<ContactAggregate>(x)), query.Skip, query.Take, response.TotalCount);
