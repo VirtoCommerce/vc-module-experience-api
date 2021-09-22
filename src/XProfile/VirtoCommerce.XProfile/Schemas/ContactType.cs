@@ -27,7 +27,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 
             Field(x => x.Contact.FirstName);
             Field(x => x.Contact.LastName);
-            Field<DateGraphType>("birthDate", resolve: context => context.Source.Contact.BirthDate);
+            Field<DateGraphType>("birthDate", resolve: context => context.Source.Contact.BirthDate.HasValue ? context.Source.Contact.BirthDate.Value.Date : (DateTime?)null);
             Field(x => x.Contact.FullName);
             Field(x => x.Contact.Id);
             Field(x => x.Contact.MemberType);
@@ -68,7 +68,6 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             var addressesConnectionBuilder = GraphTypeExtenstionHelper.CreateConnection<AddressType, ContactAggregate>()
                 .Name("addresses")
                 .Argument<StringGraphType>("sort", "Sort expression")
-                .Unidirectional()
                 .PageSize(20);
 
             addressesConnectionBuilder.Resolve(ResolveAddressesConnection);

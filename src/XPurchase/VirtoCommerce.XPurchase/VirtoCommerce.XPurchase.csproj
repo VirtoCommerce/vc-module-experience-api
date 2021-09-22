@@ -10,8 +10,9 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="GraphQL.DataLoader" Version="4.6.0" />
         <PackageReference Include="PipelineNet" Version="0.9.0" />
-        <PackageReference Include="GraphQL" Version="3.2.0" />
+        <PackageReference Include="GraphQL" Version="4.6.0" />
         <PackageReference Include="MediatR" Version="8.0.1" />
         <PackageReference Include="AutoMapper" Version="10.0.0" />
         <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.0.1" />

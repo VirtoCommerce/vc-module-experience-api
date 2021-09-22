@@ -87,7 +87,6 @@ namespace VirtoCommerce.XPurchase.Schemas
                 .Argument<StringGraphType>("cartType", "")
                 .Argument<StringGraphType>("filter", "This parameter applies a filter to the query results")
                 .Argument<StringGraphType>("sort", "The sort expression")
-                .Unidirectional()
                 .PageSize(20);
 
             orderConnectionBuilder.ResolveAsync(async context => await ResolveConnectionAsync(_mediator, context));

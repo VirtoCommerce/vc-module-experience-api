@@ -49,7 +49,6 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                .Name("contacts")
                .Argument<StringGraphType>("searchPhrase", "Free text search")
                .Argument<StringGraphType>("sort", "Sort expression")
-               .Unidirectional()
                .PageSize(20);
 
             connectionBuilder.ResolveAsync(async context => await ResolveConnectionAsync(mediator, factory, context));
@@ -58,7 +57,6 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             var addressesConnectionBuilder = GraphTypeExtenstionHelper.CreateConnection<AddressType, OrganizationAggregate>()
                 .Name("addresses")
                 .Argument<StringGraphType>("sort", "Sort expression")
-                .Unidirectional()
                 .PageSize(20);
 
             addressesConnectionBuilder.Resolve(ResolveAddressesConnection);
