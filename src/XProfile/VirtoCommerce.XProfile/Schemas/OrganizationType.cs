@@ -71,13 +71,14 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             var first = context.First;
             var skip = Convert.ToInt32(context.After ?? 0.ToString());
 
-            var query = new SearchOrganizationMembersQuery
+            var query = new SearchMembersQuery
             {
-                OrganizationId = context.Source.Organization.Id,
+                MemberId = context.Source.Organization.Id,
                 Take = first ?? 20,
                 Skip = skip,
                 SearchPhrase = context.GetArgument<string>("searchPhrase"),
                 Sort = context.GetArgument<string>("sort"),
+                MemberType = nameof(Contact),
             };
 
             var response = await mediator.Send(query);

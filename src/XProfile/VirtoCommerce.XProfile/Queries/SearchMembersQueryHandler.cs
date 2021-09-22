@@ -1,33 +1,36 @@
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-using VirtoCommerce.CustomerModule.Core.Model;
 using VirtoCommerce.CustomerModule.Core.Model.Search;
 using VirtoCommerce.CustomerModule.Core.Services;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Queries
 {
-    public class SearchOrganizationMembersQueryHandler : IRequestHandler<SearchOrganizationMembersQuery, MemberSearchResult>
+    public class SearchMembersQueryHandler : IRequestHandler<SearchMembersQuery, MemberSearchResult>
     {
         private readonly IMemberSearchService _memberSearchService;
 
-        public SearchOrganizationMembersQueryHandler(IMemberSearchService memberSearchService)
+        public SearchMembersQueryHandler(IMemberSearchService memberSearchService)
         {
             _memberSearchService = memberSearchService;
         }
 
-        public virtual async Task<MemberSearchResult> Handle(SearchOrganizationMembersQuery request, CancellationToken cancellationToken)
+        public virtual async Task<MemberSearchResult> Handle(SearchMembersQuery request, CancellationToken cancellationToken)
         {
             var criteria = new MembersSearchCriteria
             {
-                MemberId = request.OrganizationId,
+                MemberId = request.MemberId,
                 SearchPhrase = request.SearchPhrase,
                 Skip = request.Skip,
                 Take = request.Take,
                 Sort = request.Sort,
-                MemberType = nameof(Contact)
+                MemberType = request.MemberType,
+                ObjectIds = request.ObjectIds,
             };
-            return await _memberSearchService.SearchMembersAsync(criteria);
+
+            var result = await _memberSearchService.SearchMembersAsync(criteria);
+
+            return result;
         }
     }
 }
