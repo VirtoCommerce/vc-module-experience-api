@@ -47,7 +47,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 
             var connectionBuilder = GraphTypeExtenstionHelper.CreateConnection<ContactType, OrganizationAggregate>()
                .Name("contacts")
-               .Argument<StringGraphType>("filter", "Free text search")
+               .Argument<StringGraphType>("searchPhrase", "Free text search")
                .Argument<StringGraphType>("sort", "Sort expression")
                .Unidirectional()
                .PageSize(20);
@@ -56,6 +56,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             {
                 var query = context.GetSearchMembersQuery<SearchContactsQuery>(deepSearch: false);
                 query.MemberId = context.Source.Organization.Id;
+                query.Keyword = context.GetArgument<string>("searchPhrase");
 
                 var response = await mediator.Send(query);
 
