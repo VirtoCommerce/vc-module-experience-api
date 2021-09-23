@@ -46,8 +46,8 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field<MoneyType>("total", resolve: context => context.Source.Cart.Total.ToMoney(context.Source.Currency));
             Field<MoneyType>("subTotal", resolve: context => context.Source.Cart.SubTotal.ToMoney(context.Source.Currency));
             Field<MoneyType>("subTotalWithTax", resolve: context => context.Source.Cart.SubTotalWithTax.ToMoney(context.Source.Currency));
-            Field<MoneyType>("extendedPriceTotal", resolve: context => context.Source.Cart.Items.Sum(i => i.ExtendedPrice).ToMoney(context.Source.Currency));
-            Field<MoneyType>("extendedPriceTotalWithTax", resolve: context => context.Source.Cart.Items.Sum(i => i.ExtendedPriceWithTax).ToMoney(context.Source.Currency));
+            Field<MoneyType>("extendedPriceTotal", resolve: context => context.Source.LineItems.Sum(i => i.ExtendedPrice).ToMoney(context.Source.Currency));
+            Field<MoneyType>("extendedPriceTotalWithTax", resolve: context => context.Source.LineItems.Sum(i => i.ExtendedPriceWithTax).ToMoney(context.Source.Currency));
             Field<CurrencyType>("currency", resolve: context => context.Source.Currency);
             Field<MoneyType>("taxTotal", resolve: context => context.Source.Cart.TaxTotal.ToMoney(context.Source.Currency));
             Field(x => x.Cart.TaxPercentRate, nullable: true).Description("Tax percent rate");
@@ -108,11 +108,21 @@ namespace VirtoCommerce.XPurchase.Schemas
             // Addresses
             ExtendableField<ListGraphType<AddressType>>("addresses", resolve: context => context.Source.Cart.Addresses);
 
-            // Items
-            ExtendableField<ListGraphType<LineItemType>>("items", resolve: context => context.Source.Cart.Items);
+            // Gifts
+            FieldAsync<ListGraphType<GiftItemType>>("gifts", "Gifts", resolve: async context =>
+            {
+                var availableGifts = await cartAvailMethods.GetAvailableGiftsAsync(context.Source);
+                return availableGifts.Where(x => x.LineItemId != null);
+            });
+            FieldAsync<ListGraphType<GiftItemType>>("availableGifts", "Available Gifts", resolve: async context =>
+                await cartAvailMethods.GetAvailableGiftsAsync(context.Source)
+            );
 
-            Field<IntGraphType>("itemsCount", "Count of different items", resolve: context => context.Source.Cart.Items.Count);
-            Field<IntGraphType>("itemsQuantity", "Quantity of items", resolve: context => context.Source.Cart.Items.Sum(x => x.Quantity));
+            // Items
+            ExtendableField<ListGraphType<LineItemType>>("items", resolve: context => context.Source.LineItems);
+
+            Field<IntGraphType>("itemsCount", "Count of different items", resolve: context => context.Source.LineItems.Count());
+            Field<IntGraphType>("itemsQuantity", "Quantity of items", resolve: context => context.Source.LineItems.Sum(x => x.Quantity));
             //TODO:
             //Field<LineItemType>("recentlyAddedItem", resolve: context => context.Source.Cart.RecentlyAddedItem);
 

@@ -1,4 +1,3 @@
-using System.Linq;
 using FluentValidation;
 
 namespace VirtoCommerce.XPurchase.Validators
@@ -15,6 +14,11 @@ namespace VirtoCommerce.XPurchase.Validators
                 {
                     if (newPriceRequest.LineItem != null)
                     {
+                        if (newPriceRequest.LineItem.IsGift)
+                        {
+                            context.AddFailure(CartErrorDescriber.LineItemIsReadOnly(newPriceRequest.LineItem));
+                        }
+
                         var newSalePrice = newPriceRequest.NewPrice;
                         if (newPriceRequest.LineItem.SalePrice > newSalePrice)
                         {
