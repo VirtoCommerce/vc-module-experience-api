@@ -120,7 +120,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                 // Preconvert resulting aggregations to be properly understandable by catalog module
                 var preconvertedAggregations = new List<AggregationResponse>();
                 //Remember term facet ids to distinguish the resulting aggregations are range or term
-                var termsInRequest = new List<string>(searchRequest.Aggregations.Where(x => x is TermAggregationRequest).Select(x => x.Id));
+                var termsInRequest = new List<string>(searchRequest.Aggregations.Where(x => x is TermAggregationRequest).Select(x => x.Id ?? x.FieldName));
                 foreach (var aggregation in searchResult.Aggregations)
                 {
                     if (!termsInRequest.Contains(aggregation.Id))

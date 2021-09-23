@@ -12,7 +12,6 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             Field<IntGraphType>("accessFailedCount");
             Field<NonNullGraphType<StringGraphType>>("email");
             Field<NonNullGraphType<StringGraphType>>("id");
-            Field<BooleanGraphType>("isAdministrator");
             Field<BooleanGraphType>("lockoutEnabled");
             Field<DateTimeGraphType>("LockoutEnd");
             Field<StringGraphType>("MemberId");

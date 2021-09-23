@@ -77,6 +77,37 @@ Register your override with the special syntax in the `module.cs`.
     }
  }
 ```
+## Extend validation logic / replace validators
+The system uses Platform's abstract type factory to instantiate validators. Therefore the approach of validation logic extension similar to other cases (such as domain model extension):
+- Derive your custom validator from original one:
+
+*CartValidator2.cs*
+```C#
+    public class CartValidator2 : CartValidator
+    {
+        public CartValidator2()
+        {
+            // Some additional rules (to the basic) can be provided there
+            RuleFor(x => x.CartAggregate.Cart.Id).NotEmpty(); // Just example
+        }
+    }
+```
+- Override original validator type with your custom in order to tell the factory CartValidator2 replaces the original validator:
+
+*module.cs*
+```C#
+    public class Module : IModule
+    {
+        public void PostInitialize(IApplicationBuilder appBuilder)
+        {
+            ...
+            // Example: replace cart validator
+            AbstractTypeFactory<CartValidator>.OverrideType<CartValidator, CartValidator2>(); 
+            ...
+        }
+    }
+```
+
 
 # Generic behavior pipelines
 xAPI extension points are not limited to data structure extensions. You can also change behavior and business logic outside from  the your custom module without touching the original source code.

@@ -11,7 +11,6 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             Field<DateTimeGraphType>("createdDate");
             Field<NonNullGraphType<StringGraphType>>("email");
             Field<StringGraphType>("id");
-            Field<BooleanGraphType>("isAdministrator");
             Field<BooleanGraphType>("lockoutEnabled");
             Field<DateTimeGraphType>("LockoutEnd");
             Field<ListGraphType<InputApplicationUserLoginType>>(nameof(ApplicationUser.Logins));

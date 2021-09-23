@@ -78,7 +78,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             };
             schema.Query.AddField(cartField);
 
-            var orderConnectionBuilder = GraphTypeExtenstionHelper.CreateConnection<CartType, object>()
+            var cartConnectionBuilder = GraphTypeExtenstionHelper.CreateConnection<CartType, object>()
                 .Name("carts")
                 .Argument<StringGraphType>("storeId", "")
                 .Argument<StringGraphType>("userId", "")
@@ -89,9 +89,9 @@ namespace VirtoCommerce.XPurchase.Schemas
                 .Argument<StringGraphType>("sort", "The sort expression")
                 .PageSize(20);
 
-            orderConnectionBuilder.ResolveAsync(async context => await ResolveConnectionAsync(_mediator, context));
+            cartConnectionBuilder.ResolveAsync(async context => await ResolveCartsConnectionAsync(_mediator, context));
+            schema.Query.AddField(cartConnectionBuilder.FieldType);
 
-            schema.Query.AddField(orderConnectionBuilder.FieldType);
 
             //Mutations
             /// <example>
@@ -128,6 +128,34 @@ namespace VirtoCommerce.XPurchase.Schemas
                                            .FieldType;
 
             schema.Mutation.AddField(addItemField);
+
+            schema.Mutation.AddField(FieldBuilder
+                .Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<CartType>())
+                .Name("addGiftItems")
+                .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputAddGiftItemsType>>(), _commandName)
+                .ResolveAsync(async context =>
+                {
+                    var cartAggregate = await _mediator.Send(context.GetCartCommand<AddGiftItemsCommand>());
+                    //store cart aggregate in the user context for future usage in the graph types resolvers
+                    context.SetExpandedObjectGraph(cartAggregate);
+                    return cartAggregate;
+                })
+                .FieldType
+            );
+
+            schema.Mutation.AddField(FieldBuilder
+                .Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<CartType>())
+                .Name("rejectGiftItems")
+                .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputRejectGiftItemsType>>(), _commandName)
+                .ResolveAsync(async context =>
+                {
+                    var cartAggregate = await _mediator.Send(context.GetCartCommand<RejectGiftCartItemsCommand>());
+                    //store cart aggregate in the user context for future usage in the graph types resolvers
+                    context.SetExpandedObjectGraph(cartAggregate);
+                    return cartAggregate;
+                })
+                .FieldType
+            );
 
             /// <example>
             /// This is an example JSON request for a mutation
@@ -764,7 +792,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             schema.Mutation.AddField(updateCartShipmentDynamicPropertiesField);
         }
 
-        private async Task<object> ResolveConnectionAsync(IMediator mediator, IResolveConnectionContext<object> context)
+        private async Task<object> ResolveCartsConnectionAsync(IMediator mediator, IResolveConnectionContext<object> context)
         {
             var first = context.First;
             var skip = Convert.ToInt32(context.After ?? 0.ToString());

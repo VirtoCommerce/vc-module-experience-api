@@ -1,19 +1,21 @@
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
+using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.CartModule.Core.Services;
+using VirtoCommerce.Platform.Core.GenericCrud;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Commands
 {
     public class CreateOrderFromCartCommandHandler : IRequestHandler<CreateOrderFromCartCommand, CustomerOrderAggregate>
     {
-        private readonly IShoppingCartService _cartService;
+        private readonly ICrudService<ShoppingCart> _cartService;
         private readonly ICustomerOrderAggregateRepository _customerOrderAggregateRepository;
 
         public CreateOrderFromCartCommandHandler(IShoppingCartService cartService,
             ICustomerOrderAggregateRepository customerOrderAggregateRepository)
         {
-            _cartService = cartService;
+            _cartService = (ICrudService<ShoppingCart>)cartService;
             _customerOrderAggregateRepository = customerOrderAggregateRepository;
         }
 

@@ -23,6 +23,9 @@ namespace VirtoCommerce.XPurchase.Mapping
         public CartMappingProfile()
         {
             CreateMap<CartModule.Core.Model.Address, TaxModule.Core.Model.Address>();
+            CreateMap<GiftReward, GiftItem>();
+            CreateMap<GiftItem, LineItem>();
+
             CreateMap<CartProduct, LineItem>().ConvertUsing((cartProduct, lineItem, context) =>
             {
                 if (lineItem == null)
@@ -192,7 +195,7 @@ namespace VirtoCommerce.XPurchase.Mapping
 
                 promoEvalcontext.CartPromoEntries = new List<ProductPromoEntry>();
 
-                foreach (var lineItem in cartAggr.Cart.Items)
+                foreach (var lineItem in cartAggr.LineItems)
                 {
                     var promoEntry = context.Mapper.Map<ProductPromoEntry>(lineItem);
                     var cartProduct = cartAggr.CartProducts[lineItem.ProductId];
@@ -249,7 +252,7 @@ namespace VirtoCommerce.XPurchase.Mapping
                 taxEvalcontext.CustomerId = cartAggr.Cart.CustomerId;
                 //TODO: Customer
 
-                foreach (var lineItem in cartAggr.Cart.Items ?? Array.Empty<LineItem>())
+                foreach (var lineItem in cartAggr.LineItems ?? Array.Empty<LineItem>())
                 {
                     taxEvalcontext.Lines.Add(new TaxLine()
                     {
