@@ -28,12 +28,12 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Infrastructure
         public string Description { get; set; }
 
         public IObjectGraphType Query { get => _schema.Value?.Query; set => _schema.Value.Query = value; }
-        public INameConverter NameConverter { get => _schema.Value?.NameConverter; } //?????
+        public INameConverter NameConverter { get => _schema.Value?.NameConverter; }
         public IObjectGraphType Mutation { get => _schema.Value?.Mutation; set => _schema.Value.Mutation = value; }
         public IObjectGraphType Subscription { get => _schema.Value?.Subscription; set => _schema.Value.Subscription = value; }
-        public SchemaDirectives Directives { get => _schema.Value?.Directives; } //?????
+        public SchemaDirectives Directives { get => _schema.Value?.Directives; }
 
-        public SchemaTypes AllTypes => _schema.Value?.AllTypes; //????
+        public SchemaTypes AllTypes => _schema.Value?.AllTypes;
 
         public IEnumerable<Type> AdditionalTypes => _schema.Value?.AdditionalTypes;
 
@@ -42,11 +42,11 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Infrastructure
         public FieldType TypeMetaFieldType => _schema.Value?.TypeMetaFieldType;
         public FieldType TypeNameMetaFieldType => _schema.Value?.TypeNameMetaFieldType;
 
-        public ExperimentalFeatures Features { get => _schema.Value?.Features; set => _schema.Value.Features = value; } //?????
+        public ExperimentalFeatures Features { get => _schema.Value?.Features; set => _schema.Value.Features = value; }
 
-        public IFieldMiddlewareBuilder FieldMiddleware => _schema.Value?.FieldMiddleware; //?????
+        public IFieldMiddlewareBuilder FieldMiddleware => _schema.Value?.FieldMiddleware;
 
-        public IEnumerable<IGraphType> AdditionalTypeInstances => _schema.Value?.AdditionalTypeInstances; //?????
+        public IEnumerable<IGraphType> AdditionalTypeInstances => _schema.Value?.AdditionalTypeInstances;
 
         public IEnumerable<(Type clrType, Type graphType)> TypeMappings => _schema.Value?.TypeMappings;
 
