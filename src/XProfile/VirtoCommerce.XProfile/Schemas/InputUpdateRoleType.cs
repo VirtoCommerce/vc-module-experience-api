@@ -7,11 +7,11 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
     {
         public InputUpdateRoleType()
         {
-            Field<StringGraphType>("concurrencyStamp");
-            Field<NonNullGraphType<StringGraphType>>("id");
-            Field<NonNullGraphType<StringGraphType>>("name");
-            Field<StringGraphType>("description");
-            Field<NonNullGraphType<ListGraphType<InputAssignPermissionType>>>(nameof(Role.Permissions));
+            Field<StringGraphType>("concurrencyStamp", description: "Concurrency Stamp");
+            Field<NonNullGraphType<StringGraphType>>("id", description: "Role ID");
+            Field<NonNullGraphType<StringGraphType>>("name", description: "Role name");
+            Field<StringGraphType>("description", description: "Role description");
+            Field<NonNullGraphType<ListGraphType<InputAssignPermissionType>>>(nameof(Role.Permissions), description: "List of Role permissions");
         }
     }
 }
