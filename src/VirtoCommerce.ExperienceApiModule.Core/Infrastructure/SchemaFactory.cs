@@ -127,51 +127,22 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Infrastructure
 
         public void RegisterVisitor(ISchemaNodeVisitor visitor)
         {
-            throw new NotImplementedException();
+            _schema.Value?.RegisterVisitor(visitor);
         }
 
         public void RegisterVisitor(Type type)
         {
-            throw new NotImplementedException();
+            _schema.Value?.RegisterVisitor(type);
         }
 
         public void RegisterType(Type type)
         {
-            throw new NotImplementedException();
+            _schema.Value?.RegisterType(type);
         }
 
         public void RegisterTypeMapping(Type clrType, Type graphType)
         {
-            throw new NotImplementedException();
-        }
-    }
-
-
-    public class test
-    {
-        public void RegisterType(IGraphType type)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void RegisterType(Type type)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void RegisterTypeMapping(Type clrType, Type graphType)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void RegisterVisitor(ISchemaNodeVisitor visitor)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void RegisterVisitor(Type type)
-        {
-            throw new NotImplementedException();
+            _schema.Value?.RegisterTypeMapping(clrType, graphType);
         }
     }
 }
