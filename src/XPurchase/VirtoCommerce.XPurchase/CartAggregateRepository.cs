@@ -5,15 +5,17 @@ using System.Threading.Tasks;
 using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.CartModule.Core.Model.Search;
 using VirtoCommerce.CartModule.Core.Services;
+using VirtoCommerce.CartModule.Data.Model;
 using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.ExperienceApiModule.Core;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.GenericCrud;
+using VirtoCommerce.Platform.Data.GenericCrud;
 using VirtoCommerce.StoreModule.Core.Services;
 using VirtoCommerce.XPurchase.Queries;
 using VirtoCommerce.XPurchase.Services;
-using VirtoCommerce.XPurchase.Validators;
 
 namespace VirtoCommerce.XPurchase
 {
@@ -21,8 +23,8 @@ namespace VirtoCommerce.XPurchase
     {
         private readonly Func<CartAggregate> _cartAggregateFactory;
         private readonly ICartProductService _cartProductsService;
-        private readonly IShoppingCartSearchService _shoppingCartSearchService;
-        private readonly IShoppingCartService _shoppingCartService;
+        private readonly SearchService<ShoppingCartSearchCriteria, ShoppingCartSearchResult, ShoppingCart, ShoppingCartEntity> _shoppingCartSearchService;
+        private readonly ICrudService<ShoppingCart> _shoppingCartService;
         private readonly ICurrencyService _currencyService;
         private readonly IMemberResolver _memberResolver;
         private readonly IStoreService _storeService;
@@ -34,12 +36,11 @@ namespace VirtoCommerce.XPurchase
             ICurrencyService currencyService,
             IMemberResolver memberResolver,
             IStoreService storeService,
-            ICartValidationContextFactory cartValidationContextFactory,
             ICartProductService cartProductsService)
         {
             _cartAggregateFactory = cartAggregateFactory;
-            _shoppingCartSearchService = shoppingCartSearchService;
-            _shoppingCartService = shoppingCartService;
+            _shoppingCartSearchService = (SearchService<ShoppingCartSearchCriteria, ShoppingCartSearchResult, ShoppingCart, ShoppingCartEntity>)shoppingCartSearchService;
+            _shoppingCartService = (ICrudService<ShoppingCart>)shoppingCartService;
             _currencyService = currencyService;
             _memberResolver = memberResolver;
             _storeService = storeService;
@@ -49,7 +50,7 @@ namespace VirtoCommerce.XPurchase
         public async Task SaveAsync(CartAggregate cartAggregate)
         {
             await cartAggregate.RecalculateAsync();
-            await _shoppingCartService.SaveChangesAsync(new ShoppingCart[] { cartAggregate.Cart });
+            await _shoppingCartService.SaveChangesAsync(new List<ShoppingCart> { cartAggregate.Cart });
         }
 
         public async Task<CartAggregate> GetCartByIdAsync(string cartId, string language = null)
@@ -80,7 +81,7 @@ namespace VirtoCommerce.XPurchase
                 ResponseGroup = EnumUtility.SafeParseFlags(responseGroup, CartResponseGroup.Full).ToString()
             };
 
-            var cartSearchResult = await _shoppingCartSearchService.SearchCartAsync(criteria);
+            var cartSearchResult = await _shoppingCartSearchService.SearchAsync(criteria);
             //The null value for the Type parameter should be interpreted as a valuable parameter, and we must return a cart object with Type property that has null exactly set.
             //otherwise, for the case where the system contains carts with different Types, the resulting cart may be a random result.
             var cart = cartSearchResult.Results.FirstOrDefault(x => (type != null) || x.Type == null);
@@ -99,7 +100,7 @@ namespace VirtoCommerce.XPurchase
                 throw new ArgumentNullException(nameof(criteria));
             }
 
-            var searchResult = await _shoppingCartSearchService.SearchCartAsync(criteria);
+            var searchResult = await _shoppingCartSearchService.SearchAsync(criteria);
             var cartAggregates = await GetCartsForShoppingCartsAsync(searchResult.Results);
 
             return new SearchCartResponse() { Results = cartAggregates, TotalCount = searchResult.TotalCount };

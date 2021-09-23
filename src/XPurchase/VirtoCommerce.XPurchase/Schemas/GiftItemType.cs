@@ -32,10 +32,10 @@ namespace VirtoCommerce.XPurchase.Schemas
                 Name = "id",
                 Description = "Artificial ID for this value object",
                 Type = GraphTypeExtenstionHelper.GetActualType<NonNullGraphType<StringGraphType>>(),
-                Resolver = new FuncFieldResolver<string>(context =>
+                Resolver = new FuncFieldResolver<GiftItem, string>(context =>
                 {
-                    // As GiftItem is ValueObject, it's HashCode is determined by the values returned form GetEqualityComponents(). Always the same value for same Equality Components.
-                    return context.Source.GetHashCode().ToString();
+                    // CacheKey as Id. CacheKey is determined by the values returned form GetEqualityComponents().
+                    return context.Source.GetCacheKey();
                 })
             });
 
