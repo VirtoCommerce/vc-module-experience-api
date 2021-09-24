@@ -72,6 +72,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
 
                             var notification = await _notificationSearchService.GetNotificationAsync<RegistrationInvitationEmailNotification>();
                             notification.InviteUrl = $"{store.Url.TrimLastSlash()}{request.UrlSuffix.NormalizeUrlSuffix()}?userId={user.Id}&token={Uri.EscapeDataString(token)}";
+                            notification.Message = request.Message;
                             notification.To = user.Email;
                             notification.From = store.Email;
 
