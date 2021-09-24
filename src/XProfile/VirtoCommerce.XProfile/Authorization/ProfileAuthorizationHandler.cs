@@ -10,6 +10,7 @@ using VirtoCommerce.ExperienceApiModule.XProfile.Commands;
 using VirtoCommerce.Platform.Core;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Security;
+using VirtoCommerce.StoreModule.Core.Model;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Authorization
 {
@@ -162,6 +163,11 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Authorization
                 updatePersonalDataCommand.UserId = currentUserId;
                 result = true;
             }
+            else if (context.Resource is InviteUserCommand inviteUserCommand && currentContact != null)
+            {
+                var user = await _userManager.FindByIdAsync(currentUserId);
+                result = await HasSameOrganizationAsync(currentContact, inviteUserCommand.OrganizationId) && await HasSameStoreAsync(user, inviteUserCommand.StoreId);
+            }
             if (result)
             {
                 context.Succeed(requirement);
@@ -185,6 +191,14 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Authorization
 
             var contact = await GetCustomerAsync(contactId) as Contact;
             return currentContact.Organizations.Intersect(contact?.Organizations ?? Array.Empty<string>()).Any();
+        }
+
+        private async Task<bool> HasSameStoreAsync(ApplicationUser currentUser, string storeId)
+        {
+            if (currentUser is null)
+                return false;
+            
+            return currentUser.StoreId == storeId;
         }
 
         //TODO: DRY violation in many places in this solution. Move to abstraction to from multiple boundaries
