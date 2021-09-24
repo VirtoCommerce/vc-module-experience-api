@@ -17,7 +17,7 @@ using VirtoCommerce.StoreModule.Core.Services;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
 {
-    public class InviteUserHandler : IRequestHandler<InviteUserCommand, IdentityResultResponse>
+    public class InviteUserCommandHandler : IRequestHandler<InviteUserCommand, IdentityResultResponse>
     {
         private readonly Func<UserManager<ApplicationUser>> _userManagerFactory;
         private readonly IMemberService _memberService;
@@ -25,7 +25,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
         private readonly INotificationSender _notificationSender;
         private readonly IStoreService _storeService;
 
-        public InviteUserHandler(
+        public InviteUserCommandHandler(
             Func<UserManager<ApplicationUser>> userManager, IMemberService memberService,
             INotificationSearchService notificationSearchService, INotificationSender notificationSender,
             IStoreService storeService)

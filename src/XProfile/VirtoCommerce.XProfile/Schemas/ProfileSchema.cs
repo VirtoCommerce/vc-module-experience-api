@@ -527,6 +527,35 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                 })
                 .FieldType);
 
+            #region register by invitation
+
+#pragma warning disable S125 // Sections of code should not be commented out
+            /*
+            mutation ($command: InputInviteUserType!){
+                inviteUser(command: $command){ succeeded errors { code }}
+            }
+            Query variables:
+            {
+                "command": {
+                    "storeId": "my-store", "organizationId": "my-org", "urlSuffix": "/invite", "email": "example@example.org", "message": "Message"
+                }
+            }
+             */
+#pragma warning restore S125 // Sections of code should not be commented out
+
+            #endregion
+            _ = schema.Mutation.AddField(FieldBuilder.Create<object, IdentityResultResponse>(GraphTypeExtenstionHelper.GetActualType<IdentityResultType>())
+                .Name("inviteUser")
+                .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputInviteUserType>>(), _commandName)
+                .ResolveAsync(async context =>
+                {
+                    var type = GenericTypeHelper.GetActualType<InviteUserCommand>();
+                    var command = (InviteUserCommand)context.GetArgument(type, _commandName);
+                    await CheckAuthAsync(context.GetCurrentUserId(), command);
+                    return await _mediator.Send(command);
+                })
+                .FieldType);
+
             #region create user
 
 #pragma warning disable S125 // Sections of code should not be commented out
