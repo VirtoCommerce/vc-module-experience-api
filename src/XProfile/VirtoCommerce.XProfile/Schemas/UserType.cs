@@ -1,16 +1,15 @@
-using System;
 using System.Linq;
 using GraphQL.Resolvers;
 using GraphQL.Types;
-using Microsoft.AspNetCore.Identity;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
+using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.Platform.Core.Security;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 {
     public class UserType : ObjectGraphType<ApplicationUser>
     {
-        public UserType(IContactAggregateRepository contactAggregateRepository, Func<UserManager<ApplicationUser>> userManagerFactory)
+        public UserType(IContactAggregateRepository contactAggregateRepository, IUserManagerCore userManagerCore)
         {
             Field(x => x.AccessFailedCount);
             Field(x => x.CreatedBy, true);
@@ -31,7 +30,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             Field(x => x.PhoneNumberConfirmed);
             Field(x => x.PhotoUrl, true);
             Field<ListGraphType<RoleType>>("roles", resolve: x => x.Source.Roles);
-            Field<ListGraphType<StringGraphType>>("permissions", resolve: x => x.Source.Roles?.SelectMany(r => r.Permissions?.Select(p => p.Name)));
+            Field<ListGraphType<StringGraphType>>("permissions", resolve: x => x.Source.Roles?.SelectMany(r => r.Permissions?.Select(p => p.Name)).Distinct(), description: "Account permissions");
             Field(x => x.SecurityStamp);
             Field(x => x.StoreId, true);
             Field(x => x.TwoFactorEnabled);
@@ -51,15 +50,8 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             {
                 Name = "LockedState",
                 Description = "Account locked state",
-                Type = GraphTypeExtenstionHelper.GetActualType<BooleanGraphType>(),
-                Resolver = new AsyncFieldResolver<ApplicationUser, bool>(async context =>
-                {
-                    using var userManager = userManagerFactory();
-                    var result = await userManager.IsLockedOutAsync(context.Source);
-
-                    return result;
-                }),
-
+                Type = typeof(BooleanGraphType),
+                Resolver = new AsyncFieldResolver<ApplicationUser, bool>(context => userManagerCore.IsLockedOutAsync(context.Source)),
             });
         }
     }
