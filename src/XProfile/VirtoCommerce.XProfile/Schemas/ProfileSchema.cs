@@ -108,7 +108,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 
             var organizationsConnectionBuilder = GraphTypeExtenstionHelper.CreateConnection<OrganizationType, object>()
                 .Name("organizations")
-                .Argument<StringGraphType>("filter", "This parameter applies a filter to the query results")
+                .Argument<StringGraphType>("searchPhrase", "This parameter applies a filter to the query results")
                 .Argument<StringGraphType>("sort", "The sort expression")
                 .Unidirectional()
                 .PageSize(20);
@@ -118,6 +118,8 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                 context.CopyArgumentsToUserContext();
 
                 var query = context.GetSearchMembersQuery<SearchOrganizationsQuery>();
+                query.DeepSearch = true;
+
                 var response = await _mediator.Send(query);
 
                 return new PagedConnection<OrganizationAggregate>(response.Results.Select(x => _factory.Create<OrganizationAggregate>(x)), query.Skip, query.Take, response.TotalCount);
@@ -162,7 +164,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 
             var contactsConnectionBuilder = GraphTypeExtenstionHelper.CreateConnection<ContactType, object>()
                 .Name("contacts")
-                .Argument<StringGraphType>("filter", "This parameter applies a filter to the query results")
+                .Argument<StringGraphType>("searchPhrase", "This parameter applies a filter to the query results")
                 .Argument<StringGraphType>("sort", "The sort expression")
                 .Unidirectional()
                 .PageSize(20);
@@ -172,6 +174,8 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                 context.CopyArgumentsToUserContext();
 
                 var query = context.GetSearchMembersQuery<SearchContactsQuery>();
+                query.DeepSearch = true;
+
                 var response = await _mediator.Send(query);
 
                 return new PagedConnection<ContactAggregate>(response.Results.Select(x => _factory.Create<ContactAggregate>(x)), query.Skip, query.Take, response.TotalCount);

@@ -33,15 +33,17 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
             return _memberSearchService.SearchMembersAsync(searchCriteria);
         }
 
-        private static MembersSearchCriteria BuildMembersSearchCriteria(SearchMembersQueryBase request, string memberType)
+        protected virtual MembersSearchCriteria BuildMembersSearchCriteria(SearchMembersQueryBase request, string memberType)
         {
             var result = AbstractTypeFactory<MembersSearchCriteria>.TryCreateInstance();
-            result.DeepSearch = true;
+            result.DeepSearch = request.DeepSearch;
             result.MemberType = memberType;
-            result.Keyword = request.Filter;
+            result.Keyword = request.Keyword;
             result.Skip = request.Skip;
             result.Take = request.Take;
             result.Sort = request.Sort;
+            result.ObjectIds = request.ObjectIds;
+            result.MemberId = request.MemberId;
 
             return result;
         }
