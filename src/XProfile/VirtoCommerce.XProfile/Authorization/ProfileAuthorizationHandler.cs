@@ -166,7 +166,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Authorization
             else if (context.Resource is InviteUserCommand inviteUserCommand && currentContact != null)
             {
                 var user = await _userManager.FindByIdAsync(currentUserId);
-                result = await HasSameOrganizationAsync(currentContact, inviteUserCommand.OrganizationId) && await HasSameStoreAsync(user, inviteUserCommand.StoreId);
+                result = await HasSameOrganizationAsync(currentContact, inviteUserCommand.OrganizationId) && HasSameStore(user, inviteUserCommand.StoreId);
             }
             if (result)
             {
@@ -193,7 +193,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Authorization
             return currentContact.Organizations.Intersect(contact?.Organizations ?? Array.Empty<string>()).Any();
         }
 
-        private async Task<bool> HasSameStoreAsync(ApplicationUser currentUser, string storeId)
+        private bool HasSameStore(ApplicationUser currentUser, string storeId)
         {
             if (currentUser is null)
                 return false;

@@ -508,7 +508,11 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             Query variables:
             {
                 "command": {
-                    "storeId": "my-store", "organizationId": "my-org", "urlSuffix": "/invite", "email": "example@example.org", "message": "Message"
+                    "storeId": "my-store",
+                    "organizationId": "my-org",
+                    "urlSuffix": "/invite",
+                    "email": "example@example.org",
+                    "message": "Message"
                 }
             }
              */
@@ -531,13 +535,18 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 
 #pragma warning disable S125 // Sections of code should not be commented out
             /*
-            mutation ($command: InputInviteUserType!){
-                inviteUser(command: $command){ succeeded errors { code }}
+            mutation ($command: InputRegisterByInvitationType!){
+                registerByInvitation(command: $command){ succeeded errors { code }}
             }
             Query variables:
             {
                 "command": {
-                    "storeId": "my-store", "organizationId": "my-org", "urlSuffix": "/invite", "email": "example@example.org", "message": "Message"
+                    "userId": "my-user",
+                    "token": "large-unique-token",
+                    "firstName": "John",
+                    "lastName": "Smith",
+                    "userName": "johnsmith",
+                    "password": "password1!"
                 }
             }
              */
@@ -545,12 +554,12 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 
             #endregion
             _ = schema.Mutation.AddField(FieldBuilder.Create<object, IdentityResultResponse>(GraphTypeExtenstionHelper.GetActualType<IdentityResultType>())
-                .Name("inviteUser")
-                .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputInviteUserType>>(), _commandName)
+                .Name("registerByInvitation")
+                .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputRegisterByInvitationType>>(), _commandName)
                 .ResolveAsync(async context =>
                 {
-                    var type = GenericTypeHelper.GetActualType<InviteUserCommand>();
-                    var command = (InviteUserCommand)context.GetArgument(type, _commandName);
+                    var type = GenericTypeHelper.GetActualType<RegisterByInvitationCommand>();
+                    var command = (RegisterByInvitationCommand)context.GetArgument(type, _commandName);
                     await CheckAuthAsync(context.GetCurrentUserId(), command);
                     return await _mediator.Send(command);
                 })
