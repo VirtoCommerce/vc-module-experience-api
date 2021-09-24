@@ -42,7 +42,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
                 identityResult = await userManager.SetUserNameAsync(user, request.Username);
                 if (identityResult.Succeeded)
                 {
-                    identityResult = await userManager.AddPasswordAsync(user, request.Password);
+                    identityResult = await userManager.ResetPasswordAsync(user, request.Token, request.Password);
 
                     if (identityResult.Succeeded)
                     {

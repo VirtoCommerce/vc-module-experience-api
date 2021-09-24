@@ -10,7 +10,6 @@ using VirtoCommerce.ExperienceApiModule.XProfile.Commands;
 using VirtoCommerce.Platform.Core;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Security;
-using VirtoCommerce.StoreModule.Core.Model;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Authorization
 {
