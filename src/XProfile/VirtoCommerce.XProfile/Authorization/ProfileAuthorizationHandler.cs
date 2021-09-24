@@ -165,8 +165,12 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Authorization
             }
             else if (context.Resource is InviteUserCommand inviteUserCommand && currentContact != null)
             {
-                var user = await _userManager.FindByIdAsync(currentUserId);
-                result = await HasSameOrganizationAsync(currentContact, inviteUserCommand.OrganizationId) && HasSameStore(user, inviteUserCommand.StoreId);
+                var currentUser = await _userManager.FindByIdAsync(currentUserId);
+                result = currentContact.Organizations.Contains(inviteUserCommand.OrganizationId) && currentUser?.StoreId == inviteUserCommand.StoreId;
+            }
+            else if (context.Resource is RegisterByInvitationCommand)
+            {
+                result = true;
             }
             if (result)
             {
@@ -191,14 +195,6 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Authorization
 
             var contact = await GetCustomerAsync(contactId) as Contact;
             return currentContact.Organizations.Intersect(contact?.Organizations ?? Array.Empty<string>()).Any();
-        }
-
-        private bool HasSameStore(ApplicationUser currentUser, string storeId)
-        {
-            if (currentUser is null)
-                return false;
-            
-            return currentUser.StoreId == storeId;
         }
 
         //TODO: DRY violation in many places in this solution. Move to abstraction to from multiple boundaries

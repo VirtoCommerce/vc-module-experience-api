@@ -80,6 +80,16 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
                         }
                     }
                 }
+
+                if (!identityResult.Succeeded)
+                {
+                    await _memberService.DeleteAsync(new[] { contact.Id });
+
+                    if (user.Id != null)
+                    {
+                        await userManager.DeleteAsync(user);
+                    }
+                }
             }
 
             result.Errors = identityResult?.Errors.Select(x => x.MapToIdentityErrorInfo()).ToList();
