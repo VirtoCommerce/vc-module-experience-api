@@ -167,10 +167,6 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Authorization
                 var currentUser = await _userManager.FindByIdAsync(currentUserId);
                 result = currentContact.Organizations.Contains(inviteUserCommand.OrganizationId) && currentUser?.StoreId == inviteUserCommand.StoreId;
             }
-            else if (context.Resource is RegisterByInvitationCommand)
-            {
-                result = true;
-            }
             if (result)
             {
                 context.Succeed(requirement);

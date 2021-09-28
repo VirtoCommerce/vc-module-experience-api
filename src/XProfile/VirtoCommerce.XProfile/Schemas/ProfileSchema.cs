@@ -560,7 +560,6 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                 {
                     var type = GenericTypeHelper.GetActualType<RegisterByInvitationCommand>();
                     var command = (RegisterByInvitationCommand)context.GetArgument(type, _commandName);
-                    await CheckAuthAsync(context.GetCurrentUserId(), command);
                     return await _mediator.Send(command);
                 })
                 .FieldType);

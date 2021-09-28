@@ -7,12 +7,13 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
     {
         public InputRegisterByInvitationType()
         {
-            Field<NonNullGraphType<StringGraphType>>(nameof(RegisterByInvitationCommand.UserId));
-            Field<NonNullGraphType<StringGraphType>>(nameof(RegisterByInvitationCommand.Token));
-            Field<NonNullGraphType<StringGraphType>>(nameof(RegisterByInvitationCommand.FirstName));
-            Field<NonNullGraphType<StringGraphType>>(nameof(RegisterByInvitationCommand.LastName));
-            Field<NonNullGraphType<StringGraphType>>(nameof(RegisterByInvitationCommand.Username));
-            Field<NonNullGraphType<StringGraphType>>(nameof(RegisterByInvitationCommand.Password));
+            Field<NonNullGraphType<StringGraphType>>(nameof(RegisterByInvitationCommand.UserId), "ID of use created for invited email");
+            Field<NonNullGraphType<StringGraphType>>(nameof(RegisterByInvitationCommand.Token), "Invitation token");
+            Field<NonNullGraphType<StringGraphType>>(nameof(RegisterByInvitationCommand.FirstName), "First name of person");
+            Field<NonNullGraphType<StringGraphType>>(nameof(RegisterByInvitationCommand.LastName), "Last name of person");
+            Field<StringGraphType>>(nameof(RegisterByInvitationCommand.Phone), "Phone");
+            Field<NonNullGraphType<StringGraphType>>(nameof(RegisterByInvitationCommand.Username), "Username");
+            Field<NonNullGraphType<StringGraphType>>(nameof(RegisterByInvitationCommand.Password), "Password");
         }
     }
 }

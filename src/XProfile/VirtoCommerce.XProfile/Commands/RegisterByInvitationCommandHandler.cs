@@ -52,6 +52,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
                             contact.FirstName = request.FirstName;
                             contact.LastName = request.LastName;
                             contact.FullName = $"{request.FirstName} {request.LastName}";
+                            contact.Phones = new List<string> { request.Phone };
 
                             await _memberService.SaveChangesAsync(new Member[] { contact });
                         }
