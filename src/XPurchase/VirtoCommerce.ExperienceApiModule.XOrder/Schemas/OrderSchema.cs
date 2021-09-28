@@ -84,7 +84,6 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                 .Argument<StringGraphType>("sort", "The sort expression")
                 .Argument<StringGraphType>("cultureName", "Culture name (\"en-US\")")
                 .Argument<StringGraphType>("userId", "")
-                .Unidirectional()
                 .PageSize(20);
 
             orderConnectionBuilder.ResolveAsync(async context => await ResolveOrdersConnectionAsync(_mediator, context));
@@ -97,7 +96,6 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
              .Argument<StringGraphType>("sort", "The sort expression")
              .Argument<StringGraphType>("cultureName", "Culture name (\"en-US\")")
              .Argument<NonNullGraphType<StringGraphType>>("userId", "")
-             .Unidirectional()
              .PageSize(20);
             paymentsConnectionBuilder.ResolveAsync(async context => await ResolvePaymentsConnectionAsync(_mediator, context));
             schema.Query.AddField(paymentsConnectionBuilder.FieldType);

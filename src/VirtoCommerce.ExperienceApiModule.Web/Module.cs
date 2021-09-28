@@ -1,8 +1,6 @@
-using System;
 using AutoMapper;
 using GraphQL.Server;
 using GraphQL.Types;
-using GraphQL.Utilities;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using VirtoCommerce.ExperienceApiModule.Core;
@@ -55,9 +53,6 @@ namespace VirtoCommerce.ExperienceApiModule.Web
             services.AddXPurchase(graphQlBuilder);
             services.AddXOrder(graphQlBuilder);
 
-            //TODO: Remove after update GraphQL.net to 3.2.0 version.
-            //VP-6356 DateTime field types for GraphQL schema do not return time in result
-            GraphTypeTypeRegistry.Register<DateTime, DateTimeGraphType>();
 
 
             services.AddSingleton<IStoreCurrencyResolver, StoreCurrencyResolver>();

@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using GraphQL;
@@ -26,7 +25,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
                 return context.Source.DisplayNames.FirstOrDefault(x => culture.IsNullOrEmpty() || x.Locale.EqualsInvariant(culture))?.Name;
             });
             Field(x => x.DisplayOrder, nullable: true).Description("The order for the dynamic property to display");
-            Field<StringGraphType>(nameof(DynamicProperty.ValueType), "Value Type", resolve: context => context.Source.ValueType);
+            Field<StringGraphType>(nameof(DynamicProperty.ValueType), "Value Type", resolve: context => context.Source.ValueType.ToString());
             Field<BooleanGraphType>("isArray", resolve: context => context.Source.IsArray, description: "Is dynamic property value an array");
             Field<BooleanGraphType>("isDictionary", resolve: context => context.Source.IsDictionary, description: "Is dynamic property value a dictionary");
             Field<BooleanGraphType>("isMultilingual", resolve: context => context.Source.IsMultilingual, description: "Is dynamic property value multilingual");
@@ -37,7 +36,6 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
               .Argument<StringGraphType>("filter", "")
               .Argument<StringGraphType>("cultureName", "")
               .Argument<StringGraphType>("sort", "")
-              .Unidirectional()
               .PageSize(20)
               .ResolveAsync(async context =>
               {
