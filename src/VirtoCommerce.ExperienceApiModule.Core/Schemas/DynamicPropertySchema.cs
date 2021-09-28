@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Builders;
@@ -51,7 +50,6 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
                 .Argument<StringGraphType>("cultureName", "The culture name (\"en-US\")")
                 .Argument<StringGraphType>("filter", "This parameter applies a filter to the query results")
                 .Argument<StringGraphType>("sort", "The sort expression")
-                .Unidirectional()
                 .PageSize(20);
 
             dynamicPropertiesConnectionBuilder.ResolveAsync(async context => await ResolveDynamicPropertiesConnectionAsync(_mediator, context));

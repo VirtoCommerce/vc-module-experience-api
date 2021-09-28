@@ -110,7 +110,6 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                 .Name("organizations")
                 .Argument<StringGraphType>("searchPhrase", "This parameter applies a filter to the query results")
                 .Argument<StringGraphType>("sort", "The sort expression")
-                .Unidirectional()
                 .PageSize(20);
 
             organizationsConnectionBuilder.ResolveAsync(async context =>
@@ -166,7 +165,6 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                 .Name("contacts")
                 .Argument<StringGraphType>("searchPhrase", "This parameter applies a filter to the query results")
                 .Argument<StringGraphType>("sort", "The sort expression")
-                .Unidirectional()
                 .PageSize(20);
 
             contactsConnectionBuilder.ResolveAsync(async context =>
