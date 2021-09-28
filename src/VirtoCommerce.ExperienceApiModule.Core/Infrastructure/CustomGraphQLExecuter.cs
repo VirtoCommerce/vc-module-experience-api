@@ -21,7 +21,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Infrastructure
     /// <summary>
     /// Wrapper for the default GraphQL query executor with AppInsights logging
     /// </summary>
-    public class CustomGraphQLExecuter<TSchema> : DefaultGraphQLExecuter<TSchema>
+    public sealed class CustomGraphQLExecuter<TSchema> : DefaultGraphQLExecuter<TSchema>
         where TSchema : ISchema
     {
         private readonly TelemetryClient _telemetryClient;
@@ -73,7 +73,11 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Infrastructure
                 // pass an error responce code to trigger AppInsights operation failure state
                 requestTelemetry.ResponseCode = "500";
 
-                var exeptionTelemetry = new ExceptionTelemetry(result.Errors.FirstOrDefault());
+                var exception = result.Errors.Count > 1
+                    ? new AggregateException(result.Errors)
+                    : result.Errors.FirstOrDefault() as Exception;
+
+                var exeptionTelemetry = new ExceptionTelemetry(exception);
 
                 // link exception with the operation
                 exeptionTelemetry.Context.Operation.ParentId = requestTelemetry.Context.Operation.Id;
