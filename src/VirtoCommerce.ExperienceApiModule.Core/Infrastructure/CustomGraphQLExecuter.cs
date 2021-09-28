@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Execution;
 using GraphQL.Server;
-using GraphQL.Server.Internal;
 using GraphQL.Types;
 using GraphQL.Validation;
 using Microsoft.ApplicationInsights;

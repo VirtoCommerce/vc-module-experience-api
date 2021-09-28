@@ -1,6 +1,5 @@
 using AutoMapper;
 using GraphQL.Server;
-using GraphQL.Server.Internal;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
