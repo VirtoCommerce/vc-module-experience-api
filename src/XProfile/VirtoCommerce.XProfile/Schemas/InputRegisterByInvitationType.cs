@@ -11,7 +11,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             Field<NonNullGraphType<StringGraphType>>(nameof(RegisterByInvitationCommand.Token), "Invitation token");
             Field<NonNullGraphType<StringGraphType>>(nameof(RegisterByInvitationCommand.FirstName), "First name of person");
             Field<NonNullGraphType<StringGraphType>>(nameof(RegisterByInvitationCommand.LastName), "Last name of person");
-            Field<StringGraphType>>(nameof(RegisterByInvitationCommand.Phone), "Phone");
+            Field<StringGraphType>(nameof(RegisterByInvitationCommand.Phone), "Phone");
             Field<NonNullGraphType<StringGraphType>>(nameof(RegisterByInvitationCommand.Username), "Username");
             Field<NonNullGraphType<StringGraphType>>(nameof(RegisterByInvitationCommand.Password), "Password");
         }
