@@ -14,7 +14,8 @@ The project "Experience API" it is primarily a intermediated layer between clien
         "User": "elastic",
         "Key": "",
         "EnableHttpCompression": ""
-    }
+    },
+    "OrderFullTextSearchEnabled": true
 }
 ```
 1. The settings “Store full object in index modules” are enabled for catalog and pricing modules:
