@@ -63,15 +63,15 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
                     var store = await _storeService.GetByIdAsync(user.StoreId);
                     if (store == null)
                     {
-                        var error = _environment.IsDevelopment() ? new IdentityError { Code = "StoreNotFound", Description = "Store not found" } : null;
-                        identityResult = IdentityResult.Failed(error);
+                        var errors = _environment.IsDevelopment() ? new [] { new IdentityError { Code = "StoreNotFound", Description = "Store not found" } } : null;
+                        identityResult = IdentityResult.Failed(errors);
                     }
                     else
                     {
                         if (string.IsNullOrEmpty(store.Url) || string.IsNullOrEmpty(store.Email))
                         {
-                            var error = _environment.IsDevelopment() ? new IdentityError { Code = "StoreNotConfigured", Description = "Store has invalid URL or email" } : null;
-                            identityResult = IdentityResult.Failed(error);
+                            var errors = _environment.IsDevelopment() ? new [] { new IdentityError { Code = "StoreNotConfigured", Description = "Store has invalid URL or email" } } : null;
+                            identityResult = IdentityResult.Failed(errors);
                         }
                         else
                         {

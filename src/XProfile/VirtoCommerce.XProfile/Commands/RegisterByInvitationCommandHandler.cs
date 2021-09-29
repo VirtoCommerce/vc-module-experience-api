@@ -45,8 +45,8 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
 
             if (user == null)
             {
-                var error = _environment.IsDevelopment() ? new IdentityError { Code = "UserNotFound", Description = "User not found" } : null;
-                identityResult = IdentityResult.Failed(error);
+                var errors = _environment.IsDevelopment() ? new [] { new IdentityError { Code = "UserNotFound", Description = "User not found" } } : null;
+                identityResult = IdentityResult.Failed(errors);
             }
             else
             {
@@ -59,8 +59,8 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
                         var contact = await _memberService.GetByIdAsync(user.MemberId) as Contact;
                         if (contact == null)
                         {
-                            var error = _environment.IsDevelopment() ? new IdentityError { Code = "ContactNotFound", Description = "Contact not found" } : null;
-                            identityResult = IdentityResult.Failed(error);
+                            var errors = _environment.IsDevelopment() ? new [] { new IdentityError { Code = "ContactNotFound", Description = "Contact not found" } } : null;
+                            identityResult = IdentityResult.Failed(errors);
                         }
                         else
                         {
