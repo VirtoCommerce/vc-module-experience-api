@@ -10,6 +10,7 @@ using Microsoft.Extensions.Hosting;
 using VirtoCommerce.CustomerModule.Core.Model;
 using VirtoCommerce.CustomerModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.XProfile.Extensions;
+using VirtoCommerce.ExperienceApiModule.XProfile.Models;
 using VirtoCommerce.ExperienceApiModule.XProfile.Queries;
 using VirtoCommerce.NotificationsModule.Core.Extensions;
 using VirtoCommerce.NotificationsModule.Core.Services;
@@ -48,7 +49,11 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
         {
             using var userManager = _userManagerFactory();
 
-            var result = new IdentityResultResponse();
+            var result = new IdentityResultResponse
+            {
+                Errors = new List<IdentityErrorInfo>(),
+                Succeeded = false,
+            };
 
             foreach (var email in request.Emails)
             {
@@ -79,11 +84,8 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
                         }
                     }
                 }
-
-                if (identityResult.Errors != null)
-                {
-                    result.Errors.AddRange(identityResult.Errors.Select(x => x.MapToIdentityErrorInfo()));
-                }
+                
+                result.Errors.AddRange(identityResult.Errors.Select(x => x.MapToIdentityErrorInfo()));
                 result.Succeeded &= identityResult.Succeeded;
 
                 if (!result.Succeeded)

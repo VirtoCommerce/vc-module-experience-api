@@ -10,6 +10,7 @@ using Microsoft.Extensions.Hosting;
 using VirtoCommerce.CustomerModule.Core.Model;
 using VirtoCommerce.CustomerModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.XProfile.Extensions;
+using VirtoCommerce.ExperienceApiModule.XProfile.Models;
 using VirtoCommerce.ExperienceApiModule.XProfile.Queries;
 using VirtoCommerce.NotificationsModule.Core.Extensions;
 using VirtoCommerce.NotificationsModule.Core.Services;
@@ -38,7 +39,12 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
         {
             using var userManager = _userManagerFactory();
 
-            var result = new IdentityResultResponse();
+            var result = new IdentityResultResponse
+            {
+                Errors = new List<IdentityErrorInfo>(),
+                Succeeded = false,
+            };
+
             IdentityResult identityResult;
 
             var user = await userManager.FindByIdAsync(request.UserId);
@@ -67,18 +73,18 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
                             contact.FirstName = request.FirstName;
                             contact.LastName = request.LastName;
                             contact.FullName = $"{request.FirstName} {request.LastName}";
-                            contact.Phones = new List<string> { request.Phone };
+                            if (!string.IsNullOrEmpty(request.Phone))
+                            {
+                                contact.Phones = new List<string> { request.Phone };
+                            }
 
                             await _memberService.SaveChangesAsync(new Member[] { contact });
                         }
                     }
                 }
             }
-
-            if (identityResult.Errors != null)
-            {
-                result.Errors = identityResult.Errors.Select(x => x.MapToIdentityErrorInfo()).ToList();
-            }
+            
+            result.Errors = identityResult.Errors.Select(x => x.MapToIdentityErrorInfo()).ToList();
             result.Succeeded = identityResult.Succeeded;
 
             return result;
