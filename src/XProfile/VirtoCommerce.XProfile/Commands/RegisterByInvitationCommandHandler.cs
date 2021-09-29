@@ -75,7 +75,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
                 }
             }
 
-            result.Errors = identityResult.Errors.Select(x => x.MapToIdentityErrorInfo()).ToList();
+            result.Errors = identityResult.Errors?.Select(x => x.MapToIdentityErrorInfo()).ToList();
             result.Succeeded = identityResult.Succeeded;
 
             return result;

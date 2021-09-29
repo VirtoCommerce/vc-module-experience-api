@@ -80,7 +80,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
                     }
                 }
 
-                result.Errors.AddRange(identityResult.Errors.Select(x => x.MapToIdentityErrorInfo()));
+                result.Errors.AddRange(identityResult.Errors?.Select(x => x.MapToIdentityErrorInfo()));
                 result.Succeeded &= identityResult.Succeeded;
 
                 if (!result.Succeeded)
