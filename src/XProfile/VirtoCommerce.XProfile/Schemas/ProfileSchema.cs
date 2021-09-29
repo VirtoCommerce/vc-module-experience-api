@@ -545,6 +545,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                     "token": "large-unique-token",
                     "firstName": "John",
                     "lastName": "Smith",
+                    "phone": "+12025550000",
                     "userName": "johnsmith",
                     "password": "password1!"
                 }
