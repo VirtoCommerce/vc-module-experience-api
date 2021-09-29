@@ -71,7 +71,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
                             var token = await userManager.GeneratePasswordResetTokenAsync(user);
 
                             var notification = await _notificationSearchService.GetNotificationAsync<RegistrationInvitationEmailNotification>();
-                            notification.InviteUrl = $"{store.Url.TrimLastSlash()}{request.UrlSuffix.NormalizeUrlSuffix()}?userId={user.Id}&token={Uri.EscapeDataString(token)}";
+                            notification.InviteUrl = $"{store.Url.TrimLastSlash()}{request.UrlSuffix.NormalizeUrlSuffix()}?userId={user.Id}&email={user.Email}&token={Uri.EscapeDataString(token)}";
                             notification.Message = request.Message;
                             notification.To = user.Email;
                             notification.From = store.Email;
