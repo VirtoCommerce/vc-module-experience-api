@@ -4,7 +4,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Hosting;
 using VirtoCommerce.CustomerModule.Core.Model;
 using VirtoCommerce.CustomerModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.XProfile.Extensions;
@@ -19,11 +21,15 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
 {
     public class RegisterByInvitationCommandHandler : IRequestHandler<RegisterByInvitationCommand, IdentityResultResponse>
     {
+        private readonly IWebHostEnvironment _environment;
         private readonly Func<UserManager<ApplicationUser>> _userManagerFactory;
         private readonly IMemberService _memberService;
 
-        public RegisterByInvitationCommandHandler(Func<UserManager<ApplicationUser>> userManager, IMemberService memberService)
+        public RegisterByInvitationCommandHandler(
+            IWebHostEnvironment environment,
+            Func<UserManager<ApplicationUser>> userManager, IMemberService memberService)
         {
+            _environment = environment;
             _userManagerFactory = userManager;
             _memberService = memberService;
         }
@@ -33,21 +39,30 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
             using var userManager = _userManagerFactory();
 
             var result = new IdentityResultResponse();
-            var identityResult = default(IdentityResult);
+            IdentityResult identityResult;
 
             var user = await userManager.FindByIdAsync(request.UserId);
 
-            if (user != null)
+            if (user == null)
+            {
+                var error = _environment.IsDevelopment() ? new IdentityError { Code = "UserNotFound", Description = "User not found" } : null;
+                identityResult = IdentityResult.Failed(error);
+            }
+            else
             {
                 identityResult = await userManager.ResetPasswordAsync(user, Uri.UnescapeDataString(request.Token), request.Password);
                 if (identityResult.Succeeded)
                 {
                     identityResult = await userManager.SetUserNameAsync(user, request.Username);
-
                     if (identityResult.Succeeded)
                     {
                         var contact = await _memberService.GetByIdAsync(user.MemberId) as Contact;
-                        if (contact != null)
+                        if (contact == null)
+                        {
+                            var error = _environment.IsDevelopment() ? new IdentityError { Code = "ContactNotFound", Description = "Contact not found" } : null;
+                            identityResult = IdentityResult.Failed(error);
+                        }
+                        else
                         {
                             contact.FirstName = request.FirstName;
                             contact.LastName = request.LastName;
@@ -60,8 +75,8 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
                 }
             }
 
-            result.Errors = identityResult?.Errors.Select(x => x.MapToIdentityErrorInfo()).ToList();
-            result.Succeeded = identityResult?.Succeeded ?? false;
+            result.Errors = identityResult.Errors.Select(x => x.MapToIdentityErrorInfo()).ToList();
+            result.Succeeded = identityResult.Succeeded;
 
             return result;
         }
