@@ -7,7 +7,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
     {
         public InputCreateUserType()
         {
-            Field<NonNullGraphType<InputApplicationUserToCreate>>("applicationUser", description: "Application user to create");
+            Field<NonNullGraphType<InputCreateApplicationUserType>>("applicationUser", description: "Application user to create");
         }
     }
 }

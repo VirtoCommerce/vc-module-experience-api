@@ -9,7 +9,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
     {
         public InputUpdateUserType()
         {
-            Field<NonNullGraphType<InputApplicationUserToUpdate>>("applicationUser", description: "Application user to update");
+            Field<NonNullGraphType<InputUpdateApplicationUserType>>("applicationUser", description: "Application user to update");
         }
     }
 }

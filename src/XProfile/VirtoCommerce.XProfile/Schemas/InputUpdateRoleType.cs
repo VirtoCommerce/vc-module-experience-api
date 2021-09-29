@@ -6,7 +6,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
     {
         public InputUpdateRoleType()
         {
-            Field<NonNullGraphType<InputRoleToUpdate>>("role", description: "Role to update");
+            Field<NonNullGraphType<InputUpdateRoleInnerType>>("role", description: "Role to update");
         }
     }
 }

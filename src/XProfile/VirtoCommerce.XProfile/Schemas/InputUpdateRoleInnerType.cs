@@ -3,9 +3,9 @@ using VirtoCommerce.Platform.Core.Security;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 {
-    public class InputRoleToUpdate : InputObjectGraphType
+    public class InputUpdateRoleInnerType : InputObjectGraphType
     {
-        public InputRoleToUpdate()
+        public InputUpdateRoleInnerType()
         {
             Field<StringGraphType>("concurrencyStamp", description: "Concurrency Stamp");
             Field<NonNullGraphType<StringGraphType>>("id", description: "Role ID");

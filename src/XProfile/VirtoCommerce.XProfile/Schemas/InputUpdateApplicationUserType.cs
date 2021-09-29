@@ -3,9 +3,9 @@ using VirtoCommerce.Platform.Core.Security;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 {
-    public class InputApplicationUserToUpdate : InputObjectGraphType
+    public class InputUpdateApplicationUserType : InputObjectGraphType
     {
-        public InputApplicationUserToUpdate()
+        public InputUpdateApplicationUserType()
         {
             Field<IntGraphType>("accessFailedCount", description: "Failed login attempts for the current user");
             Field<NonNullGraphType<StringGraphType>>("email", description: "User Email");

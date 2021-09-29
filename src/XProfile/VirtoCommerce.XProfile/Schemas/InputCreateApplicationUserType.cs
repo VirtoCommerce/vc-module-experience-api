@@ -3,9 +3,9 @@ using VirtoCommerce.Platform.Core.Security;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 {
-    public class InputApplicationUserToCreate : InputObjectGraphType
+    public class InputCreateApplicationUserType : InputObjectGraphType
     {
-        public InputApplicationUserToCreate()
+        public InputCreateApplicationUserType()
         {
             Field<StringGraphType>("createdBy", description: "Username of the creator");
             Field<DateTimeGraphType>("createdDate", description: "Date of user creation");
