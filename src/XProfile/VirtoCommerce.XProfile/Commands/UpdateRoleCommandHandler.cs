@@ -24,16 +24,16 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
 
             using var scope = _services.CreateScope();
             var _roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<Role>>();
-            var roleExists = string.IsNullOrEmpty(request.Id) ?
-                await _roleManager.RoleExistsAsync(request.Name) :
-                await _roleManager.FindByIdAsync(request.Id) != null;
+            var roleExists = string.IsNullOrEmpty(request.Role.Id) ?
+                await _roleManager.RoleExistsAsync(request.Role.Name) :
+                await _roleManager.FindByIdAsync(request.Role.Id) != null;
             if (!roleExists)
             {
-                result = await _roleManager.CreateAsync(request);
+                result = await _roleManager.CreateAsync(request.Role);
             }
             else
             {
-                result = await _roleManager.UpdateAsync(request);
+                result = await _roleManager.UpdateAsync(request.Role);
             }
 
             return result;

@@ -151,10 +151,10 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Authorization
             }
             else if (context.Resource is UpdateUserCommand updateUserCommand && currentContact != null)
             {
-                result = updateUserCommand.Id == currentContact.Id;
+                result = updateUserCommand.ApplicationUser.Id == currentContact.Id;
                 if (!result)
                 {
-                    result = await HasSameOrganizationAsync(currentContact, updateUserCommand.Id);
+                    result = await HasSameOrganizationAsync(currentContact, updateUserCommand.ApplicationUser.Id);
                 }
             }
             else if (context.Resource is UpdatePersonalDataCommand updatePersonalDataCommand)

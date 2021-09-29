@@ -5,8 +5,8 @@ using VirtoCommerce.Platform.Core.Security;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
 {
-    [Obsolete("Move required properties from ApplicationUser")]
-    public class UpdateUserCommand : ApplicationUser, ICommand<IdentityResult>
+    public class UpdateUserCommand : ICommand<IdentityResult>
     {
+        public ApplicationUser ApplicationUser { get; set; } = new ApplicationUser();
     }
 }
