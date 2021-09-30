@@ -5,6 +5,7 @@ using GraphQL.Builders;
 using GraphQL.Types;
 using MediatR;
 using VirtoCommerce.CustomerModule.Core.Model;
+using VirtoCommerce.CustomerModule.Core.Model.Search;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
@@ -61,13 +62,19 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 
             organizationsConnectionBuilder.ResolveAsync(async context =>
             {
+                var response = AbstractTypeFactory<MemberSearchResult>.TryCreateInstance();
                 var query = context.GetSearchMembersQuery<SearchOrganizationsQuery>();
-                query.DeepSearch = false;
-                query.ObjectIds = context.Source.Contact.Organizations;
 
-                var respose = await mediator.Send(query);
+                // If user have no organizations, member search service would return all organizations
+                // it means we don't need the search request when user's organization list is empty
+                if (!context.Source.Contact.Organizations.IsNullOrEmpty())
+                {
+                    query.DeepSearch = true;
+                    query.ObjectIds = context.Source.Contact.Organizations;
+                    response = await mediator.Send(query);
+                }
 
-                return new PagedConnection<OrganizationAggregate>(respose.Results.Select(x => memberAggregateFactory.Create<OrganizationAggregate>(x)), query.Skip, query.Take, respose.TotalCount);
+                return new PagedConnection<OrganizationAggregate>(response.Results.Select(x => memberAggregateFactory.Create<OrganizationAggregate>(x)), query.Skip, query.Take, response.TotalCount);
             });
             AddField(organizationsConnectionBuilder.FieldType);
 

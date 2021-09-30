@@ -27,11 +27,16 @@ namespace VirtoCommerce.ExperienceApiModule.Web
 
         public void Initialize(IServiceCollection services)
         {
+            services.AddApplicationInsightsTelemetryProcessor<IgnorePlainGraphQLTelemetryProcessor>();
+            // register custom executror with app insight wrapper
+            services.AddTransient(typeof(IGraphQLExecuter<>), typeof(CustomGraphQLExecuter<>));
+
             //Register .NET GraphQL server
             var graphQlBuilder = services.AddGraphQL(_ =>
             {
                 _.EnableMetrics = false;
-            }).AddNewtonsoftJson(deserializerSettings => { }, serializerSettings => { })
+            })
+            .AddNewtonsoftJson(deserializerSettings => { }, serializerSettings => { })
             .AddErrorInfoProvider(options =>
             {
                 options.ExposeExtensions = true;
