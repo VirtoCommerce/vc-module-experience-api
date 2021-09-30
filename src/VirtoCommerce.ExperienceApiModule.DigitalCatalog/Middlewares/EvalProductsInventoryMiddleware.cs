@@ -52,6 +52,7 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
                     var searchResult = await _inventorySearchService.SearchInventoriesAsync(new InventorySearchCriteria
                     {
                         ProductIds = productIds,
+                        Skip = i,
                         Take = pageSize,
                     });
 
