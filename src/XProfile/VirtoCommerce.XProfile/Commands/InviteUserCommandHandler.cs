@@ -52,7 +52,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
             var result = new IdentityResultResponse
             {
                 Errors = new List<IdentityErrorInfo>(),
-                Succeeded = false,
+                Succeeded = true,
             };
 
             foreach (var email in request.Emails)

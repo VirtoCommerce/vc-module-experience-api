@@ -42,7 +42,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
             var result = new IdentityResultResponse
             {
                 Errors = new List<IdentityErrorInfo>(),
-                Succeeded = false,
+                Succeeded = true,
             };
 
             IdentityResult identityResult;
