@@ -12,10 +12,11 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Extensions
             int.TryParse(context.After, out var skip);
 
             var result = AbstractTypeFactory<T>.TryCreateInstance();
-            result.Filter = context.GetArgument<string>("filter");
+            result.Keyword = context.GetArgument<string>("searchPhrase");
             result.Sort = context.GetArgument<string>("sort");
             result.Skip = skip;
             result.Take = context.First ?? context.PageSize ?? 20;
+
             return result;
         }
     }

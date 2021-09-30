@@ -179,7 +179,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                         ?.FirstOrDefault(x => x.Value != null)
                         ?.Value;
 
-                    return brandName;
+                    return brandName?.ToString();
                 });
 
             FieldAsync<ListGraphType<VariationType>>(
@@ -283,7 +283,6 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
               .Name("associations")
               .Argument<StringGraphType>("query", "the search phrase")
               .Argument<StringGraphType>("group", "association group (Accessories, RelatedItem)")
-              .Unidirectional()
               .PageSize(20)
               .ResolveAsync(async context =>
               {

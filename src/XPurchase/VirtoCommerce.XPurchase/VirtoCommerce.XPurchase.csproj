@@ -10,18 +10,19 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="GraphQL.DataLoader" Version="4.6.0" />
         <PackageReference Include="PipelineNet" Version="0.9.0" />
-        <PackageReference Include="GraphQL" Version="3.2.0" />
+        <PackageReference Include="GraphQL" Version="4.6.0" />
         <PackageReference Include="MediatR" Version="8.0.1" />
         <PackageReference Include="AutoMapper" Version="10.0.0" />
         <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.0.1" />
         <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="8.0.0" />
         <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-        <PackageReference Include="VirtoCommerce.CartModule.Core" Version="3.17.0" />
+        <PackageReference Include="VirtoCommerce.CartModule.Data" Version="3.22.0" />
         <PackageReference Include="VirtoCommerce.CoreModule.Core" Version="3.22.0" />
         <PackageReference Include="VirtoCommerce.InventoryModule.Core" Version="3.3.0" />
         <PackageReference Include="VirtoCommerce.StoreModule.Core" Version="3.21.0" />
-        <PackageReference Include="VirtoCommerce.CustomerModule.Core" Version="3.1.0" />
+        <PackageReference Include="VirtoCommerce.CustomerModule.Core" Version="3.18.0" />
         <PackageReference Include="VirtoCommerce.MarketingModule.Data" Version="3.23.0" />
         <PackageReference Include="VirtoCommerce.PaymentModule.Core" Version="3.1.0" />
         <PackageReference Include="VirtoCommerce.ShippingModule.Core" Version="3.1.0" />

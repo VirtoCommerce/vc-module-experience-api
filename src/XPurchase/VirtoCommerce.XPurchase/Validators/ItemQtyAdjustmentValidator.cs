@@ -1,3 +1,4 @@
+using System.Linq;
 using FluentValidation;
 using VirtoCommerce.CartModule.Core.Model;
 
@@ -16,7 +17,7 @@ namespace VirtoCommerce.XPurchase.Validators
                 {
                     context.AddFailure(CartErrorDescriber.LineItemWithGivenIdNotFound(new LineItem { Id = qtyAdjust.LineItemId }));
                 }
-                else if (qtyAdjust.LineItem.IsReadOnly)
+                else if (qtyAdjust.LineItem.IsReadOnly || qtyAdjust.LineItem.IsGift)
                 {
                     context.AddFailure(CartErrorDescriber.LineItemIsReadOnly(qtyAdjust.LineItem));
                 }

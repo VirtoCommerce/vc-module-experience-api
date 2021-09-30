@@ -13,7 +13,8 @@
         <PackageReference Include="AutoMapper" Version="10.0.0" />
         <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.0.1" />
         <PackageReference Include="FluentValidation" Version="8.6.3" />
-        <PackageReference Include="GraphQL" Version="3.2.0" />
+        <PackageReference Include="GraphQL" Version="4.6.0" />
+        <PackageReference Include="GraphQL.DataLoader" Version="4.6.0" />
         <PackageReference Include="MediatR" Version="8.0.1" />
         <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="8.0.0" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.8" />
@@ -22,7 +23,7 @@
         <PackageReference Include="VirtoCommerce.OrdersModule.Core" Version="3.33.0-alpha.891" />
         <PackageReference Include="VirtoCommerce.OrdersModule.Data" Version="3.33.0-alpha.891" />
         <PackageReference Include="VirtoCommerce.Platform.Core" Version="3.66.0" />
-        <PackageReference Include="VirtoCommerce.CartModule.Core" Version="3.17.0" />
+        <PackageReference Include="VirtoCommerce.CartModule.Core" Version="3.22.0" />
     </ItemGroup>
 
     <ItemGroup>
