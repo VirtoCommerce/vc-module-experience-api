@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
@@ -5,6 +6,7 @@ using VirtoCommerce.Platform.Core.Security;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
 {
+    [Obsolete("Move required properties from Role")]
     public class UpdateRoleCommand : Role, ICommand<IdentityResult>
     {
         public UpdateRoleCommand(string id = default, string description = null, string name = null, IList<Permission> permissions = null)

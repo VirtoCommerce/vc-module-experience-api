@@ -68,6 +68,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
 
             services.AddTransient<IDynamicPropertyResolverService, DynamicPropertyResolverService>();
             services.AddTransient<IDynamicPropertyUpdaterService, DynamicPropertyUpdaterService>();
+            services.AddTransient<IUserManagerCore, UserManagerCore>();
 
             return services;
         }
