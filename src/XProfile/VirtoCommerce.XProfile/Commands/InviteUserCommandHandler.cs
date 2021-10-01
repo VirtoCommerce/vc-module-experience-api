@@ -60,7 +60,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
                 var contact = new Contact { FirstName = string.Empty, LastName = string.Empty, FullName = string.Empty, Organizations = new List<string> { request.OrganizationId }};
                 await _memberService.SaveChangesAsync(new Member[] { contact });
 
-                var user = new ApplicationUser { UserName = email, Email = email, MemberId = contact.Id, StoreId = request.StoreId };
+                var user = new ApplicationUser { UserName = email, Email = email, MemberId = contact.Id, StoreId = request.StoreId, UserType = UserType.Customer.ToString() };
                 var identityResult = await userManager.CreateAsync(user);
 
                 if (identityResult.Succeeded)
