@@ -26,18 +26,18 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
             {
                 var result = default(IdentityResult);
 
-                if (request.Password.IsNullOrEmpty())
+                if (request.ApplicationUser.Password.IsNullOrEmpty())
                 {
-                    result = await userManager.CreateAsync(request);
+                    result = await userManager.CreateAsync(request.ApplicationUser);
                 }
                 else
                 {
-                    result = await userManager.CreateAsync(request, request.Password);
+                    result = await userManager.CreateAsync(request.ApplicationUser, request.ApplicationUser.Password);
                 }
 
                 if (result.Succeeded)
                 {
-                    var user = await userManager.FindByNameAsync(request.UserName);
+                    var user = await userManager.FindByNameAsync(request.ApplicationUser.UserName);
 
                     await _storeNotificationSender.SendUserEmailVerificationAsync(user);
                 }
