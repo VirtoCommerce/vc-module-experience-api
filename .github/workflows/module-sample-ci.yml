@@ -36,6 +36,7 @@ jobs:
     outputs:
       artifactUrl: ${{ steps.blobRelease.outputs.packageUrl }}
       jira-keys: ${{ steps.jira_keys.outputs.jira-keys }}
+      projectName: ${{ matrix.projectName }}
 
     steps:
 
@@ -174,7 +175,7 @@ jobs:
       id: deployConfig
       with:
         envName: ${{ matrix.environment }}
-        deployConfigPath: '.deployment/samples/argoDeploy.json'
+        deployConfigPath: '.deployment/samples/${{ needs.ci.outputs.projectName }}.argoDeploy.json'
 
     - name: Start deployment
       uses: bobheadxi/deployments@master
