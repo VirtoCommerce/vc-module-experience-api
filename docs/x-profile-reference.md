@@ -42,6 +42,7 @@ With this query you can get the contact by id
     memberType
     name
     organizationId
+    emails
     organizations {
       name
     }

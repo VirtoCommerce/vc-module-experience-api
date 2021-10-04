@@ -19,6 +19,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 {
     public class ContactType : ExtendableGraphType<ContactAggregate>
     {
+        [Obsolete("Remove after 1.38.0 version")]
         private readonly IOrganizationAggregateRepository _organizationAggregateRepository;
 
         public ContactType(
@@ -28,8 +29,6 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             IMemberAggregateFactory memberAggregateFactory)
         {
             _organizationAggregateRepository = organizationAggregateRepository;
-
-            //this.AuthorizeWith(CustomerModule.Core.ModuleConstants.Security.Permissions.Read);
 
             Field(x => x.Contact.FirstName);
             Field(x => x.Contact.LastName);
@@ -41,6 +40,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             Field(x => x.Contact.Name, true);
             Field(x => x.Contact.OuterId, true);
             Field(x => x.Contact.Status, true).Description("Contact status");
+            Field<ListGraphType<StringGraphType>>("emails", resolve: x => x.Source.Contact.Emails, description: "List of contact`s emails");
 
             ExtendableField<NonNullGraphType<ListGraphType<DynamicPropertyValueType>>>(
                 "dynamicProperties",
@@ -57,7 +57,6 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                 .Name("organizations")
                 .Argument<StringGraphType>("searchPhrase", "Free text search")
                 .Argument<StringGraphType>("sort", "Sort expression")
-                .Unidirectional()
                 .PageSize(20);
 
             organizationsConnectionBuilder.ResolveAsync(async context =>
