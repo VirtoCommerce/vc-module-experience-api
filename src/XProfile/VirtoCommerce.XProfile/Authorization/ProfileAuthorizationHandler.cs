@@ -151,10 +151,10 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Authorization
             }
             else if (context.Resource is UpdateUserCommand updateUserCommand && currentContact != null)
             {
-                result = updateUserCommand.Id == currentContact.Id;
+                result = updateUserCommand.ApplicationUser.Id == currentContact.Id;
                 if (!result)
                 {
-                    result = await HasSameOrganizationAsync(currentContact, updateUserCommand.Id);
+                    result = await HasSameOrganizationAsync(currentContact, updateUserCommand.ApplicationUser.Id);
                 }
             }
             else if (context.Resource is UpdatePersonalDataCommand updatePersonalDataCommand)
@@ -162,6 +162,11 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Authorization
                 updatePersonalDataCommand.UserId = currentUserId;
                 result = true;
             }
+            else if (context.Resource is InviteUserCommand inviteUserCommand && currentContact != null)
+            {
+                var currentUser = await _userManager.FindByIdAsync(currentUserId);
+                result = currentContact.Organizations.Contains(inviteUserCommand.OrganizationId) && currentUser.StoreId.EqualsInvariant(inviteUserCommand.StoreId);
+            }            
             if (result)
             {
                 context.Succeed(requirement);

@@ -71,7 +71,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             var criteria = new ProductIndexedSearchCriteria
             {
                 StoreId = request.StoreId,
-                Currency = request.CurrencyCode,
+                Currency = request.CurrencyCode ?? store.DefaultCurrency,
                 LanguageCode = store.Languages.Contains(request.CultureName) ? request.CultureName : store.DefaultLanguage,
                 CatalogId = store.Catalog
             };
@@ -81,9 +81,8 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             {
                 var predefinedAggregations = await _aggregationConverter.GetAggregationRequestsAsync(criteria, new FiltersContainer());
 
-                var facets = request.Facet.AddLanguageSpecificFacets(criteria.LanguageCode);
-
-                builder.ParseFacets(_phraseParser, facets, predefinedAggregations)
+                builder.WithCultureName(criteria.LanguageCode);
+                builder.ParseFacets(_phraseParser, request.Facet, predefinedAggregations)
                    .ApplyMultiSelectFacetSearch();
 
             }
@@ -91,9 +90,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             var searchRequest = builder.Build();
             var searchResult = await _searchProvider.SearchAsync(KnownDocumentTypes.Product, searchRequest);
 
-            //TODO: move later to own implementation
-            //Call the catalog aggregation converter service to convert AggregationResponse to proper Aggregation type (term, range, filter)
-            var resultAggregations = await _aggregationConverter.ConvertAggregationsAsync(searchResult.Aggregations, criteria);
+            var resultAggregations = await ConvertResultAggregations(criteria, searchRequest, searchResult);
 
             searchRequest.SetAppliedAggregations(resultAggregations.ToArray());
 
@@ -117,6 +114,44 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             await _pipeline.Execute(result);
 
             return result;
+
+            async Task<Aggregation[]> ConvertResultAggregations(ProductIndexedSearchCriteria criteria, SearchRequest searchRequest, SearchResponse searchResult)
+            {
+                // Preconvert resulting aggregations to be properly understandable by catalog module
+                var preconvertedAggregations = new List<AggregationResponse>();
+                //Remember term facet ids to distinguish the resulting aggregations are range or term
+                var termsInRequest = new List<string>(searchRequest.Aggregations.Where(x => x is TermAggregationRequest).Select(x => x.Id ?? x.FieldName));
+                foreach (var aggregation in searchResult.Aggregations)
+                {
+                    if (!termsInRequest.Contains(aggregation.Id))
+                    {
+                        // There we'll go converting range facet result
+                        var fieldName = new Regex(@"^(?<fieldName>[A-Za-z0-9]+)(-.+)*$", RegexOptions.IgnoreCase).Match(aggregation.Id).Groups["fieldName"].Value;
+                        if (!fieldName.IsNullOrEmpty())
+                        {
+                            preconvertedAggregations.AddRange(aggregation.Values.Select(x =>
+                            {
+                                var matchId = new Regex(@"^(?<left>[0-9*]+)-(?<right>[0-9*]+)$", RegexOptions.IgnoreCase).Match(x.Id);
+                                var left = matchId.Groups["left"].Value;
+                                var right = matchId.Groups["right"].Value;
+                                x.Id = left == "*" ? $@"under-{right}" : x.Id;
+                                x.Id = right == "*" ? $@"over-{left}" : x.Id;
+                                return new AggregationResponse() { Id = $@"{fieldName}-{x.Id}", Values = new List<AggregationResponseValue> { x } };
+                            }
+                            ));
+                        }
+                    }
+                    else
+                    {
+                        // This is term aggregation, should skip converting and put resulting aggregation as is
+                        preconvertedAggregations.Add(aggregation);
+                    }
+                }
+
+                //TODO: move later to own implementation
+                //Call the catalog aggregation converter service to convert AggregationResponse to proper Aggregation type (term, range, filter)
+                return await _aggregationConverter.ConvertAggregationsAsync(preconvertedAggregations, criteria);
+            }
         }
 
         public virtual async Task<LoadProductResponse> Handle(LoadProductsQuery request, CancellationToken cancellationToken)

@@ -108,9 +108,8 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 
             var organizationsConnectionBuilder = GraphTypeExtenstionHelper.CreateConnection<OrganizationType, object>()
                 .Name("organizations")
-                .Argument<StringGraphType>("filter", "This parameter applies a filter to the query results")
+                .Argument<StringGraphType>("searchPhrase", "This parameter applies a filter to the query results")
                 .Argument<StringGraphType>("sort", "The sort expression")
-                .Unidirectional()
                 .PageSize(20);
 
             organizationsConnectionBuilder.ResolveAsync(async context =>
@@ -118,6 +117,8 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                 context.CopyArgumentsToUserContext();
 
                 var query = context.GetSearchMembersQuery<SearchOrganizationsQuery>();
+                query.DeepSearch = true;
+
                 var response = await _mediator.Send(query);
 
                 return new PagedConnection<OrganizationAggregate>(response.Results.Select(x => _factory.Create<OrganizationAggregate>(x)), query.Skip, query.Take, response.TotalCount);
@@ -162,9 +163,8 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 
             var contactsConnectionBuilder = GraphTypeExtenstionHelper.CreateConnection<ContactType, object>()
                 .Name("contacts")
-                .Argument<StringGraphType>("filter", "This parameter applies a filter to the query results")
+                .Argument<StringGraphType>("searchPhrase", "This parameter applies a filter to the query results")
                 .Argument<StringGraphType>("sort", "The sort expression")
-                .Unidirectional()
                 .PageSize(20);
 
             contactsConnectionBuilder.ResolveAsync(async context =>
@@ -172,6 +172,8 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                 context.CopyArgumentsToUserContext();
 
                 var query = context.GetSearchMembersQuery<SearchContactsQuery>();
+                query.DeepSearch = true;
+
                 var response = await _mediator.Send(query);
 
                 return new PagedConnection<ContactAggregate>(response.Results.Select(x => _factory.Create<ContactAggregate>(x)), query.Skip, query.Take, response.TotalCount);
@@ -224,6 +226,56 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                     });
 
                     return result.IsUnique;
+                })
+            });
+
+#pragma warning disable S125 // Sections of code should not be commented out
+            /*                         
+               query {
+                     requestPasswordReset(loginOrEmail: "user@email")
+               }                         
+            */
+#pragma warning restore S125 // Sections of code should not be commented out
+
+            _ = schema.Query.AddField(new FieldType
+            {
+                Name = "requestPasswordReset",
+                Arguments = new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "loginOrEmail" },
+                    new QueryArgument<StringGraphType> { Name = "urlSuffix" }),
+                Type = GraphTypeExtenstionHelper.GetActualType<BooleanGraphType>(),
+                Resolver = new AsyncFieldResolver<object>(async context =>
+                {
+                    var result = await _mediator.Send(new RequestPasswordResetQuery
+                    {
+                        LoginOrEmail = context.GetArgument<string>("loginOrEmail"),
+                        UrlSuffix = context.GetArgument<string>("urlSuffix"),
+                    });
+
+                    return result;
+                })
+            });
+
+#pragma warning disable S125 // Sections of code should not be commented out
+            /*                         
+               query {
+                     validatePassword(password: "pswd")
+               }                         
+            */
+#pragma warning restore S125 // Sections of code should not be commented out
+            _ = schema.Query.AddField(new FieldType
+            {
+                Name = "validatePassword",
+                Arguments = new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "password" }),
+                Type = GraphTypeExtenstionHelper.GetActualType<CustomIdentityResultType>(),
+                Resolver = new AsyncFieldResolver<object>(async context =>
+                {
+                    var result = await _mediator.Send(new PasswordValidationQuery
+                    {
+                        Password = context.GetArgument<string>("password"),
+                    });
+
+                    return result;
                 })
             });
 
@@ -368,6 +420,18 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                         })
                         .FieldType);
 
+            _ = schema.Mutation.AddField(FieldBuilder.Create<object, IdentityResultResponse>(GraphTypeExtenstionHelper.GetActualType<CustomIdentityResultType>())
+                .Name("resetPasswordByToken")
+                .Argument(GraphTypeExtenstionHelper.GetActualComplexType<InputResetPasswordByTokenType>(), _commandName)
+                .ResolveAsync(async context =>
+                {
+                    var type = GenericTypeHelper.GetActualType<ResetPasswordByTokenCommand>();
+                    var command = (ResetPasswordByTokenCommand)context.GetArgument(type, _commandName);
+
+                    return await _mediator.Send(command);
+                })
+                .FieldType);
+
             // Security API fields
 
             #region user query
@@ -436,6 +500,73 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                 })
             });
 
+            #region invite user
+
+#pragma warning disable S125 // Sections of code should not be commented out
+            /*
+            mutation ($command: InputInviteUserType!){
+                inviteUser(command: $command){ succeeded errors { code }}
+            }
+            Query variables:
+            {
+                "command": {
+                    "storeId": "my-store",
+                    "organizationId": "my-org",
+                    "urlSuffix": "/invite",
+                    "email": "example@example.org",
+                    "message": "Message"
+                }
+            }
+             */
+#pragma warning restore S125 // Sections of code should not be commented out
+
+            #endregion
+            _ = schema.Mutation.AddField(FieldBuilder.Create<object, IdentityResultResponse>(GraphTypeExtenstionHelper.GetActualType<CustomIdentityResultType>())
+                .Name("inviteUser")
+                .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputInviteUserType>>(), _commandName)
+                .ResolveAsync(async context =>
+                {
+                    var type = GenericTypeHelper.GetActualType<InviteUserCommand>();
+                    var command = (InviteUserCommand)context.GetArgument(type, _commandName);
+                    await CheckAuthAsync(context.GetCurrentUserId(), command);
+                    return await _mediator.Send(command);
+                })
+                .FieldType);
+
+            #region register by invitation
+
+#pragma warning disable S125 // Sections of code should not be commented out
+            /*
+            mutation ($command: InputRegisterByInvitationType!){
+                registerByInvitation(command: $command){ succeeded errors { code }}
+            }
+            Query variables:
+            {
+                "command": {
+                    "userId": "my-user",
+                    "token": "large-unique-token",
+                    "firstName": "John",
+                    "lastName": "Smith",
+                    "phone": "+12025550000",
+                    "userName": "johnsmith",
+                    "password": "password1!"
+                }
+            }
+             */
+#pragma warning restore S125 // Sections of code should not be commented out
+
+            #endregion
+            _ = schema.Mutation.AddField(FieldBuilder.Create<object, IdentityResultResponse>(GraphTypeExtenstionHelper.GetActualType<CustomIdentityResultType>())
+                .Name("registerByInvitation")
+                .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputRegisterByInvitationType>>(), _commandName)
+                .ResolveAsync(async context =>
+                {
+                    var type = GenericTypeHelper.GetActualType<RegisterByInvitationCommand>();
+                    var command = (RegisterByInvitationCommand)context.GetArgument(type, _commandName);
+                    return await _mediator.Send(command);
+                })
+                .FieldType);
+
             #region create user
 
 #pragma warning disable S125 // Sections of code should not be commented out
@@ -475,7 +606,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                         Query variables:
                         {
                          "command":{
-                          "isAdministrator": false,
+                          "securityStamp": ...,
                           "userType": "Customer",
                           "roles": [],
                           "id": "b5d28a83-c296-4212-b89e-046fca3866be",

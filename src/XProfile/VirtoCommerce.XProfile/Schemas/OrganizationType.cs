@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Builders;
 using GraphQL.Types;
@@ -11,7 +10,8 @@ using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
 using VirtoCommerce.ExperienceApiModule.Core.Services;
-using VirtoCommerce.ExperienceApiModule.XProfile.Queries;
+using VirtoCommerce.ExperienceApiModule.XProfile.Commands;
+using VirtoCommerce.ExperienceApiModule.XProfile.Extensions;
 using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
@@ -36,6 +36,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             Field(x => x.Organization.Emails, true);
             Field(x => x.Organization.Groups, true);
             Field(x => x.Organization.SeoObjectType).Description("SEO object type");
+            Field(x => x.Organization.Status, true).Description("Organization status");
             ExtendableField<NonNullGraphType<ListGraphType<DynamicPropertyValueType>>>(
                "dynamicProperties",
                "Organization's dynamic property values",
@@ -49,40 +50,27 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                .Name("contacts")
                .Argument<StringGraphType>("searchPhrase", "Free text search")
                .Argument<StringGraphType>("sort", "Sort expression")
-               .Unidirectional()
                .PageSize(20);
 
-            connectionBuilder.ResolveAsync(async context => await ResolveConnectionAsync(mediator, factory, context));
+            connectionBuilder.ResolveAsync(async context =>
+            {
+                var query = context.GetSearchMembersQuery<SearchContactsQuery>();
+                query.MemberId = context.Source.Organization.Id;
+                query.DeepSearch = false;
+
+                var response = await mediator.Send(query);
+
+                return new PagedConnection<ContactAggregate>(response.Results.Select(x => factory.Create<ContactAggregate>(x)), query.Skip, query.Take, response.TotalCount);
+            });
             AddField(connectionBuilder.FieldType);
 
             var addressesConnectionBuilder = GraphTypeExtenstionHelper.CreateConnection<AddressType, OrganizationAggregate>()
                 .Name("addresses")
                 .Argument<StringGraphType>("sort", "Sort expression")
-                .Unidirectional()
                 .PageSize(20);
 
             addressesConnectionBuilder.Resolve(ResolveAddressesConnection);
             AddField(addressesConnectionBuilder.FieldType);
-        }
-
-
-        private async Task<object> ResolveConnectionAsync(IMediator mediator, IMemberAggregateFactory factory, IResolveConnectionContext<OrganizationAggregate> context)
-        {
-            var first = context.First;
-            var skip = Convert.ToInt32(context.After ?? 0.ToString());
-
-            var query = new SearchOrganizationMembersQuery
-            {
-                OrganizationId = context.Source.Organization.Id,
-                Take = first ?? 20,
-                Skip = skip,
-                SearchPhrase = context.GetArgument<string>("searchPhrase"),
-                Sort = context.GetArgument<string>("sort"),
-            };
-
-            var response = await mediator.Send(query);
-
-            return new PagedConnection<ContactAggregate>(response.Results.Select(x => factory.Create<ContactAggregate>(x)), query.Skip, query.Take, response.TotalCount);
         }
 
         private static object ResolveAddressesConnection(IResolveConnectionContext<OrganizationAggregate> context)

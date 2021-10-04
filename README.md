@@ -46,9 +46,11 @@ $ curl -X POST http://localhost:10645/graphql \
 ## Getting started
 Read this [article...](docs/getting-started.md)
 
-
 ## How to extend
 Read this [article...](docs/x-api-extensions.md)
+
+## Where to find logs
+Read this [article...](docs/application-insights-integration.md)
 
 ## Limitation
 

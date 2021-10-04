@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using VirtoCommerce.Exp.ExtensionSamples.Commands;
 using VirtoCommerce.Exp.ExtensionSamples.UseCases.TypeExtension.Queries;
+using VirtoCommerce.Exp.ExtensionSamples.UseCases.TypeExtension.Validators;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
 using VirtoCommerce.Platform.Core.Common;
@@ -16,6 +17,7 @@ using VirtoCommerce.XDigitalCatalog.Schemas;
 using VirtoCommerce.XPurchase.Commands;
 using VirtoCommerce.XPurchase.Queries;
 using VirtoCommerce.XPurchase.Schemas;
+using VirtoCommerce.XPurchase.Validators;
 
 namespace VirtoCommerce.Exp.ExtensionSamples
 {
@@ -82,6 +84,12 @@ namespace VirtoCommerce.Exp.ExtensionSamples
 
         public void PostInitialize(IApplicationBuilder appBuilder)
         {
+            #region Extension scenarios
+            #region UseCase Validators: Extend validation logic / replace validators by custom ones
+            // Example: replace cart validator
+            AbstractTypeFactory<CartValidator>.OverrideType<CartValidator, CartValidator2>(); 
+            #endregion
+            #endregion
         }
 
         public void Uninstall()

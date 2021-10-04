@@ -12,17 +12,21 @@ namespace VirtoCommerce.XDigitalCatalog.Extensions
         /// See details: PT-3517
         /// </summary>
         /// <param name="requestFacets"></param>
-        /// <param name="languageCode"></param>
+        /// <param name="cultureName"></param>
         /// <returns></returns>
-        public static string AddLanguageSpecificFacets(this string requestFacets, string languageCode)
+        public static string AddLanguageSpecificFacets(this string requestFacets, string cultureName)
         {
-            var facets = string.Empty;
-            foreach (var facet in requestFacets?.Split(" ") ?? new string[0])
+            var result = requestFacets;
+            if (cultureName != null)
             {
-                facets = $"{facets} {facet} {facet}_{languageCode.ToLowerInvariant()}";
+                var facets = string.Empty;
+                foreach (var facet in requestFacets?.Split(" ") ?? new string[0])
+                {
+                    facets = $"{facets} {facet} {facet}_{cultureName.ToLowerInvariant()}";
+                }
+                result = facets;
             }
-
-            return facets;
+            return result.Trim();
         }
 
         /// <summary>

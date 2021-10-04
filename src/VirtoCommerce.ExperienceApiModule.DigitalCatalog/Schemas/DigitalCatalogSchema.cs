@@ -91,7 +91,6 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 .Argument<StringGraphType>("facet", "Facets calculate statistical counts to aid in faceted navigation.")
                 .Argument<StringGraphType>("sort", "The sort expression")
                 .Argument<ListGraphType<StringGraphType>>("productIds", "Product Ids") // TODO: make something good with it, move productIds in filter for example
-                .Unidirectional()
                 .PageSize(20);
 
             productsConnectionBuilder.ResolveAsync(async context =>
@@ -151,7 +150,6 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 .Argument<StringGraphType>("facet", "Facets calculate statistical counts to aid in faceted navigation.")
                 .Argument<StringGraphType>("sort", "The sort expression")
                 .Argument<ListGraphType<StringGraphType>>("categoryIds", "Category Ids") // TODO: make something good with it, move CategoryIds in filter for example
-                .Unidirectional()
                 .PageSize(20);
 
             categoriesConnectionBuilder.ResolveAsync(async context =>
@@ -172,8 +170,6 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 .Argument<ListGraphType<PropertyTypeEnum>>("types", "The owner types (Catalog, Category, Product, Variation)")
                 .Argument<StringGraphType>("filter", "This parameter applies a filter to the query results")
                 .Argument<StringGraphType>("cultureName", "The language for which all localized property dictionary items will be returned")
-
-                .Unidirectional()
                 .PageSize(20);
 
             propertiesConnectionBuilder.ResolveAsync(async context =>
@@ -243,7 +239,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             var includeFields = context.SubFields.Values.GetAllNodesPaths();
 
             //TODO: Need to be able get entire query from context and read all arguments to the query properties
-            var query = context.GetCatalogQuery<SearchProductQuery>();            
+            var query = context.GetCatalogQuery<SearchProductQuery>();
             query.IncludeFields = includeFields;
 
             var productIds = context.GetArgument<List<string>>("productIds");

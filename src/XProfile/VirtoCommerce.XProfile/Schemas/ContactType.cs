@@ -1,16 +1,18 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using GraphQL;
 using GraphQL.Builders;
-using GraphQL.Resolvers;
 using GraphQL.Types;
+using MediatR;
 using VirtoCommerce.CustomerModule.Core.Model;
+using VirtoCommerce.CustomerModule.Core.Model.Search;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
 using VirtoCommerce.ExperienceApiModule.Core.Services;
+using VirtoCommerce.ExperienceApiModule.XProfile.Commands;
+using VirtoCommerce.ExperienceApiModule.XProfile.Extensions;
 using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
@@ -19,7 +21,11 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
     {
         private readonly IOrganizationAggregateRepository _organizationAggregateRepository;
 
-        public ContactType(IOrganizationAggregateRepository organizationAggregateRepository, IDynamicPropertyResolverService dynamicPropertyResolverService)
+        public ContactType(
+            IOrganizationAggregateRepository organizationAggregateRepository,
+            IDynamicPropertyResolverService dynamicPropertyResolverService,
+            IMediator mediator,
+            IMemberAggregateFactory memberAggregateFactory)
         {
             _organizationAggregateRepository = organizationAggregateRepository;
 
@@ -27,13 +33,14 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 
             Field(x => x.Contact.FirstName);
             Field(x => x.Contact.LastName);
-            Field<DateGraphType>("birthDate", resolve: context => context.Source.Contact.BirthDate);
+            Field<DateGraphType>("birthDate", resolve: context => context.Source.Contact.BirthDate.HasValue ? context.Source.Contact.BirthDate.Value.Date : (DateTime?)null);
             Field(x => x.Contact.FullName);
             Field(x => x.Contact.Id);
             Field(x => x.Contact.MemberType);
             Field(x => x.Contact.MiddleName, true);
             Field(x => x.Contact.Name, true);
             Field(x => x.Contact.OuterId, true);
+            Field(x => x.Contact.Status, true).Description("Contact status");
 
             ExtendableField<NonNullGraphType<ListGraphType<DynamicPropertyValueType>>>(
                 "dynamicProperties",
@@ -46,35 +53,39 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             Field("organizationsIds", x => x.Contact.Organizations);
             Field("phones", x => x.Contact.Phones);
 
-            AddField(new FieldType
+            var organizationsConnectionBuilder = GraphTypeExtenstionHelper.CreateConnection<OrganizationType, ContactAggregate>()
+                .Name("organizations")
+                .Argument<StringGraphType>("searchPhrase", "Free text search")
+                .Argument<StringGraphType>("sort", "Sort expression")
+                .Unidirectional()
+                .PageSize(20);
+
+            organizationsConnectionBuilder.ResolveAsync(async context =>
             {
-                Name = "Organizations",
-                Description = "All contact's organizations",
-                Type = GraphTypeExtenstionHelper.GetActualType<ListGraphType<OrganizationType>>(),
-                Resolver = new AsyncFieldResolver<ContactAggregate, IEnumerable<OrganizationAggregate>>(async context =>
+                var response = AbstractTypeFactory<MemberSearchResult>.TryCreateInstance();
+                var query = context.GetSearchMembersQuery<SearchOrganizationsQuery>();
+
+                // If user have no organizations, member search service would return all organizations
+                // it means we don't need the search request when user's organization list is empty
+                if (!context.Source.Contact.Organizations.IsNullOrEmpty())
                 {
-                    if (context.Source.Contact.Organizations.IsNullOrEmpty())
-                    {
-                        return default;
-                    }
-                    else
-                    {
-                        var idsToTake = context.Source.Contact.Organizations.ToArray();
-                        return await _organizationAggregateRepository.GetOrganizationsByIdsAsync(idsToTake);
-                    }
-                })
+                    query.DeepSearch = true;
+                    query.ObjectIds = context.Source.Contact.Organizations;
+                    response = await mediator.Send(query);
+                }
+
+                return new PagedConnection<OrganizationAggregate>(response.Results.Select(x => memberAggregateFactory.Create<OrganizationAggregate>(x)), query.Skip, query.Take, response.TotalCount);
             });
+            AddField(organizationsConnectionBuilder.FieldType);
 
             var addressesConnectionBuilder = GraphTypeExtenstionHelper.CreateConnection<AddressType, ContactAggregate>()
                 .Name("addresses")
                 .Argument<StringGraphType>("sort", "Sort expression")
-                .Unidirectional()
                 .PageSize(20);
 
             addressesConnectionBuilder.Resolve(ResolveAddressesConnection);
             AddField(addressesConnectionBuilder.FieldType);
         }
-
 
         private static object ResolveAddressesConnection(IResolveConnectionContext<ContactAggregate> context)
         {

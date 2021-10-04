@@ -87,6 +87,8 @@ namespace VirtoCommerce.XPurchase
         }
 
         public ShoppingCart Cart { get; protected set; }
+        public IEnumerable<LineItem> GiftItems => Cart?.Items.Where(x => x.IsGift);
+        public IEnumerable<LineItem> LineItems => Cart?.Items.Where(x => !x.IsGift);
 
         /// <summary>
         /// Represents the dictionary of all CartProducts data for each  existing cart line item
@@ -102,6 +104,7 @@ namespace VirtoCommerce.XPurchase
 
         public bool IsValid => !ValidationErrors.Any();
         public IList<ValidationFailure> ValidationErrors { get; protected set; } = new List<ValidationFailure>();
+        public bool IsValidated { get; private set; } = false;
 
         public virtual CartAggregate GrabCart(ShoppingCart cart, Store store, Member member, Currency currency)
         {
@@ -136,7 +139,7 @@ namespace VirtoCommerce.XPurchase
                 throw new ArgumentNullException(nameof(newCartItem));
             }
 
-            var validationResult = await new NewCartItemValidator().ValidateAsync(newCartItem, ruleSet: ValidationRuleSet);
+            var validationResult = await AbstractTypeFactory<NewCartItemValidator>.TryCreateInstance().ValidateAsync(newCartItem, ruleSet: ValidationRuleSet);
             if (!validationResult.IsValid)
             {
                 ValidationErrors.AddRange(validationResult.Errors);
@@ -201,6 +204,62 @@ namespace VirtoCommerce.XPurchase
             return this;
         }
 
+        public virtual Task<CartAggregate> AddGiftItemsAsync(IReadOnlyCollection<string> giftIds, IReadOnlyCollection<GiftItem> availableGifts)
+        {
+            EnsureCartExists();
+
+            if (!giftIds.IsNullOrEmpty())
+            {
+                foreach (var giftId in giftIds)
+                {
+                    var availableGift = availableGifts.FirstOrDefault(x => x.Id == giftId);
+                    if (availableGift == null)
+                    {
+                        // ignore the gift, if it's not in available gifts list
+                        continue;
+                    }
+
+                    var giftItem = GiftItems.FirstOrDefault(x => x.EqualsReward(availableGift));
+                    if (giftItem == null)
+                    {
+                        giftItem = _mapper.Map<LineItem>(availableGift);
+                        giftItem.Id = null;
+                        giftItem.IsGift = true;
+                        giftItem.CatalogId ??= "";
+                        giftItem.ProductId ??= "";
+                        giftItem.Sku ??= "";
+                        giftItem.Currency = Currency.Code;
+                        Cart.Items.Add(giftItem);
+                    }
+
+                    giftItem.IsRejected = false;
+                }
+            }
+
+            return Task.FromResult(this);
+        }
+
+        public virtual CartAggregate RejectCartItems(IReadOnlyCollection<string> cartItemIds)
+        {
+            EnsureCartExists();
+
+            if (cartItemIds.IsNullOrEmpty())
+            {
+                return this;
+            }
+
+            foreach (var cartItemId in cartItemIds)
+            {
+                var giftItem = GiftItems.FirstOrDefault(x => x.Id == cartItemId);
+                if (giftItem != null)
+                {
+                    RemoveItemAsync(giftItem.Id);
+                }
+            }
+
+            return this;
+        }
+
         public virtual async Task<CartAggregate> ChangeItemPriceAsync(PriceAdjustment priceAdjustment)
         {
             EnsureCartExists();
@@ -208,7 +267,7 @@ namespace VirtoCommerce.XPurchase
             var lineItem = Cart.Items.FirstOrDefault(x => x.Id == priceAdjustment.LineItemId);
             if (lineItem != null)
             {
-                await new ChangeCartItemPriceValidator(this).ValidateAndThrowAsync(priceAdjustment, ruleSet: ValidationRuleSet);
+                await AbstractTypeFactory<ChangeCartItemPriceValidator>.TryCreateInstance().ValidateAndThrowAsync(priceAdjustment, ruleSet: ValidationRuleSet);
                 lineItem.ListPrice = priceAdjustment.NewPrice;
                 lineItem.SalePrice = priceAdjustment.NewPrice;
             }
@@ -220,7 +279,7 @@ namespace VirtoCommerce.XPurchase
         {
             EnsureCartExists();
 
-            var validationResult = await new ItemQtyAdjustmentValidator(this).ValidateAsync(qtyAdjustment, ruleSet: ValidationRuleSet);
+            var validationResult = await AbstractTypeFactory<ItemQtyAdjustmentValidator>.TryCreateInstance().ValidateAsync(qtyAdjustment, ruleSet: ValidationRuleSet);
             if (!validationResult.IsValid)
             {
                 ValidationErrors.AddRange(validationResult.Errors);
@@ -312,7 +371,12 @@ namespace VirtoCommerce.XPurchase
         {
             EnsureCartExists();
 
-            await new CartShipmentValidator(availRates).ValidateAndThrowAsync(shipment, ruleSet: ValidationRuleSet);
+            var validationContext = new ShipmentValidationContext
+            {
+                Shipment = shipment,
+                AvailShippingRates = availRates
+            };
+            await AbstractTypeFactory<CartShipmentValidator>.TryCreateInstance().ValidateAndThrowAsync(validationContext, ruleSet: ValidationRuleSet);
 
             await RemoveExistingShipmentAsync(shipment);
 
@@ -370,8 +434,12 @@ namespace VirtoCommerce.XPurchase
         public virtual async Task<CartAggregate> AddPaymentAsync(Payment payment, IEnumerable<PaymentMethod> availPaymentMethods)
         {
             EnsureCartExists();
-
-            await new CartPaymentValidator(availPaymentMethods).ValidateAndThrowAsync(payment, ruleSet: ValidationRuleSet);
+            var validationContext = new PaymentValidationContext
+            {
+                 Payment = payment,
+                 AvailPaymentMethods = availPaymentMethods
+            };
+            await AbstractTypeFactory<CartPaymentValidator>.TryCreateInstance().ValidateAndThrowAsync(validationContext, ruleSet: ValidationRuleSet);
 
             if (payment.Currency == null)
             {
@@ -448,19 +516,25 @@ namespace VirtoCommerce.XPurchase
             return this;
         }
 
-        public async Task<IList<ValidationFailure>> ValidateAsync(CartValidationContext validationContext)
+        public virtual async Task<IList<ValidationFailure>> ValidateAsync(CartValidationContext validationContext)
         {
-            EnsureCartExists();
+            if (validationContext == null)
+            {
+                throw new ArgumentNullException(nameof(validationContext));
+            }
+            validationContext.CartAggregate = this;
 
-            var result = await new CartValidator(validationContext).ValidateAsync(this, ruleSet: ValidationRuleSet);
+            EnsureCartExists();
+            var result = await AbstractTypeFactory<CartValidator>.TryCreateInstance().ValidateAsync(validationContext, ruleSet: ValidationRuleSet);
             if (!result.IsValid)
             {
                 ValidationErrors.AddRange(result.Errors);
             }
+            IsValidated = true;
             return result.Errors;
         }
 
-        public async Task<bool> ValidateCouponAsync(string coupon)
+        public virtual async Task<bool> ValidateCouponAsync(string coupon)
         {
             EnsureCartExists();
 
@@ -480,7 +554,7 @@ namespace VirtoCommerce.XPurchase
             EnsureCartExists();
 
             var promotionResult = new PromotionResult();
-            if (!Cart.Items.IsNullOrEmpty() && !Cart.Items.Any(i => i.IsReadOnly))
+            if (!LineItems.IsNullOrEmpty() && !LineItems.Any(i => i.IsReadOnly))
             {
                 var evalContext = _mapper.Map<PromotionEvaluationContext>(this);
                 promotionResult = await EvaluatePromotionsAsync(evalContext);
@@ -489,12 +563,12 @@ namespace VirtoCommerce.XPurchase
             return promotionResult;
         }
 
-        public virtual async Task<PromotionResult> EvaluatePromotionsAsync(PromotionEvaluationContext evalContext)
+        public virtual Task<PromotionResult> EvaluatePromotionsAsync(PromotionEvaluationContext evalContext)
         {
-            return await _marketingEvaluator.EvaluatePromotionAsync(evalContext);
+            return _marketingEvaluator.EvaluatePromotionAsync(evalContext);
         }
 
-        protected async Task<IEnumerable<TaxRate>> EvaluateTaxesAsync()
+        protected virtual async Task<IEnumerable<TaxRate>> EvaluateTaxesAsync()
         {
             EnsureCartExists();
             var result = Enumerable.Empty<TaxRate>();
@@ -512,7 +586,7 @@ namespace VirtoCommerce.XPurchase
             EnsureCartExists();
 
             var promotionEvalResult = await EvaluatePromotionsAsync();
-            Cart.ApplyRewards(promotionEvalResult.Rewards);
+            this.ApplyRewards(promotionEvalResult.Rewards);
 
             var taxRates = await EvaluateTaxesAsync();
             Cart.ApplyTaxRates(taxRates);
@@ -632,7 +706,7 @@ namespace VirtoCommerce.XPurchase
 
         protected virtual async Task<CartAggregate> InnerAddLineItemAsync(LineItem lineItem, CartProduct product = null)
         {
-            var existingLineItem = Cart.Items.FirstOrDefault(li => li.ProductId == lineItem.ProductId);
+            var existingLineItem = LineItems.FirstOrDefault(li => li.ProductId == lineItem.ProductId);
             if (existingLineItem != null)
             {
                 await InnerChangeItemQuantityAsync(existingLineItem, existingLineItem.Quantity + Math.Max(1, lineItem.Quantity), product);

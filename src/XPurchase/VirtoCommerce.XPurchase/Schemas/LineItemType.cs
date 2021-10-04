@@ -50,7 +50,7 @@ namespace VirtoCommerce.XPurchase.Schemas
 
             //Field<MoneyType>("paymentPlan", resolve: context => context.Source.PaymentPlan);
             Field<IntGraphType>("inStockQuantity", resolve: context => context.GetCart().CartProducts[context.Source.ProductId]?.AvailableQuantity ?? 0);
-            Field<StringGraphType>("warehouseLocation", resolve: context => context.GetCart().CartProducts[context.Source.ProductId]?.Inventory?.FulfillmentCenter?.Address);
+            Field<StringGraphType>("warehouseLocation", resolve: context => context.GetCart().CartProducts[context.Source.ProductId]?.Inventory?.FulfillmentCenter?.Address?.ToString());
 
             Field<BooleanGraphType>("IsValid", resolve: context => !context.GetCart().ValidationErrors.GetEntityCartErrors(context.Source).Any());
             Field<ListGraphType<ValidationErrorType>>("validationErrors", resolve: context => context.GetCart().ValidationErrors.GetEntityCartErrors(context.Source));

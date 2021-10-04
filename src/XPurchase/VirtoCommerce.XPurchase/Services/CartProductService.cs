@@ -58,11 +58,11 @@ namespace VirtoCommerce.XPurchase.Services
                 });
 
                 var pricesEvalContext = _mapper.Map<PriceEvaluationContext>(cartAggr);
-                pricesEvalContext.ProductIds = ids;             
+                pricesEvalContext.ProductIds = ids;
                 var evalPricesTask = _pricingService.EvaluateProductPricesAsync(pricesEvalContext);
 
                 await Task.WhenAll(loadInventoriesTask, evalPricesTask);
-              
+
                 foreach (var product in products)
                 {
                     var cartProduct = new CartProduct(product);

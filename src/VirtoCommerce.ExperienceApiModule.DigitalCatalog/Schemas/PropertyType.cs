@@ -52,12 +52,12 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             Field<StringGraphType>(
                 "valueType",
-                resolve: context => context.Source.Values.Select(x => x.ValueType).FirstOrDefault()
+                resolve: context => context.Source.Values.Select(x => x.ValueType).FirstOrDefault().ToString()
             );
 
             Field<StringGraphType>(
                 "value",
-                resolve: context => context.Source.Values.Select(x => x.Value).FirstOrDefault()
+                resolve: context => context.Source.Values.Select(x => x.Value).FirstOrDefault()?.ToString()
             );
             //.RootAlias("__object.properties.values");
 
@@ -68,7 +68,6 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             Connection<PropertyDictionaryItemType>()
               .Name("propertyDictItems")
-              .Unidirectional()
               .PageSize(20)
               .ResolveAsync(async context =>
               {

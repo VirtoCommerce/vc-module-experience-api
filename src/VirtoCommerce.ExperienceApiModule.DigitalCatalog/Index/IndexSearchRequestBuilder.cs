@@ -6,6 +6,7 @@ using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.SearchModule.Core.Extenstions;
 using VirtoCommerce.SearchModule.Core.Model;
 using VirtoCommerce.SearchModule.Core.Services;
+using VirtoCommerce.XDigitalCatalog.Extensions;
 
 namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
 {
@@ -13,6 +14,7 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
     {
         private const string ScoreSortingFieldName = "score";
         private SearchRequest SearchRequest { get; set; }
+        private string _cultureName { get; set; }
 
         public IndexSearchRequestBuilder()
         {
@@ -48,6 +50,12 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
         public IndexSearchRequestBuilder WithSearchPhrase(string searchPhrase)
         {
             SearchRequest.SearchKeywords = searchPhrase;
+            return this;
+        }
+
+        public IndexSearchRequestBuilder WithCultureName(string cultureName)
+        {
+            _cultureName = cultureName;
             return this;
         }
 
@@ -187,6 +195,7 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
             //Term facets
             if (!string.IsNullOrEmpty(parseResult.Keyword))
             {
+                parseResult.Keyword = parseResult.Keyword.AddLanguageSpecificFacets(_cultureName);
                 var termFacetExpressions = parseResult.Keyword.Split(" ");
                 parseResult.Filters.AddRange(termFacetExpressions.Select(x => new TermFilter
                 {
@@ -204,7 +213,7 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
                     {
                         RangeFilter rangeFilter => new RangeAggregationRequest
                         {
-                            Id = filter.Stringify(),
+                            Id = filter.Stringify(true),
                             FieldName = rangeFilter.FieldName,
                             Values = rangeFilter.Values.Select(x => new RangeAggregationRequestValue
                             {
