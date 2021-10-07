@@ -38,6 +38,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field(x => x.Order.IsPrototype);
             Field(x => x.Order.SubscriptionNumber, true);
             Field(x => x.Order.SubscriptionId, true);
+            Field(x => x.Order.PurchaseOrderNumber, true);
             Field(x => x.Order.Fee);
             Field(x => x.Order.FeeWithTax);
             Field(x => x.Order.FeeTotal);
@@ -89,6 +90,8 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                 "Customer order dynamic property values",
                 QueryArgumentPresets.GetArgumentForDynamicProperties(),
                 context => dynamicPropertyResolverService.LoadDynamicPropertyValues(context.Source.Order, context.GetArgumentOrValue<string>("cultureName")));
+
+            ExtendableField<ListGraphType<StringGraphType>>("coupons", resolve: x => x.Source.GetCustomerOrderCoupons());
         }
     }
 }
