@@ -95,11 +95,6 @@ namespace VirtoCommerce.XPurchase
         /// </summary>
         public IDictionary<string, CartProduct> CartProducts { get; protected set; } = new Dictionary<string, CartProduct>().WithDefaultValue(null);
 
-        /// <summary>
-        /// Contains a new of validation rule set that will be executed each time the basket is changed.
-        /// FluentValidation RuleSets allow you to group validation rules together which can be executed together as a group. You can set exists rule set name to evaluate default.
-        /// <see cref="CartValidator"/>
-        /// </summary>
         public string RuleSetItems { get; set; } = "default,items";
 
         public string RuleSetShipments { get; set; } = "default,shipments";
