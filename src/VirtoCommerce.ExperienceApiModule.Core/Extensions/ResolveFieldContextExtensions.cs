@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using GraphQL;
+using GraphQL.Execution;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.Core.Queries;
@@ -30,10 +31,20 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
 
             if (resolveContext.UserContext.TryGetValue(key, out var value))
             {
-                return value is T typedObject ? typedObject : defaultValue;
+                return castValue(value, defaultValue);
             }
 
             return defaultValue;
+
+            static T castValue(object value, T defaultValue)
+            {
+                return value is ArgumentValue argumentValue ? (T)argumentValue.Value : castValueAsTyped(value, defaultValue);
+
+                static T castValueAsTyped(object value, T defaultValue)
+                {
+                    return value is T typedObject ? typedObject : defaultValue;
+                }
+            }
         }
 
         public static T GetValue<T>(this IResolveFieldContext resolveContext, string key)
