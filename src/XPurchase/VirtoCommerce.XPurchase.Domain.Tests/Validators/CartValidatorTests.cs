@@ -25,7 +25,7 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             var result = await _validator.ValidateAsync(new CartValidationContext
             {
                 CartAggregate = aggregate
-            }, ruleSet: "default,strict");
+            }, ruleSet: "default,items,shipments,payments");
 
             // Assert
             result.IsValid.Should().BeTrue();
@@ -44,7 +44,7 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             var result = await _validator.ValidateAsync(new CartValidationContext
             {
                 CartAggregate = aggregate
-            }, ruleSet: "default,strict");
+            }, ruleSet: "default,items,shipments,payments");
 
             // Assert
             result.IsValid.Should().BeFalse();
