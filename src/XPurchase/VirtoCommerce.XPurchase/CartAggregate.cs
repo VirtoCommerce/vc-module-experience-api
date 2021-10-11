@@ -96,9 +96,7 @@ namespace VirtoCommerce.XPurchase
         public IDictionary<string, CartProduct> CartProducts { get; protected set; } = new Dictionary<string, CartProduct>().WithDefaultValue(null);
 
         public string RuleSetItems { get; set; } = "default,items";
-
         public string RuleSetShipments { get; set; } = "default,shipments";
-
         public string RuleSetPayments { get; set; } = "default,payments";
         public string RuleSetAll { get; set; } = "default,items,shipments,payments";
 
