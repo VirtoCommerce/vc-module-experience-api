@@ -67,5 +67,23 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             result.IsValid.Should().BeTrue();
             result.Errors.Should().BeEmpty();
         }
+
+        [Fact]
+        public async Task ValidateCart_ApplyRuleOverride()
+        {
+            // Arrange
+            var aggregate = GetValidCartAggregate();
+
+            var validator2 = new CartValidator2();
+
+            // Act
+            var result = await validator2.ValidateAsync(new CartValidationContext
+            {
+                CartAggregate = aggregate
+            }, ruleSet: "items");
+
+            // Assert
+            result.Errors.Should().HaveCount(1);
+        }
     }
 }

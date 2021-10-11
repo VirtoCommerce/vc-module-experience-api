@@ -136,6 +136,7 @@ namespace VirtoCommerce.XPurchase.Tests.Aggregates
             });
 
             var cartAggregate = GetValidCartAggregate();
+            cartAggregate.ValidationRuleSet = "default";
             cartAggregate.Cart.Items = Enumerable.Empty<LineItem>().ToList();
 
             // Act
