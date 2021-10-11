@@ -45,6 +45,8 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                 Type = GraphTypeExtenstionHelper.GetActualType<ContactType>(),
                 Resolver = new AsyncFieldResolver<ApplicationUser, ContactAggregate>(context =>
                 {
+                    // It's possible to create a user without a contact since MemberId is nullable.
+                    // Platfrom system users (frontend, admin, etc) usually don't have a contact.
                     if (context.Source.MemberId == null)
                     {
                         throw new ExecutionError("Cannot query field 'contact': MemberId is null");
