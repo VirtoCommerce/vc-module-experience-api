@@ -139,20 +139,22 @@ namespace VirtoCommerce.XPurchase.Schemas
             FieldAsync<BooleanGraphType>("isValid", "The flag indicates the valid cart",
                 QueryArgumentPresets.GetArgumentsForCartValidator(),
                 resolve: async context =>
-            {
-                var ruleSet = context.GetArgumentOrValue<string>("ruleSet");
-                await EnsureThatCartValidatedAsync(context.Source, cartValidationContextFactory, ruleSet);
-                return context.Source.IsValid;
-            });
+                {
+                    var ruleSet = context.GetArgumentOrValue<string>("ruleSet");
+                    await EnsureThatCartValidatedAsync(context.Source, cartValidationContextFactory, ruleSet);
+                    return context.Source.IsValid;
+                },
+                deprecationReason: "Deprecated, because of useless (no need to know validation state without details). Use validationErrors field."
+            );
 
             FieldAsync<ListGraphType<ValidationErrorType>>("validationErrors", "A set of errors in case of invalid cart",
                 QueryArgumentPresets.GetArgumentsForCartValidator(),
                 resolve: async context =>
-            {
-                var ruleSet = context.GetArgumentOrValue<string>("ruleSet");
-                await EnsureThatCartValidatedAsync(context.Source, cartValidationContextFactory, ruleSet);
-                return context.Source.ValidationErrors.OfType<CartValidationError>();
-            });
+                {
+                    var ruleSet = context.GetArgumentOrValue<string>("ruleSet");
+                    await EnsureThatCartValidatedAsync(context.Source, cartValidationContextFactory, ruleSet);
+                    return context.Source.ValidationErrors.OfType<CartValidationError>();
+                });
             Field(x => x.Cart.Type, nullable: true).Description("Shopping cart type");
         }
 
