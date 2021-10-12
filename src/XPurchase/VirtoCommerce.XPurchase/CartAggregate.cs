@@ -436,8 +436,8 @@ namespace VirtoCommerce.XPurchase
             EnsureCartExists();
             var validationContext = new PaymentValidationContext
             {
-                 Payment = payment,
-                 AvailPaymentMethods = availPaymentMethods
+                Payment = payment,
+                AvailPaymentMethods = availPaymentMethods
             };
             await AbstractTypeFactory<CartPaymentValidator>.TryCreateInstance().ValidateAndThrowAsync(validationContext, ruleSet: ValidationRuleSet);
 
@@ -514,6 +514,12 @@ namespace VirtoCommerce.XPurchase
             }
 
             return this;
+        }
+
+        [Obsolete("Use a separate method with ruleSet parameter. One of or comma-divided combination of \"items\",\"shipments\",\"payments\"")]
+        public virtual Task<IList<ValidationFailure>> ValidateAsync(CartValidationContext validationContext)
+        {
+            return ValidateAsync(validationContext, "default,items,shipments,payments");
         }
 
         public virtual async Task<IList<ValidationFailure>> ValidateAsync(CartValidationContext validationContext, string ruleSet)

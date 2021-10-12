@@ -17,5 +17,10 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Helpers
                 Description = "Filter multilingual dynamic properties to return only values of specified language (\"en-US\")"
             });
         }
+
+        public static QueryArguments GetArgumentsForCartValidator()
+        {
+            return new QueryArguments(new QueryArgument<StringGraphType> { Name = "ruleSet", Description = "CartValidator's rule sets to call. One of or comma-divided combination of \"items\",\"shipments\",\"payments\"" });
+        }
     }
 }

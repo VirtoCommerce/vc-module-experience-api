@@ -136,8 +136,8 @@ namespace VirtoCommerce.XPurchase.Schemas
                 QueryArgumentPresets.GetArgumentForDynamicProperties(),
                 context => dynamicPropertyResolverService.LoadDynamicPropertyValues(context.Source.Cart, context.GetArgumentOrValue<string>("cultureName")));
 
-            FieldAsync<BooleanGraphType>("isValid", "The flag indicates that the cart is valid",
-                new QueryArguments(new QueryArgument<StringGraphType> { Name = "ruleSet", Description = "CartValidator's rules to call. One of or comma-divided combination of \"items\",\"shipments\",\"payments\"" }),
+            FieldAsync<BooleanGraphType>("isValid", "The flag indicates the valid cart",
+                QueryArgumentPresets.GetArgumentsForCartValidator(),
                 resolve: async context =>
             {
                 var ruleSet = context.GetArgumentOrValue<string>("ruleSet");
@@ -146,7 +146,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             });
 
             FieldAsync<ListGraphType<ValidationErrorType>>("validationErrors", "A set of errors in case of invalid cart",
-                new QueryArguments(new QueryArgument<StringGraphType> { Name = "ruleSet", Description = "CartValidator's rules to call. One of or comma-divided combination of \"items\",\"shipments\",\"payments\"" }),
+                QueryArgumentPresets.GetArgumentsForCartValidator(),
                 resolve: async context =>
             {
                 var ruleSet = context.GetArgumentOrValue<string>("ruleSet");

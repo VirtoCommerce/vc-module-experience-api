@@ -1,7 +1,6 @@
 using System.Threading.Tasks;
 using FluentAssertions;
 using FluentValidation;
-using FluentValidation.Validators;
 using VirtoCommerce.XPurchase.Tests.Helpers;
 using VirtoCommerce.XPurchase.Validators;
 using Xunit;
@@ -83,7 +82,7 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             }, ruleSet: "items");
 
             // Assert
-            result.Errors.Should().HaveCount(1);
+            result.Errors.Should().Contain(x => x.ErrorMessage == "FakeFailure");
         }
     }
 }
