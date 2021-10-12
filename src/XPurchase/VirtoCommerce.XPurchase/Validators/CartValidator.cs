@@ -1,5 +1,5 @@
-using System.Linq;
 using FluentValidation;
+using FluentValidation.Validators;
 using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.XPurchase.Validators
@@ -17,50 +17,68 @@ namespace VirtoCommerce.XPurchase.Validators
             PaymentValidator = AbstractTypeFactory<CartPaymentValidator>.TryCreateInstance();
 
             RuleFor(x => x.CartAggregate.Cart).NotNull();
-            When(x => x.CartAggregate.Cart != null, () =>
-            {
-                RuleFor(x => x.CartAggregate.Cart.Name).NotEmpty();
-                RuleFor(x => x.CartAggregate.Cart.Currency).NotEmpty();
-                RuleFor(x => x.CartAggregate.Cart.CustomerId).NotEmpty();
+            RuleFor(x => x.CartAggregate.Cart.Name).NotEmpty();
+            RuleFor(x => x.CartAggregate.Cart.Currency).NotEmpty();
+            RuleFor(x => x.CartAggregate.Cart.CustomerId).NotEmpty();
 
-                RuleSet("strict", () =>
+            RuleSet("items", () =>
+                RuleFor(x => x).Custom((cartContext, context) =>
                 {
-                    RuleFor(x => x).Custom((cartContext, context) =>
-                    {
-                        cartContext.CartAggregate.Cart.Items?.Apply(item =>
-                        {
-                            var lineItemContext = new LineItemValidationContext
-                            {
-                                LineItem = item,
-                                AllCartProducts = cartContext.AllCartProducts ?? cartContext.CartAggregate.CartProducts.Values
-                            };
-                            var result = LineItemValidator.Validate(lineItemContext);
-                            result.Errors.Apply(x => context.AddFailure(x));
-                        });
+                    ApplyRuleForItems(cartContext, context);
+                }));
 
-                        cartContext.CartAggregate.Cart.Shipments?.Apply(shipment =>
-                        {
-                            var shipmentContext = new ShipmentValidationContext
-                            {
-                                Shipment = shipment,
-                                AvailShippingRates = cartContext.AvailShippingRates
-                            };
-                            var result = ShipmentValidator.Validate(shipmentContext);
-                            result.Errors.Apply(x => context.AddFailure(x));
-                        });
+            RuleSet("shipments", () =>
+                RuleFor(x => x).Custom((cartContext, context) =>
+                {
+                    ApplyRuleForShipments(cartContext, context);
+                }));
 
-                        cartContext.CartAggregate.Cart.Payments?.Apply(payment =>
-                        {
-                            var paymentContext = new PaymentValidationContext
-                            {
-                                Payment = payment,
-                                AvailPaymentMethods = cartContext.AvailPaymentMethods
-                            };
-                            var result = PaymentValidator.Validate(paymentContext);
-                            result.Errors.Apply(x => context.AddFailure(x));
-                        });
-                    });
-                });
+            RuleSet("payments", () =>
+                RuleFor(x => x).Custom((cartContext, context) =>
+                {
+                    ApplyRuleForPayments(cartContext, context);
+                }));
+        }
+
+        protected virtual void ApplyRuleForPayments(CartValidationContext cartContext, CustomContext context)
+        {
+            cartContext.CartAggregate.Cart.Payments?.Apply(payment =>
+            {
+                var paymentContext = new PaymentValidationContext
+                {
+                    Payment = payment,
+                    AvailPaymentMethods = cartContext.AvailPaymentMethods
+                };
+                var result = PaymentValidator.Validate(paymentContext);
+                result.Errors.Apply(x => context.AddFailure(x));
+            });
+        }
+
+        protected virtual void ApplyRuleForShipments(CartValidationContext cartContext, CustomContext context)
+        {
+            cartContext.CartAggregate.Cart.Shipments?.Apply(shipment =>
+            {
+                var shipmentContext = new ShipmentValidationContext
+                {
+                    Shipment = shipment,
+                    AvailShippingRates = cartContext.AvailShippingRates
+                };
+                var result = ShipmentValidator.Validate(shipmentContext);
+                result.Errors.Apply(x => context.AddFailure(x));
+            });
+        }
+
+        protected virtual void ApplyRuleForItems(CartValidationContext cartContext, CustomContext context)
+        {
+            cartContext.CartAggregate.Cart.Items?.Apply(item =>
+            {
+                var lineItemContext = new LineItemValidationContext
+                {
+                    LineItem = item,
+                    AllCartProducts = cartContext.AllCartProducts ?? cartContext.CartAggregate.CartProducts.Values
+                };
+                var result = LineItemValidator.Validate(lineItemContext);
+                result.Errors.Apply(x => context.AddFailure(x));
             });
         }
     }

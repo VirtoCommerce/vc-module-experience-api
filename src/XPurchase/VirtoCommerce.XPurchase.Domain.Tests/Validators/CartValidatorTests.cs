@@ -1,7 +1,6 @@
 using System.Threading.Tasks;
 using FluentAssertions;
 using FluentValidation;
-using FluentValidation.Validators;
 using VirtoCommerce.XPurchase.Tests.Helpers;
 using VirtoCommerce.XPurchase.Validators;
 using Xunit;
@@ -25,7 +24,7 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             var result = await _validator.ValidateAsync(new CartValidationContext
             {
                 CartAggregate = aggregate
-            }, ruleSet: "default,strict");
+            }, ruleSet: "default,items,shipments,payments");
 
             // Assert
             result.IsValid.Should().BeTrue();
@@ -44,7 +43,7 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             var result = await _validator.ValidateAsync(new CartValidationContext
             {
                 CartAggregate = aggregate
-            }, ruleSet: "default,strict");
+            }, ruleSet: "default,items,shipments,payments");
 
             // Assert
             result.IsValid.Should().BeFalse();
@@ -66,6 +65,24 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             // Assert
             result.IsValid.Should().BeTrue();
             result.Errors.Should().BeEmpty();
+        }
+
+        [Fact]
+        public async Task ValidateCart_ApplyRuleOverride()
+        {
+            // Arrange
+            var aggregate = GetValidCartAggregate();
+
+            var validator2 = new CartValidator2();
+
+            // Act
+            var result = await validator2.ValidateAsync(new CartValidationContext
+            {
+                CartAggregate = aggregate
+            }, ruleSet: "items");
+
+            // Assert
+            result.Errors.Should().Contain(x => x.ErrorMessage == "FakeFailure");
         }
     }
 }
