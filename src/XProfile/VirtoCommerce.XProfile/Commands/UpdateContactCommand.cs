@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
 {
@@ -5,6 +6,8 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
     //remove in the future
     public class UpdateContactCommand : ContactCommand
     {
-        public string UserId { get; set; }
+        //public string UserId { get; set; }
+
+        public IDictionary<string, object> OriginalInput { get; set; }
     }
 }

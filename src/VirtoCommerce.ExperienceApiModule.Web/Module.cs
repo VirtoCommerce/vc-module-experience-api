@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using AutoMapper;
 using GraphQL.Server;
 using GraphQL.Types;
@@ -62,7 +63,20 @@ namespace VirtoCommerce.ExperienceApiModule.Web
 
             services.AddSingleton<IStoreCurrencyResolver, StoreCurrencyResolver>();
 
-            services.AddAutoMapper(ModuleInfo.Assembly);
+            services.AddAutoMapper(cfg =>
+                {
+                    cfg.CreateMap<XProfile.Commands.UpdateContactCommand, CustomerModule.Core.Model.Contact>()
+                         .ForAllMembers(opt => opt.Condition((src, dst, srcMember, dstMember, context) =>
+                             {
+                                 IDictionary<string, object> items = context.Items["OriginalInput"] as IDictionary<string, object>;
+                                 if (items != null)
+                                 {
+                                     return items.ContainsKey(opt.DestinationMember.Name.ToLower());
+                                 }
+                                 return true;
+                             }));
+                },
+                ModuleInfo.Assembly);
 
             #region Pipelines
             services.AddPipeline<PromotionEvaluationContext>(builder =>

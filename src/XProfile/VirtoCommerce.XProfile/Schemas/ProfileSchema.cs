@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GraphQL;
@@ -307,6 +308,10 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                             {
                                 var type = GenericTypeHelper.GetActualType<UpdateContactCommand>();
                                 var command = (UpdateContactCommand)context.GetArgument(type, _commandName);
+
+                                command.OriginalInput = context.GetArgument<IDictionary<string, object>>(_commandName);
+
+
                                 await CheckAuthAsync(context.GetCurrentUserId(), command);
                                 return await _mediator.Send(command);
 
