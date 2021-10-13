@@ -492,9 +492,9 @@ namespace VirtoCommerce.XPurchase
             }
 
             await MergeLineItemsFromCartAsync(otherCart);
-            await MergeCouponFromCartAsync(otherCart);
-            await MergeShipmentFromCartAsync(otherCart);
-            await MergePaymentFromCartAsync(otherCart);
+            await MergeCouponsFromCartAsync(otherCart);
+            await MergeShipmentsFromCartAsync(otherCart);
+            await MergePaymentsFromCartAsync(otherCart);
             return this;
         }
 
@@ -506,7 +506,7 @@ namespace VirtoCommerce.XPurchase
             }
         }
 
-        protected virtual async Task MergeCouponFromCartAsync(CartAggregate otherCart)
+        protected virtual async Task MergeCouponsFromCartAsync(CartAggregate otherCart)
         {
             foreach (var coupon in otherCart.Cart.Coupons.ToList())
             {
@@ -514,7 +514,7 @@ namespace VirtoCommerce.XPurchase
             }
         }
 
-        protected virtual async Task MergeShipmentFromCartAsync(CartAggregate otherCart)
+        protected virtual async Task MergeShipmentsFromCartAsync(CartAggregate otherCart)
         {
             foreach (var shipment in otherCart.Cart.Shipments.ToList())
             {
@@ -523,7 +523,7 @@ namespace VirtoCommerce.XPurchase
             }
         }
 
-        protected virtual async Task MergePaymentFromCartAsync(CartAggregate otherCart)
+        protected virtual async Task MergePaymentsFromCartAsync(CartAggregate otherCart)
         {
             foreach (var payment in otherCart.Cart.Payments.ToList())
             {
