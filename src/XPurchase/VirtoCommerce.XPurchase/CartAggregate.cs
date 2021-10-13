@@ -491,49 +491,45 @@ namespace VirtoCommerce.XPurchase
                 entity.Id = null;
             }
 
-            await AddLineItemToCartAsync(otherCart);
-            await AddCouponToCartAsync(otherCart);
-            await AddShipmentToCartAsync(otherCart);
-            await AddPaymentToCartAsync(otherCart);
+            await MergeLineItemsFromCartAsync(otherCart);
+            await MergeCouponFromCartAsync(otherCart);
+            await MergeShipmentFromCartAsync(otherCart);
+            await MergePaymentFromCartAsync(otherCart);
             return this;
         }
 
-        protected virtual async Task<CartAggregate> AddLineItemToCartAsync(CartAggregate otherCart)
+        protected virtual async Task MergeLineItemsFromCartAsync(CartAggregate otherCart)
         {
             foreach (var lineItem in otherCart.Cart.Items.ToList())
             {
                 await InnerAddLineItemAsync(lineItem, otherCart.CartProducts[lineItem.ProductId]);
             }
-            return this;
         }
 
-        protected virtual async Task<CartAggregate> AddCouponToCartAsync(CartAggregate otherCart)
+        protected virtual async Task MergeCouponFromCartAsync(CartAggregate otherCart)
         {
             foreach (var coupon in otherCart.Cart.Coupons.ToList())
             {
                 await AddCouponAsync(coupon);
             }
-            return this;
         }
 
-        protected virtual async Task<CartAggregate> AddShipmentToCartAsync(CartAggregate otherCart)
+        protected virtual async Task MergeShipmentFromCartAsync(CartAggregate otherCart)
         {
             foreach (var shipment in otherCart.Cart.Shipments.ToList())
             {
                 //Skip validation, do not pass avail methods
                 await AddShipmentAsync(shipment, null);
             }
-            return this;
         }
 
-        protected virtual async Task<CartAggregate> AddPaymentToCartAsync(CartAggregate otherCart)
+        protected virtual async Task MergePaymentFromCartAsync(CartAggregate otherCart)
         {
             foreach (var payment in otherCart.Cart.Payments.ToList())
             {
                 //Skip validation, do not pass avail methods
                 await AddPaymentAsync(payment, null);
             }
-            return this;
         }
 
         [Obsolete("Use a separate method with ruleSet parameter. One of or comma-divided combination of \"items\",\"shipments\",\"payments\"")]
