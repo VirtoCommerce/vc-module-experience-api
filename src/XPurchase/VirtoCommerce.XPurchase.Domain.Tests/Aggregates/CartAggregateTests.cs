@@ -414,12 +414,6 @@ namespace VirtoCommerce.XPurchase.Tests.Aggregates
 
         #region AddShipmentAsync
 
-        // TODO: Write tests
-
-        #endregion AddShipmentAsync
-
-        #region RemoveShipmentAsync
-
         [Fact]
         public async Task AddShipmentAsync_ShipmentFound_MustContainSameShipment()
         {
@@ -446,6 +440,12 @@ namespace VirtoCommerce.XPurchase.Tests.Aggregates
             // Assert
             cartAggregate.Cart.Shipments.Should().Contain(shipment);
         }
+
+        #endregion AddShipmentAsync
+
+        #region RemoveShipmentAsync
+
+        // TODO: Write tests
 
         #endregion RemoveShipmentAsync
 
