@@ -491,28 +491,48 @@ namespace VirtoCommerce.XPurchase
                 entity.Id = null;
             }
 
+            await AddLineItemToCartAsync(otherCart);
+            await AddCouponToCartAsync(otherCart);
+            await AddShipmentToCartAsync(otherCart);
+            await AddPaymentToCartAsync(otherCart);
+            return this;
+        }
+
+        protected virtual async Task<CartAggregate> AddLineItemToCartAsync(CartAggregate otherCart)
+        {
             foreach (var lineItem in otherCart.Cart.Items.ToList())
             {
                 await InnerAddLineItemAsync(lineItem, otherCart.CartProducts[lineItem.ProductId]);
             }
+            return this;
+        }
 
+        protected virtual async Task<CartAggregate> AddCouponToCartAsync(CartAggregate otherCart)
+        {
             foreach (var coupon in otherCart.Cart.Coupons.ToList())
             {
                 await AddCouponAsync(coupon);
             }
+            return this;
+        }
 
+        protected virtual async Task<CartAggregate> AddShipmentToCartAsync(CartAggregate otherCart)
+        {
             foreach (var shipment in otherCart.Cart.Shipments.ToList())
             {
                 //Skip validation, do not pass avail methods
                 await AddShipmentAsync(shipment, null);
             }
+            return this;
+        }
 
+        protected virtual async Task<CartAggregate> AddPaymentToCartAsync(CartAggregate otherCart)
+        {
             foreach (var payment in otherCart.Cart.Payments.ToList())
             {
                 //Skip validation, do not pass avail methods
                 await AddPaymentAsync(payment, null);
             }
-
             return this;
         }
 
