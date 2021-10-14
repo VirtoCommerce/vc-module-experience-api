@@ -39,6 +39,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field(x => x.Order.SubscriptionNumber, true);
             Field(x => x.Order.SubscriptionId, true);
             Field<MoneyType>(nameof(CustomerOrder.Fee).ToCamelCase(), resolve: context => context.Source.Order.Fee.ToMoney(context.Source.Currency));
+            Field(x => x.Order.PurchaseOrderNumber, true);
             Field(x => x.Order.FeeWithTax);
             Field(x => x.Order.FeeTotal);
             Field(x => x.Order.FeeTotalWithTax);
@@ -89,6 +90,8 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                 "Customer order dynamic property values",
                 QueryArgumentPresets.GetArgumentForDynamicProperties(),
                 context => dynamicPropertyResolverService.LoadDynamicPropertyValues(context.Source.Order, context.GetArgumentOrValue<string>("cultureName")));
+
+            ExtendableField<ListGraphType<StringGraphType>>("coupons", resolve: x => x.Source.GetCustomerOrderCoupons());
         }
     }
 }

@@ -1,4 +1,5 @@
 using System.Linq;
+using GraphQL;
 using GraphQL.Resolvers;
 using GraphQL.Types;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
@@ -43,7 +44,16 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                 Description = "The associated contact info",
                 Type = GraphTypeExtenstionHelper.GetActualType<ContactType>(),
                 Resolver = new AsyncFieldResolver<ApplicationUser, ContactAggregate>(context =>
-                     contactAggregateRepository.GetMemberAggregateRootByIdAsync<ContactAggregate>(context.Source.MemberId))
+                {
+                    // It's possible to create a user without a contact since MemberId is nullable.
+                    // Platfrom system users (frontend, admin, etc) usually don't have a contact.
+                    if (context.Source.MemberId == null)
+                    {
+                        throw new ExecutionError("Cannot query field 'contact': MemberId is null");
+                    }
+
+                    return contactAggregateRepository.GetMemberAggregateRootByIdAsync<ContactAggregate>(context.Source.MemberId);
+                }),
             });
 
             AddField(new FieldType
