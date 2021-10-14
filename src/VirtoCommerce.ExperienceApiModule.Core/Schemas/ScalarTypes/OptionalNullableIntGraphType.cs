@@ -1,9 +1,9 @@
-﻿using GraphQL.Types;
+using GraphQL.Types;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 
 namespace VirtoCommerce.ExperienceApiModule.Core.Schemas.ScalarTypes
 {
-    public class OptionalNullableIntGraphType : IntGraphType
+    public sealed class OptionalNullableIntGraphType : IntGraphType
     {
         public OptionalNullableIntGraphType()
         {

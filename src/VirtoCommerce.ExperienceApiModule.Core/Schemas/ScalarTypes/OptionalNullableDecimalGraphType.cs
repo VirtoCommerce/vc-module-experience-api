@@ -3,7 +3,7 @@ using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 
 namespace VirtoCommerce.ExperienceApiModule.Core.Schemas.ScalarTypes
 {
-    public class OptionalNullableDecimalGraphType : DecimalGraphType
+    public sealed class OptionalNullableDecimalGraphType : DecimalGraphType
     {
         public OptionalNullableDecimalGraphType()
         {

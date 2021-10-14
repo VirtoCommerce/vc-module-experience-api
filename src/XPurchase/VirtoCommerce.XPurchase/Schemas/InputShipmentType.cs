@@ -2,7 +2,7 @@ using GraphQL.Types;
 
 namespace VirtoCommerce.XPurchase.Schemas
 {
-    public class InputShipmentType : InputObjectGraphType<ShipmentOptional>
+    public class InputShipmentType : InputObjectGraphType<ExpCartShipment>
     {
         public InputShipmentType()
         {

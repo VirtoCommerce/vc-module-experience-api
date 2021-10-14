@@ -3,7 +3,7 @@ using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 
 namespace VirtoCommerce.ExperienceApiModule.Core.Schemas.ScalarTypes
 {
-    public class OptionalStringGraphType : StringGraphType
+    public sealed class OptionalStringGraphType : StringGraphType
     {
         public OptionalStringGraphType()
         {

@@ -4,7 +4,6 @@ using System.Linq;
 using AutoMapper;
 using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.CartModule.Core.Model.Search;
-using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.CoreModule.Core.Outlines;
 using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.ExperienceApiModule.Core.Index;
@@ -165,27 +164,27 @@ namespace VirtoCommerce.XPurchase.Mapping
 
             CreateMap<LineItem, ProductPromoEntry>()
                 .ConvertUsing((lineItem, productPromoEntry, context) =>
-            {
-                if (productPromoEntry == null)
                 {
-                    productPromoEntry = AbstractTypeFactory<ProductPromoEntry>.TryCreateInstance();
-                }
-                // TODO:
-                // productPromoEntry.InStockQuantity = lineItem.InStockQuantity;
-                // productPromoEntry.Outline = lineItem.Product.Outline;
-                // productPromoEntry.Variations = null;
+                    if (productPromoEntry == null)
+                    {
+                        productPromoEntry = AbstractTypeFactory<ProductPromoEntry>.TryCreateInstance();
+                    }
+                    // TODO:
+                    // productPromoEntry.InStockQuantity = lineItem.InStockQuantity;
+                    // productPromoEntry.Outline = lineItem.Product.Outline;
+                    // productPromoEntry.Variations = null;
 
-                productPromoEntry.CatalogId = lineItem.CatalogId;
-                productPromoEntry.CategoryId = lineItem.CategoryId;
-                productPromoEntry.Code = lineItem.Sku;
-                productPromoEntry.Discount = lineItem.DiscountTotal;
-                //Use only base price for discount evaluation
-                productPromoEntry.Price = lineItem.SalePrice;
-                productPromoEntry.ProductId = lineItem.ProductId;
-                productPromoEntry.Quantity = lineItem.Quantity;
+                    productPromoEntry.CatalogId = lineItem.CatalogId;
+                    productPromoEntry.CategoryId = lineItem.CategoryId;
+                    productPromoEntry.Code = lineItem.Sku;
+                    productPromoEntry.Discount = lineItem.DiscountTotal;
+                    //Use only base price for discount evaluation
+                    productPromoEntry.Price = lineItem.SalePrice;
+                    productPromoEntry.ProductId = lineItem.ProductId;
+                    productPromoEntry.Quantity = lineItem.Quantity;
 
-                return productPromoEntry;
-            });
+                    return productPromoEntry;
+                });
 
             CreateMap<CartAggregate, PromotionEvaluationContext>().ConvertUsing((cartAggr, promoEvalcontext, context) =>
             {
@@ -319,239 +318,6 @@ namespace VirtoCommerce.XPurchase.Mapping
 
                   return criteria;
               });
-
-            CreateMap<AddressOptional, CartModule.Core.Model.Address>().
-                ConvertUsing((optional, address, context) =>
-                {
-                    if (address == null)
-                    {
-                        address = AbstractTypeFactory<CartModule.Core.Model.Address>.TryCreateInstance();
-                    }
-
-                    if (optional.Key?.IsSpecified == true)
-                    {
-                        address.Key = optional.Key.Value;
-                    }
-
-                    if (optional.City?.IsSpecified == true)
-                    {
-                        address.City = optional.City.Value;
-                    }
-
-                    if (optional.CountryCode?.IsSpecified == true)
-                    {
-                        address.CountryCode = optional.CountryCode.Value;
-                    }
-
-                    if (optional.CountryName?.IsSpecified == true)
-                    {
-                        address.CountryName = optional.CountryName.Value;
-                    }
-
-                    if (optional.Email?.IsSpecified == true)
-                    {
-                        address.Email = optional.Email.Value;
-                    }
-
-                    if (optional.FirstName?.IsSpecified == true)
-                    {
-                        address.FirstName = optional.FirstName.Value;
-                    }
-
-                    if (optional.LastName?.IsSpecified == true)
-                    {
-                        address.LastName = optional.LastName.Value;
-                    }
-
-                    if (optional.Line1?.IsSpecified == true)
-                    {
-                        address.Line1 = optional.Line1.Value;
-                    }
-
-                    if (optional.Line2?.IsSpecified == true)
-                    {
-                        address.Line2 = optional.Line2.Value;
-                    }
-
-                    if (optional.MiddleName?.IsSpecified == true)
-                    {
-                        address.MiddleName = optional.MiddleName.Value;
-                    }
-
-                    if (optional.Name?.IsSpecified == true)
-                    {
-                        address.Name = optional.Name.Value;
-                    }
-
-                    if (optional.Organization?.IsSpecified == true)
-                    {
-                        address.Organization = optional.Organization.Value;
-                    }
-
-                    if (optional.Phone?.IsSpecified == true)
-                    {
-                        address.Phone = optional.Phone.Value;
-                    }
-
-                    if (optional.PostalCode?.IsSpecified == true)
-                    {
-                        address.PostalCode = optional.PostalCode.Value;
-                    }
-
-                    if (optional.RegionId?.IsSpecified == true)
-                    {
-                        address.RegionId = optional.RegionId.Value;
-                    }
-
-                    if (optional.RegionName?.IsSpecified == true)
-                    {
-                        address.RegionName = optional.RegionName.Value;
-                    }
-
-                    if (optional.Zip?.IsSpecified == true)
-                    {
-                        address.Zip = optional.Zip.Value;
-                    }
-
-                    if (optional.OuterId?.IsSpecified == true)
-                    {
-                        address.OuterId = optional.OuterId.Value;
-                    }
-
-                    if (optional.AddressType?.IsSpecified == true)
-                    {
-                        address.AddressType = (AddressType)optional.AddressType.Value;
-                    }
-
-                    return address;
-                });
-
-            CreateMap<PaymentOptional, Payment>()
-                .ConvertUsing((optional, payment, context) =>
-                {
-                    if (payment == null)
-                    {
-                        payment = AbstractTypeFactory<Payment>.TryCreateInstance();
-                    }
-
-                    if (optional.Id?.IsSpecified == true)
-                    {
-                        payment.Id = optional.Id.Value;
-                    }
-
-                    if (optional.OuterId?.IsSpecified == true)
-                    {
-                        payment.OuterId = optional.OuterId.Value;
-                    }
-
-                    if (optional.PaymentGatewayCode?.IsSpecified == true)
-                    {
-                        payment.PaymentGatewayCode = optional.PaymentGatewayCode.Value;
-                    }
-
-                    if (optional.Currency?.IsSpecified == true)
-                    {
-                        payment.Currency = optional.Currency.Value;
-                    }
-
-                    if (optional.Price?.IsSpecified == true)
-                    {
-                        payment.Price = optional.Price.Value;
-                    }
-
-                    if (optional.Amount?.IsSpecified == true)
-                    {
-                        payment.Amount = optional.Amount.Value;
-                    }
-
-                    if (optional.BillingAddress?.IsSpecified == true)
-                    {
-                        payment.BillingAddress = context.Mapper.Map(optional.BillingAddress.Value, payment.BillingAddress);
-                    }
-
-                    return payment;
-                });
-
-            CreateMap<ShipmentOptional, Shipment>()
-                .ConvertUsing((optional, shipment, context) =>
-                {
-                    if (shipment == null)
-                    {
-                        shipment = AbstractTypeFactory<Shipment>.TryCreateInstance();
-                    }
-
-                    if (optional.Id?.IsSpecified == true)
-                    {
-                        shipment.Id = optional.Id.Value;
-                    }
-
-                    if (optional.FulfillmentCenterId?.IsSpecified == true)
-                    {
-                        shipment.FulfillmentCenterId = optional.FulfillmentCenterId.Value;
-                    }
-
-                    if (optional.Length?.IsSpecified == true)
-                    {
-                        shipment.Length = optional.Length.Value;
-                    }
-
-                    if (optional.Height?.IsSpecified == true)
-                    {
-                        shipment.Height = optional.Height.Value;
-                    }
-
-                    if (optional.MeasureUnit?.IsSpecified == true)
-                    {
-                        shipment.MeasureUnit = optional.MeasureUnit.Value;
-                    }
-
-                    if (optional.ShipmentMethodOption?.IsSpecified == true)
-                    {
-                        shipment.ShipmentMethodOption = optional.ShipmentMethodOption.Value;
-                    }
-
-                    if (optional.ShipmentMethodCode?.IsSpecified == true)
-                    {
-                        shipment.ShipmentMethodCode = optional.ShipmentMethodCode.Value;
-                    }
-
-                    if (optional.VolumetricWeight?.IsSpecified == true)
-                    {
-                        shipment.VolumetricWeight = optional.VolumetricWeight.Value;
-                    }
-
-                    if (optional.Weight?.IsSpecified == true)
-                    {
-                        shipment.Weight = optional.Weight.Value;
-                    }
-
-                    if (optional.WeightUnit?.IsSpecified == true)
-                    {
-                        shipment.WeightUnit = optional.WeightUnit.Value;
-                    }
-
-                    if (optional.Width?.IsSpecified == true)
-                    {
-                        shipment.Width = optional.Width.Value;
-                    }
-
-                    if (optional.Currency?.IsSpecified == true)
-                    {
-                        shipment.Currency = optional.Currency.Value;
-                    }
-
-                    if (optional.Price?.IsSpecified == true)
-                    {
-                        shipment.Price = optional.Price.Value;
-                    }
-
-                    if (optional.DeliveryAddress?.IsSpecified == true)
-                    {
-                        shipment.DeliveryAddress = context.Mapper.Map(optional.DeliveryAddress.Value, shipment.DeliveryAddress);
-                    }
-
-                    return shipment;
-                });
         }
     }
 

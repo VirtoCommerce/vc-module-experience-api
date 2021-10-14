@@ -38,7 +38,7 @@ namespace VirtoCommerce.XPurchase.Schemas
 
         public void Build(ISchema schema)
         {
-            ValueConverter.Register<AddressOptional, Optional<AddressOptional>>((x) => { return new Optional<AddressOptional>(x); });
+            ValueConverter.Register<ExpCartAddress, Optional<ExpCartAddress>>(x => new Optional<ExpCartAddress>(x));
 
             //Queries
             //We can't use the fluent syntax for new types registration provided by dotnet graphql here, because we have the strict requirement for underlying types extensions

@@ -77,6 +77,11 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Infrastructure
             schema.RegisterTypeMapping<Optional<int>, OptionalIntGraphType>();
             schema.RegisterTypeMapping<Optional<int?>, OptionalNullableIntGraphType>();
 
+            // Map common value conversions to Optional
+            ValueConverter.Register<int, Optional<int>>(x => new Optional<int>(x));
+            ValueConverter.Register<decimal, Optional<decimal>>(x => new Optional<decimal>(x));
+            ValueConverter.Register<string, Optional<string>>(x => new Optional<string>(x));
+
             // Clean Query, Mutation and Subscription if they have no fields
             // to prevent GraphQL configuration errors.
 

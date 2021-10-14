@@ -1,6 +1,6 @@
 namespace VirtoCommerce.ExperienceApiModule.Core.Infrastructure
 {
-    public class Optional<T>
+    public sealed class Optional<T>
     {
         public Optional()
         {
@@ -26,5 +26,4 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Infrastructure
 
         public bool IsSpecified { get; set; }
     }
-
 }

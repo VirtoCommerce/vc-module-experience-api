@@ -6,12 +6,12 @@ namespace VirtoCommerce.XPurchase.Commands
         {
         }
 
-        public AddCartAddressCommand(string storeId, string cartType, string cartName, string userId, string currencyCode, string cultureName, AddressOptional address)
+        public AddCartAddressCommand(string storeId, string cartType, string cartName, string userId, string currencyCode, string cultureName, ExpCartAddress address)
             : base(storeId, cartType, cartName, userId, currencyCode, cultureName)
         {
             Address = address;
         }
 
-        public AddressOptional Address { get; set; }
+        public ExpCartAddress Address { get; set; }
     }
 }

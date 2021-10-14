@@ -8,12 +8,12 @@ namespace VirtoCommerce.XPurchase.Commands
         {
         }
 
-        public AddOrUpdateCartShipmentCommand(string storeId, string cartType, string cartName, string userId, string currencyCode, string cultureName, ShipmentOptional shipment)
+        public AddOrUpdateCartShipmentCommand(string storeId, string cartType, string cartName, string userId, string currencyCode, string cultureName, ExpCartShipment shipment)
             : base(storeId, cartType, cartName, userId, currencyCode, cultureName)
         {
             Shipment = shipment;
         }
 
-        public ShipmentOptional Shipment { get; set; }
+        public ExpCartShipment Shipment { get; set; }
     }
 }

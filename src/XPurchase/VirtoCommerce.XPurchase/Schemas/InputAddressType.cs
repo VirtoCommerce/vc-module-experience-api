@@ -3,7 +3,7 @@ using VirtoCommerce.CartModule.Core.Model;
 
 namespace VirtoCommerce.XPurchase.Schemas
 {
-    public class InputAddressType : InputObjectGraphType<AddressOptional>
+    public class InputAddressType : InputObjectGraphType<ExpCartAddress>
     {
         public InputAddressType()
         {

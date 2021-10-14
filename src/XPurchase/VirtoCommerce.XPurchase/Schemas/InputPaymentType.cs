@@ -2,7 +2,7 @@ using GraphQL.Types;
 
 namespace VirtoCommerce.XPurchase.Schemas
 {
-    public class InputPaymentType : InputObjectGraphType<PaymentOptional>
+    public class InputPaymentType : InputObjectGraphType<ExpCartPayment>
     {
         public InputPaymentType()
         {
