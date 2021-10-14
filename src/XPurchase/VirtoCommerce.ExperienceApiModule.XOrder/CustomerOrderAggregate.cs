@@ -6,8 +6,9 @@ using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.ExperienceApiModule.Core.Models;
 using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.XOrder.Validators;
+using VirtoCommerce.MarketingModule.Core.Model.Promotions.Search;
+using VirtoCommerce.MarketingModule.Core.Search;
 using VirtoCommerce.OrdersModule.Core.Model;
-using VirtoCommerce.PaymentModule.Core.Model;
 using VirtoCommerce.PaymentModule.Model.Requests;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Domain;
@@ -17,10 +18,13 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder
     public class CustomerOrderAggregate : Entity, IAggregateRoot, ICloneable
     {
         private readonly IDynamicPropertyUpdaterService _dynamicPropertyUpdaterService;
+        private readonly IPromotionUsageSearchService _promotionUsageSearchService;
 
-        public CustomerOrderAggregate(IDynamicPropertyUpdaterService dynamicPropertyUpdaterService)
+        public CustomerOrderAggregate(IDynamicPropertyUpdaterService dynamicPropertyUpdaterService,
+            IPromotionUsageSearchService promotionUsageSearchService)
         {
             _dynamicPropertyUpdaterService = dynamicPropertyUpdaterService;
+            _promotionUsageSearchService = promotionUsageSearchService;
         }
 
         public CustomerOrder Order { get; protected set; }
@@ -117,6 +121,19 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder
             }
 
             return this;
+        }
+
+        public virtual async Task<IEnumerable<string>> GetCustomerOrderCoupons()
+        {
+            var criteria = new PromotionUsageSearchCriteria
+            {
+                ObjectId = Order.Id,
+                ObjectType = nameof(CustomerOrder)
+            };
+
+            var result = await _promotionUsageSearchService.SearchUsagesAsync(criteria);
+
+            return result.Results.Select(x => x.CouponCode);
         }
 
         public object Clone()

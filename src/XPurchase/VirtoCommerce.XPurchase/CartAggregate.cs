@@ -491,29 +491,45 @@ namespace VirtoCommerce.XPurchase
                 entity.Id = null;
             }
 
+            await MergeLineItemsFromCartAsync(otherCart);
+            await MergeCouponsFromCartAsync(otherCart);
+            await MergeShipmentsFromCartAsync(otherCart);
+            await MergePaymentsFromCartAsync(otherCart);
+            return this;
+        }
+
+        protected virtual async Task MergeLineItemsFromCartAsync(CartAggregate otherCart)
+        {
             foreach (var lineItem in otherCart.Cart.Items.ToList())
             {
                 await InnerAddLineItemAsync(lineItem, otherCart.CartProducts[lineItem.ProductId]);
             }
+        }
 
+        protected virtual async Task MergeCouponsFromCartAsync(CartAggregate otherCart)
+        {
             foreach (var coupon in otherCart.Cart.Coupons.ToList())
             {
                 await AddCouponAsync(coupon);
             }
+        }
 
+        protected virtual async Task MergeShipmentsFromCartAsync(CartAggregate otherCart)
+        {
             foreach (var shipment in otherCart.Cart.Shipments.ToList())
             {
                 //Skip validation, do not pass avail methods
                 await AddShipmentAsync(shipment, null);
             }
+        }
 
+        protected virtual async Task MergePaymentsFromCartAsync(CartAggregate otherCart)
+        {
             foreach (var payment in otherCart.Cart.Payments.ToList())
             {
                 //Skip validation, do not pass avail methods
                 await AddPaymentAsync(payment, null);
             }
-
-            return this;
         }
 
         [Obsolete("Use a separate method with ruleSet parameter. One of or comma-divided combination of \"items\",\"shipments\",\"payments\"")]

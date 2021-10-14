@@ -7,8 +7,11 @@ using FluentAssertions;
 using Moq;
 using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model;
+using VirtoCommerce.PaymentModule.Core.Model;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.ShippingModule.Core.Model;
 using VirtoCommerce.XPurchase.Tests.Helpers;
+using VirtoCommerce.XPurchase.Tests.Helpers.Stubs;
 using Xunit;
 using AddressType = VirtoCommerce.CoreModule.Core.Common.AddressType;
 
@@ -411,7 +414,32 @@ namespace VirtoCommerce.XPurchase.Tests.Aggregates
 
         #region AddShipmentAsync
 
-        // TODO: Write tests
+        [Fact]
+        public async Task AddShipmentAsync_ShipmentFound_MustContainSameShipment()
+        {
+            // Arrange
+            var cartAggregate = GetValidCartAggregate();
+            var shipment = new Shipment
+            {
+                ShipmentMethodCode = "shippingMethodCode",
+                ShipmentMethodOption = "OptionName",
+                Price = 777,
+            };
+            var shippingRate = new ShippingRate
+            {
+                OptionName = "OptionName",
+                ShippingMethod = new StubShippingMethod("shippingMethodCode"),
+                Rate = 777,
+            };
+            var shippingRates = new List<ShippingRate> { shippingRate };
+            cartAggregate.Cart.Shipments = new List<Shipment> { shipment };
+
+            // Act
+            await cartAggregate.AddShipmentAsync(shipment, shippingRates);
+
+            // Assert
+            cartAggregate.Cart.Shipments.Should().Contain(shipment);
+        }
 
         #endregion AddShipmentAsync
 
@@ -423,7 +451,23 @@ namespace VirtoCommerce.XPurchase.Tests.Aggregates
 
         #region AddPaymentAsync
 
-        // TODO: Write tests
+        [Fact]
+        public async Task AddPaymentAsync_PaymentFound_MustContainSamePayment()
+        {
+            // Arrange
+            var cartAggregate = GetValidCartAggregate();
+            var payment = _fixture.Create<Payment>();
+            payment.PaymentGatewayCode = null;
+            var paymentMethod = _fixture.Create<PaymentMethod>();
+            var paymentMethods = new List<PaymentMethod> { paymentMethod };
+            cartAggregate.Cart.Payments = new List<Payment> { payment };
+
+            // Act
+            await cartAggregate.AddPaymentAsync(payment, paymentMethods);
+
+            // Assert
+            cartAggregate.Cart.Payments.Should().Contain(payment);
+        }
 
         #endregion AddPaymentAsync
 
