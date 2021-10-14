@@ -1,6 +1,8 @@
 using System.Linq;
 using System.Threading.Tasks;
+using GraphQL;
 using GraphQL.Types;
+using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
@@ -53,6 +55,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field(x => x.Cart.TaxPercentRate, nullable: true).Description("Tax percent rate");
             Field(x => x.Cart.TaxType, nullable: true).Description("Shipping tax type");
             Field<ListGraphType<TaxDetailType>>("taxDetails", resolve: context => context.Source.Cart.TaxDetails);
+            Field<MoneyType>(nameof(ShoppingCart.Fee).ToCamelCase(), resolve: context => context.Source.Cart.Fee.ToMoney(context.Source.Currency));
 
             // Shipping
             Field<MoneyType>("shippingPrice", resolve: context => context.Source.Cart.ShippingTotal.ToMoney(context.Source.Currency));
@@ -155,7 +158,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                     await EnsureThatCartValidatedAsync(context.Source, cartValidationContextFactory, ruleSet);
                     return context.Source.ValidationErrors.OfType<CartValidationError>();
                 });
-            Field(x => x.Cart.Type, nullable: true).Description("Shopping cart type");
+            Field(x => x.Cart.Type, nullable: true).Description("Shopping cart type");            
         }
 
         private async Task EnsureThatCartValidatedAsync(CartAggregate cartAggr, ICartValidationContextFactory cartValidationContextFactory, string ruleSet)
