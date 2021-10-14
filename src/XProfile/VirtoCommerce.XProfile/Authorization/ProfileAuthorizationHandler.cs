@@ -36,7 +36,8 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Authorization
         {
             var result = context.User.IsInRole(PlatformConstants.Security.SystemRoles.Administrator);
 
-            if (result)
+            // Administrators can do anything except creating any users
+            if (result && !(context.Resource is CreateUserCommand))
             {
                 context.Succeed(requirement);
                 return;
