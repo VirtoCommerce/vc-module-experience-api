@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using AutoMapper;
 using Moq;
 using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.XPurchase.Commands;
@@ -15,10 +16,11 @@ namespace VirtoCommerce.XPurchase.Tests.Handlers
         {
             // Arragne
             var cartAggregateRepositoryMock = new Mock<ICartAggregateRepository>();
+            var mapperMock = new Mock<IMapper>();
             var cartAggregateMock = new Mock<CartAggregate>(MockBehavior.Loose, null, null, null, null, null, null);
             cartAggregateRepositoryMock.Setup(x => x.GetCartByIdAsync(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(cartAggregateMock.Object);
 
-            var handler = new AddCartAddressCommandHandler(cartAggregateRepositoryMock.Object);
+            var handler = new AddCartAddressCommandHandler(cartAggregateRepositoryMock.Object, mapperMock.Object);
             var request = new AddCartAddressCommand() { CartId = Guid.NewGuid().ToString() };
 
             // Act

@@ -1,9 +1,8 @@
 using GraphQL.Types;
-using VirtoCommerce.CartModule.Core.Model;
 
 namespace VirtoCommerce.XPurchase.Schemas
 {
-    public class InputPaymentType : InputObjectGraphType<Payment>
+    public class InputPaymentType : InputObjectGraphType<PaymentOptional>
     {
         public InputPaymentType()
         {

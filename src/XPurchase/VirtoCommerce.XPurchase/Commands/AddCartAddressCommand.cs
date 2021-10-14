@@ -1,5 +1,3 @@
-using Address = VirtoCommerce.CartModule.Core.Model.Address;
-
 namespace VirtoCommerce.XPurchase.Commands
 {
     public class AddCartAddressCommand : CartCommand
@@ -8,12 +6,12 @@ namespace VirtoCommerce.XPurchase.Commands
         {
         }
 
-        public AddCartAddressCommand(string storeId, string cartType, string cartName, string userId, string currencyCode, string cultureName, Address address)
+        public AddCartAddressCommand(string storeId, string cartType, string cartName, string userId, string currencyCode, string cultureName, AddressOptional address)
             : base(storeId, cartType, cartName, userId, currencyCode, cultureName)
         {
             Address = address;
         }
 
-        public Address Address { get; set; }
+        public AddressOptional Address { get; set; }
     }
 }

@@ -1,4 +1,4 @@
-using VirtoCommerce.CartModule.Core.Model;
+using VirtoCommerce.XPurchase.Schemas;
 
 namespace VirtoCommerce.XPurchase.Commands
 {
@@ -8,12 +8,12 @@ namespace VirtoCommerce.XPurchase.Commands
         {
         }
 
-        public AddOrUpdateCartPaymentCommand(string storeId, string cartType, string cartName, string userId, string currencyCode, string cultureName, Payment payment)
+        public AddOrUpdateCartPaymentCommand(string storeId, string cartType, string cartName, string userId, string currencyCode, string cultureName, PaymentOptional payment)
             : base(storeId, cartType, cartName, userId, currencyCode, cultureName)
         {
             Payment = payment;
         }
 
-        public Payment Payment { get; set; }
+        public PaymentOptional Payment { get; set; }
     }
 }

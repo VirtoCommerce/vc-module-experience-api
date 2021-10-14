@@ -7,6 +7,7 @@ using GraphQL.Instrumentation;
 using GraphQL.Introspection;
 using GraphQL.Types;
 using GraphQL.Utilities;
+using VirtoCommerce.ExperienceApiModule.Core.Schemas.ScalarTypes;
 
 namespace VirtoCommerce.ExperienceApiModule.Core.Infrastructure
 {
@@ -68,6 +69,13 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Infrastructure
             {
                 builder.Build(schema);
             }
+
+            // Map custom optional Graph Types for partial mutations support
+            schema.RegisterTypeMapping<Optional<string>, OptionalStringGraphType>();
+            schema.RegisterTypeMapping<Optional<decimal>, OptionalDecimalGraphType>();
+            schema.RegisterTypeMapping<Optional<decimal?>, OptionalNullableDecimalGraphType>();
+            schema.RegisterTypeMapping<Optional<int>, OptionalIntGraphType>();
+            schema.RegisterTypeMapping<Optional<int?>, OptionalNullableIntGraphType>();
 
             // Clean Query, Mutation and Subscription if they have no fields
             // to prevent GraphQL configuration errors.
