@@ -83,8 +83,11 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Authorization
             }
             else if (context.Resource is CreateUserCommand createUserCommand)
             {
-                //Anonymous user can create user
-                result = true;
+                //Anonymous user can create customer users only
+                if (!createUserCommand.ApplicationUser.IsAdministrator && createUserCommand.ApplicationUser.UserType.EqualsInvariant("Customer"))
+                {
+                    result = true;
+                }
             }
             else if (context.Resource is SendVerifyEmailCommand)
             {
