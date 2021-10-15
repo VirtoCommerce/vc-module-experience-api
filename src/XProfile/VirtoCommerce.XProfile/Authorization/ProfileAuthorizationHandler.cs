@@ -36,7 +36,8 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Authorization
         {
             var result = context.User.IsInRole(PlatformConstants.Security.SystemRoles.Administrator);
 
-            if (result)
+            // Administrators can do anything except creating any users
+            if (result && !(context.Resource is CreateUserCommand))
             {
                 context.Succeed(requirement);
                 return;
@@ -83,8 +84,8 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Authorization
             }
             else if (context.Resource is CreateUserCommand createUserCommand)
             {
-                //Anonymous user can create user
-                result = true;
+                //Anonymous user can create customer users only
+                result = !createUserCommand.ApplicationUser.IsAdministrator && createUserCommand.ApplicationUser.UserType.EqualsInvariant("Customer");
             }
             else if (context.Resource is SendVerifyEmailCommand)
             {
