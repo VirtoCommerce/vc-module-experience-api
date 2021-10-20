@@ -1,4 +1,3 @@
-using VirtoCommerce.XPurchase.Services;
 using Moq;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.InventoryModule.Core.Services;
@@ -13,53 +12,43 @@ using FluentAssertions;
 
 namespace VirtoCommerce.XPurchase.Tests.Services
 {
-    public class CartProductServiceHeir : CartProductService
+    public class CartProductServiceTests
     {
-        public CartProductServiceHeir(IItemService productService
-            , IInventorySearchService inventoryService
-            , IPricingService pricingService
-            , IMapper mapper) : base(productService, inventoryService, pricingService, mapper)
+        private readonly Mock<IItemService> _productService;
+        private readonly Mock<IInventorySearchService> _inventorySearchService;
+        private readonly Mock<IPricingService> _pricingService;
+        private readonly Mock<IMapper> _mapper;
+
+        public CartProductServiceTests()
         {
+            _productService = new Mock<IItemService>();
+            _inventorySearchService = new Mock<IInventorySearchService>();
+            _pricingService = new Mock<IPricingService>();
+            _mapper = new Mock<IMapper>();
         }
 
-        public class CartProductServiceTests
+        [Fact]
+        public async Task GetProductsByIdsAsync_NumberProducts_ReturnsProducts()
         {
-            private readonly Mock<IItemService> _productService;
-            private readonly Mock<IInventorySearchService> _inventorySearchService;
-            private readonly Mock<IPricingService> _pricingService;
-            private readonly Mock<IMapper> _mapper;
+            // Arrange
+            var productId1 = Guid.NewGuid().ToString();
+            var productId2 = Guid.NewGuid().ToString();
+            var ids = new[] { productId1, productId2 };
 
-            public CartProductServiceTests()
-            {
-                _productService = new Mock<IItemService>();
-                _inventorySearchService = new Mock<IInventorySearchService>();
-                _pricingService = new Mock<IPricingService>();
-                _mapper = new Mock<IMapper>();
-            }
-
-            [Fact]
-            public async Task GetProductsByIdsAsync_NumberProducts_ReturnsProducts()
-            {
-                // Arrange
-                var productId1 = Guid.NewGuid().ToString();
-                var productId2 = Guid.NewGuid().ToString();
-                var ids = new[] { productId1, productId2 };
-
-                var TestCatalogProduct = new List<CatalogProduct>()
+            var TestCatalogProduct = new List<CatalogProduct>()
             {
                 new CatalogProduct() { Id = productId1 },
                 new CatalogProduct() { Id = productId2 }
             };
 
-                var _service = new CartProductServiceHeir(_productService.Object, _inventorySearchService.Object, _pricingService.Object, _mapper.Object);
-                _productService.Setup(x => x.GetByIdsAsync(ids, It.IsAny<string>(), null)).ReturnsAsync(TestCatalogProduct.ToArray());
+            var _service = new CartProductServiceFake(_productService.Object, _inventorySearchService.Object, _pricingService.Object, _mapper.Object);
+            _productService.Setup(x => x.GetByIdsAsync(ids, It.IsAny<string>(), null)).ReturnsAsync(TestCatalogProduct.ToArray());
 
-                //Act
-                var result = await _service.GetProductsByIdsAsync(ids);
+            //Act
+            var result = await _service.GetProductsByIdsFakeAsync(ids);
 
-                //Assert
-                result.Should().HaveCount(2);
-            }
+            //Assert
+            result.Should().HaveCount(2);
         }
     }
 }

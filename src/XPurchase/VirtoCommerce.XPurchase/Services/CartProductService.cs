@@ -19,8 +19,8 @@ namespace VirtoCommerce.XPurchase.Services
         private readonly IItemService _productService;
         private readonly IInventorySearchService _inventorySearchService;
         private readonly IPricingService _pricingService;
-        protected ItemResponseGroup defaultResponseGroups = ItemResponseGroup.ItemAssets | ItemResponseGroup.ItemInfo | ItemResponseGroup.Outlines | ItemResponseGroup.Seo;
-        protected int pageSize = 50;
+        protected virtual ItemResponseGroup DefaultResponseGroups { get; set; } = ItemResponseGroup.ItemAssets | ItemResponseGroup.ItemInfo | ItemResponseGroup.Outlines | ItemResponseGroup.Seo;
+        protected virtual int DefaultPageSize { get; set; } = 50;
 
         private readonly IMapper _mapper;
         public CartProductService(
@@ -47,20 +47,42 @@ namespace VirtoCommerce.XPurchase.Services
             }
 
             var products = await GetProductsByIdsAsync(ids);
-            var result = await AddPricesAndInventorysToCartProductAsync(cartAggr, products.ToArray());
-            return result;
+            var cartProductWithPrices = await AddPricesToCartProductAsync(cartAggr, products.ToList());
+            var cartProductWithInventorys = await AddInventorysToCartProductAsync(cartAggr, products.ToList());
+            return cartProductWithPrices.AddRange(cartProductWithInventorys);
         }
 
         protected virtual async Task<IEnumerable<CatalogProduct>> GetProductsByIdsAsync(string[] ids)
         {
-            return await _productService.GetByIdsAsync(ids, defaultResponseGroups.ToString());
+            return await _productService.GetByIdsAsync(ids, DefaultResponseGroups.ToString());
         }
 
-        protected virtual async Task<IEnumerable<CartProduct>> AddPricesAndInventorysToCartProductAsync(CartAggregate cartAggr, CatalogProduct[] products)
+        protected virtual async Task<IList<CartProduct>> AddPricesToCartProductAsync(CartAggregate cartAggregate, List<CatalogProduct> products)
+        {
+            var result = new List<CartProduct>();
+            if (!products.IsNullOrEmpty())
+            {
+                var ids = products.Select(x => x.Id).ToArray();
+                var pricesEvalContext = _mapper.Map<PriceEvaluationContext>(cartAggregate);
+                pricesEvalContext.ProductIds = ids;
+                var evalPricesTask = await _pricingService.EvaluateProductPricesAsync(pricesEvalContext);
+
+                foreach (var product in products)
+                {
+                    var cartProduct = new CartProduct(product);
+                    //Apply prices
+                    cartProduct.ApplyPrices(evalPricesTask, cartAggregate.Currency);
+                    result.Add(cartProduct);
+                }
+            }
+            return result;
+        }
+
+        protected virtual async Task<IList<CartProduct>> AddInventorysToCartProductAsync(CartAggregate cartAggregate, List<CatalogProduct> products)
         {
             var pageNumber = 1;
             var skip = 0;
-            var take = pageSize;
+            var take = DefaultPageSize;
 
             var result = new List<CartProduct>();
             var allLoadInventories = new List<InventoryInfo>();
@@ -80,22 +102,15 @@ namespace VirtoCommerce.XPurchase.Services
                     });
                     allLoadInventories.AddRange(loadInventoriesTask.Results);
                     pageNumber++;
-                    skip = (pageNumber - 1) * pageSize;
-                    take = Math.Min(pageSize, totalCounts - skip);
+                    skip = (pageNumber - 1) * DefaultPageSize;
+                    take = Math.Min(DefaultPageSize, totalCounts - skip);
                 }
-
-                var pricesEvalContext = _mapper.Map<PriceEvaluationContext>(cartAggr);
-                pricesEvalContext.ProductIds = ids;
-                var evalPricesTask = await _pricingService.EvaluateProductPricesAsync(pricesEvalContext);
 
                 foreach (var product in products)
                 {
                     var cartProduct = new CartProduct(product);
                     //Apply inventories
-                    cartProduct.ApplyInventories(allLoadInventories, cartAggr.Store);
-
-                    //Apply prices
-                    cartProduct.ApplyPrices(evalPricesTask, cartAggr.Currency);
+                    cartProduct.ApplyInventories(allLoadInventories, cartAggregate.Store);
                     result.Add(cartProduct);
                 }
             }
