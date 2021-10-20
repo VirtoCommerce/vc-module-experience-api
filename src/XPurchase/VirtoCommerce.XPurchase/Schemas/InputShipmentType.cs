@@ -1,9 +1,8 @@
 using GraphQL.Types;
-using VirtoCommerce.CartModule.Core.Model;
 
 namespace VirtoCommerce.XPurchase.Schemas
 {
-    public class InputShipmentType : InputObjectGraphType<Shipment>
+    public class InputShipmentType : InputObjectGraphType<ExpCartShipment>
     {
         public InputShipmentType()
         {
@@ -20,8 +19,8 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field(x => x.Width, nullable: true).Description("Value of width");
             //TODO: Add descriptions
             Field<InputAddressType>("deliveryAddress");
-            Field(x=> x.Currency, nullable: true);
-            Field(x=> x.Price, nullable: true);          
+            Field(x => x.Currency, nullable: true);
+            Field(x => x.Price, nullable: true);
             //Field(x=> x.Items);
         }
     }

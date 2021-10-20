@@ -164,27 +164,27 @@ namespace VirtoCommerce.XPurchase.Mapping
 
             CreateMap<LineItem, ProductPromoEntry>()
                 .ConvertUsing((lineItem, productPromoEntry, context) =>
-            {
-                if (productPromoEntry == null)
                 {
-                    productPromoEntry = AbstractTypeFactory<ProductPromoEntry>.TryCreateInstance();
-                }
-                // TODO:
-                // productPromoEntry.InStockQuantity = lineItem.InStockQuantity;
-                // productPromoEntry.Outline = lineItem.Product.Outline;
-                // productPromoEntry.Variations = null;
+                    if (productPromoEntry == null)
+                    {
+                        productPromoEntry = AbstractTypeFactory<ProductPromoEntry>.TryCreateInstance();
+                    }
+                    // TODO:
+                    // productPromoEntry.InStockQuantity = lineItem.InStockQuantity;
+                    // productPromoEntry.Outline = lineItem.Product.Outline;
+                    // productPromoEntry.Variations = null;
 
-                productPromoEntry.CatalogId = lineItem.CatalogId;
-                productPromoEntry.CategoryId = lineItem.CategoryId;
-                productPromoEntry.Code = lineItem.Sku;
-                productPromoEntry.Discount = lineItem.DiscountTotal;
-                //Use only base price for discount evaluation
-                productPromoEntry.Price = lineItem.SalePrice;
-                productPromoEntry.ProductId = lineItem.ProductId;
-                productPromoEntry.Quantity = lineItem.Quantity;
+                    productPromoEntry.CatalogId = lineItem.CatalogId;
+                    productPromoEntry.CategoryId = lineItem.CategoryId;
+                    productPromoEntry.Code = lineItem.Sku;
+                    productPromoEntry.Discount = lineItem.DiscountTotal;
+                    //Use only base price for discount evaluation
+                    productPromoEntry.Price = lineItem.SalePrice;
+                    productPromoEntry.ProductId = lineItem.ProductId;
+                    productPromoEntry.Quantity = lineItem.Quantity;
 
-                return productPromoEntry;
-            });
+                    return productPromoEntry;
+                });
 
             CreateMap<CartAggregate, PromotionEvaluationContext>().ConvertUsing((cartAggr, promoEvalcontext, context) =>
             {

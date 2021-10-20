@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -14,7 +15,10 @@ namespace VirtoCommerce.XPurchase.Commands
         {
             var cartAggregate = await GetOrCreateCartFromCommandAsync(request);
 
-            await cartAggregate.AddOrUpdateCartAddressByTypeAsync(request.Address);
+            var address = cartAggregate.Cart.Addresses.FirstOrDefault(x => (int)x.AddressType == request.Address.AddressType?.Value);
+            address = request.Address.MapTo(address);
+
+            await cartAggregate.AddOrUpdateCartAddressByTypeAsync(address);
 
             return await SaveCartAsync(cartAggregate);
         }
