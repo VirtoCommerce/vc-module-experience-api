@@ -16,7 +16,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field(x => x.ShipmentMethodCode, nullable: true).Description("Shipment method code");
             Field(x => x.ShipmentMethodOption, nullable: true).Description("Shipment method option");
             Field(x => x.FulfillmentCenterId, nullable: true).Description("Fulfillment center id");
-            ExtendableField<AddressType>("deliveryAddress", resolve: context => context.Source.DeliveryAddress);
+            ExtendableField<CartAddressType>("deliveryAddress", resolve: context => context.Source.DeliveryAddress);
             Field(x => x.VolumetricWeight, nullable: true).Description("Value of volumetric weight");
             Field(x => x.WeightUnit, nullable: true).Description("Value of weight unit");
             Field(x => x.Weight, nullable: true).Description("Value of weight");
