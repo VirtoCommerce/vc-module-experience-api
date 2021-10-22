@@ -10,6 +10,7 @@ using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.CustomerModule.Core.Model;
+using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.Tests.Helpers;
 using VirtoCommerce.InventoryModule.Core.Model;
@@ -113,6 +114,26 @@ namespace VirtoCommerce.XPurchase.Tests.Helpers
                                             .Create());
 
             _fixture.Register<Price>(() => null);
+
+            _fixture.Register(() =>
+                _fixture.Build<Optional<string>>()
+                .With(x => x.IsSpecified, true)
+                .Create());
+
+            _fixture.Register(() =>
+                _fixture.Build<Optional<int>>()
+                .With(x => x.IsSpecified, true)
+                .Create());
+
+            _fixture.Register(() =>
+                _fixture.Build<Optional<decimal>>()
+                .With(x => x.IsSpecified, true)
+                .Create());
+
+            _fixture.Register(() =>
+                _fixture.Build<Optional<decimal?>>()
+                .With(x => x.IsSpecified, true)
+                .Create());
 
             _cartProductServiceMock = new Mock<ICartProductService>();
 
