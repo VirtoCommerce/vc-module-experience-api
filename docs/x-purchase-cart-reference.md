@@ -442,7 +442,7 @@ mutation ($command:InputRemoveShipmentType!)
 ```
 
 ### AddOrUpdateCartShipment
-This mutation adds or updates shipment of cart.
+This mutation adds or updates shipment of cart. This mutation supports partial update, all fields in `command.shipment` and `command.shipment.deliveryAddress` are optional. 
 #### Query:
 ```
 mutation ($command:InputAddOrUpdateCartShipmentType!)
@@ -482,7 +482,7 @@ mutation ($command:InputAddOrUpdateCartShipmentType!)
 > To see all possible parametrs for shipment object [look here...](https://github.com/VirtoCommerce/vc-module-experience-api/blob/dev/src/XPurchase/VirtoCommerce.XPurchase/Schemas/InputShipmentType.cs)
 
 ### AddOrUpdateCartPayment
-This mutation adds or updates payment of cart.
+This mutation adds or updates payment of cart. This mutation supports partial update, all fields in `command.payment` and `command.payment.billingAddress` are optional.
 #### Query:
 ```
 mutation ($command:InputAddOrUpdateCartPaymentType!)
@@ -873,7 +873,7 @@ mutation ($command: InputUpdateCartItemDynamicPropertiesType!)
 ```
 
 ### AddCartAddress
-This mutation adds a new address to cart or updates an existing one by `addressType`
+This mutation adds a new address to cart or updates an existing one by `addressType`. This mutation supports partial update, all fields in `command.address` are optional. 
 
 #### Query:
 ```
