@@ -74,6 +74,11 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Services
 
             var comparer = AnonymousComparer.Create((DynamicObjectProperty x) => x.Name);
 
+            if (entity.DynamicProperties == null)
+            {
+                entity.DynamicProperties = new List<DynamicObjectProperty>();
+            }
+
             // fill missing values with the original ones. (That enables single value updates)
             sourceProperties = sourceProperties.Union(entity.DynamicProperties, comparer).ToArray();
 

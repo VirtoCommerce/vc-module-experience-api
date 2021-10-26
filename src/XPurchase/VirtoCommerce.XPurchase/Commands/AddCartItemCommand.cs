@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using VirtoCommerce.ExperienceApiModule.Core.Models;
 
 namespace VirtoCommerce.XPurchase.Commands
 {
@@ -33,6 +34,6 @@ namespace VirtoCommerce.XPurchase.Commands
         /// <summary>
         /// Dynamic properties
         /// </summary>
-        public Dictionary<string, string> DynamicProperties { get; set; }
+        public IList<DynamicPropertyValue> DynamicProperties { get; set; }
     }
 }
