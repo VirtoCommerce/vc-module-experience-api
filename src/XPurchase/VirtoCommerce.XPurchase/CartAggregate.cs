@@ -159,14 +159,9 @@ namespace VirtoCommerce.XPurchase
                     lineItem.Note = newCartItem.Comment;
                 }
 
-                if (newCartItem.DynamicProperties != null)
-                {
-                    await UpdateCartItemDynamicProperties(lineItem, newCartItem.DynamicProperties);
-                }
-
                 CartProducts[newCartItem.CartProduct.Id] = newCartItem.CartProduct;
                 await SetItemFulfillmentCenterAsync(lineItem, newCartItem.CartProduct);
-                await InnerAddLineItemAsync(lineItem, newCartItem.CartProduct);
+                await InnerAddLineItemAsync(lineItem, newCartItem.CartProduct, newCartItem.DynamicProperties);
             }
 
             return this;
@@ -739,7 +734,7 @@ namespace VirtoCommerce.XPurchase
             return Task.FromResult(this);
         }
 
-        protected virtual async Task<CartAggregate> InnerAddLineItemAsync(LineItem lineItem, CartProduct product = null)
+        protected virtual async Task<CartAggregate> InnerAddLineItemAsync(LineItem lineItem, CartProduct product = null, IList<DynamicPropertyValue> dynamicProperties = null)
         {
             var existingLineItem = LineItems.FirstOrDefault(li => li.ProductId == lineItem.ProductId);
             if (existingLineItem != null)
@@ -748,11 +743,18 @@ namespace VirtoCommerce.XPurchase
 
                 existingLineItem.FulfillmentCenterId = lineItem.FulfillmentCenterId;
                 existingLineItem.FulfillmentCenterName = lineItem.FulfillmentCenterName;
+
+                lineItem = existingLineItem;
             }
             else
             {
                 lineItem.Id = null;
                 Cart.Items.Add(lineItem);
+            }
+
+            if (dynamicProperties != null)
+            {
+                await UpdateCartItemDynamicProperties(lineItem, dynamicProperties);
             }
 
             return this;
