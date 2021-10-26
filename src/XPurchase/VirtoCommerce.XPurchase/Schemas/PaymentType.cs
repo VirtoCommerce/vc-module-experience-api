@@ -17,7 +17,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field(x => x.PaymentGatewayCode, nullable: true).Description("Value of payment gateway code");
             Field<CurrencyType>("currency", resolve: context => context.GetCart().Currency);
             Field<MoneyType>("amount", resolve: context => context.Source.Amount.ToMoney(context.GetCart().Currency));
-            ExtendableField<AddressType>("billingAddress", resolve: context => context.Source.BillingAddress);
+            ExtendableField<CartAddressType>("billingAddress", resolve: context => context.Source.BillingAddress);
             Field<MoneyType>("price", resolve: context => context.Source.Price.ToMoney(context.GetCart().Currency));
             Field<MoneyType>("priceWithTax", resolve: context => context.Source.PriceWithTax.ToMoney(context.GetCart().Currency));
             Field<MoneyType>("total", resolve: context => context.Source.Total.ToMoney(context.GetCart().Currency));
