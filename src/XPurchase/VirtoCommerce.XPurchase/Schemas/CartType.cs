@@ -109,7 +109,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field<ListGraphType<DiscountType>>("discounts", resolve: context => context.Source.Cart.Discounts);
 
             // Addresses
-            ExtendableField<ListGraphType<AddressType>>("addresses", resolve: context => context.Source.Cart.Addresses);
+            ExtendableField<ListGraphType<CartAddressType>>("addresses", resolve: context => context.Source.Cart.Addresses);
 
             // Gifts
             FieldAsync<ListGraphType<GiftItemType>>("gifts", "Gifts", resolve: async context =>
@@ -158,7 +158,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                     await EnsureThatCartValidatedAsync(context.Source, cartValidationContextFactory, ruleSet);
                     return context.Source.ValidationErrors.OfType<CartValidationError>();
                 });
-            Field(x => x.Cart.Type, nullable: true).Description("Shopping cart type");            
+            Field(x => x.Cart.Type, nullable: true).Description("Shopping cart type");
         }
 
         private async Task EnsureThatCartValidatedAsync(CartAggregate cartAggr, ICartValidationContextFactory cartValidationContextFactory, string ruleSet)

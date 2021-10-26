@@ -9,36 +9,11 @@ using VirtoCommerce.XPurchase.Tests.Helpers;
 using Xunit;
 using AddressType = VirtoCommerce.CoreModule.Core.Common.AddressType;
 
+
 namespace VirtoCommerce.XPurchase.Tests.Handlers
 {
-    public class AddCartAddressCommandHandlerTests : XPurchaseMoqHelper
+    public class AddOrUpdateCartAddressCommandHandlerTests : XPurchaseMoqHelper
     {
-        [Fact]
-        public async Task Handle_RequestWithCartId_AddCartAddressAsyncCalled()
-        {
-            // Arragne
-            var cartAggregate = GetValidCartAggregate();
-            cartAggregate.Cart.Addresses.Clear();
-
-            var cartAggregateRepositoryMock = new Mock<ICartAggregateRepository>();
-            cartAggregateRepositoryMock
-                .Setup(x => x.GetCartByIdAsync(It.IsAny<string>(), It.IsAny<string>()))
-                .ReturnsAsync(cartAggregate);
-
-            var request = new AddCartAddressCommand()
-            {
-                Address = new ExpCartAddress(),
-                CartId = cartAggregate.Cart.Id,
-            };
-            var handler = new AddCartAddressCommandHandler(cartAggregateRepositoryMock.Object);
-
-            // Act
-            var aggregate = await handler.Handle(request, CancellationToken.None);
-
-            // Assert
-            cartAggregateRepositoryMock.Verify(x => x.SaveAsync(It.Is<CartAggregate>(x => x.Cart.Id == request.CartId)), Times.Once);
-        }
-
         [Fact]
         public async Task Handle_RequestWithAddress_AllAddressFieldsAreMapped()
         {
@@ -54,18 +29,19 @@ namespace VirtoCommerce.XPurchase.Tests.Handlers
                 .Setup(x => x.GetCartByIdAsync(It.IsAny<string>(), It.IsAny<string>()))
                 .ReturnsAsync(cartAggregate);
 
-            var request = new AddCartAddressCommand()
+            var request = new AddOrUpdateCartAddressCommand()
             {
                 Address = address,
                 CartId = cartAggregate.Cart.Id,
             };
-            var handler = new AddCartAddressCommandHandler(cartAggregateRepositoryMock.Object);
+            var handler = new AddOrUpdateCartAddressCommandHandler(cartAggregateRepositoryMock.Object);
 
             // Act
             var aggregate = await handler.Handle(request, CancellationToken.None);
 
             // Assert
             cartAggregate.Cart.Addresses.Should().ContainSingle(x => x.AddressType == addressType);
+            cartAggregate.Cart.Addresses.Should().ContainSingle(x => x.Key == address.Key.Value);
             cartAggregate.Cart.Addresses.Should().ContainSingle(x => x.City == address.City.Value);
             cartAggregate.Cart.Addresses.Should().ContainSingle(x => x.CountryCode == address.CountryCode.Value);
             cartAggregate.Cart.Addresses.Should().ContainSingle(x => x.CountryName == address.CountryName.Value);

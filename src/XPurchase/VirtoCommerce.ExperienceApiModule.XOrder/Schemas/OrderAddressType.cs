@@ -1,11 +1,11 @@
 using GraphQL.Types;
-using VirtoCommerce.CoreModule.Core.Common;
+using VirtoCommerce.OrdersModule.Core.Model;
 
-namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
+namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 {
-    public class AddressType : ObjectGraphType<Address>
+    public class OrderAddressType : ObjectGraphType<Address>
     {
-        public AddressType()
+        public OrderAddressType()
         {
             Field<StringGraphType>("id", resolve: context => context.Source.Key, description: "Id");
             Field(x => x.Key, true).Description("Id");

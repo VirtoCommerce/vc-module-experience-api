@@ -64,7 +64,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             });
             AddField(connectionBuilder.FieldType);
 
-            var addressesConnectionBuilder = GraphTypeExtenstionHelper.CreateConnection<AddressType, OrganizationAggregate>()
+            var addressesConnectionBuilder = GraphTypeExtenstionHelper.CreateConnection<MemberAddressType, OrganizationAggregate>()
                 .Name("addresses")
                 .Argument<StringGraphType>("sort", "Sort expression")
                 .PageSize(20);
