@@ -23,27 +23,8 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Mapping
             CreateMap<UpdateOrganizationCommand, Organization>().ForMember(x => x.DynamicProperties, opt => opt.Ignore());
 
             CreateMap<CreateContactCommand, Contact>()
-                .ConvertUsing((command, contact, context) =>
-                {
-                    contact = new Contact
-                    {
-                        Name = command.Name,
-                        PhotoUrl = command.PhotoUrl,
-                        TimeZone = command.TimeZone,
-                        DefaultLanguage = command.DefaultLanguage,
-                        LastName = command.LastName,
-                        MiddleName = command.MiddleName,
-                        FirstName = command.FirstName,
-                        FullName = command.FullName,
-                        Salutation = command.Salutation,
-                        Addresses = command.Addresses,
-                        Phones = command.Phones,
-                        Emails = command.Emails,
-                        Groups = command.Groups,
-                        Organizations = command.Organizations,
-                    };
-                    return contact;
-                });
+                .ForMember(x => x.Id, opt => opt.Ignore())
+                .ForMember(x => x.DynamicProperties, opt => opt.Ignore());
             CreateMap<UpdateContactCommand, Contact>().ForMember(x => x.DynamicProperties, opt => opt.Ignore());
         }
     }
