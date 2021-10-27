@@ -21,6 +21,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\..\tests\VirtoCommerce.ExperienceApiModule.Tests\VirtoCommerce.ExperienceApiModule.Tests.csproj" />
       <ProjectReference Include="..\VirtoCommerce.XProfile\VirtoCommerce.ExperienceApiModule.XProfile.csproj" />
     </ItemGroup>
 
