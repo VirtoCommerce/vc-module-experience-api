@@ -734,6 +734,11 @@ namespace VirtoCommerce.XPurchase
             return Task.FromResult(this);
         }
 
+        protected virtual async Task<CartAggregate> InnerAddLineItemAsync(LineItem lineItem, CartProduct product = null)
+        {
+            return await InnerAddLineItemAsync(lineItem, product, dynamicProperties: null);
+        }
+
         protected virtual async Task<CartAggregate> InnerAddLineItemAsync(LineItem lineItem, CartProduct product = null, IList<DynamicPropertyValue> dynamicProperties = null)
         {
             var existingLineItem = LineItems.FirstOrDefault(li => li.ProductId == lineItem.ProductId);
