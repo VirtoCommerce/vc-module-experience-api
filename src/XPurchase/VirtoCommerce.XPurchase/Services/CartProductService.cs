@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using AutoMapper;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Services;
-using VirtoCommerce.InventoryModule.Core.Model;
 using VirtoCommerce.InventoryModule.Core.Model.Search;
 using VirtoCommerce.InventoryModule.Core.Services;
 using VirtoCommerce.Platform.Core.Common;
@@ -59,7 +58,7 @@ namespace VirtoCommerce.XPurchase.Services
             return await _productService.GetByIdsAsync(ids.ToArray(), DefaultResponseGroups.ToString());
         }
 
-        private Task<List<CartProduct>> GetCartProductsAsync(IEnumerable<CatalogProduct> catalogProducts)
+        protected virtual Task<List<CartProduct>> GetCartProductsAsync(IEnumerable<CatalogProduct> catalogProducts)
         {
             return Task.FromResult(catalogProducts.Select(x => new CartProduct(x)).ToList());
         }
@@ -84,23 +83,32 @@ namespace VirtoCommerce.XPurchase.Services
 
         protected virtual async Task AddInventorysToCartProductAsync(CartAggregate cartAggregate, List<CartProduct> products)
         {
-            var allLoadInventories = new List<InventoryInfo>();
             if (products.IsNullOrEmpty())
             {
                 return;
             }
 
             var ids = products.Select(x => x.Id).ToArray();
-            var countResult = await _inventorySearchService.SearchInventoriesAsync(new InventorySearchCriteria { ProductIds = ids });
-            for (var i = 0; i < countResult.TotalCount; i += DefaultPageSize)
+            var countResult = await _inventorySearchService.SearchInventoriesAsync(new InventorySearchCriteria
             {
-                var loadInventoriesTask = await _inventorySearchService.SearchInventoriesAsync(new InventorySearchCriteria
+                ProductIds = ids,
+                Skip = 0,
+                Take = DefaultPageSize
+            });
+            var allLoadInventories = countResult.Results.ToList();
+
+            if (countResult.TotalCount > DefaultPageSize)
+            {
+                for (var i = DefaultPageSize; i < countResult.TotalCount; i += DefaultPageSize)
                 {
-                    ProductIds = ids,
-                    Skip = i,
-                    Take = DefaultPageSize
-                });
-                allLoadInventories.AddRange(loadInventoriesTask.Results);
+                    var loadInventoriesTask = await _inventorySearchService.SearchInventoriesAsync(new InventorySearchCriteria
+                    {
+                        ProductIds = ids,
+                        Skip = i,
+                        Take = DefaultPageSize
+                    });
+                    allLoadInventories.AddRange(loadInventoriesTask.Results);
+                }
             }
 
             foreach (var cartProduct in products)
