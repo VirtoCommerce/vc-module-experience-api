@@ -18,7 +18,7 @@ namespace VirtoCommerce.XPurchase.Tests.Services
         {
         }
 
-        internal Task<IEnumerable<CatalogProduct>> GetProductsByIdsFakeAsync(string[] ids)
+        internal Task<IList<CatalogProduct>> GetProductsByIdsFakeAsync(IEnumerable<string> ids)
         {
             return base.GetProductsByIdsAsync(ids);
         }
