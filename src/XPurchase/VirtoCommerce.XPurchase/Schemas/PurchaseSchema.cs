@@ -110,6 +110,11 @@ namespace VirtoCommerce.XPurchase.Schemas
             ///          "cartType": "cart",
             ///          "productId": "9cbd8f316e254a679ba34a900fccb076",
             ///          "quantity": 1
+            ///          "dynamicProperties": [
+            ///             {
+            ///                 "name": "ItemProperty",
+            ///                 "value": "test value"
+            ///            }]
             ///      }
             ///   }
             /// }
@@ -450,7 +455,6 @@ namespace VirtoCommerce.XPurchase.Schemas
 
             schema.Mutation.AddField(removeShipmentField);
 
-            //TODO: add shipment model to example
             /// <example>
             /// This is an example JSON request for a mutation
             /// {
@@ -463,7 +467,46 @@ namespace VirtoCommerce.XPurchase.Schemas
             ///          "language": "en-US",
             ///          "currency": "USD",
             ///          "cartType": "cart",
-            ///          "shipment": { }
+            ///          "shipment": {
+            ///             "id": "7557d2ee-8173-46bb-95eb-64f23e1316e3",
+            ///             "fulfillmentCenterId": "tulsa-branch",
+            ///             "height": 10,
+            ///             "length": 10,
+            ///             "measureUnit": "cm",
+            ///             "shipmentMethodCode": "FixedRate",
+            ///             "shipmentMethodOption": "Ground",
+            //              "volumetricWeight": 10,
+            ///             "weight": 50,
+            ///             "weightUnit": "kg",
+            ///             "width": 10,
+            ///             "currency": "USD",
+            ///             "price": 10,
+            ///             "dynamicProperties": [
+            ///                 {
+            ///                     "name": "ShipmentProperty",
+            ///                     "value": "test value"
+            ///                 }],
+            ///             "deliveryAddress": {
+            ///                 "city": "CityName",
+            ///                 "countryCode": "RU",
+            ///                 "countryName": "Russia",
+            ///                 "email": "Email@test",
+            ///                 "firstName": "First test name",
+            ///                 "key": "KeyTest",
+            ///                 "lastName": "Last name test",
+            ///                 "line1": "Address Line 1",
+            ///                 "line2": "Address line 2",
+            ///                 "middleName": "Test Middle Name",
+            ///                 "name": "First name address",
+            ///                 "organization": "OrganizationTestName",
+            ///                 "phone": "88005553535",
+            ///                 "postalCode": "12345",
+            ///                 "regionId": "RegId",
+            ///                 "regionName": "Region Name",
+            ///                 "zip": "12345",
+            ///                 "addressType": 2
+            ///           }
+            ///        }
             ///      }
             ///   }
             /// }
@@ -483,7 +526,6 @@ namespace VirtoCommerce.XPurchase.Schemas
 
             schema.Mutation.AddField(addOrUpdateCartShipmentField);
 
-            //TODO: add payment model to example
             /// <example>
             /// This is an example JSON request for a mutation
             /// {
@@ -496,7 +538,39 @@ namespace VirtoCommerce.XPurchase.Schemas
             ///          "language": "en-US",
             ///          "currency": "USD",
             ///          "cartType": "cart",
-            ///          "payment": { }
+            ///          "payment": {
+            ///             "id": "7557d2ee-8173-46bb-95eb-64f23e1316e3",
+            ///             "outerId": "ID1",
+            ///             "paymentGatewayCode": "ManualTestPaymentMethod",
+            ///             "dynamicProperties": [
+            ///                 {
+            ///                     "name": "PaymentProperty",
+            ///                     "value": "test value"
+            ///                 }],
+            ///             "billingAddress": {
+            ///                 "city": "CityName",
+            ///                 "countryCode": "RU",
+            ///                 "countryName": "Russia",
+            ///                 "email": "Email@test",
+            ///                 "firstName": "First test name",
+            ///                 "key": "KeyTest",
+            ///                 "lastName": "Last name test",
+            ///                 "line1": "Address Line 1",
+            ///                 "line2": "Address line 2",
+            ///                 "middleName": "Test Middle Name",
+            ///                 "name": "First name address",
+            ///                 "organization": "OrganizationTestName",
+            ///                 "phone": "88005553535",
+            ///                 "postalCode": "12345",
+            ///                 "regionId": "RegId",
+            ///                 "regionName": "Region Name",
+            ///                 "zip": "12345",
+            ///                 "addressType": 1
+            ///             },
+            ///             "currency": "USD",
+            ///             "price": "1001",
+            ///             "amount": "1001"
+            ///          }
             ///      }
             ///   }
             /// }
@@ -717,7 +791,12 @@ namespace VirtoCommerce.XPurchase.Schemas
             ///         "cartId": "",
             ///         "cartItems": [{
             ///             "productId": "1111-1111-1111-1111",
-            ///             "quantity": 2
+            ///             "quantity": 2,
+            ///             "dynamicProperties": [
+            ///                 {
+            ///                     "name": "ItemProperty",
+            ///                     "value": "test value"
+            ///                 }]
             ///         },
             ///         {
             ///             "productId": "2222-2222-2222-2222",

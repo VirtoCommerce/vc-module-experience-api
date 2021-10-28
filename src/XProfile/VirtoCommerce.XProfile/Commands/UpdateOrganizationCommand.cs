@@ -1,8 +1,7 @@
 using System.Collections.Generic;
-using System.Linq;
 using VirtoCommerce.CustomerModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
-using VirtoCommerce.Platform.Core.DynamicProperties;
+using VirtoCommerce.ExperienceApiModule.Core.Models;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
 {
@@ -31,5 +30,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Commands
 
         public IList<Address> Addresses { get; set; }
         public string UserId { get; set; }
+
+        public IList<DynamicPropertyValue> DynamicProperties { get; set; }
     }
 }

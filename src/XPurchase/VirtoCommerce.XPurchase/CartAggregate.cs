@@ -18,7 +18,6 @@ using VirtoCommerce.MarketingModule.Core.Services;
 using VirtoCommerce.PaymentModule.Core.Model;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Domain;
-using VirtoCommerce.Platform.Core.DynamicProperties;
 using VirtoCommerce.ShippingModule.Core.Model;
 using VirtoCommerce.TaxModule.Core.Model;
 using VirtoCommerce.TaxModule.Core.Model.Search;
@@ -160,18 +159,9 @@ namespace VirtoCommerce.XPurchase
                     lineItem.Note = newCartItem.Comment;
                 }
 
-                if (!newCartItem.DynamicProperties.IsNullOrEmpty())
-                {
-                    lineItem.DynamicProperties = newCartItem.DynamicProperties.Select(x => new DynamicObjectProperty
-                    {
-                        Name = x.Key,
-                        Values = new[] { new DynamicPropertyObjectValue { Value = x.Value } }
-                    }).ToList();
-                }
-
                 CartProducts[newCartItem.CartProduct.Id] = newCartItem.CartProduct;
                 await SetItemFulfillmentCenterAsync(lineItem, newCartItem.CartProduct);
-                await InnerAddLineItemAsync(lineItem, newCartItem.CartProduct);
+                await InnerAddLineItemAsync(lineItem, newCartItem.CartProduct, newCartItem.DynamicProperties);
             }
 
             return this;
@@ -643,6 +633,12 @@ namespace VirtoCommerce.XPurchase
             return this;
         }
 
+        public virtual async Task<CartAggregate> UpdateCartItemDynamicProperties(LineItem lineItem, IList<DynamicPropertyValue> dynamicProperties)
+        {
+            await _dynamicPropertyUpdaterService.UpdateDynamicPropertyValues(lineItem, dynamicProperties);
+            return this;
+        }
+
         public virtual async Task<CartAggregate> UpdateCartShipmentDynamicProperties(string shipmentId, IList<DynamicPropertyValue> dynamicProperties)
         {
             var shipment = Cart.Shipments.FirstOrDefault(x => x.Id == shipmentId);
@@ -654,6 +650,12 @@ namespace VirtoCommerce.XPurchase
             return this;
         }
 
+        public virtual async Task<CartAggregate> UpdateCartShipmentDynamicProperties(Shipment shipment, IList<DynamicPropertyValue> dynamicProperties)
+        {
+            await _dynamicPropertyUpdaterService.UpdateDynamicPropertyValues(shipment, dynamicProperties);
+            return this;
+        }
+
         public virtual async Task<CartAggregate> UpdateCartPaymentDynamicProperties(string paymentId, IList<DynamicPropertyValue> dynamicProperties)
         {
             var payment = Cart.Payments.FirstOrDefault(x => x.Id == paymentId);
@@ -662,6 +664,12 @@ namespace VirtoCommerce.XPurchase
                 await _dynamicPropertyUpdaterService.UpdateDynamicPropertyValues(payment, dynamicProperties);
             }
 
+            return this;
+        }
+
+        public virtual async Task<CartAggregate> UpdateCartPaymentDynamicProperties(Payment payment, IList<DynamicPropertyValue> dynamicProperties)
+        {
+            await _dynamicPropertyUpdaterService.UpdateDynamicPropertyValues(payment, dynamicProperties);
             return this;
         }
 
@@ -728,6 +736,11 @@ namespace VirtoCommerce.XPurchase
 
         protected virtual async Task<CartAggregate> InnerAddLineItemAsync(LineItem lineItem, CartProduct product = null)
         {
+            return await InnerAddLineItemAsync(lineItem, product, dynamicProperties: null);
+        }
+
+        protected virtual async Task<CartAggregate> InnerAddLineItemAsync(LineItem lineItem, CartProduct product = null, IList<DynamicPropertyValue> dynamicProperties = null)
+        {
             var existingLineItem = LineItems.FirstOrDefault(li => li.ProductId == lineItem.ProductId);
             if (existingLineItem != null)
             {
@@ -735,11 +748,18 @@ namespace VirtoCommerce.XPurchase
 
                 existingLineItem.FulfillmentCenterId = lineItem.FulfillmentCenterId;
                 existingLineItem.FulfillmentCenterName = lineItem.FulfillmentCenterName;
+
+                lineItem = existingLineItem;
             }
             else
             {
                 lineItem.Id = null;
                 Cart.Items.Add(lineItem);
+            }
+
+            if (dynamicProperties != null)
+            {
+                await UpdateCartItemDynamicProperties(lineItem, dynamicProperties);
             }
 
             return this;

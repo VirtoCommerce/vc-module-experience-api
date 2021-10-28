@@ -1,6 +1,7 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.XPurchase.Services;
 
 namespace VirtoCommerce.XPurchase.Commands
@@ -24,6 +25,11 @@ namespace VirtoCommerce.XPurchase.Commands
             shipment = request.Shipment.MapTo(shipment);
 
             await cartAggregate.AddShipmentAsync(shipment, await _cartAvailMethodService.GetAvailableShippingRatesAsync(cartAggregate));
+
+            if (!request.Shipment.DynamicProperties.IsNullOrEmpty())
+            {
+                await cartAggregate.UpdateCartShipmentDynamicProperties(shipment, request.Shipment.DynamicProperties);
+            }
 
             return await SaveCartAsync(cartAggregate);
         }
