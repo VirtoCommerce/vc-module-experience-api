@@ -159,7 +159,13 @@ mutation ($command:InputAddItemType!)
     "currencyCode": "USD",
     "cartType": "cart",
     "productId": "9cbd8f316e254a679ba34a900fccb076",
-    "quantity": 1
+    "quantity": 1,
+    "dynamicProperties": [
+        {
+            "name": "ItemProperty",
+            "value": "test value"
+        }
+    ]
 }
 ```
 ### ClearCart
@@ -473,7 +479,13 @@ mutation ($command:InputAddOrUpdateCartShipmentType!)
         "height": 7,
         "shipmentMethodCode": "code",
         "currency": "USD",
-        "price": 98
+        "price": 98,
+        "dynamicProperties": [
+            {
+                "name": "ShipmentProperty",
+                "value": "test value"
+            }
+        ]
     },
 }
 ```
@@ -513,7 +525,13 @@ mutation ($command:InputAddOrUpdateCartPaymentType!)
         "paymentGatewayCode": "code",
         "currency": "USD",
         "price": 98,
-        "amount": 55
+        "amount": 55,
+        "dynamicProperties": [
+            {
+                "name": "PaymentProperty",
+                "value": "test value"
+            }
+        ]
     },
 }
 ```

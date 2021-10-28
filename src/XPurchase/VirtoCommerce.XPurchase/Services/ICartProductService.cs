@@ -6,12 +6,11 @@ namespace VirtoCommerce.XPurchase.Services
     public interface ICartProductService
     {
         /// <summary>
-        /// Load products and fill their inventory data and prices based on specified cartAggr.
+        /// Load products and fill their inventory data and prices based on specified <see cref="CartAggregate"/>
         /// </summary>
-        /// <param name="cartAggr">Cart data to use</param>
+        /// <param name="aggregate">Cart data to use</param>
         /// <param name="ids">Product ids</param>
-        /// <param name="additionalResponseGroups">Response groups in addition to the default ones</param>
-        /// <returns></returns>
-        Task<IEnumerable<CartProduct>> GetCartProductsByIdsAsync(CartAggregate cartAggr, string[] ids, string additionalResponseGroups = null);
+        /// <returns>List of <see cref="CartProduct"/></returns>
+        Task<IList<CartProduct>> GetCartProductsByIdsAsync(CartAggregate aggregate, IEnumerable<string> ids);
     }
 }

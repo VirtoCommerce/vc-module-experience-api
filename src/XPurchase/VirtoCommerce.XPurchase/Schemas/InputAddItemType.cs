@@ -1,4 +1,5 @@
 using GraphQL.Types;
+using VirtoCommerce.ExperienceApiModule.Core.Schemas;
 
 namespace VirtoCommerce.XPurchase.Schemas
 {
@@ -10,6 +11,8 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field<NonNullGraphType<IntGraphType>>("quantity");
             Field<DecimalGraphType>("price");
             Field<StringGraphType>("comment");
+
+            Field<ListGraphType<InputDynamicPropertyValueType>>("dynamicProperties");
         }
     }
 }
