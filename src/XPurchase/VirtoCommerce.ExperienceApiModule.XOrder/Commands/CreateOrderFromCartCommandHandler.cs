@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -23,7 +24,9 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Commands
         {
             var cart = await _cartService.GetByIdAsync(request.CartId);
             var result = await _customerOrderAggregateRepository.CreateOrderFromCart(cart);
-
+            await _cartService.DeleteAsync(new List<string> { request.CartId }, true);
+            // Remark: There is potential bug, because there is no transaction thru two actions above. If a cart deletion fails, the order remains. That causes data inconsistency.
+            // Unfortunately, current architecture does not allow us to support such scenarios in a transactional manner.
             return result;
         }
     }
