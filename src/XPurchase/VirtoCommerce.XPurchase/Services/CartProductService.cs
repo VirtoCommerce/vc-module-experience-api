@@ -18,15 +18,12 @@ namespace VirtoCommerce.XPurchase.Services
         private readonly IItemService _productService;
         private readonly IInventorySearchService _inventorySearchService;
         private readonly IPricingService _pricingService;
+        private readonly IMapper _mapper;
+        
         protected virtual ItemResponseGroup DefaultResponseGroups { get; set; } = ItemResponseGroup.ItemAssets | ItemResponseGroup.ItemInfo | ItemResponseGroup.Outlines | ItemResponseGroup.Seo;
         protected virtual int DefaultPageSize { get; set; } = 50;
-
-        private readonly IMapper _mapper;
-        public CartProductService(
-            IItemService productService
-            , IInventorySearchService inventoryService
-            , IPricingService pricingService
-            , IMapper mapper)
+        
+        public CartProductService(IItemService productService, IInventorySearchService inventoryService, IPricingService pricingService, IMapper mapper)
         {
             _productService = productService;
             _inventorySearchService = inventoryService;
@@ -40,6 +37,7 @@ namespace VirtoCommerce.XPurchase.Services
             {
                 throw new ArgumentNullException(nameof(aggregate));
             }
+            
             if (ids == null)
             {
                 throw new ArgumentNullException(nameof(ids));
@@ -47,9 +45,11 @@ namespace VirtoCommerce.XPurchase.Services
 
             var products = await GetProductsByIdsAsync(ids);
             var cartProducts = await GetCartProductsAsync(products);
+            
             var evalPricesTask = AddPricesToCartProductAsync(aggregate, cartProducts);
             var loadInventoriesTask = AddInventorysToCartProductAsync(aggregate, cartProducts);
             await Task.WhenAll(loadInventoriesTask, evalPricesTask);
+            
             return cartProducts;
         }
 
@@ -69,14 +69,14 @@ namespace VirtoCommerce.XPurchase.Services
             {
                 return;
             }
-            var ids = products.Select(x => x.Id).ToArray();
+            
             var pricesEvalContext = _mapper.Map<PriceEvaluationContext>(cartAggregate);
-            pricesEvalContext.ProductIds = ids;
+            pricesEvalContext.ProductIds = products.Select(x => x.Id).ToArray();
+            
             var evalPricesTask = await _pricingService.EvaluateProductPricesAsync(pricesEvalContext);
 
             foreach (var cartProduct in products)
             {
-                //Apply prices
                 cartProduct.ApplyPrices(evalPricesTask, cartAggregate.Currency);
             }
         }
@@ -89,12 +89,14 @@ namespace VirtoCommerce.XPurchase.Services
             }
 
             var ids = products.Select(x => x.Id).ToArray();
+            
             var countResult = await _inventorySearchService.SearchInventoriesAsync(new InventorySearchCriteria
             {
                 ProductIds = ids,
                 Skip = 0,
                 Take = DefaultPageSize
             });
+            
             var allLoadInventories = countResult.Results.ToList();
 
             if (countResult.TotalCount > DefaultPageSize)
@@ -107,13 +109,13 @@ namespace VirtoCommerce.XPurchase.Services
                         Skip = i,
                         Take = DefaultPageSize
                     });
+                    
                     allLoadInventories.AddRange(loadInventoriesTask.Results);
                 }
             }
 
             foreach (var cartProduct in products)
             {
-                //Apply inventories
                 cartProduct.ApplyInventories(allLoadInventories, cartAggregate.Store);
             }
         }
