@@ -87,7 +87,7 @@ namespace VirtoCommerce.XPurchase.Tests.Aggregates
             shoppingCart.Items = Enumerable.Empty<LineItem>().ToList();
 
             _cartProductServiceMock
-                .Setup(x => x.GetCartProductsByIdsAsync(It.IsAny<CartAggregate>(), new[] { productId }, null))
+                .Setup(x => x.GetCartProductsByIdsAsync(It.IsAny<CartAggregate>(), new[] { productId }))
                 .ReturnsAsync(new List<CartProduct>() { new CartProduct(new CatalogProduct()) });
 
             // Act
@@ -116,7 +116,7 @@ namespace VirtoCommerce.XPurchase.Tests.Aggregates
             var newCartItems = new List<NewCartItem>() { newCartItem1, newCartItem2 };
 
             _cartProductServiceMock
-                .Setup(x => x.GetCartProductsByIdsAsync(It.IsAny<CartAggregate>(), new[] { productId1, productId2 }, null))
+                .Setup(x => x.GetCartProductsByIdsAsync(It.IsAny<CartAggregate>(), new[] { productId1, productId2 }))
                 .ReturnsAsync(
                     new List<CartProduct>()
                     {

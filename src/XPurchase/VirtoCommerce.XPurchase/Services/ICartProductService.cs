@@ -10,8 +10,7 @@ namespace VirtoCommerce.XPurchase.Services
         /// </summary>
         /// <param name="cartAggr">Cart data to use</param>
         /// <param name="ids">Product ids</param>
-        /// <param name="additionalResponseGroups">Response groups in addition to the default ones</param>
         /// <returns></returns>
-        Task<IEnumerable<CartProduct>> GetCartProductsByIdsAsync(CartAggregate cartAggr, string[] ids, string additionalResponseGroups = null);
+        Task<IList<CartProduct>> GetCartProductsByIdsAsync(CartAggregate cartAggr, IEnumerable<string> ids);
     }
 }
