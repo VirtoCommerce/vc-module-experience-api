@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.CoreModule.Core.Currency;
@@ -11,7 +10,7 @@ using VirtoCommerce.StoreModule.Core.Services;
 
 namespace VirtoCommerce.XDigitalCatalog
 {
-    //TODO: Move to Store module
+    //PT-5343: Move to Store module
     public class StoreCurrencyResolver : IStoreCurrencyResolver
     {
         private readonly ICurrencyService _currencyService;
@@ -20,7 +19,7 @@ namespace VirtoCommerce.XDigitalCatalog
             ICurrencyService currencyService
             , IStoreService storeService
         )
-        {          
+        {
             _currencyService = currencyService;
             _storeService = storeService;
         }
@@ -35,7 +34,7 @@ namespace VirtoCommerce.XDigitalCatalog
             var store = await _storeService.GetByIdAsync(storeId);
             var defaultCultureName = store.DefaultLanguage ?? Language.InvariantLanguage.CultureName;
             //Clone currencies
-            //TODO: Add caching  to prevent cloning each time
+            //PT-5343: Add caching  to prevent cloning each time
             var allCurrencies = (await _currencyService.GetAllCurrenciesAsync()).Select(x => x.Clone()).OfType<Currency>().ToArray();
             //Change culture name for all system currencies to requested
             allCurrencies.Apply(x => x.CultureName = cultureName ?? defaultCultureName);

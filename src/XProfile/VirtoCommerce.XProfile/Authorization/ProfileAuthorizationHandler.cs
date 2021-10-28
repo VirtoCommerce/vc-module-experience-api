@@ -167,7 +167,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Authorization
             {
                 var currentUser = await _userManager.FindByIdAsync(currentUserId);
                 result = currentContact.Organizations.Contains(inviteUserCommand.OrganizationId) && currentUser.StoreId.EqualsInvariant(inviteUserCommand.StoreId);
-            }            
+            }
             if (result)
             {
                 context.Succeed(requirement);
@@ -180,7 +180,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Authorization
 
         private static string GetUserId(AuthorizationHandlerContext context)
         {
-            //TODO use ClaimTypes instead of "name"
+            //PT-5375 use ClaimTypes instead of "name"
             return context.User.FindFirstValue("name");
         }
 

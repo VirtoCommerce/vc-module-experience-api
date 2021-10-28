@@ -6,6 +6,6 @@ namespace VirtoCommerce.XPurchase.Tests.Services
     {
         private readonly CartProductService service;
 
-        //TODO: Write tests
+        //PT-5335: Write tests
     }
 }

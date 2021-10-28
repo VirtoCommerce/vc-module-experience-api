@@ -31,7 +31,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Authorization
                 else if (context.Resource is SearchOrderQuery query)
                 {
                     query.CustomerId = GetUserId(context);
-                    result = query.CustomerId != null; 
+                    result = query.CustomerId != null;
                 }
                 else if (context.Resource is SearchPaymentsQuery paymentsQuery)
                 {
@@ -54,7 +54,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Authorization
 
         private static string GetUserId(AuthorizationHandlerContext context)
         {
-            //TODO use ClaimTypes instead of "name"
+            //PT-5375 use ClaimTypes instead of "name"
             return context.User.FindFirstValue("name");
         }
     }

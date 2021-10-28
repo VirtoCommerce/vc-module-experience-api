@@ -8,7 +8,7 @@ using VirtoCommerce.XPurchase.Queries;
 
 namespace VirtoCommerce.XPurchase.Authorization
 {
-    public class CanAccessCartAuthorizationRequirement: PermissionAuthorizationRequirement
+    public class CanAccessCartAuthorizationRequirement : PermissionAuthorizationRequirement
     {
         public CanAccessCartAuthorizationRequirement() : base("CanAccessCart")
         {
@@ -50,7 +50,7 @@ namespace VirtoCommerce.XPurchase.Authorization
 
         private static string GetUserId(AuthorizationHandlerContext context)
         {
-            //TODO use ClaimTypes instead of "name"
+            //PT-5375 use ClaimTypes instead of "name"
             return context.User.FindFirstValue("name");
         }
     }

@@ -27,10 +27,10 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field(x => x.IsCancelled);
             Field(x => x.CancelledDate, true);
             Field(x => x.CancelReason, true);
-            
+
             Field(x => x.CategoryId, true);
             Field(x => x.CatalogId);
-            
+
             Field(x => x.Sku);
             Field(x => x.PriceId, true);
             Field(x => x.Price);
@@ -54,7 +54,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field<NonNullGraphType<ListGraphType<InputOrderTaxDetailType>>>(nameof(LineItem.TaxDetails));
             Field<NonNullGraphType<ListGraphType<InputOrderDiscountType>>>(nameof(LineItem.Discounts));
 
-            //TODO
+            //PT-5383
             //public ICollection<DynamicObjectProperty> DynamicProperties);
         }
     }

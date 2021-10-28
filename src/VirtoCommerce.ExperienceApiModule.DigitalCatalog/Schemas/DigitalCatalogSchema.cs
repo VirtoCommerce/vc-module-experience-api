@@ -238,7 +238,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             var skip = Convert.ToInt32(context.After ?? 0.ToString());
             var includeFields = context.SubFields.Values.GetAllNodesPaths();
 
-            //TODO: Need to be able get entire query from context and read all arguments to the query properties
+            //PT-5371: Need to be able get entire query from context and read all arguments to the query properties
             var query = context.GetCatalogQuery<SearchProductQuery>();
             query.IncludeFields = includeFields;
 

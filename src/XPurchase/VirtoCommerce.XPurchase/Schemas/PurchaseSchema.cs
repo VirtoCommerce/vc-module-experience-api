@@ -120,7 +120,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                                            //TODO: Write the unit-tests for successfully mapping input variable to the command
                                            .ResolveAsync(async context =>
                                            {
-                                               //TODO: Need to refactor later to prevent ugly code duplication
+                                               //PT-5327: Need to refactor later to prevent ugly code duplication
                                                //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
                                                var cartAggregate = await _mediator.Send(context.GetCartCommand<AddCartItemCommand>());
                                                //store cart aggregate in the user context for future usage in the graph types resolvers
@@ -180,7 +180,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                                              .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputClearCartType>>(), _commandName)
                                              .ResolveAsync(async context =>
                                              {
-                                                 //TODO: Need to refactor later to prevent ugly code duplication
+                                                 //PT-5327: Need to refactor later to prevent ugly code duplication
                                                  //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
                                                  var cartAggregate = await _mediator.Send(context.GetCartCommand<ClearCartCommand>());
                                                  //store cart aggregate in the user context for future usage in the graph types resolvers
@@ -212,7 +212,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                                                  .Argument(GraphTypeExtenstionHelper.GetActualType<InputChangeCommentType>(), _commandName)
                                                  .ResolveAsync(async context =>
                                                  {
-                                                     //TODO: Need to refactor later to prevent ugly code duplication
+                                                     //PT-5327: Need to refactor later to prevent ugly code duplication
                                                      //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
                                                      var cartAggregate = await _mediator.Send(context.GetCartCommand<ChangeCommentCommand>());
                                                      //store cart aggregate in the user context for future usage in the graph types resolvers
@@ -246,7 +246,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                                                        .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputChangeCartItemPriceType>>(), _commandName)
                                                        .ResolveAsync(async context =>
                                                        {
-                                                           //TODO: Need to refactor later to prevent ugly code duplication
+                                                           //PT-5327: Need to refactor later to prevent ugly code duplication
                                                            //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
                                                            var cartAggregate = await _mediator.Send(context.GetCartCommand<ChangeCartItemPriceCommand>());
                                                            //store cart aggregate in the user context for future usage in the graph types resolvers
@@ -279,7 +279,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                                                           .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputChangeCartItemQuantityType>>(), _commandName)
                                                           .ResolveAsync(async context =>
                                                           {
-                                                              //TODO: Need to refactor later to prevent ugly code duplication
+                                                              //PT-5327: Need to refactor later to prevent ugly code duplication
                                                               //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
                                                               var cartAggregate = await _mediator.Send(context.GetCartCommand<ChangeCartItemQuantityCommand>());
                                                               //store cart aggregate in the user context for future usage in the graph types resolvers
@@ -312,7 +312,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                                                           .Argument(GraphTypeExtenstionHelper.GetActualType<InputChangeCartItemCommentType>(), _commandName)
                                                           .ResolveAsync(async context =>
                                                           {
-                                                              //TODO: Need to refactor later to prevent ugly code duplication
+                                                              //PT-5327: Need to refactor later to prevent ugly code duplication
                                                               //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
                                                               var cartAggregate = await _mediator.Send(context.GetCartCommand<ChangeCartItemCommentCommand>());
                                                               //store cart aggregate in the user context for future usage in the graph types resolvers
@@ -344,7 +344,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                                                   .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputRemoveItemType>>(), _commandName)
                                                   .ResolveAsync(async context =>
                                                   {
-                                                      //TODO: Need to refactor later to prevent ugly code duplication
+                                                      //PT-5327: Need to refactor later to prevent ugly code duplication
                                                       //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
                                                       var cartAggregate = await _mediator.Send(context.GetCartCommand<RemoveCartItemCommand>());
                                                       //store cart aggregate in the user context for future usage in the graph types resolvers
@@ -376,7 +376,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                                              .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputAddCouponType>>(), _commandName)
                                              .ResolveAsync(async context =>
                                              {
-                                                 //TODO: Need to refactor later to prevent ugly code duplication
+                                                 //PT-5327: Need to refactor later to prevent ugly code duplication
                                                  //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
                                                  var cartAggregate = await _mediator.Send(context.GetCartCommand<AddCouponCommand>());
                                                  //store cart aggregate in the user context for future usage in the graph types resolvers
@@ -408,7 +408,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                                                 .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputRemoveCouponType>>(), _commandName)
                                                 .ResolveAsync(async context =>
                                                 {
-                                                    //TODO: Need to refactor later to prevent ugly code duplication
+                                                    //PT-5327: Need to refactor later to prevent ugly code duplication
                                                     //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
                                                     var cartAggregate = await _mediator.Send(context.GetCartCommand<RemoveCouponCommand>());
                                                     //store cart aggregate in the user context for future usage in the graph types resolvers
@@ -440,7 +440,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                                                   .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputRemoveShipmentType>>(), _commandName)
                                                   .ResolveAsync(async context =>
                                                   {
-                                                      //TODO: Need to refactor later to prevent ugly code duplication
+                                                      //PT-5327: Need to refactor later to prevent ugly code duplication
                                                       //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
                                                       var cartAggregate = await _mediator.Send(context.GetCartCommand<RemoveShipmentCommand>());
                                                       //store cart aggregate in the user context for future usage in the graph types resolvers
@@ -473,7 +473,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                                                            .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputAddOrUpdateCartShipmentType>>(), _commandName)
                                                            .ResolveAsync(async context =>
                                                            {
-                                                               //TODO: Need to refactor later to prevent ugly code duplication
+                                                               //PT-5327: Need to refactor later to prevent ugly code duplication
                                                                //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
                                                                var cartAggregate = await _mediator.Send(context.GetCartCommand<AddOrUpdateCartShipmentCommand>());
                                                                //store cart aggregate in the user context for future usage in the graph types resolvers
@@ -506,7 +506,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                                                           .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputAddOrUpdateCartPaymentType>>(), _commandName)
                                                           .ResolveAsync(async context =>
                                                           {
-                                                              //TODO: Need to refactor later to prevent ugly code duplication
+                                                              //PT-5327: Need to refactor later to prevent ugly code duplication
                                                               //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
                                                               var cartAggregate = await _mediator.Send(context.GetCartCommand<AddOrUpdateCartPaymentCommand>());
                                                               //store cart aggregate in the user context for future usage in the graph types resolvers
@@ -565,7 +565,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                                              .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputMergeCartType>>(), _commandName)
                                              .ResolveAsync(async context =>
                                              {
-                                                 //TODO: Need to refactor later to prevent ugly code duplication
+                                                 //PT-5327: Need to refactor later to prevent ugly code duplication
                                                  //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
                                                  var cartAggregate = await _mediator.Send(context.GetCartCommand<MergeCartCommand>());
                                                  //store cart aggregate in the user context for future usage in the graph types resolvers
@@ -610,7 +610,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                                                   .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputClearShipmentsType>>(), _commandName)
                                                   .ResolveAsync(async context =>
                                                   {
-                                                      //TODO: Need to refactor later to prevent ugly code duplication
+                                                      //PT-5327: Need to refactor later to prevent ugly code duplication
                                                       //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
                                                       var cartAggregate = await _mediator.Send(context.GetCartCommand<ClearShipmentsCommand>());
                                                       //store cart aggregate in the user context for future usage in the graph types resolvers
@@ -637,7 +637,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                                                  .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputClearPaymentsType>>(), _commandName)
                                                  .ResolveAsync(async context =>
                                                  {
-                                                     //TODO: Need to refactor later to prevent ugly code duplication
+                                                     //PT-5327: Need to refactor later to prevent ugly code duplication
                                                      //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
                                                      var cartAggregate = await _mediator.Send(context.GetCartCommand<ClearPaymentsCommand>());
                                                      //store cart aggregate in the user context for future usage in the graph types resolvers
@@ -672,7 +672,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                                                  .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputAddOrUpdateCartAddressType>>(), _commandName)
                                                  .ResolveAsync(async context =>
                                                  {
-                                                     //TODO: Need to refactor later to prevent ugly code duplication
+                                                     //PT-5327: Need to refactor later to prevent ugly code duplication
                                                      //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
                                                      var cartAggregate = await _mediator.Send(context.GetCartCommand<AddOrUpdateCartAddressCommand>());
                                                      //store cart aggregate in the user context for future usage in the graph types resolvers

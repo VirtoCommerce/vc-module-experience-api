@@ -256,7 +256,7 @@ namespace VirtoCommerce.XPurchase.Mapping
                 {
                     taxEvalcontext.Lines.Add(new TaxLine()
                     {
-                        //TODO: Add Currency to tax line
+                        //PT-5339: Add Currency to tax line
                         Id = lineItem.Id,
                         Code = lineItem.Sku,
                         Name = lineItem.Name,
@@ -273,7 +273,7 @@ namespace VirtoCommerce.XPurchase.Mapping
                 {
                     var totalTaxLine = new TaxLine
                     {
-                        //TODO: Add Currency to tax line
+                        //PT-5339: Add Currency to tax line
                         Id = shipment.Id,
                         Code = shipment.ShipmentMethodCode,
                         Name = shipment.ShipmentMethodOption,
@@ -294,7 +294,7 @@ namespace VirtoCommerce.XPurchase.Mapping
                 {
                     var totalTaxLine = new TaxLine
                     {
-                        //TODO: Add Currency to tax line
+                        //PT-5339: Add Currency to tax line
                         Id = payment.Id,
                         Code = payment.PaymentGatewayCode,
                         Name = payment.PaymentGatewayCode,

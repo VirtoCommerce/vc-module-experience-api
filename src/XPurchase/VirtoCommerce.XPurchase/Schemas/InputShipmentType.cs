@@ -17,7 +17,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field(x => x.Weight, nullable: true).Description("Value of weight");
             Field(x => x.WeightUnit, nullable: true).Description("Value of weight unit");
             Field(x => x.Width, nullable: true).Description("Value of width");
-            //TODO: Add descriptions
+            //PT-1612: Add descriptions
             Field<InputAddressType>("deliveryAddress");
             Field(x => x.Currency, nullable: true);
             Field(x => x.Price, nullable: true);
