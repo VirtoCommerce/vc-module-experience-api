@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,10 +18,17 @@ namespace VirtoCommerce.XPurchase.Services
         private readonly IInventorySearchService _inventorySearchService;
         private readonly IPricingService _pricingService;
         private readonly IMapper _mapper;
-        
-        protected virtual ItemResponseGroup DefaultResponseGroups { get; set; } = ItemResponseGroup.ItemAssets | ItemResponseGroup.ItemInfo | ItemResponseGroup.Outlines | ItemResponseGroup.Seo;
-        protected virtual int DefaultPageSize { get; set; } = 50;
-        
+
+        /// <summary>
+        /// Default response group
+        /// </summary>
+        protected virtual ItemResponseGroup ResponseGroups => ItemResponseGroup.ItemAssets | ItemResponseGroup.ItemInfo | ItemResponseGroup.Outlines | ItemResponseGroup.Seo;
+
+        /// <summary>
+        /// Default page size for pagination
+        /// </summary>
+        protected virtual int DefaultPageSize => 50;
+
         public CartProductService(IItemService productService, IInventorySearchService inventoryService, IPricingService pricingService, IMapper mapper)
         {
             _productService = productService;
@@ -31,72 +37,76 @@ namespace VirtoCommerce.XPurchase.Services
             _mapper = mapper;
         }
 
+        /// <summary>
+        /// Load <see cref="CartProduct"/>s with all dependencies
+        /// </summary>
+        /// <param name="aggregate">Cart aggregate</param>
+        /// <param name="ids">Product ids</param>
+        /// <returns>List of <see cref="CartProduct"/>s</returns>
         public async Task<IList<CartProduct>> GetCartProductsByIdsAsync(CartAggregate aggregate, IEnumerable<string> ids)
         {
-            if (aggregate == null)
-            {
-                throw new ArgumentNullException(nameof(aggregate));
-            }
-            
-            if (ids == null)
-            {
-                throw new ArgumentNullException(nameof(ids));
-            }
+            if (aggregate is null || ids.IsNullOrEmpty())
+                return new List<CartProduct>();
 
             var products = await GetProductsByIdsAsync(ids);
             var cartProducts = await GetCartProductsAsync(products);
-            
-            var evalPricesTask = AddPricesToCartProductAsync(aggregate, cartProducts);
-            var loadInventoriesTask = AddInventorysToCartProductAsync(aggregate, cartProducts);
-            await Task.WhenAll(loadInventoriesTask, evalPricesTask);
-            
+
+            await Task.WhenAll(LoadDependencies(aggregate, cartProducts));
+
             return cartProducts;
         }
 
+        /// <summary>
+        /// Load <see cref="CatalogProduct"/>s
+        /// </summary>
+        /// <param name="ids">Product ids</param>
+        /// <returns>List of <see cref="CatalogProduct"/>s</returns>
         protected virtual async Task<IList<CatalogProduct>> GetProductsByIdsAsync(IEnumerable<string> ids)
         {
-            return await _productService.GetByIdsAsync(ids.ToArray(), DefaultResponseGroups.ToString());
+            return await _productService.GetByIdsAsync(ids.ToArray(), ResponseGroups.ToString());
         }
 
+        /// <summary>
+        /// Map all <see cref="CatalogProduct"/> to <see cref="CartProduct"/>
+        /// </summary>
+        /// <param name="catalogProducts">Products from the catalog</param>
+        /// <returns>List of <see cref="CartProduct"/>s</returns>
         protected virtual Task<List<CartProduct>> GetCartProductsAsync(IEnumerable<CatalogProduct> catalogProducts)
         {
             return Task.FromResult(catalogProducts.Select(x => new CartProduct(x)).ToList());
         }
 
-        protected virtual async Task AddPricesToCartProductAsync(CartAggregate cartAggregate, List<CartProduct> products)
+        /// <summary>
+        /// Load all properties for <see cref="CartProduct"/>s
+        /// </summary>
+        /// <param name="aggregate">Cart aggregate</param>
+        /// <param name="products">List of <see cref="CartProduct"/>s</param>
+        /// <returns>List of <see cref="Task"/>s</returns>
+        protected virtual List<Task> LoadDependencies(CartAggregate aggregate, List<CartProduct> products) => new List<Task>
+        {
+            ApplyInventoriesToCartProductAsync(aggregate, products),
+            ApplyPricesToCartProductAsync(aggregate, products)
+        };
+
+        /// <summary>
+        /// Load inventories and apply them to <see cref="CartProduct"/>s
+        /// </summary>
+        /// <param name="aggregate">Cart aggregate</param>
+        /// <param name="products">List of <see cref="CartProduct"/>s</param>
+        protected virtual async Task ApplyInventoriesToCartProductAsync(CartAggregate aggregate, List<CartProduct> products)
         {
             if (products.IsNullOrEmpty())
-            {
                 return;
-            }
-            
-            var pricesEvalContext = _mapper.Map<PriceEvaluationContext>(cartAggregate);
-            pricesEvalContext.ProductIds = products.Select(x => x.Id).ToArray();
-            
-            var evalPricesTask = await _pricingService.EvaluateProductPricesAsync(pricesEvalContext);
-
-            foreach (var cartProduct in products)
-            {
-                cartProduct.ApplyPrices(evalPricesTask, cartAggregate.Currency);
-            }
-        }
-
-        protected virtual async Task AddInventorysToCartProductAsync(CartAggregate cartAggregate, List<CartProduct> products)
-        {
-            if (products.IsNullOrEmpty())
-            {
-                return;
-            }
 
             var ids = products.Select(x => x.Id).ToArray();
-            
+
             var countResult = await _inventorySearchService.SearchInventoriesAsync(new InventorySearchCriteria
             {
                 ProductIds = ids,
                 Skip = 0,
                 Take = DefaultPageSize
             });
-            
+
             var allLoadInventories = countResult.Results.ToList();
 
             if (countResult.TotalCount > DefaultPageSize)
@@ -109,14 +119,35 @@ namespace VirtoCommerce.XPurchase.Services
                         Skip = i,
                         Take = DefaultPageSize
                     });
-                    
+
                     allLoadInventories.AddRange(loadInventoriesTask.Results);
                 }
             }
 
             foreach (var cartProduct in products)
             {
-                cartProduct.ApplyInventories(allLoadInventories, cartAggregate.Store);
+                cartProduct.ApplyInventories(allLoadInventories, aggregate.Store);
+            }
+        }
+
+        /// <summary>
+        /// Evaluate prices and apply them to <see cref="CartProduct"/>s
+        /// </summary>
+        /// <param name="aggregate">Cart aggregate</param>
+        /// <param name="products">List of <see cref="CartProduct"/>s</param>
+        protected virtual async Task ApplyPricesToCartProductAsync(CartAggregate aggregate, List<CartProduct> products)
+        {
+            if (products.IsNullOrEmpty())
+                return;
+
+            var pricesEvalContext = _mapper.Map<PriceEvaluationContext>(aggregate);
+            pricesEvalContext.ProductIds = products.Select(x => x.Id).ToArray();
+
+            var evalPricesTask = await _pricingService.EvaluateProductPricesAsync(pricesEvalContext);
+
+            foreach (var cartProduct in products)
+            {
+                cartProduct.ApplyPrices(evalPricesTask, aggregate.Currency);
             }
         }
     }
