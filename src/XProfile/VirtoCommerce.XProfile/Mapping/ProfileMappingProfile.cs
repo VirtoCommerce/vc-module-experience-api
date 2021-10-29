@@ -20,7 +20,12 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Mapping
                     };
                     return org;
                 });
-            CreateMap<UpdateOrganizationCommand, Organization>();
+            CreateMap<UpdateOrganizationCommand, Organization>().ForMember(x => x.DynamicProperties, opt => opt.Ignore());
+
+            CreateMap<CreateContactCommand, Contact>()
+                .ForMember(x => x.Id, opt => opt.Ignore())
+                .ForMember(x => x.DynamicProperties, opt => opt.Ignore());
+            CreateMap<UpdateContactCommand, Contact>().ForMember(x => x.DynamicProperties, opt => opt.Ignore());
         }
     }
 }

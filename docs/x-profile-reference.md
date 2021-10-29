@@ -115,7 +115,13 @@ mutation($command: InputCreateContactType!) {
   "command": {
   "firstName": "testGraphQlFirstName",
   "lastName": "testGraphQlLastName",
-  "name": "testGraphQlName"
+  "name": "testGraphQlName",
+  "dynamicProperties": [
+      {
+          "name": "Default shipping address",
+          "value": "test value"
+      }
+    ]
 	}
 }
 ```
@@ -135,7 +141,13 @@ mutation($command: InputUpdateContactType!){
   "command": {
     "id": "550e9b14-ddde-46fe-bc28-0afec83ade96",
     "firstName": "testGraphQlFirstName2",
-    "lastName": "testGraphQlLastName2"
+    "lastName": "testGraphQlLastName2",
+    "dynamicProperties": [
+      {
+          "name": "Default shipping address",
+          "value": "test value"
+      }
+    ]
 	}
 }
 ```
@@ -266,7 +278,13 @@ mutation($command: InputCreateOrganizationType!) {
 {
   "command": {
     "name": "testOrganizationName",
-    "emails": ["testOrg.graphql.local"]
+    "emails": ["testOrg.graphql.local"],
+    "dynamicProperties": [
+      {
+          "name": "Sector,
+          "value": "test value"
+      }
+    ]
   }
 }
 ```
@@ -287,7 +305,13 @@ mutation($command: InputUpdateOrganizationType!) {
   "command": {
     "id": "5385b5b7-1772-4c08-8596-27503b8fdddd",
     "name": "EditedTestOrganization",
-    "emails": ["test@graphql.local2"]
+    "emails": ["test@graphql.local2"],
+    "dynamicProperties": [
+      {
+          "name": "Sector,
+          "value": "test value"
+      }
+    ]
   }
 }
 ```

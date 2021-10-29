@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
+using VirtoCommerce.ExperienceApiModule.Core.Models;
 using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.XPurchase
@@ -20,6 +22,8 @@ namespace VirtoCommerce.XPurchase
         public Optional<string> Currency { get; set; }
         public Optional<decimal> Price { get; set; }
         public Optional<ExpCartAddress> DeliveryAddress { get; set; }
+
+        public IList<DynamicPropertyValue> DynamicProperties { get; set; }
 
         public Shipment MapTo(Shipment shipment)
         {

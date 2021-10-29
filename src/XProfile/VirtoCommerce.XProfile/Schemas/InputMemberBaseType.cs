@@ -1,5 +1,6 @@
 using GraphQL.Types;
 using VirtoCommerce.CustomerModule.Core.Model;
+using VirtoCommerce.ExperienceApiModule.Core.Schemas;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 {
@@ -14,6 +15,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             Field<ListGraphType<StringGraphType>>(nameof(Member.Phones));
             Field<ListGraphType<StringGraphType>>(nameof(Member.Emails));
             Field<ListGraphType<StringGraphType>>(nameof(Member.Groups));
+            Field<ListGraphType<InputDynamicPropertyValueType>>(nameof(Member.DynamicProperties));
         }
     }
 }
