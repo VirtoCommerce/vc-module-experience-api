@@ -6,5 +6,6 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Queries
     {
         public string IdOrName { get; set; }
         public string CultureName { get; set; }
+        public string ObjectType { get; set; }
     }
 }
