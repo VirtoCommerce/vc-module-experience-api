@@ -122,7 +122,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             var addItemField = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<CartType>())
                                            .Name("addItem")
                                            .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputAddItemType>>(), _commandName)
-                                           //TODO: Write the unit-tests for successfully mapping input variable to the command
+                                           //PT-5394: Write the unit-tests for successfully mapping input variable to the command
                                            .ResolveAsync(async context =>
                                            {
                                                //PT-5327: Need to refactor later to prevent ugly code duplication

@@ -100,7 +100,6 @@ namespace VirtoCommerce.XPurchase.Mapping
                         Id = string.Join("&", shipmentRate.ShippingMethod.Code, shipmentRate.OptionName),
                         Code = shipmentRate.ShippingMethod.Code,
                         TaxType = shipmentRate.ShippingMethod.TaxType,
-                        //TODO: Is second param is shipmentRate.Rate ?
                         Amount = shipmentRate.DiscountAmount > 0 ? shipmentRate.DiscountAmount : shipmentRate.Rate
                     }
                 };
