@@ -1,6 +1,6 @@
 namespace VirtoCommerce.XPurchase.Schemas
 {
-    //TODO
+    //PT-5434: Add PaymentPlanType
     //public class PaymentPlanType : ObjectGraphType<PaymentPlan>
     //{
     //    public PaymentPlanType()

@@ -23,7 +23,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field<MoneyType>("totalWithTax", resolve: context => (context.Source.RateWithTax - context.Source.DiscountAmountWithTax).ToMoney(context.GetCart().Currency));
             Field<MoneyType>("discountAmount", resolve: context => context.Source.DiscountAmount.ToMoney(context.GetCart().Currency));
             Field<MoneyType>("discountAmountWithTax", resolve: context => context.Source.DiscountAmountWithTax.ToMoney(context.GetCart().Currency));
-            //TODO:
+            //PT-5449: Add fields to ShippingMethodType
             //Field<MoneyType>("taxTotal", resolve: context => context.Source.TaxTotal);
             //Field(x => x.TaxPercentRate, nullable: true).Description("Tax percent rate");
             //Field(x => x.TaxType, nullable: true).Description("Tax type");

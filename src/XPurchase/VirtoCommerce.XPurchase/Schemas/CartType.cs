@@ -27,7 +27,8 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field(x => x.Cart.ChannelId, nullable: true).Description("Shopping cart channel id");
             Field<BooleanGraphType>("hasPhysicalProducts", resolve: context => AbstractTypeFactory<CartHasPhysicalProductsSpecification>.TryCreateInstance().IsSatisfiedBy(context.Source.Cart));
             Field(x => x.Cart.IsAnonymous, nullable: true).Description("Sign that shopping cart is anonymous");
-            //Field(x => x.Customer, nullable: true).Description("Shopping cart user"); //todo: add resolver
+            //PT-5425: Add fields
+            //Field(x => x.Customer, nullable: true).Description("Shopping cart user");
             Field(x => x.Cart.CustomerId, nullable: true).Description("Shopping cart user id");
             Field(x => x.Cart.CustomerName, nullable: true).Description("Shopping cart user name");
             Field(x => x.Cart.OrganizationId, nullable: true).Description("Shopping cart organization id");
@@ -38,7 +39,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field(x => x.Cart.VolumetricWeight, nullable: true).Description("Shopping cart value of volumetric weight");
             Field(x => x.Cart.WeightUnit, nullable: true).Description("Shopping cart value of weight unit");
             Field(x => x.Cart.Weight, nullable: true).Description("Shopping cart value of shopping cart weight");
-            //TODO:
+            //PT-5425: Add fields
             //Field(x => x.MeasureUnit, nullable: true).Description("Shopping cart value of measurement unit");
             //Field(x => x.Height, nullable: true).Description("Shopping cart value of height");
             //Field(x => x.Length, nullable: true).Description("Shopping cart value of length");
@@ -91,11 +92,10 @@ namespace VirtoCommerce.XPurchase.Schemas
                 }
                 return methods;
             });
-            //TODO:
+            //PT-5425: Add fields
             //Field<ListGraphType<PaymentPlanType>>("paymentPlan", resolve: context => context.Source.PaymentPlan);
 
-            // Extended money
-            //TODO:
+            //PT-5425: Add fields Extended money
             //Field<MoneyType>("extendedPriceTotal", resolve: context => context.Source.ExtendedPriceTotal);
             //Field<MoneyType>("extendedPriceTotalWithTax", resolve: context => context.Source.ExtendedPriceTotalWithTax);
 
@@ -126,7 +126,7 @@ namespace VirtoCommerce.XPurchase.Schemas
 
             Field<IntGraphType>("itemsCount", "Count of different items", resolve: context => context.Source.LineItems.Count());
             Field<IntGraphType>("itemsQuantity", "Quantity of items", resolve: context => context.Source.LineItems.Sum(x => x.Quantity));
-            //TODO:
+            //PT-5425: Add fields
             //Field<LineItemType>("recentlyAddedItem", resolve: context => context.Source.Cart.RecentlyAddedItem);
 
             // Coupons

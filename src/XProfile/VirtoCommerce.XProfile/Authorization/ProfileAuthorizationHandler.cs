@@ -193,7 +193,6 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Authorization
             return currentContact.Organizations.Intersect(contact?.Organizations ?? Array.Empty<string>()).Any();
         }
 
-        //TODO: DRY violation in many places in this solution. Move to abstraction to from multiple boundaries
         protected virtual async Task<Member> GetCustomerAsync(string customerId)
         {
             if (string.IsNullOrWhiteSpace(customerId))

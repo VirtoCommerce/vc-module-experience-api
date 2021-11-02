@@ -90,7 +90,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 .Argument<IntGraphType>("fuzzyLevel", "The fuzziness level is quantified in terms of the Damerau-Levenshtein distance, this distance being the number of operations needed to transform one word into another.")
                 .Argument<StringGraphType>("facet", "Facets calculate statistical counts to aid in faceted navigation.")
                 .Argument<StringGraphType>("sort", "The sort expression")
-                .Argument<ListGraphType<StringGraphType>>("productIds", "Product Ids") // TODO: make something good with it, move productIds in filter for example
+                .Argument<ListGraphType<StringGraphType>>("productIds", "Product Ids")
                 .PageSize(20);
 
             productsConnectionBuilder.ResolveAsync(async context =>
@@ -149,7 +149,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 .Argument<IntGraphType>("fuzzyLevel", "The fuzziness level is quantified in terms of the Damerau-Levenshtein distance, this distance being the number of operations needed to transform one word into another.")
                 .Argument<StringGraphType>("facet", "Facets calculate statistical counts to aid in faceted navigation.")
                 .Argument<StringGraphType>("sort", "The sort expression")
-                .Argument<ListGraphType<StringGraphType>>("categoryIds", "Category Ids") // TODO: make something good with it, move CategoryIds in filter for example
+                .Argument<ListGraphType<StringGraphType>>("categoryIds", "Category Ids")
                 .PageSize(20);
 
             categoriesConnectionBuilder.ResolveAsync(async context =>

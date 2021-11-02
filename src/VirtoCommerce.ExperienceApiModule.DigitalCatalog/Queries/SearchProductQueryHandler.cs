@@ -148,7 +148,6 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                     }
                 }
 
-                //TODO: move later to own implementation
                 //Call the catalog aggregation converter service to convert AggregationResponse to proper Aggregation type (term, range, filter)
                 return await _aggregationConverter.ConvertAggregationsAsync(preconvertedAggregations, criteria);
             }

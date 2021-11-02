@@ -58,15 +58,12 @@ namespace VirtoCommerce.XPurchase.Extensions
                         shipmentMethod.TaxPercentRate = Math.Round(taxRate.Rate / amount, 4, MidpointRounding.AwayFromZero);
                     }
                 }
-
-                // TODO: No TaxDetails in shipmentMethod
-                //shipmentMethod.TaxDetails = taxRate.TaxDetails;
             }
         }
 
         public static void ApplyTaxRates(this ShippingRate shippingRate, IEnumerable<TaxRate> taxRates)
         {
-            // TODO: Write and use new model for resolve taxable logic for ShippingRate/ShippingMethod
+            //PT-5421: Write and use new model for resolve taxable logic for ShippingRate/ShippingMethod
         }
 
         public static void ApplyTaxRates(this LineItem lineItem, IEnumerable<TaxRate> taxRates)
