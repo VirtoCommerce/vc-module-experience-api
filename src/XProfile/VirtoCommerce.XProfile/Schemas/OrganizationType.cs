@@ -43,9 +43,6 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                 QueryArgumentPresets.GetArgumentForDynamicProperties(),
                 context => dynamicPropertyResolverService.LoadDynamicPropertyValues(context.Source.Organization, context.GetArgumentOrValue<string>("cultureName")));
 
-            // TODO:
-            //    SeoInfos
-
             var connectionBuilder = GraphTypeExtenstionHelper.CreateConnection<ContactType, OrganizationAggregate>()
                .Name("contacts")
                .Argument<StringGraphType>("searchPhrase", "Free text search")

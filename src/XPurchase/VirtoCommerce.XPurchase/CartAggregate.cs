@@ -65,7 +65,6 @@ namespace VirtoCommerce.XPurchase
         {
             get
             {
-                //TODO: refactor to be more performance
                 var allAppliedCoupons = Cart.GetFlatObjectsListWithInterface<IHasDiscounts>()
                                             .SelectMany(x => x.Discounts ?? Array.Empty<Discount>())
                                             .Where(x => !string.IsNullOrEmpty(x.Coupon))
@@ -113,7 +112,6 @@ namespace VirtoCommerce.XPurchase
             Currency = currency;
             Store = store;
             Cart.IsAnonymous = member == null;
-            //TODO: Need to check what member.Name contains name for all derived member types such as contact etc.
             Cart.CustomerName = member?.Name ?? "Anonymous";
             Cart.Items ??= new List<LineItem>();
 
@@ -384,7 +382,7 @@ namespace VirtoCommerce.XPurchase
                 var shippingMethod = availRates.First(sm => shipment.ShipmentMethodCode.EqualsInvariant(sm.ShippingMethod.Code) && shipment.ShipmentMethodOption.EqualsInvariant(sm.OptionName));
                 shipment.Price = shippingMethod.Rate;
                 shipment.DiscountAmount = shippingMethod.DiscountAmount;
-                //TODO:
+                //PT-5421: use new model for resolve taxable logic for ShippingRate/ShippingMethod 
                 //shipment.TaxType = shippingMethod.TaxType;
             }
             return this;
@@ -775,7 +773,7 @@ namespace VirtoCommerce.XPurchase
 
         protected async Task<TaxProvider> GetActiveTaxProviderAsync()
         {
-            //TODO:
+            //PT-5417: Do not calculate taxes if Enable Tax Calculation is disabled in Store settings
             //if (!context.StoreTaxCalculationEnabled)
             //{
             //    return;

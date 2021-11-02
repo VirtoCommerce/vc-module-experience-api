@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
 using FluentValidation;
@@ -48,7 +48,7 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             result.Errors.Should().Contain(x => x.PropertyName == "CartProduct" && x.ErrorCode == nameof(NotNullValidator));
         }
 
-        // TODO: Implement this!
+        // PT-5433: Write tests for NewCartItemValidator using "strict" ruleset
         //[Fact]
         //public async Task ValidateAddItem_RuleSetStrict_Valid()
         //{

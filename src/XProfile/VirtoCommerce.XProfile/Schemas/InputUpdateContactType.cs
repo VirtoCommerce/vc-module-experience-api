@@ -4,8 +4,6 @@ using VirtoCommerce.CustomerModule.Core.Model;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 {
-    //TODO: We mustn't use such general  commands that update entire contact on the xApi level. Need to use commands more close to real business scenarios instead.
-    //remove in the future
     public class InputUpdateContactType : InputMemberBaseType
     {
         public InputUpdateContactType()

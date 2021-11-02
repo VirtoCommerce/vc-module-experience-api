@@ -68,7 +68,7 @@ namespace VirtoCommerce.XProfile.Middlewares
                 }
                 evalContextBase.UserGroups = contact.Groups?.ToArray();
                 evalContextBase.GeoTimeZone = contact.TimeZone;
-                //TODO: Set other fields from customer 
+                //PT-5445: Set other fields from customer 
             }
         }
     }

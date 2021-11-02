@@ -50,7 +50,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             ExtendableField<OrderAddressType>(nameof(PaymentIn.BillingAddress), resolve: context => context.Source.BillingAddress);
 
             Field<ListGraphType<PaymentTransactionType>>(nameof(PaymentIn.Transactions), resolve: x => x.Source.Transactions);
-            //TODO
+            //PT-5383: Add additional properties to XOrder types:
             //public IList<Operation> ChildrenOperations);
 
             ExtendableField<NonNullGraphType<CustomerOrderType>>(
