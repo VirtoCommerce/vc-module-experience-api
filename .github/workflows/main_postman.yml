@@ -63,5 +63,5 @@ jobs:
         environment: https://raw.githubusercontent.com/VirtoCommerce/vc-module-experience-api/collectionfortest/tests/postman/qa.postman_environment.json
         envVar: '[{ "key": "url", "value": "http://localhost:8090" }]'
         delayRequest: 1000
-        reporters: '["json", "cli"]'
+        reporters: '["json", "cli", "junit"]'
         folder: '["Ready_for_CI"]'
