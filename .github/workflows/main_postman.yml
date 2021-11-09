@@ -1,13 +1,5 @@
 name: Experience API Integration tests(postman)
 
-on:
-  workflow_dispatch:
-    inputs:
-      testSuite:
-        description: "Test Suite"
-        required: false
-        default: "Test Suites/Modules/ExperienceAPI"
-
   pull_request:
     paths-ignore:
       - '.github/**'
@@ -25,7 +17,6 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
       NUGET_KEY: ${{ secrets.NUGET_KEY }}
       BLOB_SAS: ${{ secrets.BLOB_TOKEN }}
-      DEFAULT_TEST_SUITE: "Test Suites/Modules/ExperienceAPI"
 
     steps:
     - uses: actions/checkout@v2
@@ -44,13 +35,6 @@ jobs:
       uses: VirtoCommerce/vc-github-actions/get-image-version@master
       id: image
 
-    - name: Getting tests
-      shell: sh
-      run: |
-        git clone https://github.com/VirtoCommerce/vc-quality-gate-katalon.git
-        cd ${{ github.workspace }}/vc-quality-gate-katalon/
-        git checkout -b dev origin/dev
-        ls -l
     # Temporary commented for speedup workflow test
     - name: Build
       run: vc-build Compile
