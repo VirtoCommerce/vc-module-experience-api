@@ -72,3 +72,5 @@ jobs:
          collection: https://github.com/VirtoCommerce/vc-module-experience-api/blob/collectionfortest/tests/postman/platform_xapi_collection_QA.json
          reporters: json
          envVar: '[{ "key": "url", "value": "http://localhost:8090" }]'
+         delayRequest: 1000
+         folder: Ready_for_CI
