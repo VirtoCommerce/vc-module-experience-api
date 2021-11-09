@@ -1,6 +1,7 @@
 name: Experience API Integration tests(postman)
 
-  pull_request:
+on:
+ pull_request:
     paths-ignore:
       - '.github/**'
       - 'docs/**'
