@@ -64,3 +64,5 @@ jobs:
         envVar: '[{ "key": "url", "value": "http://localhost:8090" }]'
         delayRequest: 1000
         folder: Ready_for_CI
+    - run: npm install -g newman
+    - run: newman run https://www.getpostman.com/collections/df0244a9c935884533d6 --folder Ready_for_CI --delay-request 1000
