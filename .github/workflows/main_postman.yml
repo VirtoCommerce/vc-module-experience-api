@@ -64,4 +64,4 @@ jobs:
         envVar: '[{ "key": "url", "value": "http://localhost:8090" }]'
         delayRequest: 1000
         reporters: '["json", "cli"]'
-       #folder: '["Ready_for_CI"]'
+        folder: '["Ready_for_CI"]'
