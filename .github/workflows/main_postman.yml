@@ -56,8 +56,8 @@ jobs:
         installModule: 'true'
         moduleId: ${{ steps.image.outputs.moduleId }}
         
-    - name: Run API Tests
-      uses: matt-ball/newman-action@master
+    - name: Newman Action
+      uses: matt-ball/newman-action@v1.0.2
       with:
          collection: https://github.com/VirtoCommerce/vc-module-experience-api/blob/collectionfortest/tests/postman/platform_xapi_collection_QA.json
          reporters: json
