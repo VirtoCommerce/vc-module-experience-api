@@ -1,6 +1,9 @@
 name: Experience API Integration tests(postman)
 
 on:
+ workflow_dispatch:
+   
+
  pull_request:
     paths-ignore:
       - '.github/**'
