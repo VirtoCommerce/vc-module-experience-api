@@ -18,7 +18,6 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field<StringGraphType>("paymentMethodGroupType", description: "Value of payment group type", resolve: context => context.Source.PaymentMethodGroupType.ToString());
             Field(x => x.Priority, nullable: true).Description("Value of payment method priority");
             Field(x => x.IsAvailableForPartial, nullable: true).Description("Is payment method available for partial payments");
-            //TODO: ???? Check if this is required.
             //Field<ListGraphType<SettingType>>("settings", resolve: context => context.Source.Settings);
             Field<CurrencyType>("currency", resolve: context => context.GetCart().Currency);
             Field<MoneyType>("price", resolve: context => context.Source.Price.ToMoney(context.GetCart().Currency));
@@ -31,7 +30,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field(x => x.TaxPercentRate, nullable: true).Description("Tax percent rate");
             Field(x => x.TaxType, nullable: true).Description("Tax type");
             Field<ListGraphType<TaxDetailType>>("taxDetails", resolve: context => context.Source.TaxDetails);
-            //TODO: Extend the paymentmethod domain model
+            //PT-5441: Extend the paymentmethod domain model
             //Field<ListGraphType<DiscountType>>("discounts", resolve: context => context.Source.Discounts);
         }
     }

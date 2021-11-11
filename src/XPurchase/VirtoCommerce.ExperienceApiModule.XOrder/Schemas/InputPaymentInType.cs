@@ -42,7 +42,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field<InputOrderPaymentMethodType>(nameof(PaymentIn.PaymentMethod));
             Field<InputOrderAddressType>(nameof(PaymentIn.BillingAddress));
 
-            //TODO
+            //PT-5383: Add additional properties to XOrder types:
             //Transactions
             //public IList<Operation> ChildrenOperations);
             //public IList<DynamicProperty> DynamicProperties);

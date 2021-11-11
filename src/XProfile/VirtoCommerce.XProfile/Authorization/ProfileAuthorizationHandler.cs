@@ -167,7 +167,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Authorization
             {
                 var currentUser = await _userManager.FindByIdAsync(currentUserId);
                 result = currentContact.Organizations.Contains(inviteUserCommand.OrganizationId) && currentUser.StoreId.EqualsInvariant(inviteUserCommand.StoreId);
-            }            
+            }
             if (result)
             {
                 context.Succeed(requirement);
@@ -180,7 +180,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Authorization
 
         private static string GetUserId(AuthorizationHandlerContext context)
         {
-            //TODO use ClaimTypes instead of "name"
+            //PT-5375 use ClaimTypes instead of "name"
             return context.User.FindFirstValue("name");
         }
 
@@ -193,7 +193,6 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Authorization
             return currentContact.Organizations.Intersect(contact?.Organizations ?? Array.Empty<string>()).Any();
         }
 
-        //TODO: DRY violation in many places in this solution. Move to abstraction to from multiple boundaries
         protected virtual async Task<Member> GetCustomerAsync(string customerId)
         {
             if (string.IsNullOrWhiteSpace(customerId))

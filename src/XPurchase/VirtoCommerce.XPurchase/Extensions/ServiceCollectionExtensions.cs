@@ -1,13 +1,11 @@
 using System;
 using AutoMapper;
-using AutoMapper.Configuration;
 using GraphQL.Server;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.XPurchase.Authorization;
-using VirtoCommerce.XPurchase.Mapping;
 using VirtoCommerce.XPurchase.Schemas;
 using VirtoCommerce.XPurchase.Services;
 using VirtoCommerce.XPurchase.Validators;
@@ -18,15 +16,8 @@ namespace VirtoCommerce.XPurchase.Extensions
     {
         public static IServiceCollection AddXPurchase(this IServiceCollection services, IGraphQLBuilder graphQlbuilder)
         {
-            //TODO:
-            //services.AddSchemaType<PaymentPlanType>();
-            //services.AddSchemaType<SettingType>();
-            //services.AddSchemaType<StoreStatusEnum>();
-            //services.AddSchemaType<StoreType>();
-            //services.AddSchemaType<UserType>();
-
             graphQlbuilder.AddGraphTypes(typeof(XPurchaseAnchor));
-                       
+
             services.AddSchemaBuilder<PurchaseSchema>();
             services.AddSingleton<IAuthorizationHandler, CanAccessCartAuthorizationHandler>();
             services.AddTransient<ICartAggregateRepository, CartAggregateRepository>();

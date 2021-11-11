@@ -48,7 +48,6 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                 QueryArgumentPresets.GetArgumentForDynamicProperties(),
                 context => dynamicPropertyResolverService.LoadDynamicPropertyValues(context.Source.Contact, context.GetArgumentOrValue<string>("cultureName")));
             Field<ListGraphType<UserType>>("securityAccounts", resolve: context => context.Source.Contact.SecurityAccounts);
-            //TODO: remove later
             Field<StringGraphType>("organizationId", resolve: context => context.Source.Contact.Organizations?.FirstOrDefault());
             Field("organizationsIds", x => x.Contact.Organizations);
             Field("phones", x => x.Contact.Phones);

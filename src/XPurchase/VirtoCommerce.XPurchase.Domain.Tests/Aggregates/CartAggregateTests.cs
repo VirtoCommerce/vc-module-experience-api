@@ -167,8 +167,8 @@ namespace VirtoCommerce.XPurchase.Tests.Aggregates
             {
                 LineItemId = _fixture.Create<string>(),
                 LineItem = _fixture.Create<LineItem>(),
-                 NewPrice = _fixture.Create<decimal>()
-             });
+                NewPrice = _fixture.Create<decimal>()
+            });
 
             // Assert
             cartAggregate.Cart.Items.Should().Contain(x => x.ListPrice == lineItem.ListPrice && x.SalePrice == lineItem.SalePrice);
@@ -186,9 +186,9 @@ namespace VirtoCommerce.XPurchase.Tests.Aggregates
             // Act
             await cartAggregate.ChangeItemPriceAsync(new PriceAdjustment
             {
-                 LineItem = lineItem,
-                 LineItemId = lineItem.Id,
-                 NewPrice = newPrice
+                LineItem = lineItem,
+                LineItemId = lineItem.Id,
+                NewPrice = newPrice
             });
 
             // Assert
@@ -445,7 +445,7 @@ namespace VirtoCommerce.XPurchase.Tests.Aggregates
 
         #region RemoveShipmentAsync
 
-        // TODO: Write tests
+        // PT-5331: Write tests
 
         #endregion RemoveShipmentAsync
 
@@ -473,31 +473,31 @@ namespace VirtoCommerce.XPurchase.Tests.Aggregates
 
         #region MergeWithCartAsync
 
-        // TODO: Write tests
+        // PT-5331: Write tests
 
         #endregion MergeWithCartAsync
 
         #region ValidateAsync
 
-        // TODO: Write tests
+        // PT-5331: Write tests
 
         #endregion ValidateAsync
 
         #region ValidateCouponAsync
 
-        // TODO: Write tests
+        // PT-5331: Write tests
 
         #endregion ValidateCouponAsync
 
         #region EvaluatePromotionsAsync(PromotionEvaluationContext evalContext)
 
-        // TODO: Write tests
+        // PT-5331: Write tests
 
         #endregion EvaluatePromotionsAsync(PromotionEvaluationContext evalContext)
 
         #region RecalculateAsync
 
-        // TODO: Write tests
+        // PT-5331: Write tests
 
         #endregion RecalculateAsync
 

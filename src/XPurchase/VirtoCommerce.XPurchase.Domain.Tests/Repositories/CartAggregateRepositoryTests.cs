@@ -119,7 +119,7 @@ namespace VirtoCommerce.XPurchase.Tests.Repositories
 
         #region InnerGetCartAggregateFromCartAsync
 
-        // TODO: Write tests
+        // PT-5331: Write tests
 
         #endregion InnerGetCartAggregateFromCartAsync
 
