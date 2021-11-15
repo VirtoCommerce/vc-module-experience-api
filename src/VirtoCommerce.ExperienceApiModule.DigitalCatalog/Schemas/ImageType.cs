@@ -25,13 +25,27 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
         /// </example>
         public ImageType()
         {
-            Field<StringGraphType>("id", resolve: context => context.Source.Id);
-            Field<StringGraphType>("name", resolve: context => context.Source.Name);
-            Field<StringGraphType>("group", resolve: context => context.Source.Group);
-            Field<StringGraphType>("url", resolve: context => context.Source.Url);
-            Field<StringGraphType>("relativeUrl", resolve: context => context.Source.RelativeUrl);
-            Field<IntGraphType>("sortOrder", resolve: context => context.Source.SortOrder);
-            Field<StringGraphType>("cultureName", resolve: context => context.Source.LanguageCode);
+            Field<StringGraphType>("id",
+                "Image Id",
+                resolve: context => context.Source.Id);
+            Field<StringGraphType>("name",
+                "Image name",
+                resolve: context => context.Source.Name);
+            Field<StringGraphType>("group",
+                "Image group",
+                resolve: context => context.Source.Group);
+            Field<StringGraphType>("url",
+                "Image url",
+                resolve: context => context.Source.Url);
+            Field<StringGraphType>("relativeUrl",
+                "Image relative url",
+                resolve: context => context.Source.RelativeUrl);
+            Field<IntGraphType>("sortOrder",
+                "Sort order",
+                resolve: context => context.Source.SortOrder);
+            Field<StringGraphType>("cultureName",
+                "Culture name",
+                resolve: context => context.Source.LanguageCode);
         }
     }
 }

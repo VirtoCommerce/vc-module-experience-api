@@ -18,13 +18,14 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field(x => x.Weight, nullable: true).Description("Value of weight");
             Field(x => x.WeightUnit, nullable: true).Description("Value of weight unit");
             Field(x => x.Width, nullable: true).Description("Value of width");
-            //PT-1612: Add descriptions
-            Field<InputAddressType>("deliveryAddress");
-            Field(x => x.Currency, nullable: true);
-            Field(x => x.Price, nullable: true);
+            Field<InputAddressType>("deliveryAddress",
+                "Delivery address");
+            Field(x => x.Currency, nullable: true).Description("Value of currency");
+            Field(x => x.Price, nullable: true).Description("Value of price");
             //Field(x=> x.Items);
 
-            Field<ListGraphType<InputDynamicPropertyValueType>>("dynamicProperties");
+            Field<ListGraphType<InputDynamicPropertyValueType>>("dynamicProperties",
+                "Dynamic properties");
         }
     }
 }

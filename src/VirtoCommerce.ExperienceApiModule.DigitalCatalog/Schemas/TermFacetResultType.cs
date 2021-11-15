@@ -11,8 +11,11 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             Field(d => d.Name, nullable: false).Description("The key/name  of the facet.");
             Field(d => d.Label, nullable: false).Description("Localized name of the facet.");
-            Field<FacetTypeEnum>("FacetType", "The three types of facets. Terms, Range, Filter");
-            Field<ListGraphType<FacetTermType>>("Terms", "Terms", resolve: context => context.Source.Terms);
+            Field<FacetTypeEnum>("FacetType",
+                "The three types of facets. Terms, Range, Filter");
+            Field<ListGraphType<FacetTermType>>("Terms",
+                "Terms",
+                resolve: context => context.Source.Terms);
 
             IsTypeOf = obj => obj is TermFacetResult;
             Interface<FacetInterface>();

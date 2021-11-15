@@ -32,7 +32,9 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 
             Field(x => x.Contact.FirstName);
             Field(x => x.Contact.LastName);
-            Field<DateGraphType>("birthDate", resolve: context => context.Source.Contact.BirthDate.HasValue ? context.Source.Contact.BirthDate.Value.Date : (DateTime?)null);
+            Field<DateGraphType>("birthDate",
+                "Contact birth date",
+                resolve: context => context.Source.Contact.BirthDate.HasValue ? context.Source.Contact.BirthDate.Value.Date : (DateTime?)null);
             Field(x => x.Contact.FullName);
             Field(x => x.Contact.Id);
             Field(x => x.Contact.MemberType);
@@ -47,8 +49,12 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                 "Contact's dynamic property values",
                 QueryArgumentPresets.GetArgumentForDynamicProperties(),
                 context => dynamicPropertyResolverService.LoadDynamicPropertyValues(context.Source.Contact, context.GetArgumentOrValue<string>("cultureName")));
-            Field<ListGraphType<UserType>>("securityAccounts", resolve: context => context.Source.Contact.SecurityAccounts);
-            Field<StringGraphType>("organizationId", resolve: context => context.Source.Contact.Organizations?.FirstOrDefault());
+            Field<ListGraphType<UserType>>("securityAccounts",
+                "Security accounts",
+                resolve: context => context.Source.Contact.SecurityAccounts);
+            Field<StringGraphType>("organizationId",
+                "Organization Id",
+                resolve: context => context.Source.Contact.Organizations?.FirstOrDefault());
             Field("organizationsIds", x => x.Contact.Organizations);
             Field("phones", x => x.Contact.Phones);
 

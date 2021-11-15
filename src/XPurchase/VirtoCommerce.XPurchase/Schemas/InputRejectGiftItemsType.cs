@@ -6,7 +6,8 @@ namespace VirtoCommerce.XPurchase.Schemas
     {
         public InputRejectGiftItemsType()
         {
-            Field<NonNullGraphType<ListGraphType<StringGraphType>>>("Ids", "Ids of gift lineItems to reject from cart");
+            Field<NonNullGraphType<ListGraphType<StringGraphType>>>("Ids",
+                "Ids of gift lineItems to reject from cart");
         }
     }
 }

@@ -6,7 +6,8 @@ namespace VirtoCommerce.XPurchase.Schemas
     {
         public InputAddGiftItemsType()
         {
-            Field<NonNullGraphType<ListGraphType<StringGraphType>>>("Ids", "Ids of gift rewards to add to cart");
+            Field<NonNullGraphType<ListGraphType<StringGraphType>>>("Ids",
+                "Ids of gift rewards to add to cart");
         }
     }
 }

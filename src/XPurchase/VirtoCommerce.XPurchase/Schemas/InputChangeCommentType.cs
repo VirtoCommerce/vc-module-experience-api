@@ -6,7 +6,8 @@ namespace VirtoCommerce.XPurchase.Schemas
     {
         public InputChangeCommentType()
         {
-            Field<StringGraphType>("comment");
+            Field<StringGraphType>("comment",
+                "Comment");
         }
     }
 }

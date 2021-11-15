@@ -12,10 +12,18 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
             Field(x => x.Coupon, nullable: true).Description("Coupon");
             Field(x => x.Description, nullable: true).Description("Value of discount description");
             Field(x => x.PromotionId, nullable: true).Description("Value of promotion id");
-            Field<DecimalGraphType>("amount", resolve: context => context.Source.DiscountAmount);
-            Field<MoneyType>("moneyAmount", resolve: context => context.Source.DiscountAmount.ToMoney(context.GetCurrencyByCode(context.Source.Currency)));
-            Field<DecimalGraphType>("amountWithTax", resolve: context => context.Source.DiscountAmountWithTax);
-            Field<MoneyType>("moneyAmountWithTax", resolve: context => context.Source.DiscountAmountWithTax.ToMoney(context.GetCurrencyByCode(context.Source.Currency)));
+            Field<DecimalGraphType>("amount",
+                "Discount amount",
+                resolve: context => context.Source.DiscountAmount);
+            Field<MoneyType>("moneyAmount",
+                "Discount amount in the specified currency",
+                resolve: context => context.Source.DiscountAmount.ToMoney(context.GetCurrencyByCode(context.Source.Currency)));
+            Field<DecimalGraphType>("amountWithTax",
+                "Discount amount with tax",
+                resolve: context => context.Source.DiscountAmountWithTax);
+            Field<MoneyType>("moneyAmountWithTax",
+                "Discount amount with tax in the specified currency",
+                resolve: context => context.Source.DiscountAmountWithTax.ToMoney(context.GetCurrencyByCode(context.Source.Currency)));
         }
     }
 }

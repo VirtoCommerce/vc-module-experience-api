@@ -9,11 +9,16 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
     {
         public InputPersonalDataType()
         {
-            Field<StringGraphType>(nameof(ApplicationUser.Email));
-            Field<StringGraphType>(nameof(Contact.FullName));
-            Field<StringGraphType>(nameof(Contact.FirstName));
-            Field<StringGraphType>(nameof(Contact.LastName));
-            Field<StringGraphType>(nameof(Contact.MiddleName));
+            Field<StringGraphType>(nameof(ApplicationUser.Email),
+                "Email");
+            Field<StringGraphType>(nameof(Contact.FullName),
+                "Full name");
+            Field<StringGraphType>(nameof(Contact.FirstName),
+                "First name");
+            Field<StringGraphType>(nameof(Contact.LastName),
+                "Last name");
+            Field<StringGraphType>(nameof(Contact.MiddleName),
+                "Middle name");
         }
     }
 }

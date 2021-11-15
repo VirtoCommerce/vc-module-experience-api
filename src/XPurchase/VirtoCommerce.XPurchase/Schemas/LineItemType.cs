@@ -49,11 +49,19 @@ namespace VirtoCommerce.XPurchase.Schemas
             AddField(productField);
 
             //Field<MoneyType>("paymentPlan", resolve: context => context.Source.PaymentPlan);
-            Field<IntGraphType>("inStockQuantity", resolve: context => context.GetCart().CartProducts[context.Source.ProductId]?.AvailableQuantity ?? 0);
-            Field<StringGraphType>("warehouseLocation", resolve: context => context.GetCart().CartProducts[context.Source.ProductId]?.Inventory?.FulfillmentCenter?.Address?.ToString());
+            Field<IntGraphType>("inStockQuantity",
+                "In stock quantity",
+                resolve: context => context.GetCart().CartProducts[context.Source.ProductId]?.AvailableQuantity ?? 0);
+            Field<StringGraphType>("warehouseLocation",
+                "Warehouse location",
+                resolve: context => context.GetCart().CartProducts[context.Source.ProductId]?.Inventory?.FulfillmentCenter?.Address?.ToString());
 
-            Field<BooleanGraphType>("IsValid", resolve: context => !context.GetCart().ValidationErrors.GetEntityCartErrors(context.Source).Any());
-            Field<ListGraphType<ValidationErrorType>>("validationErrors", resolve: context => context.GetCart().ValidationErrors.GetEntityCartErrors(context.Source));
+            Field<BooleanGraphType>("IsValid",
+                "Is valid",
+                resolve: context => !context.GetCart().ValidationErrors.GetEntityCartErrors(context.Source).Any());
+            Field<ListGraphType<ValidationErrorType>>("validationErrors",
+                "Validation errors",
+                resolve: context => context.GetCart().ValidationErrors.GetEntityCartErrors(context.Source));
 
             Field(x => x.CatalogId, nullable: true).Description("Value of catalog id");
             Field(x => x.CategoryId, nullable: true).Description("Value of category id");
@@ -85,21 +93,51 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field(x => x.Width, nullable: true).Description("Value of width");
             Field(x => x.FulfillmentCenterId, nullable: true).Description("Value of line item Fulfillment center ID");
             Field(x => x.FulfillmentCenterName, nullable: true).Description("Value of line item Fulfillment center name");
-            Field<ListGraphType<DiscountType>>("discounts", resolve: context => context.Source.Discounts);
-            Field<ListGraphType<TaxDetailType>>("taxDetails", resolve: context => context.Source.TaxDetails);
-            Field<MoneyType>("discountAmount", resolve: context => context.Source.DiscountAmount.ToMoney(context.GetCart().Currency));
-            Field<MoneyType>("discountAmountWithTax", resolve: context => context.Source.DiscountAmountWithTax.ToMoney(context.GetCart().Currency));
-            Field<MoneyType>("discountTotal", resolve: context => context.Source.DiscountTotal.ToMoney(context.GetCart().Currency));
-            Field<MoneyType>("discountTotalWithTax", resolve: context => context.Source.DiscountTotalWithTax.ToMoney(context.GetCart().Currency));
-            Field<MoneyType>("extendedPrice", resolve: context => context.Source.ExtendedPrice.ToMoney(context.GetCart().Currency));
-            Field<MoneyType>("extendedPriceWithTax", resolve: context => context.Source.ExtendedPriceWithTax.ToMoney(context.GetCart().Currency));
-            Field<MoneyType>("listPrice", resolve: context => context.Source.ListPrice.ToMoney(context.GetCart().Currency));
-            Field<MoneyType>("listPriceWithTax", resolve: context => context.Source.ListPriceWithTax.ToMoney(context.GetCart().Currency));
-            Field<MoneyType>("placedPrice", resolve: context => context.Source.PlacedPrice.ToMoney(context.GetCart().Currency));
-            Field<MoneyType>("placedPriceWithTax", resolve: context => context.Source.PlacedPriceWithTax.ToMoney(context.GetCart().Currency));
-            Field<MoneyType>("salePrice", resolve: context => context.Source.SalePrice.ToMoney(context.GetCart().Currency));
-            Field<MoneyType>("salePriceWithTax", resolve: context => context.Source.SalePriceWithTax.ToMoney(context.GetCart().Currency));
-            Field<MoneyType>("taxTotal", resolve: context => context.Source.TaxTotal.ToMoney(context.GetCart().Currency));
+            Field<ListGraphType<DiscountType>>("discounts",
+                "Discounts",
+                resolve: context => context.Source.Discounts);
+            Field<ListGraphType<TaxDetailType>>("taxDetails",
+                "Tax details",
+                resolve: context => context.Source.TaxDetails);
+            Field<MoneyType>("discountAmount",
+                "Discount amount",
+                resolve: context => context.Source.DiscountAmount.ToMoney(context.GetCart().Currency));
+            Field<MoneyType>("discountAmountWithTax",
+                "Discount amount with tax",
+                resolve: context => context.Source.DiscountAmountWithTax.ToMoney(context.GetCart().Currency));
+            Field<MoneyType>("discountTotal",
+                "Discount total",
+                resolve: context => context.Source.DiscountTotal.ToMoney(context.GetCart().Currency));
+            Field<MoneyType>("discountTotalWithTax",
+                "Discount total with tax",
+                resolve: context => context.Source.DiscountTotalWithTax.ToMoney(context.GetCart().Currency));
+            Field<MoneyType>("extendedPrice",
+                "Extended price",
+                resolve: context => context.Source.ExtendedPrice.ToMoney(context.GetCart().Currency));
+            Field<MoneyType>("extendedPriceWithTax",
+                "Extended price with tax",
+                resolve: context => context.Source.ExtendedPriceWithTax.ToMoney(context.GetCart().Currency));
+            Field<MoneyType>("listPrice",
+                "List price",
+                resolve: context => context.Source.ListPrice.ToMoney(context.GetCart().Currency));
+            Field<MoneyType>("listPriceWithTax",
+                "List price with tax",
+                resolve: context => context.Source.ListPriceWithTax.ToMoney(context.GetCart().Currency));
+            Field<MoneyType>("placedPrice",
+                "Placed price",
+                resolve: context => context.Source.PlacedPrice.ToMoney(context.GetCart().Currency));
+            Field<MoneyType>("placedPriceWithTax",
+                "Placed price with tax",
+                resolve: context => context.Source.PlacedPriceWithTax.ToMoney(context.GetCart().Currency));
+            Field<MoneyType>("salePrice",
+                "Sale price",
+                resolve: context => context.Source.SalePrice.ToMoney(context.GetCart().Currency));
+            Field<MoneyType>("salePriceWithTax",
+                "Sale price with tax",
+                resolve: context => context.Source.SalePriceWithTax.ToMoney(context.GetCart().Currency));
+            Field<MoneyType>("taxTotal",
+                "Tax total",
+                resolve: context => context.Source.TaxTotal.ToMoney(context.GetCart().Currency));
 
             ExtendableField<ListGraphType<DynamicPropertyValueType>>(
                 "dynamicProperties",

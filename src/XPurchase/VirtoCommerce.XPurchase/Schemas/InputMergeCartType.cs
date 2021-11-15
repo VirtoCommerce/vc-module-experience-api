@@ -6,7 +6,8 @@ namespace VirtoCommerce.XPurchase.Schemas
     {
         public InputMergeCartType()
         {
-            Field<NonNullGraphType<StringGraphType>>("secondCartId");
+            Field<NonNullGraphType<StringGraphType>>("secondCartId",
+                "Second cart Id");
         }
     }
 }

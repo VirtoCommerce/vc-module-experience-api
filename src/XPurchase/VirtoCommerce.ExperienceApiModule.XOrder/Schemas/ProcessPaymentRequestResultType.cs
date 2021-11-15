@@ -12,7 +12,9 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
         {
             Field(x => x.IsSuccess);
             Field(x => x.HtmlForm, nullable: true);
-            Field<StringGraphType>("newPaymentStatus", resolve: context => context.Source.NewPaymentStatus.ToString());
+            Field<StringGraphType>("newPaymentStatus",
+                "New payment status",
+                resolve: context => context.Source.NewPaymentStatus.ToString());
             Field(x => x.OuterId, nullable: true);
             Field(x => x.RedirectUrl, nullable: true);
             Field(x => x.ErrorMessage, nullable: true);

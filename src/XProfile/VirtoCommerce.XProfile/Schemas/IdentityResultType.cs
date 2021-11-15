@@ -8,7 +8,9 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
         public IdentityResultType()
         {
             Field(x => x.Succeeded);
-            Field<ListGraphType<IdentityErrorType>>("errors", "The errors that occurred during the identity operation.", resolve: context => context.Source.Errors);
+            Field<ListGraphType<IdentityErrorType>>("errors",
+                "The errors that occurred during the identity operation.",
+                resolve: context => context.Source.Errors);
         }
     }
 }

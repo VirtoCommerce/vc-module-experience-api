@@ -9,13 +9,19 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
         {
             Name = "TaxLine";
 
-            Field(d => d.Id); // PT-1612: add desciption
-            Field(d => d.Name); // PT-1612: add desciption
-            Field(d => d.Code); // PT-1612: add desciption
-            Field(d => d.TaxType); // PT-1612: add desciption
-            Field<IntGraphType>("quantity", resolve: context => context.Source.Quantity);
-            Field<DecimalGraphType>("amount", resolve: context => context.Source.Amount);
-            Field<DecimalGraphType>("price", resolve: context => context.Source.Price);
+            Field(d => d.Id).Description("Tax line Id");
+            Field(d => d.Name).Description("Tax name");
+            Field(d => d.Code).Description("Tax code");
+            Field(d => d.TaxType).Description("Tax type");
+            Field<IntGraphType>("quantity",
+                "Tax quantity",
+                resolve: context => context.Source.Quantity);
+            Field<DecimalGraphType>("amount",
+                "Tax amount",
+                resolve: context => context.Source.Amount);
+            Field<DecimalGraphType>("price",
+                "Tax price",
+                resolve: context => context.Source.Price);
         }
     }
 }

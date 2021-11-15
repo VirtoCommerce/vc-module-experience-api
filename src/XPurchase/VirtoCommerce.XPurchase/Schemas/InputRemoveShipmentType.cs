@@ -1,4 +1,4 @@
-﻿using GraphQL.Types;
+using GraphQL.Types;
 
 namespace VirtoCommerce.XPurchase.Schemas
 {
@@ -6,7 +6,8 @@ namespace VirtoCommerce.XPurchase.Schemas
     {
         public InputRemoveShipmentType()
         {
-            Field<StringGraphType>("shipmentId");
+            Field<StringGraphType>("shipmentId",
+                "Shipment Id");
         }
     }
 }

@@ -10,7 +10,9 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
     {
         public OrderDiscountType()
         {
-            Field<MoneyType>("Amount", resolve: context => new Money(context.Source.DiscountAmount, context.GetOrderCurrency()));
+            Field<MoneyType>("Amount",
+                "Order discount amount",
+                resolve: context => new Money(context.Source.DiscountAmount, context.GetOrderCurrency()));
             Field(x => x.Coupon, true);
             Field(x => x.Description, true);
             Field(x => x.PromotionId, true);
