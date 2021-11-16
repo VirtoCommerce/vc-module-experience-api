@@ -12,13 +12,13 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             Field<NonNullGraphType<StringGraphType>>("id", description: "User ID");
             Field<BooleanGraphType>("lockoutEnabled", description: "Can user be locked out");
             Field<DateTimeGraphType>("LockoutEnd", description: "End date of lockout");
-            Field<StringGraphType>("MemberId", description: "Id of the associated Memeber");
+            Field<StringGraphType>("MemberId", description: "Associated Member ID");
             Field<StringGraphType>("PhoneNumber", description: "User phone number");
-            Field<BooleanGraphType>("PhoneNumberConfirmed", description: "Is user phone number confirmed");
-            Field<StringGraphType>("PhotoUrl", description: "User photo URL");
+            Field<BooleanGraphType>("PhoneNumberConfirmed", description: "Displays whether the user phone number is confirmed");
+            Field<StringGraphType>("PhotoUrl", description: "User pic URL");
             Field<ListGraphType<InputAssignRoleType>>(nameof(ApplicationUser.Roles), description: "List of user roles");
-            Field<StringGraphType>("StoreId", description: "Associated store Id");
-            Field<BooleanGraphType>("TwoFactorEnabled", description: "Is two factor authentication enabled");
+            Field<StringGraphType>("StoreId", description: "Associated store ID");
+            Field<BooleanGraphType>("TwoFactorEnabled", description: "Enables two factor authentication");
             Field<NonNullGraphType<StringGraphType>>("UserName", description: "User name");
             Field<NonNullGraphType<StringGraphType>>("UserType", description: "User type (Manager, Customer)"); // Manager, Customer
             Field<StringGraphType>("passwordHash", description: "Password hash");
