@@ -11,10 +11,10 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
 
             Field(x => x.Name).Description("Tax detail name");
             Field<DecimalGraphType>("amount",
-                "Tax amount detail",
+                "Tax amount details",
                 resolve: context => context.Source.Amount);
             Field<DecimalGraphType>("rate",
-                "Tax rate detail",
+                "Tax rate details",
                 resolve: context => context.Source.Rate);
         }
     }
