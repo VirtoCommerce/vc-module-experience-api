@@ -9,7 +9,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
         {
             Name = "TaxLine";
 
-            Field(d => d.Id).Description("Tax line Id");
+            Field(d => d.Id).Description("Tax line ID");
             Field(d => d.Name).Description("Tax name");
             Field(d => d.Code).Description("Tax code");
             Field(d => d.TaxType).Description("Tax type");
