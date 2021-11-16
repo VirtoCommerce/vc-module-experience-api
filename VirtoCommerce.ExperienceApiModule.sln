@@ -53,6 +53,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtoCommerce.ExperienceApi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtoCommerce.XDigitalCatalog.Tests", "tests\VirtoCommerce.XDigitalCatalog.Tests\VirtoCommerce.XDigitalCatalog.Tests.csproj", "{C07338AA-A581-4DF1-823C-B1A25B8778D4}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "XCMS", "XCMS", "{BD8B6647-4CEC-4332-AEC4-E66B25A9C8C1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VirtoCommerce.ExperienceApiModule.XCMS", "src\XCMS\VirtoCommerce.ExperienceApiModule.XCMS\VirtoCommerce.ExperienceApiModule.XCMS.csproj", "{666D6EA5-DF6D-4C04-99E3-F43CABC4D950}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -127,6 +131,10 @@ Global
 		{C07338AA-A581-4DF1-823C-B1A25B8778D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C07338AA-A581-4DF1-823C-B1A25B8778D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C07338AA-A581-4DF1-823C-B1A25B8778D4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{666D6EA5-DF6D-4C04-99E3-F43CABC4D950}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{666D6EA5-DF6D-4C04-99E3-F43CABC4D950}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{666D6EA5-DF6D-4C04-99E3-F43CABC4D950}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{666D6EA5-DF6D-4C04-99E3-F43CABC4D950}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -154,6 +162,8 @@ Global
 		{55587F1C-B83C-46CB-A89E-E7D062144F9B} = {C2FC6659-3B97-4513-A22C-CCF81A4E4395}
 		{E2E45B13-D240-4300-8333-94C6C616CD00} = {E3929EC9-690B-492A-BF16-6F8FDBBD0D97}
 		{C07338AA-A581-4DF1-823C-B1A25B8778D4} = {E3929EC9-690B-492A-BF16-6F8FDBBD0D97}
+		{BD8B6647-4CEC-4332-AEC4-E66B25A9C8C1} = {FAE6CCF7-298C-4AF3-8044-60DAA0C099F0}
+		{666D6EA5-DF6D-4C04-99E3-F43CABC4D950} = {BD8B6647-4CEC-4332-AEC4-E66B25A9C8C1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E56E5C53-D55A-451B-96FA-654D86F96658}
