@@ -16,7 +16,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             Field<StringGraphType>(nameof(Contact.MiddleName),
                 "Middle name");
             Field<StringGraphType>(nameof(Contact.Salutation),
-                "Salutation");
+                "Title");
             Field<StringGraphType>(nameof(Contact.PhotoUrl),
                 "Photo URL");
             Field<StringGraphType>(nameof(Contact.TimeZone),
