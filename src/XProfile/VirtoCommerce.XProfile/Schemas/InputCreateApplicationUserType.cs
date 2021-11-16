@@ -20,8 +20,8 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             Field<BooleanGraphType>("PhoneNumberConfirmed", description: "Is user phone number confirmed");
             Field<StringGraphType>("PhotoUrl", description: "User photo URL");
             Field<ListGraphType<InputAssignRoleType>>(nameof(ApplicationUser.Roles), description: "List of user roles");
-            Field<StringGraphType>("StoreId", description: "Associated Store Id");
-            Field<BooleanGraphType>("TwoFactorEnabled", description: "Is Two Factor Authentication enabled");
+            Field<StringGraphType>("StoreId", description: "Associated store Id");
+            Field<BooleanGraphType>("TwoFactorEnabled", description: "Is two factor authentication enabled");
             Field<NonNullGraphType<StringGraphType>>("UserName", description: "User name");
             Field<NonNullGraphType<StringGraphType>>("UserType", description: "User type (Manager, Customer)"); // Manager, Customer
             Field<BooleanGraphType>("PasswordExpired", description: "Password expiration date");

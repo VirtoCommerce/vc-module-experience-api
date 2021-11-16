@@ -17,13 +17,13 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
             _dynamicPropertyDictionaryItemsService = dynamicPropertyDictionaryItemsService;
 
             Field<StringGraphType>("name",
-                "Property Name",
+                "Property name",
                 resolve: context => context.Source.PropertyName);
             Field<StringGraphType>(nameof(DynamicPropertyObjectValue.ValueType),
-                "Value Type",
+                "Value type",
                 resolve: context => context.Source.ValueType.ToString());
             Field<StringGraphType>(nameof(DynamicPropertyObjectValue.Value),
-                "Property Value",
+                "Property value",
                 resolve: context => context.Source.Value?.ToString());
 
             FieldAsync<DictionaryItemType>("dictionaryItem", "Associated dictionary item", resolve: async context =>

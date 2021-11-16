@@ -21,10 +21,10 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field(x => x.PromotionId).Description("Promotion Id");
             Field(x => x.Quantity).Description("Quantity of gifts in the reward");
             Field(x => x.ProductId, true).Description("Product id");
-            Field(x => x.CategoryId, true).Description("Product Category Id");
+            Field(x => x.CategoryId, true).Description("Product category Id");
             Field(x => x.ImageUrl, true).Description("Value of reward image absolute URL");
             Field(x => x.Name).Description("Name of the reward");
-            Field(x => x.MeasureUnit, true).Description("Measure Unit");
+            Field(x => x.MeasureUnit, true).Description("Measure unit");
             Field(x => x.LineItemId, true).Description("ID of lineItem if gift is in cart. Otherwise null");
 
             AddField(new FieldType

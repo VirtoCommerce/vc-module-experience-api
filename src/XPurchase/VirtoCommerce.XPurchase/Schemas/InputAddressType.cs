@@ -22,10 +22,10 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field(x => x.Organization, nullable: true).Description("Company name");
             Field(x => x.Phone, nullable: true).Description("Phone");
             Field(x => x.PostalCode, nullable: true).Description("Postal code");
-            Field(x => x.RegionId, nullable: true).Description("Region id");
+            Field(x => x.RegionId, nullable: true).Description("Region Id");
             Field(x => x.RegionName, nullable: true).Description("Region name");
             Field(x => x.Zip, nullable: true).Description("Zip");
-            Field(x => x.OuterId, nullable: true).Description("Outer id");
+            Field(x => x.OuterId, nullable: true).Description("Outer Id");
             Field<IntGraphType>(nameof(Address.AddressType));
         }
     }

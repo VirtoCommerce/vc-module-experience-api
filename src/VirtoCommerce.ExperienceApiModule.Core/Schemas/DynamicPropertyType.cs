@@ -18,9 +18,9 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
         {
             Field(x => x.Id).Description("Id");
             Field(x => x.Name).Description("Name");
-            Field(x => x.ObjectType).Description("Object Type");
+            Field(x => x.ObjectType).Description("Object type");
             Field<StringGraphType>("label",
-                "Localized Property Name",
+                "Localized property name",
                 resolve: context =>
             {
                 var culture = context.GetValue<string>("cultureName");
@@ -28,7 +28,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
             });
             Field(x => x.DisplayOrder, nullable: true).Description("The order for the dynamic property to display");
             Field<StringGraphType>(nameof(DynamicProperty.ValueType),
-                "Value Type",
+                "Value type",
                 resolve: context => context.Source.ValueType.ToString());
             Field<BooleanGraphType>("isArray", resolve: context => context.Source.IsArray, description: "Is dynamic property value an array");
             Field<BooleanGraphType>("isDictionary", resolve: context => context.Source.IsDictionary, description: "Is dynamic property value a dictionary");
