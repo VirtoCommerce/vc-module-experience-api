@@ -26,7 +26,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
         public ImageType()
         {
             Field<StringGraphType>("id",
-                "Image Id",
+                "Image ID",
                 resolve: context => context.Source.Id);
             Field<StringGraphType>("name",
                 "Image name",
@@ -35,10 +35,10 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 "Image group",
                 resolve: context => context.Source.Group);
             Field<StringGraphType>("url",
-                "Image url",
+                "Image URL",
                 resolve: context => context.Source.Url);
             Field<StringGraphType>("relativeUrl",
-                "Image relative url",
+                "Image relative URL",
                 resolve: context => context.Source.RelativeUrl);
             Field<IntGraphType>("sortOrder",
                 "Sort order",
