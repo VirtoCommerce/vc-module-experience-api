@@ -13,7 +13,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
                 "Tax rate",
                 resolve: context => context.Source.Rate);
             Field<DecimalGraphType>("percentRate",
-                "Tax rate as a percent",
+                "Tax rate percentage",
                 resolve: context => context.Source.PercentRate);
             Field<TaxLineType>("line",
                 "Tax line",
