@@ -18,14 +18,14 @@ namespace VirtoCommerce.XPurchase.Schemas
     {
         public GiftItemType(IMediator mediator, IDataLoaderContextAccessor dataLoader, IDynamicPropertyResolverService dynamicPropertyResolverService)
         {
-            Field(x => x.PromotionId).Description("Promotion Id");
-            Field(x => x.Quantity).Description("Quantity of gifts in the reward");
-            Field(x => x.ProductId, true).Description("Product id");
-            Field(x => x.CategoryId, true).Description("Product category Id");
+            Field(x => x.PromotionId).Description("Promotion ID");
+            Field(x => x.Quantity).Description("Number of gifts in the reward");
+            Field(x => x.ProductId, true).Description("Product ID");
+            Field(x => x.CategoryId, true).Description("Product category ID");
             Field(x => x.ImageUrl, true).Description("Value of reward image absolute URL");
             Field(x => x.Name).Description("Name of the reward");
-            Field(x => x.MeasureUnit, true).Description("Measure unit");
-            Field(x => x.LineItemId, true).Description("ID of lineItem if gift is in cart. Otherwise null");
+            Field(x => x.MeasureUnit, true).Description("Measurement unit");
+            Field(x => x.LineItemId, true).Description("Line item ID in case there is a gift in the cart. If there is no gift, it stays null");
 
             AddField(new FieldType
             {
