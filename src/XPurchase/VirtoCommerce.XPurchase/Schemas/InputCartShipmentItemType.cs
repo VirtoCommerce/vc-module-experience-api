@@ -9,7 +9,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field<NonNullGraphType<IntGraphType>>("quantity",
                 "Quantity");
             Field<NonNullGraphType<StringGraphType>>("lineItemId",
-                "Line item Id");
+                "Line item ID");
         }
     }
 }
