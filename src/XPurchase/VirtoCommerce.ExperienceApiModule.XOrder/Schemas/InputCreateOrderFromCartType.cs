@@ -7,7 +7,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
         public InputCreateOrderFromCartType()
         {
             Field<StringGraphType>("cartId",
-                "Cart Id");
+                "Cart ID");
         }
     }
 }
