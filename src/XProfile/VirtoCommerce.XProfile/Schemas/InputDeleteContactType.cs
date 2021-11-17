@@ -6,7 +6,8 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
     {
         public InputDeleteContactType()
         {
-            Field<NonNullGraphType<StringGraphType>>("contactId");
+            Field<NonNullGraphType<StringGraphType>>("contactId",
+                "Delete contact");
         }
     }
 }

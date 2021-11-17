@@ -32,7 +32,9 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
 
             Field(x => x.Contact.FirstName);
             Field(x => x.Contact.LastName);
-            Field<DateGraphType>("birthDate", resolve: context => context.Source.Contact.BirthDate.HasValue ? context.Source.Contact.BirthDate.Value.Date : (DateTime?)null);
+            Field<DateGraphType>("birthDate",
+                "Contact birth date",
+                resolve: context => context.Source.Contact.BirthDate.HasValue ? context.Source.Contact.BirthDate.Value.Date : (DateTime?)null);
             Field(x => x.Contact.FullName);
             Field(x => x.Contact.Id);
             Field(x => x.Contact.MemberType);
@@ -40,15 +42,19 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             Field(x => x.Contact.Name, true);
             Field(x => x.Contact.OuterId, true);
             Field(x => x.Contact.Status, true).Description("Contact status");
-            Field<ListGraphType<StringGraphType>>("emails", resolve: x => x.Source.Contact.Emails, description: "List of contact`s emails");
+            Field<ListGraphType<StringGraphType>>("emails", resolve: x => x.Source.Contact.Emails, description: "List of contact emails");
 
             ExtendableField<NonNullGraphType<ListGraphType<DynamicPropertyValueType>>>(
                 "dynamicProperties",
-                "Contact's dynamic property values",
+                "Contact dynamic property values",
                 QueryArgumentPresets.GetArgumentForDynamicProperties(),
                 context => dynamicPropertyResolverService.LoadDynamicPropertyValues(context.Source.Contact, context.GetArgumentOrValue<string>("cultureName")));
-            Field<ListGraphType<UserType>>("securityAccounts", resolve: context => context.Source.Contact.SecurityAccounts);
-            Field<StringGraphType>("organizationId", resolve: context => context.Source.Contact.Organizations?.FirstOrDefault());
+            Field<ListGraphType<UserType>>("securityAccounts",
+                "Security accounts",
+                resolve: context => context.Source.Contact.SecurityAccounts);
+            Field<StringGraphType>("organizationId",
+                "Organization ID",
+                resolve: context => context.Source.Contact.Organizations?.FirstOrDefault());
             Field("organizationsIds", x => x.Contact.Organizations);
             Field("phones", x => x.Contact.Phones);
 

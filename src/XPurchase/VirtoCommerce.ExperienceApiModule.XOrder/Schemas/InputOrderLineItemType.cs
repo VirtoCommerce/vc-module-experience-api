@@ -51,8 +51,10 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field(x => x.PlacedPrice);
             Field(x => x.PlacedPriceWithTax);
             Field(x => x.TaxTotal);
-            Field<NonNullGraphType<ListGraphType<InputOrderTaxDetailType>>>(nameof(LineItem.TaxDetails));
-            Field<NonNullGraphType<ListGraphType<InputOrderDiscountType>>>(nameof(LineItem.Discounts));
+            Field<NonNullGraphType<ListGraphType<InputOrderTaxDetailType>>>(nameof(LineItem.TaxDetails),
+                "Tax details");
+            Field<NonNullGraphType<ListGraphType<InputOrderDiscountType>>>(nameof(LineItem.Discounts),
+                "Discounts");
 
             //PT-5383
             //public ICollection<DynamicObjectProperty> DynamicProperties);

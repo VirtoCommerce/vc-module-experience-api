@@ -7,7 +7,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
     {
         public InputUpdateRoleInnerType()
         {
-            Field<StringGraphType>("concurrencyStamp", description: "Concurrency Stamp");
+            Field<StringGraphType>("concurrencyStamp", description: "Concurrency stamp");
             Field<NonNullGraphType<StringGraphType>>("id", description: "Role ID");
             Field<NonNullGraphType<StringGraphType>>("name", description: "Role name");
             Field<StringGraphType>("description", description: "Role description");
