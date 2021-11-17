@@ -8,7 +8,7 @@ namespace VirtoCommerce.XPurchase.Schemas
         public InputAddItemType()
         {
             Field<NonNullGraphType<StringGraphType>>("productId",
-                "Product Id");
+                "Product ID");
             Field<NonNullGraphType<IntGraphType>>("quantity",
                 "Quantity");
             Field<DecimalGraphType>("price",
