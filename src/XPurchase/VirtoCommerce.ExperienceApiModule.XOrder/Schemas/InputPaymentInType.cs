@@ -43,7 +43,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field<ListGraphType<InputOrderDiscountType>>(nameof(PaymentIn.Discounts),
                 "Discounts");
             Field<InputOrderPaymentMethodType>(nameof(PaymentIn.PaymentMethod),
-                "PaymentMethod");
+                "Payment method");
             Field<InputOrderAddressType>(nameof(PaymentIn.BillingAddress),
                 "Billing address");
 
