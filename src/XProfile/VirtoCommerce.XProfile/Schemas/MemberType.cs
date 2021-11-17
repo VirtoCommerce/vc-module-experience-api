@@ -20,7 +20,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                 resolve: context => context.Source.Member.Addresses);
             ExtendableField<NonNullGraphType<ListGraphType<DynamicPropertyValueType>>>(
                 "dynamicProperties",
-                "Contact's dynamic property values",
+                "Contact dynamic property values",
                 QueryArgumentPresets.GetArgumentForDynamicProperties(),
                 context => dynamicPropertyResolverService.LoadDynamicPropertyValues(context.Source.Member, context.GetArgumentOrValue<string>("cultureName")));
             Field("phones", x => x.Member.Phones);
