@@ -62,7 +62,7 @@ jobs:
       uses: VirtoCommerce/vc-github-actions/katalon-studio-github-action@master
       with:
         version: '7.9.1'
-        projectPath: '${{ github.workspace }}/vc-quality-gate-katalon/platform_storefront.prj'
+        projectPath: 'https://github.com/VirtoCommerce/vc-quality-gate-katalon/platform_storefront.prj'
         args: '-noSplash -retry=0 -testSuitePath="${{ github.event.inputs.testSuite || env.DEFAULT_TEST_SUITE }}" -browserType="Chrome" -apiKey= ${{ secrets.KATALON_API_KEY }} -g_urlBack="http://localhost:8090" -g_urlFront="http://localhost:8080" -executionProfile="default"'
    
     - name: Newman Action
