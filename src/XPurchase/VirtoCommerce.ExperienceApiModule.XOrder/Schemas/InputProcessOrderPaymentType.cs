@@ -7,11 +7,11 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
         public InputProcessOrderPaymentType()
         {
             Field<NonNullGraphType<StringGraphType>>("orderId",
-                "Order Id");
+                "Order ID");
             Field<NonNullGraphType<StringGraphType>>("paymentId",
-                "Payment Id");
+                "Payment ID");
             Field<InputOrderBankCardInfoType>("bankCardInfo",
-                "Bank card info");
+                "Credit card details");
         }
     }
 }
