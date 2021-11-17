@@ -66,7 +66,7 @@ jobs:
       with:
         version: '8.0.5'
         projectPath: '${{ github.workspace }}/vc-quality-gate-katalon/platform_storefront.prj'
-        args: '-noSplash -retry=0 -testSuitePath="Test Suites/DynamicPropertyCreation" -browserType="Chrome" -apiKey= ${{ secrets.KATALON_API_KEY }} -g_urlBack="http://localhost:8090" -g_urlFront="http://localhost:8080" -executionProfile="default" --config -webui.autoUpdateDrivers=true'
+        args: '-noSplash -retry=0 -testSuitePath="Test Suites/DynamicPropertyCreation" -browserType="Chrome" -apiKey= ${{ secrets.KATALON_API_KEY }} -g_urlBack="http://localhost:8090" -g_urlFront="http://localhost:8080" -executionProfile="Regression-QA" --config -webui.autoUpdateDrivers=true'
    
     - name: Newman Action
       uses: matt-ball/newman-action@v1.0.2
