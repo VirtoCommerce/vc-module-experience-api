@@ -558,6 +558,78 @@
 					]
 				},
 				{
+					"name": "GetToken",
+					"item": [
+						{
+							"name": "GetAdminToken",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    \r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"pm.test(\"Set admin token\", function () {\r",
+											"   \r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.collectionVariables.set(\"AdminToken\", jsonData.access_token);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disabledSystemHeaders": {
+									"content-type": true
+								}
+							},
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/x-www-form-urlencoded",
+										"type": "text"
+									},
+									{
+										"key": "grand_type",
+										"value": "",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "grant_type=password&scope=offline_access&username=admin&password=store",
+									"options": {
+										"raw": {
+											"language": "text"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/connect/token",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"connect",
+										"token"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
 					"name": "Auth token",
 					"item": [
 						{
@@ -955,78 +1027,6 @@
 									""
 								]
 							}
-						}
-					]
-				},
-				{
-					"name": "GetToken",
-					"item": [
-						{
-							"name": "GetAdminToken",
-							"event": [
-								{
-									"listen": "test",
-									"script": {
-										"exec": [
-											"pm.test(\"Status code is 200\", function () {\r",
-											"    \r",
-											"    pm.response.to.have.status(200);\r",
-											"});\r",
-											"pm.test(\"Set admin token\", function () {\r",
-											"   \r",
-											"    var jsonData = pm.response.json();\r",
-											"    pm.collectionVariables.set(\"AdminToken\", jsonData.access_token);\r",
-											"});\r",
-											""
-										],
-										"type": "text/javascript"
-									}
-								}
-							],
-							"protocolProfileBehavior": {
-								"disabledSystemHeaders": {
-									"content-type": true
-								}
-							},
-							"request": {
-								"auth": {
-									"type": "noauth"
-								},
-								"method": "POST",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/x-www-form-urlencoded",
-										"type": "text"
-									},
-									{
-										"key": "grand_type",
-										"value": "",
-										"type": "text",
-										"disabled": true
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "grant_type=password&scope=offline_access&username=admin&password=store",
-									"options": {
-										"raw": {
-											"language": "text"
-										}
-									}
-								},
-								"url": {
-									"raw": "{{url}}/connect/token",
-									"host": [
-										"{{url}}"
-									],
-									"path": [
-										"connect",
-										"token"
-									]
-								}
-							},
-							"response": []
 						}
 					]
 				},
@@ -2994,7 +2994,7 @@
 											"listen": "prerequest",
 											"script": {
 												"exec": [
-													"setTimeout(() => {}, 1000); "
+													"setTimeout(() => {}, 5000); "
 												],
 												"type": "text/javascript"
 											}
@@ -13046,6 +13046,1275 @@
 			]
 		},
 		{
+			"name": "Add multiple items",
+			"item": [
+				{
+					"name": "Create products",
+					"item": [
+						{
+							"name": "Create normal_product_1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"pm.test(\"Set ProductId1\", function(){\r",
+											"    var jsonData = pm.response.json();\r",
+											"pm.collectionVariables.set(\"ProductId1\", jsonData.id);\r",
+											"pm.collectionVariables.set(\"Nameofproduct1\", jsonData.name);\r",
+											"pm.collectionVariables.set(\"Code1\", jsonData.code);\r",
+											"});\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"code\": \"DDR-234304560\",\r\n    \"name\": \"Normal_Product\",\r\n    \"catalogId\": \"{{catalogQA}}\",\r\n    \"categoryId\": \"{{categoryQA}}\",\r\n    \"isActive\": true,\r\n    \"startDate\": \"0001-01-01T00:00:00Z\",\r\n    \"priority\": 0,\r\n    \"properties\": [\r\n        {\r\n            \"isReadOnly\": false,\r\n            \"isManageable\": true,\r\n            \"isNew\": false,\r\n            \"catalogId\": \"{{catalogQA}}\",\r\n            \"name\": \"Multi\",\r\n            \"required\": false,\r\n            \"dictionary\": false,\r\n            \"multivalue\": false,\r\n            \"multilanguage\": true,\r\n            \"hidden\": false,\r\n            \"valueType\": \"ShortText\",\r\n            \"type\": \"Product\",\r\n            \"values\": [],\r\n            \"attributes\": [],\r\n            \"displayNames\": [\r\n                {\r\n                    \"languageCode\": \"fr-FR\"\r\n                },\r\n                {\r\n                    \"languageCode\": \"de-DE\"\r\n                },\r\n                {\r\n                    \"languageCode\": \"en-US\"\r\n                }\r\n            ],\r\n            \"validationRules\": [],\r\n            \"isInherited\": true,\r\n            \"id\": \"a9d63927-3b90-48f1-9006-fafc013c4a6f\"\r\n        },\r\n        {\r\n            \"isReadOnly\": false,\r\n            \"isManageable\": true,\r\n            \"isNew\": false,\r\n            \"catalogId\": \"{{catalogQA}}\",\r\n            \"name\": \"new_property3\",\r\n            \"required\": false,\r\n            \"dictionary\": false,\r\n            \"multivalue\": false,\r\n            \"multilanguage\": false,\r\n            \"hidden\": false,\r\n            \"valueType\": \"ShortText\",\r\n            \"type\": \"Product\",\r\n            \"values\": [],\r\n            \"attributes\": [],\r\n            \"displayNames\": [\r\n                {\r\n                    \"languageCode\": \"en-US\"\r\n                }\r\n            ],\r\n            \"validationRules\": [],\r\n            \"isInherited\": true,\r\n            \"id\": \"0fc79d38-60bd-49be-ba14-d5bb631ce3dd\"\r\n        },\r\n        {\r\n            \"isReadOnly\": false,\r\n            \"isManageable\": true,\r\n            \"isNew\": false,\r\n            \"catalogId\": \"{{catalogQA}}\",\r\n            \"name\": \"new_property4\",\r\n            \"required\": false,\r\n            \"dictionary\": false,\r\n            \"multivalue\": false,\r\n            \"multilanguage\": false,\r\n            \"hidden\": false,\r\n            \"valueType\": \"ShortText\",\r\n            \"type\": \"Variation\",\r\n            \"values\": [],\r\n            \"attributes\": [],\r\n            \"displayNames\": [\r\n                {\r\n                    \"languageCode\": \"en-US\"\r\n                }\r\n            ],\r\n            \"validationRules\": [],\r\n            \"isInherited\": true,\r\n            \"id\": \"0fa78f60-13b3-4171-9344-2df47b251c56\"\r\n        }\r\n    ],\r\n    \"seoObjectType\": \"CatalogProduct\",\r\n    \"seoInfos\": [],\r\n    \"isInherited\": false,\r\n    \"createdDate\": \"0001-01-01T00:00:00Z\",\r\n    \"productType\": \"Physical\",\r\n     \"reviews\": []\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/catalog/products",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"catalog",
+										"products"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Add price to the normal_product",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(204);\r",
+											"});\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"productId\": \"{{ProductId1}}\",\r\n  \"product\": {\r\n    \"code\": \"{{Code1}}\",\r\n    \"name\": \"Normal_Product\",\r\n    \"catalogId\": \"4974648a41df4e6ea67ef2ad76d7bbd4\",\r\n    \"categoryId\": \"0d4ad9bab9184d69a6e586effdf9c2ea\",\r\n    \"outline\": \"0d4ad9bab9184d69a6e586effdf9c2ea\",\r\n    \"path\": \"Cell phones\",\r\n    \"isBuyable\": true,\r\n    \"isActive\": true,\r\n    \"trackInventory\": true,\r\n    \"maxQuantity\": 0,\r\n    \"minQuantity\": 0,\r\n    \"productType\": \"Physical\",\r\n    \"startDate\": \"2021-10-13T11:15:17.8103888Z\",\r\n    \"priority\": 0,\r\n    \"properties\": [],\r\n    \"images\": [],\r\n    \"assets\": [],\r\n    \"links\": [],\r\n    \"seoObjectType\": \"CatalogProduct\",\r\n    \"seoInfos\": [\r\n      {\r\n        \"semanticUrl\": \"product1\",\r\n        \"objectId\": \"a9c8297d-ce0d-4ec6-99de-270105e80a98\",\r\n        \"objectType\": \"CatalogProduct\",\r\n        \"isActive\": true,\r\n        \"languageCode\": \"en-US\",\r\n        \"id\": \"3e03dc62-18c2-42e6-a220-cc95e042cf76\"\r\n      }\r\n    ],\r\n    \"reviews\": [],\r\n    \"associations\": [],\r\n    \"referencedAssociations\": [],\r\n    \"outlines\": [\r\n      {\r\n        \"items\": [\r\n          {\r\n            \"id\": \"4974648a41df4e6ea67ef2ad76d7bbd4\",\r\n            \"seoObjectType\": \"Catalog\",\r\n            \"name\": \"Electronics\",\r\n            \"hasVirtualParent\": false\r\n          },\r\n          {\r\n            \"id\": \"Cell-phones\",\r\n            \"seoObjectType\": \"Category\",\r\n            \"seoInfos\": [\r\n              {\r\n                \"semanticUrl\": \"cell-phones\",\r\n                \"objectId\": \"0d4ad9bab9184d69a6e586effdf9c2ea\",\r\n                \"objectType\": \"Category\",\r\n                \"isActive\": true,\r\n                \"languageCode\": \"en-US\",\r\n                \"id\": \"73642cc7f2e44d92af13e94c79c73456\"\r\n              }\r\n            ],\r\n            \"name\": \"Cell phones\",\r\n            \"hasVirtualParent\": false\r\n          },\r\n          {\r\n            \"id\": \"DDR-234304560\",\r\n            \"seoObjectType\": \"CatalogProduct\",\r\n            \"seoInfos\": [\r\n              {\r\n                \"semanticUrl\": \"product1\",\r\n                \"objectId\": \"a9c8297d-ce0d-4ec6-99de-270105e80a98\",\r\n                \"objectType\": \"CatalogProduct\",\r\n                \"isActive\": true,\r\n                \"languageCode\": \"en-US\",\r\n                \"id\": \"3e03dc62-18c2-42e6-a220-cc95e042cf76\"\r\n              }\r\n            ],\r\n            \"name\": \"Product1\",\r\n            \"hasVirtualParent\": false\r\n          }\r\n        ]\r\n      }\r\n    ],\r\n    \"isInherited\": false,\r\n    \"createdDate\": \"2021-10-13T11:15:17.8142229Z\",\r\n    \"modifiedDate\": \"2021-10-13T11:15:17.8142229Z\",\r\n    \"createdBy\": \"admin\",\r\n    \"modifiedBy\": \"admin\",\r\n    \"id\": \"a9c8297d-ce0d-4ec6-99de-270105e80a98\",\r\n    \"_priority\": 0\r\n  },\r\n  \"prices\": [\r\n    {\r\n      \"productId\": \"{{ProductId1}}\",\r\n      \"list\": {{ProductPrice1}},\r\n      \"minQuantity\": 1,\r\n      \"currency\": \"USD\",\r\n      \"pricelistId\": \"934da94516a74f9ab4ec001343ac928a\",\r\n      \"name\": \"ElectronicsUSD\",\r\n      \"catalog\": \"Electronics virtual, Electronics\"\r\n    }\r\n  ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/products/{{ProductId1}}/prices",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"products",
+										"{{ProductId1}}",
+										"prices"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Add stock qty to the normal_product",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"pm.test(\"Add stock qty to the product\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData.inStockQuantity).to.eql(25);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"fulfillmentCenterId\": \"vendor-fulfillment\",\r\n  \"fulfillmentCenterName\": \"Los Angeles Branch\",\r\n  \"fulfillmentCenter\": {\r\n    \"name\": \"Los Angeles Branch\",\r\n    \"description\": \"<h3>Branch Hours</h3>\\n                            <table class=\\\"table\\\">\\n                                <tbody>\\n                                    <tr>\\n                                        <th class=\\\"day\\\">Day</th>\\n                                        <th><span class=\\\"hours\\\">Hours</span></th>\\n                                    </tr>\\n                                    <tr>\\n                                        <td>MON</td>\\n                                        <td>7:30 AM - 5:00 PM</td>\\n                                    </tr>\\n                                    <tr>\\n                                        <td>TUE</td>\\n                                        <td>7:30 AM - 5:00 PM</td>\\n                                    </tr>\\n                                    <tr>\\n                                        <td>WED</td>\\n                                        <td>7:30 AM - 5:00 PM</td>\\n                                    </tr>\\n                                    <tr>\\n                                        <td>THU</td>\\n                                        <td>7:30 AM - 5:00 PM</td>\\n                                    </tr>\\n                                    <tr>\\n                                        <td>FRI</td>\\n                                        <td>7:30 AM - 5:00 PM</td>\\n                                    </tr>\\n                                    <tr>\\n                                        <td>SAT</td>\\n                                        <td>\\n\\n                                            CLOSED\\n                                        </td>\\n                                    </tr>\\n                                    <tr>\\n                                        <td>SUN</td>\\n                                        <td>CLOSED</td>\\n                                    </tr>\\n                                </tbody>\\n                            </table>\",\r\n    \"geoLocation\": \"\",\r\n    \"address\": {\r\n      \"addressType\": 0,\r\n      \"countryCode\": \"USA\",\r\n      \"countryName\": \"United States\",\r\n      \"city\": \"Los Angeles\",\r\n      \"postalCode\": \"90234\",\r\n      \"line1\": \"1232 Wilshire Blvd\",\r\n      \"regionName\": \"California\",\r\n      \"phone\": \"3232323232\"\r\n    },\r\n    \"createdDate\": \"2018-05-07T12:05:20.42Z\",\r\n    \"modifiedDate\": \"2021-10-07T12:38:49.2056388Z\",\r\n    \"createdBy\": \"unknown\",\r\n    \"modifiedBy\": \"admin\",\r\n    \"id\": \"vendor-fulfillment\"\r\n  },\r\n  \"productId\": \"{{ProductId1}}\",\r\n  \"inStockQuantity\": 25,\r\n  \"reservedQuantity\": 0,\r\n  \"reorderMinQuantity\": 0,\r\n  \"preorderQuantity\": 0,\r\n  \"backorderQuantity\": 0,\r\n  \"allowBackorder\": false,\r\n  \"allowPreorder\": false,\r\n  \"inTransit\": 0,\r\n  \"status\": \"Disabled\",\r\n  \"createdDate\": \"0001-01-01T00:00:00Z\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/inventory/products/{{ProductId1}}",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"inventory",
+										"products",
+										"{{ProductId1}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create no_price_product_2",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"pm.test(\"Set ProductId2\", function(){\r",
+											"    var jsonData = pm.response.json();\r",
+											"pm.collectionVariables.set(\"ProductId2\", jsonData.id);\r",
+											"pm.collectionVariables.set(\"Nameofproduct2\", jsonData.name);\r",
+											"pm.collectionVariables.set(\"Code2\", jsonData.code);\r",
+											"});\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"code\": \"DDR-234304561\",\r\n    \"name\": \"No_Price_Product\",\r\n    \"catalogId\": \"{{catalogQA}}\",\r\n    \"categoryId\": \"{{categoryQA}}\",\r\n    \"isActive\": true,\r\n    \"startDate\": \"0001-01-01T00:00:00Z\",\r\n    \"priority\": 0,\r\n    \"properties\": [\r\n        {\r\n            \"isReadOnly\": false,\r\n            \"isManageable\": true,\r\n            \"isNew\": false,\r\n            \"catalogId\": \"{{catalogQA}}\",\r\n            \"name\": \"Multi\",\r\n            \"required\": false,\r\n            \"dictionary\": false,\r\n            \"multivalue\": false,\r\n            \"multilanguage\": true,\r\n            \"hidden\": false,\r\n            \"valueType\": \"ShortText\",\r\n            \"type\": \"Product\",\r\n            \"values\": [],\r\n            \"attributes\": [],\r\n            \"displayNames\": [\r\n                {\r\n                    \"languageCode\": \"fr-FR\"\r\n                },\r\n                {\r\n                    \"languageCode\": \"de-DE\"\r\n                },\r\n                {\r\n                    \"languageCode\": \"en-US\"\r\n                }\r\n            ],\r\n            \"validationRules\": [],\r\n            \"isInherited\": true,\r\n            \"id\": \"a9d63927-3b90-48f1-9006-fafc013c4a6f\"\r\n        },\r\n        {\r\n            \"isReadOnly\": false,\r\n            \"isManageable\": true,\r\n            \"isNew\": false,\r\n            \"catalogId\": \"{{catalogQA}}\",\r\n            \"name\": \"new_property3\",\r\n            \"required\": false,\r\n            \"dictionary\": false,\r\n            \"multivalue\": false,\r\n            \"multilanguage\": false,\r\n            \"hidden\": false,\r\n            \"valueType\": \"ShortText\",\r\n            \"type\": \"Product\",\r\n            \"values\": [],\r\n            \"attributes\": [],\r\n            \"displayNames\": [\r\n                {\r\n                    \"languageCode\": \"en-US\"\r\n                }\r\n            ],\r\n            \"validationRules\": [],\r\n            \"isInherited\": true,\r\n            \"id\": \"0fc79d38-60bd-49be-ba14-d5bb631ce3dd\"\r\n        },\r\n        {\r\n            \"isReadOnly\": false,\r\n            \"isManageable\": true,\r\n            \"isNew\": false,\r\n            \"catalogId\": \"{{catalogQA}}\",\r\n            \"name\": \"new_property4\",\r\n            \"required\": false,\r\n            \"dictionary\": false,\r\n            \"multivalue\": false,\r\n            \"multilanguage\": false,\r\n            \"hidden\": false,\r\n            \"valueType\": \"ShortText\",\r\n            \"type\": \"Variation\",\r\n            \"values\": [],\r\n            \"attributes\": [],\r\n            \"displayNames\": [\r\n                {\r\n                    \"languageCode\": \"en-US\"\r\n                }\r\n            ],\r\n            \"validationRules\": [],\r\n            \"isInherited\": true,\r\n            \"id\": \"0fa78f60-13b3-4171-9344-2df47b251c56\"\r\n        }\r\n    ],\r\n    \"seoObjectType\": \"CatalogProduct\",\r\n    \"seoInfos\": [],\r\n    \"isInherited\": false,\r\n    \"createdDate\": \"0001-01-01T00:00:00Z\",\r\n    \"productType\": \"Physical\",\r\n     \"reviews\": []\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/catalog/products",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"catalog",
+										"products"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Add stock qty to the no_price_product_2",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"pm.test(\"Add stock qty to the product\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData.inStockQuantity).to.eql(25);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"fulfillmentCenterId\": \"vendor-fulfillment\",\r\n  \"fulfillmentCenterName\": \"Los Angeles Branch\",\r\n  \"fulfillmentCenter\": {\r\n    \"name\": \"Los Angeles Branch\",\r\n    \"description\": \"<h3>Branch Hours</h3>\\n                            <table class=\\\"table\\\">\\n                                <tbody>\\n                                    <tr>\\n                                        <th class=\\\"day\\\">Day</th>\\n                                        <th><span class=\\\"hours\\\">Hours</span></th>\\n                                    </tr>\\n                                    <tr>\\n                                        <td>MON</td>\\n                                        <td>7:30 AM - 5:00 PM</td>\\n                                    </tr>\\n                                    <tr>\\n                                        <td>TUE</td>\\n                                        <td>7:30 AM - 5:00 PM</td>\\n                                    </tr>\\n                                    <tr>\\n                                        <td>WED</td>\\n                                        <td>7:30 AM - 5:00 PM</td>\\n                                    </tr>\\n                                    <tr>\\n                                        <td>THU</td>\\n                                        <td>7:30 AM - 5:00 PM</td>\\n                                    </tr>\\n                                    <tr>\\n                                        <td>FRI</td>\\n                                        <td>7:30 AM - 5:00 PM</td>\\n                                    </tr>\\n                                    <tr>\\n                                        <td>SAT</td>\\n                                        <td>\\n\\n                                            CLOSED\\n                                        </td>\\n                                    </tr>\\n                                    <tr>\\n                                        <td>SUN</td>\\n                                        <td>CLOSED</td>\\n                                    </tr>\\n                                </tbody>\\n                            </table>\",\r\n    \"geoLocation\": \"\",\r\n    \"address\": {\r\n      \"addressType\": 0,\r\n      \"countryCode\": \"USA\",\r\n      \"countryName\": \"United States\",\r\n      \"city\": \"Los Angeles\",\r\n      \"postalCode\": \"90234\",\r\n      \"line1\": \"1232 Wilshire Blvd\",\r\n      \"regionName\": \"California\",\r\n      \"phone\": \"3232323232\"\r\n    },\r\n    \"createdDate\": \"2018-05-07T12:05:20.42Z\",\r\n    \"modifiedDate\": \"2021-10-07T12:38:49.2056388Z\",\r\n    \"createdBy\": \"unknown\",\r\n    \"modifiedBy\": \"admin\",\r\n    \"id\": \"vendor-fulfillment\"\r\n  },\r\n  \"productId\": \"{{ProductId2}}\",\r\n  \"inStockQuantity\": 25,\r\n  \"reservedQuantity\": 0,\r\n  \"reorderMinQuantity\": 0,\r\n  \"preorderQuantity\": 0,\r\n  \"backorderQuantity\": 0,\r\n  \"allowBackorder\": false,\r\n  \"allowPreorder\": false,\r\n  \"inTransit\": 0,\r\n  \"status\": \"Disabled\",\r\n  \"createdDate\": \"0001-01-01T00:00:00Z\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/inventory/products/{{ProductId2}}",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"inventory",
+										"products",
+										"{{ProductId2}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create no_stock_product_3",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"pm.test(\"Set ProductId3\", function(){\r",
+											"    var jsonData = pm.response.json();\r",
+											"pm.collectionVariables.set(\"ProductId3\", jsonData.id);\r",
+											"pm.collectionVariables.set(\"Nameofproduct3\", jsonData.name);\r",
+											"pm.collectionVariables.set(\"Code3\", jsonData.code);\r",
+											"});\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"code\": \"DDR-234304562\",\r\n    \"name\": \"Not_In_Stock_Product_3\",\r\n    \"catalogId\": \"{{catalogQA}}\",\r\n    \"categoryId\": \"{{categoryQA}}\",\r\n    \"isActive\": true,\r\n    \"startDate\": \"0001-01-01T00:00:00Z\",\r\n    \"priority\": 0,\r\n    \"properties\": [\r\n        {\r\n            \"isReadOnly\": false,\r\n            \"isManageable\": true,\r\n            \"isNew\": false,\r\n            \"catalogId\": \"{{catalogQA}}\",\r\n            \"name\": \"Multi\",\r\n            \"required\": false,\r\n            \"dictionary\": false,\r\n            \"multivalue\": false,\r\n            \"multilanguage\": true,\r\n            \"hidden\": false,\r\n            \"valueType\": \"ShortText\",\r\n            \"type\": \"Product\",\r\n            \"values\": [],\r\n            \"attributes\": [],\r\n            \"displayNames\": [\r\n                {\r\n                    \"languageCode\": \"fr-FR\"\r\n                },\r\n                {\r\n                    \"languageCode\": \"de-DE\"\r\n                },\r\n                {\r\n                    \"languageCode\": \"en-US\"\r\n                }\r\n            ],\r\n            \"validationRules\": [],\r\n            \"isInherited\": true,\r\n            \"id\": \"a9d63927-3b90-48f1-9006-fafc013c4a6f\"\r\n        },\r\n        {\r\n            \"isReadOnly\": false,\r\n            \"isManageable\": true,\r\n            \"isNew\": false,\r\n            \"catalogId\": \"{{catalogQA}}\",\r\n            \"name\": \"new_property3\",\r\n            \"required\": false,\r\n            \"dictionary\": false,\r\n            \"multivalue\": false,\r\n            \"multilanguage\": false,\r\n            \"hidden\": false,\r\n            \"valueType\": \"ShortText\",\r\n            \"type\": \"Product\",\r\n            \"values\": [],\r\n            \"attributes\": [],\r\n            \"displayNames\": [\r\n                {\r\n                    \"languageCode\": \"en-US\"\r\n                }\r\n            ],\r\n            \"validationRules\": [],\r\n            \"isInherited\": true,\r\n            \"id\": \"0fc79d38-60bd-49be-ba14-d5bb631ce3dd\"\r\n        },\r\n        {\r\n            \"isReadOnly\": false,\r\n            \"isManageable\": true,\r\n            \"isNew\": false,\r\n            \"catalogId\": \"{{catalogQA}}\",\r\n            \"name\": \"new_property4\",\r\n            \"required\": false,\r\n            \"dictionary\": false,\r\n            \"multivalue\": false,\r\n            \"multilanguage\": false,\r\n            \"hidden\": false,\r\n            \"valueType\": \"ShortText\",\r\n            \"type\": \"Variation\",\r\n            \"values\": [],\r\n            \"attributes\": [],\r\n            \"displayNames\": [\r\n                {\r\n                    \"languageCode\": \"en-US\"\r\n                }\r\n            ],\r\n            \"validationRules\": [],\r\n            \"isInherited\": true,\r\n            \"id\": \"0fa78f60-13b3-4171-9344-2df47b251c56\"\r\n        }\r\n    ],\r\n    \"seoObjectType\": \"CatalogProduct\",\r\n    \"seoInfos\": [],\r\n    \"isInherited\": false,\r\n    \"createdDate\": \"0001-01-01T00:00:00Z\",\r\n    \"productType\": \"Physical\",\r\n     \"reviews\": []\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/catalog/products",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"catalog",
+										"products"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Add price to the no_stock_product_3",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(204);\r",
+											"});\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"productId\": \"{{ProductId3}}\",\r\n  \"product\": {\r\n    \"code\": \"{{Code3}}\",\r\n    \"name\": \"Not_In_Stock_Product_3\",\r\n    \"catalogId\": \"4974648a41df4e6ea67ef2ad76d7bbd4\",\r\n    \"categoryId\": \"0d4ad9bab9184d69a6e586effdf9c2ea\",\r\n    \"outline\": \"0d4ad9bab9184d69a6e586effdf9c2ea\",\r\n    \"path\": \"Cell phones\",\r\n    \"isBuyable\": true,\r\n    \"isActive\": true,\r\n    \"trackInventory\": true,\r\n    \"maxQuantity\": 0,\r\n    \"minQuantity\": 0,\r\n    \"productType\": \"Physical\",\r\n    \"startDate\": \"2021-10-13T11:15:17.8103888Z\",\r\n    \"priority\": 0,\r\n    \"properties\": [],\r\n    \"images\": [],\r\n    \"assets\": [],\r\n    \"links\": [],\r\n    \"seoObjectType\": \"CatalogProduct\",\r\n    \"seoInfos\": [\r\n      {\r\n        \"semanticUrl\": \"product3\",\r\n        \"objectId\": \"a9c8297d-ce0d-4ec6-99de-270105e80a98\",\r\n        \"objectType\": \"CatalogProduct\",\r\n        \"isActive\": true,\r\n        \"languageCode\": \"en-US\",\r\n        \"id\": \"3e03dc62-18c2-42e6-a220-cc95e042cf76\"\r\n      }\r\n    ],\r\n    \"reviews\": [],\r\n    \"associations\": [],\r\n    \"referencedAssociations\": [],\r\n    \"outlines\": [\r\n      {\r\n        \"items\": [\r\n          {\r\n            \"id\": \"4974648a41df4e6ea67ef2ad76d7bbd4\",\r\n            \"seoObjectType\": \"Catalog\",\r\n            \"name\": \"Electronics\",\r\n            \"hasVirtualParent\": false\r\n          },\r\n          {\r\n            \"id\": \"Cell-phones\",\r\n            \"seoObjectType\": \"Category\",\r\n            \"seoInfos\": [\r\n              {\r\n                \"semanticUrl\": \"cell-phones\",\r\n                \"objectId\": \"0d4ad9bab9184d69a6e586effdf9c2ea\",\r\n                \"objectType\": \"Category\",\r\n                \"isActive\": true,\r\n                \"languageCode\": \"en-US\",\r\n                \"id\": \"73642cc7f2e44d92af13e94c79c73456\"\r\n              }\r\n            ],\r\n            \"name\": \"Cell phones\",\r\n            \"hasVirtualParent\": false\r\n          },\r\n          {\r\n            \"id\": \"DDR-234304560\",\r\n            \"seoObjectType\": \"CatalogProduct\",\r\n            \"seoInfos\": [\r\n              {\r\n                \"semanticUrl\": \"product3\",\r\n                \"objectId\": \"a9c8297d-ce0d-4ec6-99de-270105e80a98\",\r\n                \"objectType\": \"CatalogProduct\",\r\n                \"isActive\": true,\r\n                \"languageCode\": \"en-US\",\r\n                \"id\": \"3e03dc62-18c2-42e6-a220-cc95e042cf76\"\r\n              }\r\n            ],\r\n            \"name\": \"Product3\",\r\n            \"hasVirtualParent\": false\r\n          }\r\n        ]\r\n      }\r\n    ],\r\n    \"isInherited\": false,\r\n    \"createdDate\": \"2021-10-13T11:15:17.8142229Z\",\r\n    \"modifiedDate\": \"2021-10-13T11:15:17.8142229Z\",\r\n    \"createdBy\": \"admin\",\r\n    \"modifiedBy\": \"admin\",\r\n    \"id\": \"a9c8297d-ce0d-4ec6-99de-270105e80a98\",\r\n    \"_priority\": 0\r\n  },\r\n  \"prices\": [\r\n    {\r\n      \"productId\": \"{{ProductId3}}\",\r\n      \"list\": {{ProductPrice3}},\r\n      \"minQuantity\": 1,\r\n      \"currency\": \"USD\",\r\n      \"pricelistId\": \"934da94516a74f9ab4ec001343ac928a\",\r\n      \"name\": \"ElectronicsUSD\",\r\n      \"catalog\": \"Electronics virtual, Electronics\"\r\n    }\r\n  ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/products/{{ProductId3}}/prices",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"products",
+										"{{ProductId3}}",
+										"prices"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Add stock qty 0 to the no_stock_product_3",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"pm.test(\"Add stock qty to the product\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData.inStockQuantity).to.eql(25);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"fulfillmentCenterId\": \"vendor-fulfillment\",\r\n  \"fulfillmentCenterName\": \"Los Angeles Branch\",\r\n  \"fulfillmentCenter\": {\r\n    \"name\": \"Los Angeles Branch\",\r\n    \"description\": \"<h3>Branch Hours</h3>\\n                            <table class=\\\"table\\\">\\n                                <tbody>\\n                                    <tr>\\n                                        <th class=\\\"day\\\">Day</th>\\n                                        <th><span class=\\\"hours\\\">Hours</span></th>\\n                                    </tr>\\n                                    <tr>\\n                                        <td>MON</td>\\n                                        <td>7:30 AM - 5:00 PM</td>\\n                                    </tr>\\n                                    <tr>\\n                                        <td>TUE</td>\\n                                        <td>7:30 AM - 5:00 PM</td>\\n                                    </tr>\\n                                    <tr>\\n                                        <td>WED</td>\\n                                        <td>7:30 AM - 5:00 PM</td>\\n                                    </tr>\\n                                    <tr>\\n                                        <td>THU</td>\\n                                        <td>7:30 AM - 5:00 PM</td>\\n                                    </tr>\\n                                    <tr>\\n                                        <td>FRI</td>\\n                                        <td>7:30 AM - 5:00 PM</td>\\n                                    </tr>\\n                                    <tr>\\n                                        <td>SAT</td>\\n                                        <td>\\n\\n                                            CLOSED\\n                                        </td>\\n                                    </tr>\\n                                    <tr>\\n                                        <td>SUN</td>\\n                                        <td>CLOSED</td>\\n                                    </tr>\\n                                </tbody>\\n                            </table>\",\r\n    \"geoLocation\": \"\",\r\n    \"address\": {\r\n      \"addressType\": 0,\r\n      \"countryCode\": \"USA\",\r\n      \"countryName\": \"United States\",\r\n      \"city\": \"Los Angeles\",\r\n      \"postalCode\": \"90234\",\r\n      \"line1\": \"1232 Wilshire Blvd\",\r\n      \"regionName\": \"California\",\r\n      \"phone\": \"3232323232\"\r\n    },\r\n    \"createdDate\": \"2018-05-07T12:05:20.42Z\",\r\n    \"modifiedDate\": \"2021-10-07T12:38:49.2056388Z\",\r\n    \"createdBy\": \"unknown\",\r\n    \"modifiedBy\": \"admin\",\r\n    \"id\": \"vendor-fulfillment\"\r\n  },\r\n  \"productId\": \"{{ProductId3}}\",\r\n  \"inStockQuantity\": 0,\r\n  \"reservedQuantity\": 0,\r\n  \"reorderMinQuantity\": 0,\r\n  \"preorderQuantity\": 0,\r\n  \"backorderQuantity\": 0,\r\n  \"allowBackorder\": false,\r\n  \"allowPreorder\": false,\r\n  \"inTransit\": 0,\r\n  \"status\": \"Disabled\",\r\n  \"createdDate\": \"0001-01-01T00:00:00Z\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/inventory/products/{{ProductId3}}",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"inventory",
+										"products",
+										"{{ProductId3}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get product 3 Copy 2",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Product_4 not exist\", function () {\r",
+											"    pm.response.to.have.status(404);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/catalog/products/Not_Exist_Product",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"catalog",
+										"products",
+										"Not_Exist_Product"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Create user and get token",
+					"item": [
+						{
+							"name": "Сreate Contact_1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"pm.test(\"Set contactId\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.collectionVariables.set(\"contactId1\", jsonData.data.createContact.id);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "graphql",
+									"graphql": {
+										"query": "mutation createContact ($command: InputCreateContactType!) {\ncreateContact (command: $command) {\nfullName\nid\nlastName\nname\n\n}\n}",
+										"variables": "{\n\"command\": {\n\"name\": \"Contact1\",\n\"memberType\": \"Contact\",\n\"addresses\": [],\n\"fullName\": \"Contact1\",\n\"firstName\": \"Contact1\",\n\"lastName\": \"Contact1\"\n}\n}\n\n"
+									}
+								},
+								"url": {
+									"raw": "{{url}}/graphql",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"graphql"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Add User_1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "graphql",
+									"graphql": {
+										"query": "mutation createUser ($command: InputCreateUserType!) {\n    createUser (command: $command) {\n        errors {\n            code\n            description\n        }\n        succeeded\n    }\n}\n\n",
+										"variables": "{\n\"command\":\n  {\n     \"applicationUser\":{\n    \"createdBy\": \"eXp16\",\n    \"email\": \"user11_Acc@mailto.plus\",\n    \"password\":\"{{userName1}}\",\n    \"userName\": \"{{userName1}}\",\n    \"userType\": \"Customer\",\n    \"memberId\":\"{{contactId1}}\"\n      }}\n}"
+									}
+								},
+								"url": {
+									"raw": "{{url}}/graphql",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"graphql"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Set CustomerId1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Set CustomerId1\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.collectionVariables.set(\"customerId1\",jsonData.data.contact.securityAccounts[0].id);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "graphql",
+									"graphql": {
+										"query": "query contact ( $id: String!) {\n    contact (id: $id) {\n  id\n  securityAccounts{\n      id\n  }\n  }\n    }\n",
+										"variables": "{\n  \"id\": \"{{contactId1}}\"\n}"
+									}
+								},
+								"url": {
+									"raw": "{{url}}/graphql",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"graphql"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Token for User_1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"pm.test(\"Set Token1\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.collectionVariables.set(\"Token1\", jsonData.access_token);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disabledSystemHeaders": {
+									"content-type": true
+								}
+							},
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/x-www-form-urlencoded",
+										"type": "text"
+									},
+									{
+										"key": "grand_type",
+										"value": "",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "grant_type=password&scope=offline_access&username={{userName1}}&password={{userName1}}",
+									"options": {
+										"raw": {
+											"language": "text"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/connect/token",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"connect",
+										"token"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "{{AdminToken}}",
+								"type": "string"
+							}
+						]
+					},
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Add multiple items (variations)",
+					"item": [
+						{
+							"name": "getCart Copy",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Set cartId2, randomUser2\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.collectionVariables.set(\"cartId\", jsonData.data.cart.id);\r",
+											"});\r",
+											"pm.test(\"Check cart by user ID\", function () {\r",
+											"    var data = pm.response.json();\r",
+											"    pm.expect(data.data.cart).to.not.eql(null);\r",
+											"    pm.expect(data.data.cart).to.be.an(\"object\");\r",
+											"    pm.expect(data.data.cart.id).to.be.a(\"string\");\r",
+											"    pm.expect(data.errors).to.be.undefined;\r",
+											"});\r",
+											"pm.test(\"Check available payment method\", function () {\r",
+											"    var data = pm.response.json();\r",
+											"    pm.expect(data.data.cart.availablePaymentMethods).to.not.empty;\r",
+											"     pm.expect(data.errors).to.be.undefined;\r",
+											"});\r",
+											"pm.test(\"Check available shipment method\", function () {\r",
+											"    var data = pm.response.json();\r",
+											"    pm.expect(data.data.cart.availableShippingMethods).to.not.empty;\r",
+											" pm.expect(data.errors).to.be.undefined;\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{Token1}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "graphql",
+									"graphql": {
+										"query": "{\r\ncart (\r\nstoreId:\"{{storeId}}\"\r\nuserId: \"{{customerId1}}\"\r\ncurrencyCode: \"{{currencyCode}}\"\r\ncultureName: \"{{cultureName}}\"\r\ncartName: \"{{cartName}}\"\r\n)\r\n{\r\nid\r\ncustomerId\r\nitems\r\n{\r\n    id\r\n    name\r\n}\r\ncoupons{\r\n    code\r\n}\r\ncomment\r\ndynamicProperties {\r\nname\r\nvalue\r\nvalueType\r\n  dictionaryItem{\r\n    id\r\n    name\r\n    label\r\n  }\r\n}\r\nitems\r\n{\r\nid\r\nname\r\nproductId\r\nfulfillmentCenterId\r\nfulfillmentCenterName\r\ndynamicProperties {\r\nname\r\nvalue\r\nvalueType\r\n  dictionaryItem{\r\n    id\r\n    name\r\n    label\r\n  }\r\n}\r\n\r\nlistPrice {\r\namount\r\n}\r\n}\r\navailableShippingMethods {\r\ncode\r\noptionName\r\nlogoUrl\r\ncurrency {\r\ncode\r\n}\r\ntotal {\r\namount\r\n}\r\noptionDescription\r\nprice {\r\namount\r\n}\r\npriority\r\n}\r\navailablePaymentMethods {\r\ncode\r\ncurrency{\r\ncode\r\n}\r\nlogoUrl\r\nisAvailableForPartial\r\ntaxTotal{\r\namount\r\n}\r\npaymentMethodGroupType\r\nprice {\r\namount\r\n}\r\npriority\r\nisAvailableForPartial\r\n}\r\ntaxTotal {\r\namount\r\n}\r\ntotal{\r\n    amount\r\n}\r\npayments\r\n{\r\n    id\r\n    dynamicProperties {\r\nname\r\nvalue\r\nvalueType\r\n  dictionaryItem{\r\n    id\r\n    name\r\n    label\r\n  }\r\n}\r\n}\r\n\r\nshipments\r\n{\r\n    id\r\n    dynamicProperties {\r\nname\r\nvalue\r\nvalueType\r\n  dictionaryItem{\r\n    id\r\n    name\r\n    label\r\n  }\r\n}\r\n}\r\n}}",
+										"variables": ""
+									}
+								},
+								"url": {
+									"raw": "{{url}}/graphql",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"graphql"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "add items Copy",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"pm.test(\"Product without price not added\", function(){\r",
+											"var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData.data.addItemsCart.items[0].productId).to.be.equal(pm.collectionVariables.get(\"ProductId1\"));\r",
+											"    pm.expect(jsonData.data.addItemsCart.items[1]).to.be.undefined;\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "graphql",
+									"graphql": {
+										"query": "mutation ($command: InputAddItemsType!) {\r\n    addItemsCart (command: $command)        \r\n    {\r\n        id\r\n        items {\r\n            productId,\r\n            quantity\r\n        }\r\n    }\r\n}",
+										"variables": "{\r\n  \"command\": {\r\n    \"storeId\": \"{{storeId}}\",\r\n    \"cartName\": \"{{cartName}}\",\r\n    \"userId\": \"{{customerId1}}\",\r\n    \"currencyCode\": \"{{currencyCode}}\",\r\n    \"cultureName\": \"{{cultureName}}\",\r\n    \"cartType\": \"\",\r\n    \"cartId\": \"{{cartId}}\",\r\n    \"cartItems\": [{\r\n        \"productId\": \"{{ProductId1}}\",\r\n        \"quantity\": 2\r\n    },\r\n    {\r\n        \"productId\": \"{{ProductId2}}\",\r\n        \"quantity\": 5\r\n    }   \r\n    ]\r\n  }\r\n}"
+									}
+								},
+								"url": {
+									"raw": "{{url}}/graphql",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"graphql"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "add items Copy 2",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"pm.test(\"Product with stock qty=0 not added\", function(){\r",
+											"var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData.data.addItemsCart.items[0].productId).to.be.equal(pm.collectionVariables.get(\"ProductId1\"));\r",
+											"pm.expect(jsonData.data.addItemsCart.items[1]).to.be.undefined;\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "graphql",
+									"graphql": {
+										"query": "mutation ($command: InputAddItemsType!) {\r\n    addItemsCart (command: $command)        \r\n    {\r\n        id\r\n        items {\r\n            productId,\r\n            quantity\r\n        }\r\n    }\r\n}",
+										"variables": "{\r\n  \"command\": {\r\n    \"storeId\": \"{{storeId}}\",\r\n    \"cartName\": \"{{cartName}}\",\r\n    \"userId\": \"{{customerId1}}\",\r\n    \"currencyCode\": \"{{currencyCode}}\",\r\n    \"cultureName\": \"{{cultureName}}\",\r\n    \"cartType\": \"\",\r\n    \"cartId\": \"{{cartId}}\",\r\n    \"cartItems\": [{\r\n        \"productId\": \"{{ProductId1}}\",\r\n        \"quantity\": 2\r\n    },\r\n    {\r\n        \"productId\": \"{{ProductId3}}\",\r\n        \"quantity\": 5\r\n    }   \r\n    ]\r\n  }\r\n}"
+									}
+								},
+								"url": {
+									"raw": "{{url}}/graphql",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"graphql"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "add items Copy 3",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"pm.test(\"Product with stock qty=0 not added\", function(){\r",
+											"var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData.data.addItemsCart.items[0].productId).to.be.equal(pm.collectionVariables.get(\"ProductId1\"));\r",
+											"pm.expect(jsonData.data.addItemsCart.items[1]).to.be.undefined;\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "graphql",
+									"graphql": {
+										"query": "mutation ($command: InputAddItemsType!) {\r\n    addItemsCart (command: $command)        \r\n    {\r\n        id\r\n        items {\r\n            productId,\r\n            quantity\r\n        }\r\n    }\r\n}",
+										"variables": "{\r\n  \"command\": {\r\n    \"storeId\": \"{{storeId}}\",\r\n    \"cartName\": \"{{cartName}}\",\r\n    \"userId\": \"{{customerId1}}\",\r\n    \"currencyCode\": \"{{currencyCode}}\",\r\n    \"cultureName\": \"{{cultureName}}\",\r\n    \"cartType\": \"\",\r\n    \"cartId\": \"{{cartId}}\",\r\n    \"cartItems\": [{\r\n        \"productId\": \"{{ProductId1}}\",\r\n        \"quantity\": 2\r\n    },\r\n    {\r\n        \"productId\": \"Not_Exist_Product\",\r\n        \"quantity\": 5\r\n    }   \r\n    ]\r\n  }\r\n}"
+									}
+								},
+								"url": {
+									"raw": "{{url}}/graphql",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"graphql"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "clearCart Copy 2",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"clearCart\", function () {\r",
+											"    var json = pm.response.json();\r",
+											"    pm.expect(json.data.clearCart).to.be.not.empty;\r",
+											"    pm.expect(json.data.clearCart.total.amount).to.be.equal(0.00);\r",
+											"    pm.expect(json.errors).to.be.undefined;\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "graphql",
+									"graphql": {
+										"query": "mutation clearCart ($command: InputClearCartType!) {\nclearCart (command: $command) {\nid\ntotal{\namount\n}\n}\n}",
+										"variables": "{\n  \"command\": {\n    \"cartId\": \"{{cartId}}\",\n    \"storeId\": \"{{storeId}}\",\n    \"cartName\": \"{{cartName}}\",\n    \"userId\": \"{{userId}}\",\n    \"currencyCode\": \"{{currencyCode}}\",\n    \"cultureName\": \"{{cultureName}}\",\n    \"cartType\": \"{{cartType}}\"\n  }\n}"
+									}
+								},
+								"url": {
+									"raw": "{{url}}/graphql",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"graphql"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "getCart Copy 2",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Set cartId2, randomUser2\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.collectionVariables.set(\"cartId\", jsonData.data.cart.id);\r",
+											"});\r",
+											"pm.test(\"Check cart by user ID\", function () {\r",
+											"    var data = pm.response.json();\r",
+											"    pm.expect(data.data.cart).to.not.eql(null);\r",
+											"    pm.expect(data.data.cart).to.be.an(\"object\");\r",
+											"    pm.expect(data.data.cart.id).to.be.a(\"string\");\r",
+											"    pm.expect(data.errors).to.be.undefined;\r",
+											"});\r",
+											"pm.test(\"Check available payment method\", function () {\r",
+											"    var data = pm.response.json();\r",
+											"    pm.expect(data.data.cart.availablePaymentMethods).to.not.empty;\r",
+											"     pm.expect(data.errors).to.be.undefined;\r",
+											"});\r",
+											"pm.test(\"Check available shipment method\", function () {\r",
+											"    var data = pm.response.json();\r",
+											"    pm.expect(data.data.cart.availableShippingMethods).to.not.empty;\r",
+											" pm.expect(data.errors).to.be.undefined;\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{Token1}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "graphql",
+									"graphql": {
+										"query": "{\r\ncart (\r\nstoreId:\"{{storeId}}\"\r\nuserId: \"{{customerId1}}\"\r\ncurrencyCode: \"{{currencyCode}}\"\r\ncultureName: \"{{cultureName}}\"\r\ncartName: \"{{cartName}}\"\r\n)\r\n{\r\nid\r\ncustomerId\r\nitems\r\n{\r\n    id\r\n    name\r\n}\r\ncoupons{\r\n    code\r\n}\r\ncomment\r\ndynamicProperties {\r\nname\r\nvalue\r\nvalueType\r\n  dictionaryItem{\r\n    id\r\n    name\r\n    label\r\n  }\r\n}\r\nitems\r\n{\r\nid\r\nname\r\nproductId\r\nfulfillmentCenterId\r\nfulfillmentCenterName\r\ndynamicProperties {\r\nname\r\nvalue\r\nvalueType\r\n  dictionaryItem{\r\n    id\r\n    name\r\n    label\r\n  }\r\n}\r\n\r\nlistPrice {\r\namount\r\n}\r\n}\r\navailableShippingMethods {\r\ncode\r\noptionName\r\nlogoUrl\r\ncurrency {\r\ncode\r\n}\r\ntotal {\r\namount\r\n}\r\noptionDescription\r\nprice {\r\namount\r\n}\r\npriority\r\n}\r\navailablePaymentMethods {\r\ncode\r\ncurrency{\r\ncode\r\n}\r\nlogoUrl\r\nisAvailableForPartial\r\ntaxTotal{\r\namount\r\n}\r\npaymentMethodGroupType\r\nprice {\r\namount\r\n}\r\npriority\r\nisAvailableForPartial\r\n}\r\ntaxTotal {\r\namount\r\n}\r\ntotal{\r\n    amount\r\n}\r\npayments\r\n{\r\n    id\r\n    dynamicProperties {\r\nname\r\nvalue\r\nvalueType\r\n  dictionaryItem{\r\n    id\r\n    name\r\n    label\r\n  }\r\n}\r\n}\r\n\r\nshipments\r\n{\r\n    id\r\n    dynamicProperties {\r\nname\r\nvalue\r\nvalueType\r\n  dictionaryItem{\r\n    id\r\n    name\r\n    label\r\n  }\r\n}\r\n}\r\n}}",
+										"variables": ""
+									}
+								},
+								"url": {
+									"raw": "{{url}}/graphql",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"graphql"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Clear all",
+					"item": [
+						{
+							"name": "clearCart Copy",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"clearCart\", function () {\r",
+											"    var json = pm.response.json();\r",
+											"    pm.expect(json.data.clearCart).to.be.not.empty;\r",
+											"    pm.expect(json.data.clearCart.total.amount).to.be.equal(0.00);\r",
+											"    pm.expect(json.errors).to.be.undefined;\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "graphql",
+									"graphql": {
+										"query": "mutation clearCart ($command: InputClearCartType!) {\nclearCart (command: $command) {\nid\ntotal{\namount\n}\n}\n}",
+										"variables": "{\n  \"command\": {\n    \"cartId\": \"{{cartId}}\",\n    \"storeId\": \"{{storeId}}\",\n    \"cartName\": \"{{cartName}}\",\n    \"userId\": \"{{userId}}\",\n    \"currencyCode\": \"{{currencyCode}}\",\n    \"cultureName\": \"{{cultureName}}\",\n    \"cartType\": \"{{cartType}}\"\n  }\n}"
+									}
+								},
+								"url": {
+									"raw": "{{url}}/graphql",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"graphql"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "removeCart Copy",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"RemoveCart\", function(){\r",
+											"    var jSonData = pm.response.json();\r",
+											"    pm.expect(jSonData.data.removeCart).to.be.equal(true);\r",
+											"    pm.expect(data.error).to.be.undefined;\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "graphql",
+									"graphql": {
+										"query": "mutation removeCart ($command: InputRemoveCartType!) {\n    removeCart (command: $command)\n}",
+										"variables": "{\n  \"command\": {\n    \"cartId\": \"{{cartId}}\"\n  }\n}"
+									}
+								},
+								"url": {
+									"raw": "{{url}}/graphql",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"graphql"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete users [admin] Copy 2",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "graphql",
+									"graphql": {
+										"query": "mutation deleteUsers ($command: InputDeleteUserType!) {\r\n    deleteUsers (command: $command) {\r\n        errors {\r\n            code\r\n            description\r\n        }\r\n        succeeded\r\n    }\r\n}\r\n\r\n\r\n\r\n",
+										"variables": "{\r\n  \"command\": {\r\n    \"userNames\": [\r\n      \"{{userName1}}\"\r\n    ]\r\n  }\r\n}\r\n"
+									}
+								},
+								"url": {
+									"raw": "{{url}}/graphql",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"graphql"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Contact_1 [admin] Copy",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "graphql",
+									"graphql": {
+										"query": "mutation deleteContact ($command: InputDeleteContactType!) {\r\n    deleteContact (command: $command)\r\n}\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n",
+										"variables": "{\r\n  \"command\": {\r\n    \"contactId\": \"{{contactId1}}\"\r\n  }\r\n}"
+									}
+								},
+								"url": {
+									"raw": "{{url}}/graphql",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"graphql"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete a product 1 Copy",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/catalog/products?ids={{ProductId1}}",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"catalog",
+										"products"
+									],
+									"query": [
+										{
+											"key": "ids",
+											"value": "{{ProductId1}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete a product 2 Copy",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/catalog/products?ids={{ProductId2}}",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"catalog",
+										"products"
+									],
+									"query": [
+										{
+											"key": "ids",
+											"value": "{{ProductId2}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete a product 3 Copy",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/catalog/products?ids={{ProductId3}}",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"catalog",
+										"products"
+									],
+									"query": [
+										{
+											"key": "ids",
+											"value": "{{ProductId3}}"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{AdminToken}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
 			"name": "mutations",
 			"item": [
 				{
@@ -15453,7 +16722,7 @@
 			"name": "Cart User",
 			"item": [
 				{
-					"name": "Create user and get token",
+					"name": "Create user and get token Copy",
 					"item": [
 						{
 							"name": "Сreate Contact_1",
@@ -15822,57 +17091,6 @@
 									"path": [
 										"connect",
 										"token"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Get all carts",
-							"event": [
-								{
-									"listen": "test",
-									"script": {
-										"exec": [
-											"pm.test(\"Status code is 200\", function () {\r",
-											"    pm.response.to.have.status(200);\r",
-											"});\r",
-											"pm.test(\"Items empty\", function () {\r",
-											"    var jsonData = pm.response.json();\r",
-											"     pm.expect(jsonData.data.carts.items).to.be.empty;\r",
-											"});"
-										],
-										"type": "text/javascript"
-									}
-								}
-							],
-							"request": {
-								"auth": {
-									"type": "bearer",
-									"bearer": [
-										{
-											"key": "token",
-											"value": "{{Token1}}",
-											"type": "string"
-										}
-									]
-								},
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "graphql",
-									"graphql": {
-										"query": "query carts {\n  carts(storeId: \"Electronics\") {\n    items {\n      id\n      name\n      customerName\n    }\n  }\n}\n\n",
-										"variables": ""
-									}
-								},
-								"url": {
-									"raw": "{{url}}/graphql",
-									"host": [
-										"{{url}}"
-									],
-									"path": [
-										"graphql"
 									]
 								}
 							},
@@ -28185,8 +29403,8 @@
 								"body": {
 									"mode": "graphql",
 									"graphql": {
-										"query": "mutation createUser ($command: InputCreateUserType!) {\n    createUser (command: $command) {\n        errors {\n            code\n            description\n        }\n        succeeded\n    }\n}\n\n",
-										"variables": "{\n\"command\": {\n\"applicationUser\": {   \n\"createdBy\": \"autoTestPostman\",\n\"email\": \"{{test2_mail1}}\",\n\"password\":\"{{test2_password}}\",\n\"userName\": \"{{test2_userName1}}\",\n\"userType\": \"Customer\",\n\"storeId\": \"{{storeId}}\",\n\"memberId\":\"{{test2_contactId1}}\"\n}\n}\n}\n\n"
+										"query": "mutation createUser ($command: InputCreateUserType!) {\n    createUser (command: $command) {\n        errors {\n            code\n            description\n        }\n        succeeded\n    }\n}",
+										"variables": "{\n\"command\": {\n\"applicationUser\": {   \n\"createdBy\": \"autoTestPostman\",\n\"email\": \"{{test2_mail1}}\",\n\"password\":\"{{test2_password}}\",\n\"userName\": \"{{test2_userName1}}\",\n\"userType\": \"Customer\",\n\"storeId\": \"{{storeId}}\",\n\"memberId\":\"{{test2_contactId1}}\"\n}\n}\n}"
 									}
 								},
 								"url": {
@@ -28347,7 +29565,8 @@
 											"});\r",
 											"pm.test(\"Set userId\", function () {\r",
 											"    var jsonData = pm.response.json();\r",
-											"    //pm.collectionVariables.set(\"test2_userId2\", jsonData.data.contact.securityAccounts.id);\r",
+											"    pm.collectionVariables.set(\"test2_Id2\", jsonData.data.contact.securityAccounts[0].id);\r",
+											"    pm.collectionVariables.set(\"test2_name2\", jsonData.data.contact.securityAccounts[0].userName);\r",
 											"});"
 										],
 										"type": "text/javascript"
@@ -28420,7 +29639,7 @@
 							"response": []
 						},
 						{
-							"name": "Create Contact_1 [admin]",
+							"name": "Create Contact_3 [admin]",
 							"event": [
 								{
 									"listen": "test",
@@ -28504,7 +29723,7 @@
 							"response": []
 						},
 						{
-							"name": "Check added Contact_1 with User_1 [admin]",
+							"name": "Check added Contact_3 with User_3 [admin]",
 							"event": [
 								{
 									"listen": "test",
@@ -28517,7 +29736,8 @@
 											"});\r",
 											"pm.test(\"Set userId\", function () {\r",
 											"    var jsonData = pm.response.json();\r",
-											"    //pm.collectionVariables.set(\"test2_userId1\", jsonData.data.contact.securityAccounts.id);\r",
+											"   pm.collectionVariables.set(\"test2_userId3\", jsonData.data.contact.securityAccounts[0].id);\r",
+											"   pm.collectionVariables.set(\"test2_name3\", jsonData.data.contact.securityAccounts[0].userName);\r",
 											"});"
 										],
 										"type": "text/javascript"
@@ -28541,6 +29761,79 @@
 									],
 									"path": [
 										"graphql"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetUserToken",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    \r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"pm.test(\"Set user token\", function () {\r",
+											"   \r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.collectionVariables.set(\"test2_userToken\", jsonData.access_token);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"setTimeout(() => {}, 1000); "
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disabledSystemHeaders": {
+									"content-type": true
+								}
+							},
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/x-www-form-urlencoded",
+										"type": "text"
+									},
+									{
+										"key": "grand_type",
+										"value": "",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "grant_type=password&scope=offline_access&username={{test2_userName1}}&password={{test2_password}}",
+									"options": {
+										"raw": {
+											"language": "text"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/connect/token",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"connect",
+										"token"
 									]
 								}
 							},
@@ -28640,7 +29933,7 @@
 									"mode": "graphql",
 									"graphql": {
 										"query": "mutation updateUser ($command: InputUpdateUserType!) {\r\n    updateUser (command: $command) {\r\n        errors {\r\n            code\r\n            description\r\n        }\r\n        succeeded\r\n    }\r\n}",
-										"variables": "{\r\n\"command\": {\r\n\"applicationUser\": {   \r\n\"id\":\"{{test2_userId1}}\",\r\n\"email\": \"{{test2_mail1}}\",\r\n\"userName\": \"{{test2_userName1}}\",\r\n\"userType\": \"Customer\",\r\n\"securityStamp\": \"RandomData\",\r\n\"roles\":[{\r\n\"id\":\"{{test2_roleId}}\",\r\n\"name\":\"userbyUser\",\r\n  \"permissions\": [{\r\n    \"name\": \"platform:security:create\"\r\n  }]\r\n}]\r\n}\r\n}\r\n}\r\n\r\n\r\n"
+										"variables": "{\r\n\"command\": {\r\n\"applicationUser\": {   \r\n\"id\":\"{{test2_userId1}}\",\r\n\"email\": \"{{test2_mail1}}\",\r\n\"userName\": \"{{test2_userName1}}\",\r\n\"userType\": \"Customer\",\r\n\"securityStamp\": \"RandomData\",\r\n\"memberId\":\"{{test2_contactId1}}\",\r\n\"roles\":[{\r\n\"id\":\"{{test2_roleId}}\",\r\n\"name\":\"userbyUser\",\r\n  \"permissions\": [{\r\n    \"name\": \"platform:security:create\"\r\n  }]\r\n}]\r\n}\r\n}\r\n}\r\n\r\n\r\n"
 									}
 								},
 								"url": {
@@ -28650,117 +29943,6 @@
 									],
 									"path": [
 										"graphql"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "GetUserToken",
-							"event": [
-								{
-									"listen": "test",
-									"script": {
-										"exec": [
-											"pm.test(\"Admin updateUserRole\", function(){\r",
-											"\r",
-											"        var jsonData = pm.response.json();\r",
-											"        pm.expect(jsonData.succeeded).to.eql(true);\r",
-											"        pm.expect(jsonData.errors).to.be.empty;\r",
-											"\r",
-											"});"
-										],
-										"type": "text/javascript"
-									}
-								}
-							],
-							"request": {
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "grant_type=password&scope=offline_access&username=Velma.Quitzon59&password=ZXCvbn444",
-									"options": {
-										"raw": {
-											"language": "text"
-										}
-									}
-								},
-								"url": {
-									"raw": "{{url}}/connect/token",
-									"host": [
-										"{{url}}"
-									],
-									"path": [
-										"connect",
-										"token"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "GetUserToken",
-							"event": [
-								{
-									"listen": "test",
-									"script": {
-										"exec": [
-											"pm.test(\"Status code is 200\", function () {\r",
-											"    \r",
-											"    pm.response.to.have.status(200);\r",
-											"});\r",
-											"pm.test(\"Set admin token\", function () {\r",
-											"   \r",
-											"    var jsonData = pm.response.json();\r",
-											"    pm.collectionVariables.set(\"AdminToken\", jsonData.access_token);\r",
-											"});\r",
-											""
-										],
-										"type": "text/javascript"
-									}
-								}
-							],
-							"protocolProfileBehavior": {
-								"disabledSystemHeaders": {
-									"content-type": true
-								}
-							},
-							"request": {
-								"auth": {
-									"type": "noauth"
-								},
-								"method": "POST",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/x-www-form-urlencoded",
-										"type": "text"
-									},
-									{
-										"key": "grand_type",
-										"value": "",
-										"type": "text",
-										"disabled": true
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "grant_type=password&scope=offline_access&username=admin&password=store",
-									"options": {
-										"raw": {
-											"language": "text"
-										}
-									}
-								},
-								"url": {
-									"raw": "{{url}}/connect/token",
-									"host": [
-										"{{url}}"
-									],
-									"path": [
-										"connect",
-										"token"
 									]
 								}
 							},
@@ -28801,7 +29983,7 @@
 									"mode": "graphql",
 									"graphql": {
 										"query": "mutation createUser ($command: InputCreateUserType!) {\n    createUser (command: $command) {\n        errors {\n            code\n            description\n        }\n        succeeded\n      \n    }\n}",
-										"variables": "{\n\"command\": {\n\"applicationUser\": {\n\"id\":\"{{test2_userId2}}\",      \n\"createdBy\": \"userAutoTest\",\n\"email\": \"{{test2_email2}}\",\n\"password\":\"{{$randomPassword}}\",\n\"userName\": \"{{test2_userName2}}\",\n\"userType\": \"Customer\",\n\"storeId\":\"{{storeId}}\"\n}\n}\n}\n\n"
+										"variables": "{\n\"command\": {\n\"applicationUser\": {\n\"createdBy\": \"userAutoTest\",\n\"email\": \"{{test2_email2}}\",\n\"password\":\"{{$randomPassword}}\",\n\"userName\": \"{{test2_userName2}}\",\n\"userType\": \"Customer\",\n\"storeId\":\"{{storeId}}\"\n}\n}\n}\n\n"
 									}
 								},
 								"url": {
@@ -28872,10 +30054,10 @@
 									"script": {
 										"exec": [
 											"pm.test(\"createUser (No permission)\", function(){\r",
-											"    var jsonData = pm.response.json();\r",
-											"    pm.expect(jsonData.errors).to.not.empty;\r",
-											"    pm.expect(jsonData.errors[0].message).to.include(\"VirtoCommerce.ExperienceApiModule.Core.Infrastructure.Authorization.AuthorizationError: User doesn't have the required permission 'platform:security:create'\");\r",
-											"  });\r",
+											"           var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData.data.createUser.succeeded).to.equal(true);\r",
+											"});\r",
+											"\r",
 											"\r",
 											"pm.test(\"Status code is 200\", function () {\r",
 											"    pm.response.to.have.status(200);\r",
@@ -28902,7 +30084,7 @@
 									"mode": "graphql",
 									"graphql": {
 										"query": "mutation createUser ($command: InputCreateUserType!) {\n    createUser (command: $command) {\n        errors {\n            code\n            description\n        }\n        succeeded\n      \n    }\n}",
-										"variables": "{\n\"command\": {\n\"applicationUser\": {   \n\"createdBy\": \"userAutoTest\",\n\"email\": \"{{$randomEmail}}\",\n\"password\":\"{{$randomPassword}}\",\n\"userName\": \"{{$randomUserName}}\",\n\"userType\": \"Customer\",\n\"storeId\":\"{{storeId}}\"\n}\n}\n}\n\n"
+										"variables": "{\n\"command\": {\n\"applicationUser\": {   \n\"createdBy\": \"userAutoTest\",\n\"email\": \"Keshaun67@hotmail.com\",\n\"password\":\"{{$randomPassword}}\",\n\"userName\": \"Mikayla_Schultz\",\n\"userType\": \"Customer\",\n\"storeId\":\"{{storeId}}\"\n}\n}\n}\n\n"
 									}
 								},
 								"url": {
@@ -28990,7 +30172,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n  \"storeId\": \"Electronics\",\r\n  \"isAdministrator\": false,\r\n  \"userType\": \"Customer\",\r\n  \"createdDate\": \"2021-11-15T08:43:31.3699384Z\",\r\n  \"modifiedDate\": \"2021-11-15T08:50:47.179429Z\",\r\n  \"createdBy\": \"autoTestPostman\",\r\n  \"modifiedBy\": \"admin\",\r\n  \"roles\": [\r\n    {\r\n      \"permissions\": [],\r\n      \"id\": \"4fe20ccc-eeff-4ef9-8e7c-e64cb1c3f57b\",\r\n      \"name\": \"userbyUser\",\r\n      \"normalizedName\": \"USERCREATEUSER\",\r\n      \"concurrencyStamp\": \"ee8545f9-ce56-4a21-b696-c623b86cf8f9\",\r\n      \"$selected\": false\r\n    }\r\n  ],\r\n  \"userState\": \"PendingApproval\",\r\n  \"permissions\": [],\r\n  \"logins\": [],\r\n  \"passwordExpired\": false,\r\n  \"id\": \"{{test2_userId1}}\",\r\n  \"userName\": \"{{test2_userName1}}\",\r\n  \"normalizedUserName\": \"{{test2_userName1}}\",\r\n  \"email\": \"Celine_Stiedemann40@gmail.com\",\r\n  \"normalizedEmail\": \"CELINE_STIEDEMANN40@GMAIL.COM\",\r\n  \"emailConfirmed\": false,\r\n  \"securityStamp\": \"RandomData\",\r\n  \"concurrencyStamp\": \"f1c16509-7383-4f7c-9282-5804de42e74a\",\r\n  \"phoneNumberConfirmed\": false,\r\n  \"twoFactorEnabled\": false,\r\n  \"lockoutEnabled\": false,\r\n  \"accessFailedCount\": 0\r\n}",
+									"raw": "{\r\n  \"storeId\": \"Electronics\",\r\n  \"memberId\": \"{{test2_contactId1}}\",\r\n  \"isAdministrator\": false,\r\n  \"userType\": \"Customer\",\r\n  \"createdDate\": \"2021-11-15T08:43:31.3699384Z\",\r\n  \"modifiedDate\": \"2021-11-15T08:50:47.179429Z\",\r\n  \"createdBy\": \"autoTestPostman\",\r\n  \"modifiedBy\": \"admin\",\r\n  \"roles\": [\r\n    {\r\n      \"permissions\": [],\r\n      \"id\": \"4fe20ccc-eeff-4ef9-8e7c-e64cb1c3f57b\",\r\n      \"name\": \"userbyUser\",\r\n      \"normalizedName\": \"USERCREATEUSER\",\r\n      \"concurrencyStamp\": \"ee8545f9-ce56-4a21-b696-c623b86cf8f9\",\r\n      \"$selected\": false\r\n    }\r\n  ],\r\n  \"userState\": \"PendingApproval\",\r\n  \"permissions\": [],\r\n  \"logins\": [],\r\n  \"passwordExpired\": false,\r\n  \"id\": \"{{test2_userId1}}\",\r\n  \"userName\": \"{{test2_userName1}}\",\r\n  \"normalizedUserName\": \"{{test2_userName1}}\",\r\n  \"email\": \"Celine_Stiedemann40@gmail.com\",\r\n  \"normalizedEmail\": \"CELINE_STIEDEMANN40@GMAIL.COM\",\r\n  \"emailConfirmed\": false,\r\n  \"securityStamp\": \"RandomData\",\r\n  \"concurrencyStamp\": \"f1c16509-7383-4f7c-9282-5804de42e74a\",\r\n  \"phoneNumberConfirmed\": false,\r\n  \"twoFactorEnabled\": false,\r\n  \"lockoutEnabled\": false,\r\n  \"accessFailedCount\": 0\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -29013,13 +30195,13 @@
 							"response": []
 						},
 						{
-							"name": "updateUser (with permission)",
+							"name": "User updateUser in the same organization (with permission)",
 							"event": [
 								{
 									"listen": "test",
 									"script": {
 										"exec": [
-											"pm.test(\"updateUser (with permission)\", function(){\r",
+											"pm.test(\"User updateUser the same org_1 (with permission)\", function(){\r",
 											"\r",
 											"        var jsonData = pm.response.json();\r",
 											"        pm.expect(jsonData.data.updateUser.errors).to.be.empty;\r",
@@ -29052,7 +30234,142 @@
 									"mode": "graphql",
 									"graphql": {
 										"query": "mutation updateUser ($command: InputUpdateUserType!) {\n    updateUser (command: $command) {\n        errors {\n            code\n            description\n        }\n        succeeded\n    }\n}",
-										"variables": "\n{\n\"command\":{\n   \"applicationUser\":{\n\"userType\": \"Customer\",\n\"roles\": [],\n\"id\": \"{{test2_userId1}}\",\n\"userName\": \"{{test2_userName1}}\",\n\"email\": \"testqa2@gmail.com\",\n\"securityStamp\": \"RandomData\",\n\"storeId\":\"{{storeId}}\"\n}\n}\n}"
+										"variables": "\n{\n\"command\":{\n\"applicationUser\":{\n\"userType\": \"Customer\",\n\"memberId\":\"{{test2_contactId2}}\",\n\"roles\": [],\n\"id\": \"{{test2_Id2}}\",\n\"userName\": \"QWERTY\",\n\"email\": \"testqa2@gmail.com\",\n\"securityStamp\": \"RandomData\",\n\"storeId\":\"{{storeId}}\"\n}\n}\n}"
+									}
+								},
+								"url": {
+									"raw": "{{url}}/graphql",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"graphql"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Index",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "[\r\n    {\r\n        \"documentType\": \"Member\",\r\n        \"documentIds\": [\r\n            \"{{test2_contactId2}}\"\r\n        ]\r\n    }\r\n]",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/search/indexes/index",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"search",
+										"indexes",
+										"index"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Check User_2 after update",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"pm.test(\"Check User_2 after update\", function(){\r",
+											"    var jsonData =pm.response.json();\r",
+											"    pm.expect(jsonData.data.user.email).to.equal(\"testqa2@gmail.com\");\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{AdminToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "graphql",
+									"graphql": {
+										"query": "query user(\n  $id: String\n  $userName: String\n  $email: String\n  $loginProvider: String\n  $providerKey: String\n) {\n  user(\n    id: $id\n    userName: $userName\n    email: $email\n    loginProvider: $loginProvider\n    providerKey: $providerKey\n  ) {\n    id\n    isAdministrator\n        userName\n    email\n    storeId\n    userName\n    userType\n    securityStamp\n    roles{\n      id\n      name\n      description\n      permissions\n    }\n  }\n}",
+										"variables": "{\n//\"id\": \"9d30a8a0-9ecf-4dc7-b273-51f6739bec87\",\n\"userName\": \"QWERTY\",\n//\"email\": \"eXp100@mail.com\",\n\"loginProvider\":\"\",\n\"providerKey\": \"\"\n}"
+									}
+								},
+								"url": {
+									"raw": "{{url}}/graphql",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"graphql"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "User updateUser in organization_2 (with permission)",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"User updateUser in organization_2 (with permission)\", function(){\r",
+											"       var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData.errors).to.not.empty;\r",
+											"    pm.expect(jsonData.errors[0].message).to.include(\"VirtoCommerce.ExperienceApiModule.Core.Infrastructure.Authorization.AuthorizationError: Access denied\");\r",
+											"\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{test2_userToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "graphql",
+									"graphql": {
+										"query": "mutation updateUser ($command: InputUpdateUserType!) {\n    updateUser (command: $command) {\n        errors {\n            code\n            description\n        }\n        succeeded\n    }\n}",
+										"variables": "\n{\n\"command\":{\n   \"applicationUser\":{\n\"userType\": \"Customer\",\n\"memberId\":\"{{test2_contactId3}}\",\n\"roles\": [],\n\"id\": \"{{test2_userId3}}\",\n\"userName\": \"{{test2_name3}}\",\n\"email\": \"testqa2@gmail.com\",\n\"securityStamp\": \"RandomData\",\n\"storeId\":\"{{storeId}}\"\n}\n}\n}"
 									}
 								},
 								"url": {
@@ -29105,7 +30422,7 @@
 									"mode": "graphql",
 									"graphql": {
 										"query": "mutation deleteUsers ($command: InputDeleteUserType!) {\n    deleteUsers (command: $command) {\n        errors {\n            code\n            description\n        }\n        succeeded\n    }\n}",
-										"variables": "{\n\"command\": {\n\"userNames\": [\n\"{{test2_userName2}}\"\n]\n}\n}"
+										"variables": "{\n\"command\": {\n\"userNames\": [\n\"QWERTY\"\n]\n}\n}"
 									}
 								},
 								"url": {
@@ -29193,7 +30510,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n  \"storeId\": \"Electronics\",\r\n  \"isAdministrator\": false,\r\n  \"userType\": \"Customer\",\r\n  \"createdDate\": \"2021-11-15T08:43:31.3699384Z\",\r\n  \"modifiedDate\": \"2021-11-15T08:50:47.179429Z\",\r\n  \"createdBy\": \"autoTestPostman\",\r\n  \"modifiedBy\": \"admin\",\r\n  \"roles\": [\r\n    {\r\n      \"permissions\": [],\r\n      \"id\": \"4fe20ccc-eeff-4ef9-8e7c-e64cb1c3f57b\",\r\n      \"name\": \"userbyUser\",\r\n      \"normalizedName\": \"USERCREATEUSER\",\r\n      \"concurrencyStamp\": \"ee8545f9-ce56-4a21-b696-c623b86cf8f9\",\r\n      \"$selected\": false\r\n    }\r\n  ],\r\n  \"userState\": \"PendingApproval\",\r\n  \"permissions\": [],\r\n  \"logins\": [],\r\n  \"passwordExpired\": false,\r\n  \"id\": \"{{test2_userId1}}\",\r\n  \"userName\": \"{{test2_userName1}}\",\r\n  \"normalizedUserName\": \"{{test2_userName1}}\",\r\n  \"email\": \"Celine_Stiedemann40@gmail.com\",\r\n  \"normalizedEmail\": \"CELINE_STIEDEMANN40@GMAIL.COM\",\r\n  \"emailConfirmed\": false,\r\n  \"securityStamp\": \"RandomData\",\r\n  \"concurrencyStamp\": \"f1c16509-7383-4f7c-9282-5804de42e74a\",\r\n  \"phoneNumberConfirmed\": false,\r\n  \"twoFactorEnabled\": false,\r\n  \"lockoutEnabled\": false,\r\n  \"accessFailedCount\": 0\r\n}",
+									"raw": "{\r\n  \"storeId\": \"Electronics\",\r\n  \"memberId\": \"{{test2_contactId1}}\",\r\n  \"isAdministrator\": false,\r\n  \"userType\": \"Customer\",\r\n  \"createdDate\": \"2021-11-15T08:43:31.3699384Z\",\r\n  \"modifiedDate\": \"2021-11-15T08:50:47.179429Z\",\r\n  \"createdBy\": \"autoTestPostman\",\r\n  \"modifiedBy\": \"admin\",\r\n  \"roles\": [\r\n    {\r\n      \"permissions\": [],\r\n      \"id\": \"4fe20ccc-eeff-4ef9-8e7c-e64cb1c3f57b\",\r\n      \"name\": \"userbyUser\",\r\n      \"normalizedName\": \"USERCREATEUSER\",\r\n      \"concurrencyStamp\": \"ee8545f9-ce56-4a21-b696-c623b86cf8f9\",\r\n      \"$selected\": false\r\n    }\r\n  ],\r\n  \"userState\": \"PendingApproval\",\r\n  \"permissions\": [],\r\n  \"logins\": [],\r\n  \"passwordExpired\": false,\r\n  \"id\": \"{{test2_userId1}}\",\r\n  \"userName\": \"{{test2_userName1}}\",\r\n  \"normalizedUserName\": \"{{test2_userName1}}\",\r\n  \"email\": \"Celine_Stiedemann40@gmail.com\",\r\n  \"normalizedEmail\": \"CELINE_STIEDEMANN40@GMAIL.COM\",\r\n  \"emailConfirmed\": false,\r\n  \"securityStamp\": \"RandomData\",\r\n  \"concurrencyStamp\": \"f1c16509-7383-4f7c-9282-5804de42e74a\",\r\n  \"phoneNumberConfirmed\": false,\r\n  \"twoFactorEnabled\": false,\r\n  \"lockoutEnabled\": false,\r\n  \"accessFailedCount\": 0\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -29216,13 +30533,13 @@
 							"response": []
 						},
 						{
-							"name": "User deleteUser(with permission)",
+							"name": "User deleteUser in the same organization_1 (with permission)",
 							"event": [
 								{
 									"listen": "test",
 									"script": {
 										"exec": [
-											"pm.test(\"deleteUsers\", function(){\r",
+											"pm.test(\"User deleteUser in the same organization_1 (with permission)\", function(){\r",
 											"    var jsonData = pm.response.json();\r",
 											"    pm.expect(jsonData.data.deleteUsers).to.not.empty;\r",
 											"    pm.expect(jsonData.data.deleteUsers.succeeded).to.be.equal(true);\r",
@@ -29250,7 +30567,7 @@
 									"mode": "graphql",
 									"graphql": {
 										"query": "mutation deleteUsers ($command: InputDeleteUserType!) {\n    deleteUsers (command: $command) {\n        errors {\n            code\n            description\n        }\n        succeeded\n    }\n}",
-										"variables": "{\n\"command\": {\n\"userNames\": [\n\"{{test2_userName2}}\"\n]\n}\n}"
+										"variables": "{\n\"command\": {\n\"userNames\": [\n\"QWERTY\"\n]\n}\n}"
 									}
 								},
 								"url": {
@@ -29266,22 +30583,17 @@
 							"response": []
 						},
 						{
-							"name": "User get user",
+							"name": "User deleteUser in organization_2 (with permission)",
 							"event": [
 								{
 									"listen": "test",
 									"script": {
 										"exec": [
-											"pm.test(\"get user\", function () {\r",
-											"    var json = pm.response.json();\r",
-											"    pm.expect(json.data.user).to.not.eql(null);\r",
-											"    pm.expect(json.data.user).to.be.an(\"object\");\r",
-											"    pm.expect(json.data.user.id).to.be.a(\"string\");\r",
-											"    pm.expect(json.data.user.email).to.be.not.empty;\r",
-											"    pm.expect(json.errors).to.be.undefined;\r",
-											"   // pm.collectionVariables.set(\"userIdblock\", json.data.user.id);\r",
-											"});\r",
-											""
+											"pm.test(\"User deleteUser in the same organization_1 (with permission)\", function(){\r",
+											"   var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData.errors).to.not.empty;\r",
+											"    pm.expect(jsonData.errors[0].message).to.include(\"VirtoCommerce.ExperienceApiModule.Core.Infrastructure.Authorization.AuthorizationError: Access denied\");\r",
+											"});"
 										],
 										"type": "text/javascript"
 									}
@@ -29293,7 +30605,7 @@
 									"bearer": [
 										{
 											"key": "token",
-											"value": "{{AdminToken}}",
+											"value": "{{test2_userToken}}",
 											"type": "string"
 										}
 									]
@@ -29303,8 +30615,8 @@
 								"body": {
 									"mode": "graphql",
 									"graphql": {
-										"query": "query user(\n  $id: String\n  $userName: String\n  $email: String\n  $loginProvider: String\n  $providerKey: String\n) {\n  user(\n    id: $id\n    userName: $userName\n    email: $email\n    loginProvider: $loginProvider\n    providerKey: $providerKey\n  ) {\n    id\n    isAdministrator\n        userName\n    email\n    storeId\n    userName\n    userType\n    securityStamp\n    roles{\n      id\n      name\n      description\n      permissions\n    }\n  }\n}",
-										"variables": "{\n//\"id\": \"9d30a8a0-9ecf-4dc7-b273-51f6739bec87\",\n\"userName\": \"{{test2_userName1}}\",\n//\"email\": \"eXp100@mail.com\",\n\"loginProvider\":\"\",\n\"providerKey\": \"\"\n}"
+										"query": "mutation deleteUsers ($command: InputDeleteUserType!) {\n    deleteUsers (command: $command) {\n        errors {\n            code\n            description\n        }\n        succeeded\n    }\n}",
+										"variables": "{\n\"command\": {\n\"userNames\": [\n\"{{test2_name3}}\"\n]\n}\n}"
 									}
 								},
 								"url": {
@@ -29419,6 +30731,22 @@
 						},
 						{
 							"name": "Delete users [admin]",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Delete users [admin]\", function(){\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData.data.deleteUsers).to.not.empty;\r",
+											"    pm.expect(jsonData.data.deleteUsers.succeeded).to.be.equal(true);\r",
+											"    pm.expect(data.errors).to.be.undefined;\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
 							"request": {
 								"method": "POST",
 								"header": [],
@@ -29426,7 +30754,7 @@
 									"mode": "graphql",
 									"graphql": {
 										"query": "mutation deleteUsers ($command: InputDeleteUserType!) {\r\n    deleteUsers (command: $command) {\r\n        errors {\r\n            code\r\n            description\r\n        }\r\n        succeeded\r\n    }\r\n}\r\n\r\n\r\n\r\n",
-										"variables": "{\r\n  \"command\": {\r\n    \"userNames\": [\r\n      \"{{userName1}}\"\r\n    ]\r\n  }\r\n}\r\n"
+										"variables": "{\r\n  \"command\": {\r\n    \"userNames\": [\r\n      \"Mikayla_Schultz\",\"{{test2_name3}}\",\"{{test2_name2}}\",\"{{test2_userName2}}\",\"QWERTY\"\r\n    ]\r\n  }\r\n}\r\n"
 									}
 								},
 								"url": {
@@ -29436,6 +30764,213 @@
 									],
 									"path": [
 										"graphql"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Contact_1 [admin]",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Delete Contact_1 [admin]\", function(){\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData.data.deleteContact).to.eql(true);\r",
+											"    pm.expect(data.errors).to.be.undefined;\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "graphql",
+									"graphql": {
+										"query": "mutation deleteContact ($command: InputDeleteContactType!) {\r\n    deleteContact (command: $command)\r\n}\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n",
+										"variables": "{\r\n  \"command\": {\r\n    \"contactId\": \"{{test2_contactId1}}\"\r\n  }\r\n}"
+									}
+								},
+								"url": {
+									"raw": "{{url}}/graphql",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"graphql"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Contact_2 [admin]",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Delete Contact_2 [admin]\", function(){\r",
+											"    var jsonData = pm.response.json();\r",
+											"  \r",
+											"    pm.expect(jsonData.data.deleteContact).to.eql(true);\r",
+											"    pm.expect(data.errors).to.be.undefined;\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "graphql",
+									"graphql": {
+										"query": "mutation deleteContact ($command: InputDeleteContactType!) {\r\n    deleteContact (command: $command)\r\n}\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n",
+										"variables": "{\r\n  \"command\": {\r\n    \"contactId\": \"{{test2_contactId2}}\"\r\n  }\r\n}"
+									}
+								},
+								"url": {
+									"raw": "{{url}}/graphql",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"graphql"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Contact_3[admin]",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Delete Contact_3 [admin]\", function(){\r",
+											"    var jsonData = pm.response.json();\r",
+											"   \r",
+											"    pm.expect(jsonData.data.deleteContact).to.eql(true);\r",
+											"    pm.expect(data.errors).to.be.undefined;\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "graphql",
+									"graphql": {
+										"query": "mutation deleteContact ($command: InputDeleteContactType!) {\r\n    deleteContact (command: $command)\r\n}\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n",
+										"variables": "{\r\n  \"command\": {\r\n    \"contactId\": \"{{test2_contactId3}}\"\r\n  }\r\n}"
+									}
+								},
+								"url": {
+									"raw": "{{url}}/graphql",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"graphql"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete organization_1 [admin]",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Successful POST request\", function () {\r",
+											"    pm.expect(pm.response.code).to.be.oneOf([202, 204]);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "graphql",
+									"graphql": {
+										"query": "mutation deleteContact ($command: InputDeleteContactType!) {\r\n    deleteContact (command: $command)\r\n}\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n",
+										"variables": "{\r\n  \"command\": {\r\n    \"contactId\": \"{{contactId2}}\"\r\n  }\r\n}"
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/members?ids={{test2_organizationId1}}",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"members"
+									],
+									"query": [
+										{
+											"key": "ids",
+											"value": "{{test2_organizationId1}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete organization _2[admin]",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Successful POST request\", function () {\r",
+											"    pm.expect(pm.response.code).to.be.oneOf([202, 204]);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "graphql",
+									"graphql": {
+										"query": "mutation deleteContact ($command: InputDeleteContactType!) {\r\n    deleteContact (command: $command)\r\n}\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n",
+										"variables": "{\r\n  \"command\": {\r\n    \"contactId\": \"{{contactId2}}\"\r\n  }\r\n}"
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/members?ids={{test2_organizationId2}}",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"members"
+									],
+									"query": [
+										{
+											"key": "ids",
+											"value": "{{test2_organizationId2}}"
+										}
 									]
 								}
 							},
@@ -29473,10 +31008,6 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"\r",
-											"pm.test(\"Status code is 200\", function () {\r",
-											"    pm.response.to.have.status(200);\r",
-											"});\r",
 											"\r",
 											"pm.test(\"Status code is 200\", function () {\r",
 											"    pm.response.to.have.status(200);\r",
@@ -29547,14 +31078,6 @@
 									"listen": "prerequest",
 									"script": {
 										"exec": [
-											"const jar = pm.cookies.jar();\r",
-											"\r",
-											"jar.clear(pm.request.vcplatform-platform.qa.govirto.com, function (error) {\r",
-											"  //error - <Error>\r",
-											"});\r",
-											"\r",
-											"\r",
-											"\r",
 											""
 										],
 										"type": "text/javascript"
@@ -29607,13 +31130,6 @@
 									"listen": "prerequest",
 									"script": {
 										"exec": [
-											"const jar = pm.cookies.jar();\r",
-											"\r",
-											"jar.clear(pm.request.vcplatform-platform.qa.govirto.com, function (error) {\r",
-											"  //error - <Error>\r",
-											"});\r",
-											"\r",
-											"\r",
 											""
 										],
 										"type": "text/javascript"
@@ -29666,13 +31182,6 @@
 									"listen": "prerequest",
 									"script": {
 										"exec": [
-											"const jar = pm.cookies.jar();\r",
-											"\r",
-											"jar.clear(pm.request.vcplatform-platform.qa.govirto.com, function (error) {\r",
-											"  //error - <Error>\r",
-											"});\r",
-											"\r",
-											"\r",
 											""
 										],
 										"type": "text/javascript"
@@ -29729,14 +31238,6 @@
 									"listen": "prerequest",
 									"script": {
 										"exec": [
-											"const jar = pm.cookies.jar();\r",
-											"\r",
-											"jar.clear(pm.request.vcplatform-platform.qa.govirto.com, function (error) {\r",
-											"  //error - <Error>\r",
-											"});\r",
-											"\r",
-											"\r",
-											"\r",
 											""
 										],
 										"type": "text/javascript"
@@ -29785,13 +31286,6 @@
 							"script": {
 								"type": "text/javascript",
 								"exec": [
-									"const jar = pm.cookies.jar();",
-									"",
-									"jar.clear(pm.request.vcplatform-platform.qa.govirto.com, function (error) {",
-									"  //error - <Error>",
-									"});",
-									"",
-									"",
 									""
 								]
 							}
@@ -30397,6 +31891,22 @@
 		},
 		{
 			"key": "test2_userId1",
+			"value": ""
+		},
+		{
+			"key": "test2_name2",
+			"value": ""
+		},
+		{
+			"key": "test2_userId3",
+			"value": ""
+		},
+		{
+			"key": "test2_name3",
+			"value": ""
+		},
+		{
+			"key": "test2_Id2",
 			"value": ""
 		}
 	]
