@@ -20,32 +20,32 @@ namespace VirtoCommerce.XPurchase.Schemas
             IDynamicPropertyResolverService dynamicPropertyResolverService,
             ICartValidationContextFactory cartValidationContextFactory)
         {
-            Field(x => x.Cart.Id, nullable: true).Description("Shopping cart Id");
+            Field(x => x.Cart.Id, nullable: true).Description("Shopping cart ID");
             Field(x => x.Cart.Name, nullable: false).Description("Shopping cart name");
             Field(x => x.Cart.Status, nullable: true).Description("Shopping cart status");
-            Field(x => x.Cart.StoreId, nullable: true).Description("Shopping cart store id");
-            Field(x => x.Cart.ChannelId, nullable: true).Description("Shopping cart channel id");
+            Field(x => x.Cart.StoreId, nullable: true).Description("Shopping cart store ID");
+            Field(x => x.Cart.ChannelId, nullable: true).Description("Shopping cart channel ID");
             Field<BooleanGraphType>("hasPhysicalProducts",
                 "Has physical products",
                 resolve: context => AbstractTypeFactory<CartHasPhysicalProductsSpecification>.TryCreateInstance().IsSatisfiedBy(context.Source.Cart));
-            Field(x => x.Cart.IsAnonymous, nullable: true).Description("Sign that shopping cart is anonymous");
+            Field(x => x.Cart.IsAnonymous, nullable: true).Description("Displays whether the shopping cart is anonymous");
             //PT-5425: Add fields
             //Field(x => x.Customer, nullable: true).Description("Shopping cart user");
-            Field(x => x.Cart.CustomerId, nullable: true).Description("Shopping cart user id");
+            Field(x => x.Cart.CustomerId, nullable: true).Description("Shopping cart user ID");
             Field(x => x.Cart.CustomerName, nullable: true).Description("Shopping cart user name");
-            Field(x => x.Cart.OrganizationId, nullable: true).Description("Shopping cart organization id");
-            Field(x => x.Cart.IsRecuring, nullable: true).Description("Sign that shopping cart is recurring");
+            Field(x => x.Cart.OrganizationId, nullable: true).Description("Shopping cart organization ID");
+            Field(x => x.Cart.IsRecuring, nullable: true).Description("Displays whether the shopping cart is recurring");
             Field(x => x.Cart.Comment, nullable: true).Description("Shopping cart text comment");
 
             // Characteristics
-            Field(x => x.Cart.VolumetricWeight, nullable: true).Description("Shopping cart value of volumetric weight");
-            Field(x => x.Cart.WeightUnit, nullable: true).Description("Shopping cart value of weight unit");
-            Field(x => x.Cart.Weight, nullable: true).Description("Shopping cart value of shopping cart weight");
+            Field(x => x.Cart.VolumetricWeight, nullable: true).Description("Shopping cart volumetric weight value");
+            Field(x => x.Cart.WeightUnit, nullable: true).Description("Shopping cart weight unit value");
+            Field(x => x.Cart.Weight, nullable: true).Description("Shopping cart weight value");
             //PT-5425: Add fields
-            //Field(x => x.MeasureUnit, nullable: true).Description("Shopping cart value of measurement unit");
-            //Field(x => x.Height, nullable: true).Description("Shopping cart value of height");
-            //Field(x => x.Length, nullable: true).Description("Shopping cart value of length");
-            //Field(x => x.Width, nullable: true).Description("Shopping cart value of width");
+            //Field(x => x.MeasureUnit, nullable: true).Description("Shopping cart measurement unit value");
+            //Field(x => x.Height, nullable: true).Description("Shopping cart height");
+            //Field(x => x.Length, nullable: true).Description("Shopping cart length value");
+            //Field(x => x.Width, nullable: true).Description("Shopping cart width value");
 
             // Money
             Field<MoneyType>("total",
@@ -58,18 +58,18 @@ namespace VirtoCommerce.XPurchase.Schemas
                 "Subtotal with tax",
                 resolve: context => context.Source.Cart.SubTotalWithTax.ToMoney(context.Source.Currency));
             Field<MoneyType>("extendedPriceTotal",
-                "Extended price total",
+                "Total extended price",
                 resolve: context => context.Source.LineItems.Sum(i => i.ExtendedPrice).ToMoney(context.Source.Currency));
             Field<MoneyType>("extendedPriceTotalWithTax",
-                "Extended price total with tax",
+                "Total extended price with tax",
                 resolve: context => context.Source.LineItems.Sum(i => i.ExtendedPriceWithTax).ToMoney(context.Source.Currency));
             Field<CurrencyType>("currency",
                 "Currency",
                 resolve: context => context.Source.Currency);
             Field<MoneyType>("taxTotal",
-                "Tax total",
+                "Total tax",
                 resolve: context => context.Source.Cart.TaxTotal.ToMoney(context.Source.Currency));
-            Field(x => x.Cart.TaxPercentRate, nullable: true).Description("Tax percent rate");
+            Field(x => x.Cart.TaxPercentRate, nullable: true).Description("Tax percentage");
             Field(x => x.Cart.TaxType, nullable: true).Description("Shipping tax type");
             Field<ListGraphType<TaxDetailType>>("taxDetails",
                 "Tax details",
@@ -84,10 +84,10 @@ namespace VirtoCommerce.XPurchase.Schemas
                 "Shipping price with tax",
                 resolve: context => context.Source.Cart.ShippingTotalWithTax.ToMoney(context.Source.Currency));
             Field<MoneyType>("shippingTotal",
-                "Shipping total",
+                "Total shipping",
                 resolve: context => context.Source.Cart.ShippingTotal.ToMoney(context.Source.Currency));
             Field<MoneyType>("shippingTotalWithTax",
-                "Shipping total with tax",
+                "Total shipping with tax",
                 resolve: context => context.Source.Cart.ShippingTotalWithTax.ToMoney(context.Source.Currency));
             ExtendableField<ListGraphType<ShipmentType>>("shipments",
                 "Shipments",
@@ -112,10 +112,10 @@ namespace VirtoCommerce.XPurchase.Schemas
                 "Payment price with tax",
                 resolve: context => context.Source.Cart.PaymentTotalWithTax.ToMoney(context.Source.Currency));
             Field<MoneyType>("paymentTotal",
-                "Payment total",
+                "Total payment",
                 resolve: context => context.Source.Cart.PaymentTotal.ToMoney(context.Source.Currency));
             Field<MoneyType>("paymentTotalWithTax",
-                "Payment total with tax",
+                "Total payment with tax",
                 resolve: context => context.Source.Cart.PaymentTotalWithTax.ToMoney(context.Source.Currency));
             ExtendableField<ListGraphType<PaymentType>>("payments",
                 "Payments",
@@ -141,18 +141,18 @@ namespace VirtoCommerce.XPurchase.Schemas
 
             // Handling totals
             Field<MoneyType>("handlingTotal",
-                "Handling total",
+                "Total handling",
                 resolve: context => context.Source.Cart.HandlingTotal.ToMoney(context.Source.Currency));
             Field<MoneyType>("handlingTotalWithTax",
-                "Handling total with tax",
+                "Total handling with tax",
                 resolve: context => context.Source.Cart.HandlingTotalWithTax.ToMoney(context.Source.Currency));
 
             // Discounts
             Field<MoneyType>("discountTotal",
-                "Discount total",
+                "Total discount",
                 resolve: context => context.Source.Cart.DiscountTotal.ToMoney(context.Source.Currency));
             Field<MoneyType>("discountTotalWithTax",
-                "Discount total with tax",
+                "Total discount with tax",
                 resolve: context => context.Source.Cart.DiscountTotalWithTax.ToMoney(context.Source.Currency));
             Field<ListGraphType<DiscountType>>("discounts",
                 "Discounts",
@@ -179,7 +179,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                 resolve: context => context.Source.LineItems);
 
             Field<IntGraphType>("itemsCount",
-                "Count of different items",
+                "Item count",
                 resolve: context => context.Source.LineItems.Count());
             Field<IntGraphType>("itemsQuantity",
                 "Quantity of items",
@@ -199,7 +199,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                 QueryArgumentPresets.GetArgumentForDynamicProperties(),
                 context => dynamicPropertyResolverService.LoadDynamicPropertyValues(context.Source.Cart, context.GetArgumentOrValue<string>("cultureName")));
 
-            FieldAsync<BooleanGraphType>("isValid", "The flag indicates the valid cart",
+            FieldAsync<BooleanGraphType>("isValid", "Shows whether the cart is valid",
                 QueryArgumentPresets.GetArgumentsForCartValidator(),
                 resolve: async context =>
                 {
@@ -210,7 +210,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                 deprecationReason: "Deprecated, because of useless (no need to know validation state without details). Use validationErrors field."
             );
 
-            FieldAsync<ListGraphType<ValidationErrorType>>("validationErrors", "A set of errors in case of invalid cart",
+            FieldAsync<ListGraphType<ValidationErrorType>>("validationErrors", "A set of errors in case the cart is invalid",
                 QueryArgumentPresets.GetArgumentsForCartValidator(),
                 resolve: async context =>
                 {
