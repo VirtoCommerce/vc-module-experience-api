@@ -5,7 +5,7 @@ using AutoMapper;
 using PipelineNet.Middleware;
 using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.CustomerModule.Core.Model;
-using VirtoCommerce.ExperienceApiModule.Core;
+using VirtoCommerce.CustomerModule.Core.Services;
 using VirtoCommerce.MarketingModule.Core.Model.Promotions;
 using VirtoCommerce.Platform.Core.DynamicProperties;
 using VirtoCommerce.PricingModule.Core.Model;
