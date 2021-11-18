@@ -57,8 +57,8 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 // when the Property object was created dynamically by grouping
                 resolve: context => context.Source.Values.IsNullOrEmpty()
                         ? context.Source.ValueType.ToString()
-                        : context.Source.Values.Select(x => x.ValueType).FirstOrDefault().ToString()
-            );
+                        : context.Source.Values.Select(x => x.ValueType).FirstOrDefault().ToString(),
+            description: "ValueType of the property.");
 
             Field<StringGraphType>(
                 "value",
