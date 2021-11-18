@@ -74,13 +74,13 @@ jobs:
         args: '-noSplash -retry=0 -testSuitePath="Test Suites/DynamicPropertyCreation" -browserType="Chrome" -apiKey= ${{ secrets.KATALON_API_KEY }} -g_urlBack="http://localhost:8090" -g_urlFront="http://localhost:8080" -executionProfile="Regression-QA" --config -webui.autoUpdateDrivers=true'
    
     - name: Katalon Report Uploader
-        if: always()
-        uses: katalon-studio/report-uploader@v0.0.7.11
-        env:
-          PASSWORD: ${{ secrets.KATALON_API_KEY }}
-          PROJECT_ID: 223504
-          TYPE: junit
-          REPORT_PATH: ${{ github.workspace }}/vc-quality-gate-katalon/Reports
+      if: always( )
+      uses: katalon-studio/report-uploader@v0.0.7.11
+      env:
+        PASSWORD: ${{ secrets.KATALON_API_KEY }}
+        PROJECT_ID: 223504
+        TYPE: junit
+        REPORT_PATH: ${{ github.workspace }}/vc-quality-gate-katalon/Reports
     
     
     - name: Newman Action
