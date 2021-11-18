@@ -52,6 +52,9 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             Field<StringGraphType>(
                 "valueType",
+                // since PropertyType is used both for property metadata queries and product/category/catalog queries
+                // to infer "valueType" need to look in ValueType property in case of metadata query or in the first value in case
+                // when the Property object was created dynamically by grouping
                 resolve: context => context.Source.Values.IsNullOrEmpty()
                         ? context.Source.ValueType.ToString()
                         : context.Source.Values.Select(x => x.ValueType).FirstOrDefault().ToString()
