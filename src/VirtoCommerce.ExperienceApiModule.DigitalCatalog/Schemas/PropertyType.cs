@@ -52,7 +52,9 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             Field<StringGraphType>(
                 "valueType",
-                resolve: context => context.Source.Values.Select(x => x.ValueType).FirstOrDefault().ToString()
+                resolve: context => context.Source.Values.IsNullOrEmpty()
+                        ? context.Source.ValueType.ToString()
+                        : context.Source.Values.Select(x => x.ValueType).FirstOrDefault().ToString()
             );
 
             Field<StringGraphType>(
