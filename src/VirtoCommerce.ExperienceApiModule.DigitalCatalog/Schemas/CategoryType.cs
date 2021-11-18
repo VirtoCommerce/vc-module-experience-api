@@ -6,6 +6,7 @@ using GraphQL;
 using GraphQL.DataLoader;
 using GraphQL.Types;
 using MediatR;
+using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
@@ -114,6 +115,41 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                     result = result.Where(x => names.Contains(x.Name, StringComparer.InvariantCultureIgnoreCase)).ToList();
                 }
                 return result;
+            });
+
+            Field<ListGraphType<DescriptionType>>("descriptions",
+                arguments: new QueryArguments(new QueryArgument<StringGraphType> { Name = "type" }),
+                resolve: context =>
+            {
+                var descriptions = context.Source.Category.Descriptions;
+                var cultureName = context.GetArgumentOrValue<string>("cultureName");
+                var type = context.GetArgumentOrValue<string>("type");
+                if (cultureName != null)
+                {
+                    descriptions = descriptions.Where(x => string.IsNullOrEmpty(x.LanguageCode) || x.LanguageCode.EqualsInvariant(cultureName)).ToList();
+                }
+                if (type != null)
+                {
+                    descriptions = descriptions.Where(x => x.DescriptionType?.EqualsInvariant(type) ?? true).ToList();
+                }
+                return descriptions;
+            });
+
+            Field<DescriptionType>("description",
+                arguments: new QueryArguments(new QueryArgument<StringGraphType> { Name = "type" }),
+                resolve: context =>
+            {
+                var descriptions = context.Source.Category.Descriptions;
+                var type = context.GetArgumentOrValue<string>("type");
+                var cultureName = context.GetArgumentOrValue<string>("cultureName");
+
+                if (!descriptions.IsNullOrEmpty())
+                {
+                    return descriptions.Where(x => x.DescriptionType.EqualsInvariant(type ?? "FullReview")).FirstBestMatchForLanguage(cultureName) as CategoryDescription
+                        ?? descriptions.FirstBestMatchForLanguage(cultureName) as CategoryDescription;
+                }
+
+                return null;
             });
 
         }
