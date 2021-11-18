@@ -7,15 +7,16 @@ namespace VirtoCommerce.XPurchase.Schemas
     {
         public InputPaymentType()
         {
-            Field(x => x.Id, nullable: true).Description("the payment id");
-            Field(x => x.OuterId, nullable: true).Description("Value of payment outer id");
-            Field(x => x.PaymentGatewayCode, nullable: true).Description("Value of payment gateway code");
+            Field(x => x.Id, nullable: true).Description("Payment ID");
+            Field(x => x.OuterId, nullable: true).Description("Payment outer ID value");
+            Field(x => x.PaymentGatewayCode, nullable: true).Description("Payment gateway code value");
             Field<InputAddressType>("billingAddress");
             Field(x => x.Currency, nullable: true);
             Field(x => x.Price, nullable: true);
             Field(x => x.Amount, nullable: true);
 
-            Field<ListGraphType<InputDynamicPropertyValueType>>("dynamicProperties");
+            Field<ListGraphType<InputDynamicPropertyValueType>>("dynamicProperties",
+                "Dynamic properties");
         }
     }
 }

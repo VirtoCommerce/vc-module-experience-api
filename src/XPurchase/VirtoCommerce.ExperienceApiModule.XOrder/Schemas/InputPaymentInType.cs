@@ -34,13 +34,18 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field(x => x.Sum);
             Field(x => x.TaxTotal);
             Field(x => x.Currency);
-            Field<IntGraphType>(nameof(PaymentIn.PaymentStatus));
+            Field<IntGraphType>(nameof(PaymentIn.PaymentStatus),
+                "Payment status");
             Field(x => x.TaxType, true);
 
-            Field<ListGraphType<InputOrderTaxDetailType>>(nameof(PaymentIn.TaxDetails));
-            Field<ListGraphType<InputOrderDiscountType>>(nameof(PaymentIn.Discounts));
-            Field<InputOrderPaymentMethodType>(nameof(PaymentIn.PaymentMethod));
-            Field<InputOrderAddressType>(nameof(PaymentIn.BillingAddress));
+            Field<ListGraphType<InputOrderTaxDetailType>>(nameof(PaymentIn.TaxDetails),
+                "Tax details");
+            Field<ListGraphType<InputOrderDiscountType>>(nameof(PaymentIn.Discounts),
+                "Discounts");
+            Field<InputOrderPaymentMethodType>(nameof(PaymentIn.PaymentMethod),
+                "Payment method");
+            Field<InputOrderAddressType>(nameof(PaymentIn.BillingAddress),
+                "Billing address");
 
             //PT-5383: Add additional properties to XOrder types:
             //Transactions

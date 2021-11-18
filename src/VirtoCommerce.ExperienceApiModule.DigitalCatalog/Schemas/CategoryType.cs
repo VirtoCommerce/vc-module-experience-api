@@ -81,13 +81,18 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 return null;
             });
 
-            Field<BooleanGraphType>("hasParent", resolve: context => TryGetParentId(context, out _));
-
-            Field<ListGraphType<OutlineType>>("outlines", resolve: context => context.Source.Category.Outlines);
-
-            Field<ListGraphType<ImageType>>("images", resolve: context => context.Source.Category.Images);
-
-            Field<ListGraphType<BreadcrumbType>>("breadcrumbs", resolve: context =>
+            Field<BooleanGraphType>("hasParent",
+                "Have a parent",
+                resolve: context => TryGetParentId(context, out _));
+            Field<ListGraphType<OutlineType>>("outlines",
+                "Outlines",
+                resolve: context => context.Source.Category.Outlines);
+            Field<ListGraphType<ImageType>>("images",
+                "Images",
+                resolve: context => context.Source.Category.Images);
+            Field<ListGraphType<BreadcrumbType>>("breadcrumbs",
+                "Breadcrumbs",
+                resolve: context =>
             {
 
                 var store = context.GetArgumentOrValue<Store>("store");

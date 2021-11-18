@@ -7,15 +7,24 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
     {
         public InputCreateContactType()
         {
-            Field<StringGraphType>(nameof(Contact.FullName));
-            Field<NonNullGraphType<StringGraphType>>(nameof(Contact.FirstName));
-            Field<NonNullGraphType<StringGraphType>>(nameof(Contact.LastName));
-            Field<StringGraphType>(nameof(Contact.MiddleName));
-            Field<StringGraphType>(nameof(Contact.Salutation));
-            Field<StringGraphType>(nameof(Contact.PhotoUrl));
-            Field<StringGraphType>(nameof(Contact.TimeZone));
-            Field<StringGraphType>(nameof(Contact.DefaultLanguage));
-            Field<ListGraphType<StringGraphType>>(nameof(Contact.Organizations));
+            Field<StringGraphType>(nameof(Contact.FullName),
+                "Full name");
+            Field<NonNullGraphType<StringGraphType>>(nameof(Contact.FirstName),
+                "First name");
+            Field<NonNullGraphType<StringGraphType>>(nameof(Contact.LastName),
+                "Last name");
+            Field<StringGraphType>(nameof(Contact.MiddleName),
+                "Middle name");
+            Field<StringGraphType>(nameof(Contact.Salutation),
+                "Title");
+            Field<StringGraphType>(nameof(Contact.PhotoUrl),
+                "Photo URL");
+            Field<StringGraphType>(nameof(Contact.TimeZone),
+                "Time zone");
+            Field<StringGraphType>(nameof(Contact.DefaultLanguage),
+                "Default language");
+            Field<ListGraphType<StringGraphType>>(nameof(Contact.Organizations),
+                "Organizations");
         }
     }
 }

@@ -6,7 +6,8 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
     {
         public InputDeleteUserType()
         {
-            Field<NonNullGraphType<ListGraphType<StringGraphType>>>("userNames");
+            Field<NonNullGraphType<ListGraphType<StringGraphType>>>("userNames",
+                "User names");
         }
     }
 }

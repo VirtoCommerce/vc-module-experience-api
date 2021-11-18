@@ -8,6 +8,7 @@ using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
 using VirtoCommerce.ExperienceApiModule.Web.Extensions;
+using VirtoCommerce.ExperienceApiModule.XCMS.Extensions;
 using VirtoCommerce.ExperienceApiModule.XOrder.Extensions;
 using VirtoCommerce.ExperienceApiModule.XProfile.Extensions;
 using VirtoCommerce.MarketingModule.Core.Model.Promotions;
@@ -57,8 +58,7 @@ namespace VirtoCommerce.ExperienceApiModule.Web
             services.AddXProfile(graphQlBuilder);
             services.AddXPurchase(graphQlBuilder);
             services.AddXOrder(graphQlBuilder);
-
-
+            services.AddXCMS(graphQlBuilder);
 
             services.AddSingleton<IStoreCurrencyResolver, StoreCurrencyResolver>();
 

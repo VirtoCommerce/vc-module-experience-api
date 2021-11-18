@@ -31,6 +31,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             ExtendableField<AvailabilityDataType>(
                 "availabilityData",
+                "Availability data",
                 resolve: context => new ExpAvailabilityData
                 {
                     AvailableQuantity = context.Source.AvailableQuantity,
@@ -40,11 +41,17 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                     IsInStock = context.Source.IsInStock
                 });
 
-            Field<ListGraphType<ImageType>>("images", resolve: context => context.Source.IndexedProduct.Images);
+            Field<ListGraphType<ImageType>>("images",
+                "Product images",
+                resolve: context => context.Source.IndexedProduct.Images);
 
-            Field<PriceType>("price", resolve: context => context.Source.AllPrices.FirstOrDefault() ?? new ProductPrice(context.GetCurrencyByCode(context.GetValue<string>("currencyCode"))));
+            Field<PriceType>("price",
+                "Product price",
+                resolve: context => context.Source.AllPrices.FirstOrDefault() ?? new ProductPrice(context.GetCurrencyByCode(context.GetValue<string>("currencyCode"))));
 
-            Field<ListGraphType<PriceType>>("prices", resolve: context => context.Source.AllPrices);
+            Field<ListGraphType<PriceType>>("prices",
+                "Product prices",
+                resolve: context => context.Source.AllPrices);
 
             ExtendableField<ListGraphType<PropertyType>>("properties", resolve: context =>
             {
@@ -52,9 +59,13 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 return context.Source.IndexedProduct.Properties.ExpandByValues(cultureName);
             });
 
-            Field<ListGraphType<AssetType>>("assets", resolve: context => context.Source.IndexedProduct.Assets);
+            Field<ListGraphType<AssetType>>("assets",
+                "Assets",
+                resolve: context => context.Source.IndexedProduct.Assets);
 
-            Field<ListGraphType<OutlineType>>("outlines", resolve: context => context.Source.IndexedProduct.Outlines);
+            Field<ListGraphType<OutlineType>>("outlines",
+                "Outlines",
+                resolve: context => context.Source.IndexedProduct.Outlines);
         }
     }
 }

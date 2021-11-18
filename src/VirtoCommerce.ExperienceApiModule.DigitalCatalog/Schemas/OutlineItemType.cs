@@ -11,7 +11,9 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             Field(x => x.Id, nullable: false);
             Field(x => x.Name, nullable: true);
             Field(x => x.SeoObjectType, nullable: true);
-            Field<ListGraphType<SeoInfoType>>("seoInfos", resolve: context => context.Source.SeoInfos);
+            Field<ListGraphType<SeoInfoType>>("seoInfos",
+                "SEO info",
+                resolve: context => context.Source.SeoInfos);
         }
     }
 }

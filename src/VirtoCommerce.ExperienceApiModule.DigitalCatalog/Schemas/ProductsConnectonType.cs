@@ -13,12 +13,13 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
         public ProductsConnectonType()
         {
             Field<ListGraphType<FilterFacetResultType>>("filter_facets",
-               resolve: context => ((ProductsConnection<ExpProduct>)context.Source).Facets.OfType<FilterFacetResult>());
-
+                "Filter facets",
+                resolve: context => ((ProductsConnection<ExpProduct>)context.Source).Facets.OfType<FilterFacetResult>());
             Field<ListGraphType<RangeFacetResultType>>("range_facets",
-               resolve: context => ((ProductsConnection<ExpProduct>)context.Source).Facets.OfType<RangeFacetResult>());
-
+                "Range facets",
+                resolve: context => ((ProductsConnection<ExpProduct>)context.Source).Facets.OfType<RangeFacetResult>());
             Field<ListGraphType<TermFacetResultType>>("term_facets",
+                "Term facets",
                 resolve: context => ((ProductsConnection<ExpProduct>)context.Source).Facets.OfType<TermFacetResult>());
         }
     }

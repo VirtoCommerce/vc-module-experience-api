@@ -16,9 +16,15 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
         {
             _dynamicPropertyDictionaryItemsService = dynamicPropertyDictionaryItemsService;
 
-            Field<StringGraphType>("name", "Property Name", resolve: context => context.Source.PropertyName);
-            Field<StringGraphType>(nameof(DynamicPropertyObjectValue.ValueType), "Value Type", resolve: context => context.Source.ValueType.ToString());
-            Field<StringGraphType>(nameof(DynamicPropertyObjectValue.Value), "Property Value", resolve: context => context.Source.Value?.ToString());
+            Field<StringGraphType>("name",
+                "Property name",
+                resolve: context => context.Source.PropertyName);
+            Field<StringGraphType>(nameof(DynamicPropertyObjectValue.ValueType),
+                "Value type",
+                resolve: context => context.Source.ValueType.ToString());
+            Field<StringGraphType>(nameof(DynamicPropertyObjectValue.Value),
+                "Property value",
+                resolve: context => context.Source.Value?.ToString());
 
             FieldAsync<DictionaryItemType>("dictionaryItem", "Associated dictionary item", resolve: async context =>
             {
