@@ -5,6 +5,7 @@ using VirtoCommerce.CustomerModule.Core.Model;
 using VirtoCommerce.CustomerModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.Core;
 using VirtoCommerce.Platform.Core.Security;
+using IMemberResolver = VirtoCommerce.ExperienceApiModule.Core.IMemberResolver;
 
 namespace VirtoCommerce.ExperienceApiModule.XProfile
 {

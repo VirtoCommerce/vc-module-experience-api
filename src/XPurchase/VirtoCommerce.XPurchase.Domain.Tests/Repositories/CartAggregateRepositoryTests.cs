@@ -153,6 +153,11 @@ namespace VirtoCommerce.XPurchase.Tests.Repositories
                 throw new System.NotImplementedException();
             }
 
+            public Task<IReadOnlyCollection<ShoppingCart>> GetAsync(List<string> ids, string responseGroup = null)
+            {
+                throw new System.NotImplementedException();
+            }
+
             public Task<ShoppingCart> GetByIdAsync(string id, string responseGroup = null)
             {
                 throw new System.NotImplementedException();

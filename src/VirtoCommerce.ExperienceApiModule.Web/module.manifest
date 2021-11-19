@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <module xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <id>VirtoCommerce.ExperienceApi</id>
-  <version>1.47.0</version>
+  <version>3.200.0</version>
   <version-tag />
-  <platformVersion>3.66.0</platformVersion>
+  <platformVersion>3.200.0</platformVersion>
   <title>Commerce experience API module</title>
   <description />
   <authors>
@@ -29,16 +29,16 @@
   <assemblyFile>VirtoCommerce.ExperienceApiModule.Web.dll</assemblyFile>
   <moduleType>VirtoCommerce.ExperienceApiModule.Web.Module, VirtoCommerce.ExperienceApiModule.Web</moduleType>
   <dependencies>
-    <dependency id="VirtoCommerce.Core" version="3.22.0" />
-    <dependency id="VirtoCommerce.Cart" version="3.22.0" />
-    <dependency id="VirtoCommerce.Marketing" version="3.23.0" />
-    <dependency id="VirtoCommerce.Inventory" version="3.2.0" />
-    <dependency id="VirtoCommerce.Payment" version="3.1.0" />
-    <dependency id="VirtoCommerce.Shipping" version="3.1.0" />
-    <dependency id="VirtoCommerce.Customer" version="3.18.0" />
-    <dependency id="VirtoCommerce.Orders" version="3.33.0" />
-    <dependency id="VirtoCommerce.Store" version="3.21.0" />
-    <dependency id="VirtoCommerce.Catalog" version="3.55.0" />
+    <dependency id="VirtoCommerce.Core" version="3.200.0" />
+    <dependency id="VirtoCommerce.Cart" version="3.200.0" />
+    <dependency id="VirtoCommerce.Marketing" version="3.200.0" />
+    <dependency id="VirtoCommerce.Inventory" version="3.200.0" />
+    <dependency id="VirtoCommerce.Payment" version="3.200.0" />
+    <dependency id="VirtoCommerce.Shipping" version="3.200.0" />
+    <dependency id="VirtoCommerce.Customer" version="3.200.0" />
+    <dependency id="VirtoCommerce.Orders" version="3.200.0" />
+    <dependency id="VirtoCommerce.Store" version="3.200.0" />
+    <dependency id="VirtoCommerce.Catalog" version="3.200.0" />
   </dependencies>
   <incompatibilities />
   <groups>
