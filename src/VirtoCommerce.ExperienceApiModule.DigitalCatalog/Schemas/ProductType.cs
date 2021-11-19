@@ -293,7 +293,16 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
               .PageSize(20)
               .ResolveAsync(async context =>
               {
-                  return await ResolveConnectionAsync(mediator, context);
+                  return await ResolveAssociationConnectionAsync(mediator, context);
+              });
+
+
+            Connection<VideoType>()
+              .Name("videos")
+              .PageSize(20)
+              .ResolveAsync(async context =>
+              {
+                  return await ResolveVideosConnectionAsync(mediator, context);
               });
         }
 
@@ -306,7 +315,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             return result;
         }
 
-        private static async Task<object> ResolveConnectionAsync(IMediator mediator, IResolveConnectionContext<ExpProduct> context)
+        private static async Task<object> ResolveAssociationConnectionAsync(IMediator mediator, IResolveConnectionContext<ExpProduct> context)
         {
             var first = context.First;
 
@@ -325,6 +334,26 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             var response = await mediator.Send(query);
 
             return new PagedConnection<ProductAssociation>(response.Result.Results, query.Skip, query.Take, response.Result.TotalCount);
+        }
+
+        private static async Task<object> ResolveVideosConnectionAsync(IMediator mediator, IResolveConnectionContext<ExpProduct> context)
+        {
+            var first = context.First;
+
+            int.TryParse(context.After, out var skip);
+
+            var query = new SearchVideoQuery
+            {
+                Skip = skip,
+                Take = first ?? context.PageSize ?? 10,
+                OwnerType = "Product",
+                OwnerId = context.Source.Id,
+                CultureName = context.GetArgumentOrValue<string>("cultureName")
+            };
+
+            var response = await mediator.Send(query);
+
+            return new PagedConnection<Video>(response.Result.Results, query.Skip, query.Take, response.Result.TotalCount);
         }
     }
 }
