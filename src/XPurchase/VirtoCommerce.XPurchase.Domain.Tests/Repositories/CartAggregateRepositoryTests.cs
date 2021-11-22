@@ -10,11 +10,13 @@ using VirtoCommerce.CartModule.Core.Services;
 using VirtoCommerce.CartModule.Data.Model;
 using VirtoCommerce.CartModule.Data.Repositories;
 using VirtoCommerce.CoreModule.Core.Currency;
+using VirtoCommerce.CustomerModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.Core;
 using VirtoCommerce.Platform.Core.Caching;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.GenericCrud;
 using VirtoCommerce.Platform.Data.GenericCrud;
+using VirtoCommerce.StoreModule.Core.Model;
 using VirtoCommerce.StoreModule.Core.Services;
 using VirtoCommerce.XPurchase.Tests.Helpers;
 using Xunit;
@@ -36,14 +38,13 @@ namespace VirtoCommerce.XPurchase.Tests.Repositories
             _shoppingCartSearchService = new Mock<ShoppingCartSearchServiceStub>();
             _shoppingCartService = new Mock<ShoppingCartServiceStub>();
             _currencyService = new Mock<ICurrencyService>();
-            _currencyService = new Mock<ICurrencyService>();
             _storeService = new Mock<IStoreService>();
             _memberResolver = new Mock<IMemberResolver>();
 
             repository = new CartAggregateRepository(
                 () => _fixture.Create<CartAggregate>(),
                 _shoppingCartSearchService.Object,
-               _shoppingCartService.Object,
+                _shoppingCartService.Object,
                 _currencyService.Object,
                 _memberResolver.Object,
                 _storeService.Object,
@@ -119,7 +120,54 @@ namespace VirtoCommerce.XPurchase.Tests.Repositories
 
         #region InnerGetCartAggregateFromCartAsync
 
-        // PT-5331: Write tests
+        [Fact]
+        public async Task GetCartForShoppingCartAsync_CartFound_AggregateReturnedCorrectly()
+        {
+            // Arrange
+            var cartAggregate = GetValidCartAggregate();
+
+            var repository = new CartAggregateRepository(
+                 () => cartAggregate,
+                 _shoppingCartSearchService.Object,
+                 _shoppingCartService.Object,
+                 _currencyService.Object,
+                 _memberResolver.Object,
+                 _storeService.Object,
+                 _cartProductServiceMock.Object
+                 );
+
+            var storeId = "Store";
+            var store = _fixture.Create<Store>();
+            store.Id = storeId;
+
+            var shoppingCart = _fixture.Create<ShoppingCart>();
+            shoppingCart.StoreId = storeId;
+
+            _storeService.Setup(x => x.GetByIdAsync(It.Is<string>(x => x == storeId), It.IsAny<string>()))
+                .ReturnsAsync(store);
+
+            var currencies = _fixture.CreateMany<Currency>(1).ToList();
+
+            _currencyService.Setup(x => x.GetAllCurrenciesAsync())
+                .ReturnsAsync(currencies);
+
+            var customer = _fixture.Create<Contact>();
+            _memberResolver.Setup(x => x.ResolveMemberByIdAsync(It.Is<string>(x => x == shoppingCart.CustomerId)))
+                .ReturnsAsync(customer);
+
+            _cartProductServiceMock.Setup(x => x.GetCartProductsByIdsAsync(It.Is<CartAggregate>(x => x == cartAggregate), It.IsAny<IEnumerable<string>>()))
+                .ReturnsAsync(new List<CartProduct>());
+
+            // Act
+            var result = await repository.GetCartForShoppingCartAsync(shoppingCart);
+
+            // Assert
+            result.Id.Should().Be(shoppingCart.Id);
+            result.Cart.Should().Be(shoppingCart);
+            result.Member.Should().Be(customer);
+            result.Store.Should().Be(store);
+            result.Currency.Code.Should().Be(currencies.FirstOrDefault().Code);
+        }
 
         #endregion InnerGetCartAggregateFromCartAsync
 
