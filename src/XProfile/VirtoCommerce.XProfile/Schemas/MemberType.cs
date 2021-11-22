@@ -15,10 +15,12 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
             Field(x => x.Member.MemberType);
             Field(x => x.Member.Name, true);
             Field(x => x.Member.OuterId, true);
-            ExtendableField<ListGraphType<MemberAddressType>>("addresses", resolve: context => context.Source.Member.Addresses);
+            ExtendableField<ListGraphType<MemberAddressType>>("addresses",
+                "Addresses",
+                resolve: context => context.Source.Member.Addresses);
             ExtendableField<NonNullGraphType<ListGraphType<DynamicPropertyValueType>>>(
                 "dynamicProperties",
-                "Contact's dynamic property values",
+                "Contact dynamic property values",
                 QueryArgumentPresets.GetArgumentForDynamicProperties(),
                 context => dynamicPropertyResolverService.LoadDynamicPropertyValues(context.Source.Member, context.GetArgumentOrValue<string>("cultureName")));
             Field("phones", x => x.Member.Phones);

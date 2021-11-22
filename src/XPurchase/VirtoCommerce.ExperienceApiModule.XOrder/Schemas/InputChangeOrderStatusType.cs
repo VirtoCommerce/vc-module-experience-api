@@ -6,8 +6,10 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
     {
         public InputChangeOrderStatusType()
         {
-            Field<NonNullGraphType<StringGraphType>>("orderId");
-            Field<NonNullGraphType<StringGraphType>>("status");
+            Field<NonNullGraphType<StringGraphType>>("orderId",
+                "Order ID");
+            Field<NonNullGraphType<StringGraphType>>("status",
+                "Order status");
         }
     }
 }

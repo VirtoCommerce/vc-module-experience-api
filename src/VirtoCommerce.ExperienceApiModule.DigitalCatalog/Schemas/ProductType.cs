@@ -66,7 +66,9 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             Field(d => d.IndexedProduct.Id).Description("The unique ID of the product.");
             Field(d => d.IndexedProduct.Code, nullable: false).Description("The product SKU.");
-            Field<StringGraphType>("catalogId", resolve: context => context.Source.IndexedProduct.CatalogId);
+            Field<StringGraphType>("catalogId",
+                "The unique ID of the catalog",
+                resolve: context => context.Source.IndexedProduct.CatalogId);
             Field(d => d.IndexedProduct.ProductType, nullable: true).Description("The type of product");
 
             FieldAsync<StringGraphType>("outline", resolve: async context =>
@@ -204,6 +206,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             Field(
                 GraphTypeExtenstionHelper.GetActualType<AvailabilityDataType>(),
                 "availabilityData",
+                "Product availability data",
                 resolve: context => new ExpAvailabilityData
                 {
                     AvailableQuantity = context.Source.AvailableQuantity,
@@ -217,6 +220,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             Field<ListGraphType<ImageType>>(
                 "images",
+                "Product images",
                 resolve: context =>
                 {
                     var images = context.Source.IndexedProduct.Images;
@@ -233,10 +237,12 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             Field<PriceType>(
                 "price",
+                "Product price",
                 resolve: context => context.Source.AllPrices.FirstOrDefault() ?? new ProductPrice(context.GetCurrencyByCode(context.GetValue<string>("currencyCode"))));
 
             Field<ListGraphType<PriceType>>(
                 "prices",
+                "Product prices",
                 resolve: context => context.Source.AllPrices);
 
             ExtendableField<ListGraphType<PropertyType>>("properties",
@@ -255,6 +261,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             Field<ListGraphType<AssetType>>(
                 "assets",
+                "Assets",
                 resolve: context =>
                 {
                     var assets = context.Source.IndexedProduct.Assets;
@@ -269,9 +276,9 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                     };
                 });
 
-            Field<ListGraphType<OutlineType>>("outlines", resolve: context => context.Source.IndexedProduct.Outlines);//.RootAlias("__object.outlines");
+            Field<ListGraphType<OutlineType>>("outlines", "Outlines", resolve: context => context.Source.IndexedProduct.Outlines);//.RootAlias("__object.outlines");
 
-            Field<ListGraphType<BreadcrumbType>>("breadcrumbs", resolve: context =>
+            Field<ListGraphType<BreadcrumbType>>("breadcrumbs", "Breadcrumbs", resolve: context =>
             {
                 var store = context.GetArgumentOrValue<Store>("store");
                 var cultureName = context.GetValue<string>("cultureName");
@@ -286,7 +293,16 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
               .PageSize(20)
               .ResolveAsync(async context =>
               {
-                  return await ResolveConnectionAsync(mediator, context);
+                  return await ResolveAssociationConnectionAsync(mediator, context);
+              });
+
+
+            Connection<VideoType>()
+              .Name("videos")
+              .PageSize(20)
+              .ResolveAsync(async context =>
+              {
+                  return await ResolveVideosConnectionAsync(mediator, context);
               });
         }
 
@@ -299,7 +315,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             return result;
         }
 
-        private static async Task<object> ResolveConnectionAsync(IMediator mediator, IResolveConnectionContext<ExpProduct> context)
+        private static async Task<object> ResolveAssociationConnectionAsync(IMediator mediator, IResolveConnectionContext<ExpProduct> context)
         {
             var first = context.First;
 
@@ -318,6 +334,26 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             var response = await mediator.Send(query);
 
             return new PagedConnection<ProductAssociation>(response.Result.Results, query.Skip, query.Take, response.Result.TotalCount);
+        }
+
+        private static async Task<object> ResolveVideosConnectionAsync(IMediator mediator, IResolveConnectionContext<ExpProduct> context)
+        {
+            var first = context.First;
+
+            int.TryParse(context.After, out var skip);
+
+            var query = new SearchVideoQuery
+            {
+                Skip = skip,
+                Take = first ?? context.PageSize ?? 10,
+                OwnerType = "Product",
+                OwnerId = context.Source.Id,
+                CultureName = context.GetArgumentOrValue<string>("cultureName")
+            };
+
+            var response = await mediator.Send(query);
+
+            return new PagedConnection<Video>(response.Result.Results, query.Skip, query.Take, response.Result.TotalCount);
         }
     }
 }

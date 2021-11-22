@@ -18,14 +18,18 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
         {
             Field(x => x.Id).Description("Id");
             Field(x => x.Name).Description("Name");
-            Field(x => x.ObjectType).Description("Object Type");
-            Field<StringGraphType>("label", "Localized Property Name", resolve: context =>
+            Field(x => x.ObjectType).Description("Object type");
+            Field<StringGraphType>("label",
+                "Localized property name",
+                resolve: context =>
             {
                 var culture = context.GetValue<string>("cultureName");
                 return context.Source.DisplayNames.FirstOrDefault(x => culture.IsNullOrEmpty() || x.Locale.EqualsInvariant(culture))?.Name;
             });
             Field(x => x.DisplayOrder, nullable: true).Description("The order for the dynamic property to display");
-            Field<StringGraphType>(nameof(DynamicProperty.ValueType), "Value Type", resolve: context => context.Source.ValueType.ToString());
+            Field<StringGraphType>(nameof(DynamicProperty.ValueType),
+                "Value type",
+                resolve: context => context.Source.ValueType.ToString());
             Field<BooleanGraphType>("isArray", resolve: context => context.Source.IsArray, description: "Is dynamic property value an array");
             Field<BooleanGraphType>("isDictionary", resolve: context => context.Source.IsDictionary, description: "Is dynamic property value a dictionary");
             Field<BooleanGraphType>("isMultilingual", resolve: context => context.Source.IsMultilingual, description: "Is dynamic property value multilingual");

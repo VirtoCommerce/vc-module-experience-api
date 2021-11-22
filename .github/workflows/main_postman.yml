@@ -2,6 +2,11 @@ name: Experience API Integration tests(postman)
 
 on:
  workflow_dispatch:
+  testBranch:
+         description: "Branch of tests"
+         required: false
+         default: "dev"
+
 
 jobs:
   e2e-tests:
@@ -56,12 +61,33 @@ jobs:
         installModule: 'true'
         moduleId: ${{ steps.image.outputs.moduleId }}
         
+        
+    - name: Getting tests
+      shell: sh
+      run: git clone https://github.com/VirtoCommerce/vc-quality-gate-katalon.git --branch dev
+
+    - name: Katalon Studio Github Action
+      uses: VirtoCommerce/vc-github-actions/katalon-studio-github-action@master
+      with:
+        version: '8.0.5'
+        projectPath: '${{ github.workspace }}/vc-quality-gate-katalon/platform_storefront.prj'
+        args: '-noSplash -retry=0 -testSuitePath="Test Suites/DynamicPropertyCreation" -browserType="Chrome" -apiKey= ${{ secrets.KATALON_API_KEY }} -g_urlBack="http://localhost:8090" -g_urlFront="http://localhost:8080" -executionProfile="Regression-QA" --config -webui.autoUpdateDrivers=true'
+   
+    - name: Katalon Report Uploader
+      if: always( )
+      uses: katalon-studio/report-uploader@v0.0.7.11
+      env:
+        PASSWORD: ${{ secrets.KATALON_API_KEY }}
+        PROJECT_ID: 223504
+        TYPE: junit
+        REPORT_PATH: ${{ github.workspace }}/vc-quality-gate-katalon/Reports
+    
+    
     - name: Newman Action
       uses: matt-ball/newman-action@v1.0.2
       with:
         collection: https://raw.githubusercontent.com/VirtoCommerce/vc-module-experience-api/collectionfortest/tests/postman/platform_xapi_collection_QA.json
         environment: https://raw.githubusercontent.com/VirtoCommerce/vc-module-experience-api/collectionfortest/tests/postman/qa.postman_environment.json
         envVar: '[{ "key": "url", "value": "http://localhost:8090" }]'
-        delayRequest: 1500
         reporters: '["json", "cli", "junit"]'
         folder: '["Ready_for_CI"]'

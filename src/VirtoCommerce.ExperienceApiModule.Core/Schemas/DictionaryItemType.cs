@@ -12,7 +12,9 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
         {
             Field(x => x.Id).Description("Id");
             Field(x => x.Name).Description("Name");
-            Field<StringGraphType>("label", "Localized dictionary item value", resolve: context =>
+            Field<StringGraphType>("label",
+                "Localized dictionary item value",
+                resolve: context =>
             {
                 var culture = context.GetValue<string>("cultureName");
                 return context.Source.DisplayNames.FirstOrDefault(x => culture.IsNullOrEmpty() || x.Locale.EqualsInvariant(culture))?.Name;

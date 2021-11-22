@@ -7,8 +7,10 @@ namespace VirtoCommerce.XPurchase.Schemas
     {
         public InputUpdateCartPaymentDynamicPropertiesType()
         {
-            Field<NonNullGraphType<StringGraphType>>("paymentId");
-            Field<NonNullGraphType<ListGraphType<InputDynamicPropertyValueType>>>("dynamicProperties");
+            Field<NonNullGraphType<StringGraphType>>("paymentId",
+                "Payment Id");
+            Field<NonNullGraphType<ListGraphType<InputDynamicPropertyValueType>>>("dynamicProperties",
+                "Dynamic properties");
         }
     }
 }
