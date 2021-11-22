@@ -6,11 +6,11 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Infrastructure
     /// <summary>
     /// Custom implementation of GraphQLBuilder to call GraphQL.Server extentions methods
     /// </summary>
-    public sealed class CustomeGraphQLBuilder : IGraphQLBuilder
+    public sealed class CustomGraphQLBuilder : IGraphQLBuilder
     {
         public IServiceCollection Services { get; }
 
-        public CustomeGraphQLBuilder(IServiceCollection services)
+        public CustomGraphQLBuilder(IServiceCollection services)
         {
             Services = services;
         }
