@@ -377,7 +377,7 @@ namespace VirtoCommerce.XPurchase
             }
             Cart.Shipments.Add(shipment);
 
-            if (!string.IsNullOrEmpty(shipment.ShipmentMethodCode) && !Cart.IsTransient())
+            if (availRates != null && !string.IsNullOrEmpty(shipment.ShipmentMethodCode) && !Cart.IsTransient())
             {
                 var shippingMethod = availRates.First(sm => shipment.ShipmentMethodCode.EqualsInvariant(sm.ShippingMethod.Code) && shipment.ShipmentMethodOption.EqualsInvariant(sm.OptionName));
                 shipment.Price = shippingMethod.Rate;
