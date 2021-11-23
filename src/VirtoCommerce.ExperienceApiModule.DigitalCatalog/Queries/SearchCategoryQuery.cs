@@ -49,6 +49,11 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                 result |= CategoryResponseGroup.WithParents | CategoryResponseGroup.WithOutlines;
             }
 
+            if (IncludeFields.ContainsAny("declaration", "declarations"))
+            {
+                result |= CategoryResponseGroup.Full;
+            }
+
             return result.ToString();
         }
     }
