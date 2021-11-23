@@ -49,7 +49,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                 result |= CategoryResponseGroup.WithParents | CategoryResponseGroup.WithOutlines;
             }
 
-            if (IncludeFields.ContainsAny("declaration", "declarations"))
+            if (IncludeFields.ContainsAny("description", "descriptions"))
             {
                 result |= CategoryResponseGroup.Full;
             }

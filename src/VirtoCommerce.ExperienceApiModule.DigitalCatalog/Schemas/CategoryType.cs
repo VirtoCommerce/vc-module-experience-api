@@ -71,7 +71,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 return seoInfo ?? GetFallbackSeoInfo(source, cultureName);
             }, description: "Request related SEO info");
 
-            Field<ListGraphType<CategoryDescriptionType>>("declarations",
+            Field<ListGraphType<CategoryDescriptionType>>("descriptions",
                   arguments: new QueryArguments(new QueryArgument<StringGraphType> { Name = "type" }),
                   resolve: context =>
                   {
@@ -89,7 +89,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                       return descriptions;
                   });
 
-            Field<CategoryDescriptionType>("declaration",
+            Field<CategoryDescriptionType>("description",
                 arguments: new QueryArguments(new QueryArgument<StringGraphType> { Name = "type" }),
                 resolve: context =>
                 {
