@@ -250,6 +250,7 @@ Get one property with dictionary items for specific culture:
 |23|seoInfos         |List of SeoInfoType                  |SEO information of the product|
 |24|associations     |ProductAssociationType               |Product associations|
 |25|breadcrumbs      |BreadcrumbType                       |Product navigation information|
+|26|videos           |VideoType                            |Product videos|
 ### CategoryType
 ![image](./media/CategoryType.jpeg)
 #### Schema fields:
