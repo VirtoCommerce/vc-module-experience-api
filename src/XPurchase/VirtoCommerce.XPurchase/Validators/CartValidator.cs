@@ -1,5 +1,4 @@
 using FluentValidation;
-using FluentValidation.Validators;
 using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.XPurchase.Validators
@@ -40,7 +39,7 @@ namespace VirtoCommerce.XPurchase.Validators
                 }));
         }
 
-        protected virtual void ApplyRuleForPayments(CartValidationContext cartContext, CustomContext context)
+        protected virtual void ApplyRuleForPayments(CartValidationContext cartContext, ValidationContext<CartValidationContext> context)
         {
             cartContext.CartAggregate.Cart.Payments?.Apply(payment =>
             {
@@ -54,7 +53,7 @@ namespace VirtoCommerce.XPurchase.Validators
             });
         }
 
-        protected virtual void ApplyRuleForShipments(CartValidationContext cartContext, CustomContext context)
+        protected virtual void ApplyRuleForShipments(CartValidationContext cartContext, ValidationContext<CartValidationContext> context)
         {
             cartContext.CartAggregate.Cart.Shipments?.Apply(shipment =>
             {
@@ -68,7 +67,7 @@ namespace VirtoCommerce.XPurchase.Validators
             });
         }
 
-        protected virtual void ApplyRuleForItems(CartValidationContext cartContext, CustomContext context)
+        protected virtual void ApplyRuleForItems(CartValidationContext cartContext, ValidationContext<CartValidationContext> context)
         {
             cartContext.CartAggregate.Cart.Items?.Apply(item =>
             {

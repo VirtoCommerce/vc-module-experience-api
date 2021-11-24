@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
 using FluentValidation;
-using FluentValidation.Validators;
 using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.XPurchase.Tests.Helpers;
 using VirtoCommerce.XPurchase.Validators;
@@ -20,13 +19,13 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
 
             var newItemPriceAdjustment = new PriceAdjustment
             {
-                 LineItemId = _fixture.Create<string>(),
-                 NewPrice = _fixture.Create<decimal>()
+                LineItemId = _fixture.Create<string>(),
+                NewPrice = _fixture.Create<decimal>()
             };
             var validator = new ChangeCartItemPriceValidator();
 
             // Act
-            var result = await validator.ValidateAsync(newItemPriceAdjustment, ruleSet: "default");
+            var result = await validator.ValidateAsync(newItemPriceAdjustment, options => options.IncludeRuleSets("default"));
 
             // Assert
             result.IsValid.Should().BeTrue();
@@ -38,20 +37,20 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
         {
             var newItemPrice = new PriceAdjustment()
             {
-                 NewPrice = -1
+                NewPrice = -1
             };
 
             // Act
             var validator = new ChangeCartItemPriceValidator();
-            var result = await validator.ValidateAsync(newItemPrice, ruleSet: "default");
+            var result = await validator.ValidateAsync(newItemPrice, options => options.IncludeRuleSets("default"));
 
             // Assert
             result.IsValid.Should().BeFalse();
             result.Errors.Should().NotBeEmpty();
             result.Errors.Should().HaveCount(3);
-            result.Errors.Should().Contain(x => x.PropertyName == "NewPrice" && x.ErrorCode == nameof(GreaterThanOrEqualValidator));
-            result.Errors.Should().Contain(x => x.PropertyName == "LineItemId" && x.ErrorCode == nameof(NotEmptyValidator));
-            result.Errors.Should().Contain(x => x.PropertyName == "LineItemId" && x.ErrorCode == nameof(NotNullValidator));
+            result.Errors.Should().Contain(x => x.PropertyName == "NewPrice" && x.ErrorCode.Contains("GreaterThanOrEqualValidator"));
+            result.Errors.Should().Contain(x => x.PropertyName == "LineItemId" && x.ErrorCode.Contains("NotEmptyValidator"));
+            result.Errors.Should().Contain(x => x.PropertyName == "LineItemId" && x.ErrorCode.Contains("NotNullValidator"));
         }
 
         [Fact]
@@ -71,7 +70,7 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             var validator = new ChangeCartItemPriceValidator();
 
             // Act
-            var result = await validator.ValidateAsync(newItemPrice, ruleSet: "strict");
+            var result = await validator.ValidateAsync(newItemPrice, options => options.IncludeRuleSets("strict"));
 
             // Assert
             result.IsValid.Should().BeTrue();
@@ -89,14 +88,14 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
 
             var newItemPrice = new PriceAdjustment
             {
-                 LineItemId = item.Id,
-                 LineItem = item,
-                 NewPrice = item.ListPrice - _fixture.Create<decimal>()
+                LineItemId = item.Id,
+                LineItem = item,
+                NewPrice = item.ListPrice - _fixture.Create<decimal>()
             };
             var validator = new ChangeCartItemPriceValidator();
 
             // Act
-            var result = await validator.ValidateAsync(newItemPrice, ruleSet: "strict");
+            var result = await validator.ValidateAsync(newItemPrice, options => options.IncludeRuleSets("strict"));
 
             // Assert
             result.IsValid.Should().BeFalse();
