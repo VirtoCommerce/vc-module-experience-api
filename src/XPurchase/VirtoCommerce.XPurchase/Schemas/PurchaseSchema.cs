@@ -12,6 +12,7 @@ using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure.Authorization;
+using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.XPurchase.Authorization;
 using VirtoCommerce.XPurchase.Commands;
 using VirtoCommerce.XPurchase.Extensions;
@@ -871,6 +872,145 @@ namespace VirtoCommerce.XPurchase.Schemas
                                                                .FieldType;
 
             schema.Mutation.AddField(updateCartShipmentDynamicPropertiesField);
+
+            #region Wishlists
+
+            // Queries
+
+            var listField = new FieldType
+            {
+                Name = "wishlist",
+                Arguments = new QueryArguments(
+                        new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "listId", Description = "List Id" }),
+                Type = GraphTypeExtenstionHelper.GetActualType<WishlistType>(),
+                Resolver = new AsyncFieldResolver<object>(async context =>
+                {
+                    var getListQuery = AbstractTypeFactory<GetWishlistQuery>.TryCreateInstance();
+                    getListQuery.ListId = context.GetArgument<string>("listId");
+                    context.CopyArgumentsToUserContext();
+
+                    var cartAggregate = await _mediator.Send(getListQuery);
+
+                    if (cartAggregate == null)
+                    {
+                        return null;
+                    }
+
+                    context.SetExpandedObjectGraph(cartAggregate);
+
+                    return cartAggregate;
+                })
+            };
+            schema.Query.AddField(listField);
+
+            var listConnectionBuilder = GraphTypeExtenstionHelper.CreateConnection<WishlistType, object>()
+                .Name("wishlists")
+                .Argument<StringGraphType>("storeId", "Store Id")
+                .Argument<StringGraphType>("userId", "User Id")
+                .Argument<StringGraphType>("currencyCode", "Currency Code")
+                .Argument<StringGraphType>("cultureName", "Culture Name")
+                .Argument<StringGraphType>("sort", "The sort expression")
+                .PageSize(20);
+
+            listConnectionBuilder.ResolveAsync(async context => await ResolveListConnectionAsync(_mediator, context));
+            schema.Query.AddField(listConnectionBuilder.FieldType);
+
+            // Mutations
+            // Add list 
+            var addListField = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<WishlistType>())
+                                                 .Name("createWishlist")
+                                                 .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputCreateWishlistType>>(), _commandName)
+                                                  .ResolveAsync(async context =>
+                                                  {
+                                                      var commandType = GenericTypeHelper.GetActualType<CreateWishlistCommand>();
+                                                      var command = (CreateWishlistCommand)context.GetArgument(commandType, _commandName);
+                                                      var cartAggregate = await _mediator.Send(command);
+                                                      context.SetExpandedObjectGraph(cartAggregate);
+                                                      return cartAggregate;
+                                                  })
+                                                 .FieldType;
+
+            schema.Mutation.AddField(addListField);
+
+            // Rename list
+            var renameListField = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<WishlistType>())
+                                     .Name("renameWishlist")
+                                     .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputRenameWishlistType>>(), _commandName)
+                                     .ResolveAsync(async context =>
+                                     {
+                                         var commandType = GenericTypeHelper.GetActualType<RenameWishlistCommand>();
+                                         var command = (RenameWishlistCommand)context.GetArgument(commandType, _commandName);
+                                         var cartAggregate = await _mediator.Send(command);
+                                         context.SetExpandedObjectGraph(cartAggregate);
+                                         return cartAggregate;
+                                     })
+                                     .FieldType;
+
+            schema.Mutation.AddField(renameListField);
+
+            // Remove list
+            var removeListField = FieldBuilder.Create<CartAggregate, bool>(typeof(BooleanGraphType))
+                         .Name("removeWishlist")
+                         .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputRemoveWishlistType>>(), _commandName)
+                         .ResolveAsync(async context =>
+                         {
+                             var commandType = GenericTypeHelper.GetActualType<RemoveWishlistCommand>();
+                             var command = (RemoveWishlistCommand)context.GetArgument(commandType, _commandName);
+                             return await _mediator.Send(command);
+                         })
+                         .FieldType;
+
+            schema.Mutation.AddField(removeListField);
+
+            // Add product to list
+            var addListItemField = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<WishlistType>())
+                         .Name("addWishlistItem")
+                         .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputAddWishlistItemType>>(), _commandName)
+                         .ResolveAsync(async context =>
+                         {
+                             var commandType = GenericTypeHelper.GetActualType<AddWishlistItemCommand>();
+                             var command = (AddWishlistItemCommand)context.GetArgument(commandType, _commandName);
+                             var cartAggregate = await _mediator.Send(command);
+                             context.SetExpandedObjectGraph(cartAggregate);
+                             return cartAggregate;
+                         })
+                         .FieldType;
+
+            schema.Mutation.AddField(addListItemField);
+
+            // Remove product from list
+            var removeListItemField = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<WishlistType>())
+                         .Name("removeWishlistItem")
+                         .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputRemoveWishlistItemType>>(), _commandName)
+                         .ResolveAsync(async context =>
+                         {
+                             var commandType = GenericTypeHelper.GetActualType<RemoveWishlistItemCommand>();
+                             var command = (RemoveWishlistItemCommand)context.GetArgument(commandType, _commandName);
+                             var cartAggregate = await _mediator.Send(command);
+                             context.SetExpandedObjectGraph(cartAggregate);
+                             return cartAggregate;
+                         })
+                         .FieldType;
+
+            schema.Mutation.AddField(removeListItemField);
+
+            // Move product to another list
+            var moveListItemField = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<WishlistType>())
+                     .Name("moveWishlistItem")
+                     .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputMoveWishlistItemType>>(), _commandName)
+                     .ResolveAsync(async context =>
+                     {
+                         var commandType = GenericTypeHelper.GetActualType<MoveWishlistItemCommand>();
+                         var command = (MoveWishlistItemCommand)context.GetArgument(commandType, _commandName);
+                         var cartAggregate = await _mediator.Send(command);
+                         context.SetExpandedObjectGraph(cartAggregate);
+                         return cartAggregate;
+                     })
+                     .FieldType;
+
+            schema.Mutation.AddField(moveListItemField);
+
+            #endregion
         }
 
         private async Task<object> ResolveCartsConnectionAsync(IMediator mediator, IResolveConnectionContext<object> context)
@@ -895,6 +1035,33 @@ namespace VirtoCommerce.XPurchase.Schemas
 
             var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), query, new CanAccessCartAuthorizationRequirement());
 
+            if (!authorizationResult.Succeeded)
+            {
+                throw new AuthorizationError($"Access denied");
+            }
+
+            var response = await mediator.Send(query);
+            foreach (var cartAggregate in response.Results)
+            {
+                context.SetExpandedObjectGraph(cartAggregate);
+            }
+
+            return new PagedConnection<CartAggregate>(response.Results, query.Skip, query.Take, response.TotalCount);
+        }
+
+        private async Task<object> ResolveListConnectionAsync(IMediator mediator, IResolveConnectionContext<object> context)
+        {
+            var first = context.First;
+            var skip = Convert.ToInt32(context.After ?? 0.ToString());
+
+            var query = context.GetCartQuery<SearchWishlistQuery>();
+            query.Skip = skip;
+            query.Take = first ?? context.PageSize ?? 10;
+            query.Sort = context.GetArgument<string>("sort");
+
+            context.CopyArgumentsToUserContext();
+
+            var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), query, new CanAccessCartAuthorizationRequirement());
             if (!authorizationResult.Succeeded)
             {
                 throw new AuthorizationError($"Access denied");
