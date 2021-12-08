@@ -1,26 +1,22 @@
 using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
 
 namespace VirtoCommerce.XPurchase.Commands
 {
-    public class RemoveWishlistItemCommandHandler : IRequestHandler<RemoveWishlistItemCommand, CartAggregate>
+    public class RemoveWishlistItemCommandHandler : CartCommandHandler<RemoveWishlistItemCommand>
     {
-        private readonly ICartAggregateRepository _cartRepository;
-
         public RemoveWishlistItemCommandHandler(ICartAggregateRepository cartAggrRepository)
+            : base(cartAggrRepository)
         {
-            _cartRepository = cartAggrRepository;
         }
 
-        public virtual async Task<CartAggregate> Handle(RemoveWishlistItemCommand request, CancellationToken cancellationToken)
+        public override async Task<CartAggregate> Handle(RemoveWishlistItemCommand request, CancellationToken cancellationToken)
         {
-            var cartAggregate = await _cartRepository.GetCartByIdAsync(request.ListId);
+            var cartAggregate = await CartRepository.GetCartByIdAsync(request.ListId);
 
             await cartAggregate.RemoveItemAsync(request.LineItemId);
 
-            await _cartRepository.SaveAsync(cartAggregate);
-            return cartAggregate;
+            return await SaveCartAsync(cartAggregate);
         }
     }
 }

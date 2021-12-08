@@ -1,26 +1,24 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
 using VirtoCommerce.XPurchase.Services;
 
 namespace VirtoCommerce.XPurchase.Commands
 {
-    public class MoveWishListItemCommandHandler : IRequestHandler<MoveWishlistItemCommand, CartAggregate>
+    public class MoveWishListItemCommandHandler : CartCommandHandler<MoveWishlistItemCommand>
     {
-        private readonly ICartAggregateRepository _cartRepository;
         private readonly ICartProductService _cartProductService;
 
         public MoveWishListItemCommandHandler(ICartAggregateRepository cartAggrRepository, ICartProductService cartProductService)
+            : base(cartAggrRepository)
         {
-            _cartRepository = cartAggrRepository;
             _cartProductService = cartProductService;
         }
 
-        public virtual async Task<CartAggregate> Handle(MoveWishlistItemCommand request, CancellationToken cancellationToken)
+        public override async Task<CartAggregate> Handle(MoveWishlistItemCommand request, CancellationToken cancellationToken)
         {
-            var sourceCartAggregate = await _cartRepository.GetCartByIdAsync(request.ListId);
-            var destinationCartAggregate = await _cartRepository.GetCartByIdAsync(request.DestinationListId);
+            var sourceCartAggregate = await CartRepository.GetCartByIdAsync(request.ListId);
+            var destinationCartAggregate = await CartRepository.GetCartByIdAsync(request.DestinationListId);
 
             var item = sourceCartAggregate.Cart.Items.FirstOrDefault(x => x.Id == request.LineItemId);
             if (item != null)
@@ -33,8 +31,8 @@ namespace VirtoCommerce.XPurchase.Commands
 
                 await sourceCartAggregate.RemoveItemAsync(request.LineItemId);
 
-                await _cartRepository.SaveAsync(destinationCartAggregate);
-                await _cartRepository.SaveAsync(sourceCartAggregate);
+                await SaveCartAsync(destinationCartAggregate);
+                await SaveCartAsync(sourceCartAggregate);
             }
 
             return destinationCartAggregate;

@@ -1,34 +1,35 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
 using VirtoCommerce.XPurchase.Services;
 
 namespace VirtoCommerce.XPurchase.Commands
 {
-    public class AddWishlistItemCommandHandler : IRequestHandler<AddWishlistItemCommand, CartAggregate>
+    public class AddWishlistItemCommandHandler : CartCommandHandler<AddWishlistItemCommand>
     {
-        private readonly ICartAggregateRepository _cartRepository;
         private readonly ICartProductService _cartProductService;
 
         public AddWishlistItemCommandHandler(ICartAggregateRepository cartAggrRepository, ICartProductService cartProductService)
+            : base(cartAggrRepository)
         {
-            _cartRepository = cartAggrRepository;
             _cartProductService = cartProductService;
         }
 
-        public virtual async Task<CartAggregate> Handle(AddWishlistItemCommand request, CancellationToken cancellationToken)
+        public override async Task<CartAggregate> Handle(AddWishlistItemCommand request, CancellationToken cancellationToken)
         {
-            var cartAggregate = await _cartRepository.GetCartByIdAsync(request.ListId);
-
-            var product = (await _cartProductService.GetCartProductsByIdsAsync(cartAggregate, new[] { request.ProductId })).FirstOrDefault();
+            var cartAggregate = await CartRepository.GetCartByIdAsync(request.ListId);
+            var product = await GetdCartProduct(request.ProductId, cartAggregate);
             await cartAggregate.AddItemAsync(new NewCartItem(request.ProductId, 1)
             {
                 CartProduct = product
             });
 
-            await _cartRepository.SaveAsync(cartAggregate);
-            return cartAggregate;
+            return await SaveCartAsync(cartAggregate);
+        }
+
+        protected async Task<CartProduct> GetdCartProduct(string productId, CartAggregate cartAggregate)
+        {
+            return (await _cartProductService.GetCartProductsByIdsAsync(cartAggregate, new[] { productId })).FirstOrDefault();
         }
     }
 }

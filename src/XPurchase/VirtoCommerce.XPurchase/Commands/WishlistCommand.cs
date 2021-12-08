@@ -1,8 +1,6 @@
-using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
-
 namespace VirtoCommerce.XPurchase.Commands
 {
-    public abstract class WishlistCommand : ICommand<CartAggregate>
+    public abstract class WishlistCommand : CartCommand
     {
         public string ListId { get; set; }
     }

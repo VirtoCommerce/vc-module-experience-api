@@ -14,9 +14,9 @@ namespace VirtoCommerce.XPurchase.Queries
         private readonly ISearchPhraseParser _searchPhraseParser;
 
         public SearchWishlistQueryHandler(
-            ICartAggregateRepository cartAggregateRepository
-            , IMapper mapper
-            , ISearchPhraseParser searchPhraseParser)
+            ICartAggregateRepository cartAggregateRepository,
+            IMapper mapper,
+            ISearchPhraseParser searchPhraseParser)
         {
             _cartAggregateRepository = cartAggregateRepository;
             _mapper = mapper;
@@ -33,9 +33,9 @@ namespace VirtoCommerce.XPurchase.Queries
                                      .WithCustomerId(request.UserId)
                                      .WithPaging(request.Skip, request.Take)
                                      .WithSorting(request.Sort)
+                                     .WithResponseGroup(CartResponseGroup.WithLineItems)
                                      .Build();
 
-            searchCriteria.ResponseGroup = CartResponseGroup.WithLineItems.ToString();
             return _cartAggregateRepository.SearchCartAsync(searchCriteria);
         }
     }
