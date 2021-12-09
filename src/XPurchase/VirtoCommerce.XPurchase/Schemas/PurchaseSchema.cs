@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GraphQL;
@@ -7,12 +8,15 @@ using GraphQL.Resolvers;
 using GraphQL.Types;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using VirtoCommerce.CartModule.Core.Model;
+using VirtoCommerce.CartModule.Core.Services;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure.Authorization;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.GenericCrud;
 using VirtoCommerce.XPurchase.Authorization;
 using VirtoCommerce.XPurchase.Commands;
 using VirtoCommerce.XPurchase.Extensions;
@@ -25,16 +29,19 @@ namespace VirtoCommerce.XPurchase.Schemas
         private readonly IMediator _mediator;
         private readonly IAuthorizationService _authorizationService;
         private readonly ICurrencyService _currencyService;
+        private readonly ICrudService<ShoppingCart> _cartService;
 
         public const string _commandName = "command";
 
         public PurchaseSchema(IMediator mediator,
             IAuthorizationService authorizationService,
-            ICurrencyService currencyService)
+            ICurrencyService currencyService,
+            IShoppingCartService cartService)
         {
             _mediator = mediator;
             _authorizationService = authorizationService;
             _currencyService = currencyService;
+            _cartService = (ICrudService<ShoppingCart>)cartService;
         }
 
         public void Build(ISchema schema)
@@ -896,6 +903,8 @@ namespace VirtoCommerce.XPurchase.Schemas
                         return null;
                     }
 
+                    await AuthorizeAsync(context, cartAggregate.Cart);
+
                     context.SetExpandedObjectGraph(cartAggregate);
 
                     return cartAggregate;
@@ -924,6 +933,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                                                   {
                                                       var commandType = GenericTypeHelper.GetActualType<CreateWishlistCommand>();
                                                       var command = (CreateWishlistCommand)context.GetArgument(commandType, _commandName);
+                                                      await AuthorizeAsync(context, command.UserId);
                                                       var cartAggregate = await _mediator.Send(command);
                                                       context.SetExpandedObjectGraph(cartAggregate);
                                                       return cartAggregate;
@@ -940,6 +950,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                                      {
                                          var commandType = GenericTypeHelper.GetActualType<RenameWishlistCommand>();
                                          var command = (RenameWishlistCommand)context.GetArgument(commandType, _commandName);
+                                         await CheckAuthAsyncByCartId(context, command.ListId);
                                          var cartAggregate = await _mediator.Send(command);
                                          context.SetExpandedObjectGraph(cartAggregate);
                                          return cartAggregate;
@@ -956,6 +967,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                          {
                              var commandType = GenericTypeHelper.GetActualType<RemoveWishlistCommand>();
                              var command = (RemoveWishlistCommand)context.GetArgument(commandType, _commandName);
+                             await CheckAuthAsyncByCartId(context, command.ListId);
                              return await _mediator.Send(command);
                          })
                          .FieldType;
@@ -971,6 +983,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                              var commandType = GenericTypeHelper.GetActualType<AddWishlistItemCommand>();
                              var command = (AddWishlistItemCommand)context.GetArgument(commandType, _commandName);
                              var cartAggregate = await _mediator.Send(command);
+                             await CheckAuthAsyncByCartId(context, command.ListId);
                              context.SetExpandedObjectGraph(cartAggregate);
                              return cartAggregate;
                          })
@@ -987,6 +1000,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                              var commandType = GenericTypeHelper.GetActualType<RemoveWishlistItemCommand>();
                              var command = (RemoveWishlistItemCommand)context.GetArgument(commandType, _commandName);
                              var cartAggregate = await _mediator.Send(command);
+                             await CheckAuthAsyncByCartId(context, command.ListId);
                              context.SetExpandedObjectGraph(cartAggregate);
                              return cartAggregate;
                          })
@@ -1002,6 +1016,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                      {
                          var commandType = GenericTypeHelper.GetActualType<MoveWishlistItemCommand>();
                          var command = (MoveWishlistItemCommand)context.GetArgument(commandType, _commandName);
+                         await CheckAuthAsyncByCartIds(context, new List<string> { command.ListId, command.DestinationListId });
                          var cartAggregate = await _mediator.Send(command);
                          context.SetExpandedObjectGraph(cartAggregate);
                          return cartAggregate;
@@ -1033,12 +1048,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             //this is required to resolve Currency in DiscountType
             context.SetCurrencies(allCurrencies, query.CultureName);
 
-            var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), query, new CanAccessCartAuthorizationRequirement());
-
-            if (!authorizationResult.Succeeded)
-            {
-                throw new AuthorizationError($"Access denied");
-            }
+            await AuthorizeAsync(context, query);
 
             var response = await mediator.Send(query);
             foreach (var cartAggregate in response.Results)
@@ -1061,11 +1071,7 @@ namespace VirtoCommerce.XPurchase.Schemas
 
             context.CopyArgumentsToUserContext();
 
-            var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), query, new CanAccessCartAuthorizationRequirement());
-            if (!authorizationResult.Succeeded)
-            {
-                throw new AuthorizationError($"Access denied");
-            }
+            await AuthorizeAsync(context, query);
 
             var response = await mediator.Send(query);
             foreach (var cartAggregate in response.Results)
@@ -1074,6 +1080,29 @@ namespace VirtoCommerce.XPurchase.Schemas
             }
 
             return new PagedConnection<CartAggregate>(response.Results, query.Skip, query.Take, response.TotalCount);
+        }
+
+        private async Task CheckAuthAsyncByCartId(IResolveFieldContext context, string cartId)
+        {
+            var cart = await _cartService.GetByIdAsync(cartId, CartResponseGroup.Default.ToString());
+
+            await AuthorizeAsync(context, cart);
+        }
+
+        private async Task CheckAuthAsyncByCartIds(IResolveFieldContext context, List<string> cartIds)
+        {
+            var carts = await _cartService.GetByIdsAsync(cartIds, CartResponseGroup.Default.ToString());
+
+            await AuthorizeAsync(context, carts);
+        }
+
+        private async Task AuthorizeAsync(IResolveFieldContext context, object resource)
+        {
+            var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), resource, new CanAccessCartAuthorizationRequirement());
+            if (!authorizationResult.Succeeded)
+            {
+                throw new AuthorizationError($"Access denied");
+            }
         }
     }
 }

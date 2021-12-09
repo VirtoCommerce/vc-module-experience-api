@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -20,19 +22,26 @@ namespace VirtoCommerce.XPurchase.Authorization
     {
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, CanAccessCartAuthorizationRequirement requirement)
         {
-
             var result = context.User.IsInRole(PlatformConstants.Security.SystemRoles.Administrator);
 
             if (!result)
             {
-                if (context.Resource is ShoppingCart cart)
+                switch (context.Resource)
                 {
-                    result = cart.CustomerId == GetUserId(context);
-                }
-                else if (context.Resource is SearchCartQuery searchQuery)
-                {
-                    searchQuery.UserId = GetUserId(context);
-                    result = searchQuery.UserId != null;
+                    case string userId:
+                        result = userId == GetUserId(context);
+                        break;
+                    case ShoppingCart cart:
+                        result = cart.CustomerId == GetUserId(context);
+                        break;
+                    case IEnumerable<ShoppingCart> carts:
+                        var user = GetUserId(context);
+                        result = carts.All(x => x.CustomerId == user);
+                        break;
+                    case SearchCartQuery searchQuery:
+                        searchQuery.UserId = GetUserId(context);
+                        result = searchQuery.UserId != null;
+                        break;
                 }
             }
 
