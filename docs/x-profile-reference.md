@@ -1,14 +1,18 @@
 # X-Profile
 
-X-Profiles provides high performance search queries for customer and organization data.
+X-Profile provides high performance search queries for customer and organization data.
 
 ## Key features
-- CRUD operations with **users**
-- CRUD operations with **organizations**
-- CRUD operations with **contacts**
+Through X-Profile, you can perform create, read, update, and delete (CRUD) operations with **users**, **organizations**, and **contacts**.
+All such operations can be completed with various queries, which are listed and detailed in the sections below.
+
+## How It Works
+Just like other xAPI modules, X-Profile resides on a website's or application's back end and is managed with queries. It enables efficiently creating, updating, and deleting various entity profiles. The chart below shows how X-Profile works in case of creating a new user (customer):
+
+![Creating new user process explained](./media/01-x-profile-creating-new-user-chart.png)
 
 ## QueryRoot
-#### List of queries:
+List of available queries:
 |#|Endpoint|Arguments|Return|
 |-|-|-|-|
 |1|[organization](#organization)|`id`|Organization|
@@ -17,7 +21,7 @@ X-Profiles provides high performance search queries for customer and organizatio
 |4|[user](#user)|`id` `userName` `email` `loginProvider` `providerKey`|User|
 
 ### Organization
-With this query you can get the organization by id
+With this query, you can get the organization by its ID:
 ```
 {
   organization(id: "689a72757c754bef97cde51afc663430") {
@@ -33,7 +37,7 @@ With this query you can get the organization by id
 }
 ```
 ### Contact
-With this query you can get the contact by id
+With this query, you can get the contact by its ID:
 ```
 {
   contact(id: "5f807280-bb1a-42b2-9a96-ed107269ea06") {
@@ -50,7 +54,7 @@ With this query you can get the contact by id
 }
 ```
 ### Role
-With this query you can get the role by name
+With this query, you can get the role by its name:
 ```
 {
   role(roleName: "Store administrator") {
@@ -61,7 +65,7 @@ With this query you can get the role by name
 }
 ```
 ### User
-With this query you can get the user by few arguments
+With this query, you can get the user by a few arguments
 ```
 {
   user(id: "9b605a3096ba4cc8bc0b8d80c397c59f") {
@@ -78,27 +82,28 @@ With this query you can get the user by few arguments
 }
 ```
 
-## Queriable objects
-### Profile schema type
+## Queryable Objects
+This **Profile type schema** represents queryable objects for X-Profile:
+
 ![Profile schema type](./media/X-Profile-Type-Schema.jpg)
 
 ## Mutations
-#### List of mutations:
+List of mutations:
 |#|Endpoint|Arguments|Description|
 |-|-|-|-|
-|1|[createContact](#createcontact)|`id` `name!` `memberType` `addresses` `phones` `emails` `groups` `fullName` `firstName!` `lastName!` `middleName` `salutation` `photoUrl` `timeZone` `defaultLanguage` `organizations`|Creates contact|
-|2|[updateContact](#updatecontact)|`id!` `name` `memberType` `addresses` `phones` `emails` `groups` `fullName` `firstName!` `lastName!` `middleName` `salutation` `photoUrl` `timeZone` `defaultLanguage` `organizations`|Updates contact|
-|3|[deleteContact](#deletecontact)|`contactId!`|Deletes contact|
-|4|[createUser](#createuser)|`id` `email` `createdBy` `createdDate` `isAdministrator` `lockoutEnabled` `lockoutEnd` `logins` `memberId` `password` `phoneNumber` `phoneContactConfirmed` `photoUrl` `roles` `storeId` `twoFactorEnabled` `userName` `userType`|Creates user|
-|5|[updateUser](#updateuser)|`accessFailedCount` `email!` `id!` `isAdministrator` `lockoutEnabled` `lockoutEnd` `memberId` `phoneNumber` `phoneNumberConfirmed` `photoUrl` `roles` `storeId` `twoFactorEnabled` `userName!` `userType!` `passwordHash` `securityStamp!`|Updates user|
-|6|[deleteUsers](#deleteusers)|`userNames!`|Delete users|
-|7|[updateAddresses](#updateaddresses)|`contactId!` `addresses!`|Update addresses|
-|8|[createOrganization](#createorganization)|`id` `name` `memberType` `addresses` `phones` `emails` `groups`|Creates organization|
-|9|[updateOrganization](#updateorganization)|`id!` `name` `memberType` `addresses` `phones` `emails` `groups`|Updates organization|
-|10|[updateRole](#updaterole)|`concurrencyStamp` `id!` `name!` `description` `permissions!`|Updates role|
+|1|[createContact](#createcontact)|`id` `name!` `memberType` `addresses` `phones` `emails` `groups` `fullName` `firstName!` `lastName!` `middleName` `salutation` `photoUrl` `timeZone` `defaultLanguage` `organizations`|Creates a contact|
+|2|[updateContact](#updatecontact)|`id!` `name` `memberType` `addresses` `phones` `emails` `groups` `fullName` `firstName!` `lastName!` `middleName` `salutation` `photoUrl` `timeZone` `defaultLanguage` `organizations`|Updates a contact|
+|3|[deleteContact](#deletecontact)|`contactId!`|Deletes a contact|
+|4|[createUser](#createuser)|`id` `email` `createdBy` `createdDate` `isAdministrator` `lockoutEnabled` `lockoutEnd` `logins` `memberId` `password` `phoneNumber` `phoneContactConfirmed` `photoUrl` `roles` `storeId` `twoFactorEnabled` `userName` `userType`|Creates a user|
+|5|[updateUser](#updateuser)|`accessFailedCount` `email!` `id!` `isAdministrator` `lockoutEnabled` `lockoutEnd` `memberId` `phoneNumber` `phoneNumberConfirmed` `photoUrl` `roles` `storeId` `twoFactorEnabled` `userName!` `userType!` `passwordHash` `securityStamp!`|Updates a user|
+|6|[deleteUsers](#deleteusers)|`userNames!`|Delete a users|
+|7|[updateAddresses](#updateaddresses)|`contactId!` `addresses!`|Update an addresses|
+|8|[createOrganization](#createorganization)|`id` `name` `memberType` `addresses` `phones` `emails` `groups`|Creates an organization|
+|9|[updateOrganization](#updateorganization)|`id!` `name` `memberType` `addresses` `phones` `emails` `groups`|Updates an organization|
+|10|[updateRole](#updaterole)|`concurrencyStamp` `id!` `name!` `description` `permissions!`|Updates a role|
 
 ### CreateContact
-#### Query
+#### Query:
 ```
 mutation($command: InputCreateContactType!) {
   createContact(command: $command) {
@@ -109,7 +114,7 @@ mutation($command: InputCreateContactType!) {
   }
 }
 ```
-#### Variables
+#### Variables:
 ```
 {
   "command": {
@@ -126,7 +131,7 @@ mutation($command: InputCreateContactType!) {
 }
 ```
 ### UpdateContact
-#### Query
+#### Query:
 ```
 mutation($command: InputUpdateContactType!){
   updateContact(command: $command) {
@@ -135,7 +140,7 @@ mutation($command: InputUpdateContactType!){
   }
 }
 ```
-#### Variables
+#### Variables:
 ```
 {
   "command": {
@@ -152,13 +157,13 @@ mutation($command: InputUpdateContactType!){
 }
 ```
 ### DeleteContact
-#### Query
+#### Query:
 ```
 mutation($command: InputDeleteContactType!){
   deleteContact(command: $command)
 }
 ```
-#### Variables
+#### Variables:
 ```
 {
   "command": {
@@ -167,7 +172,7 @@ mutation($command: InputDeleteContactType!){
 }
 ```
 ### CreateUser
-#### Query
+#### Query:
 ```
 mutation($command: InputCreateUserType!) {
   createUser(command: $command) {
@@ -175,7 +180,7 @@ mutation($command: InputCreateUserType!) {
   }
 }
 ```
-#### Variables
+#### Variables:
 ```
 {
   "command": {
@@ -186,7 +191,7 @@ mutation($command: InputCreateUserType!) {
 }
 ```
 ### UpdateUser
-#### Query
+#### Query:
 ```
 mutation($command: InputUpdateUserType!) {
   updateUser(command: $command) {
@@ -198,7 +203,7 @@ mutation($command: InputUpdateUserType!) {
   }
 }
 ```
-#### Variables
+#### Variables:
 ```
 {
   "command": {
@@ -210,9 +215,9 @@ mutation($command: InputUpdateUserType!) {
   }
 }
 ```
-> SecurityStamp - A random value that must change whenever a users credentials change (password changed, login removed)
+> SecurityStamp is a random value that must change whenever user credentials, i.e. login or password, change.
 ### DeleteUsers
-#### Query
+#### Query:
 ```
 mutation($command: InputDeleteUserType!) {
   deleteUsers(command: $command) {
@@ -224,7 +229,7 @@ mutation($command: InputDeleteUserType!) {
   }
 }
 ```
-#### Variables
+#### Variables:
 ```
 {
   "command": {
@@ -233,7 +238,7 @@ mutation($command: InputDeleteUserType!) {
 }
 ```
 ### UpdateAddresses
-#### Query
+#### Query:
 ```
 mutation($command: InputUpdateContactAddressType!) {
   updateAddresses(command: $command) {
@@ -243,7 +248,7 @@ mutation($command: InputUpdateContactAddressType!) {
   }
 }
 ```
-#### Variables
+#### Variables:
 ```
 {
   "command": {
@@ -263,7 +268,7 @@ mutation($command: InputUpdateContactAddressType!) {
 ```
 > Address type: **1** - Billing, **2** - Shipping, **3** - BillingAndShipping
 ### CreateOrganization
-#### Query
+#### Query:
 ```
 mutation($command: InputCreateOrganizationType!) {
   createOrganization(command: $command) {
@@ -273,7 +278,7 @@ mutation($command: InputCreateOrganizationType!) {
   }
 }
 ```
-#### Variables
+#### Variables:
 ```
 {
   "command": {
@@ -289,7 +294,7 @@ mutation($command: InputCreateOrganizationType!) {
 }
 ```
 ### UpdateOrganization
-#### Query
+#### Query:
 ```
 mutation($command: InputUpdateOrganizationType!) {
   updateOrganization(command: $command) {
@@ -299,7 +304,7 @@ mutation($command: InputUpdateOrganizationType!) {
   }
 }
 ```
-#### Variables
+#### Variables:
 ```
 {
   "command": {
@@ -316,7 +321,7 @@ mutation($command: InputUpdateOrganizationType!) {
 }
 ```
 ### UpdateRole
-#### Query
+#### Query:
 ```
 mutation($command: InputUpdateRoleType!) {
   updateRole(command: $command) {
@@ -328,7 +333,7 @@ mutation($command: InputUpdateRoleType!) {
   }
 }
 ```
-#### Variables
+#### Variables:
 ```
 {
   "command": {
@@ -346,4 +351,4 @@ mutation($command: InputUpdateRoleType!) {
   }
 }
 ```
-> ConcurrencyStamp - A random value that should change whenever a role is persisted to the store
+> ConcurrencyStamp is a random value that must change whenever a role is assigned to the store.
