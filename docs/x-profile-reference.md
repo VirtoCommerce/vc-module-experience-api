@@ -9,7 +9,7 @@ All such operations can be completed with various queries, which are listed and 
 ## How It Works
 Just like other xAPI modules, X-Profile resides on a website's or application's back end and is managed with queries. It enables efficiently creating, updating, and deleting various entity profiles. The chart below shows how X-Profile works in case of creating a new user (customer):
 
-![Creating new user process explained](./media/01-x-profile-creating-new-user-chart.png)
+![Creating new user process explained](./media/01-x-profile-creating-new-user-chart-new.png)
 
 ## QueryRoot
 List of available queries:
