@@ -13,6 +13,7 @@ Just like other xAPI modules, X-Profile resides on a website's or application's 
 
 ## QueryRoot
 List of available queries:
+
 |#|Endpoint|Arguments|Return|
 |-|-|-|-|
 |1|[organization](#organization)|`id`|Organization|
@@ -89,6 +90,7 @@ This **Profile type schema** represents queryable objects for X-Profile:
 
 ## Mutations
 List of mutations:
+
 |#|Endpoint|Arguments|Description|
 |-|-|-|-|
 |1|[createContact](#createcontact)|`id` `name!` `memberType` `addresses` `phones` `emails` `groups` `fullName` `firstName!` `lastName!` `middleName` `salutation` `photoUrl` `timeZone` `defaultLanguage` `organizations`|Creates a contact|
