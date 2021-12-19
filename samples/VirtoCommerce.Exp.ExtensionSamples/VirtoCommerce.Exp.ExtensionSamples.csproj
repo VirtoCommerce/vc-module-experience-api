@@ -30,6 +30,7 @@
     <ItemGroup>
       <ProjectReference Include="..\..\src\VirtoCommerce.ExperienceApiModule.Core\VirtoCommerce.ExperienceApiModule.Core.csproj" />
       <ProjectReference Include="..\..\src\VirtoCommerce.ExperienceApiModule.DigitalCatalog\VirtoCommerce.XDigitalCatalog.csproj" />
+      <ProjectReference Include="..\..\src\XPurchase\VirtoCommerce.ExperienceApiModule.XOrder\VirtoCommerce.ExperienceApiModule.XOrder.csproj" />
       <ProjectReference Include="..\..\src\XPurchase\VirtoCommerce.XPurchase\VirtoCommerce.XPurchase.csproj" />
       <ProjectReference Include="..\PetsStoreClient\PetsStoreClient.csproj" />
     </ItemGroup>

@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Builders;
@@ -17,6 +16,7 @@ using VirtoCommerce.ExperienceApiModule.XOrder.Queries;
 using VirtoCommerce.OrdersModule.Core.Model;
 using VirtoCommerce.OrdersModule.Core.Services;
 using VirtoCommerce.PaymentModule.Model.Requests;
+using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 {
@@ -42,20 +42,12 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             _ = schema.Query.AddField(new FieldType
             {
                 Name = "order",
-                Arguments = new QueryArguments(
-                    new QueryArgument<StringGraphType> { Name = "id" },
-                    new QueryArgument<StringGraphType> { Name = "number" },
-                    new QueryArgument<StringGraphType> { Name = "cultureName", Description = "Culture name (\"en-US\")" }),
+                Arguments = AbstractTypeFactory<OrderQueryArguments>.TryCreateInstance(),
                 Type = GraphTypeExtenstionHelper.GetActualType<CustomerOrderType>(),
                 Resolver = new AsyncFieldResolver<object>(async context =>
                 {
-                    var request = new GetOrderQuery
-                    {
-                        Number = context.GetArgument<string>("number"),
-                        OrderId = context.GetArgument<string>("id"),
-                        CultureName = context.GetArgument<string>(nameof(Currency.CultureName))
-                    };
-
+                    var request = AbstractTypeFactory<GetOrderQuery>.TryCreateInstance();
+                    request.Map(context);
                     context.CopyArgumentsToUserContext();
 
                     var orderAggregate = await _mediator.Send(request);
@@ -78,25 +70,13 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                 })
             });
 
-            var orderConnectionBuilder = GraphTypeExtenstionHelper.CreateConnection<CustomerOrderType, object>()
-                .Name("orders")
-                .Argument<StringGraphType>("filter", "This parameter applies a filter to the query results")
-                .Argument<StringGraphType>("sort", "The sort expression")
-                .Argument<StringGraphType>("cultureName", "Culture name (\"en-US\")")
-                .Argument<StringGraphType>("userId", "")
-                .PageSize(20);
-
+            var orderConnectionBuilder = GraphTypeExtenstionHelper.CreateConnection<CustomerOrderType, object>().Name("orders").PageSize(20);
+            orderConnectionBuilder.FieldType.Arguments = AbstractTypeFactory<QueryConnectionArguments>.TryCreateInstance().AddArguments(orderConnectionBuilder.FieldType.Arguments);
             orderConnectionBuilder.ResolveAsync(async context => await ResolveOrdersConnectionAsync(_mediator, context));
-
             schema.Query.AddField(orderConnectionBuilder.FieldType);
 
-            var paymentsConnectionBuilder = GraphTypeExtenstionHelper.CreateConnection<PaymentInType, object>()
-             .Name("payments")
-             .Argument<StringGraphType>("filter", "This parameter applies a filter to the query results")
-             .Argument<StringGraphType>("sort", "The sort expression")
-             .Argument<StringGraphType>("cultureName", "Culture name (\"en-US\")")
-             .Argument<NonNullGraphType<StringGraphType>>("userId", "")
-             .PageSize(20);
+            var paymentsConnectionBuilder = GraphTypeExtenstionHelper.CreateConnection<PaymentInType, object>().Name("payments").PageSize(20);
+            paymentsConnectionBuilder.FieldType.Arguments = AbstractTypeFactory<QueryConnectionArguments>.TryCreateInstance().AddArguments(paymentsConnectionBuilder.FieldType.Arguments);
             paymentsConnectionBuilder.ResolveAsync(async context => await ResolvePaymentsConnectionAsync(_mediator, context));
             schema.Query.AddField(paymentsConnectionBuilder.FieldType);
 
@@ -194,18 +174,8 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 
         private async Task<object> ResolveOrdersConnectionAsync(IMediator mediator, IResolveConnectionContext<object> context)
         {
-            var first = context.First;
-            var skip = Convert.ToInt32(context.After ?? 0.ToString());
-
-            var query = new SearchOrderQuery
-            {
-                Skip = skip,
-                Take = first ?? context.PageSize ?? 10,
-                Filter = context.GetArgument<string>("filter"),
-                Sort = context.GetArgument<string>("sort"),
-                CultureName = context.GetArgument<string>(nameof(Currency.CultureName).ToCamelCase()),
-                CustomerId = context.GetArgumentOrValue<string>("userId")
-            };
+            var query = AbstractTypeFactory<SearchOrderQuery>.TryCreateInstance();
+            query.Map(context);
 
             context.CopyArgumentsToUserContext();
             var allCurrencies = await _currencyService.GetAllCurrenciesAsync();
@@ -230,18 +200,8 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 
         private async Task<object> ResolvePaymentsConnectionAsync(IMediator mediator, IResolveConnectionContext<object> context)
         {
-            var first = context.First;
-            var skip = Convert.ToInt32(context.After ?? 0.ToString());
-
-            var query = new SearchPaymentsQuery
-            {
-                Skip = skip,
-                Take = first ?? context.PageSize ?? 10,
-                Filter = context.GetArgument<string>("filter"),
-                Sort = context.GetArgument<string>("sort"),
-                CultureName = context.GetArgument<string>(nameof(Currency.CultureName).ToCamelCase()),
-                CustomerId = context.GetArgumentOrValue<string>("userId")
-            };
+            var query = AbstractTypeFactory<SearchPaymentsQuery>.TryCreateInstance();
+            query.Map(context);
 
             var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), query, new CanAccessOrderAuthorizationRequirement());
             if (!authorizationResult.Succeeded)

@@ -5,9 +5,12 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using VirtoCommerce.Exp.ExtensionSamples.Commands;
 using VirtoCommerce.Exp.ExtensionSamples.UseCases.TypeExtension.Queries;
+using VirtoCommerce.Exp.ExtensionSamples.UseCases.TypeExtension.Schemas;
 using VirtoCommerce.Exp.ExtensionSamples.UseCases.TypeExtension.Validators;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
+using VirtoCommerce.ExperienceApiModule.XOrder.Queries;
+using VirtoCommerce.ExperienceApiModule.XOrder.Schemas;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Modularity;
 using VirtoCommerce.XDigitalCatalog;
@@ -32,6 +35,7 @@ namespace VirtoCommerce.Exp.ExtensionSamples
             #region Type override: add a new properties
             //use such lines to override exists query and command handler
             services.OverrideQueryType<GetCartQuery, GetCartQueryExtended>().WithQueryHandler<CustomGetCartQueryHandler>();
+            services.OverrideQueryType<SearchOrderQuery, ExtendedSearchOrderQuery>().WithQueryHandler<ExtendedSearchOrderQueryHandler>();
 
             services.AddGraphQL(_ =>
             {
@@ -52,7 +56,9 @@ namespace VirtoCommerce.Exp.ExtensionSamples
             services.AddSchemaType<CartType2>().OverrideType<CartType, CartType2>();
             services.AddSchemaType<ProductType2>().OverrideType<ProductType, ProductType2>();
             services.AddSchemaType<InputRemoveCartType2>().OverrideType<InputRemoveCartType, InputRemoveCartType2>();
+
             services.OverrideCommandType<RemoveCartCommand, RemoveCartCommandExtended>().WithCommandHandler<RemoveCartCommandHandlerExtended>();
+            services.OverrideCommandType<QueryConnectionArguments, ExtendedQueryConnectionArguments>();
 
             //Domain types overrides
             AbstractTypeFactory<ExpProduct>.OverrideType<ExpProduct, ExpProduct2>();
