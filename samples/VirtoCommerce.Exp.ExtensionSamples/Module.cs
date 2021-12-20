@@ -36,7 +36,7 @@ namespace VirtoCommerce.Exp.ExtensionSamples
             //use such lines to override exists query and command handler
             services.OverrideQueryType<GetCartQuery, GetCartQueryExtended>().WithQueryHandler<CustomGetCartQueryHandler>();
             services.OverrideQueryType<SearchOrderQuery, ExtendedSearchOrderQuery>().WithQueryHandler<ExtendedSearchOrderQueryHandler>();
-
+            services.OverrideArgumentType<OrderQueryConnectionArguments, ExtendedOrderQueryConnectionArguments>();
             services.AddGraphQL(_ =>
             {
                 //It is important to pass the GraphQLOptions configure action, because the default parameters used in xAPI module won't be used after this call
@@ -56,9 +56,7 @@ namespace VirtoCommerce.Exp.ExtensionSamples
             services.AddSchemaType<CartType2>().OverrideType<CartType, CartType2>();
             services.AddSchemaType<ProductType2>().OverrideType<ProductType, ProductType2>();
             services.AddSchemaType<InputRemoveCartType2>().OverrideType<InputRemoveCartType, InputRemoveCartType2>();
-
             services.OverrideCommandType<RemoveCartCommand, RemoveCartCommandExtended>().WithCommandHandler<RemoveCartCommandHandlerExtended>();
-            services.OverrideCommandType<QueryConnectionArguments, ExtendedQueryConnectionArguments>();
 
             //Domain types overrides
             AbstractTypeFactory<ExpProduct>.OverrideType<ExpProduct, ExpProduct2>();

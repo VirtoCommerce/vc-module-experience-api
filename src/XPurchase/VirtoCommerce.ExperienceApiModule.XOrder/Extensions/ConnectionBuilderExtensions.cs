@@ -8,7 +8,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Extensions
     {
         public static ConnectionBuilder<object> Arguments(this ConnectionBuilder<object> connectionBuilder)
         {
-            connectionBuilder.FieldType.Arguments = AbstractTypeFactory<QueryConnectionArguments>.TryCreateInstance().AddArguments(connectionBuilder.FieldType.Arguments);
+            connectionBuilder.FieldType.Arguments = AbstractTypeFactory<OrderQueryConnectionArguments>.TryCreateInstance().AddArguments(connectionBuilder.FieldType.Arguments);
             return connectionBuilder;
         }
     }

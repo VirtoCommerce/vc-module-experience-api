@@ -3,9 +3,9 @@ using VirtoCommerce.ExperienceApiModule.XOrder.Schemas;
 
 namespace VirtoCommerce.Exp.ExtensionSamples.UseCases.TypeExtension.Schemas
 {
-    public class ExtendedQueryConnectionArguments : QueryConnectionArguments
+    public class ExtendedOrderQueryConnectionArguments : OrderQueryConnectionArguments
     {
-        public ExtendedQueryConnectionArguments()
+        public ExtendedOrderQueryConnectionArguments()
         {
             Argument<StringGraphType>("test");
         }

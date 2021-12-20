@@ -6,12 +6,11 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Extensions
 {
     public static class ResolveConnectionContextExtensions
     {
-        public static T ExtractQuery<T>(this IResolveConnectionContext<object> context) where T : ISearchOrderQuery
+        public static T ExtractQuery<T>(this IResolveConnectionContext<object> context) where T : IExtendableQuery<IResolveConnectionContext<object>>
         {
             var query = AbstractTypeFactory<T>.TryCreateInstance();
             query.Map(context);
             return query;
         }
     }
-
 }

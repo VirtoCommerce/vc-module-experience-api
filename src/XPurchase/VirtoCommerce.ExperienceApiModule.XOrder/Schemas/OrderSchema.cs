@@ -47,10 +47,9 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                 Type = GraphTypeExtenstionHelper.GetActualType<CustomerOrderType>(),
                 Resolver = new AsyncFieldResolver<object>(async context =>
                 {
-                    var request = AbstractTypeFactory<GetOrderQuery>.TryCreateInstance();
-                    request.Map(context);
-                    context.CopyArgumentsToUserContext();
+                    var request = context.ExtractQuery<GetOrderQuery>();
 
+                    context.CopyArgumentsToUserContext();
                     var orderAggregate = await _mediator.Send(request);
 
                     var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), orderAggregate.Order, new CanAccessOrderAuthorizationRequirement());

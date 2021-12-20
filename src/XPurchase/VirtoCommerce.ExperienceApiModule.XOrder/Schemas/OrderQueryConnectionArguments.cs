@@ -1,10 +1,11 @@
 using GraphQL.Types;
+using VirtoCommerce.ExperienceApiModule.Core.Schemas;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 {
-    public class QueryConnectionArguments : ArgumentList
+    public class OrderQueryConnectionArguments : ArgumentList
     {
-        public QueryConnectionArguments()
+        public OrderQueryConnectionArguments()
         {
             Argument<StringGraphType>("filter", "This parameter applies a filter to the query results");
             Argument<StringGraphType>("sort", "The sort expression");
@@ -12,7 +13,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Argument<StringGraphType>("userId", "");
         }
 
-        public virtual QueryConnectionArguments AddArguments(QueryArguments arguments)
+        public virtual OrderQueryConnectionArguments AddArguments(QueryArguments arguments)
         {
             foreach (var argument in arguments)
                 Add(argument);

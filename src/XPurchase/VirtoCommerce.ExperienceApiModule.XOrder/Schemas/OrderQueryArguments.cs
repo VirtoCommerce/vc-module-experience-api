@@ -1,4 +1,5 @@
 using GraphQL.Types;
+using VirtoCommerce.ExperienceApiModule.Core.Schemas;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 {

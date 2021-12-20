@@ -1,6 +1,6 @@
 using GraphQL.Types;
 
-namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
+namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
 {
     public abstract class ArgumentList : QueryArguments
     {

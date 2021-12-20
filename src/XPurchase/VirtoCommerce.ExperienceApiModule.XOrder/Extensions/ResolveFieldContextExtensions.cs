@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using GraphQL;
-using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
+using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Extensions
@@ -33,6 +33,11 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Extensions
             return result;
         }
 
-      
+        public static T ExtractQuery<T>(this IResolveFieldContext context) where T : IExtendableQuery<IResolveFieldContext>
+        {
+            var query = AbstractTypeFactory<T>.TryCreateInstance();
+            query.Map(context);
+            return query;
+        }
     }
 }

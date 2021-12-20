@@ -7,7 +7,7 @@ using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Queries
 {
-    public class SearchOrderQuery : IQuery<SearchOrderResponse>, ISearchOrderQuery
+    public class SearchOrderQuery : IQuery<SearchOrderResponse>, IExtendableQuery<IResolveConnectionContext<object>>
     {
         public string Sort { get; set; }
         public int Skip { get; set; }
