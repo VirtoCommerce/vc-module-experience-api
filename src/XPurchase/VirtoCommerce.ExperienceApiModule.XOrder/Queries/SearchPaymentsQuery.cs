@@ -8,7 +8,7 @@ using VirtoCommerce.OrdersModule.Core.Model.Search;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Queries
 {
-    public class SearchPaymentsQuery : IQuery<PaymentSearchResult>
+    public class SearchPaymentsQuery : IQuery<PaymentSearchResult>, ISearchOrderQuery
     {
         public string Sort { get; set; }
         public int Skip { get; set; }

@@ -12,6 +12,7 @@ using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure.Authorization;
 using VirtoCommerce.ExperienceApiModule.XOrder.Authorization;
 using VirtoCommerce.ExperienceApiModule.XOrder.Commands;
+using VirtoCommerce.ExperienceApiModule.XOrder.Extensions;
 using VirtoCommerce.ExperienceApiModule.XOrder.Queries;
 using VirtoCommerce.OrdersModule.Core.Model;
 using VirtoCommerce.OrdersModule.Core.Services;
@@ -70,13 +71,21 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                 })
             });
 
-            var orderConnectionBuilder = GraphTypeExtenstionHelper.CreateConnection<CustomerOrderType, object>().Name("orders").PageSize(20);
-            orderConnectionBuilder.FieldType.Arguments = AbstractTypeFactory<QueryConnectionArguments>.TryCreateInstance().AddArguments(orderConnectionBuilder.FieldType.Arguments);
+            var orderConnectionBuilder = GraphTypeExtenstionHelper
+                .CreateConnection<CustomerOrderType, object>()
+                .Name("orders")
+                .PageSize(20)
+                .Arguments();
+
             orderConnectionBuilder.ResolveAsync(async context => await ResolveOrdersConnectionAsync(_mediator, context));
             schema.Query.AddField(orderConnectionBuilder.FieldType);
 
-            var paymentsConnectionBuilder = GraphTypeExtenstionHelper.CreateConnection<PaymentInType, object>().Name("payments").PageSize(20);
-            paymentsConnectionBuilder.FieldType.Arguments = AbstractTypeFactory<QueryConnectionArguments>.TryCreateInstance().AddArguments(paymentsConnectionBuilder.FieldType.Arguments);
+            var paymentsConnectionBuilder = GraphTypeExtenstionHelper
+                .CreateConnection<PaymentInType, object>()
+                .Name("payments")
+                .PageSize(20)
+                .Arguments();
+
             paymentsConnectionBuilder.ResolveAsync(async context => await ResolvePaymentsConnectionAsync(_mediator, context));
             schema.Query.AddField(paymentsConnectionBuilder.FieldType);
 
@@ -174,8 +183,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 
         private async Task<object> ResolveOrdersConnectionAsync(IMediator mediator, IResolveConnectionContext<object> context)
         {
-            var query = AbstractTypeFactory<SearchOrderQuery>.TryCreateInstance();
-            query.Map(context);
+            var query = context.ExtractQuery<SearchOrderQuery>();
 
             context.CopyArgumentsToUserContext();
             var allCurrencies = await _currencyService.GetAllCurrenciesAsync();
@@ -200,8 +208,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 
         private async Task<object> ResolvePaymentsConnectionAsync(IMediator mediator, IResolveConnectionContext<object> context)
         {
-            var query = AbstractTypeFactory<SearchPaymentsQuery>.TryCreateInstance();
-            query.Map(context);
+            var query = context.ExtractQuery<SearchPaymentsQuery>();
 
             var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), query, new CanAccessOrderAuthorizationRequirement());
             if (!authorizationResult.Succeeded)

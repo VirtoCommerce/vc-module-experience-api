@@ -12,7 +12,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Argument<StringGraphType>("userId", "");
         }
 
-        public QueryConnectionArguments AddArguments(QueryArguments arguments)
+        public virtual QueryConnectionArguments AddArguments(QueryArguments arguments)
         {
             foreach (var argument in arguments)
                 Add(argument);
