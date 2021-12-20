@@ -1,5 +1,4 @@
 using System.Linq;
-using GraphQL;
 using GraphQL.Resolvers;
 using GraphQL.Types;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
@@ -49,7 +48,7 @@ namespace VirtoCommerce.ExperienceApiModule.XProfile.Schemas
                     // Platfrom system users (frontend, admin, etc) usually don't have a contact.
                     if (context.Source.MemberId == null)
                     {
-                        throw new ExecutionError("Cannot query field 'contact': MemberId is null");
+                        return null;
                     }
 
                     return contactAggregateRepository.GetMemberAggregateRootByIdAsync<ContactAggregate>(context.Source.MemberId);
