@@ -41,7 +41,6 @@
     <ProjectReference Include="..\VirtoCommerce.ExperienceApiModule.Core\VirtoCommerce.ExperienceApiModule.Core.csproj" />
     <ProjectReference Include="..\VirtoCommerce.ExperienceApiModule.DigitalCatalog\VirtoCommerce.XDigitalCatalog.csproj" />
     <ProjectReference Include="..\XCMS\VirtoCommerce.ExperienceApiModule.XCMS\VirtoCommerce.ExperienceApiModule.XCMS.csproj" />
-    <ProjectReference Include="..\XProfile\VirtoCommerce.XProfile\VirtoCommerce.ExperienceApiModule.XProfile.csproj" />
     <ProjectReference Include="..\XPurchase\VirtoCommerce.ExperienceApiModule.XOrder\VirtoCommerce.ExperienceApiModule.XOrder.csproj" />
     <ProjectReference Include="..\XPurchase\VirtoCommerce.XPurchase\VirtoCommerce.XPurchase.csproj" />
   </ItemGroup>
