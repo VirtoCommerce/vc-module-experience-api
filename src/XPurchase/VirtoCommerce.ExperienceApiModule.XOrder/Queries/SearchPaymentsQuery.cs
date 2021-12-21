@@ -8,7 +8,7 @@ using VirtoCommerce.OrdersModule.Core.Model.Search;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Queries
 {
-    public class SearchPaymentsQuery : IQuery<PaymentSearchResult>, IExtendableQuery<IResolveConnectionContext<object>>
+    public class SearchPaymentsQuery : IQuery<PaymentSearchResult>, IExtendableQuery
     {
         public string Sort { get; set; }
         public int Skip { get; set; }
@@ -17,14 +17,15 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Queries
         public string CultureName { get; set; }
         public string CustomerId { get; set; }
 
-        public virtual void Map(IResolveConnectionContext<object> context)
+        public virtual void Map(IResolveFieldContext context)
         {
-            Skip = Convert.ToInt32(context.After ?? 0.ToString());
-            Take = context.First ?? context.PageSize ?? 10;
-            CultureName = context.GetArgument<string>(nameof(Currency.CultureName).ToCamelCase());
-            Filter = context.GetArgument<string>("filter");
-            Sort = context.GetArgument<string>("sort");
-            CustomerId = context.GetArgumentOrValue<string>("userId");
+            var connectionContext = (IResolveConnectionContext)context;
+            Skip = Convert.ToInt32(connectionContext.After ?? 0.ToString());
+            Take = connectionContext.First ?? connectionContext.PageSize ?? 10;
+            CultureName = connectionContext.GetArgument<string>(nameof(Currency.CultureName).ToCamelCase());
+            Filter = connectionContext.GetArgument<string>("filter");
+            Sort = connectionContext.GetArgument<string>("sort");
+            CustomerId = connectionContext.GetArgumentOrValue<string>("userId");
         }
     }
 }

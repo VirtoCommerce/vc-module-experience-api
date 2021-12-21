@@ -4,7 +4,7 @@ using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Queries
 {
-    public class GetOrderQuery : IQuery<CustomerOrderAggregate>, IExtendableQuery<IResolveFieldContext>
+    public class GetOrderQuery : IQuery<CustomerOrderAggregate>, IExtendableQuery
     {
         public GetOrderQuery()
         {

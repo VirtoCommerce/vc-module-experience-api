@@ -1,10 +1,9 @@
 using GraphQL;
-using GraphQL.Builders;
 
 namespace VirtoCommerce.ExperienceApiModule.Core.Infrastructure
 {
-    public interface IExtendableQuery<T>
+    public interface IExtendableQuery
     {
-        public void Map(T context);
+        public void Map(IResolveFieldContext context);
     }
 }
