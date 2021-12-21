@@ -8,7 +8,7 @@ namespace VirtoCommerce.Exp.ExtensionSamples.UseCases.TypeExtension.Queries
     {
         public string Test { get; set; }
 
-        public override void Map(IResolveConnectionContext<object> context)
+        public override void Map(IResolveFieldContext context)
         {
             base.Map(context);
             Test = context.GetArgument<string>("test");
