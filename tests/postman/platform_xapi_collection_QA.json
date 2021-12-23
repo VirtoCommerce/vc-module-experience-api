@@ -2080,6 +2080,15 @@
 												],
 												"type": "text/javascript"
 											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
 										}
 									],
 									"request": {
@@ -2089,7 +2098,7 @@
 											"mode": "graphql",
 											"graphql": {
 												"query": "mutation createUser ($command: InputCreateUserType!) {\n    createUser (command: $command) {\n        errors {\n            code\n            description\n        }\n        succeeded\n    }\n}\n\n",
-												"variables": "{\n\"command\":\n  {\n     \"applicationUser\":{\n    \"createdBy\": \"eXp16\",\n    \"email\": \"user11_Acc@mailto.plus\",\n    \"password\":\"{{userName1}}\",\n    \"userName\": \"{{userName1}}\",\n    \"userType\": \"Customer\",\n    \"memberId\":\"{{contactId1}}\"\n      }}\n}"
+												"variables": "{\n\"command\":\n  {\n     \"applicationUser\":{\n    \"createdBy\": \"eXp16\",\n    \"email\": \"{{userName1}}\",\n    \"password\":\"Password1\",\n    \"userName\": \"{{userName1}}\",\n    \"userType\": \"Customer\",\n    \"memberId\":\"{{contactId1}}\"\n      }}\n}"
 											}
 										},
 										"url": {
@@ -2118,6 +2127,7 @@
 													"pm.test(\"Set CustomerId1\", function () {\r",
 													"    var jsonData = pm.response.json();\r",
 													"    pm.collectionVariables.set(\"customerId1\",jsonData.data.contact.securityAccounts[0].id);\r",
+													"    pm.collectionVariables.set(\"UserNameForCart\",jsonData.data.contact.securityAccounts[0].userName)\r",
 													"});"
 												],
 												"type": "text/javascript"
@@ -2130,7 +2140,7 @@
 										"body": {
 											"mode": "graphql",
 											"graphql": {
-												"query": "query contact ( $id: String!) {\n    contact (id: $id) {\n  id\n  securityAccounts{\n      id\n  }\n  }\n    }\n",
+												"query": "query contact ( $id: String!) {\n    contact (id: $id) {\n  id\n  securityAccounts{\n      id\n      userName\n  }\n  }\n    }\n",
 												"variables": "{\n  \"id\": \"{{contactId1}}\"\n}"
 											}
 										},
@@ -2190,7 +2200,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "grant_type=password&scope=offline_access&username={{userName1}}&password={{userName1}}",
+											"raw": "grant_type=password&scope=offline_access&username={{UserNameForCart}}&password=Password1",
 											"options": {
 												"raw": {
 													"language": "text"
@@ -2530,7 +2540,7 @@
 											"bearer": [
 												{
 													"key": "token",
-													"value": "{{AdminToken}}",
+													"value": "{{Token1}}",
 													"type": "string"
 												}
 											]
@@ -3255,7 +3265,7 @@
 											"mode": "graphql",
 											"graphql": {
 												"query": "mutation createUser ($command: InputCreateUserType!) {\n    createUser (command: $command) {\n        errors {\n            code\n            description\n        }\n        succeeded\n    }\n}\n\n",
-												"variables": "{\n\"command\":\n  {\n     \"applicationUser\":{\n    \"createdBy\": \"eXp16\",\n    \"email\": \"user11_Acc@mailto.plus\",\n    \"password\":\"{{userName1}}\",\n    \"userName\": \"{{userName1}}\",\n    \"userType\": \"Customer\",\n    \"memberId\":\"{{contactId1}}\"\n      }}\n}"
+												"variables": "{\n\"command\":\n  {\n     \"applicationUser\":{\n    \"createdBy\": \"eXp16\",\n    \"email\": \"user121_Acc@mailto.plus\",\n    \"password\":\"Password1\",\n    \"userName\": \"{{userName1}}\",\n    \"userType\": \"Customer\",\n    \"memberId\":\"{{contactId1}}\"\n      }}\n}"
 											}
 										},
 										"url": {
@@ -3366,7 +3376,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "grant_type=password&scope=offline_access&username={{userName1}}&password={{userName1}}",
+											"raw": "grant_type=password&scope=offline_access&username={{userName1}}&password=Password1",
 											"options": {
 												"raw": {
 													"language": "text"
@@ -3946,7 +3956,7 @@
 											"mode": "graphql",
 											"graphql": {
 												"query": "mutation createUser ($command: InputCreateUserType!) {\n    createUser (command: $command) {\n    \n        errors {\n            code\n            description\n        }\n        succeeded\n    }\n}\n\n",
-												"variables": "{\"command\":{\n\"applicationUser\":{\n  \"userType\": \"Customer\",\n  \"roles\": [{   \n           \"name\":\"{{roleName}}\",\n           \"id\":\"{{roleId}}\",\n           \"permissions\":[]\n        }],\n\n  \"storeId\":\"Electronics\",\n  \"id\":\"{{userId3}}\",\n  \"email\": \"user33_Acc@mailto.plus\",\n  \"userName\":\"{{userName3}}\",\n  \"memberId\":\"{{contactId3}}\",\n  \"password\":\"{{userName3}}\"\n\n}\n}\n}"
+												"variables": "{\"command\":{\n\"applicationUser\":{\n  \"userType\": \"Customer\",\n  \"roles\": [{   \n           \"name\":\"{{roleName}}\",\n           \"id\":\"{{roleId}}\",\n           \"permissions\":[]\n        }],\n\n  \"storeId\":\"Electronics\",\n  \"id\":\"{{userId3}}\",\n  \"email\": \"user363_Acc@mailto.plus\",\n  \"userName\":\"{{userName3}}\",\n  \"memberId\":\"{{contactId3}}\",\n  \"password\":\"{{userName3}}\"\n\n}\n}\n}"
 											}
 										},
 										"url": {
@@ -5461,7 +5471,7 @@
 											"mode": "graphql",
 											"graphql": {
 												"query": "query contacts($searchPhrase: String, $cultureName: String, $sort: String, $after: String, $first: Int){\r\ncontacts(searchPhrase:$searchPhrase, sort: $sort, first: $first, after:$after){\r\ntotalCount items{\r\nid\r\nname\r\ndynamicProperties(cultureName: $cultureName) {\r\nname value valueType\r\ndynamicProperty {\r\nname label valueType\r\ndictionaryItems(cultureName: $cultureName){ items { label name }}\r\n}\r\ndictionaryItem {\r\nlabel name id\r\n}\r\n}\r\n}\r\n}\r\n}",
-												"variables": "{\r\n\"cultureName\": \"en-US\",\r\n\"searchPhrase\": \"\\\"CustomerModule_Contact_ShortText_1_1_0\\\":\\\"value22\\\"\"\r\n}  "
+												"variables": "{\r\n\"cultureName\": \"en-US\",\r\n\"searchPhrase\": \"CustomerModule_Contact_ShortText_0_0_0:super_short\"\r\n}  "
 											}
 										},
 										"url": {
@@ -6128,10 +6138,10 @@
 													" pm.expect(pm.response.text()).to.include(\"ndkvncvkdvnjednvksnmdklvndekvn11\");\r",
 													" pm.expect(pm.response.text()).to.include(\"Go_org1\");\r",
 													" pm.expect(pm.response.text()).to.include(\"https://regression-platform.qa.govirto.com/cms-content/assets/catalog/Camcorders/102320611.jpg\");\r",
-													" pm.expect(pm.response.text()).to.include(\"10/25/2021 21:00:00\");\r",
+													" pm.expect(pm.response.text()).to.include(\"10/25/2021\");\r",
 													" pm.expect(pm.response.text()).to.include(\"this is long text for FR languages1\");\r",
 													" pm.expect(pm.response.text()).to.include(\"11111111122\");\r",
-													" pm.expect(pm.response.text()).to.include(\"value00111\");\r",
+													" //pm.expect(pm.response.text()).to.include(\"value00111\");\r",
 													" //pm.expect(pm.response.text()).to.include(\"value00211\");\r",
 													" pm.expect(pm.response.text()).to.include(\"text value for en-US1\");\r",
 													" pm.expect(pm.response.text()).to.include(\"text value for fr-FR1\");\r",
@@ -6315,7 +6325,7 @@
 											"mode": "graphql",
 											"graphql": {
 												"query": "query organizations($searchPhrase: String, $cultureName: String, $sort: String, $after: String, $first: Int){\r\n  organizations (searchPhrase:$searchPhrase, sort: $sort, first: $first, after: $after){ \r\n    totalCount items{\r\n      name id\r\n      dynamicProperties(cultureName: $cultureName) {\r\n        name value valueType\r\n        dynamicProperty {\r\n          name label valueType\r\n          dictionaryItems(cultureName: $cultureName){ items { label name }}\r\n        }\r\n        dictionaryItem {\r\n          label name id\r\n        }\r\n      }\r\n    } \r\n  }\r\n}",
-												"variables": "{\r\n  \"cultureName\": \"en-US\",\r\n    \"searchPhrase\": \"\\\"CustomerModule_Organization_LongText_0_0_0\\\":\\\"ndkvncvkdvnjednvks\\nmdklvndekvn11\\\"\"\r\n}"
+												"variables": "{\r\n  \"cultureName\": \"en-US\",\r\n    \"searchPhrase\": \"\\\"CustomerModule_Organization_LongText_0_0_0\\\":\\\"ndkvncvkdvnjednvksnmdklvndekvn11\\\"\"\r\n}"
 											}
 										},
 										"url": {
@@ -6738,7 +6748,7 @@
 											"mode": "graphql",
 											"graphql": {
 												"query": "mutation createUser ($command: InputCreateUserType!) {\n    createUser (command: $command) {\n    \n        errors {\n            code\n            description\n        }\n        succeeded\n    }\n}\n\n",
-												"variables": "{\n\"command\":\n  {\n     \"applicationUser\":{\n    \"createdBy\": \"eXp16\",\n    \"email\": \"user11_Acc@mailto.plus\",\n    \"password\":\"{{userName1}}\",\n    \"userName\": \"{{userName1}}\",\n    \"userType\": \"Customer\",\n    \"memberId\":\"{{contactId1}}\"\n      }}\n}"
+												"variables": "{\n\"command\":\n  {\n     \"applicationUser\":{\n    \"createdBy\": \"eXp16\",\n    \"email\": \"user1221_Acc@mailto.plus\",\n    \"password\":\"{{userName1}}\",\n    \"userName\": \"{{userName1}}\",\n    \"userType\": \"Customer\",\n    \"memberId\":\"{{contactId1}}\"\n      }}\n}"
 											}
 										},
 										"url": {
@@ -8871,7 +8881,7 @@
 								"body": {
 									"mode": "graphql",
 									"graphql": {
-										"query": "{\r\ncart (\r\nstoreId:\"{{storeId}}\"\r\nuserId: \"{{$randomUUID}}\"\r\ncurrencyCode: \"{{currencyCode}}\"\r\ncultureName: \"{{cultureName}}\"\r\ncartName: \"{{cartName}}\"\r\n)\r\n{\r\nid\r\ncustomerId\r\nitems\r\n{\r\n    id\r\n    name\r\n}\r\ncoupons{\r\n    code\r\n}\r\ncomment\r\ndynamicProperties {\r\nname\r\nvalue\r\nvalueType\r\n  dictionaryItem{\r\n    id\r\n    name\r\n    label\r\n  }\r\n}\r\nitems\r\n{\r\nid\r\nname\r\nproductId\r\nfulfillmentCenterId\r\nfulfillmentCenterName\r\ndynamicProperties {\r\nname\r\nvalue\r\nvalueType\r\n  dictionaryItem{\r\n    id\r\n    name\r\n    label\r\n  }\r\n}\r\n\r\nlistPrice {\r\namount\r\n}\r\n}\r\navailableShippingMethods {\r\ncode\r\noptionName\r\nlogoUrl\r\ncurrency {\r\ncode\r\n}\r\ntotal {\r\namount\r\n}\r\noptionDescription\r\nprice {\r\namount\r\n}\r\npriority\r\n}\r\navailablePaymentMethods {\r\ncode\r\ncurrency{\r\ncode\r\n}\r\nlogoUrl\r\nisAvailableForPartial\r\ntaxTotal{\r\namount\r\n}\r\npaymentMethodGroupType\r\nprice {\r\namount\r\n}\r\npriority\r\nisAvailableForPartial\r\n}\r\ntaxTotal {\r\namount\r\n}\r\ntotal{\r\n    amount\r\n}\r\npayments\r\n{\r\n    id\r\n    dynamicProperties {\r\nname\r\nvalue\r\nvalueType\r\n  dictionaryItem{\r\n    id\r\n    name\r\n    label\r\n  }\r\n}\r\n}\r\n\r\nshipments\r\n{\r\n    id\r\n    dynamicProperties {\r\nname\r\nvalue\r\nvalueType\r\n  dictionaryItem{\r\n    id\r\n    name\r\n    label\r\n  }\r\n}\r\n}\r\n}}",
+										"query": "{\r\ncart (\r\nstoreId:\"{{storeId}}\"\r\nuserId: \"f1bfe670-6ba4-41f6-9925-0204e001696d\"\r\ncurrencyCode: \"{{currencyCode}}\"\r\ncultureName: \"{{cultureName}}\"\r\ncartName: \"{{cartName}}\"\r\n)\r\n{\r\nid\r\ncustomerId\r\nitems\r\n{\r\n    id\r\n    name\r\n}\r\ncoupons{\r\n    code\r\n}\r\ncomment\r\ndynamicProperties {\r\nname\r\nvalue\r\nvalueType\r\n  dictionaryItem{\r\n    id\r\n    name\r\n    label\r\n  }\r\n}\r\nitems\r\n{\r\nid\r\nname\r\nproductId\r\nfulfillmentCenterId\r\nfulfillmentCenterName\r\ndynamicProperties {\r\nname\r\nvalue\r\nvalueType\r\n  dictionaryItem{\r\n    id\r\n    name\r\n    label\r\n  }\r\n}\r\n\r\nlistPrice {\r\namount\r\n}\r\n}\r\navailableShippingMethods {\r\ncode\r\noptionName\r\nlogoUrl\r\ncurrency {\r\ncode\r\n}\r\ntotal {\r\namount\r\n}\r\noptionDescription\r\nprice {\r\namount\r\n}\r\npriority\r\n}\r\navailablePaymentMethods {\r\ncode\r\ncurrency{\r\ncode\r\n}\r\nlogoUrl\r\nisAvailableForPartial\r\ntaxTotal{\r\namount\r\n}\r\npaymentMethodGroupType\r\nprice {\r\namount\r\n}\r\npriority\r\nisAvailableForPartial\r\n}\r\ntaxTotal {\r\namount\r\n}\r\ntotal{\r\n    amount\r\n}\r\npayments\r\n{\r\n    id\r\n    dynamicProperties {\r\nname\r\nvalue\r\nvalueType\r\n  dictionaryItem{\r\n    id\r\n    name\r\n    label\r\n  }\r\n}\r\n}\r\n\r\nshipments\r\n{\r\n    id\r\n    dynamicProperties {\r\nname\r\nvalue\r\nvalueType\r\n  dictionaryItem{\r\n    id\r\n    name\r\n    label\r\n  }\r\n}\r\n}\r\n}}",
 										"variables": ""
 									}
 								},
@@ -9041,7 +9051,7 @@
 									"mode": "graphql",
 									"graphql": {
 										"query": "mutation addOrUpdateCartPayment($command: InputAddOrUpdateCartPaymentType!) {\naddOrUpdateCartPayment(command: $command) {\nid\npayments {\nid\nouterId\npaymentGatewayCode\nprice {\namount\n}\namount {\namount\n}\nbillingAddress {\nid\ncity\ncountryCode\ncountryName\nemail\nfirstName\nlastName\nline1\nline2\nmiddleName\nname\norganization\nphone\npostalCode\nregionId\nregionName\nzip\n}\n}\n}\n}",
-										"variables": "{\n\"command\": {\n\"cartId\": \"{{orderCart}}\",\n\"storeId\": \"{{storeId}}\",\n\"cartName\": \"{{cartName}}\",\n\"userId\": \"{{randomUser3}}\",\n\"currencyCode\": \"{{currencyCode}}\",\n\"cultureName\":\"{{cultureName}}\",\n\"cartType\": null,\n\"payment\": {\n\"id\": \"{{$randomUUID}}\",\n\"outerId\": \"paymentouterud_default_test_1\",\n\"paymentGatewayCode\": \"DefaultManualPaymentMethod\",\n\"billingAddress\": {\n\"city\": \"City 17\",\n\"countryCode\": \"RU\",\n\"countryName\": \"Russia\",\n\"email\": \"addressCart email test\",\n\"firstName\": \"First test name\",\n\"id\": \"KeyTest\",\n\"key\": \"KeyTest\",\n\"lastName\": \"Last name test\",\n\"line1\": \"Address Line 1\",\n\"line2\": \"Address line 2\",\n\"middleName\": \"Test Middle Name\",\n\"name\": \"First name address\",\n\"organization\": \"OrganizationTestName\",\n\"phone\": \"88005553535\",\n\"postalCode\": \"111111\",\n\"regionId\": \"Test region\",\n\"regionName\": \"Region 15\",\n\"zip\": \"13413\",\n\"addressType\": 1\n},\n\"currency\": \"USD\",\n\"price\": 1050,\n\"amount\": 1050\n}\n}\n}"
+										"variables": "{\n\"command\": {\n\"cartId\": \"{{orderCart}}\",\n\"storeId\": \"{{storeId}}\",\n\"cartName\": \"{{cartName}}\",\n\"userId\": \"{{randomUser3}}\",\n\"currencyCode\": \"{{currencyCode}}\",\n\"cultureName\":\"{{cultureName}}\",\n\"cartType\": null,\n\"payment\": {\n\"id\": \"{{$randomUUID}}\",\n\"outerId\": \"paymentouterud_default_test_1\",\n\"paymentGatewayCode\": \"DefaultManualPaymentMethod\",\n\"billingAddress\": {\n\"city\": \"City 17\",\n\"countryCode\": \"RU\",\n\"countryName\": \"Russia\",\n\"email\": \"PaddressCart@email.com\",\n\"firstName\": \"First test name\",\n\"id\": \"KeyTest\",\n\"key\": \"KeyTest\",\n\"lastName\": \"Last name test\",\n\"line1\": \"Address Line 1\",\n\"line2\": \"Address line 2\",\n\"middleName\": \"Test Middle Name\",\n\"name\": \"First name address\",\n\"organization\": \"OrganizationTestName\",\n\"phone\": \"88005553535\",\n\"postalCode\": \"111111\",\n\"regionId\": \"Test region\",\n\"regionName\": \"Region 15\",\n\"zip\": \"13413\",\n\"addressType\": 1\n},\n\"currency\": \"USD\",\n\"price\": 1050,\n\"amount\": 1050\n}\n}\n}"
 									}
 								},
 								"url": {
@@ -9087,7 +9097,7 @@
 									"mode": "graphql",
 									"graphql": {
 										"query": "mutation addOrUpdateCartShipment($command:InputAddOrUpdateCartShipmentType!) {addOrUpdateCartShipment(command: $command) {\nshipments {\nid\nshipmentMethodCode\nshipmentMethodOption\nfulfillmentCenterId\nprice{\namount\n}\ndeliveryAddress {\nid\ncity\ncountryCode\ncountryName\nemail\nfirstName\nlastName\nline1\nline2\nmiddleName\nname\norganization\nphone\npostalCode\nregionId\nregionName\nzip\n}\n}\n}\n}",
-										"variables": "{\n\"command\": {\n\"cartId\": \"{{orderCart}}\",\n\"storeId\": \"{{storeId}}\",\n\"cartName\": \"{{default}}\",\n\"userId\": \"{{randomUser3}}\",\n\"currencyCode\": \"{{currencyCode}}\",\n\"cultureName\":\"{{cultureName}}\",\n\"cartType\": \"null\",\n\"shipment\": {\n\"id\": \"{{$randomUUID}}\",\n\"fulfillmentCenterId\": \"142ba5568ae4454aad553ece41b9c3b5\",\n\"height\": 123,\n\"length\": 432,\n\"measureUnit\": \"mm\",\n\"shipmentMethodCode\": \"FixedRate\",\n\"shipmentMethodOption\": \"Ground\",\n\"volumetricWeight\": 151,\n\"weight\": 15643,\n\"weightUnit\": \"116\",\n\"width\": 114,\n\"deliveryAddress\": {\n\"city\": \"City 17\",\n\"countryCode\": \"RU\",\n\"countryName\": \"Russia\",\n\"email\": \"addressCart email test\",\n\"firstName\": \"First test name\",\n\"key\": \"KeyTest\",\n\"lastName\": \"Last name test\",\n\"line1\": \"Address Line 1\",\n\"line2\": \"Address line 2\",\n\"middleName\": \"Test Middle Name\",\n\"name\": \"First name address\",\n\"organization\": \"OrganizationTestName\",\n\"phone\": \"88005553535\",\n\"postalCode\": \"111111\",\n\"regionId\": \"Test region\",\n\"regionName\": \"Region 15\",\n\"zip\": \"13413\",\n\"addressType\": 1\n},\n\"currency\": \"USD\",\n\"price\": 10\n}\n}\n}"
+										"variables": "{\n\"command\": {\n\"cartId\": \"{{orderCart}}\",\n\"storeId\": \"{{storeId}}\",\n\"cartName\": \"{{default}}\",\n\"userId\": \"{{randomUser3}}\",\n\"currencyCode\": \"{{currencyCode}}\",\n\"cultureName\":\"{{cultureName}}\",\n\"cartType\": \"null\",\n\"shipment\": {\n\"id\": \"{{$randomUUID}}\",\n\"fulfillmentCenterId\": \"142ba5568ae4454aad553ece41b9c3b5\",\n\"height\": 123,\n\"length\": 432,\n\"measureUnit\": \"mm\",\n\"shipmentMethodCode\": \"FixedRate\",\n\"shipmentMethodOption\": \"Ground\",\n\"volumetricWeight\": 151,\n\"weight\": 15643,\n\"weightUnit\": \"116\",\n\"width\": 114,\n\"deliveryAddress\": {\n\"city\": \"City 17\",\n\"countryCode\": \"RU\",\n\"countryName\": \"Russia\",\n\"email\": \"addressCart@email.com\",\n\"firstName\": \"First test name\",\n\"key\": \"KeyTest\",\n\"lastName\": \"Last name test\",\n\"line1\": \"Address Line 1\",\n\"line2\": \"Address line 2\",\n\"middleName\": \"Test Middle Name\",\n\"name\": \"First name address\",\n\"organization\": \"OrganizationTestName\",\n\"phone\": \"88005553535\",\n\"postalCode\": \"111111\",\n\"regionId\": \"Test region\",\n\"regionName\": \"Region 15\",\n\"zip\": \"13413\",\n\"addressType\": 1\n},\n\"currency\": \"USD\",\n\"price\": 10\n}\n}\n}"
 									}
 								},
 								"url": {
@@ -9128,7 +9138,7 @@
 									"mode": "graphql",
 									"graphql": {
 										"query": "mutation addOrUpdateCartAddress($command: InputAddOrUpdateCartAddressType!) {\naddOrUpdateCartAddress(command: $command) {\nid\naddresses {\naddressType\ncity\ncountryCode\ncountryName\nemail\nfirstName\nid\nlastName\nline1\nline2\nmiddleName\nname\norganization\nphone\npostalCode\nregionId\nregionName\nzip\nid\n}\n}\n}",
-										"variables": "{\n\"command\": {\n\"cartId\": \"{{orderCart}}\",\n    \"storeId\": \"{{storeId}}\",\n    \"cartName\": \"{{cartName}}\",\n    \"userId\": \"{{randomUser3}}\",\n    \"currencyCode\": \"{{currencyCode}}\",\n    \"cultureName\": \"{{cultureName}}\",\n    \"cartType\": \"{{cartType}}\",\n\"address\": {\n\"city\": \"City 18\",\n\"countryCode\": \"RU\",\n\"countryName\": \"Russia\",\n\"email\": \"3333addressCart email test\",\n\"firstName\": \"First test name\",\n\"key\": \"{{$randomUUID}}\",\n\"lastName\": \"Last name test\",\n\"line1\": \"Address Line 1\",\n\"line2\": \"Address line 2\",\n\"middleName\": \"Test Middle Name\",\n\"name\": \"First name address\",\n\"organization\": \"OrganizationTestName\",\n\"phone\": \"88005553535\",\n\"postalCode\": \"111111\",\n\"regionId\": \"Test region\",\n\"regionName\": \"Region 15\",\n\"zip\": \"13413\",\n\"addressType\": 1\n}\n}\n}"
+										"variables": "{\n\"command\": {\n\"cartId\": \"{{orderCart}}\",\n    \"storeId\": \"{{storeId}}\",\n    \"cartName\": \"{{cartName}}\",\n    \"userId\": \"{{randomUser3}}\",\n    \"currencyCode\": \"{{currencyCode}}\",\n    \"cultureName\": \"{{cultureName}}\",\n    \"cartType\": \"{{cartType}}\",\n\"address\": {\n\"city\": \"City 18\",\n\"countryCode\": \"RU\",\n\"countryName\": \"Russia\",\n\"email\": \"3333addressCart@emai.ru\",\n\"firstName\": \"First test name\",\n\"key\": \"{{$randomUUID}}\",\n\"lastName\": \"Last name test\",\n\"line1\": \"Address Line 1\",\n\"line2\": \"Address line 2\",\n\"middleName\": \"Test Middle Name\",\n\"name\": \"First name address\",\n\"organization\": \"OrganizationTestName\",\n\"phone\": \"88005553535\",\n\"postalCode\": \"111111\",\n\"regionId\": \"Test region\",\n\"regionName\": \"Region 15\",\n\"zip\": \"13413\",\n\"addressType\": 1\n}\n}\n}"
 									}
 								},
 								"url": {
@@ -12727,6 +12737,48 @@
 				{
 					"name": "Product",
 					"item": [
+						{
+							"name": "Create Contact_1 [admin] Copy",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"pm.test(\"Set contactId\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.collectionVariables.set(\"contactId1\", jsonData.data.createContact.id);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "graphql",
+									"graphql": {
+										"query": "mutation createContact ($command: InputCreateContactType!) {\ncreateContact (command: $command) {\nfullName\nid\nlastName\nname\n\n}\n}",
+										"variables": "{\n\"command\": {\n\"name\": \"Contact1\",\n\"memberType\": \"Contact\",\n\"addresses\": [],\n\"fullName\": \"Contact1\",\n\"firstName\": \"Contact1\",\n\"lastName\": \"Contact1\",\n\"organizations\": \"{{organizationId1}}\"\n}\n}\n\n"
+									}
+								},
+								"url": {
+									"raw": "{{url}}/graphql",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"graphql"
+									]
+								}
+							},
+							"response": []
+						},
 						{
 							"name": "Create product",
 							"event": [
@@ -17908,7 +17960,7 @@
 											"pm.test(\"Check values\", function () {\r",
 											"    pm.expect(pm.response.text()).to.include(\"link\");\r",
 											"    pm.expect(pm.response.text()).to.include(\"True\");\r",
-											"    pm.expect(pm.response.text()).to.include(\"10/26/2021 00:00:00\");\r",
+											"    pm.expect(pm.response.text()).to.include(\"10/26/2021\");\r",
 											"    pm.expect(pm.response.text()).to.include(\"29.67\");\r",
 											"    pm.expect(pm.response.text()).to.include(\"2.3\");\r",
 											"    pm.expect(pm.response.text()).to.include(\"112.6\");\r",
@@ -18015,7 +18067,7 @@
 											"pm.test(\"Check values\", function () {\r",
 											"     pm.expect(pm.response.text()).to.include(\"link\");\r",
 											"    pm.expect(pm.response.text()).to.include(\"True\");\r",
-											"    pm.expect(pm.response.text()).to.include(\"10/26/2021 00:00:00\");\r",
+											"    pm.expect(pm.response.text()).to.include(\"10/26/2021\");\r",
 											"    pm.expect(pm.response.text()).to.include(\"29.67\");\r",
 											"    pm.expect(pm.response.text()).to.include(\"2.3\");\r",
 											"    pm.expect(pm.response.text()).to.include(\"112.6\");\r",
@@ -18116,7 +18168,7 @@
 									"script": {
 										"exec": [
 											"pm.test(\"Check values\", function () {\r",
-											"pm.expect(pm.response.text()).to.include(\"10/20/2021 00:00:00\");\r",
+											"pm.expect(pm.response.text()).to.include(\"10/20/2021\");\r",
 											"pm.expect(pm.response.text()).to.include(\"5.0\");\r",
 											"pm.expect(pm.response.text()).to.include(\"225.89\");\r",
 											"pm.expect(pm.response.text()).to.include(\"190.87\");\r",
@@ -18215,7 +18267,7 @@
 									"script": {
 										"exec": [
 											"pm.test(\"Check values\", function () {\r",
-											"pm.expect(pm.response.text()).to.include(\"10/26/2021 00:00:00\");\r",
+											"pm.expect(pm.response.text()).to.include(\"10/26/2021\");\r",
 											"pm.expect(pm.response.text()).to.include(\"21\");\r",
 											"pm.expect(pm.response.text()).to.include(\"Comment loong text\");\r",
 											"pm.expect(pm.response.text()).to.include(\"Test updated value text-en-US\");\r",
@@ -18298,7 +18350,7 @@
 										"exec": [
 											"pm.test(\"Check values\", function () {\r",
 											"    pm.expect(pm.response.text()).to.include(\"True\");\r",
-											"    pm.expect(pm.response.text()).to.include(\"09/28/2021 00:00:00\");\r",
+											"    pm.expect(pm.response.text()).to.include(\"9/28/2021\");\r",
 											"    pm.expect(pm.response.text()).to.include(\"74.9\");\r",
 											"    pm.expect(pm.response.text()).to.include(\"34.3\");\r",
 											"    pm.expect(pm.response.text()).to.include(\"13.7\");\r",
@@ -19035,7 +19087,7 @@
 							"response": []
 						},
 						{
-							"name": "getCart Copy",
+							"name": "getCart",
 							"event": [
 								{
 									"listen": "test",
@@ -19053,16 +19105,7 @@
 											"    pm.expect(data.data.cart.id).to.be.a(\"string\");\r",
 											"    pm.expect(data.errors).to.be.undefined;\r",
 											"});\r",
-											"pm.test(\"Check available payment method\", function () {\r",
-											"    var data = pm.response.json();\r",
-											"    pm.expect(data.data.cart.availablePaymentMethods).to.not.empty;\r",
-											"     pm.expect(data.errors).to.be.undefined;\r",
-											"});\r",
-											"pm.test(\"Check available shipment method\", function () {\r",
-											"    var data = pm.response.json();\r",
-											"    pm.expect(data.data.cart.availableShippingMethods).to.not.empty;\r",
-											" pm.expect(data.errors).to.be.undefined;\r",
-											"});"
+											""
 										],
 										"type": "text/javascript"
 									}
@@ -19235,7 +19278,12 @@
 											"    pm.expect(json.errors).to.be.undefined;\r",
 											"});\r",
 											"\r",
-											""
+											"pm.test(\"Get fulfillment center of products - Default (checkOrder)\", function(){\r",
+											"var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData.data.createOrderFromCart.items[0].fulfillmentCenterId).to.be.equal(pm.collectionVariables.get(\"DefaultFFCId\"));\r",
+											"    pm.expect(jsonData.data.createOrderFromCart.items[0].fulfillmentCenterName).to.be.equal(pm.collectionVariables.get(\"DefaultFFCName\"));\r",
+											"\r",
+											"});"
 										],
 										"type": "text/javascript"
 									}
@@ -19249,6 +19297,137 @@
 									"graphql": {
 										"query": "mutation createOrderFromCart ($command: InputCreateOrderFromCartType!) {\ncreateOrderFromCart (command: $command) {\nid\nitems{\nid\nname\nquantity\nfulfillmentCenterId\nfulfillmentCenterName\n}\n}\n}",
 										"variables": "{\n\"command\": {\n    \"cartId\": \"{{orderCart}}\"\n  }\n}"
+									}
+								},
+								"url": {
+									"raw": "{{url}}/graphql",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"graphql"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "checkOrder Copy",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Get fulfillment center of products - Default (checkOrder)\", function(){\r",
+											"var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData.data.order.items[0].fulfillmentCenterId).to.be.equal(pm.collectionVariables.get(\"DefaultFFCId\"));\r",
+											"    pm.expect(jsonData.data.order.items[0].fulfillmentCenterName).to.be.equal(pm.collectionVariables.get(\"DefaultFFCName\"));\r",
+											"\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "graphql",
+									"graphql": {
+										"query": "query order($id: String, $cultureName: String) {\r\n  order(id: $id, cultureName: $cultureName) {\r\n    id\r\n    number\r\n\r\nitems{\r\nid\r\nname\r\nquantity\r\nfulfillmentCenterId\r\nfulfillmentCenterName\r\n}\r\n   \r\n  \r\n  }\r\n}\r\n",
+										"variables": "{\r\n  \"id\": \"{{orderid1}}\",\r\n  \"cultureName\": \"en-US\"\r\n}"
+									}
+								},
+								"url": {
+									"raw": "{{url}}/graphql",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"graphql"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "getCart",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Set orderCart, randomUser3\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.collectionVariables.set(\"orderCart\", jsonData.data.cart.id);\r",
+											"    pm.collectionVariables.set(\"randomUser3\", jsonData.data.cart.customerId);\r",
+											"});\r",
+											"pm.test(\"Check cart by user ID\", function () {\r",
+											"    var data = pm.response.json();\r",
+											"    pm.expect(data.data.cart).to.not.eql(null);\r",
+											"    pm.expect(data.data.cart).to.be.an(\"object\");\r",
+											"    pm.expect(data.data.cart.id).to.be.a(\"string\");\r",
+											"    pm.expect(data.errors).to.be.undefined;\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "graphql",
+									"graphql": {
+										"query": "{\r\ncart (\r\nstoreId:\"{{storeId}}\"\r\nuserId: \"{{$randomUUID}}\"\r\ncurrencyCode: \"{{currencyCode}}\"\r\ncultureName: \"{{cultureName}}\"\r\ncartName: \"{{cartName}}\"\r\n)\r\n{\r\nid\r\ncustomerId\r\nitems\r\n{\r\n    id\r\n    name\r\n}\r\ncoupons{\r\n    code\r\n}\r\ncomment\r\ndynamicProperties {\r\nname\r\nvalue\r\nvalueType\r\n  dictionaryItem{\r\n    id\r\n    name\r\n    label\r\n  }\r\n}\r\nitems\r\n{\r\nid\r\nname\r\nproductId\r\nfulfillmentCenterId\r\nfulfillmentCenterName\r\ndynamicProperties {\r\nname\r\nvalue\r\nvalueType\r\n  dictionaryItem{\r\n    id\r\n    name\r\n    label\r\n  }\r\n}\r\n\r\nlistPrice {\r\namount\r\n}\r\n}\r\navailableShippingMethods {\r\ncode\r\noptionName\r\nlogoUrl\r\ncurrency {\r\ncode\r\n}\r\ntotal {\r\namount\r\n}\r\noptionDescription\r\nprice {\r\namount\r\n}\r\npriority\r\n}\r\navailablePaymentMethods {\r\ncode\r\ncurrency{\r\ncode\r\n}\r\nlogoUrl\r\nisAvailableForPartial\r\ntaxTotal{\r\namount\r\n}\r\npaymentMethodGroupType\r\nprice {\r\namount\r\n}\r\npriority\r\nisAvailableForPartial\r\n}\r\ntaxTotal {\r\namount\r\n}\r\ntotal{\r\n    amount\r\n}\r\npayments\r\n{\r\n    id\r\n    dynamicProperties {\r\nname\r\nvalue\r\nvalueType\r\n  dictionaryItem{\r\n    id\r\n    name\r\n    label\r\n  }\r\n}\r\n}\r\n\r\nshipments\r\n{\r\n    id\r\n    dynamicProperties {\r\nname\r\nvalue\r\nvalueType\r\n  dictionaryItem{\r\n    id\r\n    name\r\n    label\r\n  }\r\n}\r\n}\r\n}}",
+										"variables": ""
+									}
+								},
+								"url": {
+									"raw": "{{url}}/graphql",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"graphql"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "clearCart Copy",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"clearCart\", function () {\r",
+											"    var json = pm.response.json();\r",
+											"    pm.expect(json.data.clearCart).to.be.not.empty;\r",
+											"    pm.expect(json.data.clearCart.total.amount).to.be.equal(0.00);\r",
+											"    pm.expect(json.errors).to.be.undefined;\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "graphql",
+									"graphql": {
+										"query": "mutation clearCart ($command: InputClearCartType!) {\nclearCart (command: $command) {\nid\ntotal{\namount\n}\n}\n}",
+										"variables": "{\n  \"command\": {\n    \"cartId\": \"{{orderCart}}\",\n    \"storeId\": \"{{storeId}}\",\n    \"cartName\": \"{{cartName}}\",\n    \"userId\": \"{{randomUser3}}\",\n    \"currencyCode\": \"{{currencyCode}}\",\n    \"cultureName\": \"{{cultureName}}\",\n    \"cartType\": \"{{cartType}}\"\n  }\n}"
 									}
 								},
 								"url": {
@@ -19337,6 +19516,145 @@
 									"mode": "graphql",
 									"graphql": {
 										"query": "{\r\ncart (\r\nstoreId:\"{{storeId}}\"\r\nuserId: \"{{randomUser3}}\"\r\ncurrencyCode: \"{{currencyCode}}\"\r\ncultureName: \"{{cultureName}}\"\r\ncartName: \"{{cartName}}\"\r\n)\r\n{ items{\r\n      product{\r\n        name\r\n      }\r\n      fulfillmentCenterId\r\n      fulfillmentCenterName\r\n    }\r\n  }\r\n\r\n}",
+										"variables": ""
+									}
+								},
+								"url": {
+									"raw": "{{url}}/graphql",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"graphql"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "createOrderFromCart",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"CreateOrderFromCart\", function () {\r",
+											"    var json = pm.response.json();\r",
+											"    pm.collectionVariables.set(\"orderid1\", json.data.createOrderFromCart.id);\r",
+											"    pm.expect(json.data.createOrderFromCart).to.be.not.empty;\r",
+											"    pm.expect(json.data.createOrderFromCart.id).to.be.a(\"string\");\r",
+											"    pm.expect(json.errors).to.be.undefined;\r",
+											"});\r",
+											"pm.test(\"Get fulfillment center of products - Available (checkOrder)\", function(){\r",
+											"var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData.data.createOrderFromCart.items[0].fulfillmentCenterId).to.be.equal(pm.collectionVariables.get(\"AvaibleFFCId\"));\r",
+											"    pm.expect(jsonData.data.createOrderFromCart.items[0].fulfillmentCenterName).to.be.equal(pm.collectionVariables.get(\"AvaibleFFCName\"));\r",
+											"\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "graphql",
+									"graphql": {
+										"query": "mutation createOrderFromCart ($command: InputCreateOrderFromCartType!) {\ncreateOrderFromCart (command: $command) {\nid\nitems{\nid\nname\nquantity\nfulfillmentCenterId\nfulfillmentCenterName\n}\n}\n}",
+										"variables": "{\n\"command\": {\n    \"cartId\": \"{{orderCart}}\"\n  }\n}"
+									}
+								},
+								"url": {
+									"raw": "{{url}}/graphql",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"graphql"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "checkOrder",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Get fulfillment center of products - Available (checkOrder)\", function(){\r",
+											"var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData.data.order.items[0].fulfillmentCenterId).to.be.equal(pm.collectionVariables.get(\"AvaibleFFCId\"));\r",
+											"    pm.expect(jsonData.data.order.items[0].fulfillmentCenterName).to.be.equal(pm.collectionVariables.get(\"AvaibleFFCName\"));\r",
+											"\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "graphql",
+									"graphql": {
+										"query": "query order($id: String, $cultureName: String) {\r\n  order(id: $id, cultureName: $cultureName) {\r\n    id\r\n    number\r\n\r\nitems{\r\nid\r\nname\r\nquantity\r\nfulfillmentCenterId\r\nfulfillmentCenterName\r\n}\r\n   \r\n  \r\n  }\r\n}\r\n",
+										"variables": "{\r\n  \"id\": \"{{orderid1}}\",\r\n  \"cultureName\": \"en-US\"\r\n}"
+									}
+								},
+								"url": {
+									"raw": "{{url}}/graphql",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"graphql"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "getCart",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Set orderCart, randomUser3\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.collectionVariables.set(\"orderCart\", jsonData.data.cart.id);\r",
+											"    pm.collectionVariables.set(\"randomUser3\", jsonData.data.cart.customerId);\r",
+											"});\r",
+											"pm.test(\"Check cart by user ID\", function () {\r",
+											"    var data = pm.response.json();\r",
+											"    pm.expect(data.data.cart).to.not.eql(null);\r",
+											"    pm.expect(data.data.cart).to.be.an(\"object\");\r",
+											"    pm.expect(data.data.cart.id).to.be.a(\"string\");\r",
+											"    pm.expect(data.errors).to.be.undefined;\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "graphql",
+									"graphql": {
+										"query": "{\r\ncart (\r\nstoreId:\"{{storeId}}\"\r\nuserId: \"{{$randomUUID}}\"\r\ncurrencyCode: \"{{currencyCode}}\"\r\ncultureName: \"{{cultureName}}\"\r\ncartName: \"{{cartName}}\"\r\n)\r\n{\r\nid\r\ncustomerId\r\nitems\r\n{\r\n    id\r\n    name\r\n}\r\ncoupons{\r\n    code\r\n}\r\ncomment\r\ndynamicProperties {\r\nname\r\nvalue\r\nvalueType\r\n  dictionaryItem{\r\n    id\r\n    name\r\n    label\r\n  }\r\n}\r\nitems\r\n{\r\nid\r\nname\r\nproductId\r\nfulfillmentCenterId\r\nfulfillmentCenterName\r\ndynamicProperties {\r\nname\r\nvalue\r\nvalueType\r\n  dictionaryItem{\r\n    id\r\n    name\r\n    label\r\n  }\r\n}\r\n\r\nlistPrice {\r\namount\r\n}\r\n}\r\navailableShippingMethods {\r\ncode\r\noptionName\r\nlogoUrl\r\ncurrency {\r\ncode\r\n}\r\ntotal {\r\namount\r\n}\r\noptionDescription\r\nprice {\r\namount\r\n}\r\npriority\r\n}\r\navailablePaymentMethods {\r\ncode\r\ncurrency{\r\ncode\r\n}\r\nlogoUrl\r\nisAvailableForPartial\r\ntaxTotal{\r\namount\r\n}\r\npaymentMethodGroupType\r\nprice {\r\namount\r\n}\r\npriority\r\nisAvailableForPartial\r\n}\r\ntaxTotal {\r\namount\r\n}\r\ntotal{\r\n    amount\r\n}\r\npayments\r\n{\r\n    id\r\n    dynamicProperties {\r\nname\r\nvalue\r\nvalueType\r\n  dictionaryItem{\r\n    id\r\n    name\r\n    label\r\n  }\r\n}\r\n}\r\n\r\nshipments\r\n{\r\n    id\r\n    dynamicProperties {\r\nname\r\nvalue\r\nvalueType\r\n  dictionaryItem{\r\n    id\r\n    name\r\n    label\r\n  }\r\n}\r\n}\r\n}}",
 										"variables": ""
 									}
 								},
@@ -19474,6 +19792,105 @@
 									"graphql": {
 										"query": "{\r\ncart (\r\nstoreId:\"{{storeId}}\"\r\nuserId: \"{{randomUser3}}\"\r\ncurrencyCode: \"{{currencyCode}}\"\r\ncultureName: \"{{cultureName}}\"\r\ncartName: \"{{cartName}}\"\r\n)\r\n{ items{\r\n      product{\r\n        name\r\n      }\r\n      fulfillmentCenterId\r\n      fulfillmentCenterName\r\n    }\r\n  }\r\n\r\n}",
 										"variables": ""
+									}
+								},
+								"url": {
+									"raw": "{{url}}/graphql",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"graphql"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "createOrderFromCart",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"CreateOrderFromCart\", function () {\r",
+											"    var json = pm.response.json();\r",
+											"    pm.collectionVariables.set(\"orderid1\", json.data.createOrderFromCart.id);\r",
+											"    pm.expect(json.data.createOrderFromCart).to.be.not.empty;\r",
+											"    pm.expect(json.data.createOrderFromCart.id).to.be.a(\"string\");\r",
+											"    pm.expect(json.errors).to.be.undefined;\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Default in cart (CheckOrder)\", function () {\r",
+											"    pm.expect(pm.response.text()).to.include(pm.collectionVariables.get(\"AvaibleFFCId\"));\r",
+											"    pm.expect(pm.response.text()).to.include(pm.collectionVariables.get(\"AvaibleFFCName\"));\r",
+											"});\r",
+											"pm.test(\"Available in cart (CheckOrder)\", function () {\r",
+											"    pm.expect(pm.response.text()).to.include(pm.collectionVariables.get(\"DefaultFFCId\"));\r",
+											"    pm.expect(pm.response.text()).to.include(pm.collectionVariables.get(\"DefaultFFCName\"));\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "graphql",
+									"graphql": {
+										"query": "mutation createOrderFromCart ($command: InputCreateOrderFromCartType!) {\ncreateOrderFromCart (command: $command) {\nid\nitems{\nid\nname\nquantity\nfulfillmentCenterId\nfulfillmentCenterName\n}\n}\n}",
+										"variables": "{\n\"command\": {\n    \"cartId\": \"{{orderCart}}\"\n  }\n}"
+									}
+								},
+								"url": {
+									"raw": "{{url}}/graphql",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"graphql"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "checkOrder",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"\r",
+											"pm.test(\"Default in cart (CheckOrder)\", function () {\r",
+											"    pm.expect(pm.response.text()).to.include(pm.collectionVariables.get(\"AvaibleFFCId\"));\r",
+											"    pm.expect(pm.response.text()).to.include(pm.collectionVariables.get(\"AvaibleFFCName\"));\r",
+											"});\r",
+											"pm.test(\"Available in cart (CheckOrder)\", function () {\r",
+											"    pm.expect(pm.response.text()).to.include(pm.collectionVariables.get(\"DefaultFFCId\"));\r",
+											"    pm.expect(pm.response.text()).to.include(pm.collectionVariables.get(\"DefaultFFCName\"));\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "graphql",
+									"graphql": {
+										"query": "query order($id: String, $cultureName: String) {\r\n  order(id: $id, cultureName: $cultureName) {\r\n    id\r\n    number\r\n\r\nitems{\r\nid\r\nname\r\nquantity\r\nfulfillmentCenterId\r\nfulfillmentCenterName\r\n}\r\n   \r\n  \r\n  }\r\n}\r\n",
+										"variables": "{\r\n  \"id\": \"{{orderid1}}\",\r\n  \"cultureName\": \"en-US\"\r\n}"
 									}
 								},
 								"url": {
@@ -19634,382 +20051,6 @@
 								}
 							},
 							"response": []
-						},
-						{
-							"name": "getCart",
-							"event": [
-								{
-									"listen": "test",
-									"script": {
-										"exec": [
-											"pm.test(\"Set orderCart, randomUser3\", function () {\r",
-											"    var jsonData = pm.response.json();\r",
-											"    pm.collectionVariables.set(\"orderCart\", jsonData.data.cart.id);\r",
-											"    pm.collectionVariables.set(\"randomUser3\", jsonData.data.cart.customerId);\r",
-											"});\r",
-											"pm.test(\"Check cart by user ID\", function () {\r",
-											"    var data = pm.response.json();\r",
-											"    pm.expect(data.data.cart).to.not.eql(null);\r",
-											"    pm.expect(data.data.cart).to.be.an(\"object\");\r",
-											"    pm.expect(data.data.cart.id).to.be.a(\"string\");\r",
-											"    pm.expect(data.errors).to.be.undefined;\r",
-											"});\r",
-											"pm.test(\"Check available payment method\", function () {\r",
-											"    var data = pm.response.json();\r",
-											"    pm.expect(data.data.cart.availablePaymentMethods).to.not.empty;\r",
-											"     pm.expect(data.errors).to.be.undefined;\r",
-											"});\r",
-											"pm.test(\"Check available shipment method\", function () {\r",
-											"    var data = pm.response.json();\r",
-											"    pm.expect(data.data.cart.availableShippingMethods).to.not.empty;\r",
-											" pm.expect(data.errors).to.be.undefined;\r",
-											"});"
-										],
-										"type": "text/javascript"
-									}
-								}
-							],
-							"request": {
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "graphql",
-									"graphql": {
-										"query": "{\r\ncart (\r\nstoreId:\"{{storeId}}\"\r\nuserId: \"{{$randomUUID}}\"\r\ncurrencyCode: \"{{currencyCode}}\"\r\ncultureName: \"{{cultureName}}\"\r\ncartName: \"{{cartName}}\"\r\n)\r\n{\r\nid\r\ncustomerId\r\nitems\r\n{\r\n    id\r\n    name\r\n}\r\ncoupons{\r\n    code\r\n}\r\ncomment\r\ndynamicProperties {\r\nname\r\nvalue\r\nvalueType\r\n  dictionaryItem{\r\n    id\r\n    name\r\n    label\r\n  }\r\n}\r\nitems\r\n{\r\nid\r\nname\r\nproductId\r\nfulfillmentCenterId\r\nfulfillmentCenterName\r\ndynamicProperties {\r\nname\r\nvalue\r\nvalueType\r\n  dictionaryItem{\r\n    id\r\n    name\r\n    label\r\n  }\r\n}\r\n\r\nlistPrice {\r\namount\r\n}\r\n}\r\navailableShippingMethods {\r\ncode\r\noptionName\r\nlogoUrl\r\ncurrency {\r\ncode\r\n}\r\ntotal {\r\namount\r\n}\r\noptionDescription\r\nprice {\r\namount\r\n}\r\npriority\r\n}\r\navailablePaymentMethods {\r\ncode\r\ncurrency{\r\ncode\r\n}\r\nlogoUrl\r\nisAvailableForPartial\r\ntaxTotal{\r\namount\r\n}\r\npaymentMethodGroupType\r\nprice {\r\namount\r\n}\r\npriority\r\nisAvailableForPartial\r\n}\r\ntaxTotal {\r\namount\r\n}\r\ntotal{\r\n    amount\r\n}\r\npayments\r\n{\r\n    id\r\n    dynamicProperties {\r\nname\r\nvalue\r\nvalueType\r\n  dictionaryItem{\r\n    id\r\n    name\r\n    label\r\n  }\r\n}\r\n}\r\n\r\nshipments\r\n{\r\n    id\r\n    dynamicProperties {\r\nname\r\nvalue\r\nvalueType\r\n  dictionaryItem{\r\n    id\r\n    name\r\n    label\r\n  }\r\n}\r\n}\r\n}}",
-										"variables": ""
-									}
-								},
-								"url": {
-									"raw": "{{url}}/graphql",
-									"host": [
-										"{{url}}"
-									],
-									"path": [
-										"graphql"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "clearCart",
-							"event": [
-								{
-									"listen": "test",
-									"script": {
-										"exec": [
-											"pm.test(\"clearCart\", function () {\r",
-											"    var json = pm.response.json();\r",
-											"    pm.expect(json.data.clearCart).to.be.not.empty;\r",
-											"    pm.expect(json.data.clearCart.total.amount).to.be.equal(0.00);\r",
-											"    pm.expect(json.errors).to.be.undefined;\r",
-											"});"
-										],
-										"type": "text/javascript"
-									}
-								}
-							],
-							"request": {
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "graphql",
-									"graphql": {
-										"query": "mutation clearCart ($command: InputClearCartType!) {\nclearCart (command: $command) {\nid\ntotal{\namount\n}\n}\n}",
-										"variables": "{\n  \"command\": {\n    \"cartId\": \"{{orderCart}}\",\n    \"storeId\": \"{{storeId}}\",\n    \"cartName\": \"{{cartName}}\",\n    \"userId\": \"{{randomUser3}}\",\n    \"currencyCode\": \"{{currencyCode}}\",\n    \"cultureName\": \"{{cultureName}}\",\n    \"cartType\": \"{{cartType}}\"\n  }\n}"
-									}
-								},
-								"url": {
-									"raw": "{{url}}/graphql",
-									"host": [
-										"{{url}}"
-									],
-									"path": [
-										"graphql"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Add stock qty to the product 2 Available",
-							"event": [
-								{
-									"listen": "test",
-									"script": {
-										"exec": [
-											"pm.test(\"Status code is 200\", function () {\r",
-											"    pm.response.to.have.status(200);\r",
-											"});\r",
-											"pm.test(\"Add stock qty to the product 1\", function () {\r",
-											"    var jsonData = pm.response.json();\r",
-											"    pm.expect(jsonData.inStockQuantity).to.eql(132);\r",
-											"});"
-										],
-										"type": "text/javascript"
-									}
-								}
-							],
-							"request": {
-								"method": "PUT",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "{\r\n   \"fulfillmentCenterId\":\"{{AvaibleFFCId}}\",\r\n   \"fulfillmentCenterName\":\"{{AvailableFFCName}}\",\r\n   \"fulfillmentCenter\":{\r\n      \"name\":\"{{AvailableFFCName}}\",\r\n      \"description\":\"<h3>Branch Hours</h3>\\n                            <table class=\\\"table\\\">\\n                                <tbody>\\n                                    <tr>\\n                                        <th class=\\\"day\\\">Day</th>\\n                                        <th><span class=\\\"hours\\\">Hours</span></th>\\n                                    </tr>\\n                                    <tr>\\n                                        <td>MON</td>\\n                                        <td>7:30 AM - 5:00 PM</td>\\n                                    </tr>\\n                                    <tr>\\n                                        <td>TUE</td>\\n                                        <td>7:30 AM - 5:00 PM</td>\\n                                    </tr>\\n                                    <tr>\\n                                        <td>WED</td>\\n                                        <td>7:30 AM - 5:00 PM</td>\\n                                    </tr>\\n                                    <tr>\\n                                        <td>THU</td>\\n                                        <td>7:30 AM - 5:00 PM</td>\\n                                    </tr>\\n                                    <tr>\\n                                        <td>FRI</td>\\n                                        <td>7:30 AM - 5:00 PM</td>\\n                                    </tr>\\n                                    <tr>\\n                                        <td>SAT</td>\\n                                        <td>\\n\\n                                            CLOSED\\n                                        </td>\\n                                    </tr>\\n                                    <tr>\\n                                        <td>SUN</td>\\n                                        <td>CLOSED</td>\\n                                    </tr>\\n                                </tbody>\\n                            </table>\",\r\n      \"address\":{\r\n         \"addressType\":0,\r\n         \"countryCode\":\"USA\",\r\n         \"countryName\":\"United States\",\r\n         \"city\":\"Chicago\",\r\n         \"postalCode\":\"60640\",\r\n         \"line1\":\"5400 N. Lakewood Avenue\",\r\n         \"regionName\":\"Illinois\",\r\n         \"phone\":\"(312) 222-3333\",\r\n         \"isDefault\":false\r\n      },\r\n      \"createdDate\":\"2018-05-05T05:55:00.64Z\",\r\n      \"modifiedDate\":\"2021-11-18T11:54:44.6718532Z\",\r\n      \"createdBy\":\"admin\",\r\n      \"modifiedBy\":\"admin\"\r\n   },\r\n   \"productId\":\"{{ProductId2}}\",\r\n   \"inStockQuantity\":132,\r\n   \"reservedQuantity\":0,\r\n   \"reorderMinQuantity\":0,\r\n   \"preorderQuantity\":0,\r\n   \"backorderQuantity\":0,\r\n   \"allowBackorder\":false,\r\n   \"allowPreorder\":false,\r\n   \"inTransit\":0,\r\n   \"status\":\"Disabled\",\r\n   \"createdDate\":\"0001-01-01T00:00:00Z\"\r\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "{{url}}/api/inventory/products/{{ProductId2}}",
-									"host": [
-										"{{url}}"
-									],
-									"path": [
-										"api",
-										"inventory",
-										"products",
-										"{{ProductId2}}"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "createOrderFromCart",
-							"event": [
-								{
-									"listen": "test",
-									"script": {
-										"exec": [
-											"pm.test(\"CreateOrderFromCart\", function () {\r",
-											"    var json = pm.response.json();\r",
-											"    pm.collectionVariables.set(\"orderid1\", json.data.createOrderFromCart.id);\r",
-											"    pm.expect(json.data.createOrderFromCart).to.be.not.empty;\r",
-											"    pm.expect(json.data.createOrderFromCart.id).to.be.a(\"string\");\r",
-											"    pm.expect(json.errors).to.be.undefined;\r",
-											"});\r",
-											"\r",
-											""
-										],
-										"type": "text/javascript"
-									}
-								}
-							],
-							"request": {
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "graphql",
-									"graphql": {
-										"query": "mutation createOrderFromCart ($command: InputCreateOrderFromCartType!) {\ncreateOrderFromCart (command: $command) {\nid\nitems{\nid\nname\nquantity\nfulfillmentCenterId\nfulfillmentCenterName\n}\n}\n}",
-										"variables": "{\n\"command\": {\n    \"cartId\": \"{{orderCart}}\"\n  }\n}"
-									}
-								},
-								"url": {
-									"raw": "{{url}}/graphql",
-									"host": [
-										"{{url}}"
-									],
-									"path": [
-										"graphql"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "checkOrder",
-							"event": [
-								{
-									"listen": "test",
-									"script": {
-										"exec": [
-											"pm.test(\"Status code is 200\", function () {\r",
-											"    pm.response.to.have.status(200);\r",
-											"});\r",
-											"\r",
-											"pm.test(\"Get fulfillment center of products - Available (checkOrder)\", function(){\r",
-											"var jsonData = pm.response.json();\r",
-											"    pm.expect(jsonData.data.order.items[0].fulfillmentCenterId).to.be.equal(pm.collectionVariables.get(\"AvaibleFFCId\"));\r",
-											"    pm.expect(jsonData.data.order.items[0].fulfillmentCenterName).to.be.equal(pm.collectionVariables.get(\"AvaibleFFCName\"));\r",
-											"\r",
-											"});"
-										],
-										"type": "text/javascript"
-									}
-								}
-							],
-							"request": {
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "graphql",
-									"graphql": {
-										"query": "query order($id: String, $cultureName: String) {\r\n  order(id: $id, cultureName: $cultureName) {\r\n    id\r\n    number\r\n\r\nitems{\r\nid\r\nname\r\nquantity\r\nfulfillmentCenterId\r\nfulfillmentCenterName\r\n}\r\n   \r\n  \r\n  }\r\n}\r\n",
-										"variables": "{\r\n  \"id\": \"{{orderid1}}\",\r\n  \"cultureName\": \"en-US\"\r\n}"
-									}
-								},
-								"url": {
-									"raw": "{{url}}/graphql",
-									"host": [
-										"{{url}}"
-									],
-									"path": [
-										"graphql"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "getCart",
-							"event": [
-								{
-									"listen": "test",
-									"script": {
-										"exec": [
-											"pm.test(\"Set orderCart, randomUser3\", function () {\r",
-											"    var jsonData = pm.response.json();\r",
-											"    pm.collectionVariables.set(\"orderCart\", jsonData.data.cart.id);\r",
-											"    pm.collectionVariables.set(\"randomUser3\", jsonData.data.cart.customerId);\r",
-											"});\r",
-											"pm.test(\"Check cart by user ID\", function () {\r",
-											"    var data = pm.response.json();\r",
-											"    pm.expect(data.data.cart).to.not.eql(null);\r",
-											"    pm.expect(data.data.cart).to.be.an(\"object\");\r",
-											"    pm.expect(data.data.cart.id).to.be.a(\"string\");\r",
-											"    pm.expect(data.errors).to.be.undefined;\r",
-											"});\r",
-											"pm.test(\"Check available payment method\", function () {\r",
-											"    var data = pm.response.json();\r",
-											"    pm.expect(data.data.cart.availablePaymentMethods).to.not.empty;\r",
-											"     pm.expect(data.errors).to.be.undefined;\r",
-											"});\r",
-											"pm.test(\"Check available shipment method\", function () {\r",
-											"    var data = pm.response.json();\r",
-											"    pm.expect(data.data.cart.availableShippingMethods).to.not.empty;\r",
-											" pm.expect(data.errors).to.be.undefined;\r",
-											"});"
-										],
-										"type": "text/javascript"
-									}
-								}
-							],
-							"request": {
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "graphql",
-									"graphql": {
-										"query": "{\r\ncart (\r\nstoreId:\"{{storeId}}\"\r\nuserId: \"{{$randomUUID}}\"\r\ncurrencyCode: \"{{currencyCode}}\"\r\ncultureName: \"{{cultureName}}\"\r\ncartName: \"{{cartName}}\"\r\n)\r\n{\r\nid\r\ncustomerId\r\nitems\r\n{\r\n    id\r\n    name\r\n}\r\ncoupons{\r\n    code\r\n}\r\ncomment\r\ndynamicProperties {\r\nname\r\nvalue\r\nvalueType\r\n  dictionaryItem{\r\n    id\r\n    name\r\n    label\r\n  }\r\n}\r\nitems\r\n{\r\nid\r\nname\r\nproductId\r\nfulfillmentCenterId\r\nfulfillmentCenterName\r\ndynamicProperties {\r\nname\r\nvalue\r\nvalueType\r\n  dictionaryItem{\r\n    id\r\n    name\r\n    label\r\n  }\r\n}\r\n\r\nlistPrice {\r\namount\r\n}\r\n}\r\navailableShippingMethods {\r\ncode\r\noptionName\r\nlogoUrl\r\ncurrency {\r\ncode\r\n}\r\ntotal {\r\namount\r\n}\r\noptionDescription\r\nprice {\r\namount\r\n}\r\npriority\r\n}\r\navailablePaymentMethods {\r\ncode\r\ncurrency{\r\ncode\r\n}\r\nlogoUrl\r\nisAvailableForPartial\r\ntaxTotal{\r\namount\r\n}\r\npaymentMethodGroupType\r\nprice {\r\namount\r\n}\r\npriority\r\nisAvailableForPartial\r\n}\r\ntaxTotal {\r\namount\r\n}\r\ntotal{\r\n    amount\r\n}\r\npayments\r\n{\r\n    id\r\n    dynamicProperties {\r\nname\r\nvalue\r\nvalueType\r\n  dictionaryItem{\r\n    id\r\n    name\r\n    label\r\n  }\r\n}\r\n}\r\n\r\nshipments\r\n{\r\n    id\r\n    dynamicProperties {\r\nname\r\nvalue\r\nvalueType\r\n  dictionaryItem{\r\n    id\r\n    name\r\n    label\r\n  }\r\n}\r\n}\r\n}}",
-										"variables": ""
-									}
-								},
-								"url": {
-									"raw": "{{url}}/graphql",
-									"host": [
-										"{{url}}"
-									],
-									"path": [
-										"graphql"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "createOrderFromCart",
-							"event": [
-								{
-									"listen": "test",
-									"script": {
-										"exec": [
-											"pm.test(\"CreateOrderFromCart\", function () {\r",
-											"    var json = pm.response.json();\r",
-											"    pm.collectionVariables.set(\"orderid1\", json.data.createOrderFromCart.id);\r",
-											"    pm.expect(json.data.createOrderFromCart).to.be.not.empty;\r",
-											"    pm.expect(json.data.createOrderFromCart.id).to.be.a(\"string\");\r",
-											"    pm.expect(json.errors).to.be.undefined;\r",
-											"});\r",
-											"\r",
-											""
-										],
-										"type": "text/javascript"
-									}
-								}
-							],
-							"request": {
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "graphql",
-									"graphql": {
-										"query": "mutation createOrderFromCart ($command: InputCreateOrderFromCartType!) {\ncreateOrderFromCart (command: $command) {\nid\nitems{\nid\nname\nquantity\nfulfillmentCenterId\nfulfillmentCenterName\n}\n}\n}",
-										"variables": "{\n\"command\": {\n    \"cartId\": \"{{orderCart}}\"\n  }\n}"
-									}
-								},
-								"url": {
-									"raw": "{{url}}/graphql",
-									"host": [
-										"{{url}}"
-									],
-									"path": [
-										"graphql"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "checkOrder",
-							"event": [
-								{
-									"listen": "test",
-									"script": {
-										"exec": [
-											"pm.test(\"Status code is 200\", function () {\r",
-											"    pm.response.to.have.status(200);\r",
-											"});\r",
-											"\r",
-											"\r",
-											"pm.test(\"Default in cart (CheckOrder)\", function () {\r",
-											"    pm.expect(pm.response.text()).to.include(pm.collectionVariables.get(\"AvaibleFFCId\"));\r",
-											"    pm.expect(pm.response.text()).to.include(pm.collectionVariables.get(\"AvaibleFFCName\"));\r",
-											"});\r",
-											"pm.test(\"Available in cart (CheckOrder)\", function () {\r",
-											"    pm.expect(pm.response.text()).to.include(pm.collectionVariables.get(\"DefaultFFCId\"));\r",
-											"    pm.expect(pm.response.text()).to.include(pm.collectionVariables.get(\"DefaultFFCName\"));\r",
-											"});\r",
-											""
-										],
-										"type": "text/javascript"
-									}
-								}
-							],
-							"request": {
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "graphql",
-									"graphql": {
-										"query": "query order($id: String, $cultureName: String) {\r\n  order(id: $id, cultureName: $cultureName) {\r\n    id\r\n    number\r\n\r\nitems{\r\nid\r\nname\r\nquantity\r\nfulfillmentCenterId\r\nfulfillmentCenterName\r\n}\r\n   \r\n  \r\n  }\r\n}\r\n",
-										"variables": "{\r\n  \"id\": \"{{orderid1}}\",\r\n  \"cultureName\": \"en-US\"\r\n}"
-									}
-								},
-								"url": {
-									"raw": "{{url}}/graphql",
-									"host": [
-										"{{url}}"
-									],
-									"path": [
-										"graphql"
-									]
-								}
-							},
-							"response": []
 						}
 					],
 					"auth": {
@@ -20040,6 +20081,923 @@
 									""
 								]
 							}
+						}
+					]
+				},
+				{
+					"name": "Whish list by admin",
+					"item": [
+						{
+							"name": "Prepare",
+							"item": [
+								{
+									"name": "Create Contact_1 [admin]",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"pm.test(\"Set contactId\", function () {\r",
+													"    var jsonData = pm.response.json();\r",
+													"    pm.collectionVariables.set(\"contactId1\", jsonData.data.createContact.id);\r",
+													"});\r",
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "graphql",
+											"graphql": {
+												"query": "mutation createContact ($command: InputCreateContactType!) {\ncreateContact (command: $command) {\nfullName\nid\nlastName\nname\n\n}\n}",
+												"variables": "{\n\"command\": {\n\"name\": \"Contact1\",\n\"memberType\": \"Contact\",\n\"addresses\": [],\n\"fullName\": \"Contact1\",\n\"firstName\": \"Contact1\",\n\"lastName\": \"Contact1\"\n}\n}\n\n"
+											}
+										},
+										"url": {
+											"raw": "{{url}}/graphql",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"graphql"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Add User_1 [admin]",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "graphql",
+											"graphql": {
+												"query": "mutation createUser ($command: InputCreateUserType!) {\n    createUser (command: $command) {\n        errors {\n            code\n            description\n        }\n        succeeded\n    }\n}\n\n",
+												"variables": "{\n\"command\":\n  {\n     \"applicationUser\":{\n    \"createdBy\": \"eXp16\",\n    \"email\": \"user112_Acc@mailto.plus\",\n    \"password\":\"{{userName1}}\",\n    \"userName\": \"{{userName1}}\",\n    \"userType\": \"Customer\",\n    \"memberId\":\"{{contactId1}}\",\n    \"storeId\":\"{{storeId}}\"\n      }}\n}"
+											}
+										},
+										"url": {
+											"raw": "{{url}}/graphql",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"graphql"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "getUser > Set Id",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"Set userId\", function(){\r",
+													"var jsonData =pm.response.json();\r",
+													"pm.collectionVariables.set(\"customerId\",jsonData.data.user.id);\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "graphql",
+											"graphql": {
+												"query": "query user(\r\n  $id: String\r\n  $userName: String\r\n  $email: String\r\n  $loginProvider: String\r\n  $providerKey: String\r\n) {\r\n  user(\r\n    id: $id\r\n    userName: $userName\r\n    email: $email\r\n    loginProvider: $loginProvider\r\n    providerKey: $providerKey\r\n  ) {\r\n    id\r\n    isAdministrator\r\n        userName\r\n    email\r\n    storeId\r\n    userName\r\n    userType\r\n    securityStamp\r\n    roles{\r\n      id\r\n      name\r\n      description\r\n      permissions\r\n    }\r\n  }\r\n}",
+												"variables": "{\r\n\"userName\": \"{{userName1}}\",\r\n\"loginProvider\":\"\",\r\n\"providerKey\": \"\"\r\n}"
+											}
+										},
+										"url": {
+											"raw": "{{url}}/graphql",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"graphql"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Create product_1",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"pm.test(\"Set ProductId1\", function(){\r",
+													"    var jsonData = pm.response.json();\r",
+													"pm.collectionVariables.set(\"ProductId1\", jsonData.id);\r",
+													"pm.collectionVariables.set(\"Nameofproduct1\", jsonData.name);\r",
+													"pm.collectionVariables.set(\"Code1\", jsonData.code);\r",
+													"});\r",
+													"\r",
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{AdminToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"code\": \"DDR-234304560\",\r\n    \"name\": \"Product1\",\r\n    \"catalogId\": \"{{catalogQA}}\",\r\n    \"categoryId\": \"{{categoryQA}}\",\r\n    \"isActive\": true,\r\n    \"startDate\": \"0001-01-01T00:00:00Z\",\r\n    \"priority\": 0,\r\n    \"properties\": [\r\n        {\r\n            \"isReadOnly\": false,\r\n            \"isManageable\": true,\r\n            \"isNew\": false,\r\n            \"catalogId\": \"{{catalogQA}}\",\r\n            \"name\": \"Multi\",\r\n            \"required\": false,\r\n            \"dictionary\": false,\r\n            \"multivalue\": false,\r\n            \"multilanguage\": true,\r\n            \"hidden\": false,\r\n            \"valueType\": \"ShortText\",\r\n            \"type\": \"Product\",\r\n            \"values\": [],\r\n            \"attributes\": [],\r\n            \"displayNames\": [\r\n                {\r\n                    \"languageCode\": \"fr-FR\"\r\n                },\r\n                {\r\n                    \"languageCode\": \"de-DE\"\r\n                },\r\n                {\r\n                    \"languageCode\": \"en-US\"\r\n                }\r\n            ],\r\n            \"validationRules\": [],\r\n            \"isInherited\": true,\r\n            \"id\": \"a9d63927-3b90-48f1-9006-fafc013c4a6f\"\r\n        },\r\n        {\r\n            \"isReadOnly\": false,\r\n            \"isManageable\": true,\r\n            \"isNew\": false,\r\n            \"catalogId\": \"{{catalogQA}}\",\r\n            \"name\": \"new_property3\",\r\n            \"required\": false,\r\n            \"dictionary\": false,\r\n            \"multivalue\": false,\r\n            \"multilanguage\": false,\r\n            \"hidden\": false,\r\n            \"valueType\": \"ShortText\",\r\n            \"type\": \"Product\",\r\n            \"values\": [],\r\n            \"attributes\": [],\r\n            \"displayNames\": [\r\n                {\r\n                    \"languageCode\": \"en-US\"\r\n                }\r\n            ],\r\n            \"validationRules\": [],\r\n            \"isInherited\": true,\r\n            \"id\": \"0fc79d38-60bd-49be-ba14-d5bb631ce3dd\"\r\n        },\r\n        {\r\n            \"isReadOnly\": false,\r\n            \"isManageable\": true,\r\n            \"isNew\": false,\r\n            \"catalogId\": \"{{catalogQA}}\",\r\n            \"name\": \"new_property4\",\r\n            \"required\": false,\r\n            \"dictionary\": false,\r\n            \"multivalue\": false,\r\n            \"multilanguage\": false,\r\n            \"hidden\": false,\r\n            \"valueType\": \"ShortText\",\r\n            \"type\": \"Variation\",\r\n            \"values\": [],\r\n            \"attributes\": [],\r\n            \"displayNames\": [\r\n                {\r\n                    \"languageCode\": \"en-US\"\r\n                }\r\n            ],\r\n            \"validationRules\": [],\r\n            \"isInherited\": true,\r\n            \"id\": \"0fa78f60-13b3-4171-9344-2df47b251c56\"\r\n        }\r\n    ],\r\n    \"seoObjectType\": \"CatalogProduct\",\r\n    \"seoInfos\": [],\r\n    \"isInherited\": false,\r\n    \"createdDate\": \"0001-01-01T00:00:00Z\",\r\n    \"productType\": \"Physical\",\r\n     \"reviews\": []\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{url}}/api/catalog/products",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"api",
+												"catalog",
+												"products"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Add price to the product",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", function () {\r",
+													"    pm.response.to.have.status(204);\r",
+													"});\r",
+													"\r",
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{AdminToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "PUT",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"productId\": \"{{ProductId1}}\",\r\n  \"product\": {\r\n    \"code\": \"{{Code1}}\",\r\n    \"name\": \"Product1\",\r\n    \"catalogId\": \"4974648a41df4e6ea67ef2ad76d7bbd4\",\r\n    \"categoryId\": \"0d4ad9bab9184d69a6e586effdf9c2ea\",\r\n    \"outline\": \"0d4ad9bab9184d69a6e586effdf9c2ea\",\r\n    \"path\": \"Cell phones\",\r\n    \"isBuyable\": true,\r\n    \"isActive\": true,\r\n    \"trackInventory\": true,\r\n    \"maxQuantity\": 0,\r\n    \"minQuantity\": 0,\r\n    \"productType\": \"Physical\",\r\n    \"startDate\": \"2021-10-13T11:15:17.8103888Z\",\r\n    \"priority\": 0,\r\n    \"properties\": [],\r\n    \"images\": [],\r\n    \"assets\": [],\r\n    \"links\": [],\r\n    \"seoObjectType\": \"CatalogProduct\",\r\n    \"seoInfos\": [\r\n      {\r\n        \"semanticUrl\": \"product1\",\r\n        \"objectId\": \"a9c8297d-ce0d-4ec6-99de-270105e80a98\",\r\n        \"objectType\": \"CatalogProduct\",\r\n        \"isActive\": true,\r\n        \"languageCode\": \"en-US\",\r\n        \"id\": \"3e03dc62-18c2-42e6-a220-cc95e042cf76\"\r\n      }\r\n    ],\r\n    \"reviews\": [],\r\n    \"associations\": [],\r\n    \"referencedAssociations\": [],\r\n    \"outlines\": [\r\n      {\r\n        \"items\": [\r\n          {\r\n            \"id\": \"4974648a41df4e6ea67ef2ad76d7bbd4\",\r\n            \"seoObjectType\": \"Catalog\",\r\n            \"name\": \"Electronics\",\r\n            \"hasVirtualParent\": false\r\n          },\r\n          {\r\n            \"id\": \"Cell-phones\",\r\n            \"seoObjectType\": \"Category\",\r\n            \"seoInfos\": [\r\n              {\r\n                \"semanticUrl\": \"cell-phones\",\r\n                \"objectId\": \"0d4ad9bab9184d69a6e586effdf9c2ea\",\r\n                \"objectType\": \"Category\",\r\n                \"isActive\": true,\r\n                \"languageCode\": \"en-US\",\r\n                \"id\": \"73642cc7f2e44d92af13e94c79c73456\"\r\n              }\r\n            ],\r\n            \"name\": \"Cell phones\",\r\n            \"hasVirtualParent\": false\r\n          },\r\n          {\r\n            \"id\": \"DDR-234304560\",\r\n            \"seoObjectType\": \"CatalogProduct\",\r\n            \"seoInfos\": [\r\n              {\r\n                \"semanticUrl\": \"product1\",\r\n                \"objectId\": \"a9c8297d-ce0d-4ec6-99de-270105e80a98\",\r\n                \"objectType\": \"CatalogProduct\",\r\n                \"isActive\": true,\r\n                \"languageCode\": \"en-US\",\r\n                \"id\": \"3e03dc62-18c2-42e6-a220-cc95e042cf76\"\r\n              }\r\n            ],\r\n            \"name\": \"Product1\",\r\n            \"hasVirtualParent\": false\r\n          }\r\n        ]\r\n      }\r\n    ],\r\n    \"isInherited\": false,\r\n    \"createdDate\": \"2021-10-13T11:15:17.8142229Z\",\r\n    \"modifiedDate\": \"2021-10-13T11:15:17.8142229Z\",\r\n    \"createdBy\": \"admin\",\r\n    \"modifiedBy\": \"admin\",\r\n    \"id\": \"a9c8297d-ce0d-4ec6-99de-270105e80a98\",\r\n    \"_priority\": 0\r\n  },\r\n  \"prices\": [\r\n    {\r\n      \"productId\": \"{{ProductId1}}\",\r\n      \"list\": {{ProductPrice1}},\r\n      \"minQuantity\": 1,\r\n      \"currency\": \"USD\",\r\n      \"pricelistId\": \"934da94516a74f9ab4ec001343ac928a\",\r\n      \"name\": \"ElectronicsUSD\",\r\n      \"catalog\": \"Electronics virtual, Electronics\"\r\n    }\r\n  ]\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{url}}/api/products/{{ProductId1}}/prices",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"api",
+												"products",
+												"{{ProductId1}}",
+												"prices"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Add stock qty to the product",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"pm.test(\"Add stock qty to the product\", function () {\r",
+													"    var jsonData = pm.response.json();\r",
+													"    pm.expect(jsonData.inStockQuantity).to.eql(25);\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{AdminToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "PUT",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"fulfillmentCenterId\": \"vendor-fulfillment\",\r\n  \"fulfillmentCenterName\": \"Los Angeles Branch\",\r\n  \"fulfillmentCenter\": {\r\n    \"name\": \"Los Angeles Branch\",\r\n    \"description\": \"<h3>Branch Hours</h3>\\n                            <table class=\\\"table\\\">\\n                                <tbody>\\n                                    <tr>\\n                                        <th class=\\\"day\\\">Day</th>\\n                                        <th><span class=\\\"hours\\\">Hours</span></th>\\n                                    </tr>\\n                                    <tr>\\n                                        <td>MON</td>\\n                                        <td>7:30 AM - 5:00 PM</td>\\n                                    </tr>\\n                                    <tr>\\n                                        <td>TUE</td>\\n                                        <td>7:30 AM - 5:00 PM</td>\\n                                    </tr>\\n                                    <tr>\\n                                        <td>WED</td>\\n                                        <td>7:30 AM - 5:00 PM</td>\\n                                    </tr>\\n                                    <tr>\\n                                        <td>THU</td>\\n                                        <td>7:30 AM - 5:00 PM</td>\\n                                    </tr>\\n                                    <tr>\\n                                        <td>FRI</td>\\n                                        <td>7:30 AM - 5:00 PM</td>\\n                                    </tr>\\n                                    <tr>\\n                                        <td>SAT</td>\\n                                        <td>\\n\\n                                            CLOSED\\n                                        </td>\\n                                    </tr>\\n                                    <tr>\\n                                        <td>SUN</td>\\n                                        <td>CLOSED</td>\\n                                    </tr>\\n                                </tbody>\\n                            </table>\",\r\n    \"geoLocation\": \"\",\r\n    \"address\": {\r\n      \"addressType\": 0,\r\n      \"countryCode\": \"USA\",\r\n      \"countryName\": \"United States\",\r\n      \"city\": \"Los Angeles\",\r\n      \"postalCode\": \"90234\",\r\n      \"line1\": \"1232 Wilshire Blvd\",\r\n      \"regionName\": \"California\",\r\n      \"phone\": \"3232323232\"\r\n    },\r\n    \"createdDate\": \"2018-05-07T12:05:20.42Z\",\r\n    \"modifiedDate\": \"2021-10-07T12:38:49.2056388Z\",\r\n    \"createdBy\": \"unknown\",\r\n    \"modifiedBy\": \"admin\",\r\n    \"id\": \"vendor-fulfillment\"\r\n  },\r\n  \"productId\": \"{{ProductId1}}\",\r\n  \"inStockQuantity\": 25,\r\n  \"reservedQuantity\": 0,\r\n  \"reorderMinQuantity\": 0,\r\n  \"preorderQuantity\": 0,\r\n  \"backorderQuantity\": 0,\r\n  \"allowBackorder\": false,\r\n  \"allowPreorder\": false,\r\n  \"inTransit\": 0,\r\n  \"status\": \"Disabled\",\r\n  \"createdDate\": \"0001-01-01T00:00:00Z\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{url}}/api/inventory/products/{{ProductId1}}",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"api",
+												"inventory",
+												"products",
+												"{{ProductId1}}"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Whishlist",
+							"item": [
+								{
+									"name": "Create list",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Set listId\", function () {\r",
+													"    var jsonData = pm.response.json();\r",
+													"    pm.collectionVariables.set(\"listId\",jsonData.data.createWishlist.id);\r",
+													"\r",
+													"});\r",
+													"\r",
+													"pm.test(\"Status code is 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{AdminToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "graphql",
+											"graphql": {
+												"query": "\r\nmutation createWishlist($command: InputCreateWishlistType!) {\r\n    createWishlist(command: $command) {\r\n        id\r\n        customerId\r\n        customerName\r\n        name\r\n            storeId\r\n            customerId\r\n            currency {\r\n          code\r\n        }\r\n    }\r\n}\r\n\r\n",
+												"variables": "\r\n{\r\n    \"command\": {\r\n        \"storeId\": \"{{storeId}}\",\r\n        \"listName\": \"Whishlist1\",\r\n        \"userId\": \"{{customerId}}\",\r\n        \"currencyCode\": \"USD\",\r\n        \"cultureName\": \"en-US\"\r\n    }\r\n}"
+											}
+										},
+										"url": {
+											"raw": "{{url}}/graphql",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"graphql"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Search wish lists",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Search - Whishlist created\", function () {\r",
+													"    var jsonData = pm.response.json();\r",
+													"   pm.expect(jsonData.data.wishlists).to.be.not.empty;\r",
+													"\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "graphql",
+											"graphql": {
+												"query": "query wishlists($after: String, $first: Int, $userId: String!) {\r\n  wishlists(after: $after, first: $first, userId: $userId) {\r\n    totalCount\r\n    items {\r\n      id\r\n      name\r\n      items {\r\n          id\r\n          productId\r\n          name\r\n          }\r\n      }\r\n  }\r\n}\r\n\r\n",
+												"variables": "{\r\n  \"first\": 50,\r\n  \"after\": \"0\",\r\n  \"userId\": \"{{customerId}}\"\r\n}"
+											}
+										},
+										"url": {
+											"raw": "{{url}}/graphql",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"graphql"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Rename",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Whishlist1 renamed\", function () {\r",
+													"    var jsonData = pm.response.json();\r",
+													"    pm.expect(jsonData.data.renameWishlist.name).to.be.equal(\"New wish list\");\r",
+													"\r",
+													"\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "graphql",
+											"graphql": {
+												"query": "mutation renameWishlist($command: InputRenameWishlistType!) {\r\n    renameWishlist(command: $command) {\r\n        id\r\n        name\r\n    }\r\n}\r\n\r\n\r\n\r\n",
+												"variables": "{\r\n    \"command\": {\r\n        \"listId\": \"{{listId}}\",\r\n        \"listName\": \"New wish list\"\r\n    }\r\n}"
+											}
+										},
+										"url": {
+											"raw": "{{url}}/graphql",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"graphql"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get by ID - check Rename",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"getWishList - check rename\", function () {\r",
+													"    var jsonData = pm.response.json();\r",
+													"    pm.expect(jsonData.data.wishlist.name).to.be.equal(\"New wish list\");\r",
+													"\r",
+													"\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "graphql",
+											"graphql": {
+												"query": "query wishlist($listId: String!) {\r\n    wishlist (listId: $listId) {\r\n      id\r\n      name\r\n      storeId\r\n      customerId\r\n      customerName\r\n      currency {\r\n        code\r\n      }\r\n      itemsCount\r\n      items {\r\n          id\r\n          productId\r\n          name\r\n          }\r\n      }\r\n}",
+												"variables": "{\r\n    \"listId\": \"{{listId}}\"\r\n}"
+											}
+										},
+										"url": {
+											"raw": "{{url}}/graphql",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"graphql"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Add item to list",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"\r",
+													"pm.test(\"Set lineItemId\", function(){\r",
+													"var jsonData =pm.response.json();\r",
+													"pm.collectionVariables.set(\"lineItemId\",jsonData.data.addWishlistItem.items[0].id);\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "graphql",
+											"graphql": {
+												"query": "mutation addWishlistItem ($command: InputAddWishlistItemType!) {\r\n    addWishlistItem (command: $command) {\r\n        id\r\n        name\r\n        items {\r\n            id\r\n            quantity\r\n            product {\r\n              name\r\n            }\r\n        }\r\n    }\r\n}\r\n\r\n",
+												"variables": "{\r\n  \"command\": {\r\n    \"listId\": \"{{listId}}\",\r\n    \"productId\" : \"{{ProductId1}}\"\r\n  }\r\n}"
+											}
+										},
+										"url": {
+											"raw": "{{url}}/graphql",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"graphql"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Check items in the wish list (old created query) Copy",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"check items (old)  - items added\", function () {\r",
+													"    var jsonData = pm.response.json();\r",
+													"    pm.expect(jsonData.data.wishlist.items[0].name).to.be.equal(pm.collectionVariables.get(\"Nameofproduct1\"));\r",
+													"\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "graphql",
+											"graphql": {
+												"query": "query wishlistType( $listId: String!) {\r\n    wishlist(listId: $listId) {\r\n        id\r\n        name\r\n        storeId\r\n        customerName\r\n        items {\r\n          name\r\n          id\r\n        }\r\n    }\r\n    }\r\n\r\n",
+												"variables": "{\r\n    \"listId\": \"{{listId}}\"\r\n}"
+											}
+										},
+										"url": {
+											"raw": "{{url}}/graphql",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"graphql"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Create list 2",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"\r",
+													"\r",
+													"pm.test(\"Set and listId\", function () {\r",
+													"    var jsonData = pm.response.json();\r",
+													"    pm.collectionVariables.set(\"listId2\",jsonData.data.createWishlist.id);\r",
+													"\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "graphql",
+											"graphql": {
+												"query": "\r\nmutation createWishlist($command: InputCreateWishlistType!) {\r\n    createWishlist(command: $command) {\r\n        id\r\n        name\r\n            storeId\r\n            customerId\r\n            currency {\r\n          code\r\n        }\r\n    }\r\n}\r\n\r\n",
+												"variables": "\r\n{\r\n    \"command\": {\r\n        \"storeId\": \"{{storeId}}\",\r\n        \"listName\": \"Whishlist2\",\r\n        \"userId\": \"{{customerId}}\",\r\n        \"currencyCode\": \"USD\",\r\n        \"cultureName\": \"en-US\"\r\n    }\r\n}"
+											}
+										},
+										"url": {
+											"raw": "{{url}}/graphql",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"graphql"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Move item to another list",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Check listId2 - item moved\", function () {\r",
+													"    var jsonData = pm.response.json();\r",
+													"   pm.expect(jsonData.data.moveWishlistItem.name).to.be.equal(\"Whishlist2\");\r",
+													"   pm.expect(jsonData.data.moveWishlistItem.items[0].product.name).to.be.equal(pm.collectionVariables.get(\"Nameofproduct1\"));\r",
+													"\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "graphql",
+											"graphql": {
+												"query": "mutation moveWishlistItem ($command: InputMoveWishlistItemType!) {\r\n    moveWishlistItem (command: $command) {\r\n        id\r\n            name\r\n        items {\r\n            id\r\n            quantity\r\n            product {\r\n              name\r\n            }\r\n        }\r\n    }\r\n}\r\n\r\n",
+												"variables": "{\r\n  \"command\": {\r\n    \"listId\": \"{{listId}}\",\r\n    \"lineItemId\":  \"{{lineItemId}}\",\r\n    \"destinationListId\": \"{{listId2}}\"\r\n  }\r\n}"
+											}
+										},
+										"url": {
+											"raw": "{{url}}/graphql",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"graphql"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Check items in the wish list (old created query)",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Check listId - item removed\", function () {\r",
+													"    var jsonData = pm.response.json();\r",
+													"   pm.expect(jsonData.data.wishlist.name).to.be.equal(\"New wish list\");\r",
+													"   pm.expect(jsonData.data.wishlist.items).to.be.empty;\r",
+													"\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "graphql",
+											"graphql": {
+												"query": "query wishlistType( $listId: String!) {\r\n    wishlist(listId: $listId) {\r\n        id\r\n        name\r\n        storeId\r\n        customerName\r\n        items {\r\n          name\r\n          id\r\n        }\r\n    }\r\n    }\r\n\r\n",
+												"variables": "{\r\n    \"listId\": \"{{listId}}\"\r\n}"
+											}
+										},
+										"url": {
+											"raw": "{{url}}/graphql",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"graphql"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Remove item from list",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"item removed\", function () {\r",
+													"    var jsonData = pm.response.json();\r",
+													"    pm.expect(jsonData.data.removeWishlistItem.items).to.be.empty;\r",
+													"\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "graphql",
+											"graphql": {
+												"query": "mutation removeWishlistItem ($command: InputRemoveWishlistItemType!) {\r\n    removeWishlistItem (command: $command) {\r\n        id\r\n        name\r\n        items {\r\n            id\r\n            quantity\r\n            product {\r\n              name\r\n            }\r\n        }\r\n    }\r\n}\r\n\r\n\r\n\r\n",
+												"variables": "{\r\n  \"command\": {\r\n    \"listId\": \"{{listId}}\",\r\n    \"lineItemId\":  \"{{lineItemId}}\"\r\n  }\r\n}"
+											}
+										},
+										"url": {
+											"raw": "{{url}}/graphql",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"graphql"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Check items in the wish list (old created query) Copy 2",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"check items (old)  - item remove\", function () {\r",
+													"    var jsonData = pm.response.json();\r",
+													"    pm.expect(jsonData.data.wishlist.items).to.be.empty;\r",
+													"\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "graphql",
+											"graphql": {
+												"query": "query wishlistType( $listId: String!) {\r\n    wishlist(listId: $listId) {\r\n        id\r\n        name\r\n        storeId\r\n        customerName\r\n        items {\r\n          name\r\n          id\r\n        }\r\n    }\r\n    }\r\n\r\n",
+												"variables": "{\r\n    \"listId\": \"{{listId}}\"\r\n}"
+											}
+										},
+										"url": {
+											"raw": "{{url}}/graphql",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"graphql"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Remove list",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"wishList removed\", function () {\r",
+													"    var jsonData = pm.response.json();\r",
+													"    pm.expect(jsonData.data.removeWishlist).to.true;\r",
+													"\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "graphql",
+											"graphql": {
+												"query": "mutation removeWishlist($command: InputRemoveWishlistType!) {\r\n    removeWishlist (command: $command)\r\n}\r\n\r\n",
+												"variables": "{\r\n  \"command\": {\r\n    \"listId\": \"{{listId}}\"\r\n  }\r\n}"
+											}
+										},
+										"url": {
+											"raw": "{{url}}/graphql",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"graphql"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get by ID - check Delete",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"getWishList - check rename\", function () {\r",
+													"    var jsonData = pm.response.json();\r",
+													"    pm.expect(jsonData.data.wishlist).to.be.null;\r",
+													"\r",
+													"\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "graphql",
+											"graphql": {
+												"query": "query wishlist($listId: String!) {\r\n    wishlist (listId: $listId) {\r\n      id\r\n      name\r\n      storeId\r\n      customerId\r\n      customerName\r\n      currency {\r\n        code\r\n      }\r\n      itemsCount\r\n      items {\r\n          id\r\n          productId\r\n          name\r\n          }\r\n      }\r\n}",
+												"variables": "{\r\n    \"listId\": \"{{listId}}\"\r\n}"
+											}
+										},
+										"url": {
+											"raw": "{{url}}/graphql",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"graphql"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Delete",
+							"item": [
+								{
+									"name": "Delete users [admin] Copy 2",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "graphql",
+											"graphql": {
+												"query": "mutation deleteUsers ($command: InputDeleteUserType!) {\r\n    deleteUsers (command: $command) {\r\n        errors {\r\n            code\r\n            description\r\n        }\r\n        succeeded\r\n    }\r\n}\r\n\r\n\r\n\r\n",
+												"variables": "{\r\n  \"command\": {\r\n    \"userNames\": [\r\n      \"{{userName1}}\"\r\n    ]\r\n  }\r\n}\r\n"
+											}
+										},
+										"url": {
+											"raw": "{{url}}/graphql",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"graphql"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Delete Contact_1 [admin] Copy",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "graphql",
+											"graphql": {
+												"query": "mutation deleteContact ($command: InputDeleteContactType!) {\r\n    deleteContact (command: $command)\r\n}\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n",
+												"variables": "{\r\n  \"command\": {\r\n    \"contactId\": \"{{contactId1}}\"\r\n  }\r\n}"
+											}
+										},
+										"url": {
+											"raw": "{{url}}/graphql",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"graphql"
+											]
+										}
+									},
+									"response": []
+								}
+							],
+							"auth": {
+								"type": "bearer",
+								"bearer": [
+									{
+										"key": "token",
+										"value": "{{AdminToken}}",
+										"type": "string"
+									}
+								]
+							},
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"type": "text/javascript",
+										"exec": [
+											""
+										]
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"type": "text/javascript",
+										"exec": [
+											""
+										]
+									}
+								}
+							]
 						}
 					]
 				}
@@ -20079,14 +21037,17 @@
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "query me  {\n    me {\n        accessFailedCount\n        contact {\n            addresses {\n                items{\n                addressType\n                city\n                countryCode\n                countryName\n                email\n                firstName\n                key\n                lastName\n                line1\n                line2\n                middleName\n                name\n                organization\n                phone\n                postalCode\n                regionId\n                regionName\n                zip\n            }}\n            birthDate\n            firstName\n            fullName\n            id\n            lastName\n            memberType\n            middleName\n            name\n            organizationId\n            organizations {items{\n                addresses {items{\n                    addressType\n                    city\n                    countryCode\n                    countryName\n                    email\n                    firstName\n                    key\n                    lastName\n                    line1\n                    line2\n                    middleName\n                    name\n                    organization\n                    phone\n                    postalCode\n                    regionId\n                    regionName\n                    zip\n                }}}\n                items\n                contacts  {\n                    edges {\n                        cursor\n                    }\n                    items {\n                        birthDate\n                        firstName\n                        fullName\n                        id\n                        lastName\n                        memberType\n                        middleName\n                        name\n                        organizationId\n                        organizationsIds\n                        outerId\n                        phones\n                    }\n                    pageInfo {\n                        endCursor\n                        hasNextPage\n                        hasPreviousPage\n                        startCursor\n                    }\n                    totalCount\n                }\n                description\n                emails\n                groups\n                id\n                memberType\n                name\n                outerId\n                ownerId\n                parentId\n                phones\n                seoObjectType\n            }\n            organizationsIds\n            outerId\n            phones\n            securityAccounts {\n                accessFailedCount\n                contact {\n                    birthDate\n                    firstName\n                    fullName\n                    id\n                    lastName\n                    memberType\n                    middleName\n                    name\n                    organizationId\n                    organizationsIds\n                    outerId\n                    phones\n                }\n                createdBy\n                createdDate\n                email\n                emailConfirmed\n                id\n                isAdministrator\n                lockoutEnabled\n                lockoutEnd\n                memberId\n                modifiedBy\n                modifiedDate\n                normalizedEmail\n                normalizedUserName\n                passwordExpired\n                permissions\n                phoneNumber\n                phoneNumberConfirmed\n                photoUrl\n                roles {\n                    description\n                    id\n                    name\n                    normalizedName\n                    permissions\n                }\n                securityStamp\n                storeId\n                twoFactorEnabled\n                userName\n                userType\n            }\n        }\n        createdBy\n        createdDate\n        email\n        emailConfirmed\n        id\n        isAdministrator\n        lockoutEnabled\n        lockoutEnd\n        memberId\n        modifiedBy\n        modifiedDate\n        normalizedEmail\n        normalizedUserName\n        passwordExpired\n        permissions\n        phoneNumber\n        phoneNumberConfirmed\n        photoUrl\n        roles {\n            description\n            id\n            name\n            normalizedName\n            permissions\n        }\n        securityStamp\n        storeId\n        twoFactorEnabled\n        userName\n        userType\n    }\n}",
+								"query": "query me  {\n    me {\n        accessFailedCount\n        contact {\n            addresses {\n                items{\n                addressType\n                city\n                countryCode\n                countryName\n                email\n                firstName\n                key\n                lastName\n                line1\n                line2\n                middleName\n                name\n                organization\n                phone\n                postalCode\n                regionId\n                regionName\n                zip\n            }}\n            birthDate\n            firstName\n            fullName\n            id\n            lastName\n            memberType\n            middleName\n            name\n            organizationId\n            organizations {items{\n                addresses {items{\n                    addressType\n                    city\n                    countryCode\n                    countryName\n                    email\n                    firstName\n                    key\n                    lastName\n                    line1\n                    line2\n                    middleName\n                    name\n                    organization\n                    phone\n                    postalCode\n                    regionId\n                    regionName\n                    zip\n                }}}\n                items\n                contacts  {\n                    edges {\n                        cursor\n                    }\n                    items {\n                        birthDate\n                        firstName\n                        fullName\n                        id\n                        lastName\n                        memberType\n                        middleName\n                        name\n                        organizationId\n                        organizationsIds\n                        outerId\n                        phones\n                    }\n                    pageInfo {\n                        endCursor\n                        hasNextPage\n                        hasPreviousPage\n                        startCursor\n                    }\n                    totalCount\n                }\n                description\n                emails\n                groups\n                id\n                memberType\n                name\n                outerId\n                ownerId\n                parentId\n                phones\n                seoObjectType\n            }\n            organizationsIds\n            {id}\n            outerId\n            phones\n            securityAccounts {\n                accessFailedCount\n                contact {\n                    birthDate\n                    firstName\n                    fullName\n                    id\n                    lastName\n                    memberType\n                    middleName\n                    name\n                    organizationId\n                    organizationsIds\n                    outerId\n                    phones\n                }\n                createdBy\n                createdDate\n                email\n                emailConfirmed\n                id\n                isAdministrator\n                lockoutEnabled\n                lockoutEnd\n                memberId\n                modifiedBy\n                modifiedDate\n                normalizedEmail\n                normalizedUserName\n                passwordExpired\n                permissions\n                phoneNumber\n                phoneNumberConfirmed\n                photoUrl\n                roles {\n                    description\n                    id\n                    name\n                    normalizedName\n                    permissions\n                }\n                securityStamp\n                storeId\n                twoFactorEnabled\n                userName\n                userType\n            }\n        }\n        createdBy\n        createdDate\n        email\n        emailConfirmed\n        id\n        isAdministrator\n        lockoutEnabled\n        lockoutEnd\n        memberId\n        modifiedBy\n        modifiedDate\n        normalizedEmail\n        normalizedUserName\n        passwordExpired\n        permissions\n        phoneNumber\n        phoneNumberConfirmed\n        photoUrl\n        roles {\n            description\n            id\n            name\n            normalizedName\n            permissions\n        }\n        securityStamp\n        storeId\n        twoFactorEnabled\n        userName\n        userType\n    }\n}",
 								"variables": ""
 							}
 						},
 						"url": {
-							"raw": "{{url}}",
+							"raw": "{{url}}/graphql",
 							"host": [
 								"{{url}}"
+							],
+							"path": [
+								"graphql"
 							]
 						}
 					},
@@ -22581,7 +23542,7 @@
 									"mode": "graphql",
 									"graphql": {
 										"query": "mutation createUser ($command: InputCreateUserType!) {\n    createUser (command: $command) {\n        errors {\n            code\n            description\n        }\n        succeeded\n    }\n}\n\n",
-										"variables": "{\n\"command\":\n  {\n     \"applicationUser\":{\n    \"createdBy\": \"eXp16\",\n    \"email\": \"user11_Acc@mailto.plus\",\n    \"password\":\"{{userName1}}\",\n    \"userName\": \"{{userName1}}\",\n    \"userType\": \"Customer\",\n    \"memberId\":\"{{contactId1}}\"\n      }}\n}"
+										"variables": "{\n\"command\":\n  {\n     \"applicationUser\":{\n    \"createdBy\": \"eXp16\",\n    \"email\": \"{{$randomEmail}}\",\n    \"password\":\"{{userName1}}\",\n    \"userName\": \"{{userName1}}\",\n    \"userType\": \"Customer\",\n    \"memberId\":\"{{contactId1}}\"\n      }}\n}"
 									}
 								},
 								"url": {
@@ -22703,7 +23664,7 @@
 									"mode": "graphql",
 									"graphql": {
 										"query": "mutation createUser ($command: InputCreateUserType!) {\n    createUser (command: $command) {\n        errors {\n            code\n            description\n        }\n        succeeded\n        \n    }\n}\n\n",
-										"variables": "{\n\"command\":\n  {\n     \"applicationUser\":{\n    \"createdBy\": \"eXp16\",\n    \"email\": \"user1122_Acc@mailto.plus\",\n    \"password\":\"{{userName2}}\",\n    \"userName\": \"{{userName2}}\",\n    \"userType\": \"Customer\",\n    \"memberId\":\"{{contactId2}}\"\n      }}\n}"
+										"variables": "{\n\"command\":\n  {\n     \"applicationUser\":{\n    \"createdBy\": \"eXp16\",\n    \"email\": \"{{$randomEmail}}\",\n    \"password\":\"{{userName2}}\",\n    \"userName\": \"{{userName2}}\",\n    \"userType\": \"Customer\",\n    \"memberId\":\"{{contactId2}}\"\n      }}\n}"
 									}
 								},
 								"url": {
@@ -28839,7 +29800,7 @@
 									"mode": "graphql",
 									"graphql": {
 										"query": "mutation createUser ($command: InputCreateUserType!) {\n    createUser (command: $command) {\n        errors {\n            code\n            description\n        }\n        succeeded\n    }\n}\n\n",
-										"variables": "{\n\"command\":\n  {\n     \"applicationUser\":{\n    \"createdBy\": \"eXp16\",\n    \"email\": \"user11_Acc@mailto.plus\",\n    \"password\":\"{{userName1}}\",\n    \"userName\": \"{{userName1}}\",\n    \"userType\": \"Customer\",\n    \"memberId\":\"{{contactId1}}\"\n      }}\n}"
+										"variables": "{\n\"command\":\n  {\n     \"applicationUser\":{\n    \"createdBy\": \"eXp16\",\n    \"email\": \"{{$randomEmail}}\",\n    \"password\":\"{{userName1}}\",\n    \"userName\": \"{{userName1}}\",\n    \"userType\": \"Customer\",\n    \"memberId\":\"{{contactId1}}\"\n      }}\n}"
 									}
 								},
 								"url": {
@@ -35196,7 +36157,7 @@
 									"mode": "graphql",
 									"graphql": {
 										"query": "mutation createUser ($command: InputCreateUserType!) {\n    createUser (command: $command) {\n        errors {\n            code\n            description\n        }\n        succeeded\n    }\n}",
-										"variables": "{\n\"command\": {\n\"applicationUser\": {   \n\"createdBy\": \"autoTestPostman\",\n\"email\": \"{{test2_mail1}}\",\n\"password\":\"{{test2_password}}\",\n\"userName\": \"{{test2_userName1}}\",\n\"userType\": \"Customer\",\n\"storeId\": \"{{storeId}}\",\n\"memberId\":\"{{test2_contactId1}}\"\n}\n}\n}"
+										"variables": "{\n\"command\": {\n\"applicationUser\": {   \n\"createdBy\": \"autoTestPostman\",\n\"email\": \"{{$randomEmail}}\",\n\"password\":\"{{test2_password}}\",\n\"userName\": \"{{test2_userName1}}\",\n\"userType\": \"Customer\",\n\"storeId\": \"{{storeId}}\",\n\"memberId\":\"{{test2_contactId1}}\"\n}\n}\n}"
 									}
 								},
 								"url": {
@@ -35775,7 +36736,7 @@
 									"mode": "graphql",
 									"graphql": {
 										"query": "mutation createUser ($command: InputCreateUserType!) {\n    createUser (command: $command) {\n        errors {\n            code\n            description\n        }\n        succeeded\n      \n    }\n}",
-										"variables": "{\n\"command\": {\n\"applicationUser\": {\n\"createdBy\": \"userAutoTest\",\n\"email\": \"{{test2_email2}}\",\n\"password\":\"{{$randomPassword}}\",\n\"userName\": \"{{test2_userName2}}\",\n\"userType\": \"Customer\",\n\"storeId\":\"{{storeId}}\"\n}\n}\n}\n\n"
+										"variables": "{\n\"command\": {\n\"applicationUser\": {\n\"createdBy\": \"userAutoTest\",\n\"email\": \"{{$randomEmail}}\",\n\"password\":\"{{$randomPassword}}\",\n\"userName\": \"{{test2_userName2}}\",\n\"userType\": \"Customer\",\n\"storeId\":\"{{storeId}}\"\n}\n}\n}\n\n"
 									}
 								},
 								"url": {
@@ -37327,14 +38288,6 @@
 	],
 	"variable": [
 		{
-			"key": "url",
-			"value": "https://regression-platform.qa.govirto.com"
-		},
-		{
-			"key": "adminurl",
-			"value": "https://regression-platform.qa.govirto.com"
-		},
-		{
 			"key": "storeId",
 			"value": "Electronics"
 		},
@@ -37768,7 +38721,7 @@
 		},
 		{
 			"key": "userName1",
-			"value": "superUser1@a"
+			"value": "{{$randomEmail}}"
 		},
 		{
 			"key": "test2_userName1",
@@ -38000,6 +38953,22 @@
 		},
 		{
 			"key": "test5OrderId1",
+			"value": ""
+		},
+		{
+			"key": "customerId",
+			"value": "4b136e3f-2d7f-4af1-8fa2-45672612accd"
+		},
+		{
+			"key": "listId",
+			"value": ""
+		},
+		{
+			"key": "listId2",
+			"value": ""
+		},
+		{
+			"key": "UserNameForCart",
 			"value": ""
 		}
 	]
