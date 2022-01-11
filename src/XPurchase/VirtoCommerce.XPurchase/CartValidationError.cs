@@ -20,6 +20,8 @@ namespace VirtoCommerce.XPurchase
         public string ObjectType { get; set; }
         public string ObjectId { get; set; }
         public List<ErrorParameter> ErrorParameters =>
-            FormattedMessagePlaceholderValues.Select(kvp => new ErrorParameter {Key = kvp.Key, Value = kvp.Value.ToString()}).ToList();
+            FormattedMessagePlaceholderValues
+                ?.Select(kvp => new ErrorParameter { Key = kvp.Key, Value = kvp.Value.ToString() })
+                ?.ToList();
     }
 }
