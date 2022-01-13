@@ -35,9 +35,9 @@ namespace VirtoCommerce.XDigitalCatalog.Tests.Specifications
         public static IEnumerable<object[]> Data =>
             new List<object[]>
             {
-                //is has inventory, result true
+                //has inventory, result true
                 new object[] { true, true, true, true},
-                //is has no inventory, result false
+                //has no inventory, result false
                 new object[] { false, false, false, false },
             };
     }
