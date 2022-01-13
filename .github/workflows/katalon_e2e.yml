@@ -1,4 +1,4 @@
-name: Experience API Integration tests
+name: Common katalon tests
 
 on:
   workflow_dispatch:
