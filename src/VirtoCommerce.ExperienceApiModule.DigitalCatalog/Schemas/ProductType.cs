@@ -70,6 +70,8 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 "The unique ID of the catalog",
                 resolve: context => context.Source.IndexedProduct.CatalogId);
             Field(d => d.IndexedProduct.ProductType, nullable: true).Description("The type of product");
+            Field(d => d.IndexedProduct.MinQuantity, nullable: true).Description("Min. quantity");
+            Field(d => d.IndexedProduct.MaxQuantity, nullable: true).Description("Max. quantity");
 
             FieldAsync<StringGraphType>("outline", resolve: async context =>
             {

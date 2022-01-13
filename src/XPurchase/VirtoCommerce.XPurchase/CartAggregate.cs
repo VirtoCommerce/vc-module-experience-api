@@ -607,8 +607,8 @@ namespace VirtoCommerce.XPurchase
 
         public virtual Task<CartAggregate> SetItemFulfillmentCenterAsync(LineItem lineItem, CartProduct cartProduct)
         {
-            lineItem.FulfillmentCenterId = cartProduct.Inventory?.FulfillmentCenterId;
-            lineItem.FulfillmentCenterName = cartProduct.Inventory?.FulfillmentCenterName;
+            lineItem.FulfillmentCenterId = cartProduct?.Inventory?.FulfillmentCenterId;
+            lineItem.FulfillmentCenterName = cartProduct?.Inventory?.FulfillmentCenterName;
 
             return Task.FromResult(this);
         }
