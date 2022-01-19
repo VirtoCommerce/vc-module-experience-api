@@ -26,7 +26,7 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             {
                 Payment = item,
                 AvailPaymentMethods = _context.AvailPaymentMethods
-            }, ruleSet: randomRuleSet);
+            }, options => options.IncludeRuleSets(randomRuleSet));
 
             // Assert
             result.Errors.Should().BeEmpty();

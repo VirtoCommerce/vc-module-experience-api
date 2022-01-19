@@ -51,7 +51,7 @@ namespace VirtoCommerce.XPurchase.Tests.Handlers
             var sourceAggregare = GetValidCartAggregate();
 
             var destinationAggregate = GetValidCartAggregate();
-            destinationAggregate.ValidationRuleSet = "default";
+            destinationAggregate.ValidationRuleSet = new [] { "default" };
 
             var sourceListId = sourceAggregare.Cart.Id;
             var destinaitonListId = destinationAggregate.Cart.Id;

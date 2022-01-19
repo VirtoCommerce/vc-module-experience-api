@@ -29,7 +29,7 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
 
             // Assert
             result.IsValid.Should().BeFalse();
-            result.Errors.Should().Contain(x => x.PropertyName == "NewQuantity" && x.ErrorCode == nameof(GreaterThanValidator));
+            result.Errors.Should().Contain(x => x.PropertyName == "NewQuantity" && x.ErrorCode.Contains("GreaterThanValidator"));
         }
 
         [Fact]
@@ -46,7 +46,7 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
 
             // Assert
             result.IsValid.Should().BeFalse();
-            result.Errors.Should().Contain(x => x.PropertyName == "LineItemId" && x.ErrorCode == nameof(NotNullValidator));
+            result.Errors.Should().Contain(x => x.PropertyName == "LineItemId" && x.ErrorCode.Contains("NotNullValidator"));
         }
 
         [Fact]
@@ -63,7 +63,7 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
 
             // Assert
             result.IsValid.Should().BeFalse();
-            result.Errors.Should().Contain(x => x.PropertyName == "CartProduct" && x.ErrorCode == nameof(NotNullValidator));
+            result.Errors.Should().Contain(x => x.PropertyName == "CartProduct" && x.ErrorCode.Contains("NotNullValidator"));
         }
 
         [Fact]

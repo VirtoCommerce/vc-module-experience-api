@@ -24,7 +24,7 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             var result = await _validator.ValidateAsync(new CartValidationContext
             {
                 CartAggregate = aggregate
-            }, ruleSet: "default,items,shipments,payments");
+            }, options => options.IncludeRuleSets("default","items","shipments","payments"));
 
             // Assert
             result.IsValid.Should().BeTrue();
@@ -43,7 +43,7 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             var result = await _validator.ValidateAsync(new CartValidationContext
             {
                 CartAggregate = aggregate
-            }, ruleSet: "default,items,shipments,payments");
+            }, options => options.IncludeRuleSets("default","items","shipments","payments"));
 
             // Assert
             result.IsValid.Should().BeFalse();
@@ -60,7 +60,7 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             var result = await _validator.ValidateAsync(new CartValidationContext
             {
                 CartAggregate = aggregate
-            }, ruleSet: "default");
+            }, options => options.IncludeRuleSets("default"));
 
             // Assert
             result.IsValid.Should().BeTrue();
@@ -79,7 +79,7 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             var result = await validator2.ValidateAsync(new CartValidationContext
             {
                 CartAggregate = aggregate
-            }, ruleSet: "items");
+            }, options => options.IncludeRuleSets("items"));
 
             // Assert
             result.Errors.Should().Contain(x => x.ErrorMessage == "FakeFailure");
