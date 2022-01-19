@@ -56,7 +56,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder
                 request.Payment = inPayment.Clone() as PaymentIn;
             }
 
-            var validationResult = AbstractTypeFactory<ProcessPaymentRequestVaidator>.TryCreateInstance().Validate(request);
+            var validationResult = AbstractTypeFactory<ProcessPaymentRequestValidator>.TryCreateInstance().Validate(request);
             if (!validationResult.IsValid)
             {
                 return new ProcessPaymentRequestResult

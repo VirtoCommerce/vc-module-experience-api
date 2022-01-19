@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using FluentValidation;
 using VirtoCommerce.OrdersModule.Core.Model;
@@ -7,10 +6,10 @@ using VirtoCommerce.PaymentModule.Model.Requests;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Validators
 {
-    public class ProcessPaymentRequestVaidator : AbstractValidator<ProcessPaymentRequest>
+    public class ProcessPaymentRequestValidator : AbstractValidator<ProcessPaymentRequest>
     {
         private readonly PaymentStatus[] _availStatusesForProcessing = new[] { PaymentStatus.New, PaymentStatus.Custom };
-        public ProcessPaymentRequestVaidator()
+        public ProcessPaymentRequestValidator()
         {
             RuleFor(x => x.Order).NotNull();
             RuleFor(x => x.Payment).NotNull().WithMessage(OrderErrorDescriber.PaymentNotFound());
@@ -18,10 +17,11 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Validators
             RuleFor(x => x.Store).NotNull().WithMessage(OrderErrorDescriber.StoreNotFound());
             When(x => x.BankCardInfo != null, () =>
             {
-                RuleFor(x => x.BankCardInfo.BankCardNumber).CreditCard();
+                RuleFor(x => x.BankCardInfo.BankCardNumber).NotNull().NotEmpty().CreditCard();
                 RuleFor(x => x.BankCardInfo.BankCardCVV2).NotNull().NotEmpty();
                 RuleFor(x => x.BankCardInfo.BankCardType).NotNull().NotEmpty();
                 RuleFor(x => x.BankCardInfo.BankCardYear).NotNull().NotEmpty();
+                RuleFor(x => x.BankCardInfo.BankCardMonth).NotNull().NotEmpty();
                 RuleFor(x => x.BankCardInfo.CardholderName).NotNull().NotEmpty();
             });
             RuleFor(x => x).Custom((request, context) =>
