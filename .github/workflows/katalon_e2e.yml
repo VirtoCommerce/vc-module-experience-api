@@ -1,12 +1,21 @@
-name: Experience API Integration tests(postman)
+name: Common katalon tests
 
 on:
- workflow_dispatch:
-  testBranch:
-         description: "Branch of tests"
-         required: false
-         default: "dev"
+  workflow_dispatch:
+    inputs:
+      testSuite:
+        description: "Test Suite"
+        required: false
+        default: "Test Suites/Modules/Platform_collection"
 
+  pull_request:
+    paths-ignore:
+      - '.github/**'
+      - 'docs/**'
+      - 'build/**'
+      - 'README.md'
+      - 'LICENSE'
+    branches: [ master ]
 
 jobs:
   e2e-tests:
@@ -16,13 +25,14 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
       NUGET_KEY: ${{ secrets.NUGET_KEY }}
       BLOB_SAS: ${{ secrets.BLOB_TOKEN }}
+      DEFAULT_TEST_SUITE: "Test Suites/Modules/Platform_collection"
 
     steps:
     - uses: actions/checkout@v2
       with:
         fetch-depth: 0
 
-    - name: Set up .net Core 5.0.x for vc-build #GitHib Actions migrates to .net Core 5.x. To vc-build work properly need to manually install .net Core 3.1.x
+    - name: Set up .net Core 5.0.x
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: '5.0.x'
@@ -33,6 +43,15 @@ jobs:
     - name: Get Image Version
       uses: VirtoCommerce/vc-github-actions/get-image-version@master
       id: image
+
+    - name: Getting tests
+      shell: sh
+      run: |
+        git clone https://github.com/VirtoCommerce/vc-quality-gate-katalon.git
+        cd ${{ github.workspace }}/vc-quality-gate-katalon/
+        git checkout -b dev origin/dev
+        ls -l
+
 
     # Temporary commented for speedup workflow test
     - name: Build
@@ -60,34 +79,16 @@ jobs:
         validateSwagger: 'false'
         installModule: 'true'
         moduleId: ${{ steps.image.outputs.moduleId }}
-        
-        
-    - name: Getting tests
-      shell: sh
-      run: git clone https://github.com/VirtoCommerce/vc-quality-gate-katalon.git --branch dev
 
     - name: Katalon Studio Github Action
       uses: VirtoCommerce/vc-github-actions/katalon-studio-github-action@master
       with:
-        version: '8.0.5'
+        version: '7.9.1'
         projectPath: '${{ github.workspace }}/vc-quality-gate-katalon/platform_storefront.prj'
-        args: '-noSplash -retry=0 -testSuitePath="Test Suites/DynamicPropertyCreation" -browserType="Chrome" -apiKey= ${{ secrets.KATALON_API_KEY }} -g_urlBack="http://localhost:8090" -g_urlFront="http://localhost:8080" -executionProfile="Regression-QA" --config -webui.autoUpdateDrivers=true'
-   
-    - name: Katalon Report Uploader
-      if: always( )
-      uses: katalon-studio/report-uploader@v0.0.7.11
-      env:
-        PASSWORD: ${{ secrets.KATALON_API_KEY }}
-        PROJECT_ID: 223504
-        TYPE: junit
-        REPORT_PATH: ${{ github.workspace }}/vc-quality-gate-katalon/Reports
-    
-    
-    - name: Newman Action
-      uses: matt-ball/newman-action@v1.0.2
-      with:
-        collection: https://raw.githubusercontent.com/VirtoCommerce/vc-module-experience-api/collectionfortest/tests/postman/platform_xapi_collection_QA.json
-        environment: https://raw.githubusercontent.com/VirtoCommerce/vc-module-experience-api/collectionfortest/tests/postman/qa.postman_environment.json
-        envVar: '[{ "key": "url", "value": "http://localhost:8090" }, { "key": "password", "value": "store" }]'
-        reporters: '["json", "cli", "junit"]'
-        folder: '["Ready_for_CI"]'
+        args: '-noSplash -retry=0 -testSuiteCollectionPath="Test Suites/Modules/Platform_collection" -browserType="Chrome" -apiKey= ${{ secrets.KATALON_API_KEY }} -g_urlBack="http://localhost:8090" -g_urlFront="http://localhost:8080" -executionProfile="default"'
+
+    - name: Katalon Report to PR
+      if: ${{ ( success() || failure() ) && github.event_name == 'pull_request' }}
+      uses: VirtoCommerce/vc-github-actions/publish-katalon-report@master
+      with: 
+        testProjectPath: ${{ github.workspace }}

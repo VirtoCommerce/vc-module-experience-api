@@ -98,7 +98,7 @@ namespace VirtoCommerce.XPurchase
         /// FluentValidation RuleSets allow you to group validation rules together which can be executed together as a group. You can set exists rule set name to evaluate default.
         /// <see cref="CartValidator"/>
         /// </summary>
-        public string ValidationRuleSet { get; set; } = "default,strict";
+        public string[] ValidationRuleSet { get; set; } = { "default", "strict" };
 
         public bool IsValid => !ValidationErrors.Any();
         public IList<ValidationFailure> ValidationErrors { get; protected set; } = new List<ValidationFailure>();
@@ -136,7 +136,7 @@ namespace VirtoCommerce.XPurchase
                 throw new ArgumentNullException(nameof(newCartItem));
             }
 
-            var validationResult = await AbstractTypeFactory<NewCartItemValidator>.TryCreateInstance().ValidateAsync(newCartItem, ruleSet: ValidationRuleSet);
+            var validationResult = await AbstractTypeFactory<NewCartItemValidator>.TryCreateInstance().ValidateAsync(newCartItem, options => options.IncludeRuleSets(ValidationRuleSet));
             if (!validationResult.IsValid)
             {
                 ValidationErrors.AddRange(validationResult.Errors);
@@ -255,7 +255,7 @@ namespace VirtoCommerce.XPurchase
             var lineItem = Cart.Items.FirstOrDefault(x => x.Id == priceAdjustment.LineItemId);
             if (lineItem != null)
             {
-                await AbstractTypeFactory<ChangeCartItemPriceValidator>.TryCreateInstance().ValidateAndThrowAsync(priceAdjustment, ruleSet: ValidationRuleSet);
+                await AbstractTypeFactory<ChangeCartItemPriceValidator>.TryCreateInstance().ValidateAsync(priceAdjustment, options => options.IncludeRuleSets(ValidationRuleSet).ThrowOnFailures());
                 lineItem.ListPrice = priceAdjustment.NewPrice;
                 lineItem.SalePrice = priceAdjustment.NewPrice;
             }
@@ -267,7 +267,7 @@ namespace VirtoCommerce.XPurchase
         {
             EnsureCartExists();
 
-            var validationResult = await AbstractTypeFactory<ItemQtyAdjustmentValidator>.TryCreateInstance().ValidateAsync(qtyAdjustment, ruleSet: ValidationRuleSet);
+            var validationResult = await AbstractTypeFactory<ItemQtyAdjustmentValidator>.TryCreateInstance().ValidateAsync(qtyAdjustment, options => options.IncludeRuleSets(ValidationRuleSet));
             if (!validationResult.IsValid)
             {
                 ValidationErrors.AddRange(validationResult.Errors);
@@ -364,7 +364,7 @@ namespace VirtoCommerce.XPurchase
                 Shipment = shipment,
                 AvailShippingRates = availRates
             };
-            await AbstractTypeFactory<CartShipmentValidator>.TryCreateInstance().ValidateAndThrowAsync(validationContext, ruleSet: ValidationRuleSet);
+            await AbstractTypeFactory<CartShipmentValidator>.TryCreateInstance().ValidateAsync(validationContext, options => options.IncludeRuleSets(ValidationRuleSet).ThrowOnFailures());
 
             await RemoveExistingShipmentAsync(shipment);
 
@@ -427,7 +427,7 @@ namespace VirtoCommerce.XPurchase
                 Payment = payment,
                 AvailPaymentMethods = availPaymentMethods
             };
-            await AbstractTypeFactory<CartPaymentValidator>.TryCreateInstance().ValidateAndThrowAsync(validationContext, ruleSet: ValidationRuleSet);
+            await AbstractTypeFactory<CartPaymentValidator>.TryCreateInstance().ValidateAsync(validationContext, options => options.IncludeRuleSets(ValidationRuleSet).ThrowOnFailures());
 
             if (payment.Currency == null)
             {
@@ -535,7 +535,7 @@ namespace VirtoCommerce.XPurchase
             validationContext.CartAggregate = this;
 
             EnsureCartExists();
-            var result = await AbstractTypeFactory<CartValidator>.TryCreateInstance().ValidateAsync(validationContext, ruleSet: ruleSet);
+            var result = await AbstractTypeFactory<CartValidator>.TryCreateInstance().ValidateAsync(validationContext, options => options.IncludeRuleSets(ValidationRuleSet));
             if (!result.IsValid)
             {
                 ValidationErrors.AddRange(result.Errors);

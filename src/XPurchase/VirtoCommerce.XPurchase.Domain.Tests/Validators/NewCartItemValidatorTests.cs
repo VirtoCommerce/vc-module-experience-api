@@ -22,7 +22,7 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             };
 
             // Act
-            var result = await validator.ValidateAsync(newCartItem, ruleSet: "default");
+            var result = await validator.ValidateAsync(newCartItem, options => options.IncludeRuleSets("default"));
 
             // Assert
             result.IsValid.Should().BeTrue();
@@ -37,15 +37,15 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             var newCartItem = new NewCartItem(null, 0);
 
             // Act
-            var result = await validator.ValidateAsync(newCartItem, ruleSet: "default");
+            var result = await validator.ValidateAsync(newCartItem, options => options.IncludeRuleSets("default"));
 
             // Assert
             result.IsValid.Should().BeFalse();
             result.Errors.Should().NotBeEmpty();
             result.Errors.Should().HaveCount(3);
-            result.Errors.Should().Contain(x => x.PropertyName == "Quantity" && x.ErrorCode == nameof(GreaterThanValidator));
-            result.Errors.Should().Contain(x => x.PropertyName == "ProductId" && x.ErrorCode == nameof(NotNullValidator));
-            result.Errors.Should().Contain(x => x.PropertyName == "CartProduct" && x.ErrorCode == nameof(NotNullValidator));
+            result.Errors.Should().Contain(x => x.PropertyName == "Quantity" && x.ErrorCode.Contains("GreaterThanValidator"));
+            result.Errors.Should().Contain(x => x.PropertyName == "ProductId" && x.ErrorCode.Contains("NotNullValidator"));
+            result.Errors.Should().Contain(x => x.PropertyName == "CartProduct" && x.ErrorCode.Contains("NotNullValidator"));
         }
 
         // PT-5433: Write tests for NewCartItemValidator using "strict" ruleset

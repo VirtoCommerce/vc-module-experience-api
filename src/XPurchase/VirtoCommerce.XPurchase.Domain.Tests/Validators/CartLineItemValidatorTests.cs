@@ -35,7 +35,7 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             {
                 AllCartProducts = _context.AllCartProducts,
                 LineItem = item
-            }, ruleSet: "strict");
+            }, options => options.IncludeRuleSets("strict"));
 
             // Assert
             result.Errors.Should().BeEmpty();

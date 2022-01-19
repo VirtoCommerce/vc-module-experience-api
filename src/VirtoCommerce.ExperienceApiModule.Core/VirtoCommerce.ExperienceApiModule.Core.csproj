@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <Description>Experiene API functionality</Description>
-        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <TargetFramework>net6.0</TargetFramework>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>     
         <noWarn>1591</noWarn>
         <IsPackable>True</IsPackable>
@@ -28,11 +28,11 @@
         <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="8.0.0" />
         <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
         <PackageReference Include="PipelineNet" Version="0.9.0" />     
-        <PackageReference Include="VirtoCommerce.CoreModule.Core" Version="3.26.0" />
-        <PackageReference Include="VirtoCommerce.TaxModule.Core" Version="3.2.0" />
-        <PackageReference Include="VirtoCommerce.SearchModule.Core" Version="3.16.0" />
-        <PackageReference Include="VirtoCommerce.Platform.Core" Version="3.81.0" />
-        <PackageReference Include="VirtoCommerce.Platform.Security" Version="3.81.0" />
+        <PackageReference Include="VirtoCommerce.CoreModule.Core" Version="3.200.0" />
+        <PackageReference Include="VirtoCommerce.TaxModule.Core" Version="3.200.0" />
+        <PackageReference Include="VirtoCommerce.SearchModule.Core" Version="3.200.0" />
+        <PackageReference Include="VirtoCommerce.Platform.Core" Version="3.200.0" />
+        <PackageReference Include="VirtoCommerce.Platform.Security" Version="3.200.0" />
         <PackageReference Include="MediatR" Version="8.0.1" />
         <PackageReference Include="GraphQL" Version="4.6.0" />
         <PackageReference Include="GraphQL.Authorization" Version="4.0.0" />
