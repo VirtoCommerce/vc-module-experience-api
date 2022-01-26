@@ -9,6 +9,7 @@ using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.XDigitalCatalog.Queries;
+using VirtoCommerce.XDigitalCatalog.Schemas.ScalarTypes;
 
 namespace VirtoCommerce.XDigitalCatalog.Schemas
 {
@@ -60,9 +61,9 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                         : context.Source.Values.Select(x => x.ValueType).FirstOrDefault().ToString(),
             description: "ValueType of the property.");
 
-            Field<StringGraphType>(
+            Field<PropertyValueGraphType>(
                 "value",
-                resolve: context => context.Source.Values.Select(x => x.Value).FirstOrDefault()?.ToString()
+                resolve: context => context.Source.Values.Select(x => x.Value).FirstOrDefault()
             );
             //.RootAlias("__object.properties.values");
 

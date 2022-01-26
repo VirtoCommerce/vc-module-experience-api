@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GraphQL.Types;
 using VirtoCommerce.ExperienceApiModule.Core.Models;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.DynamicProperties;
@@ -11,6 +12,10 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Services
     public class DynamicPropertyUpdaterService : IDynamicPropertyUpdaterService
     {
         private readonly IDynamicPropertyMetaDataResolver _metadataResolver;
+        private readonly IntGraphType _intGraphType = new();
+        private readonly DecimalGraphType _decimalGraphType = new();
+        private readonly DateTimeGraphType _dateTimeGraphType = new();
+        private readonly BooleanGraphType _booleanGraphType = new();
 
         public DynamicPropertyUpdaterService(IDynamicPropertyMetaDataResolver metadataResolver)
         {
@@ -88,21 +93,14 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Services
 
         private object ConvertValue(DynamicPropertyValueType valueType, object value)
         {
-            switch (valueType)
+            return valueType switch
             {
-                case DynamicPropertyValueType.ShortText:
-                    return (string)value;
-                case DynamicPropertyValueType.Decimal:
-                    return value.ToNullable<decimal>();
-                case DynamicPropertyValueType.DateTime:
-                    return value.ToNullable<DateTime>();
-                case DynamicPropertyValueType.Boolean:
-                    return value.ToNullable<bool>();
-                case DynamicPropertyValueType.Integer:
-                    return value.ToNullable<int>();
-                default:
-                    return (string)value;
-            }
+                DynamicPropertyValueType.Integer => _intGraphType.ParseValue(value is string ? value.ToNullable<int>() : value),
+                DynamicPropertyValueType.Decimal => _decimalGraphType.ParseValue(value is string ? value.ToNullable<decimal>() : value),
+                DynamicPropertyValueType.Boolean => _booleanGraphType.ParseValue(value is string ? value.ToNullable<bool>() : value),
+                DynamicPropertyValueType.DateTime => _dateTimeGraphType.ParseValue(value is string ? value.ToNullable<DateTime>() : value),
+                _ => (string)value,
+            };
         }
 
         private void Patch(DynamicObjectProperty source, DynamicObjectProperty target)
