@@ -29,6 +29,18 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 resolve: context => context.Source.IndexedProduct.Code
             );
 
+            Field<IntGraphType>(
+                "minQuantity",
+                description: "Min. quantity.",
+                resolve: context => context.Source.IndexedProduct.MinQuantity
+            );
+
+            Field<IntGraphType>(
+                "maxQuantity",
+                description: "Max. quantity.",
+                resolve: context => context.Source.IndexedProduct.MaxQuantity
+            );
+
             ExtendableField<AvailabilityDataType>(
                 "availabilityData",
                 "Availability data",
