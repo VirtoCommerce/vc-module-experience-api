@@ -95,10 +95,10 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Services
         {
             return valueType switch
             {
-                DynamicPropertyValueType.Integer => _intGraphType.ParseValue(value is string ? value.ToNullable<int>() : value),
-                DynamicPropertyValueType.Decimal => _decimalGraphType.ParseValue(value is string ? value.ToNullable<decimal>() : value),
-                DynamicPropertyValueType.Boolean => _booleanGraphType.ParseValue(value is string ? value.ToNullable<bool>() : value),
-                DynamicPropertyValueType.DateTime => _dateTimeGraphType.ParseValue(value is string ? value.ToNullable<DateTime>() : value),
+                DynamicPropertyValueType.Integer => _intGraphType.ParseValue(value),
+                DynamicPropertyValueType.Decimal => _decimalGraphType.ParseValue(value),
+                DynamicPropertyValueType.Boolean => _booleanGraphType.ParseValue(value),
+                DynamicPropertyValueType.DateTime => _dateTimeGraphType.ParseValue(value),
                 _ => (string)value,
             };
         }
