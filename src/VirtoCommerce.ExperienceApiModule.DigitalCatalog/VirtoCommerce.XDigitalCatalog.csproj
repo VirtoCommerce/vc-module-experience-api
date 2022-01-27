@@ -33,8 +33,4 @@
     <ItemGroup>
         <ProjectReference Include="..\VirtoCommerce.ExperienceApiModule.Core\VirtoCommerce.ExperienceApiModule.Core.csproj" />
     </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Schemas\ScalarTypes\" />
-    </ItemGroup>
 </Project>
