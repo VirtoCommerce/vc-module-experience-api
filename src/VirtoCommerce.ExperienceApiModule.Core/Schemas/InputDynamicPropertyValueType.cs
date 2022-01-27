@@ -12,8 +12,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
             Field(x => x.Name).Description("Dynamic property name");
             Field<DynamicPropertyValueGraphType>(nameof(DynamicPropertyObjectValue.Value),
                 "Dynamic property value. ID must be passed for dictionary item");
-            Field<StringGraphType>("locale", resolve: x => x.Source.Locale, description: "Language (\"en-US\") for multilingual property", deprecationReason:
-                "Deprecated. Use cultureName field. Will be removed in v. 1.50+");
+            Field<StringGraphType>("locale", resolve: x => x.Source.Locale, description: "Language (\"en-US\") for multilingual property", deprecationReason: "Deprecated. Use cultureName field. Will be removed in v. 1.50+");
             Field("cultureName", x => x.Locale, true).Description("Culture name (\"en-US\") for multilingual property");
         }
     }
