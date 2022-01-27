@@ -10,14 +10,18 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas.ScalarTypes
         {
             if (value is StringValue stringValue)
             {
-                return GeoPoint.TryParse(stringValue.Value) ?? base.ParseLiteral(value);
+                return GeoPoint.TryParse(stringValue.Value)?.ToString() ?? base.ParseLiteral(value);
             }
             return base.ParseLiteral(value);
         }
 
         public override object ParseValue(object value)
         {
-            return value is GeoPoint ? value.ToString() : base.ParseValue(value);
+            if (value is string stringValue)
+            {
+                return GeoPoint.TryParse(stringValue)?.ToString() ?? base.ParseValue(value);
+            }
+            return base.ParseValue(value);
         }
     }
 }
