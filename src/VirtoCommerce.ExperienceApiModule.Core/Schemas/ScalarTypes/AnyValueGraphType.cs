@@ -40,7 +40,17 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas.ScalarTypes
 
         public override bool CanParseValue(object value)
         {
-            return value is sbyte or byte or short or ushort or int or uint or long or ulong or BigInteger or float or double or decimal or bool or DateTime or string or null;
+            return value switch
+            {
+                sbyte or byte or short or ushort or int or uint or long or ulong or BigInteger =>
+                    _intGraphType.CanParseValue(value) || _decimalGraphType.CanParseValue(value),
+                float or double or decimal => _decimalGraphType.CanParseValue(value),
+                bool => _booleanGraphType.CanParseValue(value),
+                DateTime => _dateTimeGraphType.CanParseValue(value),
+                string => _stringGraphType.CanParseValue(value),
+                null => true,
+                _ => base.CanParseValue(value)
+            };
         }
 
         public override object ParseValue(object value)
