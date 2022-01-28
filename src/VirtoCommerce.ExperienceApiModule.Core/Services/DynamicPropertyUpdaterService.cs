@@ -99,7 +99,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Services
                 DynamicPropertyValueType.Decimal => _decimalGraphType.ParseValue(value),
                 DynamicPropertyValueType.Boolean => _booleanGraphType.ParseValue(value),
                 DynamicPropertyValueType.DateTime => _dateTimeGraphType.ParseValue(value),
-                _ => (string)value,
+                _ => value is DateTime ? _dateTimeGraphType.Serialize(value) : value,
             };
         }
 
