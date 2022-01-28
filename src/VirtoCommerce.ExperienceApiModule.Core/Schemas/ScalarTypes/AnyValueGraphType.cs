@@ -18,7 +18,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas.ScalarTypes
             return value switch
             {
                 IntValue or LongValue or BigIntValue => _intGraphType.CanParseLiteral(value) || _decimalGraphType.CanParseLiteral(value),
-                DecimalValue => _decimalGraphType.CanParseLiteral(value),
+                FloatValue or DecimalValue => _decimalGraphType.CanParseLiteral(value),
                 BooleanValue => _booleanGraphType.CanParseLiteral(value),
                 NullValue => true,
                 _ => base.CanParseLiteral(value)
@@ -30,7 +30,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas.ScalarTypes
             return value switch
             {
                 IntValue or LongValue or BigIntValue => _intGraphType.CanParseLiteral(value) ? _intGraphType.ParseLiteral(value) : _decimalGraphType.ParseLiteral(value),
-                DecimalValue => _decimalGraphType.ParseLiteral(value),
+                FloatValue or DecimalValue => _decimalGraphType.ParseLiteral(value),
                 BooleanValue => _booleanGraphType.ParseLiteral(value),
                 StringValue => _dateTimeGraphType.CanParseLiteral(value) ? _dateTimeGraphType.ParseLiteral(value) : _stringGraphType.ParseLiteral(value),
                 NullValue => null,
