@@ -57,8 +57,6 @@ namespace VirtoCommerce.ExperienceApiModule.Web
             services.AddXOrder(graphQlBuilder);
             services.AddXCMS(graphQlBuilder);
 
-            services.AddSingleton<IStoreCurrencyResolver, StoreCurrencyResolver>();
-
             services.AddAutoMapper(ModuleInfo.Assembly);
 
             #region Pipelines
