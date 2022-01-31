@@ -56,6 +56,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             var responseGroup = EnumUtility.SafeParse(request.GetResponseGroup(), ExpProductResponseGroup.None);
 
             var builder = new IndexSearchRequestBuilder()
+                                            .WithCurrency(currency.Code)
                                             .WithFuzzy(request.Fuzzy, request.FuzzyLevel)
                                             .ParseFilters(_phraseParser, request.Filter)
                                             .WithSearchPhrase(request.Query)
