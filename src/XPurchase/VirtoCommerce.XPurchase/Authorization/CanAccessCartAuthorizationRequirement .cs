@@ -31,9 +31,11 @@ namespace VirtoCommerce.XPurchase.Authorization
                     case string userId:
                         result = userId == GetUserId(context);
                         break;
-                    case ShoppingCart cart:
-                        result = (context.User.Identity.IsAuthenticated && cart.CustomerId == GetUserId(context)) ||
-                                (!context.User.Identity.IsAuthenticated && cart.IsAnonymous);
+                    case ShoppingCart cart when context.User.Identity.IsAuthenticated:
+                        result = cart.CustomerId == GetUserId(context);
+                        break;
+                    case ShoppingCart cart when !context.User.Identity.IsAuthenticated:
+                        result = cart.IsAnonymous;
                         break;
                     case IEnumerable<ShoppingCart> carts:
                         var user = GetUserId(context);
