@@ -23,7 +23,7 @@ namespace VirtoCommerce.XPurchase.Authorization
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, CanAccessCartAuthorizationRequirement requirement)
         {
             var result = context.User.IsInRole(PlatformConstants.Security.SystemRoles.Administrator);
-
+            
             if (!result)
             {
                 switch (context.Resource)
@@ -32,7 +32,8 @@ namespace VirtoCommerce.XPurchase.Authorization
                         result = userId == GetUserId(context);
                         break;
                     case ShoppingCart cart:
-                        result = cart.CustomerId == GetUserId(context);
+                        result = (context.User.Identity.IsAuthenticated && cart.CustomerId == GetUserId(context)) ||
+                                (!context.User.Identity.IsAuthenticated && cart.IsAnonymous);
                         break;
                     case IEnumerable<ShoppingCart> carts:
                         var user = GetUserId(context);
