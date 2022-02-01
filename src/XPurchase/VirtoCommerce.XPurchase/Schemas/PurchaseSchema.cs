@@ -880,6 +880,19 @@ namespace VirtoCommerce.XPurchase.Schemas
 
             schema.Mutation.AddField(updateCartShipmentDynamicPropertiesField);
 
+            var changePurchaseOrderNumberField = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<CartType>())
+                                     .Name("changePurchaseOrderNumber")
+                                     .Argument(GraphTypeExtenstionHelper.GetActualType<InputChangePurchaseOrderNumber>(), _commandName)
+                                     .ResolveAsync(async context =>
+                                     {
+                                            var cartAggregate = await _mediator.Send(context.GetCartCommand<ChangePurchaseOrderNumberCommand>());
+                                            context.SetExpandedObjectGraph(cartAggregate);
+                                            return cartAggregate;
+                                     })
+                                     .FieldType;
+
+            schema.Mutation.AddField(changePurchaseOrderNumberField);
+
             #region Wishlists
 
             // Queries

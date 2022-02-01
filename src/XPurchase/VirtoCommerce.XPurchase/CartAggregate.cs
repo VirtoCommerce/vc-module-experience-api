@@ -355,6 +355,15 @@ namespace VirtoCommerce.XPurchase
             return Task.FromResult(this);
         }
 
+        public virtual Task<CartAggregate> ChangePurchaseOrderNumber(string purchaseOrderNumber)
+        {
+            EnsureCartExists();
+
+            Cart.PurchaseOrderNumber = purchaseOrderNumber;
+
+            return Task.FromResult(this);
+        }
+
         public virtual async Task<CartAggregate> AddShipmentAsync(Shipment shipment, IEnumerable<ShippingRate> availRates)
         {
             EnsureCartExists();
