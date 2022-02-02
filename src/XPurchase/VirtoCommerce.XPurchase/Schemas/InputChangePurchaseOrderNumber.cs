@@ -1,4 +1,3 @@
-
 using GraphQL.Types;
 
 namespace VirtoCommerce.XPurchase.Schemas
