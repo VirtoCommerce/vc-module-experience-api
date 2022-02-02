@@ -75,6 +75,9 @@ namespace VirtoCommerce.XPurchase.Schemas
                     context.SetCurrencies(allCurrencies, getCartQuery.CultureName);
 
                     var cartAggregate = await _mediator.Send(getCartQuery);
+
+                    await CheckAccessToCartAsync(context, cartAggregate.Cart);
+
                     if (cartAggregate == null)
                     {
                         var createCartCommand = new CreateCartCommand(getCartQuery.StoreId, getCartQuery.CartType, getCartQuery.CartName, getCartQuery.UserId, getCartQuery.CurrencyCode, getCartQuery.CultureName);
@@ -1217,9 +1220,12 @@ namespace VirtoCommerce.XPurchase.Schemas
             }
         }
 
-        private async Task CheckAccessToCartAsync(IResolveFieldContext context)
+        private async Task CheckAccessToCartAsync(IResolveFieldContext context, ShoppingCart cart = null)
         {
-            var cart = await GetCartByContextAsync(context);
+            if (cart == null)
+            {
+                cart = await GetCartByContextAsync(context);
+            }
 
             var authorizationResult = await _authorizationService
                 .AuthorizeAsync(context.GetCurrentPrincipal(), cart, new CanAccessCartAuthorizationRequirement());
