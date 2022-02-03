@@ -75,14 +75,14 @@ namespace VirtoCommerce.XPurchase.Schemas
                     context.SetCurrencies(allCurrencies, getCartQuery.CultureName);
 
                     var cartAggregate = await _mediator.Send(getCartQuery);
-
-                    await CheckAccessToCartAsync(context, cartAggregate.Cart);
-
+                                        
                     if (cartAggregate == null)
                     {
                         var createCartCommand = new CreateCartCommand(getCartQuery.StoreId, getCartQuery.CartType, getCartQuery.CartName, getCartQuery.UserId, getCartQuery.CurrencyCode, getCartQuery.CultureName);
                         cartAggregate = await _mediator.Send(createCartCommand);
                     }
+
+                    await CheckAccessToCartAsync(context, cartAggregate.Cart);
 
                     context.SetExpandedObjectGraph(cartAggregate);
 
