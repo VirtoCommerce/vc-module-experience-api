@@ -1,8 +1,10 @@
+using System;
 using System.Linq;
 using GraphQL.Types;
 using MediatR;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Queries;
+using VirtoCommerce.ExperienceApiModule.Core.Schemas.ScalarTypes;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.DynamicProperties;
 
@@ -22,9 +24,9 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
             Field<StringGraphType>(nameof(DynamicPropertyObjectValue.ValueType),
                 "Value type",
                 resolve: context => context.Source.ValueType.ToString());
-            Field<StringGraphType>(nameof(DynamicPropertyObjectValue.Value),
+            Field<DynamicPropertyValueGraphType>(nameof(DynamicPropertyObjectValue.Value),
                 "Property value",
-                resolve: context => context.Source.Value?.ToString());
+                resolve: context => context.Source.Value);
 
             FieldAsync<DictionaryItemType>("dictionaryItem", "Associated dictionary item", resolve: async context =>
             {
