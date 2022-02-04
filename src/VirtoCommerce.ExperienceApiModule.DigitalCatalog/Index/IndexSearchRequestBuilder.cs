@@ -15,6 +15,7 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
         private const string ScoreSortingFieldName = "score";
         private SearchRequest SearchRequest { get; set; }
         private string _cultureName { get; set; }
+        private string _currencyCode { get; set; }
 
         public IndexSearchRequestBuilder()
         {
@@ -239,6 +240,12 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
             return this;
         }
 
+        public IndexSearchRequestBuilder WithCurrency(string currencyCode)
+        {
+            _currencyCode = currencyCode;
+            return this;
+        }
+
         public IndexSearchRequestBuilder AddSorting(string sort)
         {
             if (string.IsNullOrWhiteSpace(sort))
@@ -266,6 +273,9 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
                     case "name":
                     case "title":
                         sortFields.Add(new SortingField("name", sortingField.IsDescending));
+                        break;
+                    case "price" when !string.IsNullOrEmpty(_currencyCode):
+                        sortFields.Add(new SortingField($"price_{_currencyCode}".ToLowerInvariant(), sortingField.IsDescending));
                         break;
 
                     default:

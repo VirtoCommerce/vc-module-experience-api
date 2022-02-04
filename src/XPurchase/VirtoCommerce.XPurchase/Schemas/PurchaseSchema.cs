@@ -75,11 +75,14 @@ namespace VirtoCommerce.XPurchase.Schemas
                     context.SetCurrencies(allCurrencies, getCartQuery.CultureName);
 
                     var cartAggregate = await _mediator.Send(getCartQuery);
+                                        
                     if (cartAggregate == null)
                     {
                         var createCartCommand = new CreateCartCommand(getCartQuery.StoreId, getCartQuery.CartType, getCartQuery.CartName, getCartQuery.UserId, getCartQuery.CurrencyCode, getCartQuery.CultureName);
                         cartAggregate = await _mediator.Send(createCartCommand);
                     }
+
+                    await CheckAccessToCartAsync(context, cartAggregate.Cart);
 
                     context.SetExpandedObjectGraph(cartAggregate);
 
@@ -133,9 +136,12 @@ namespace VirtoCommerce.XPurchase.Schemas
                                            //PT-5394: Write the unit-tests for successfully mapping input variable to the command
                                            .ResolveAsync(async context =>
                                            {
+                                               await CheckAccessToCartAsync(context);
+
                                                //PT-5327: Need to refactor later to prevent ugly code duplication
                                                //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
                                                var cartAggregate = await _mediator.Send(context.GetCartCommand<AddCartItemCommand>());
+
                                                //store cart aggregate in the user context for future usage in the graph types resolvers
                                                context.SetExpandedObjectGraph(cartAggregate);
                                                return cartAggregate;
@@ -150,7 +156,10 @@ namespace VirtoCommerce.XPurchase.Schemas
                 .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputAddGiftItemsType>>(), _commandName)
                 .ResolveAsync(async context =>
                 {
+                    await CheckAccessToCartAsync(context);
+
                     var cartAggregate = await _mediator.Send(context.GetCartCommand<AddGiftItemsCommand>());
+
                     //store cart aggregate in the user context for future usage in the graph types resolvers
                     context.SetExpandedObjectGraph(cartAggregate);
                     return cartAggregate;
@@ -164,7 +173,10 @@ namespace VirtoCommerce.XPurchase.Schemas
                 .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputRejectGiftItemsType>>(), _commandName)
                 .ResolveAsync(async context =>
                 {
+                    await CheckAccessToCartAsync(context);
+
                     var cartAggregate = await _mediator.Send(context.GetCartCommand<RejectGiftCartItemsCommand>());
+
                     //store cart aggregate in the user context for future usage in the graph types resolvers
                     context.SetExpandedObjectGraph(cartAggregate);
                     return cartAggregate;
@@ -193,9 +205,12 @@ namespace VirtoCommerce.XPurchase.Schemas
                                              .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputClearCartType>>(), _commandName)
                                              .ResolveAsync(async context =>
                                              {
+                                                 await CheckAccessToCartAsync(context);
+
                                                  //PT-5327: Need to refactor later to prevent ugly code duplication
                                                  //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
                                                  var cartAggregate = await _mediator.Send(context.GetCartCommand<ClearCartCommand>());
+
                                                  //store cart aggregate in the user context for future usage in the graph types resolvers
                                                  context.SetExpandedObjectGraph(cartAggregate);
                                                  return cartAggregate;
@@ -225,9 +240,12 @@ namespace VirtoCommerce.XPurchase.Schemas
                                                  .Argument(GraphTypeExtenstionHelper.GetActualType<InputChangeCommentType>(), _commandName)
                                                  .ResolveAsync(async context =>
                                                  {
+                                                     await CheckAccessToCartAsync(context);
+
                                                      //PT-5327: Need to refactor later to prevent ugly code duplication
                                                      //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
                                                      var cartAggregate = await _mediator.Send(context.GetCartCommand<ChangeCommentCommand>());
+
                                                      //store cart aggregate in the user context for future usage in the graph types resolvers
                                                      context.SetExpandedObjectGraph(cartAggregate);
                                                      return cartAggregate;
@@ -259,9 +277,12 @@ namespace VirtoCommerce.XPurchase.Schemas
                                                        .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputChangeCartItemPriceType>>(), _commandName)
                                                        .ResolveAsync(async context =>
                                                        {
+                                                           await CheckAccessToCartAsync(context);
+
                                                            //PT-5327: Need to refactor later to prevent ugly code duplication
                                                            //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
                                                            var cartAggregate = await _mediator.Send(context.GetCartCommand<ChangeCartItemPriceCommand>());
+
                                                            //store cart aggregate in the user context for future usage in the graph types resolvers
                                                            context.SetExpandedObjectGraph(cartAggregate);
                                                            return cartAggregate;
@@ -292,9 +313,12 @@ namespace VirtoCommerce.XPurchase.Schemas
                                                           .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputChangeCartItemQuantityType>>(), _commandName)
                                                           .ResolveAsync(async context =>
                                                           {
+                                                              await CheckAccessToCartAsync(context);
+
                                                               //PT-5327: Need to refactor later to prevent ugly code duplication
                                                               //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
                                                               var cartAggregate = await _mediator.Send(context.GetCartCommand<ChangeCartItemQuantityCommand>());
+
                                                               //store cart aggregate in the user context for future usage in the graph types resolvers
                                                               context.SetExpandedObjectGraph(cartAggregate);
                                                               return cartAggregate;
@@ -325,9 +349,12 @@ namespace VirtoCommerce.XPurchase.Schemas
                                                           .Argument(GraphTypeExtenstionHelper.GetActualType<InputChangeCartItemCommentType>(), _commandName)
                                                           .ResolveAsync(async context =>
                                                           {
+                                                              await CheckAccessToCartAsync(context);
+
                                                               //PT-5327: Need to refactor later to prevent ugly code duplication
                                                               //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
                                                               var cartAggregate = await _mediator.Send(context.GetCartCommand<ChangeCartItemCommentCommand>());
+
                                                               //store cart aggregate in the user context for future usage in the graph types resolvers
                                                               context.SetExpandedObjectGraph(cartAggregate);
                                                               return cartAggregate;
@@ -357,9 +384,12 @@ namespace VirtoCommerce.XPurchase.Schemas
                                                   .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputRemoveItemType>>(), _commandName)
                                                   .ResolveAsync(async context =>
                                                   {
+                                                      await CheckAccessToCartAsync(context);
+
                                                       //PT-5327: Need to refactor later to prevent ugly code duplication
                                                       //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
                                                       var cartAggregate = await _mediator.Send(context.GetCartCommand<RemoveCartItemCommand>());
+
                                                       //store cart aggregate in the user context for future usage in the graph types resolvers
                                                       context.SetExpandedObjectGraph(cartAggregate);
                                                       return cartAggregate;
@@ -389,9 +419,12 @@ namespace VirtoCommerce.XPurchase.Schemas
                                              .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputAddCouponType>>(), _commandName)
                                              .ResolveAsync(async context =>
                                              {
+                                                 await CheckAccessToCartAsync(context);
+
                                                  //PT-5327: Need to refactor later to prevent ugly code duplication
                                                  //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
                                                  var cartAggregate = await _mediator.Send(context.GetCartCommand<AddCouponCommand>());
+
                                                  //store cart aggregate in the user context for future usage in the graph types resolvers
                                                  context.SetExpandedObjectGraph(cartAggregate);
                                                  return cartAggregate;
@@ -421,9 +454,12 @@ namespace VirtoCommerce.XPurchase.Schemas
                                                 .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputRemoveCouponType>>(), _commandName)
                                                 .ResolveAsync(async context =>
                                                 {
+                                                    await CheckAccessToCartAsync(context);
+
                                                     //PT-5327: Need to refactor later to prevent ugly code duplication
                                                     //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
                                                     var cartAggregate = await _mediator.Send(context.GetCartCommand<RemoveCouponCommand>());
+
                                                     //store cart aggregate in the user context for future usage in the graph types resolvers
                                                     context.SetExpandedObjectGraph(cartAggregate);
                                                     return cartAggregate;
@@ -453,9 +489,12 @@ namespace VirtoCommerce.XPurchase.Schemas
                                                   .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputRemoveShipmentType>>(), _commandName)
                                                   .ResolveAsync(async context =>
                                                   {
+                                                      await CheckAccessToCartAsync(context);
+
                                                       //PT-5327: Need to refactor later to prevent ugly code duplication
                                                       //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
                                                       var cartAggregate = await _mediator.Send(context.GetCartCommand<RemoveShipmentCommand>());
+
                                                       //store cart aggregate in the user context for future usage in the graph types resolvers
                                                       context.SetExpandedObjectGraph(cartAggregate);
                                                       return cartAggregate;
@@ -524,9 +563,12 @@ namespace VirtoCommerce.XPurchase.Schemas
                                                            .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputAddOrUpdateCartShipmentType>>(), _commandName)
                                                            .ResolveAsync(async context =>
                                                            {
+                                                               await CheckAccessToCartAsync(context);
+
                                                                //PT-5327: Need to refactor later to prevent ugly code duplication
                                                                //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
                                                                var cartAggregate = await _mediator.Send(context.GetCartCommand<AddOrUpdateCartShipmentCommand>());
+
                                                                //store cart aggregate in the user context for future usage in the graph types resolvers
                                                                context.SetExpandedObjectGraph(cartAggregate);
                                                                return cartAggregate;
@@ -588,9 +630,12 @@ namespace VirtoCommerce.XPurchase.Schemas
                                                           .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputAddOrUpdateCartPaymentType>>(), _commandName)
                                                           .ResolveAsync(async context =>
                                                           {
+                                                              await CheckAccessToCartAsync(context);
+
                                                               //PT-5327: Need to refactor later to prevent ugly code duplication
                                                               //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
                                                               var cartAggregate = await _mediator.Send(context.GetCartCommand<AddOrUpdateCartPaymentCommand>());
+
                                                               //store cart aggregate in the user context for future usage in the graph types resolvers
                                                               context.SetExpandedObjectGraph(cartAggregate);
                                                               return cartAggregate;
@@ -620,7 +665,12 @@ namespace VirtoCommerce.XPurchase.Schemas
             var validateCouponField = FieldBuilder.Create<CartAggregate, bool>(typeof(BooleanGraphType))
                                                   .Name("validateCoupon")
                                                   .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputValidateCouponType>>(), _commandName)
-                                                  .ResolveAsync(async context => await _mediator.Send(context.GetArgument<ValidateCouponCommand>(_commandName)))
+                                                  .ResolveAsync(async context =>
+                                                  {
+                                                      await CheckAccessToCartAsync(context);
+
+                                                      return await _mediator.Send(context.GetArgument<ValidateCouponCommand>(_commandName));
+                                                  })
                                                   .FieldType;
 
             schema.Mutation.AddField(validateCouponField);
@@ -647,9 +697,12 @@ namespace VirtoCommerce.XPurchase.Schemas
                                              .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputMergeCartType>>(), _commandName)
                                              .ResolveAsync(async context =>
                                              {
+                                                 await CheckAccessToCartAsync(context);
+
                                                  //PT-5327: Need to refactor later to prevent ugly code duplication
                                                  //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
                                                  var cartAggregate = await _mediator.Send(context.GetCartCommand<MergeCartCommand>());
+
                                                  //store cart aggregate in the user context for future usage in the graph types resolvers
                                                  context.SetExpandedObjectGraph(cartAggregate);
                                                  return cartAggregate;
@@ -671,7 +724,12 @@ namespace VirtoCommerce.XPurchase.Schemas
             var removeCartField = FieldBuilder.Create<CartAggregate, bool>(typeof(BooleanGraphType))
                                               .Name("removeCart")
                                               .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputRemoveCartType>>(), _commandName)
-                                              .ResolveAsync(async context => (bool)await _mediator.Send(context.GetArgument(GenericTypeHelper.GetActualType<RemoveCartCommand>(), _commandName)))
+                                              .ResolveAsync(async context =>
+                                              {
+                                                  await CheckAccessToCartAsync(context);
+
+                                                  return (bool)await _mediator.Send(context.GetArgument(GenericTypeHelper.GetActualType<RemoveCartCommand>(), _commandName));
+                                              })
                                               .FieldType;
 
             schema.Mutation.AddField(removeCartField);
@@ -692,9 +750,12 @@ namespace VirtoCommerce.XPurchase.Schemas
                                                   .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputClearShipmentsType>>(), _commandName)
                                                   .ResolveAsync(async context =>
                                                   {
+                                                      await CheckAccessToCartAsync(context);
+
                                                       //PT-5327: Need to refactor later to prevent ugly code duplication
                                                       //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
                                                       var cartAggregate = await _mediator.Send(context.GetCartCommand<ClearShipmentsCommand>());
+
                                                       //store cart aggregate in the user context for future usage in the graph types resolvers
                                                       context.SetExpandedObjectGraph(cartAggregate);
                                                       return cartAggregate;
@@ -719,9 +780,12 @@ namespace VirtoCommerce.XPurchase.Schemas
                                                  .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputClearPaymentsType>>(), _commandName)
                                                  .ResolveAsync(async context =>
                                                  {
+                                                     await CheckAccessToCartAsync(context);
+
                                                      //PT-5327: Need to refactor later to prevent ugly code duplication
                                                      //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
                                                      var cartAggregate = await _mediator.Send(context.GetCartCommand<ClearPaymentsCommand>());
+
                                                      //store cart aggregate in the user context for future usage in the graph types resolvers
                                                      context.SetExpandedObjectGraph(cartAggregate);
                                                      return cartAggregate;
@@ -754,9 +818,12 @@ namespace VirtoCommerce.XPurchase.Schemas
                                                  .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputAddOrUpdateCartAddressType>>(), _commandName)
                                                  .ResolveAsync(async context =>
                                                  {
+                                                     await CheckAccessToCartAsync(context);
+
                                                      //PT-5327: Need to refactor later to prevent ugly code duplication
                                                      //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
                                                      var cartAggregate = await _mediator.Send(context.GetCartCommand<AddOrUpdateCartAddressCommand>());
+
                                                      //store cart aggregate in the user context for future usage in the graph types resolvers
                                                      context.SetExpandedObjectGraph(cartAggregate);
                                                      return cartAggregate;
@@ -780,7 +847,12 @@ namespace VirtoCommerce.XPurchase.Schemas
             var removeCartAddressField = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<CartType>())
                                               .Name("removeCartAddress")
                                               .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputRemoveCartAddressType>>(), _commandName)
-                                              .ResolveAsync(async context => await _mediator.Send(context.GetCartCommand<RemoveCartAddressCommand>()))
+                                              .ResolveAsync(async context =>
+                                              {
+                                                  await CheckAccessToCartAsync(context);
+
+                                                  return await _mediator.Send(context.GetCartCommand<RemoveCartAddressCommand>());
+                                              })
                                               .FieldType;
 
             schema.Mutation.AddField(removeCartAddressField);
@@ -816,7 +888,12 @@ namespace VirtoCommerce.XPurchase.Schemas
             var addItemsCartField = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<CartType>())
                                                  .Name("addItemsCart")
                                                  .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputAddItemsType>>(), _commandName)
-                                                 .ResolveAsync(async context => await _mediator.Send(context.GetCartCommand<AddCartItemsCommand>()))
+                                                 .ResolveAsync(async context =>
+                                                 {
+                                                     await CheckAccessToCartAsync(context);
+
+                                                     return await _mediator.Send(context.GetCartCommand<AddCartItemsCommand>());
+                                                 })
                                                  .FieldType;
 
             schema.Mutation.AddField(addItemsCartField);
@@ -843,7 +920,12 @@ namespace VirtoCommerce.XPurchase.Schemas
             var addCartAddressField = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<CartType>())
                                                  .Name("addCartAddress")
                                                  .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputAddOrUpdateCartAddressType>>(), _commandName)
-                                                 .ResolveAsync(async context => await _mediator.Send(context.GetCartCommand<AddCartAddressCommand>()))
+                                                 .ResolveAsync(async context =>
+                                                 {
+                                                     await CheckAccessToCartAsync(context);
+
+                                                     return await _mediator.Send(context.GetCartCommand<AddCartAddressCommand>());
+                                                 })
                                                  .FieldType;
 
             schema.Mutation.AddField(addCartAddressField);
@@ -851,7 +933,12 @@ namespace VirtoCommerce.XPurchase.Schemas
             var updateCartDynamicPropertiesField = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<CartType>())
                                                      .Name("updateCartDynamicProperties")
                                                      .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputUpdateCartDynamicPropertiesType>>(), _commandName)
-                                                     .ResolveAsync(async context => await _mediator.Send(context.GetCartCommand<UpdateCartDynamicPropertiesCommand>()))
+                                                     .ResolveAsync(async context =>
+                                                     {
+                                                         await CheckAccessToCartAsync(context);
+
+                                                         return await _mediator.Send(context.GetCartCommand<UpdateCartDynamicPropertiesCommand>());
+                                                     })
                                                      .FieldType;
 
             schema.Mutation.AddField(updateCartDynamicPropertiesField);
@@ -859,7 +946,12 @@ namespace VirtoCommerce.XPurchase.Schemas
             var updateCartItemDynamicPropertiesField = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<CartType>())
                                                         .Name("updateCartItemDynamicProperties")
                                                         .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputUpdateCartItemDynamicPropertiesType>>(), _commandName)
-                                                        .ResolveAsync(async context => await _mediator.Send(context.GetCartCommand<UpdateCartItemDynamicPropertiesCommand>()))
+                                                        .ResolveAsync(async context =>
+                                                        {
+                                                            await CheckAccessToCartAsync(context);
+
+                                                            return await _mediator.Send(context.GetCartCommand<UpdateCartItemDynamicPropertiesCommand>());
+                                                        })
                                                         .FieldType;
 
             schema.Mutation.AddField(updateCartItemDynamicPropertiesField);
@@ -867,7 +959,12 @@ namespace VirtoCommerce.XPurchase.Schemas
             var updateCartPaymentDynamicPropertiesField = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<CartType>())
                                                             .Name("updateCartPaymentDynamicProperties")
                                                             .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputUpdateCartPaymentDynamicPropertiesType>>(), _commandName)
-                                                            .ResolveAsync(async context => await _mediator.Send(context.GetCartCommand<UpdateCartPaymentDynamicPropertiesCommand>()))
+                                                            .ResolveAsync(async context =>
+                                                            {
+                                                                await CheckAccessToCartAsync(context);
+
+                                                                return await _mediator.Send(context.GetCartCommand<UpdateCartPaymentDynamicPropertiesCommand>());
+                                                            })
                                                             .FieldType;
 
             schema.Mutation.AddField(updateCartPaymentDynamicPropertiesField);
@@ -875,10 +972,28 @@ namespace VirtoCommerce.XPurchase.Schemas
             var updateCartShipmentDynamicPropertiesField = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<CartType>())
                                                                .Name("updateCartShipmentDynamicProperties")
                                                                .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputUpdateCartShipmentDynamicPropertiesType>>(), _commandName)
-                                                               .ResolveAsync(async context => await _mediator.Send(context.GetCartCommand<UpdateCartShipmentDynamicPropertiesCommand>()))
+                                                               .ResolveAsync(async context =>
+                                                               {
+                                                                   await CheckAccessToCartAsync(context);
+
+                                                                   return await _mediator.Send(context.GetCartCommand<UpdateCartShipmentDynamicPropertiesCommand>());
+                                                               })
                                                                .FieldType;
 
             schema.Mutation.AddField(updateCartShipmentDynamicPropertiesField);
+
+            var changePurchaseOrderNumberField = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<CartType>())
+                                     .Name("changePurchaseOrderNumber")
+                                     .Argument(GraphTypeExtenstionHelper.GetActualType<InputChangePurchaseOrderNumber>(), _commandName)
+                                     .ResolveAsync(async context =>
+                                     {
+                                            var cartAggregate = await _mediator.Send(context.GetCartCommand<ChangePurchaseOrderNumberCommand>());
+                                            context.SetExpandedObjectGraph(cartAggregate);
+                                            return cartAggregate;
+                                     })
+                                     .FieldType;
+
+            schema.Mutation.AddField(changePurchaseOrderNumberField);
 
             #region Wishlists
 
@@ -1104,5 +1219,24 @@ namespace VirtoCommerce.XPurchase.Schemas
                 throw new AuthorizationError($"Access denied");
             }
         }
+
+        private async Task CheckAccessToCartAsync(IResolveFieldContext context, ShoppingCart cart = null)
+        {
+            if (cart == null)
+            {
+                cart = await GetCartByContextAsync(context);
+            }
+
+            var authorizationResult = await _authorizationService
+                .AuthorizeAsync(context.GetCurrentPrincipal(), cart, new CanAccessCartAuthorizationRequirement());
+
+            if (!authorizationResult.Succeeded)
+            {
+                throw new AuthorizationError("Access denied");
+            }
+        }
+
+        private async Task<ShoppingCart> GetCartByContextAsync(IResolveFieldContext context) =>
+            await _cartService.GetByIdAsync((context.Arguments[_commandName].Value as Dictionary<string, object>)["cartId"].ToString());
     }
 }

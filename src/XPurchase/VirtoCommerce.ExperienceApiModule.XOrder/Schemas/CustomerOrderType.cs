@@ -92,6 +92,8 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                 context => dynamicPropertyResolverService.LoadDynamicPropertyValues(context.Source.Order, context.GetArgumentOrValue<string>("cultureName")));
 
             ExtendableField<ListGraphType<StringGraphType>>("coupons", resolve: x => x.Source.GetCustomerOrderCoupons());
+
+            ExtendableField<ListGraphType<OrderDiscountType>>("discounts", resolve: x => x.Source.Order.Discounts);
         }
     }
 }

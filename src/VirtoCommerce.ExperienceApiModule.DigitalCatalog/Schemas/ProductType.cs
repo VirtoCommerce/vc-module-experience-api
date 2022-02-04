@@ -186,6 +186,24 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                     return brandName?.ToString();
                 });
 
+            FieldAsync<VariationType>(
+                "masterVariation",
+                resolve: async context =>
+                {
+                    if (string.IsNullOrEmpty(context.Source.IndexedProduct.MainProductId))
+                    {
+                        return null;
+                    }
+
+                    var query = context.GetCatalogQuery<LoadProductsQuery>();
+                    query.ObjectIds = new[] { context.Source.IndexedProduct.MainProductId };
+                    query.IncludeFields = context.SubFields.Values.GetAllNodesPaths();
+
+                    var response = await mediator.Send(query);
+
+                    return response.Products.Select(expProduct => new ExpVariation(expProduct)).FirstOrDefault();
+                });
+
             FieldAsync<ListGraphType<VariationType>>(
                 "variations",
                 resolve: async context =>
