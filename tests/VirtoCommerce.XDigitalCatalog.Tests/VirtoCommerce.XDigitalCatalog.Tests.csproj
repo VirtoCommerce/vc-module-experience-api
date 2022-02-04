@@ -7,12 +7,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Compile Remove="Schemas\**" />
-      <EmbeddedResource Remove="Schemas\**" />
-      <None Remove="Schemas\**" />
-    </ItemGroup>
-
-    <ItemGroup>
         <PackageReference Include="GraphQL" Version="4.6.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
         <PackageReference Include="xunit" Version="2.4.1" />
