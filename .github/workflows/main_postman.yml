@@ -28,7 +28,7 @@ jobs:
         dotnet-version: '5.0.x'
 
     - name: Install VirtoCommerce.GlobalTool
-      uses: VirtoCommerce/vc-github-actions/setup-vcbuild@master
+      run: dotnet tool install --global VirtoCommerce.GlobalTool --version 2.1.0-alpha.17
 
     - name: Get Image Version
       uses: VirtoCommerce/vc-github-actions/get-image-version@master
