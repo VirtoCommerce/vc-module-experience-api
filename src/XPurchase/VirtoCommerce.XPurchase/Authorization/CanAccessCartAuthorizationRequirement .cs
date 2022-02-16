@@ -1,10 +1,13 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.Platform.Core;
+using VirtoCommerce.Platform.Core.Security;
 using VirtoCommerce.Platform.Security.Authorization;
 using VirtoCommerce.XPurchase.Queries;
 
@@ -20,7 +23,14 @@ namespace VirtoCommerce.XPurchase.Authorization
 
     public class CanAccessCartAuthorizationHandler : PermissionAuthorizationHandlerBase<CanAccessCartAuthorizationRequirement>
     {
-        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, CanAccessCartAuthorizationRequirement requirement)
+        private readonly Func<UserManager<ApplicationUser>> _userManager;
+
+        public CanAccessCartAuthorizationHandler(Func<UserManager<ApplicationUser>> userManager)
+        {
+            _userManager = userManager;
+        }
+
+        protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, CanAccessCartAuthorizationRequirement requirement)
         {
             var result = context.User.IsInRole(PlatformConstants.Security.SystemRoles.Administrator);
             
@@ -28,8 +38,13 @@ namespace VirtoCommerce.XPurchase.Authorization
             {
                 switch (context.Resource)
                 {
-                    case string userId:
+                    case string userId when context.User.Identity.IsAuthenticated:
                         result = userId == GetUserId(context);
+                        break;
+                    case string userId when !context.User.Identity.IsAuthenticated:
+                        var userManager = _userManager();
+                        var userById = await userManager.FindByIdAsync(userId);
+                        result = userById == null;
                         break;
                     case ShoppingCart cart when context.User.Identity.IsAuthenticated:
                         result = cart.CustomerId == GetUserId(context);
@@ -57,7 +72,7 @@ namespace VirtoCommerce.XPurchase.Authorization
                 context.Fail();
             }
 
-            return Task.CompletedTask;
+            return;
         }
 
         private static string GetUserId(AuthorizationHandlerContext context)

@@ -85,11 +85,15 @@ namespace VirtoCommerce.XPurchase.Schemas
                                         
                     if (cartAggregate == null)
                     {
+                        await AuthorizeAsync(context, getCartQuery.UserId);
+
                         var createCartCommand = new CreateCartCommand(getCartQuery.StoreId, getCartQuery.CartType, getCartQuery.CartName, getCartQuery.UserId, getCartQuery.CurrencyCode, getCartQuery.CultureName);
                         cartAggregate = await _mediator.Send(createCartCommand);
                     }
-
-                    await AuthorizeAsync(context, cartAggregate.Cart);
+                    else
+                    {
+                        await AuthorizeAsync(context, cartAggregate.Cart);
+                    }
 
                     context.SetExpandedObjectGraph(cartAggregate);
 
@@ -1281,10 +1285,16 @@ namespace VirtoCommerce.XPurchase.Schemas
                 Name = cartName,
                 Currency = currencyCode,
                 Type = cartType,
+                LanguageCode = cultureName,
             };
 
             var cartSearchResult = await _shoppingCartSearchService.SearchAsync(criteria);
             var cart = cartSearchResult.Results.FirstOrDefault(x => (cartType != null) || x.Type == null);
+
+            if (cart == null)
+            {
+                await AuthorizeAsync(context, userId); 
+            }
 
             await AuthorizeAsync(context, cart);
         }
@@ -1292,6 +1302,11 @@ namespace VirtoCommerce.XPurchase.Schemas
         private async Task CheckAuthAsyncByCartId(IResolveFieldContext context, string cartId)
         {
             var cart = await _cartService.GetByIdAsync(cartId, CartResponseGroup.Default.ToString());
+
+            if (cart == null)
+            {
+                return;
+            }
 
             await AuthorizeAsync(context, cart);
         }

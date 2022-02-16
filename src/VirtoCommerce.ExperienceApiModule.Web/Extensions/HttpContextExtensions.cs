@@ -1,13 +1,12 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.Platform.Core.Security;
 using Microsoft.Extensions.DependencyInjection;
 using VirtoCommerce.Platform.Core;
+using VirtoCommerce.ExperienceApiModule.Core;
+using System.Security.Claims;
 
 namespace VirtoCommerce.ExperienceApiModule.Web.Extensions
 {
@@ -24,7 +23,8 @@ namespace VirtoCommerce.ExperienceApiModule.Web.Extensions
             {
                 if (userNameFromHeader == "Anonymous")
                 {
-                    principal = null;
+                    // create principal for anon user
+                    principal = new ClaimsPrincipal(new ClaimsIdentity());
                 }
                 else
                 {
