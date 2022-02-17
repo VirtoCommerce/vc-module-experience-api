@@ -178,7 +178,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 resolve: context =>
                 {
                     var brandName = context.Source.IndexedProduct.Properties
-                        ?.FirstOrDefault(x => x.Name == "Brand")
+                        ?.FirstOrDefault(x => x.Name.EqualsInvariant("Brand"))
                         ?.Values
                         ?.FirstOrDefault(x => x.Value != null)
                         ?.Value;
@@ -221,6 +221,14 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                     var response = await mediator.Send(query);
 
                     return response.Products.Select(expProduct => new ExpVariation(expProduct));
+                });
+
+            Field<BooleanGraphType>(
+                "hasVariations",
+                resolve: context =>
+                {
+                    var result = context.Source.IndexedVariationIds?.Any() ?? false;
+                    return result;
                 });
 
             Field(
