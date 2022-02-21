@@ -1321,8 +1321,10 @@ namespace VirtoCommerce.XPurchase.Schemas
             {
                 await CheckAuthAsyncByCartId(context, cartCommand.CartId);
             }
-
-            await CheckAuthByCartParamsAsync(context, cartCommand.StoreId, cartCommand.CartType, cartCommand.CartName, cartCommand.UserId, cartCommand.CurrencyCode, cartCommand.CultureName);
+            else
+            {
+                await CheckAuthByCartParamsAsync(context, cartCommand.StoreId, cartCommand.CartType, cartCommand.CartName, cartCommand.UserId, cartCommand.CurrencyCode, cartCommand.CultureName);
+            }
         }
 
         private async Task CheckAuthByCartParamsAsync(IResolveFieldContext context, string storeId, string cartType, string cartName, string userId, string currencyCode, string cultureName)
@@ -1344,8 +1346,10 @@ namespace VirtoCommerce.XPurchase.Schemas
             {
                 await AuthorizeAsync(context, userId);
             }
-
-            await AuthorizeAsync(context, cart);
+            else
+            {
+                await AuthorizeAsync(context, cart);
+            }
         }
 
         private async Task CheckAuthAsyncByCartId(IResolveFieldContext context, string cartId)
