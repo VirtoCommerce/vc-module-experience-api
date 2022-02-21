@@ -61,7 +61,7 @@ namespace VirtoCommerce.XPurchase.Commands
                 CartItems = cartItemsToAdd.ToArray(),
             };
 
-            var cartAggregate = await _mediator.Send(command);
+            var cartAggregate = await _mediator.Send(command, cancellationToken);
 
             result.Cart = cartAggregate;
 
