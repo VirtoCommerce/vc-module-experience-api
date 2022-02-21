@@ -3,6 +3,8 @@ The xAPI provides default GraphQL schemas for types,  queries, and mutations. Ho
 
 At the moment the xAPI project has the following main extensions points in addition to the extension points that platform provides [extensibility overview](https://virtocommerce.com/docs/latest/fundamentals/extensibility/overview/)
 
+Note: *However, unfortunately, there is no opportunity to extend AutoMapper's profiles using AbstractTypeFactory<> type.*
+
 [Sample code](https://github.com/VirtoCommerce/vc-module-experience-api/tree/dev/samples/VirtoCommerce.Exp.ExtensionSamples)
 
 ## Extend the root GraphQL schema
@@ -27,7 +29,7 @@ Here an example how to define schema types for existing domain types. On this ex
                 Type = typeof(InventoryType),
                 Resolver = new  FieldResolver<Inventory>(context =>
                 {
-                    return new Inventory { ProductId = "1", FulfillmentCenterId = "center1" }; 
+                    return new Inventory { ProductId = "1", FulfillmentCenterId = "center1" };
                 })
             };
             schema.Query.AddField(inventoryQueryField);
@@ -72,7 +74,7 @@ Register your override with the special syntax in the `module.cs`.
  {
     public void Initialize(IServiceCollection services)
     {
-        //GraphQL schema overrides 
+        //GraphQL schema overrides
         services.AddSchemaType<CartType2>().OverrideType<CartType, CartType2>();
     }
  }
@@ -102,7 +104,7 @@ The system uses Platform's abstract type factory to instantiate validators. Ther
         {
             ...
             // Example: replace cart validator
-            AbstractTypeFactory<CartValidator>.OverrideType<CartValidator, CartValidator2>(); 
+            AbstractTypeFactory<CartValidator>.OverrideType<CartValidator, CartValidator2>();
             ...
         }
     }
@@ -112,16 +114,16 @@ The system uses Platform's abstract type factory to instantiate validators. Ther
 # Generic behavior pipelines
 xAPI extension points are not limited to data structure extensions. You can also change behavior and business logic outside from  the your custom module without touching the original source code.
 
-*Generic behavior pipelines* - is primarily intended to split the complex logic into multiple lousily coupled stages (middleware) that can be define on the different places and  that are combined into one logical pipeline that can executed for some system events of requests. 
+*Generic behavior pipelines* - is primarily intended to split the complex logic into multiple lousily coupled stages (middleware) that can be define on the different places and  that are combined into one logical pipeline that can executed for some system events of requests.
 
 ![image](media/x-api-extensions-1.png)
 
 You can extend the existing generic pipelines with you own middlewares or even replace an existing to your custom version.
 
-Consider the example when you want to replace the existing generic pipeline that is called to enrich the `ProductSearchResult` with the data for pricing and availability from different data sources. 
+Consider the example when you want to replace the existing generic pipeline that is called to enrich the `ProductSearchResult` with the data for pricing and availability from different data sources.
 
 ```C#
- //the generic pipeline that is used  for on-the-fly additional data evaluation (prices, inventories, discounts and taxes) for resulting products 
+ //the generic pipeline that is used  for on-the-fly additional data evaluation (prices, inventories, discounts and taxes) for resulting products
 services.AddPipeline<SearchProductResponse>(builder =>
 {
     builder.AddMiddleware(typeof(EvalProductsPricesMiddleware));
