@@ -82,7 +82,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                     context.SetCurrencies(allCurrencies, getCartQuery.CultureName);
 
                     var cartAggregate = await _mediator.Send(getCartQuery);
-                                        
+
                     if (cartAggregate == null)
                     {
                         await AuthorizeAsync(context, getCartQuery.UserId);
@@ -955,6 +955,55 @@ namespace VirtoCommerce.XPurchase.Schemas
 
             /// <example>
             /// This is an example JSON request for a mutation
+            /// mutation ($command: InputAddItemsBulkType!) { addItemsCart(command: $command) }
+            /// "variables": {
+            ///    "command": {
+            ///         "storeId": "Electronics",
+            ///         "cartName": "default",
+            ///         "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
+            ///         "currencyCode": "USD",
+            ///         "cultureName": "en-US",
+            ///         "cartType": "cart",
+            ///         "cartId": "",
+            ///         "cartItems": [{
+            ///             "productSku": "1111-1111-1111-1111",
+            ///             "quantity": 2
+            ///         },
+            ///         {
+            ///             "productSku": "2222-2222-2222-2222",
+            ///             "quantity": 5
+            ///         }]
+            ///     }
+            /// }
+            /// </example>
+            var addItemsBulkCartField = FieldBuilder.Create<BulkCartResult, BulkCartResult>(GraphTypeExtenstionHelper.GetActualType<BulkCartType>())
+                                                 .Name("addBulkItemsCart")
+                                                 .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputAddBulkItemsType>>(), _commandName)
+                                                 .ResolveAsync(async context =>
+                                                 {
+                                                     var command = context.GetArgument<AddCartItemsBulkCommand>(_commandName);
+
+                                                     if (!string.IsNullOrEmpty(command.CartId))
+                                                     {
+                                                         await CheckAuthAsyncByCartId(context, command.CartId);
+                                                     }
+                                                     else
+                                                     {
+                                                         await CheckAuthByCartParamsAsync(context, command.StoreId, command.CartType, command.CartName, command.UserId, command.CurrencyCode, command.CultureName);
+                                                     }
+
+                                                     var result = await _mediator.Send(command);
+
+                                                     context.SetExpandedObjectGraph(result.Cart);
+
+                                                     return result;
+                                                 })
+                                                 .FieldType;
+
+            schema.Mutation.AddField(addItemsBulkCartField);
+
+            /// <example>
+            /// This is an example JSON request for a mutation
             /// {
             ///   "query": mutation ($command: InputAddOrUpdateCartAddressType!) { addCartAddress(command: $command) }
             ///   "variables": {
@@ -1272,8 +1321,10 @@ namespace VirtoCommerce.XPurchase.Schemas
             {
                 await CheckAuthAsyncByCartId(context, cartCommand.CartId);
             }
-
-            await CheckAuthByCartParamsAsync(context, cartCommand.StoreId, cartCommand.CartType, cartCommand.CartName, cartCommand.UserId, cartCommand.CurrencyCode, cartCommand.CultureName);
+            else
+            {
+                await CheckAuthByCartParamsAsync(context, cartCommand.StoreId, cartCommand.CartType, cartCommand.CartName, cartCommand.UserId, cartCommand.CurrencyCode, cartCommand.CultureName);
+            }
         }
 
         private async Task CheckAuthByCartParamsAsync(IResolveFieldContext context, string storeId, string cartType, string cartName, string userId, string currencyCode, string cultureName)
@@ -1293,10 +1344,12 @@ namespace VirtoCommerce.XPurchase.Schemas
 
             if (cart == null)
             {
-                await AuthorizeAsync(context, userId); 
+                await AuthorizeAsync(context, userId);
             }
-
-            await AuthorizeAsync(context, cart);
+            else
+            {
+                await AuthorizeAsync(context, cart);
+            }
         }
 
         private async Task CheckAuthAsyncByCartId(IResolveFieldContext context, string cartId)
