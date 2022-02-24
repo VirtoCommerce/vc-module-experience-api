@@ -90,6 +90,7 @@ namespace VirtoCommerce.XPurchase.Commands
             {
                 Take = productSkus.Count,
                 Skus = productSkus,
+                SearchInVariations = true,
                 ResponseGroup = ItemResponseGroup.ItemInfo.ToString(),
             };
 
