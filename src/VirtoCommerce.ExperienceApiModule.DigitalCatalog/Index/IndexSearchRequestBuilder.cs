@@ -296,7 +296,7 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
         {
             foreach (var aggr in SearchRequest.Aggregations ?? Array.Empty<AggregationRequest>())
             {
-                var aggregationFilterFieldName = (aggr.Filter as INamedFilter)?.FieldName;
+                var aggregationFilterFieldName = (aggr.FieldName ?? (aggr.Filter as INamedFilter)?.FieldName)?.ToLowerInvariant();
 
                 var clonedFilter = SearchRequest.Filter.Clone() as AndFilter;
 
@@ -311,7 +311,7 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
 
                         if (x is INamedFilter namedFilter)
                         {
-                            result = !(aggregationFilterFieldName?.StartsWith(namedFilter.FieldName) ?? false);
+                            result = !(aggregationFilterFieldName?.StartsWith(namedFilter.FieldName.ToLowerInvariant()) ?? false);
                         }
 
                         return result;
