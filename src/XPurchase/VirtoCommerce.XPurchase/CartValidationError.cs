@@ -17,6 +17,15 @@ namespace VirtoCommerce.XPurchase
             ErrorCode = errorCode;
         }
 
+        public CartValidationError(string type, string id, string error, string errorCode = null)
+            : base(type, error)
+        {
+            ObjectType = type;
+            ObjectId = id;
+            ErrorMessage = error;
+            ErrorCode = errorCode;
+        }
+
         public string ObjectType { get; set; }
         public string ObjectId { get; set; }
         public List<ErrorParameter> ErrorParameters =>

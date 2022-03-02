@@ -43,7 +43,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                 result |= ItemResponseGroup.WithImages;
             }
 
-            if (IncludeFields.ContainsAny("properties"))
+            if (IncludeFields.ContainsAny("properties", "brandName"))
             {
                 result |= ItemResponseGroup.WithProperties;
             }
