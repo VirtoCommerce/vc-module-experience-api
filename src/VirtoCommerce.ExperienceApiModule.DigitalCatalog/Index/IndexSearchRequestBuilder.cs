@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using VirtoCommerce.ExperienceApiModule.Core.Index;
 using VirtoCommerce.Platform.Core.Common;
@@ -296,7 +297,7 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
         {
             foreach (var aggr in SearchRequest.Aggregations ?? Array.Empty<AggregationRequest>())
             {
-                var aggregationFilterFieldName = (aggr.Filter as INamedFilter)?.FieldName;
+                var aggregationFilterFieldName = aggr.FieldName ?? (aggr.Filter as INamedFilter)?.FieldName;
 
                 var clonedFilter = SearchRequest.Filter.Clone() as AndFilter;
 
@@ -311,7 +312,7 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
 
                         if (x is INamedFilter namedFilter)
                         {
-                            result = !(aggregationFilterFieldName?.StartsWith(namedFilter.FieldName) ?? false);
+                            result = !(aggregationFilterFieldName?.StartsWith(namedFilter.FieldName, true, CultureInfo.InvariantCulture) ?? false);
                         }
 
                         return result;
