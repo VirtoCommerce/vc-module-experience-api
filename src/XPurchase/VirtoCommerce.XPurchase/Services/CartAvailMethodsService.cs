@@ -148,7 +148,8 @@ namespace VirtoCommerce.XPurchase.Services
                 .OfType<GiftReward>()
                 .Where(reward => reward.IsValid)
                 // .Distinct() is needed as multiplied gifts would be returned otherwise.
-                .Distinct();
+                .Distinct()
+                .ToArray();
 
             var productIds = giftRewards.Select(x => x.ProductId).Distinct().Where(x => !x.IsNullOrEmpty()).ToArray();
 
@@ -159,8 +160,9 @@ namespace VirtoCommerce.XPurchase.Services
                             (x.Product.IsBuyable ?? false) &&
                             x.Price != null &&
                             (!(x.Product.TrackInventory ?? false) || x.AvailableQuantity >= giftRewards
-                                .FirstOrDefault(y => y.ProductId == x.Product.Id).Quantity))
-                .Select(x => x.Product.Id);
+                                .FirstOrDefault(y => y.ProductId == x.Product.Id)?.Quantity))
+                .Select(x => x.Product.Id)
+                .ToArray();
 
             return giftRewards
                 .Where(x => x.ProductId.IsNullOrEmpty() || availableProductsIds.Contains(x.ProductId))
