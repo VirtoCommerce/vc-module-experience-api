@@ -162,7 +162,7 @@ namespace VirtoCommerce.XPurchase.Services
                             (!(x.Product.TrackInventory ?? false) || x.AvailableQuantity >= giftRewards
                                 .FirstOrDefault(y => y.ProductId == x.Product.Id)?.Quantity))
                 .Select(x => x.Product.Id)
-                .ToArray();
+                .ToHashSet();
 
             return giftRewards
                 .Where(x => x.ProductId.IsNullOrEmpty() || availableProductsIds.Contains(x.ProductId))
