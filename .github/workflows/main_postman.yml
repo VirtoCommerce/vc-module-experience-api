@@ -83,11 +83,20 @@ jobs:
         REPORT_PATH: ${{ github.workspace }}/vc-quality-gate-katalon/Reports
     
     
+    - name: Setup newman reporter testrail
+      run: npm install newman-reporter-testrail --global
+      
     - name: Newman Action
       uses: matt-ball/newman-action@v1.0.2
       with:
+        TESTRAIL_DOMAIN: ${{ secrets.TESTRAIL_DOMAIN }}
+        TESTRAIL_USERNAME: ${{ secrets.TESTRAIL_USERNAME }}
+        TESTRAIL_APIKEY: ${{ secrets.TESTRAIL_APIKEY }}
+        TESTRAIL_PROJECTID: 18
+        TESTRAIL_TITLE: Postman API Tests
+        TESTRAIL_SUITEID: 2297
         collection: https://raw.githubusercontent.com/VirtoCommerce/vc-module-experience-api/collectionfortest/tests/postman/platform_xapi_collection_QA.json
         environment: https://raw.githubusercontent.com/VirtoCommerce/vc-module-experience-api/collectionfortest/tests/postman/qa.postman_environment.json
         envVar: '[{ "key": "url", "value": "http://localhost:8090" }, { "key": "password", "value": "store" }]'
-        reporters: '["json", "cli", "junit"]'
+        reporters: '["json", "cli", "junit", "testrail"]'
         folder: '["Ready_for_CI"]'
