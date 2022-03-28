@@ -22,6 +22,9 @@ jobs:
       with:
         fetch-depth: 0
 
+    - name: Setup newman reporter testrail
+      run: npm install newman-reporter-testrail --global
+
     - name: Set up .net Core 6.0.x 
       uses: actions/setup-dotnet@v1
       with:
@@ -81,11 +84,7 @@ jobs:
         PROJECT_ID: 223504
         TYPE: junit
         REPORT_PATH: ${{ github.workspace }}/vc-quality-gate-katalon/Reports
-    
-    
-    - name: Setup newman reporter testrail
-      run: npm install newman-reporter-testrail --global
-      
+
     - name: Newman Action
       uses: matt-ball/newman-action@v1.0.2
       with:
