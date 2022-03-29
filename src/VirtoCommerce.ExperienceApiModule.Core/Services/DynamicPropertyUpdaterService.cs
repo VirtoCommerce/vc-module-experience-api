@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GraphQL.Types;
 using VirtoCommerce.ExperienceApiModule.Core.Models;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.DynamicProperties;
@@ -11,6 +12,10 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Services
     public class DynamicPropertyUpdaterService : IDynamicPropertyUpdaterService
     {
         private readonly IDynamicPropertyMetaDataResolver _metadataResolver;
+        private readonly IntGraphType _intGraphType = new();
+        private readonly DecimalGraphType _decimalGraphType = new();
+        private readonly DateTimeGraphType _dateTimeGraphType = new();
+        private readonly BooleanGraphType _booleanGraphType = new();
 
         public DynamicPropertyUpdaterService(IDynamicPropertyMetaDataResolver metadataResolver)
         {
@@ -74,6 +79,11 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Services
 
             var comparer = AnonymousComparer.Create((DynamicObjectProperty x) => x.Name);
 
+            if (entity.DynamicProperties == null)
+            {
+                entity.DynamicProperties = new List<DynamicObjectProperty>();
+            }
+
             // fill missing values with the original ones. (That enables single value updates)
             sourceProperties = sourceProperties.Union(entity.DynamicProperties, comparer).ToArray();
 
@@ -83,21 +93,14 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Services
 
         private object ConvertValue(DynamicPropertyValueType valueType, object value)
         {
-            switch (valueType)
+            return valueType switch
             {
-                case DynamicPropertyValueType.ShortText:
-                    return (string)value;
-                case DynamicPropertyValueType.Decimal:
-                    return value.ToNullable<decimal>();
-                case DynamicPropertyValueType.DateTime:
-                    return value.ToNullable<DateTime>();
-                case DynamicPropertyValueType.Boolean:
-                    return value.ToNullable<bool>();
-                case DynamicPropertyValueType.Integer:
-                    return value.ToNullable<int>();
-                default:
-                    return (string)value;
-            }
+                DynamicPropertyValueType.Integer => _intGraphType.ParseValue(value),
+                DynamicPropertyValueType.Decimal => _decimalGraphType.ParseValue(value),
+                DynamicPropertyValueType.Boolean => _booleanGraphType.ParseValue(value),
+                DynamicPropertyValueType.DateTime => _dateTimeGraphType.ParseValue(value),
+                _ => value is DateTime ? _dateTimeGraphType.Serialize(value) : value,
+            };
         }
 
         private void Patch(DynamicObjectProperty source, DynamicObjectProperty target)
@@ -105,7 +108,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Services
             // override only values of a specific locale for multilingual property. Except dictionary properties.
             if (source.IsMultilingual && !source.IsDictionary)
             {
-                var comparer = AnonymousComparer.Create((DynamicPropertyObjectValue x) => x.Locale);
+                var comparer = AnonymousComparer.Create((DynamicPropertyObjectValue x) => x.Locale ?? string.Empty);
 
                 // fill missing values with the original ones. (That enables single value updates)
                 source.Values = source.Values.Union(target.Values, comparer).ToArray();

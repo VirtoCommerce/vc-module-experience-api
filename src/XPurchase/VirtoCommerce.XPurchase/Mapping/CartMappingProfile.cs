@@ -2,12 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
-using GraphQL;
 using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.CartModule.Core.Model.Search;
 using VirtoCommerce.CoreModule.Core.Outlines;
 using VirtoCommerce.CoreModule.Core.Seo;
-using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Index;
 using VirtoCommerce.MarketingModule.Core.Model.Promotions;
 using VirtoCommerce.PaymentModule.Core.Model;
@@ -25,13 +23,16 @@ namespace VirtoCommerce.XPurchase.Mapping
         public CartMappingProfile()
         {
             CreateMap<CartModule.Core.Model.Address, TaxModule.Core.Model.Address>();
+            CreateMap<GiftReward, GiftItem>();
+            CreateMap<GiftItem, LineItem>();
+
             CreateMap<CartProduct, LineItem>().ConvertUsing((cartProduct, lineItem, context) =>
             {
                 if (lineItem == null)
                 {
                     lineItem = AbstractTypeFactory<LineItem>.TryCreateInstance();
                 }
-                //TODO:
+                //PT-5453: Add mapping to CartMappingProfile
                 //lineItem.ValidationType
                 //lineItem.IsReadOnly = newCartItem.CartProduct.Product.IsReadOnly;
                 //lineItem.ShipmentMethodCode = newCartItem.CartProduct.Price.ShipmentMethodCode;
@@ -72,8 +73,6 @@ namespace VirtoCommerce.XPurchase.Mapping
             CreateMap<OutlineItem, Tools.Models.OutlineItem>();
             CreateMap<SeoInfo, Tools.Models.SeoInfo>();
 
-            //TODO:
-            // Check if this correct
             CreateMap<LineItem, IEnumerable<TaxLine>>().ConvertUsing((lineItem, taxLines, context) =>
             {
                 return new[]
@@ -99,7 +98,6 @@ namespace VirtoCommerce.XPurchase.Mapping
                         Id = string.Join("&", shipmentRate.ShippingMethod.Code, shipmentRate.OptionName),
                         Code = shipmentRate.ShippingMethod.Code,
                         TaxType = shipmentRate.ShippingMethod.TaxType,
-                        //TODO: Is second param is shipmentRate.Rate ?
                         Amount = shipmentRate.DiscountAmount > 0 ? shipmentRate.DiscountAmount : shipmentRate.Rate
                     }
                 };
@@ -125,6 +123,7 @@ namespace VirtoCommerce.XPurchase.Mapping
                 priceEvalContext.Language = cartAggr.Cart.LanguageCode;
                 priceEvalContext.StoreId = cartAggr.Cart.StoreId;
                 priceEvalContext.CatalogId = cartAggr.Store.Catalog;
+                priceEvalContext.Currency = cartAggr.Cart.Currency;
 
                 var contact = cartAggr.Member;
                 if (contact != null)
@@ -162,27 +161,27 @@ namespace VirtoCommerce.XPurchase.Mapping
 
             CreateMap<LineItem, ProductPromoEntry>()
                 .ConvertUsing((lineItem, productPromoEntry, context) =>
-            {
-                if (productPromoEntry == null)
                 {
-                    productPromoEntry = AbstractTypeFactory<ProductPromoEntry>.TryCreateInstance();
-                }
-                // TODO:
-                // productPromoEntry.InStockQuantity = lineItem.InStockQuantity;
-                // productPromoEntry.Outline = lineItem.Product.Outline;
-                // productPromoEntry.Variations = null;
+                    if (productPromoEntry == null)
+                    {
+                        productPromoEntry = AbstractTypeFactory<ProductPromoEntry>.TryCreateInstance();
+                    }
+                    //PT-5453: Add mapping to CartMappingProfile
+                    // productPromoEntry.InStockQuantity = lineItem.InStockQuantity;
+                    // productPromoEntry.Outline = lineItem.Product.Outline;
+                    // productPromoEntry.Variations = null;
 
-                productPromoEntry.CatalogId = lineItem.CatalogId;
-                productPromoEntry.CategoryId = lineItem.CategoryId;
-                productPromoEntry.Code = lineItem.Sku;
-                productPromoEntry.Discount = lineItem.DiscountTotal;
-                //Use only base price for discount evaluation
-                productPromoEntry.Price = lineItem.SalePrice;
-                productPromoEntry.ProductId = lineItem.ProductId;
-                productPromoEntry.Quantity = lineItem.Quantity;
+                    productPromoEntry.CatalogId = lineItem.CatalogId;
+                    productPromoEntry.CategoryId = lineItem.CategoryId;
+                    productPromoEntry.Code = lineItem.Sku;
+                    productPromoEntry.Discount = lineItem.DiscountTotal;
+                    //Use only base price for discount evaluation
+                    productPromoEntry.Price = lineItem.SalePrice;
+                    productPromoEntry.ProductId = lineItem.ProductId;
+                    productPromoEntry.Quantity = lineItem.Quantity;
 
-                return productPromoEntry;
-            });
+                    return productPromoEntry;
+                });
 
             CreateMap<CartAggregate, PromotionEvaluationContext>().ConvertUsing((cartAggr, promoEvalcontext, context) =>
             {
@@ -193,7 +192,7 @@ namespace VirtoCommerce.XPurchase.Mapping
 
                 promoEvalcontext.CartPromoEntries = new List<ProductPromoEntry>();
 
-                foreach (var lineItem in cartAggr.Cart.Items)
+                foreach (var lineItem in cartAggr.LineItems)
                 {
                     var promoEntry = context.Mapper.Map<ProductPromoEntry>(lineItem);
                     var cartProduct = cartAggr.CartProducts[lineItem.ProductId];
@@ -231,13 +230,13 @@ namespace VirtoCommerce.XPurchase.Mapping
                 }
 
                 promoEvalcontext.IsEveryone = true;
-                //TODO:
+                //PT-5429: Map Is First time buyer
                 //promoEvalcontext.IsFirstTimeBuyer = cartAggr.Member.IsFirstTimeBuyer;
 
                 return promoEvalcontext;
             });
 
-            //TODO: Need to think about extensibility for converters
+            //PT-5457: Need to think about extensibility for converters
             CreateMap<CartAggregate, TaxEvaluationContext>().ConvertUsing((cartAggr, taxEvalcontext, context) =>
             {
                 if (taxEvalcontext == null)
@@ -248,13 +247,13 @@ namespace VirtoCommerce.XPurchase.Mapping
                 taxEvalcontext.Code = cartAggr.Cart.Name;
                 taxEvalcontext.Type = "Cart";
                 taxEvalcontext.CustomerId = cartAggr.Cart.CustomerId;
-                //TODO: Customer
+                //map customer after PT-5425
 
-                foreach (var lineItem in cartAggr.Cart.Items ?? Array.Empty<LineItem>())
+                foreach (var lineItem in cartAggr.LineItems ?? Array.Empty<LineItem>())
                 {
                     taxEvalcontext.Lines.Add(new TaxLine()
                     {
-                        //TODO: Add Currency to tax line
+                        //PT-5339: Add Currency to tax line
                         Id = lineItem.Id,
                         Code = lineItem.Sku,
                         Name = lineItem.Name,
@@ -271,7 +270,7 @@ namespace VirtoCommerce.XPurchase.Mapping
                 {
                     var totalTaxLine = new TaxLine
                     {
-                        //TODO: Add Currency to tax line
+                        //PT-5339: Add Currency to tax line
                         Id = shipment.Id,
                         Code = shipment.ShipmentMethodCode,
                         Name = shipment.ShipmentMethodOption,
@@ -292,7 +291,7 @@ namespace VirtoCommerce.XPurchase.Mapping
                 {
                     var totalTaxLine = new TaxLine
                     {
-                        //TODO: Add Currency to tax line
+                        //PT-5339: Add Currency to tax line
                         Id = payment.Id,
                         Code = payment.PaymentGatewayCode,
                         Name = payment.PaymentGatewayCode,

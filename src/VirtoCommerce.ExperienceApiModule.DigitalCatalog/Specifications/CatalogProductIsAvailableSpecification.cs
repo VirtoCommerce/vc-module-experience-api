@@ -10,11 +10,12 @@ namespace VirtoCommerce.XDigitalCatalog.Specifications
         {
             var result = AbstractTypeFactory<CatalogProductIsBuyableSpecification>.TryCreateInstance().IsSatisfiedBy(expProduct);
 
-            if (result && expProduct.IndexedProduct.TrackInventory.GetValueOrDefault(false) && !expProduct.AllInventories.IsNullOrEmpty())
+            if (result && expProduct.IndexedProduct.TrackInventory.GetValueOrDefault(false))
             {
-                return expProduct.AllInventories.Any(x => x.AllowBackorder)
+                return !expProduct.AllInventories.IsNullOrEmpty() &&
+                    (expProduct.AllInventories.Any(x => x.AllowBackorder)
                     || expProduct.AllInventories.Any(x => x.AllowPreorder)
-                    || expProduct.AllInventories.Sum(inventory => Math.Max(0, inventory.InStockQuantity - inventory.ReservedQuantity)) >= 1;
+                    || expProduct.AllInventories.Sum(inventory => Math.Max(0, inventory.InStockQuantity - inventory.ReservedQuantity)) >= 1);
             }
 
             return result;

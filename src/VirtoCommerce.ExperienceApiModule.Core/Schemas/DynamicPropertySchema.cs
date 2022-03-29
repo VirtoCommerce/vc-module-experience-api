@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Builders;
@@ -29,7 +28,8 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
                 Name = "dynamicProperty",
                 Arguments = new QueryArguments(
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "idOrName", Description = "Id or name of the dynamic property" },
-                    new QueryArgument<StringGraphType> { Name = "cultureName", Description = "Culture name (\"en-US\")" }
+                    new QueryArgument<StringGraphType> { Name = "cultureName", Description = "Culture name (\"en-US\")" },
+                    new QueryArgument<StringGraphType> { Name = "objectType", Description = "Object type of the dynamic property" }
                 ),
                 Type = GraphTypeExtenstionHelper.GetActualType<DynamicPropertyType>(),
                 Resolver = new AsyncFieldResolver<object>(async context =>
@@ -38,6 +38,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
 
                     var query = context.GetDynamicPropertiesQuery<GetDynamicPropertyQuery>();
                     query.IdOrName = context.GetArgument<string>("idOrName");
+                    query.ObjectType = context.GetArgument<string>("objectType");
 
                     var response = await _mediator.Send(query);
 
@@ -51,7 +52,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
                 .Argument<StringGraphType>("cultureName", "The culture name (\"en-US\")")
                 .Argument<StringGraphType>("filter", "This parameter applies a filter to the query results")
                 .Argument<StringGraphType>("sort", "The sort expression")
-                .Unidirectional()
+                .Argument<StringGraphType>("objectType", "Object type of the dynamic property")
                 .PageSize(20);
 
             dynamicPropertiesConnectionBuilder.ResolveAsync(async context => await ResolveDynamicPropertiesConnectionAsync(_mediator, context));
@@ -68,6 +69,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
             query.Take = context.First ?? context.PageSize ?? 10;
             query.Sort = context.GetArgument<string>("sort");
             query.Filter = context.GetArgument<string>("filter");
+            query.ObjectType = context.GetArgument<string>("objectType");
 
             context.CopyArgumentsToUserContext();
 

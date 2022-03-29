@@ -45,6 +45,8 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
                         new RegexpNameMapper(@"(items.)?price[s]?.(?<part>[^\.]+).*$","__prices.$2", new [] { "__prices.currency" }),
                         new RegexpNameMapper(@"^items.variations", "__variations", new [] { "__variations" }),
                         new RegexpNameMapper(@"^variations", "__variations", new [] { "__variations" }),
+                        new RegexpNameMapper(@"^hasVariations", "__variations", new [] { "__variations" }),
+                        new RegexpNameMapper(@"^items.hasVariations", "__variations", new [] { "__variations" }),
                         new RegexpNameMapper(@"^items", "__object"),
                         new RegexpNameMapper(@"^(?!__)", "__object."),
 
@@ -60,8 +62,6 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
                         new RegexpNameMapper(@"__object.parent.*", "__object.parentId"),
 
                         new RegexpNameMapper(@"__object.category.*", "__object.categoryId"),
-                        new RegexpNameMapper(@"__object.descriptions", "__object.reviews"),
-                        new RegexpNameMapper(@"__object.description.*", "__object.reviews"),
                         new RegexpNameMapper(@"__object.seoInfo.*", "__object.seoInfos"),
 
                         new RegexpNameMapper(@"__object.breadcrumbs.*", "__object.outlines"),
@@ -70,7 +70,10 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
 		
                         new RegexpNameMapper(@"__object.slug$", "__object.outlines", new [] { "__object.seoInfos" }),
                         new RegexpNameMapper(@"__object.outline$", "__object.outlines"),
-                        new RegexpNameMapper(@"__object.level$", "__object.outlines"), 
+                        new RegexpNameMapper(@"__object.level$", "__object.outlines"),
+                        new RegexpNameMapper(@"__object.descriptions", "__object.reviews", new [] { "__object.descriptions" }),
+                        new RegexpNameMapper(@"__object.description.*", "__object.reviews", new [] { "__object.descriptions" })
+
 	                    #endregion
                     };
                 }

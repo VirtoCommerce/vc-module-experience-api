@@ -14,7 +14,7 @@ The project "Experience API" it is primarily a intermediated layer between clien
 - [X-Catalog docs](./x-catalog-reference.md)
 - [X-Purchase cart docs](./x-purchase-cart-reference.md)
 - [X-Purchase order docs](./x-purchase-order-reference.md)
-- [X-UserProfile docs](./x-profile-reference.md)
+- [X-UserProfile module](https://github.com/VirtoCommerce/vc-module-profile-experience-api) (moved to a separate module)
 - [Recommendations Gateway API](./gateway-api-reference.md) (prototype)
 
 ## How to use
@@ -45,6 +45,9 @@ Read this [article...](./getting-started.md)
 
 ## How to extend
 Read this [article...](./x-api-extensions.md)
+
+## Where to find logs
+Read this [article...](./application-insights-integration.md)
 
 ## Limitation
 

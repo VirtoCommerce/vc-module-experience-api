@@ -64,5 +64,10 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder
             return this;
         }
 
+        public DynamicPropertySearchCriteriaBuilder WithObjectType(string objectType)
+        {
+            _searchCriteria.ObjectType = objectType ?? _searchCriteria.ObjectType;
+            return this;
+        }
     }
 }

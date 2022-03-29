@@ -1,7 +1,9 @@
 # How to extend
 The xAPI provides default GraphQL schemas for types,  queries, and mutations. However, each project has its unique requirements, and we can’t foresee all of them and include into the base schema, but thanks to extensions points that the xAPI provides you can change the baseline behavior and data structures. On this article are described the main extension points and techniques that you can use in your custom projects.
 
-At the moment the xAPI project has the following main extensions points in addition to the extension points that platform provides [extensibility basics](https://virtocommerce.com/docs/latest/fundamentals/extensibility-basics/)
+At the moment the xAPI project has the following main extensions points in addition to the extension points that platform provides [extensibility overview](https://virtocommerce.com/docs/latest/fundamentals/extensibility/overview/)
+
+Note: *However, unfortunately, there is no opportunity to extend AutoMapper's profiles using AbstractTypeFactory<> type.*
 
 [Sample code](https://github.com/VirtoCommerce/vc-module-experience-api/tree/dev/samples/VirtoCommerce.Exp.ExtensionSamples)
 
@@ -27,7 +29,7 @@ Here an example how to define schema types for existing domain types. On this ex
                 Type = typeof(InventoryType),
                 Resolver = new  FieldResolver<Inventory>(context =>
                 {
-                    return new Inventory { ProductId = "1", FulfillmentCenterId = "center1" }; 
+                    return new Inventory { ProductId = "1", FulfillmentCenterId = "center1" };
                 })
             };
             schema.Query.AddField(inventoryQueryField);
@@ -72,25 +74,56 @@ Register your override with the special syntax in the `module.cs`.
  {
     public void Initialize(IServiceCollection services)
     {
-        //GraphQL schema overrides 
+        //GraphQL schema overrides
         services.AddSchemaType<CartType2>().OverrideType<CartType, CartType2>();
     }
  }
 ```
+## Extend validation logic / replace validators
+The system uses Platform's abstract type factory to instantiate validators. Therefore the approach of validation logic extension similar to other cases (such as domain model extension):
+- Derive your custom validator from original one:
+
+*CartValidator2.cs*
+```C#
+    public class CartValidator2 : CartValidator
+    {
+        public CartValidator2()
+        {
+            // Some additional rules (to the basic) can be provided there
+            RuleFor(x => x.CartAggregate.Cart.Id).NotEmpty(); // Just example
+        }
+    }
+```
+- Override original validator type with your custom in order to tell the factory CartValidator2 replaces the original validator:
+
+*module.cs*
+```C#
+    public class Module : IModule
+    {
+        public void PostInitialize(IApplicationBuilder appBuilder)
+        {
+            ...
+            // Example: replace cart validator
+            AbstractTypeFactory<CartValidator>.OverrideType<CartValidator, CartValidator2>();
+            ...
+        }
+    }
+```
+
 
 # Generic behavior pipelines
 xAPI extension points are not limited to data structure extensions. You can also change behavior and business logic outside from  the your custom module without touching the original source code.
 
-*Generic behavior pipelines* - is primarily intended to split the complex logic into multiple lousily coupled stages (middleware) that can be define on the different places and  that are combined into one logical pipeline that can executed for some system events of requests. 
+*Generic behavior pipelines* - is primarily intended to split the complex logic into multiple lousily coupled stages (middleware) that can be define on the different places and  that are combined into one logical pipeline that can executed for some system events of requests.
 
-![image](../docs/media/x-api-extensions-1.png)
+![image](media/x-api-extensions-1.png)
 
 You can extend the existing generic pipelines with you own middlewares or even replace an existing to your custom version.
 
-Consider the example when you want to replace the existing generic pipeline that is called to enrich the `ProductSearchResult` with the data for pricing and availability from different data sources. 
+Consider the example when you want to replace the existing generic pipeline that is called to enrich the `ProductSearchResult` with the data for pricing and availability from different data sources.
 
 ```C#
- //the generic pipeline that is used  for on-the-fly additional data evaluation (prices, inventories, discounts and taxes) for resulting products 
+ //the generic pipeline that is used  for on-the-fly additional data evaluation (prices, inventories, discounts and taxes) for resulting products
 services.AddPipeline<SearchProductResponse>(builder =>
 {
     builder.AddMiddleware(typeof(EvalProductsPricesMiddleware));

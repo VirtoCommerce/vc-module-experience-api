@@ -30,7 +30,6 @@ namespace RecommendationsGatewayModule.Core.Schemas
                 .Argument<StringGraphType>("itemId", "The context product id")
                 .Argument<StringGraphType>("userId", "The context user id")
                 .Argument<StringGraphType>("storeId", "the store id")
-                .Unidirectional()
                 .PageSize(20);
 
             connectionBuilder.ResolveAsync(async context =>

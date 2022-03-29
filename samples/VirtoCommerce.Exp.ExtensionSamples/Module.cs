@@ -5,8 +5,12 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using VirtoCommerce.Exp.ExtensionSamples.Commands;
 using VirtoCommerce.Exp.ExtensionSamples.UseCases.TypeExtension.Queries;
+using VirtoCommerce.Exp.ExtensionSamples.UseCases.TypeExtension.Schemas;
+using VirtoCommerce.Exp.ExtensionSamples.UseCases.TypeExtension.Validators;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
+using VirtoCommerce.ExperienceApiModule.XOrder.Queries;
+using VirtoCommerce.ExperienceApiModule.XOrder.Schemas;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Modularity;
 using VirtoCommerce.XDigitalCatalog;
@@ -16,6 +20,7 @@ using VirtoCommerce.XDigitalCatalog.Schemas;
 using VirtoCommerce.XPurchase.Commands;
 using VirtoCommerce.XPurchase.Queries;
 using VirtoCommerce.XPurchase.Schemas;
+using VirtoCommerce.XPurchase.Validators;
 
 namespace VirtoCommerce.Exp.ExtensionSamples
 {
@@ -30,7 +35,8 @@ namespace VirtoCommerce.Exp.ExtensionSamples
             #region Type override: add a new properties
             //use such lines to override exists query and command handler
             services.OverrideQueryType<GetCartQuery, GetCartQueryExtended>().WithQueryHandler<CustomGetCartQueryHandler>();
-
+            services.OverrideQueryType<SearchOrderQuery, ExtendedSearchOrderQuery>().WithQueryHandler<ExtendedSearchOrderQueryHandler>();
+            services.OverrideArgumentType<OrderQueryConnectionArguments, ExtendedOrderQueryConnectionArguments>();
             services.AddGraphQL(_ =>
             {
                 //It is important to pass the GraphQLOptions configure action, because the default parameters used in xAPI module won't be used after this call
@@ -82,6 +88,12 @@ namespace VirtoCommerce.Exp.ExtensionSamples
 
         public void PostInitialize(IApplicationBuilder appBuilder)
         {
+            #region Extension scenarios
+            #region UseCase Validators: Extend validation logic / replace validators by custom ones
+            // Example: replace cart validator
+            AbstractTypeFactory<CartValidator>.OverrideType<CartValidator, CartValidator2>(); 
+            #endregion
+            #endregion
         }
 
         public void Uninstall()

@@ -6,7 +6,8 @@ namespace VirtoCommerce.XPurchase.Schemas
     {
         public InputRemoveCartAddressType()
         {
-            Field<NonNullGraphType<StringGraphType>>("addressId");
+            Field<NonNullGraphType<StringGraphType>>("addressId",
+                "Address Id");
         }
     }
 }

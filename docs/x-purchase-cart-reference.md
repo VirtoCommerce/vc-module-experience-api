@@ -159,7 +159,13 @@ mutation ($command:InputAddItemType!)
     "currencyCode": "USD",
     "cartType": "cart",
     "productId": "9cbd8f316e254a679ba34a900fccb076",
-    "quantity": 1
+    "quantity": 1,
+    "dynamicProperties": [
+        {
+            "name": "ItemProperty",
+            "value": "test value"
+        }
+    ]
 }
 ```
 ### ClearCart
@@ -442,7 +448,7 @@ mutation ($command:InputRemoveShipmentType!)
 ```
 
 ### AddOrUpdateCartShipment
-This mutation adds or updates shipment of cart.
+This mutation adds or updates shipment of cart. This mutation supports partial update, all fields in `command.shipment` and `command.shipment.deliveryAddress` are optional. 
 #### Query:
 ```
 mutation ($command:InputAddOrUpdateCartShipmentType!)
@@ -473,7 +479,13 @@ mutation ($command:InputAddOrUpdateCartShipmentType!)
         "height": 7,
         "shipmentMethodCode": "code",
         "currency": "USD",
-        "price": 98
+        "price": 98,
+        "dynamicProperties": [
+            {
+                "name": "ShipmentProperty",
+                "value": "test value"
+            }
+        ]
     },
 }
 ```
@@ -482,7 +494,7 @@ mutation ($command:InputAddOrUpdateCartShipmentType!)
 > To see all possible parametrs for shipment object [look here...](https://github.com/VirtoCommerce/vc-module-experience-api/blob/dev/src/XPurchase/VirtoCommerce.XPurchase/Schemas/InputShipmentType.cs)
 
 ### AddOrUpdateCartPayment
-This mutation adds or updates payment of cart.
+This mutation adds or updates payment of cart. This mutation supports partial update, all fields in `command.payment` and `command.payment.billingAddress` are optional.
 #### Query:
 ```
 mutation ($command:InputAddOrUpdateCartPaymentType!)
@@ -513,7 +525,13 @@ mutation ($command:InputAddOrUpdateCartPaymentType!)
         "paymentGatewayCode": "code",
         "currency": "USD",
         "price": 98,
-        "amount": 55
+        "amount": 55,
+        "dynamicProperties": [
+            {
+                "name": "PaymentProperty",
+                "value": "test value"
+            }
+        ]
     },
 }
 ```
@@ -873,7 +891,7 @@ mutation ($command: InputUpdateCartItemDynamicPropertiesType!)
 ```
 
 ### AddCartAddress
-This mutation adds a new address to cart or updates an existing one by `addressType`
+This mutation adds a new address to cart or updates an existing one by `addressType`. This mutation supports partial update, all fields in `command.address` are optional. 
 
 #### Query:
 ```

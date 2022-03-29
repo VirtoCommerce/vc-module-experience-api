@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -5,6 +6,7 @@ using GraphQL;
 using GraphQL.DataLoader;
 using GraphQL.Types;
 using MediatR;
+using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
@@ -15,7 +17,7 @@ using VirtoCommerce.XDigitalCatalog.Queries;
 
 namespace VirtoCommerce.XDigitalCatalog.Schemas
 {
-    public class CategoryType : ObjectGraphType<ExpCategory>
+    public class CategoryType : ExtendableGraphType<ExpCategory>
     {
         public CategoryType(IMediator mediator, IDataLoaderContextAccessor dataLoader)
         {
@@ -66,14 +68,43 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                     seoInfo = source.Category.SeoInfos.GetBestMatchingSeoInfo(storeId, cultureName);
                 }
 
-                return seoInfo ?? new SeoInfo
-                {
-                    SemanticUrl = source.Id,
-                    LanguageCode = cultureName,
-                    Name = source.Category.Name
-                };
+                return seoInfo ?? GetFallbackSeoInfo(source, cultureName);
             }, description: "Request related SEO info");
 
+            Field<ListGraphType<CategoryDescriptionType>>("descriptions",
+                  arguments: new QueryArguments(new QueryArgument<StringGraphType> { Name = "type" }),
+                  resolve: context =>
+                  {
+                      var descriptions = context.Source.Category.Descriptions;
+                      var cultureName = context.GetArgumentOrValue<string>("cultureName");
+                      var type = context.GetArgumentOrValue<string>("type");
+                      if (cultureName != null)
+                      {
+                          descriptions = descriptions.Where(x => string.IsNullOrEmpty(x.LanguageCode) || x.LanguageCode.EqualsInvariant(cultureName)).ToList();
+                      }
+                      if (type != null)
+                      {
+                          descriptions = descriptions.Where(x => x.DescriptionType?.EqualsInvariant(type) ?? true).ToList();
+                      }
+                      return descriptions;
+                  });
+
+            Field<CategoryDescriptionType>("description",
+                arguments: new QueryArguments(new QueryArgument<StringGraphType> { Name = "type" }),
+                resolve: context =>
+                {
+                    var descriptions = context.Source.Category.Descriptions;
+                    var type = context.GetArgumentOrValue<string>("type");
+                    var cultureName = context.GetArgumentOrValue<string>("cultureName");
+
+                    if (!descriptions.IsNullOrEmpty())
+                    {
+                        return descriptions.Where(x => x.DescriptionType.EqualsInvariant(type ?? "FullReview")).FirstBestMatchForLanguage(cultureName) as CategoryDescription
+                            ?? descriptions.FirstBestMatchForLanguage(cultureName) as CategoryDescription;
+                    }
+
+                    return null;
+                });
 
             Field<CategoryType, ExpCategory>("parent").ResolveAsync(ctx =>
             {
@@ -85,21 +116,50 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 return null;
             });
 
-            Field<BooleanGraphType>("hasParent", resolve: context => TryGetParentId(context, out _));
-
-            Field<ListGraphType<OutlineType>>("outlines", resolve: context => context.Source.Category.Outlines);
-
-            Field<ListGraphType<ImageType>>("images", resolve: context => context.Source.Category.Images);
-
-            Field<ListGraphType<BreadcrumbType>>("breadcrumbs", resolve: context =>
+            Field<BooleanGraphType>("hasParent",
+                "Have a parent",
+                resolve: context => TryGetParentId(context, out _));
+            Field<ListGraphType<OutlineType>>("outlines",
+                "Outlines",
+                resolve: context => context.Source.Category.Outlines);
+            Field<ListGraphType<ImageType>>("images",
+                "Images",
+                resolve: context => context.Source.Category.Images);
+            Field<ListGraphType<BreadcrumbType>>("breadcrumbs",
+                "Breadcrumbs",
+                resolve: context =>
             {
-                
+
                 var store = context.GetArgumentOrValue<Store>("store");
                 var cultureName = context.GetValue<string>("cultureName");
 
                 return context.Source.Category.Outlines.GetBreadcrumbsFromOutLine(store, cultureName);
 
             });
+
+            ExtendableField<ListGraphType<PropertyType>>("properties",
+                arguments: new QueryArguments(new QueryArgument<ListGraphType<StringGraphType>> { Name = "names" }),
+                resolve: context =>
+            {
+                var names = context.GetArgument<string[]>("names");
+                var cultureName = context.GetValue<string>("cultureName");
+                var result = context.Source.Category.Properties.ExpandByValues(cultureName);
+                if (!names.IsNullOrEmpty())
+                {
+                    result = result.Where(x => names.Contains(x.Name, StringComparer.InvariantCultureIgnoreCase)).ToList();
+                }
+                return result;
+            });
+
+        }
+
+        private static SeoInfo GetFallbackSeoInfo(ExpCategory source, string cultureName)
+        {
+            var result = AbstractTypeFactory<SeoInfo>.TryCreateInstance();
+            result.SemanticUrl = source.Id;
+            result.LanguageCode = cultureName;
+            result.Name = source.Category.Name;
+            return result;
         }
 
         private static bool TryGetParentId(IResolveFieldContext<ExpCategory> context, out string parentId)
@@ -118,6 +178,5 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             var response = await mediator.Send(loadCategoryQuery);
             return response.Categories.ToDictionary(x => x.Id);
         }
-
     }
 }

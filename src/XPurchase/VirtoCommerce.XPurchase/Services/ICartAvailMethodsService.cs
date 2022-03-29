@@ -9,5 +9,6 @@ namespace VirtoCommerce.XPurchase.Services
     {
         Task<IEnumerable<PaymentMethod>> GetAvailablePaymentMethodsAsync(CartAggregate cartAggr);
         Task<IEnumerable<ShippingRate>> GetAvailableShippingRatesAsync(CartAggregate cartAggr);
+        Task<IEnumerable<GiftItem>> GetAvailableGiftsAsync(CartAggregate cartAggr);
     }
 }

@@ -1,6 +1,7 @@
-using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.XPurchase.Services;
 
 namespace VirtoCommerce.XPurchase.Commands
@@ -18,7 +19,17 @@ namespace VirtoCommerce.XPurchase.Commands
         public override async Task<CartAggregate> Handle(AddOrUpdateCartShipmentCommand request, CancellationToken cancellationToken)
         {
             var cartAggregate = await GetOrCreateCartFromCommandAsync(request);
-            await cartAggregate.AddShipmentAsync(request.Shipment, await _cartAvailMethodService.GetAvailableShippingRatesAsync(cartAggregate));
+
+            var shipmentId = request.Shipment.Id?.Value ?? null;
+            var shipment = cartAggregate.Cart.Shipments.FirstOrDefault(s => shipmentId != null && s.Id == shipmentId);
+            shipment = request.Shipment.MapTo(shipment);
+
+            await cartAggregate.AddShipmentAsync(shipment, await _cartAvailMethodService.GetAvailableShippingRatesAsync(cartAggregate));
+
+            if (!request.Shipment.DynamicProperties.IsNullOrEmpty())
+            {
+                await cartAggregate.UpdateCartShipmentDynamicProperties(shipment, request.Shipment.DynamicProperties);
+            }
 
             return await SaveCartAsync(cartAggregate);
         }

@@ -1,14 +1,21 @@
 using System.Linq;
+using System.Threading.Tasks;
+using GraphQL.Builders;
+using GraphQL.DataLoader;
 using GraphQL.Types;
+using MediatR;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
+using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.XDigitalCatalog.Queries;
+using VirtoCommerce.XDigitalCatalog.Schemas.ScalarTypes;
 
 namespace VirtoCommerce.XDigitalCatalog.Schemas
 {
     public class PropertyType : ObjectGraphType<Property>
     {
-        public PropertyType()
+        public PropertyType(IMediator mediator, IDataLoaderContextAccessor dataLoader)
         {
             Name = "Property";
             Description = "Products attributes.";
@@ -46,10 +53,15 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             Field<StringGraphType>(
                 "valueType",
-                resolve: context => context.Source.Values.Select(x => x.ValueType).FirstOrDefault()
-            );
+                // since PropertyType is used both for property metadata queries and product/category/catalog queries
+                // to infer "valueType" need to look in ValueType property in case of metadata query or in the first value in case
+                // when the Property object was created dynamically by grouping
+                resolve: context => context.Source.Values.IsNullOrEmpty()
+                        ? context.Source.ValueType.ToString()
+                        : context.Source.Values.Select(x => x.ValueType).FirstOrDefault().ToString(),
+            description: "ValueType of the property.");
 
-            Field<StringGraphType>(
+            Field<PropertyValueGraphType>(
                 "value",
                 resolve: context => context.Source.Values.Select(x => x.Value).FirstOrDefault()
             );
@@ -59,6 +71,33 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 "valueId",
                 resolve: context => context.Source.Values.Select(x => x.ValueId).FirstOrDefault()
             );
+
+            Connection<PropertyDictionaryItemType>()
+              .Name("propertyDictItems")
+              .PageSize(20)
+              .ResolveAsync(async context =>
+              {
+                  return await ResolveConnectionAsync(mediator, context);
+              });
+
+        }
+
+        private static async Task<object> ResolveConnectionAsync(IMediator mediator, IResolveConnectionContext<Property> context)
+        {
+            var first = context.First;
+
+            int.TryParse(context.After, out var skip);
+
+            var query = new SearchPropertyDictionaryItemQuery
+            {
+                Skip = skip,
+                Take = first ?? context.PageSize ?? 10,
+                PropertyIds = new[] { context.Source.Id }
+            };
+
+            var response = await mediator.Send(query);
+
+            return new PagedConnection<PropertyDictionaryItem>(response.Result.Results, query.Skip, query.Take, response.Result.TotalCount);
         }
     }
 }

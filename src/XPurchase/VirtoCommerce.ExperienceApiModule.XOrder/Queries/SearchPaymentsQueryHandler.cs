@@ -23,7 +23,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Queries
             _paymentsSearchService = paymentsSearchService;
         }
 
-        public async Task<PaymentSearchResult> Handle(SearchPaymentsQuery request, CancellationToken cancellationToken)
+        public virtual async Task<PaymentSearchResult> Handle(SearchPaymentsQuery request, CancellationToken cancellationToken)
         {
             var searchCriteria = new PaymentsSearchCriteriaBuilder(_searchPhraseParser, _mapper)
                                         .ParseFilters(request.Filter)

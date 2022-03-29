@@ -1,24 +1,83 @@
 using FluentValidation;
+using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.XPurchase.Validators
 {
-    public class CartValidator : AbstractValidator<CartAggregate>
+    public class CartValidator : AbstractValidator<CartValidationContext>
     {
-        public CartValidator(CartValidationContext validationContext)
-        {
-            RuleFor(x => x.Cart).NotNull();
-            When(x => x.Cart != null, () =>
-            {
-                RuleFor(x => x.Cart.Name).NotNull().NotEmpty();
-                RuleFor(x => x.Cart.Currency).NotNull();
-                RuleFor(x => x.Cart.CustomerId).NotNull().NotEmpty();
+        protected virtual CartLineItemValidator LineItemValidator { get; set; }
+        protected virtual CartShipmentValidator ShipmentValidator { get; set; }
+        protected virtual CartPaymentValidator PaymentValidator { get; set; }
 
-                RuleSet("strict", () =>
+        public CartValidator()
+        {
+            LineItemValidator = AbstractTypeFactory<CartLineItemValidator>.TryCreateInstance();
+            ShipmentValidator = AbstractTypeFactory<CartShipmentValidator>.TryCreateInstance();
+            PaymentValidator = AbstractTypeFactory<CartPaymentValidator>.TryCreateInstance();
+
+            RuleFor(x => x.CartAggregate.Cart).NotNull();
+            RuleFor(x => x.CartAggregate.Cart.Name).NotEmpty();
+            RuleFor(x => x.CartAggregate.Cart.Currency).NotEmpty();
+            RuleFor(x => x.CartAggregate.Cart.CustomerId).NotEmpty();
+
+            RuleSet("items", () =>
+                RuleFor(x => x).Custom((cartContext, context) =>
                 {
-                    RuleForEach(x => x.Cart.Items).SetValidator(cartAggr => new CartLineItemValidator(validationContext.AllCartProducts ?? cartAggr.CartProducts.Values));
-                    RuleForEach(x => x.Cart.Shipments).SetValidator(cartAggr => new CartShipmentValidator(validationContext.AvailShippingRates));
-                    RuleForEach(x => x.Cart.Payments).SetValidator(cartAggr => new CartPaymentValidator(validationContext.AvailPaymentMethods));
-                });
+                    ApplyRuleForItems(cartContext, context);
+                }));
+
+            RuleSet("shipments", () =>
+                RuleFor(x => x).Custom((cartContext, context) =>
+                {
+                    ApplyRuleForShipments(cartContext, context);
+                }));
+
+            RuleSet("payments", () =>
+                RuleFor(x => x).Custom((cartContext, context) =>
+                {
+                    ApplyRuleForPayments(cartContext, context);
+                }));
+        }
+
+        protected virtual void ApplyRuleForPayments(CartValidationContext cartContext, ValidationContext<CartValidationContext> context)
+        {
+            cartContext.CartAggregate.Cart.Payments?.Apply(payment =>
+            {
+                var paymentContext = new PaymentValidationContext
+                {
+                    Payment = payment,
+                    AvailPaymentMethods = cartContext.AvailPaymentMethods
+                };
+                var result = PaymentValidator.Validate(paymentContext);
+                result.Errors.Apply(x => context.AddFailure(x));
+            });
+        }
+
+        protected virtual void ApplyRuleForShipments(CartValidationContext cartContext, ValidationContext<CartValidationContext> context)
+        {
+            cartContext.CartAggregate.Cart.Shipments?.Apply(shipment =>
+            {
+                var shipmentContext = new ShipmentValidationContext
+                {
+                    Shipment = shipment,
+                    AvailShippingRates = cartContext.AvailShippingRates
+                };
+                var result = ShipmentValidator.Validate(shipmentContext);
+                result.Errors.Apply(x => context.AddFailure(x));
+            });
+        }
+
+        protected virtual void ApplyRuleForItems(CartValidationContext cartContext, ValidationContext<CartValidationContext> context)
+        {
+            cartContext.CartAggregate.Cart.Items?.Apply(item =>
+            {
+                var lineItemContext = new LineItemValidationContext
+                {
+                    LineItem = item,
+                    AllCartProducts = cartContext.AllCartProducts ?? cartContext.CartAggregate.CartProducts.Values
+                };
+                var result = LineItemValidator.Validate(lineItemContext);
+                result.Errors.Apply(x => context.AddFailure(x));
             });
         }
     }

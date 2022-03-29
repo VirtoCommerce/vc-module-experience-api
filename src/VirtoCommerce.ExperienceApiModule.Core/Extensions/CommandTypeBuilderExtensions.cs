@@ -26,6 +26,15 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
         }
 
         /// <summary>
+        /// Overrides an existing  set of arguments in abstracts factory and returns a new builder
+        /// </summary>
+        public static ICommandTypeBuilder OverrideArgumentType<TArgumentType, TExtendedArgumentType>(this IServiceCollection services)
+             where TExtendedArgumentType : TArgumentType
+        {
+            return services.OverrideCommandType<TArgumentType, TExtendedArgumentType>();
+        }
+
+        /// <summary>
         /// Overrides an existing  query or command in abstracts factory and returns a new builder
         /// </summary>
         public static ICommandTypeBuilder OverrideCommandType<TCommandType, TExtendedCommandType>(this IServiceCollection services)

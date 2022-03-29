@@ -26,8 +26,9 @@ namespace VirtoCommerce.XPurchase.Extensions
                 .Where(r => r.ShippingMethod.IsNullOrEmpty() || (shippingRate.ShippingMethod != null && r.ShippingMethod.EqualsInvariant(shippingRate.ShippingMethod.Code)))
                 .Sum(reward => reward.GetRewardAmount(shippingRate.Rate, 1));
 
-        public static void ApplyRewards(this ShoppingCart shoppingCart, ICollection<PromotionReward> rewards)
+        public static void ApplyRewards(this CartAggregate aggregate, ICollection<PromotionReward> rewards)
         {
+            var shoppingCart = aggregate.Cart;
             shoppingCart.Discounts?.Clear();
             shoppingCart.DiscountAmount = 0M;
 
@@ -53,8 +54,17 @@ namespace VirtoCommerce.XPurchase.Extensions
                 shoppingCart.DiscountAmount += discount.DiscountAmount;
             }
 
+            // remove the (added) gifts, if corresponding valid reward is missing
+            foreach (var lineItem in aggregate.GiftItems.ToList() ?? Enumerable.Empty<LineItem>())
+            {
+                if (!rewards.OfType<GiftReward>().Any(re => re.IsValid && lineItem.EqualsReward(re)))
+                {
+                    shoppingCart.Items.Remove(lineItem);
+                }
+            }
+
             var lineItemRewards = rewards.OfType<CatalogItemAmountReward>();
-            foreach (var lineItem in shoppingCart.Items ?? Enumerable.Empty<LineItem>())
+            foreach (var lineItem in aggregate.LineItems ?? Enumerable.Empty<LineItem>())
             {
                 lineItem.ApplyRewards(shoppingCart.Currency, lineItemRewards);
             }
@@ -178,6 +188,19 @@ namespace VirtoCommerce.XPurchase.Extensions
                 payment.Discounts.Add(discount);
                 payment.DiscountAmount += discount.DiscountAmount;
             }
+        }
+
+        /// <summary>
+        /// Return whether cart LineItem is equal to promotion Reward
+        /// </summary>
+        public static bool EqualsReward(this LineItem li, GiftReward reward)
+        {
+            return li.Quantity == reward.Quantity &&
+                  (li.ProductId == reward.ProductId || li.ProductId.IsNullOrEmpty() && reward.ProductId.IsNullOrEmpty() &&
+                  (li.Name == reward.Name || reward.Name.IsNullOrEmpty()) &&
+                  (li.MeasureUnit == reward.MeasureUnit || reward.MeasureUnit.IsNullOrEmpty()) &&
+                  (li.ImageUrl == reward.ImageUrl || reward.ImageUrl.IsNullOrEmpty())
+                );
         }
     }
 }

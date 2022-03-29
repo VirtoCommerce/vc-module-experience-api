@@ -41,7 +41,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder
 
             var parseResult = _phraseParser.Parse(filterPhrase);
             _mapper.Map(parseResult.Filters, _searchCriteria);
-
+            _searchCriteria.Keyword = parseResult.Keyword;
             return this;
         }
 

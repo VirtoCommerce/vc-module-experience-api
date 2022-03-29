@@ -22,15 +22,14 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             var item = _fixture.Create<ItemQtyAdjustment>();
             item.NewQuantity = newQuantity;
 
-            var aggregate = GetValidCartAggregate();
-            var validator = new ItemQtyAdjustmentValidator(aggregate);
+            var validator = new ItemQtyAdjustmentValidator();
 
             // Act
             var result = await validator.ValidateAsync(item);
 
             // Assert
             result.IsValid.Should().BeFalse();
-            result.Errors.Should().Contain(x => x.PropertyName == "NewQuantity" && x.ErrorCode == nameof(GreaterThanValidator));
+            result.Errors.Should().Contain(x => x.PropertyName == "NewQuantity" && x.ErrorCode.Contains("GreaterThanValidator"));
         }
 
         [Fact]
@@ -40,15 +39,14 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             var item = _fixture.Create<ItemQtyAdjustment>();
             item.LineItemId = null;
 
-            var aggregate = GetValidCartAggregate();
-            var validator = new ItemQtyAdjustmentValidator(aggregate);
+            var validator = new ItemQtyAdjustmentValidator();
 
             // Act
             var result = await validator.ValidateAsync(item);
 
             // Assert
             result.IsValid.Should().BeFalse();
-            result.Errors.Should().Contain(x => x.PropertyName == "LineItemId" && x.ErrorCode == nameof(NotNullValidator));
+            result.Errors.Should().Contain(x => x.PropertyName == "LineItemId" && x.ErrorCode.Contains("NotNullValidator"));
         }
 
         [Fact]
@@ -58,15 +56,14 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             var item = _fixture.Create<ItemQtyAdjustment>();
             item.CartProduct = null;
 
-            var aggregate = GetValidCartAggregate();
-            var validator = new ItemQtyAdjustmentValidator(aggregate);
+            var validator = new ItemQtyAdjustmentValidator();
 
             // Act
             var result = await validator.ValidateAsync(item);
 
             // Assert
             result.IsValid.Should().BeFalse();
-            result.Errors.Should().Contain(x => x.PropertyName == "CartProduct" && x.ErrorCode == nameof(NotNullValidator));
+            result.Errors.Should().Contain(x => x.PropertyName == "CartProduct" && x.ErrorCode.Contains("NotNullValidator"));
         }
 
         [Fact]
@@ -74,9 +71,8 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
         {
             // Arrange
             var item = _fixture.Create<ItemQtyAdjustment>();
-            var aggregate = GetValidCartAggregate();
-            aggregate.Cart.Items = Enumerable.Empty<LineItem>().ToList();
-            var validator = new ItemQtyAdjustmentValidator(aggregate);
+            item.LineItem = null;
+            var validator = new ItemQtyAdjustmentValidator();
 
             // Act
             var result = await validator.ValidateAsync(item);
@@ -107,9 +103,10 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             var item = _fixture
                 .Build<ItemQtyAdjustment>()
                 .With(x => x.LineItemId, lineItem.Id)
+                .With(x => x.LineItem, lineItem)
                 .Create();
 
-            var validator = new ItemQtyAdjustmentValidator(aggregate);
+            var validator = new ItemQtyAdjustmentValidator();
 
             // Act
             var result = await validator.ValidateAsync(item);
@@ -136,7 +133,7 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
                 .With(x => x.LineItemId, lineItem.Id)
                 .Create();
 
-            var validator = new ItemQtyAdjustmentValidator(aggregate);
+            var validator = new ItemQtyAdjustmentValidator();
 
             // Act
             var result = await validator.ValidateAsync(item);
@@ -158,6 +155,7 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             var aggregate = GetValidCartAggregate();
 
             var lineItem = _fixture.Create<LineItem>();
+            lineItem.IsGift = false;
 
             aggregate.Cart.Items = new List<LineItem> { lineItem };
 
@@ -167,7 +165,7 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
                 .With(x => x.NewQuantity, lineItem.Quantity) // Request max quantity of line item
                 .Create();
 
-            var validator = new ItemQtyAdjustmentValidator(aggregate);
+            var validator = new ItemQtyAdjustmentValidator();
 
             // Act
             var result = await validator.ValidateAsync(item);

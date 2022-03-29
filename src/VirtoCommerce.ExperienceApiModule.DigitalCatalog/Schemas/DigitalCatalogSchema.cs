@@ -9,6 +9,7 @@ using GraphQL.Resolvers;
 using GraphQL.Types;
 using GraphQL.Types.Relay;
 using MediatR;
+using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
@@ -89,8 +90,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 .Argument<IntGraphType>("fuzzyLevel", "The fuzziness level is quantified in terms of the Damerau-Levenshtein distance, this distance being the number of operations needed to transform one word into another.")
                 .Argument<StringGraphType>("facet", "Facets calculate statistical counts to aid in faceted navigation.")
                 .Argument<StringGraphType>("sort", "The sort expression")
-                .Argument<ListGraphType<StringGraphType>>("productIds", "Product Ids") // TODO: make something good with it, move productIds in filter for example
-                .Unidirectional()
+                .Argument<ListGraphType<StringGraphType>>("productIds", "Product Ids")
                 .PageSize(20);
 
             productsConnectionBuilder.ResolveAsync(async context =>
@@ -101,6 +101,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 var cultureName = context.GetArgument<string>("cultureName");
                 var store = await _storeService.GetByIdAsync(context.GetArgument<string>("storeId"));
                 context.UserContext["store"] = store;
+                context.UserContext["catalog"] = store.Catalog;
 
                 var allCurrencies = await _currencyService.GetAllCurrenciesAsync();
                 //Store all currencies in the user context for future resolve in the schema types
@@ -127,8 +128,8 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                    var store = await _storeService.GetByIdAsync(context.GetArgument<string>("storeId"));
                    context.UserContext["store"] = store;
 
-                    //PT-1606:  Need to check what there is no any alternative way to access to the original request arguments in sub selection
-                    context.CopyArgumentsToUserContext();
+                   //PT-1606:  Need to check what there is no any alternative way to access to the original request arguments in sub selection
+                   context.CopyArgumentsToUserContext();
 
                    var loader = _dataLoader.Context.GetOrAddBatchLoader<string, ExpCategory>("categoriesLoader", (ids) => LoadCategoriesAsync(_mediator, ids, context));
                    return loader.LoadAsync(context.GetArgument<string>("id"));
@@ -148,8 +149,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 .Argument<IntGraphType>("fuzzyLevel", "The fuzziness level is quantified in terms of the Damerau-Levenshtein distance, this distance being the number of operations needed to transform one word into another.")
                 .Argument<StringGraphType>("facet", "Facets calculate statistical counts to aid in faceted navigation.")
                 .Argument<StringGraphType>("sort", "The sort expression")
-                .Argument<ListGraphType<StringGraphType>>("categoryIds", "Category Ids") // TODO: make something good with it, move CategoryIds in filter for example
-                .Unidirectional()
+                .Argument<ListGraphType<StringGraphType>>("categoryIds", "Category Ids")
                 .PageSize(20);
 
             categoriesConnectionBuilder.ResolveAsync(async context =>
@@ -163,6 +163,44 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             });
 
             schema.Query.AddField(categoriesConnectionBuilder.FieldType);
+
+            var propertiesConnectionBuilder = GraphTypeExtenstionHelper.CreateConnection<PropertyType, object>()
+                .Name("properties")
+                .Argument<NonNullGraphType<StringGraphType>>("storeId", "The store id to get binded catalog")
+                .Argument<ListGraphType<PropertyTypeEnum>>("types", "The owner types (Catalog, Category, Product, Variation)")
+                .Argument<StringGraphType>("filter", "This parameter applies a filter to the query results")
+                .Argument<StringGraphType>("cultureName", "The language for which all localized property dictionary items will be returned")
+                .PageSize(20);
+
+            propertiesConnectionBuilder.ResolveAsync(async context =>
+            {
+                var store = await _storeService.GetByIdAsync(context.GetArgument<string>("storeId"));
+                context.UserContext["catalog"] = store.Catalog;
+
+                //PT-1606:  Need to check what there is no any alternative way to access to the original request arguments in sub selection
+                context.CopyArgumentsToUserContext();
+                return await ResolvePropertiesConnectionAsync(_mediator, context);
+            });
+
+            schema.Query.AddField(propertiesConnectionBuilder.FieldType);
+
+            var propertyField = new FieldType
+            {
+                Name = "property",
+                Arguments = new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id", Description = "id of the property" },
+                    new QueryArgument<StringGraphType> { Name = "cultureName", Description = "The language for which all localized property dictionary items will be returned" }
+                ),
+                Type = GraphTypeExtenstionHelper.GetActualType<PropertyType>(),
+                Resolver = new AsyncFieldResolver<PropertyType, IDataLoaderResult<Property>>(context =>
+                {
+                    //PT-1606:  Need to check what there is no any alternative way to access to the original request arguments in sub selection
+                    context.CopyArgumentsToUserContext();
+                    var loader = _dataLoader.Context.GetOrAddBatchLoader<string, Property>("propertiesLoader", (ids) => LoadPropertiesAsync(_mediator, ids));
+                    return Task.FromResult(loader.LoadAsync(context.GetArgument<string>("id")));
+                })
+            };
+            schema.Query.AddField(propertyField);
         }
 
         private static async Task<IDictionary<string, ExpProduct>> LoadProductsAsync(IMediator mediator, IEnumerable<string> ids, IResolveFieldContext context)
@@ -187,13 +225,20 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             return response.Categories.ToDictionary(x => x.Id);
         }
 
+        protected virtual async Task<IDictionary<string, Property>> LoadPropertiesAsync(IMediator mediator, IEnumerable<string> ids)
+        {
+            var result = await mediator.Send(new LoadPropertiesQuery { Ids = ids });
+
+            return result.Properties;
+        }
+
         private static async Task<object> ResolveProductsConnectionAsync(IMediator mediator, IResolveConnectionContext<object> context)
         {
             var first = context.First;
             var skip = Convert.ToInt32(context.After ?? 0.ToString());
             var includeFields = context.SubFields.Values.GetAllNodesPaths();
 
-            //TODO: Need to be able get entire query from context and read all arguments to the query properties
+            //PT-5371: Need to be able get entire query from context and read all arguments to the query properties
             var query = context.GetCatalogQuery<SearchProductQuery>();
             query.IncludeFields = includeFields;
 
@@ -259,6 +304,27 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             var response = await mediator.Send(query);
 
             return new PagedConnection<ExpCategory>(response.Results, query.Skip, query.Take, response.TotalCount);
+        }
+
+        private static async Task<object> ResolvePropertiesConnectionAsync(IMediator mediator, IResolveConnectionContext<object> context)
+        {
+            var first = context.First;
+
+            var skip = Convert.ToInt32(context.After ?? 0.ToString());
+
+            var query = new SearchPropertiesQuery
+            {
+                Skip = skip,
+                Take = first ?? context.PageSize ?? 10,
+
+                CatalogId = (string)context.UserContext["catalog"],
+                Types = context.GetArgument<object[]>("types"),
+                Filter = context.GetArgument<string>("filter")
+            };
+
+            var response = await mediator.Send(query);
+
+            return new PagedConnection<Property>(response.Result.Results, query.Skip, query.Take, response.Result.TotalCount);
         }
     }
 }

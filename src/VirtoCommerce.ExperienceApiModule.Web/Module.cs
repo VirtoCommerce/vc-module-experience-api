@@ -1,8 +1,6 @@
-using System;
 using AutoMapper;
 using GraphQL.Server;
 using GraphQL.Types;
-using GraphQL.Utilities;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using VirtoCommerce.ExperienceApiModule.Core;
@@ -10,15 +8,14 @@ using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
 using VirtoCommerce.ExperienceApiModule.Web.Extensions;
+using VirtoCommerce.ExperienceApiModule.XCMS.Extensions;
 using VirtoCommerce.ExperienceApiModule.XOrder.Extensions;
-using VirtoCommerce.ExperienceApiModule.XProfile.Extensions;
 using VirtoCommerce.MarketingModule.Core.Model.Promotions;
 using VirtoCommerce.Platform.Core.Modularity;
 using VirtoCommerce.PricingModule.Core.Model;
 using VirtoCommerce.TaxModule.Core.Model;
 using VirtoCommerce.XDigitalCatalog;
 using VirtoCommerce.XDigitalCatalog.Extensions;
-using VirtoCommerce.XProfile.Middlewares;
 using VirtoCommerce.XPurchase.Extensions;
 using VirtoCommerce.XPurchase.Middlewares;
 namespace VirtoCommerce.ExperienceApiModule.Web
@@ -29,11 +26,16 @@ namespace VirtoCommerce.ExperienceApiModule.Web
 
         public void Initialize(IServiceCollection services)
         {
+            services.AddApplicationInsightsTelemetryProcessor<IgnorePlainGraphQLTelemetryProcessor>();
+            // register custom executror with app insight wrapper
+            services.AddTransient(typeof(IGraphQLExecuter<>), typeof(CustomGraphQLExecuter<>));
+
             //Register .NET GraphQL server
             var graphQlBuilder = services.AddGraphQL(_ =>
             {
                 _.EnableMetrics = false;
-            }).AddNewtonsoftJson(deserializerSettings => { }, serializerSettings => { })
+            })
+            .AddNewtonsoftJson(deserializerSettings => { }, serializerSettings => { })
             .AddErrorInfoProvider(options =>
             {
                 options.ExposeExtensions = true;
@@ -51,37 +53,26 @@ namespace VirtoCommerce.ExperienceApiModule.Web
             //Register all xApi boundaries
             services.AddXCatalog(graphQlBuilder);
             services.AddXCore(graphQlBuilder);
-            services.AddXProfile(graphQlBuilder);
             services.AddXPurchase(graphQlBuilder);
             services.AddXOrder(graphQlBuilder);
-
-            //TODO: Remove after update GraphQL.net to 3.2.0 version.
-            //VP-6356 DateTime field types for GraphQL schema do not return time in result
-            GraphTypeTypeRegistry.Register<DateTime, DateTimeGraphType>();
-
-
-            services.AddSingleton<IStoreCurrencyResolver, StoreCurrencyResolver>();
+            services.AddXCMS(graphQlBuilder);
 
             services.AddAutoMapper(ModuleInfo.Assembly);
 
             #region Pipelines
             services.AddPipeline<PromotionEvaluationContext>(builder =>
                {
-                   builder.AddMiddleware(typeof(LoadUserToEvalContextMiddleware));
                    builder.AddMiddleware(typeof(LoadCartToEvalContextMiddleware));
                });
             services.AddPipeline<TaxEvaluationContext>(builder =>
             {
-                builder.AddMiddleware(typeof(LoadUserToEvalContextMiddleware));
                 builder.AddMiddleware(typeof(LoadCartToEvalContextMiddleware));
             });
             services.AddPipeline<PriceEvaluationContext>(builder =>
             {
-                builder.AddMiddleware(typeof(LoadUserToEvalContextMiddleware));
                 builder.AddMiddleware(typeof(LoadCartToEvalContextMiddleware));
             });
             #endregion
-
         }
 
         public void PostInitialize(IApplicationBuilder appBuilder)

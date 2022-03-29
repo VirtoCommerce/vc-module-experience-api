@@ -6,7 +6,8 @@ namespace VirtoCommerce.XPurchase.Schemas
     {
         public InputValidateCouponType()
         {
-            Field<NonNullGraphType<StringGraphType>>("coupon");
+            Field<NonNullGraphType<StringGraphType>>("coupon",
+                "Coupon");
         }
     }
 }

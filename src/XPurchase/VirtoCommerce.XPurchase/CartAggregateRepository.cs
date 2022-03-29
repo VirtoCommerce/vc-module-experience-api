@@ -5,51 +5,53 @@ using System.Threading.Tasks;
 using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.CartModule.Core.Model.Search;
 using VirtoCommerce.CartModule.Core.Services;
+using VirtoCommerce.CartModule.Data.Model;
 using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.CoreModule.Core.Currency;
+using VirtoCommerce.CustomerModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.Core;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.GenericCrud;
+using VirtoCommerce.Platform.Data.GenericCrud;
 using VirtoCommerce.StoreModule.Core.Services;
 using VirtoCommerce.XPurchase.Queries;
-using VirtoCommerce.XPurchase.Validators;
+using VirtoCommerce.XPurchase.Services;
 
 namespace VirtoCommerce.XPurchase
 {
     public class CartAggregateRepository : ICartAggregateRepository
     {
         private readonly Func<CartAggregate> _cartAggregateFactory;
-        private readonly ICartValidationContextFactory _cartValidationContextFactory;
-        private readonly IShoppingCartSearchService _shoppingCartSearchService;
-        private readonly IShoppingCartService _shoppingCartService;
+        private readonly ICartProductService _cartProductsService;
+        private readonly SearchService<ShoppingCartSearchCriteria, ShoppingCartSearchResult, ShoppingCart, ShoppingCartEntity> _shoppingCartSearchService;
+        private readonly ICrudService<ShoppingCart> _shoppingCartService;
         private readonly ICurrencyService _currencyService;
         private readonly IMemberResolver _memberResolver;
         private readonly IStoreService _storeService;
 
         public CartAggregateRepository(
-            Func<CartAggregate> cartAggregateFactory
-            , IShoppingCartSearchService shoppingCartSearchService
-            , IShoppingCartService shoppingCartService
-            , ICurrencyService currencyService
-            , IMemberResolver memberResolver
-            , IStoreService storeService
-            , ICartValidationContextFactory cartValidationContextFactory
-            )
+            Func<CartAggregate> cartAggregateFactory,
+            IShoppingCartSearchService shoppingCartSearchService,
+            IShoppingCartService shoppingCartService,
+            ICurrencyService currencyService,
+            IMemberResolver memberResolver,
+            IStoreService storeService,
+            ICartProductService cartProductsService)
         {
             _cartAggregateFactory = cartAggregateFactory;
-            _shoppingCartSearchService = shoppingCartSearchService;
-            _shoppingCartService = shoppingCartService;
+            _shoppingCartSearchService = (SearchService<ShoppingCartSearchCriteria, ShoppingCartSearchResult, ShoppingCart, ShoppingCartEntity>)shoppingCartSearchService;
+            _shoppingCartService = (ICrudService<ShoppingCart>)shoppingCartService;
             _currencyService = currencyService;
             _memberResolver = memberResolver;
             _storeService = storeService;
-            _cartValidationContextFactory = cartValidationContextFactory;
+            _cartProductsService = cartProductsService;
         }
 
         public async Task SaveAsync(CartAggregate cartAggregate)
         {
             await cartAggregate.RecalculateAsync();
-            await cartAggregate.ValidateAsync(await _cartValidationContextFactory.CreateValidationContextAsync(cartAggregate));
-            await _shoppingCartService.SaveChangesAsync(new ShoppingCart[] { cartAggregate.Cart });
+            await _shoppingCartService.SaveChangesAsync(new List<ShoppingCart> { cartAggregate.Cart });
         }
 
         public async Task<CartAggregate> GetCartByIdAsync(string cartId, string language = null)
@@ -80,7 +82,7 @@ namespace VirtoCommerce.XPurchase
                 ResponseGroup = EnumUtility.SafeParseFlags(responseGroup, CartResponseGroup.Full).ToString()
             };
 
-            var cartSearchResult = await _shoppingCartSearchService.SearchCartAsync(criteria);
+            var cartSearchResult = await _shoppingCartSearchService.SearchAsync(criteria);
             //The null value for the Type parameter should be interpreted as a valuable parameter, and we must return a cart object with Type property that has null exactly set.
             //otherwise, for the case where the system contains carts with different Types, the resulting cart may be a random result.
             var cart = cartSearchResult.Results.FirstOrDefault(x => (type != null) || x.Type == null);
@@ -99,7 +101,7 @@ namespace VirtoCommerce.XPurchase
                 throw new ArgumentNullException(nameof(criteria));
             }
 
-            var searchResult = await _shoppingCartSearchService.SearchCartAsync(criteria);
+            var searchResult = await _shoppingCartSearchService.SearchAsync(criteria);
             var cartAggregates = await GetCartsForShoppingCartsAsync(searchResult.Results);
 
             return new SearchCartResponse() { Results = cartAggregates, TotalCount = searchResult.TotalCount };
@@ -107,7 +109,7 @@ namespace VirtoCommerce.XPurchase
 
         public virtual Task RemoveCartAsync(string cartId) => _shoppingCartService.DeleteAsync(new[] { cartId }, softDelete: true);
 
-        protected virtual async Task<CartAggregate> InnerGetCartAggregateFromCartAsync(ShoppingCart cart, string language)
+        protected virtual async Task<CartAggregate> InnerGetCartAggregateFromCartAsync(ShoppingCart cart, string language, CartAggregateResponseGroup responseGroup = CartAggregateResponseGroup.Full)
         {
             if (cart == null)
             {
@@ -138,23 +140,22 @@ namespace VirtoCommerce.XPurchase
 
             aggregate.GrabCart(cart, store, member, currency);
 
-            var validationContext = await _cartValidationContextFactory.CreateValidationContextAsync(aggregate);
+
+            //Load cart products explicitly if no validation is requested
+            var cartProducts = await _cartProductsService.GetCartProductsByIdsAsync(aggregate, aggregate.Cart.Items.Select(x => x.ProductId).ToArray());
             //Populate aggregate.CartProducts with the  products data for all cart  line items
-            foreach (var cartProduct in validationContext.AllCartProducts)
+            foreach (var cartProduct in cartProducts)
             {
                 aggregate.CartProducts[cartProduct.Id] = cartProduct;
             }
 
-            foreach (var lineItem in cart.Items)
+            foreach (var lineItem in aggregate.LineItems)
             {
                 var cartProduct = aggregate.CartProducts[lineItem.ProductId];
                 await aggregate.SetItemFulfillmentCenterAsync(lineItem, cartProduct);
             }
 
             await aggregate.RecalculateAsync();
-
-            //Run validation
-            await aggregate.ValidateAsync(validationContext);
 
             return aggregate;
         }

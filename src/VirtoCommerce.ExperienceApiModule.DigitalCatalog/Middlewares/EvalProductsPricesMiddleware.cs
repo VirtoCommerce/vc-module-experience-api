@@ -4,11 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using PipelineNet.Middleware;
-using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Models;
 using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.PricingModule.Core.Services;
+using VirtoCommerce.StoreModule.Core.Model;
+using VirtoCommerce.StoreModule.Core.Services;
 using VirtoCommerce.XDigitalCatalog.Queries;
 
 namespace VirtoCommerce.XDigitalCatalog.Middlewares
@@ -18,16 +19,18 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
         private readonly IMapper _mapper;
         private readonly IPricingService _pricingService;
         private readonly IGenericPipelineLauncher _pipeline;
+        private readonly IStoreService _storeService;
 
         public EvalProductsPricesMiddleware(
-            IMapper mapper
-
-            , IPricingService pricingService
-            , IGenericPipelineLauncher pipeline)
+            IMapper mapper,
+            IPricingService pricingService,
+            IGenericPipelineLauncher pipeline,
+            IStoreService storeService)
         {
             _mapper = mapper;
             _pricingService = pricingService;
             _pipeline = pipeline;
+            _storeService = storeService;
         }
 
         public virtual async Task Run(SearchProductResponse parameter, Func<SearchProductResponse, Task> next)
@@ -65,9 +68,13 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
                 var productsWithoutPrices = parameter.Results.Where(x => !x.IndexedPrices.Any()).ToArray();
                 if (productsWithoutPrices.Any())
                 {
+                    // find Store by Id to get Catalog Id
+                    var store = await _storeService.GetByIdAsync(query.StoreId, StoreResponseGroup.StoreInfo.ToString());
+
                     var evalContext = AbstractTypeFactory<PricingModule.Core.Model.PriceEvaluationContext>.TryCreateInstance();
                     evalContext.Currency = query.CurrencyCode;
                     evalContext.StoreId = query.StoreId;
+                    evalContext.CatalogId = store?.Catalog;
                     evalContext.CustomerId = query.UserId;
                     evalContext.Language = query.CultureName;
 

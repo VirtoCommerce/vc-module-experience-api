@@ -21,7 +21,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Queries
             _customerOrderSearchService = customerOrderSearchService;
         }
 
-        public async Task<SearchOrderResponse> Handle(SearchOrderQuery request, CancellationToken cancellationToken)
+        public virtual async Task<SearchOrderResponse> Handle(SearchOrderQuery request, CancellationToken cancellationToken)
         {
             var searchCriteria = new CustomerOrderSearchCriteriaBuilder(_searchPhraseParser)
                                         .ParseFilters(request.Filter)

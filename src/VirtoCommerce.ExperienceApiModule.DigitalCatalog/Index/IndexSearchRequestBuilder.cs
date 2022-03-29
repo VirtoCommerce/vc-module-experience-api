@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using VirtoCommerce.ExperienceApiModule.Core.Index;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.SearchModule.Core.Extenstions;
 using VirtoCommerce.SearchModule.Core.Model;
 using VirtoCommerce.SearchModule.Core.Services;
+using VirtoCommerce.XDigitalCatalog.Extensions;
 
 namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
 {
@@ -13,6 +15,8 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
     {
         private const string ScoreSortingFieldName = "score";
         private SearchRequest SearchRequest { get; set; }
+        private string _cultureName { get; set; }
+        private string _currencyCode { get; set; }
 
         public IndexSearchRequestBuilder()
         {
@@ -48,6 +52,12 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
         public IndexSearchRequestBuilder WithSearchPhrase(string searchPhrase)
         {
             SearchRequest.SearchKeywords = searchPhrase;
+            return this;
+        }
+
+        public IndexSearchRequestBuilder WithCultureName(string cultureName)
+        {
+            _cultureName = cultureName;
             return this;
         }
 
@@ -187,6 +197,7 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
             //Term facets
             if (!string.IsNullOrEmpty(parseResult.Keyword))
             {
+                parseResult.Keyword = parseResult.Keyword.AddLanguageSpecificFacets(_cultureName);
                 var termFacetExpressions = parseResult.Keyword.Split(" ");
                 parseResult.Filters.AddRange(termFacetExpressions.Select(x => new TermFilter
                 {
@@ -204,7 +215,7 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
                     {
                         RangeFilter rangeFilter => new RangeAggregationRequest
                         {
-                            Id = filter.Stringify(),
+                            Id = filter.Stringify(true),
                             FieldName = rangeFilter.FieldName,
                             Values = rangeFilter.Values.Select(x => new RangeAggregationRequestValue
                             {
@@ -227,6 +238,12 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
                 .Where(x => x != null)
                 .ToList();
 
+            return this;
+        }
+
+        public IndexSearchRequestBuilder WithCurrency(string currencyCode)
+        {
+            _currencyCode = currencyCode;
             return this;
         }
 
@@ -258,6 +275,9 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
                     case "title":
                         sortFields.Add(new SortingField("name", sortingField.IsDescending));
                         break;
+                    case "price" when !string.IsNullOrEmpty(_currencyCode):
+                        sortFields.Add(new SortingField($"price_{_currencyCode}".ToLowerInvariant(), sortingField.IsDescending));
+                        break;
 
                     default:
                         sortFields.Add(sortingField);
@@ -277,7 +297,7 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
         {
             foreach (var aggr in SearchRequest.Aggregations ?? Array.Empty<AggregationRequest>())
             {
-                var aggregationFilterFieldName = (aggr.Filter as INamedFilter)?.FieldName;
+                var aggregationFilterFieldName = aggr.FieldName ?? (aggr.Filter as INamedFilter)?.FieldName;
 
                 var clonedFilter = SearchRequest.Filter.Clone() as AndFilter;
 
@@ -292,7 +312,7 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
 
                         if (x is INamedFilter namedFilter)
                         {
-                            result = !(aggregationFilterFieldName?.StartsWith(namedFilter.FieldName) ?? false);
+                            result = !(aggregationFilterFieldName?.StartsWith(namedFilter.FieldName, true, CultureInfo.InvariantCulture) ?? false);
                         }
 
                         return result;

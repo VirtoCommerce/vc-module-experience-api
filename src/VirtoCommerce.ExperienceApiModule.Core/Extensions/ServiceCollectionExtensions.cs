@@ -62,11 +62,13 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
             graphQlbuilder.AddGraphTypes(typeof(XCoreAnchor));
 
             services.AddSchemaBuilder<DynamicPropertySchema>();
+            services.AddSchemaBuilder<CoreSchema>();
             services.AddMediatR(typeof(XCoreAnchor));
             services.AddAutoMapper(typeof(XCoreAnchor));
 
             services.AddTransient<IDynamicPropertyResolverService, DynamicPropertyResolverService>();
             services.AddTransient<IDynamicPropertyUpdaterService, DynamicPropertyUpdaterService>();
+            services.AddTransient<IUserManagerCore, UserManagerCore>();
 
             return services;
         }

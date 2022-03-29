@@ -47,7 +47,6 @@ namespace VirtoCommerce.XPurchase.Queries
             }
             if (IncludeFields.Any(x => x.Contains("validationErrors")))
             {
-                //TODO: Need take into account in the repository
                 result |= CartAggregateResponseGroup.Validate;
             }
 

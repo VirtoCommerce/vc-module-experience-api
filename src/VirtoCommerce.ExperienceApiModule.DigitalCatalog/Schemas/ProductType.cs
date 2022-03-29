@@ -66,8 +66,12 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             Field(d => d.IndexedProduct.Id).Description("The unique ID of the product.");
             Field(d => d.IndexedProduct.Code, nullable: false).Description("The product SKU.");
-            Field<StringGraphType>("catalogId", resolve: context => context.Source.IndexedProduct.CatalogId);
+            Field<StringGraphType>("catalogId",
+                "The unique ID of the catalog",
+                resolve: context => context.Source.IndexedProduct.CatalogId);
             Field(d => d.IndexedProduct.ProductType, nullable: true).Description("The type of product");
+            Field(d => d.IndexedProduct.MinQuantity, nullable: true).Description("Min. quantity");
+            Field(d => d.IndexedProduct.MaxQuantity, nullable: true).Description("Max. quantity");
 
             FieldAsync<StringGraphType>("outline", resolve: async context =>
             {
@@ -108,12 +112,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                     seoInfo = source.IndexedProduct.SeoInfos.GetBestMatchingSeoInfo(storeId, cultureName);
                 }
 
-                return seoInfo ?? new SeoInfo
-                {
-                    SemanticUrl = source.Id,
-                    LanguageCode = cultureName,
-                    Name = source.IndexedProduct.Name
-                };
+                return seoInfo ?? GetFallbackSeoInfo(source, cultureName);
             }, description: "Request related SEO info");
 
             Field<ListGraphType<DescriptionType>>("descriptions",
@@ -179,12 +178,30 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 resolve: context =>
                 {
                     var brandName = context.Source.IndexedProduct.Properties
-                        ?.FirstOrDefault(x => x.Name == "Brand")
+                        ?.FirstOrDefault(x => x.Name.EqualsInvariant("Brand"))
                         ?.Values
                         ?.FirstOrDefault(x => x.Value != null)
                         ?.Value;
 
-                    return brandName;
+                    return brandName?.ToString();
+                });
+
+            FieldAsync<VariationType>(
+                "masterVariation",
+                resolve: async context =>
+                {
+                    if (string.IsNullOrEmpty(context.Source.IndexedProduct.MainProductId))
+                    {
+                        return null;
+                    }
+
+                    var query = context.GetCatalogQuery<LoadProductsQuery>();
+                    query.ObjectIds = new[] { context.Source.IndexedProduct.MainProductId };
+                    query.IncludeFields = context.SubFields.Values.GetAllNodesPaths();
+
+                    var response = await mediator.Send(query);
+
+                    return response.Products.Select(expProduct => new ExpVariation(expProduct)).FirstOrDefault();
                 });
 
             FieldAsync<ListGraphType<VariationType>>(
@@ -206,9 +223,18 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                     return response.Products.Select(expProduct => new ExpVariation(expProduct));
                 });
 
+            Field<BooleanGraphType>(
+                "hasVariations",
+                resolve: context =>
+                {
+                    var result = context.Source.IndexedVariationIds?.Any() ?? false;
+                    return result;
+                });
+
             Field(
                 GraphTypeExtenstionHelper.GetActualType<AvailabilityDataType>(),
                 "availabilityData",
+                "Product availability data",
                 resolve: context => new ExpAvailabilityData
                 {
                     AvailableQuantity = context.Source.AvailableQuantity,
@@ -222,6 +248,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             Field<ListGraphType<ImageType>>(
                 "images",
+                "Product images",
                 resolve: context =>
                 {
                     var images = context.Source.IndexedProduct.Images;
@@ -238,20 +265,31 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             Field<PriceType>(
                 "price",
+                "Product price",
                 resolve: context => context.Source.AllPrices.FirstOrDefault() ?? new ProductPrice(context.GetCurrencyByCode(context.GetValue<string>("currencyCode"))));
 
             Field<ListGraphType<PriceType>>(
                 "prices",
+                "Product prices",
                 resolve: context => context.Source.AllPrices);
 
-            ExtendableField<ListGraphType<PropertyType>>("properties", resolve: context =>
+            ExtendableField<ListGraphType<PropertyType>>("properties",
+                arguments: new QueryArguments(new QueryArgument<ListGraphType<StringGraphType>> { Name = "names" }),
+                resolve: context =>
             {
+                var names = context.GetArgument<string[]>("names");
                 var cultureName = context.GetValue<string>("cultureName");
-                return context.Source.IndexedProduct.Properties.ExpandByValues(cultureName);
+                var result = context.Source.IndexedProduct.Properties.ExpandByValues(cultureName);
+                if (!names.IsNullOrEmpty())
+                {
+                    result = result.Where(x => names.Contains(x.Name, StringComparer.InvariantCultureIgnoreCase)).ToList();
+                }
+                return result;
             });
 
             Field<ListGraphType<AssetType>>(
                 "assets",
+                "Assets",
                 resolve: context =>
                 {
                     var assets = context.Source.IndexedProduct.Assets;
@@ -266,9 +304,9 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                     };
                 });
 
-            Field<ListGraphType<OutlineType>>("outlines", resolve: context => context.Source.IndexedProduct.Outlines);//.RootAlias("__object.outlines");
+            Field<ListGraphType<OutlineType>>("outlines", "Outlines", resolve: context => context.Source.IndexedProduct.Outlines);//.RootAlias("__object.outlines");
 
-            Field<ListGraphType<BreadcrumbType>>("breadcrumbs", resolve: context =>
+            Field<ListGraphType<BreadcrumbType>>("breadcrumbs", "Breadcrumbs", resolve: context =>
             {
                 var store = context.GetArgumentOrValue<Store>("store");
                 var cultureName = context.GetValue<string>("cultureName");
@@ -280,15 +318,32 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
               .Name("associations")
               .Argument<StringGraphType>("query", "the search phrase")
               .Argument<StringGraphType>("group", "association group (Accessories, RelatedItem)")
-              .Unidirectional()
               .PageSize(20)
               .ResolveAsync(async context =>
               {
-                  return await ResolveConnectionAsync(mediator, context);
+                  return await ResolveAssociationConnectionAsync(mediator, context);
+              });
+
+
+            Connection<VideoType>()
+              .Name("videos")
+              .PageSize(20)
+              .ResolveAsync(async context =>
+              {
+                  return await ResolveVideosConnectionAsync(mediator, context);
               });
         }
 
-        private static async Task<object> ResolveConnectionAsync(IMediator mediator, IResolveConnectionContext<ExpProduct> context)
+        private static SeoInfo GetFallbackSeoInfo(ExpProduct source, string cultureName)
+        {
+            var result = AbstractTypeFactory<SeoInfo>.TryCreateInstance();
+            result.SemanticUrl = source.Id;
+            result.LanguageCode = cultureName;
+            result.Name = source.IndexedProduct.Name;
+            return result;
+        }
+
+        private static async Task<object> ResolveAssociationConnectionAsync(IMediator mediator, IResolveConnectionContext<ExpProduct> context)
         {
             var first = context.First;
 
@@ -307,6 +362,26 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             var response = await mediator.Send(query);
 
             return new PagedConnection<ProductAssociation>(response.Result.Results, query.Skip, query.Take, response.Result.TotalCount);
+        }
+
+        private static async Task<object> ResolveVideosConnectionAsync(IMediator mediator, IResolveConnectionContext<ExpProduct> context)
+        {
+            var first = context.First;
+
+            int.TryParse(context.After, out var skip);
+
+            var query = new SearchVideoQuery
+            {
+                Skip = skip,
+                Take = first ?? context.PageSize ?? 10,
+                OwnerType = "Product",
+                OwnerId = context.Source.Id,
+                CultureName = context.GetArgumentOrValue<string>("cultureName")
+            };
+
+            var response = await mediator.Send(query);
+
+            return new PagedConnection<Video>(response.Result.Results, query.Skip, query.Take, response.Result.TotalCount);
         }
     }
 }
