@@ -65,7 +65,7 @@ jobs:
         validateSwagger: 'false'
         installModule: 'true'
         moduleId: ${{ steps.image.outputs.moduleId }}
-        
+
     - name: Getting tests
       shell: sh
       run: git clone https://github.com/VirtoCommerce/vc-quality-gate-katalon.git --branch dev
