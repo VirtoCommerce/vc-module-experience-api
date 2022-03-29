@@ -66,5 +66,25 @@ jobs:
         installModule: 'true'
         moduleId: ${{ steps.image.outputs.moduleId }}
 
+    - name: Getting tests
+      shell: sh
+      run: git clone https://github.com/VirtoCommerce/vc-quality-gate-katalon.git --branch dev
+
+    - name: Katalon Studio Github Action
+      uses: VirtoCommerce/vc-github-actions/katalon-studio-github-action@master
+      with:
+        version: '8.0.5'
+        projectPath: '${{ github.workspace }}/vc-quality-gate-katalon/platform_storefront.prj'
+        args: '-noSplash -retry=0 -testSuitePath="Test Suites/DynamicPropertyCreation" -browserType="Chrome" -apiKey= ${{ secrets.KATALON_API_KEY }} -g_urlBack="http://localhost:8090" -g_urlFront="http://localhost:8080" -executionProfile="Regression-QA" --config -webui.autoUpdateDrivers=true'
+
+    - name: Katalon Report Uploader
+      if: always( )
+      uses: katalon-studio/report-uploader@v0.0.7.11
+      env:
+        PASSWORD: ${{ secrets.KATALON_API_KEY }}
+        PROJECT_ID: 223504
+        TYPE: junit
+        REPORT_PATH: ${{ github.workspace }}/vc-quality-gate-katalon/Reports
+
     - name: Newman Action
-      run: newman run "./tests/postman/platform_xapi_collection_QA.json" --folder "Get All Carts Anon [ID]" --reporters cli,testrail -e "./tests/postman/localhostenv.json"
+      run: newman run "./tests/postman/platform_xapi_collection_QA.json" --folder "Ready_for_CI" --reporters cli,testrail -e "./tests/postman/localhostenv.json"
