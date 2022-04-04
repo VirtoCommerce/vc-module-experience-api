@@ -67,4 +67,4 @@ jobs:
         moduleId: ${{ steps.image.outputs.moduleId }}
 
     - name: Newman Action
-      run: newman run "./tests/postman/platform_xapi_collection_QA.json" --folder "Get All Carts Anon [ID]" --reporters cli,testrail -e "./tests/postman/localhostenv.json"
+      run: newman run "./tests/postman/platform_xapi_collection_QA.json" --folder "Ready_for_CI" --reporters cli,testrail -e "./tests/postman/localhostenv.json"
