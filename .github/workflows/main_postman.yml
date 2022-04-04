@@ -22,6 +22,7 @@ jobs:
       TESTRAIL_PROJECTID: "18"
       TESTRAIL_TITLE: "Postman API Tests"
       TESTRAIL_SUITEID: "2297" 
+      TESTRAIL_LOGGING: "none"
       
 
     steps:
