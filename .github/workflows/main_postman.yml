@@ -16,16 +16,21 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
       NUGET_KEY: ${{ secrets.NUGET_KEY }}
       BLOB_SAS: ${{ secrets.BLOB_TOKEN }}
+      TESTRAIL_DOMAIN: ${{ secrets.TESTRAIL_DOMAIN }}
+      TESTRAIL_USERNAME: ${{ secrets.TESTRAIL_USERNAME }}
+      TESTRAIL_APIKEY: ${{ secrets.TESTRAIL_APIKEY }}
+      TESTRAIL_PROJECTID: "18"
+      TESTRAIL_TITLE: "Postman API Tests"
+      TESTRAIL_SUITEID: "2297" 
+      
 
     steps:
     - uses: actions/checkout@v2
       with:
         fetch-depth: 0
 
-    - name: Set up .net Core 6.0.x 
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: '6.0.x'
+    - name: Setup newman reporter testrail
+      run: npm install newman-reporter-testrail --global
 
     - name: Install VirtoCommerce.GlobalTool
       uses: VirtoCommerce/vc-github-actions/setup-vcbuild@master
@@ -60,8 +65,7 @@ jobs:
         validateSwagger: 'false'
         installModule: 'true'
         moduleId: ${{ steps.image.outputs.moduleId }}
-        
-        
+
     - name: Getting tests
       shell: sh
       run: git clone https://github.com/VirtoCommerce/vc-quality-gate-katalon.git --branch dev
@@ -72,7 +76,7 @@ jobs:
         version: '8.0.5'
         projectPath: '${{ github.workspace }}/vc-quality-gate-katalon/platform_storefront.prj'
         args: '-noSplash -retry=0 -testSuitePath="Test Suites/DynamicPropertyCreation" -browserType="Chrome" -apiKey= ${{ secrets.KATALON_API_KEY }} -g_urlBack="http://localhost:8090" -g_urlFront="http://localhost:8080" -executionProfile="Regression-QA" --config -webui.autoUpdateDrivers=true'
-   
+
     - name: Katalon Report Uploader
       if: always( )
       uses: katalon-studio/report-uploader@v0.0.7.11
@@ -81,13 +85,6 @@ jobs:
         PROJECT_ID: 223504
         TYPE: junit
         REPORT_PATH: ${{ github.workspace }}/vc-quality-gate-katalon/Reports
-    
-    
+
     - name: Newman Action
-      uses: matt-ball/newman-action@v1.0.2
-      with:
-        collection: https://raw.githubusercontent.com/VirtoCommerce/vc-module-experience-api/collectionfortest/tests/postman/platform_xapi_collection_QA.json
-        environment: https://raw.githubusercontent.com/VirtoCommerce/vc-module-experience-api/collectionfortest/tests/postman/qa.postman_environment.json
-        envVar: '[{ "key": "url", "value": "http://localhost:8090" }, { "key": "password", "value": "store" }]'
-        reporters: '["json", "cli", "junit"]'
-        folder: '["Ready_for_CI"]'
+      run: newman run "./tests/postman/platform_xapi_collection_QA.json" --folder "Ready_for_CI" --reporters cli,testrail -e "./tests/postman/localhostenv.json"

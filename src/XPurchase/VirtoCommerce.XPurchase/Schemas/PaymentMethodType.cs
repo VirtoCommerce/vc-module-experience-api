@@ -48,6 +48,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field<ListGraphType<TaxDetailType>>("taxDetails",
                 "Tax details",
                 resolve: context => context.Source.TaxDetails);
+            Field(x => x.Description, nullable: true).Description("Payment method description");
             //PT-5441: Extend the paymentmethod domain model
             //Field<ListGraphType<DiscountType>>("discounts", resolve: context => context.Source.Discounts);
         }
