@@ -116,7 +116,6 @@ namespace VirtoCommerce.XPurchase.Schemas
             cartConnectionBuilder.ResolveAsync(async context => await ResolveCartsConnectionAsync(_mediator, context));
             schema.Query.AddField(cartConnectionBuilder.FieldType);
 
-
             //Mutations
             /// <example>
             /// This is an example JSON request for a mutation
@@ -1158,7 +1157,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             schema.Query.AddField(listConnectionBuilder.FieldType);
 
             // Mutations
-            // Add list 
+            // Add list
             var addListField = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<WishlistType>())
                                                  .Name("createWishlist")
                                                  .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputCreateWishlistType>>(), _commandName)
@@ -1224,6 +1223,27 @@ namespace VirtoCommerce.XPurchase.Schemas
 
             schema.Mutation.AddField(addListItemField);
 
+            // Add product to wishlists
+            var addWishlistBulkItemField = FieldBuilder.Create<BulkCartAggregateResult, BulkCartAggregateResult>(GraphTypeExtenstionHelper.GetActualType<BulkWishlistType>())
+                .Name("addWishlistBulkItem")
+                .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputAddWishlistBulkItemType>>(), _commandName)
+                .ResolveAsync(async context =>
+                {
+                    var commandType = GenericTypeHelper.GetActualType<AddWishlistBulkItemCommand>();
+                    var command = (AddWishlistBulkItemCommand)context.GetArgument(commandType, _commandName);
+                    await CheckAuthAsyncByCartIds(context, command.ListIds.ToList());
+                    var cartAggregateList = await _mediator.Send(command);
+
+                    foreach (var cartAggregate in cartAggregateList.CartAggregates)
+                    {
+                        context.SetExpandedObjectGraph(cartAggregate);
+                    }
+                    return cartAggregateList;
+                })
+                .FieldType;
+
+            schema.Mutation.AddField(addWishlistBulkItemField);
+
             // Remove product from list
             var removeListItemField = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<WishlistType>())
                          .Name("removeWishlistItem")
@@ -1258,7 +1278,7 @@ namespace VirtoCommerce.XPurchase.Schemas
 
             schema.Mutation.AddField(moveListItemField);
 
-            #endregion
+            #endregion Wishlists
         }
 
         private async Task<object> ResolveCartsConnectionAsync(IMediator mediator, IResolveConnectionContext<object> context)
