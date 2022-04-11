@@ -16,7 +16,7 @@ namespace VirtoCommerce.XPurchase.Services
     {
         private readonly IItemService _productService;
         private readonly IInventorySearchService _inventorySearchService;
-        private readonly IPricingService _pricingService;
+        private readonly IPricingEvaluatorService _pricingEvaluatorService;
         private readonly IMapper _mapper;
 
         /// <summary>
@@ -29,11 +29,11 @@ namespace VirtoCommerce.XPurchase.Services
         /// </summary>
         protected virtual int DefaultPageSize => 50;
 
-        public CartProductService(IItemService productService, IInventorySearchService inventoryService, IPricingService pricingService, IMapper mapper)
+        public CartProductService(IItemService productService, IInventorySearchService inventoryService, IPricingEvaluatorService pricingEvaluatorService, IMapper mapper)
         {
             _productService = productService;
             _inventorySearchService = inventoryService;
-            _pricingService = pricingService;
+            _pricingEvaluatorService = pricingEvaluatorService;
             _mapper = mapper;
         }
 
@@ -143,7 +143,7 @@ namespace VirtoCommerce.XPurchase.Services
             var pricesEvalContext = _mapper.Map<PriceEvaluationContext>(aggregate);
             pricesEvalContext.ProductIds = products.Select(x => x.Id).ToArray();
 
-            var evalPricesTask = await _pricingService.EvaluateProductPricesAsync(pricesEvalContext);
+            var evalPricesTask = await _pricingEvaluatorService.EvaluateProductPricesAsync(pricesEvalContext);
 
             foreach (var cartProduct in products)
             {
