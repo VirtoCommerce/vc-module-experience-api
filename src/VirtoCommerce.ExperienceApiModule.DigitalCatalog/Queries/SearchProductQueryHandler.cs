@@ -63,7 +63,8 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                                             .WithPaging(request.Skip, request.Take)
                                             .AddObjectIds(request.ObjectIds)
                                             .AddSorting(request.Sort)
-                                            .WithIncludeFields(IndexFieldsMapper.MapToIndexIncludes(request.IncludeFields).ToArray());
+                                            .WithIncludeFields(IndexFieldsMapper.MapToIndexIncludes(request.IncludeFields).ToArray())
+                                            .WithPermissions(request.Permissions);
 
             if (request.ObjectIds.IsNullOrEmpty())
             {
@@ -86,7 +87,6 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                 builder.WithCultureName(criteria.LanguageCode);
                 builder.ParseFacets(_phraseParser, request.Facet, predefinedAggregations)
                    .ApplyMultiSelectFacetSearch();
-
             }
 
             var searchRequest = builder.Build();

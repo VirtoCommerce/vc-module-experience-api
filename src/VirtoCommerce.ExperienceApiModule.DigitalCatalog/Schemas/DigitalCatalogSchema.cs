@@ -9,12 +9,15 @@ using GraphQL.Resolvers;
 using GraphQL.Types;
 using GraphQL.Types.Relay;
 using MediatR;
+using Newtonsoft.Json;
+using VirtoCommerce.CatalogModule.Core;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.Security;
 using VirtoCommerce.StoreModule.Core.Services;
 using VirtoCommerce.XDigitalCatalog.Extensions;
 using VirtoCommerce.XDigitalCatalog.Queries;
@@ -253,13 +256,16 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 query.Fuzzy = context.GetArgument<bool>("fuzzy");
                 query.FuzzyLevel = context.GetArgument<int?>("fuzzyLevel");
                 query.Sort = context.GetArgument<string>("sort");
+                query.Permissions = context
+                    .GetCurrentPrincipal()
+                    .FindPermissions(ModuleConstants.Security.Permissions.Read, new JsonSerializerSettings());
             }
             else
             {
                 query.ObjectIds = productIds.ToArray();
                 query.Take = productIds.Count;
             }
-
+            
             var response = await mediator.Send(query);
             var currencyCode = context.GetArgumentOrValue<string>("currencyCode");
             if (string.IsNullOrWhiteSpace(currencyCode))

@@ -1,5 +1,8 @@
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using VirtoCommerce.CatalogModule.Core.Model;
+using VirtoCommerce.Platform.Core.Security;
 using VirtoCommerce.XDigitalCatalog.Extensions;
 
 namespace VirtoCommerce.XDigitalCatalog.Queries
@@ -15,6 +18,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
         public int Skip { get; set; }
         public int Take { get; set; }
         public string[] ObjectIds { get; set; }
+        public IList<Permission> Permissions { get; set; }
 
         public virtual string GetResponseGroup()
         {

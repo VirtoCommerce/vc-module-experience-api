@@ -11,7 +11,7 @@ namespace VirtoCommerce.XPurchase.Schemas
         public PaymentMethodType()
         {
             Field(x => x.Code, nullable: true).Description("Value of payment gateway code");
-            Field(x => x.Name, nullable: true).Description("Value of payment method name");
+            //Field(x => x.Name, nullable: true).Description("Value of payment method name");
             Field(x => x.LogoUrl, nullable: true).Description("Value of payment method logo absolute URL");
             //Field(x => x.Description, nullable: true).Description("Value of payment method description");
             Field<StringGraphType>("paymentMethodType", description: "Value of payment method type", resolve: context => context.Source.PaymentMethodType.ToString());

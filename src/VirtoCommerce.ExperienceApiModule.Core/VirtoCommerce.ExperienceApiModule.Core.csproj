@@ -31,8 +31,8 @@
         <PackageReference Include="VirtoCommerce.CoreModule.Core" Version="3.200.0" />
         <PackageReference Include="VirtoCommerce.TaxModule.Core" Version="3.200.0" />
         <PackageReference Include="VirtoCommerce.SearchModule.Core" Version="3.200.0" />
-        <PackageReference Include="VirtoCommerce.Platform.Core" Version="3.200.0" />
-        <PackageReference Include="VirtoCommerce.Platform.Security" Version="3.200.0" />
+        <PackageReference Include="VirtoCommerce.Platform.Core" Version="3.209.0" />
+        <PackageReference Include="VirtoCommerce.Platform.Security" Version="3.209.0" />
         <PackageReference Include="MediatR" Version="8.0.1" />
         <PackageReference Include="GraphQL" Version="4.6.0" />
         <PackageReference Include="GraphQL.Authorization" Version="4.0.0" />

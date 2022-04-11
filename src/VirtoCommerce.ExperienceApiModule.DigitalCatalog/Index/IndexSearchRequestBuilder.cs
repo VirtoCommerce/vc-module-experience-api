@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using VirtoCommerce.CatalogModule.Data.Authorization;
 using VirtoCommerce.ExperienceApiModule.Core.Index;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.Security;
 using VirtoCommerce.SearchModule.Core.Extenstions;
 using VirtoCommerce.SearchModule.Core.Model;
 using VirtoCommerce.SearchModule.Core.Services;
@@ -244,6 +246,25 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
         public IndexSearchRequestBuilder WithCurrency(string currencyCode)
         {
             _currencyCode = currencyCode;
+            return this;
+        }
+
+        public IndexSearchRequestBuilder WithPermissions(IList<Permission> permissions)
+        {
+            var allowedCatalogIds = permissions
+                .SelectMany(x => x.AssignedScopes)
+                .Where(x => x.Type == nameof(SelectedCatalogScope))
+                .Select(x => x.Scope)
+                .ToList();
+
+            var filter = new TermFilter
+            {
+                FieldName = "catalog",
+                Values = allowedCatalogIds
+            };
+
+            AddFiltersToSearchRequest(new IFilter[] { filter });
+
             return this;
         }
 
