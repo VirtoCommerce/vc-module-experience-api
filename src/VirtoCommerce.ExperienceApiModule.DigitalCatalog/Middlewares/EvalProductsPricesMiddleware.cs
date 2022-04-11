@@ -17,13 +17,13 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
     public class EvalProductsPricesMiddleware : IAsyncMiddleware<SearchProductResponse>
     {
         private readonly IMapper _mapper;
-        private readonly IPricingService _pricingService;
+        private readonly IPricingEvaluatorService _pricingService;
         private readonly IGenericPipelineLauncher _pipeline;
         private readonly IStoreService _storeService;
 
         public EvalProductsPricesMiddleware(
             IMapper mapper,
-            IPricingService pricingService,
+            IPricingEvaluatorService pricingService,
             IGenericPipelineLauncher pipeline,
             IStoreService storeService)
         {
