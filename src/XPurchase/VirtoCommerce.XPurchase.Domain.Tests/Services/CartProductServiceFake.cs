@@ -13,8 +13,8 @@ namespace VirtoCommerce.XPurchase.Tests.Services
     {
         public CartProductServiceFake(IItemService productService
             , IInventorySearchService inventoryService
-            , IPricingEvaluatorService pricingService
-            , IMapper mapper) : base(productService, inventoryService, pricingService, mapper)
+            , IPricingEvaluatorService pricingEvaluatorService
+            , IMapper mapper) : base(productService, inventoryService, pricingEvaluatorService, mapper)
         {
         }
 
