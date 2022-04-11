@@ -17,18 +17,18 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
     public class EvalProductsPricesMiddleware : IAsyncMiddleware<SearchProductResponse>
     {
         private readonly IMapper _mapper;
-        private readonly IPricingService _pricingService;
+        private readonly IPricingEvaluatorService _pricingEvaluatorService;
         private readonly IGenericPipelineLauncher _pipeline;
         private readonly IStoreService _storeService;
 
         public EvalProductsPricesMiddleware(
             IMapper mapper,
-            IPricingService pricingService,
+            IPricingEvaluatorService pricingEvaluatorService,
             IGenericPipelineLauncher pipeline,
             IStoreService storeService)
         {
             _mapper = mapper;
-            _pricingService = pricingService;
+            _pricingEvaluatorService = pricingEvaluatorService;
             _pipeline = pipeline;
             _storeService = storeService;
         }
@@ -81,7 +81,7 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
                     await _pipeline.Execute(evalContext);
 
                     evalContext.ProductIds = productsWithoutPrices.Select(x => x.Id).ToArray();
-                    var prices = await _pricingService.EvaluateProductPricesAsync(evalContext);
+                    var prices = await _pricingEvaluatorService.EvaluateProductPricesAsync(evalContext);
 
                     foreach (var product in productsWithoutPrices)
                     {
