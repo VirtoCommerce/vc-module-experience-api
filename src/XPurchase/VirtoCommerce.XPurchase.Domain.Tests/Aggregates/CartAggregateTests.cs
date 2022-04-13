@@ -504,46 +504,53 @@ namespace VirtoCommerce.XPurchase.Tests.Aggregates
         public async Task MergeWithCartAsync_CartsHaveItems_ItemsMerged()
         {
             // Arrange
-            var sourceAggregate = GetValidCartAggregate();
-            sourceAggregate.Cart.Coupons = Enumerable.Empty<string>().ToList();
-            sourceAggregate.Cart.Shipments = Enumerable.Empty<Shipment>().ToList();
-            sourceAggregate.Cart.Payments = Enumerable.Empty<Payment>().ToList();
+            var otherCartAggregate = GetValidCartAggregate();
+            otherCartAggregate.Cart.Coupons = Enumerable.Empty<string>().ToList();
+            otherCartAggregate.Cart.Shipments = Enumerable.Empty<Shipment>().ToList();
+            otherCartAggregate.Cart.Payments = Enumerable.Empty<Payment>().ToList();
 
-            var sourceProduct1 = _fixture.Create<CartProduct>();
-            var sourceProduct2 = _fixture.Create<CartProduct>();
+            var otherProduct1 = _fixture.Create<CartProduct>();
+            var otherProduct2 = _fixture.Create<CartProduct>();
 
-            sourceAggregate.CartProducts.Add(sourceProduct1.Id, sourceProduct1);
-            sourceAggregate.CartProducts.Add(sourceProduct2.Id, sourceProduct2);
+            otherProduct1.Id = "other1";
+            otherProduct2.Id = "other2";
 
-            var sourceLineItem1 = _fixture.Create<LineItem>();
-            sourceLineItem1.ProductId = sourceProduct1.Id;
+            otherCartAggregate.CartProducts.Add(otherProduct1.Id, otherProduct1);
+            otherCartAggregate.CartProducts.Add(otherProduct2.Id, otherProduct2);
 
-            var sourceLineItem2 = _fixture.Create<LineItem>();
-            sourceLineItem2.ProductId = sourceProduct2.Id;
+            var otherLineItem1 = _fixture.Create<LineItem>();
+            otherLineItem1.ProductId = otherProduct1.Id;
 
-            sourceAggregate.Cart.Items = new List<LineItem> { sourceLineItem1, sourceLineItem2 };
+            var otherLineItem2 = _fixture.Create<LineItem>();
+            otherLineItem2.ProductId = otherProduct2.Id;
 
-            var destinationAggregate = GetValidCartAggregate();
+            otherCartAggregate.Cart.Items = new List<LineItem> { otherLineItem1, otherLineItem2 };
 
-            var destinationProduct1 = _fixture.Create<CartProduct>();
+            var ourCartAggregate = GetValidCartAggregate();
 
-            var destinationLineItem1 = _fixture.Create<LineItem>();
-            destinationLineItem1.ProductId = destinationProduct1.Id;
+            var ourProduct1 = _fixture.Create<CartProduct>();
+            var ourProduct2 = _fixture.Create<CartProduct>();
 
-            var destinationLineItem2 = _fixture.Create<LineItem>();
-            var quantity = destinationLineItem2.Quantity;
-            destinationLineItem2.ProductId = sourceProduct2.Id;
+            ourProduct1.Id = "our1";
+            ourProduct2.Id = "our2";
 
-            destinationAggregate.Cart.Items = new List<LineItem> { destinationLineItem1, destinationLineItem2 };
+            var ourLineItem1 = _fixture.Create<LineItem>();
+            ourLineItem1.ProductId = ourProduct1.Id;
+
+            var ourLineItem2 = _fixture.Create<LineItem>();
+            ourLineItem2.ProductId = otherProduct2.Id; // matching id
+            var quantity = ourLineItem2.Quantity;
+
+            ourCartAggregate.Cart.Items = new List<LineItem> { ourLineItem1, ourLineItem2 };
 
             // Act
-            await destinationAggregate.MergeWithCartAsync(sourceAggregate);
+            await ourCartAggregate.MergeWithCartAsync(otherCartAggregate);
 
             // Assert
-            destinationAggregate.Cart.Items.Should().HaveCount(3);
-            destinationAggregate.Cart.Items.Should().Contain(x => x.ProductId == sourceLineItem1.ProductId && x.Quantity == sourceLineItem1.Quantity);
-            destinationAggregate.Cart.Items.Should().Contain(x => x.ProductId == destinationLineItem1.ProductId && x.Quantity == destinationLineItem1.Quantity);
-            destinationAggregate.Cart.Items.Should().Contain(x => x.ProductId == destinationLineItem2.ProductId && x.Quantity == sourceLineItem2.Quantity + quantity);
+            ourCartAggregate.Cart.Items.Should().HaveCount(3);
+            ourCartAggregate.Cart.Items.Should().Contain(x => x.ProductId == otherLineItem1.ProductId && x.Quantity == otherLineItem1.Quantity);
+            ourCartAggregate.Cart.Items.Should().Contain(x => x.ProductId == ourLineItem1.ProductId && x.Quantity == ourLineItem1.Quantity);
+            ourCartAggregate.Cart.Items.Should().Contain(x => x.ProductId == ourLineItem2.ProductId && x.Quantity == otherLineItem2.Quantity + quantity);
         }
 
         [Fact]

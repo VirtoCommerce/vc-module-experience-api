@@ -108,6 +108,7 @@ namespace VirtoCommerce.XPurchase.Tests.Helpers
             _fixture.Register(() => _fixture.Build<LineItem>()
                                             .Without(x => x.DynamicProperties)
                                             .With(x => x.IsReadOnly, false)
+                                            .With(x => x.IsGift, false)
                                             .With(x => x.Quantity, InStockQuantity)
                                             .With(x => x.SalePrice, ItemCost)
                                             .With(x => x.ListPrice, ItemCost)
@@ -134,6 +135,11 @@ namespace VirtoCommerce.XPurchase.Tests.Helpers
                 _fixture.Build<Optional<decimal?>>()
                 .With(x => x.IsSpecified, true)
                 .Create());
+
+            _fixture.Register(() =>
+                _fixture.Build<Optional<ExpCartAddress>>()
+                    .With(x => x.IsSpecified, true)
+                    .Create());
 
             _cartProductServiceMock = new Mock<ICartProductService>();
 
