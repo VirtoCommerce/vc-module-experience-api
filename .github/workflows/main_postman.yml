@@ -67,5 +67,14 @@ jobs:
         installModule: 'true'
         moduleId: ${{ steps.image.outputs.moduleId }}
 
-    - name: Newman Action
-      run: newman run "./tests/postman/platform_xapi_collection_QA.json" --folder "Ready_for_CI" --reporters cli,testrail -e "./tests/postman/localhostenv.json"
+    - name: Run profile tests
+      run: newman run "./tests/postman/platform_xapi_collection_QA.json" --folder "X-profile" --reporters cli,testrail -e "./tests/postman/localhostenv.json"
+    
+    - name: Run catalog tests
+      run: newman run "./tests/postman/platform_xapi_collection_QA.json" --folder "X-catalog" --reporters cli,testrail -e "./tests/postman/localhostenv.json"
+    
+    - name: Run order test
+      run: newman run "./tests/postman/platform_xapi_collection_QA.json" --folder "X-order" --reporters cli,testrail -e "./tests/postman/localhostenv.json"
+
+    - name: Run cart tests
+      run: newman run "./tests/postman/platform_xapi_collection_QA.json" --folder "X-cart" --reporters cli,testrail -e "./tests/postman/localhostenv.json"
