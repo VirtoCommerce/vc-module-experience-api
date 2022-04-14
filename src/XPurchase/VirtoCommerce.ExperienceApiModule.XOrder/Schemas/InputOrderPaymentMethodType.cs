@@ -24,6 +24,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field(x => x.Priority);
             Field(x => x.IsActive);
             Field(x => x.LogoUrl, true);
+            Field(x => x.Name, true);
             Field(x => x.Code);
             Field<IntGraphType>(nameof(PaymentMethod.PaymentMethodType),
                 "Payment method type");
