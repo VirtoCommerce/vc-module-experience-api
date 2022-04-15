@@ -125,7 +125,7 @@ Every mutation contains base arguments for working with cart context:
 |20|[updateCartShipmentDynamicProperties](#updatecartshipmentdynamicproperties)|`!shipmentId` `!dynamicProperties`|Updates dynamic properties in cart shipment.|
 |21|[updateCartPaymentDynamicProperties](#updatecartpaymentdynamicproperties)|`!paymentId` `!dynamicProperties`|Updates dynamic properties in cart payment.|
 |22|[addCartAddress](#addcartaddress)|`!address`([type](https://github.com/VirtoCommerce/vc-module-experience-api/blob/dev/src/XPurchase/VirtoCommerce.XPurchase/Schemas/InputAddOrUpdateCartAddressType.cs))|Add address for cart or update it by type
-
+|23|[addWishlistBulkItem](#addwishlistbulkitem)|`!listIds` `!productId`|Add product to few wish lists.|
 
 > [!NOTE]
 > In arguments column we only show additional arguments. if they are marked with an exclamation mark, they are required.
@@ -947,5 +947,34 @@ mutation addOrUpdateCartAddress ($command: InputAddOrUpdateCartAddressType!) {
       "zip": "123",
       "addressType": 3
     }
+}
+```
+
+### AddWishListBulkItem
+This mutation adds a product to few wish lists.
+
+#### Query:
+```
+mutation addWishlistBulkItem ($command: InputAddWishlistBulkItemType!) {
+    addWishlistBulkItem (command: $command) {    
+         wishlists {          
+          name
+          id
+          items {
+            id
+            quantity
+            product {
+              name
+            }
+          }
+        }
+    }
+}
+```
+#### Variables:
+```
+"command": {
+   "listIds": ["ce682f58-3bbd-42e5-a576-08c82a86ca11", "1b249c7a-5b7b-434d-a9b5-56a67ff993fe"],
+   "productId" : "92e671024a8648de97dedcd488f58455"
 }
 ```

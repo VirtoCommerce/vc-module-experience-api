@@ -1,4 +1,4 @@
-﻿using GraphQL.Types;
+using GraphQL.Types;
 
 namespace VirtoCommerce.XPurchase.Schemas
 {
@@ -6,8 +6,8 @@ namespace VirtoCommerce.XPurchase.Schemas
     {
         public InputAddWishlistItemType()
         {
-            Field<NonNullGraphType<StringGraphType>>("listId", description: "List ID");
-            Field<NonNullGraphType<StringGraphType>>("productId", description: "Product ID to add");
+            Field<NonNullGraphType<StringGraphType>>("listId", description: "Wish list id");
+            Field<NonNullGraphType<StringGraphType>>("productId", description: "Product id to add");
         }
     }
 }
