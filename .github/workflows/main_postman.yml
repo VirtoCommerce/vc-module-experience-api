@@ -31,6 +31,9 @@ jobs:
       with:
         fetch-depth: 0
 
+    - name: Setup newman
+      run: npm install -g newman
+
     - name: Setup newman reporter testrail
       run: npm install newman-reporter-testrail --global
 
