@@ -20,9 +20,8 @@ jobs:
       TESTRAIL_USERNAME: ${{ secrets.TESTRAIL_USERNAME }}
       TESTRAIL_APIKEY: ${{ secrets.TESTRAIL_APIKEY }}
       TESTRAIL_PROJECTID: "18"
-      TESTRAIL_TITLE: "Postman API Tests"
-      TESTRAIL_SUITEID: "2297" 
-      TESTRAIL_LOGGING: "none"
+    
+  
       
 
     steps:
@@ -69,12 +68,24 @@ jobs:
 
     - name: Run profile tests
       run: newman run "./tests/postman/platform_xapi_collection_QA.json" --folder "X-profile" --reporters cli,testrail -e "./tests/postman/localhostenv.json"
-    
+      env:
+         TESTRAIL_SUITEID: "4364"
+         TESTRAIL_RUNID: "12358"
+
     - name: Run catalog tests
       run: newman run "./tests/postman/platform_xapi_collection_QA.json" --folder "X-catalog" --reporters cli,testrail -e "./tests/postman/localhostenv.json"
-    
+      env:
+         TESTRAIL_SUITEID: "4361"
+         TESTRAIL_RUNID: "12362"
+  
     - name: Run order test
       run: newman run "./tests/postman/platform_xapi_collection_QA.json" --folder "X-order" --reporters cli,testrail -e "./tests/postman/localhostenv.json"
-
+      env:
+         TESTRAIL_SUITEID: "4363"
+         TESTRAIL_RUNID: "12360"
+  
     - name: Run cart tests
       run: newman run "./tests/postman/platform_xapi_collection_QA.json" --folder "X-cart" --reporters cli,testrail -e "./tests/postman/localhostenv.json"
+      env:
+         TESTRAIL_SUITEID: "4362"
+         TESTRAIL_RUNID: "12356"
