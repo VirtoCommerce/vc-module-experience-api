@@ -20,8 +20,6 @@ jobs:
       TESTRAIL_USERNAME: ${{ secrets.TESTRAIL_USERNAME }}
       TESTRAIL_APIKEY: ${{ secrets.TESTRAIL_APIKEY }}
       TESTRAIL_PROJECTID: "18"
-      TESTRAIL_SUITEID: "4363"
-      TESTRAIL_RUNID: "12360"
     
   
       
@@ -30,9 +28,6 @@ jobs:
     - uses: actions/checkout@v2
       with:
         fetch-depth: 0
-
-    - name: Setup newman
-      run: npm install -g newman
 
     - name: Setup newman reporter testrail
       run: npm install newman-reporter-testrail --global
@@ -71,10 +66,8 @@ jobs:
         installModule: 'true'
         moduleId: ${{ steps.image.outputs.moduleId }}
 
-    - name: X-profile tests
-      uses: matt-ball/newman-action@master
-      with:
-        collection: ./tests/postman/platform_xapi_collection_QA.json
-        environment: ./tests/postman/localhostenv.json
-        folder: "X-profile"
-        reporters: '["testrail"]'
+    - name: Run profile tests
+      run: newman run "./tests/postman/platform_xapi_collection_QA.json" --folder "X-profile" --bail --reporters testrail -e "./tests/postman/localhostenv.json"
+      env:
+         TESTRAIL_SUITEID: "4364"
+         TESTRAIL_RUNID: "12358"
