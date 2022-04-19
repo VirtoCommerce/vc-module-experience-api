@@ -67,7 +67,13 @@ jobs:
         moduleId: ${{ steps.image.outputs.moduleId }}
 
     - name: Run profile tests
-      run: newman run "./tests/postman/platform_xapi_collection_QA.json" --folder "X-cart" --bail --reporters cli -e "./tests/postman/localhostenv.json"
+      run: newman run "./tests/postman/platform_xapi_collection_QA.json" --folder "Contact Anonymous [ID]" --bail --reporters cli,testrail -e "./tests/postman/localhostenv.json"
       env:
          TESTRAIL_SUITEID: "4364"
          TESTRAIL_RUNID: "12358"
+
+    - name: Run order test
+      run: newman run "./tests/postman/platform_xapi_collection_QA.json" --folder "X-order" --reporters cli,testrail -e "./tests/postman/localhostenv.json"
+      env:
+         TESTRAIL_SUITEID: "4363"
+         TESTRAIL_RUNID: "12360"
