@@ -67,10 +67,17 @@ jobs:
         moduleId: ${{ steps.image.outputs.moduleId }}
 
     - name: Run profile tests
-      run: newman run "./tests/postman/platform_xapi_collection_QA.json" --folder "Contact Anonymous [ID]" --bail --reporters cli,testrail -e "./tests/postman/localhostenv.json"
+      run: newman run "./tests/postman/platform_xapi_collection_QA.json" --folder "X-profile"  --reporters cli,testrail -e "./tests/postman/localhostenv.json"
       env:
          TESTRAIL_SUITEID: "4364"
          TESTRAIL_RUNID: "12358"
+      if: always()
+
+    - name: Run catalog tests
+      run: newman run "./tests/postman/platform_xapi_collection_QA.json" --folder "X-catalog" --reporters cli,testrail -e "./tests/postman/localhostenv.json"
+      env:
+         TESTRAIL_SUITEID: "4361"
+         TESTRAIL_RUNID: "12362"
       if: always()
 
     - name: Run order test
@@ -78,4 +85,11 @@ jobs:
       env:
          TESTRAIL_SUITEID: "4363"
          TESTRAIL_RUNID: "12360"
+      if: always()
+
+    - name: Run cart tests
+      run: newman run "./tests/postman/platform_xapi_collection_QA.json" --folder "X-cart" --reporters cli,testrail -e "./tests/postman/localhostenv.json"
+      env:
+         TESTRAIL_SUITEID: "4362"
+         TESTRAIL_RUNID: "12356"
       if: always()
