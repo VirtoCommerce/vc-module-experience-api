@@ -1,19 +1,23 @@
-# X-Purchase order
+# X-Purchase Order
 
-X-Purchase-Cart provides high performance API for order data.
+X-Purchase-Order provides high performance API for order data.
 
 ## Key features
+
 - Getting and searching orders;
 - Basic order workflow operations;
 
 ## QueryRoot
 ### Queries
-|№|Endpoint|Arguments|Returns|
+
+|#|Endpoint|Arguments|Returns|
 |------|---------|---------|---------|
 |1|[order](#order-query)|`id` `number` `userId`|Order|
 |2|[orders](#orders-connection)|`filter` `sort` `language` `userId`|Paginated order list|
+
 ### Mutations
-|№ |Endpoint|Arguments|Description|
+
+|# |Endpoint|Arguments|Description|
 |--|-----------------------|---------------------|---------|
 |1 |[createOrderFromCart](#createOrderFromCart)|`!cartId`|Create order from an existing cart.|
 |2 |[changeOrderStatus](#changeOrderStatus)|`!orderId` `!status`|Changes order status.|
@@ -33,7 +37,9 @@ X-Purchase-Cart provides high performance API for order data.
 ![OrderType schema structure](./media/OrderMainTypes.png)
 
 ## Examples
+
 In this block you can find some examples of queries and mutations.
+
 ### Order query
 
 ```
@@ -204,13 +210,17 @@ With this connection you can get all user's orders.
 </p>
 
 ### CreateOrderFromCart
+
 This mutation creates an order from the cart with given id.
-#### Query:
+
+#### Query
+
 ```
 mutation {
   createOrderFromCart(
     command: { cartId: "05479fa6-9b6f-4028-94b1-cda21447e268" }
-  ) {
+  )
+  {
     id
     items {
       id
@@ -224,8 +234,11 @@ mutation {
 }
 ```
 ### ChangeOrderStatus
+
 This mutation changes order status.
-#### Query:
+
+#### Query
+
 ```
 mutation {
   changeOrderStatus(
@@ -236,8 +249,11 @@ mutation {
 ```
 
 ### ConfirmOrderPayment
+
 This mutation confirms order payment.
-#### Query:
+
+#### Query
+
 ```
 mutation {
   confirmOrderPayment(
@@ -264,8 +280,11 @@ mutation {
 ```
 
 ### CancelOrderPayment
+
 This mutation cancels order payment.
-#### Query:
+
+#### Query
+
 ```
 mutation {
   cancelOrderPayment(
@@ -292,9 +311,11 @@ mutation {
 ```
 
 ### updateOrderDynamicProperties
+
 This mutation updates dynamic properties in order
 
-#### Query:
+#### Query
+
 ```
 mutation ($command: InputUpdateOrderDynamicPropertiesType!)
 {
@@ -315,7 +336,9 @@ mutation ($command: InputUpdateOrderDynamicPropertiesType!)
     }
 }
 ```
-#### Variables:
+
+#### Variables
+
 ```
 "command": {
     "orderId": "d548c750-5a74-4e54-b72b-f5209f44caa6",
@@ -339,9 +362,11 @@ mutation ($command: InputUpdateOrderDynamicPropertiesType!)
 ```
 
 ### updateOrderItemDynamicProperties
+
 This mutation updates dynamic properties in order item
 
-#### Query:
+#### Query
+
 ```
 mutation ($command: InputUpdateOrderItemDynamicPropertiesType!)
 {
@@ -366,7 +391,9 @@ mutation ($command: InputUpdateOrderItemDynamicPropertiesType!)
     }
 }
 ```
-#### Variables:
+
+#### Variables
+
 ```
 "command": {
     "orderId": "d548c750-5a74-4e54-b72b-f5209f44caa6",
@@ -391,9 +418,11 @@ mutation ($command: InputUpdateOrderItemDynamicPropertiesType!)
 ```
 
 ### updateOrderShipmentDynamicProperties
+
 This mutation updates dynamic properties in order shipment
 
-#### Query:
+#### Query
+
 ```
 mutation ($command: InputUpdateOrderShipmentDynamicPropertiesType!)
 {
@@ -418,7 +447,9 @@ mutation ($command: InputUpdateOrderShipmentDynamicPropertiesType!)
     }
 }
 ```
+
 #### Variables:
+
 ```
 "command": {
     "orderId": "d548c750-5a74-4e54-b72b-f5209f44caa6",
@@ -443,9 +474,11 @@ mutation ($command: InputUpdateOrderShipmentDynamicPropertiesType!)
 ```
 
 ### updateOrderPaymentDynamicProperties
+
 This mutation updates dynamic properties in order payment
 
-#### Query:
+#### Query
+
 ```
 mutation ($command: InputUpdateOrderPaymentDynamicPropertiesType!)
 {
@@ -470,7 +503,9 @@ mutation ($command: InputUpdateOrderPaymentDynamicPropertiesType!)
     }
 }
 ```
-#### Variables:
+
+#### Variables
+
 ```
 "command": {
     "orderId": "d548c750-5a74-4e54-b72b-f5209f44caa6",
