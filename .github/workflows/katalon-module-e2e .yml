@@ -24,7 +24,7 @@ on:
         type: boolean
         default: true
       installCustomModule:
-        description: 'Boolean param. true - to install custom module ver.'
+        description: 'Enable or disable "Install Custom Modules" step'
         required: false
         type: boolean
         default: true
@@ -43,13 +43,13 @@ jobs:
   module-katalon-tests:
     uses: VirtoCommerce/.github/.github/workflows/e2e.yml@main
     with:
-      katalonRepo: ${{ inputs.katalonRepo }}
-      katalonRepoBranch: ${{ inputs.katalonRepoBranch }}
-      testSuite: ${{ inputs.testSuite }}
-      installModules: ${{ inputs.installModules }}
-      installCustomModule: ${{ inputs.installCustomModule }}
-      customModuleId: ${{ inputs.customModuleId }}
-      customModuleUrl: ${{ inputs.customModuleUrl }}
+      katalonRepo: ${{ github.event.inputs.katalonRepo }}
+      katalonRepoBranch: ${{ github.event.inputs.katalonRepoBranch }}
+      testSuite: ${{ github.event.inputs.testSuite }}
+      installModules: ${{ github.event.inputs.installModules }}
+      installCustomModule: ${{ github.event.inputs.installCustomModule }}
+      customModuleId: ${{ github.event.inputs.customModuleId }}
+      customModuleUrl: ${{ github.event.inputs.customModuleUrl }}
     secrets:
       envPAT: ${{ secrets.REPO_TOKEN }}
       katalonApiKey: ${{ secrets.KATALON_API_KEY }}
