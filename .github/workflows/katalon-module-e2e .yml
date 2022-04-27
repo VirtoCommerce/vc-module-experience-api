@@ -46,8 +46,8 @@ jobs:
       katalonRepo: ${{ github.event.inputs.katalonRepo }}
       katalonRepoBranch: ${{ github.event.inputs.katalonRepoBranch }}
       testSuite: ${{ github.event.inputs.testSuite }}
-      installModules: ${{ github.event.inputs.installModules }}
-      installCustomModule: ${{ github.event.inputs.installCustomModule }}
+      installModules: '${{ github.event.inputs.installModules }}'
+      installCustomModule: '${{ github.event.inputs.installCustomModule }}'
       customModuleId: ${{ github.event.inputs.customModuleId }}
       customModuleUrl: ${{ github.event.inputs.customModuleUrl }}
     secrets:
