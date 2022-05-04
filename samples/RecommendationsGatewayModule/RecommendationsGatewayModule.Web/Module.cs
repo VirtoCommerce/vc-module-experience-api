@@ -16,9 +16,10 @@ using VirtoCommerce.Platform.Core.Modularity;
 
 namespace RecommendationsGatewayModule.Web
 {
-    public class Module : IModule
+    public class Module : IModule, IHasConfiguration
     {
         public ManifestModuleInfo ModuleInfo { get; set; }
+        public IConfiguration Configuration { get; set; }
 
         public void Initialize(IServiceCollection services)
         {
@@ -28,13 +29,9 @@ namespace RecommendationsGatewayModule.Web
             services.AddSchemaBuilder<ProductRecommendationSchema>();
             services.AddSchemaType<ProductRecommendationType>();
 
-            // Build an intermediate service provider
-            var sp = services.BuildServiceProvider();
-            // Resolve the services from the service provider
-            var configuration = sp.GetService<IConfiguration>();
             //PT-1611: ValidateDataAnnotations() doesn't throws any exception on the first access of IOptions<RecommendationOptions>.Value.
             //Need to investigate why this doesn't work as expected because it makes difficult to diagnose errors in the configuration.
-            services.AddOptions<RecommendationOptions>().Bind(configuration.GetSection("Recommendations"))
+            services.AddOptions<RecommendationOptions>().Bind(Configuration.GetSection("Recommendations"))
                     .ValidateDataAnnotations().PostConfigure(opts =>
                                                     {
                                                         //match connection for scenario
