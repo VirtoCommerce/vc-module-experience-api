@@ -441,9 +441,9 @@ Keep only the product which matches the specified SKU:
 
 Keep only the products or variations in result. If not set will return both types.
 
-`filter: "is:product, status:visible"`
+`filter: "is:product status:visible"`
 
-`filter: "is:variation, status:hidden"`
+`filter: "is:variation status:hidden"`
 
 #### Example
 
