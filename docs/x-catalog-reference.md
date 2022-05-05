@@ -441,9 +441,30 @@ Keep only the product which matches the specified SKU:
 
 Keep only the products or variations in result. If not set will return both types.
 
-`filter: "is:product`
+`filter: "is:product status:visible"`
 
-`filter: "is:variation`
+`filter: "is:variation status:hidden"`
+
+#### Example
+
+Display products and variations in the list from a specific category
+
+```json
+query {
+  products(
+    storeId: "B2B-store"
+    cultureName: "en-US"
+    first:20
+    after: "0"
+   	filter:"status:hidden,visible category.path:7829d35f417e4dd98851f51322f32c23/4fbaca886f014767a52f3f38b9df648f"
+  ) {
+    items 
+    {
+      name
+    }
+    totalCount
+  }}
+```
 
 ### Filter by custom properties
 
