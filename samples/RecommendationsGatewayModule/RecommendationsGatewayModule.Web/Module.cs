@@ -21,17 +21,17 @@ namespace RecommendationsGatewayModule.Web
         public ManifestModuleInfo ModuleInfo { get; set; }
         public IConfiguration Configuration { get; set; }
 
-        public void Initialize(IServiceCollection services)
+        public void Initialize(IServiceCollection serviceCollection)
         {
-            services.AddSingleton<IContentRenderer, LiquidContentRenderer>();
-            services.AddMediatR(typeof(GetRecommendationsRequestHandler));
+            serviceCollection.AddSingleton<IContentRenderer, LiquidContentRenderer>();
+            serviceCollection.AddMediatR(typeof(GetRecommendationsRequestHandler));
             AbstractTypeFactory<DownstreamResponse>.RegisterType<GetRecommendationsResponse>();
-            services.AddSchemaBuilder<ProductRecommendationSchema>();
-            services.AddSchemaType<ProductRecommendationType>();
+            serviceCollection.AddSchemaBuilder<ProductRecommendationSchema>();
+            serviceCollection.AddSchemaType<ProductRecommendationType>();
 
             //PT-1611: ValidateDataAnnotations() doesn't throws any exception on the first access of IOptions<RecommendationOptions>.Value.
             //Need to investigate why this doesn't work as expected because it makes difficult to diagnose errors in the configuration.
-            services.AddOptions<RecommendationOptions>().Bind(Configuration.GetSection("Recommendations"))
+            serviceCollection.AddOptions<RecommendationOptions>().Bind(Configuration.GetSection("Recommendations"))
                     .ValidateDataAnnotations().PostConfigure(opts =>
                                                     {
                                                         //match connection for scenario
@@ -40,7 +40,7 @@ namespace RecommendationsGatewayModule.Web
                                                             scenario.Connection = opts.Connections.FirstOrDefault(x => x.Name.EqualsInvariant(scenario.ConnectionName));
                                                         }
                                                     });
-            services.AddHttpClient<IDownstreamRequestSender, DownstreamRequestSender>()
+            serviceCollection.AddHttpClient<IDownstreamRequestSender, DownstreamRequestSender>()
                 .AddTransientHttpErrorPolicy(p => p.WaitAndRetryAsync(3, _ => TimeSpan.FromMilliseconds(600)));
         }
 
