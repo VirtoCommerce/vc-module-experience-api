@@ -55,6 +55,32 @@ product(id: !string, storeId: !string, userId: !string, currencyCode: string, cu
 }
 ```
 
+#### Display Tier Pricing on product page
+
+```json
+query
+{
+  product(
+        id:"9cbd8f316e254a679ba34a900fccb076" 
+        storeId:"Electronics"
+        currencyCode:"USD")
+  {
+    prices
+    {
+      minQuantity
+      tierPrices
+      {
+        quantity
+        price
+      {
+        amount
+      }
+      }
+    }
+  }
+}
+```
+
 ### Products
 
 This connection allows you to search products.
