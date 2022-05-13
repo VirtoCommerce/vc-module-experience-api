@@ -1,4 +1,4 @@
-# Experience API and Application Insights
+# Troubleshooting
 
 By default all GraphQL requests are sent via HTTP `POST /graphql` endpoind method and all the information about the request is included in the POST request body, therefore the ability to see in Application Insights what query or mutation was executed is lost.
 

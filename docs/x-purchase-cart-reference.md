@@ -1,8 +1,9 @@
-# X-Purchase-Cart
+# X-Purchase Cart
 
 X-Purchase-Cart provides high performance API for shopping cart.
 
 ## Key features
+
 - Working with shopping cart;
 - Auto evaluating taxes and prices;
 - Multi-Laguage;
@@ -10,12 +11,16 @@ X-Purchase-Cart provides high performance API for shopping cart.
 - Lazy resolving;
 
 ## QueryRoot
+
 #### List of queries:
-|№|Endpoint|Arguments|Return|
+
+|#|Endpoint|Arguments|Return|
 |------|---------|---------|---------|
 |1|[cart](#cart)|`storeId` `cartName` `userId` `cultureName` `currencyCode` `cartType`|Shopping cart|
 |2|[carts](#carts)|`storeId` `cartName` `userId` `cultureName` `currencyCode` `cartType` `sort` `skip` `take`|Paginated shopping cart list|
+
 ### Cart
+
 ```
 {
     cart (storeId: "Electronics"
@@ -52,7 +57,9 @@ X-Purchase-Cart provides high performance API for shopping cart.
 ```
 > [!TIP]
 > See also CartType schema for better understanding of possible fields in request.
+
 ### Carts connection
+
 With this connection you can get all user's carts/whishlists.
 ```
 {
@@ -85,14 +92,18 @@ With this connection you can get all user's carts/whishlists.
 ```
 
 ## Queriable objects
+
 ### CartType
+
 ![CartType schema structure](./media/CartType.jpeg)
 
 ### CartType Addresses field
+
 Field `Cart.Addresses` in `CartType` is a functional enabler. Currently it does not participate in any internal business logic and it is separated from `Cart.Billing.Addresses` and `Cart.Shipping.Addresses`. Feel free to add your own business logic to it.
 Address type structure can be found [here](https://github.com/VirtoCommerce/vc-module-experience-api/blob/dev/src/VirtoCommerce.ExperienceApiModule.Core/Schemas/AddressType.cs).
 
 ## Mutations
+
 Every mutation contains base arguments for working with cart context:
 - `storeId` - Id of current store
 - `cartName` - Cart name
@@ -100,8 +111,9 @@ Every mutation contains base arguments for working with cart context:
 - `currencyCode` - Currency code (e.g. "USD")
 - `cultureName` - Culture name of current language (e.g. "en-Us")
 - `cartType` - Type of cart ("cart" or "whishlist")
+
 #### Mutation list:
-|№ |Endpoint|Arguments|Description|
+|# |Endpoint|Arguments|Description|
 |--|-----------------------|---------------------|---------|
 |1 |[addItem](#additem)|`!productId` `!quantity` `price` `comment`|Add item to cart.|
 |2 |[clearCart](#clearcart)|-|Remove items from cart.|
@@ -131,8 +143,11 @@ Every mutation contains base arguments for working with cart context:
 > In arguments column we only show additional arguments. if they are marked with an exclamation mark, they are required.
 
 ### AddItem
+
 This mutation validates item and add it to cart, recalculate promotion rewards and taxes then save cart.
-#### Query:
+
+#### Query
+
 ```
 mutation ($command:InputAddItemType!)
 {
@@ -149,8 +164,10 @@ mutation ($command:InputAddItemType!)
     }
 }
 ```
-#### Variables:
-```
+
+#### Variables
+
+```json
 "command": {
     "storeId": "Electronics",
     "cartName": "default",
@@ -168,10 +185,14 @@ mutation ($command:InputAddItemType!)
     ]
 }
 ```
+
 ### ClearCart
+
 This mutation removes all items from cart, reset promotion rewards based on amount of items and save cart.
-#### Query:
-```
+
+#### Query
+
+```json
 mutation ($command:InputClearCartType!)
 {
     (command: $command)
@@ -187,8 +208,10 @@ mutation ($command:InputClearCartType!)
     }
 }
 ```
-#### Variables:
-```
+
+#### Variables
+
+```json
 "command": {
     "storeId": "Electronics",
     "cartName": "default",
@@ -198,10 +221,14 @@ mutation ($command:InputClearCartType!)
     "cartType": "cart"
 }
 ```
+
 ### ChangeComment
+
 This mutation changes cart comment.
-#### Query:
-```
+
+#### Query
+
+```json
 mutation ($command:InputChangeCommentType!)
 {
     (command: $command)
@@ -211,8 +238,10 @@ mutation ($command:InputChangeCommentType!)
     }
 }
 ```
-#### Variables:
-```
+
+#### Variables
+
+```json
 "command": {
     "storeId": "Electronics",
     "cartName": "default",
@@ -225,9 +254,12 @@ mutation ($command:InputChangeCommentType!)
 ```
 
 ### ChangeCartItemPrice
+
 This mutation changes cart item price.
-#### Query:
-```
+
+#### Query
+
+```json
 mutation ($command:InputChangeCartItemPriceType!)
 {
     (command: $command)
@@ -245,8 +277,10 @@ mutation ($command:InputChangeCartItemPriceType!)
     }
 }
 ```
-#### Variables:
-```
+
+#### Variables
+
+```json
 "command": {
     "storeId": "Electronics",
     "cartName": "default",
@@ -260,9 +294,12 @@ mutation ($command:InputChangeCartItemPriceType!)
 ```
 
 ### ChangeCartItemQuantity
+
 This mutation changes cart item quantity.
-#### Query:
-```
+
+#### Query
+
+```json
 mutation ($command:InputChangeCartItemQuantityType!)
 {
     (command: $command)
@@ -279,8 +316,10 @@ mutation ($command:InputChangeCartItemQuantityType!)
     }
 }
 ```
-#### Variables:
-```
+
+#### Variables
+
+```json
 "command": {
     "storeId": "Electronics",
     "cartName": "default",
@@ -294,9 +333,12 @@ mutation ($command:InputChangeCartItemQuantityType!)
 ```
 
 ### ChangeCartItemComment
+
 This mutation changes cart item comment.
-#### Query:
-```
+
+#### Query
+
+```json
 mutation ($command:InputChangeCartItemCommentType!)
 {
     (command: $command)
@@ -311,8 +353,9 @@ mutation ($command:InputChangeCartItemCommentType!)
     }
 }
 ```
-#### Variables:
-```
+#### Variables
+
+```json
 "command": {
     "storeId": "Electronics",
     "cartName": "default",
@@ -326,9 +369,12 @@ mutation ($command:InputChangeCartItemCommentType!)
 ```
 
 ### RemoveCartItem
+
 This mutation removes item from cart.
-#### Query:
-```
+
+#### Query
+
+```json
 mutation ($command:InputRemoveItemType!)
 {
     (command: $command)
@@ -344,8 +390,10 @@ mutation ($command:InputRemoveItemType!)
     }
 }
 ```
-#### Variables:
-```
+
+#### Variables
+
+```json
 "command": {
     "storeId": "Electronics",
     "cartName": "default",
@@ -356,10 +404,14 @@ mutation ($command:InputRemoveItemType!)
     "lineItemId": "9cbd8f316e254a679ba34a900fccb076",
 }
 ```
+
 ### AddCoupon
+
 This mutation checks and adds coupon to cart.
-#### Query:
-```
+
+#### Query
+
+```json
 mutation ($command:InputAddCouponType!)
 {
     (command: $command)
@@ -373,8 +425,10 @@ mutation ($command:InputAddCouponType!)
     }
 }
 ```
-#### Variables:
-```
+
+#### Variables
+
+```json
 "command": {
     "storeId": "Electronics",
     "cartName": "default",
@@ -387,9 +441,12 @@ mutation ($command:InputAddCouponType!)
 ```
 
 ### RemoveCoupon
+
 This mutation removes coupon from cart.
-#### Query:
-```
+
+#### Query
+
+```json
 mutation ($command:InputRemoveCouponType!)
 {
     (command: $command)
@@ -403,8 +460,10 @@ mutation ($command:InputRemoveCouponType!)
     }
 }
 ```
-#### Variables:
-```
+
+#### Variables
+
+```json
 "command": {
     "storeId": "Electronics",
     "cartName": "default",
@@ -417,9 +476,12 @@ mutation ($command:InputRemoveCouponType!)
 ```
 
 ### RemoveShipment
+
 This mutation removes shipment from cart.
-#### Query:
-```
+
+#### Query
+
+```json
 mutation ($command:InputRemoveShipmentType!)
 {
     (command: $command)
@@ -434,8 +496,10 @@ mutation ($command:InputRemoveShipmentType!)
     }
 }
 ```
-#### Variables:
-```
+
+#### Variables
+
+```json
 "command": {
     "storeId": "Electronics",
     "cartName": "default",
@@ -448,9 +512,12 @@ mutation ($command:InputRemoveShipmentType!)
 ```
 
 ### AddOrUpdateCartShipment
-This mutation adds or updates shipment of cart. This mutation supports partial update, all fields in `command.shipment` and `command.shipment.deliveryAddress` are optional. 
-#### Query:
-```
+
+This mutation adds or updates shipment of cart. This mutation supports partial update, all fields in `command.shipment` and `command.shipment.deliveryAddress` are optional.
+
+#### Query
+
+```json
 mutation ($command:InputAddOrUpdateCartShipmentType!)
 {
     (command: $command)
@@ -465,8 +532,10 @@ mutation ($command:InputAddOrUpdateCartShipmentType!)
     }
 }
 ```
-#### Variables:
-```
+
+#### Variables
+
+```json
 "command": {
     "storeId": "Electronics",
     "cartName": "default",
@@ -494,9 +563,12 @@ mutation ($command:InputAddOrUpdateCartShipmentType!)
 > To see all possible parametrs for shipment object [look here...](https://github.com/VirtoCommerce/vc-module-experience-api/blob/dev/src/XPurchase/VirtoCommerce.XPurchase/Schemas/InputShipmentType.cs)
 
 ### AddOrUpdateCartPayment
+
 This mutation adds or updates payment of cart. This mutation supports partial update, all fields in `command.payment` and `command.payment.billingAddress` are optional.
-#### Query:
-```
+
+#### Query
+
+```json
 mutation ($command:InputAddOrUpdateCartPaymentType!)
 {
     (command: $command)
@@ -511,8 +583,9 @@ mutation ($command:InputAddOrUpdateCartPaymentType!)
     }
 }
 ```
-#### Variables:
-```
+#### Variables
+
+```json
 "command": {
     "storeId": "Electronics",
     "cartName": "default",
@@ -535,20 +608,26 @@ mutation ($command:InputAddOrUpdateCartPaymentType!)
     },
 }
 ```
+
 > [!TIP]
 > To see all possible parametrs for payment object [look here...](https://github.com/VirtoCommerce/vc-module-experience-api/blob/dev/src/XPurchase/VirtoCommerce.XPurchase/Schemas/InputPaymentType.cs)
 
 ### ValidateCoupon
+
 This mutation validates coupon.
-#### Query:
-```
+
+#### Query
+
+```json
 mutation ($command:InputValidateCouponType!)
 {
     (command: $command)
 }
 ```
-#### Variables:
-```
+
+#### Variables
+
+```json
 "command": {
     "storeId": "Electronics",
     "cartName": "default",
@@ -563,9 +642,12 @@ mutation ($command:InputValidateCouponType!)
 ```
 
 ### MergeCart
+
 This mutation merges two carts. You can use it to merge anonymous cart with user cart after authorization.
-#### Query:
-```
+
+#### Query
+
+```json
 mutation ($command:InputMergeCartType!)
 {
     (command: $command)
@@ -575,8 +657,10 @@ mutation ($command:InputMergeCartType!)
     }
 }
 ```
-#### Variables:
-```
+
+#### Variables
+
+```json
 "command": {
     "storeId": "Electronics",
     "cartName": "default",
@@ -591,14 +675,17 @@ mutation ($command:InputMergeCartType!)
 ### RemoveCart
 This mutation removes cart.
 
-#### Query:
-```
+#### Query
+
+```json
 mutation ($command:InputRemoveCartType!)
 {
     (command: $command)
 }
 ```
-#### Variables:
+
+#### Variables
+
 ```
 "command": {
     "cartId": "7777-7777-7777-7777"
@@ -606,10 +693,12 @@ mutation ($command:InputRemoveCartType!)
 ```
 
 ### ClearShipments
+
 This mutation removes all shipments from cart.
 
-#### Query:
-```
+#### Query
+
+```json
 mutation ($command:InputClearShipmentsType!)
 {
     (command: $command)
@@ -624,8 +713,10 @@ mutation ($command:InputClearShipmentsType!)
     }
 }
 ```
-#### Variables:
-```
+
+#### Variables
+
+```json
 "command": {
     "storeId": "Electronics",
     "cartName": "default",
@@ -637,10 +728,12 @@ mutation ($command:InputClearShipmentsType!)
 ```
 
 ### ClearPayments
+
 This mutation removes all payments from cart.
 
-#### Query:
-```
+#### Query
+
+```json
 mutation ($command:InputClearPaymentsType!)
 {
     (command: $command)
@@ -655,8 +748,10 @@ mutation ($command:InputClearPaymentsType!)
     }
 }
 ```
-#### Variables:
-```
+
+#### Variables
+
+```json
 "command": {
     "storeId": "Electronics",
     "cartName": "default",
@@ -668,10 +763,12 @@ mutation ($command:InputClearPaymentsType!)
 ```
 
 ### UpdateCartDynamicProperties
+
 This mutation updates dynamic properties in cart
 
-#### Query:
-```
+#### Query
+
+```json
 mutation ($command: InputUpdateCartDynamicPropertiesType!)
 {
     updateCartDynamicProperties(command: $command)
@@ -691,8 +788,10 @@ mutation ($command: InputUpdateCartDynamicPropertiesType!)
     }
 }
 ```
-#### Variables:
-```
+
+#### Variables
+
+```json
 "command": {
     "storeId": "Electronics",
     "cartName": "default",
@@ -720,10 +819,12 @@ mutation ($command: InputUpdateCartDynamicPropertiesType!)
 ```
 
 ### UpdateCartItemDynamicProperties
+
 This mutation updates dynamic properties in cart item
 
-#### Query:
-```
+#### Query
+
+```json
 mutation ($command: InputUpdateCartItemDynamicPropertiesType!)
 {
     updateCartItemDynamicProperties(command: $command)
@@ -747,8 +848,10 @@ mutation ($command: InputUpdateCartItemDynamicPropertiesType!)
     }
 }
 ```
-#### Variables:
-```
+
+#### Variables
+
+```json
 "command": {
     "storeId": "Electronics",
     "cartName": "default",
@@ -777,10 +880,12 @@ mutation ($command: InputUpdateCartItemDynamicPropertiesType!)
 ```
 
 ### UpdateCartShipmentDynamicProperties
+
 This mutation updates dynamic properties in cart shipment
 
-#### Query:
-```
+#### Query
+
+```json
 mutation ($command: InputUpdateCartItemDynamicPropertiesType!)
 {
     updateCartShipmentDynamicProperties(command: $command)
@@ -804,8 +909,10 @@ mutation ($command: InputUpdateCartItemDynamicPropertiesType!)
     }
 }
 ```
-#### Variables:
-```
+
+#### Variables
+
+```json
 "command": {
     "storeId": "Electronics",
     "cartName": "default",
@@ -834,10 +941,12 @@ mutation ($command: InputUpdateCartItemDynamicPropertiesType!)
 ```
 
 ### UpdateCartPaymentDynamicProperties
+
 This mutation updates dynamic properties in cart payment
 
-#### Query:
-```
+#### Query
+
+```json
 mutation ($command: InputUpdateCartItemDynamicPropertiesType!)
 {
     updateCartPaymentDynamicProperties(command: $command)
@@ -861,8 +970,10 @@ mutation ($command: InputUpdateCartItemDynamicPropertiesType!)
     }
 }
 ```
-#### Variables:
-```
+
+#### Variables
+
+```json
 "command": {
     "storeId": "Electronics",
     "cartName": "default",
@@ -891,10 +1002,12 @@ mutation ($command: InputUpdateCartItemDynamicPropertiesType!)
 ```
 
 ### AddCartAddress
+
 This mutation adds a new address to cart or updates an existing one by `addressType`. This mutation supports partial update, all fields in `command.address` are optional. 
 
-#### Query:
-```
+#### Query
+
+```json
 mutation addOrUpdateCartAddress ($command: InputAddOrUpdateCartAddressType!) {
     addOrUpdateCartAddress (command: $command) {
         addresses {
@@ -920,8 +1033,10 @@ mutation addOrUpdateCartAddress ($command: InputAddOrUpdateCartAddressType!) {
     }
 }
 ```
-#### Variables:
-```
+
+#### Variables
+
+```json
 "command": {
     "storeId": "Electronics",
     "cartName": "default",
@@ -951,10 +1066,12 @@ mutation addOrUpdateCartAddress ($command: InputAddOrUpdateCartAddressType!) {
 ```
 
 ### AddWishListBulkItem
+
 This mutation adds a product to few wish lists.
 
-#### Query:
-```
+#### Query
+
+```json
 mutation addWishlistBulkItem ($command: InputAddWishlistBulkItemType!) {
     addWishlistBulkItem (command: $command) {    
          wishlists {          
@@ -971,8 +1088,10 @@ mutation addWishlistBulkItem ($command: InputAddWishlistBulkItemType!) {
     }
 }
 ```
-#### Variables:
-```
+
+#### Variables
+
+```json
 "command": {
    "listIds": ["ce682f58-3bbd-42e5-a576-08c82a86ca11", "1b249c7a-5b7b-434d-a9b5-56a67ff993fe"],
    "productId" : "92e671024a8648de97dedcd488f58455"
