@@ -1,4 +1,3 @@
-using System.Linq;
 using FluentValidation;
 using VirtoCommerce.CartModule.Core.Model;
 
@@ -25,6 +24,18 @@ namespace VirtoCommerce.XPurchase.Validators
                 if (qtyAdjust.CartProduct != null && !new ProductIsAvailableSpecification().IsSatisfiedBy(qtyAdjust.CartProduct, qtyAdjust.NewQuantity))
                 {
                     context.AddFailure(CartErrorDescriber.ProductQtyInsufficientError(qtyAdjust.CartProduct, qtyAdjust.NewQuantity, qtyAdjust.CartProduct.AvailableQuantity));
+                }
+
+                var minQuantity = qtyAdjust.CartProduct?.Product?.MinQuantity;
+                if (qtyAdjust.NewQuantity < minQuantity)
+                {
+                    context.AddFailure(CartErrorDescriber.ProductMinQuantityError(qtyAdjust.CartProduct, qtyAdjust.NewQuantity, minQuantity ?? 0));
+                }
+
+                var maxQuantity = qtyAdjust.CartProduct?.Product?.MaxQuantity;
+                if (qtyAdjust.NewQuantity > maxQuantity)
+                {
+                    context.AddFailure(CartErrorDescriber.ProductMaxQuantityError(qtyAdjust.CartProduct, qtyAdjust.NewQuantity, maxQuantity ?? 0));
                 }
             });
         }
