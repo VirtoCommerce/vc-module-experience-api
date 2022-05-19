@@ -153,7 +153,7 @@ namespace VirtoCommerce.XPurchase
                 }
                 else
                 {
-                    SetLineItemPrices(newCartItem.CartProduct.Price, newCartItem.Quantity, lineItem);
+                    SetLineItemTierPrice(newCartItem.CartProduct.Price, newCartItem.Quantity, lineItem);
                 }
 
                 if (!string.IsNullOrEmpty(newCartItem.Comment))
@@ -281,7 +281,7 @@ namespace VirtoCommerce.XPurchase
 
             if (lineItem != null)
             {
-                SetLineItemPrices(qtyAdjustment.CartProduct.Price, qtyAdjustment.NewQuantity, lineItem);
+                SetLineItemTierPrice(qtyAdjustment.CartProduct.Price, qtyAdjustment.NewQuantity, lineItem);
 
                 lineItem.Quantity = qtyAdjustment.NewQuantity;
             }
@@ -794,8 +794,10 @@ namespace VirtoCommerce.XPurchase
         /// <summary>
         /// Sets ListPrice and SalePrice for line item by Product price
         /// </summary>
-        private static void SetLineItemPrices(ProductPrice productPrice, int quantity, LineItem lineItem)
+        private static void SetLineItemTierPrice(ProductPrice productPrice, int quantity, LineItem lineItem)
         {
+            if (productPrice == null) return;
+
             var salePrice = productPrice.GetTierPrice(quantity).Price;
             if (salePrice != 0)
             {
