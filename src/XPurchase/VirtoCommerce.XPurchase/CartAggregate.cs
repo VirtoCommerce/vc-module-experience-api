@@ -792,7 +792,7 @@ namespace VirtoCommerce.XPurchase
         }
 
         /// <summary>
-        /// Sets ListPrice and SalePrice for lineitme by Product price
+        /// Sets ListPrice and SalePrice for line item by Product price
         /// </summary>
         private static void SetLineItemPrices(ProductPrice productPrice, int quantity, LineItem lineItem)
         {
