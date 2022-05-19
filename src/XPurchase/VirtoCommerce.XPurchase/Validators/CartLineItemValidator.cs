@@ -31,6 +31,18 @@ namespace VirtoCommerce.XPurchase.Validators
                     {
                         context.AddFailure(CartErrorDescriber.ProductPriceChangedError(lineItem, lineItem.SalePrice, lineItem.SalePriceWithTax, tierPrice.Price.Amount, tierPrice.PriceWithTax.Amount));
                     }
+
+                    var minQuantity = cartProduct?.Product?.MinQuantity;
+                    if (lineItem.Quantity < minQuantity)
+                    {
+                        context.AddFailure(CartErrorDescriber.ProductMinQuantityError(lineItem, lineItem.Quantity, minQuantity ?? 0));
+                    }
+
+                    var maxQuantity = cartProduct?.Product?.MaxQuantity;
+                    if (lineItem.Quantity > maxQuantity)
+                    {
+                        context.AddFailure(CartErrorDescriber.ProductMaxQuantityError(lineItem, lineItem.Quantity, maxQuantity ?? 0));
+                    }
                 }
             });
         }

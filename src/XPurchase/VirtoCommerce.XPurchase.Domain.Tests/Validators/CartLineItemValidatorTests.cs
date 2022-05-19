@@ -129,5 +129,54 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             result.Errors.Should().HaveCount(1);
             result.Errors.Should().Contain(x => x.ErrorCode == "PRODUCT_PRICE_CHANGED");
         }
+
+        [Fact]
+        public async Task ValidateCartLineItem_RuleSetStrict_ProductMinQuantityError()
+        {
+            // Arrange
+            var item = _fixture.Create<LineItem>();
+            var lineItem = _context.AllCartProducts.FirstOrDefault();
+            item.ProductId = lineItem.Id;
+
+            item.Quantity = 1;
+            lineItem.Product.MinQuantity = 5;
+
+            // Act
+            var validator = new CartLineItemValidator();
+            var result = await validator.ValidateAsync(new LineItemValidationContext
+            {
+                LineItem = item,
+                AllCartProducts = _context.AllCartProducts
+            });
+
+            // Assert
+            result.IsValid.Should().BeFalse();
+            result.Errors.Should().Contain(x => x.ErrorCode == "PRODUCT_MIN_QTY");
+        }
+
+        [Fact]
+        public async Task ValidateCartLineItem_RuleSetStrict_ProductMaxQuantityError()
+        {
+            // Arrange
+            var item = _fixture.Create<LineItem>();
+            var lineItem = _context.AllCartProducts.FirstOrDefault();
+            item.ProductId = lineItem.Id;
+
+            item.Quantity = 10;
+            lineItem.Product.MaxQuantity = 5;
+
+
+            // Act
+            var validator = new CartLineItemValidator();
+            var result = await validator.ValidateAsync(new LineItemValidationContext
+            {
+                LineItem = item,
+                AllCartProducts = _context.AllCartProducts
+            });
+
+            // Assert
+            result.IsValid.Should().BeFalse();
+            result.Errors.Should().Contain(x => x.ErrorCode == "PRODUCT_MAX_QTY");
+        }
     }
 }

@@ -92,5 +92,41 @@ namespace VirtoCommerce.XPurchase
             var result = new CartValidationError(entity, $"The shipment method {shipmentMethodCode ?? "NULLShipmentMethodCode".ToUpper()} with {shipmentMethodOption ?? "NULLshipmentMethodOption".ToUpper()} unavailable", "SHIPMENT_METHOD_UNAVAILABLE");
             return result;
         }
+
+        public static CartValidationError BulkInvalidProductError(string type, string sku)
+        {
+            var result = new CartValidationError(type, sku, $"Product with SKU {sku} was not added to cart. This SKU doesn't exist.", "CART_INVALID_PRODUCT");
+            return result;
+        }
+
+        public static CartValidationError BulkProductUnavailableError(string type, string sku)
+        {
+            var result = new CartValidationError(type, sku, $"Product with SKU {sku} was not added to cart. The product is not longer available for purchase.", "CART_PRODUCT_UNAVAILABLE");
+            return result;
+        }
+
+        public static CartValidationError ProductMinQuantityError(IEntity entity, int qty, int minQty)
+        {
+            var result = new CartValidationError(entity, $"Product quantity {qty} is less than minumum {minQty}", "PRODUCT_MIN_QTY");
+            result.FormattedMessagePlaceholderValues = new Dictionary<string, object>
+            {
+                ["qty"] = qty,
+                ["minQty"] = minQty
+            };
+
+            return result;
+        }
+
+        public static CartValidationError ProductMaxQuantityError(IEntity entity, int qty, int maxQty)
+        {
+            var result = new CartValidationError(entity, $"Product quantity {qty} is greater than maximum {maxQty}", "PRODUCT_MAX_QTY");
+            result.FormattedMessagePlaceholderValues = new Dictionary<string, object>
+            {
+                ["qty"] = qty,
+                ["maxQty"] = maxQty
+            };
+
+            return result;
+        }
     }
 }
