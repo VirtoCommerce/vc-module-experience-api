@@ -1,15 +1,18 @@
 using System.Linq;
 using GraphQL.Types;
+using MediatR;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Models;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
+using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.XDigitalCatalog.Extensions;
+using VirtoCommerce.XDigitalCatalog.Queries;
 
 namespace VirtoCommerce.XDigitalCatalog.Schemas
 {
     public class VariationType : ExtendableGraphType<ExpVariation>
     {
-        public VariationType()
+        public VariationType(IMediator mediator)
         {
             Field<StringGraphType>(
                 "id",
@@ -78,6 +81,18 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             Field<ListGraphType<OutlineType>>("outlines",
                 "Outlines",
                 resolve: context => context.Source.IndexedProduct.Outlines);
+
+            FieldAsync<StringGraphType>("slug", resolve: async context =>
+            {
+                var outlines = context.Source.IndexedProduct.Outlines;
+                if (outlines.IsNullOrEmpty()) return null;
+
+                var loadRelatedSlugPathQuery = context.GetCatalogQuery<LoadRelatedSlugPathQuery>();
+                loadRelatedSlugPathQuery.Outlines = outlines;
+
+                var response = await mediator.Send(loadRelatedSlugPathQuery);
+                return response.Slug;
+            }, description: "Request related slug for product");
         }
     }
 }
