@@ -151,6 +151,10 @@ namespace VirtoCommerce.XPurchase
                     lineItem.ListPrice = newCartItem.Price.Value;
                     lineItem.SalePrice = newCartItem.Price.Value;
                 }
+                else
+                {
+                    SetLineItemTierPrice(newCartItem.CartProduct.Price, newCartItem.Quantity, lineItem);
+                }
 
                 if (!string.IsNullOrEmpty(newCartItem.Comment))
                 {
@@ -277,16 +281,7 @@ namespace VirtoCommerce.XPurchase
 
             if (lineItem != null)
             {
-                var salePrice = qtyAdjustment.CartProduct.Price.GetTierPrice(qtyAdjustment.NewQuantity).Price;
-                if (salePrice != 0)
-                {
-                    lineItem.SalePrice = salePrice.Amount;
-                }
-
-                //List price should be always greater or equals sale price because it may cause incorrect totals calculation
-                lineItem.ListPrice = lineItem.ListPrice < lineItem.SalePrice
-                    ? lineItem.SalePrice
-                    : lineItem.ListPrice;
+                SetLineItemTierPrice(qtyAdjustment.CartProduct.Price, qtyAdjustment.NewQuantity, lineItem);
 
                 lineItem.Quantity = qtyAdjustment.NewQuantity;
             }
@@ -794,6 +789,25 @@ namespace VirtoCommerce.XPurchase
             });
 
             return storeTaxProviders?.Results.FirstOrDefault(x => x.IsActive);
+        }
+
+        /// <summary>
+        /// Sets ListPrice and SalePrice for line item by Product price
+        /// </summary>
+        private static void SetLineItemTierPrice(ProductPrice productPrice, int quantity, LineItem lineItem)
+        {
+            if (productPrice == null) return;
+
+            var salePrice = productPrice.GetTierPrice(quantity).Price;
+            if (salePrice != 0)
+            {
+                lineItem.SalePrice = salePrice.Amount;
+            }
+
+            //List price should be always greater or equals sale price because it may cause incorrect totals calculation
+            lineItem.ListPrice = lineItem.ListPrice < lineItem.SalePrice
+                ? lineItem.SalePrice
+                : lineItem.ListPrice;
         }
 
         #region ICloneable
