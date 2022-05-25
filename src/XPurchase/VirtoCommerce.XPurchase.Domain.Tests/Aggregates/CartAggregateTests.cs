@@ -512,6 +512,9 @@ namespace VirtoCommerce.XPurchase.Tests.Aggregates
             var sourceProduct1 = _fixture.Create<CartProduct>();
             var sourceProduct2 = _fixture.Create<CartProduct>();
 
+            sourceProduct1.Id = "source1";
+            sourceProduct2.Id = "source2";
+
             sourceAggregate.CartProducts.Add(sourceProduct1.Id, sourceProduct1);
             sourceAggregate.CartProducts.Add(sourceProduct2.Id, sourceProduct2);
 
@@ -526,13 +529,14 @@ namespace VirtoCommerce.XPurchase.Tests.Aggregates
             var destinationAggregate = GetValidCartAggregate();
 
             var destinationProduct1 = _fixture.Create<CartProduct>();
+            destinationProduct1.Id = "dest1";
 
             var destinationLineItem1 = _fixture.Create<LineItem>();
             destinationLineItem1.ProductId = destinationProduct1.Id;
 
             var destinationLineItem2 = _fixture.Create<LineItem>();
-            var quantity = destinationLineItem2.Quantity;
             destinationLineItem2.ProductId = sourceProduct2.Id;
+            var quantity = destinationLineItem2.Quantity;
 
             destinationAggregate.Cart.Items = new List<LineItem> { destinationLineItem1, destinationLineItem2 };
 

@@ -38,10 +38,10 @@ namespace VirtoCommerce.XDigitalCatalog.Mapping
                         {
                             Count = x.Count,
                             From = Convert.ToInt64(x.RequestedLowerBound),
-                            IncludeFrom = !string.IsNullOrEmpty(x.RequestedLowerBound),
+                            IncludeFrom = x.IncludeLower,
                             FromStr = x.RequestedLowerBound,
                             To = Convert.ToInt64(x.RequestedUpperBound),
-                            IncludeTo = !string.IsNullOrEmpty(x.RequestedUpperBound),
+                            IncludeTo = x.IncludeUpper,
                             ToStr = x.RequestedUpperBound,
                             IsSelected = x.IsApplied,
                             Label = x.Value.ToString(),
