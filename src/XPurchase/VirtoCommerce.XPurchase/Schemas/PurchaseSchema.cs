@@ -946,11 +946,7 @@ namespace VirtoCommerce.XPurchase.Schemas
 
                                                      await CheckAuthByCartCommandAsync(context, cartCommand);
 
-                                                     var result = await _mediator.Send(cartCommand);
-
-                                                     context.SetExpandedObjectGraph(result.Cart);
-
-                                                     return result;
+                                                     return await _mediator.Send(cartCommand);
                                                  })
                                                  .FieldType;
 
