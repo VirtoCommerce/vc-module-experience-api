@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Models
 {
     public class InitializePaymentResult
@@ -21,5 +23,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Models
         public bool IsSuccess { get; set; }
 
         public string ErrorMessage { get; set; }
+
+        public Dictionary<string, string> PublicParameters { get; set; } = new();
     }
 }

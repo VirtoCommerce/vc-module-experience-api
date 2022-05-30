@@ -82,8 +82,6 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Commands
 
             var result = await InitializePaymentAsync(paymentRequest);
 
-            await _customerOrderService.SaveChangesAsync(new[] { customerOrder });
-
             return result;
         }
 
@@ -126,7 +124,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Commands
             return Task.FromResult(result);
         }
 
-        private InitializePaymentResult ErrorResult(string error)
+        private static InitializePaymentResult ErrorResult(string error)
         {
             return new InitializePaymentResult
             {
