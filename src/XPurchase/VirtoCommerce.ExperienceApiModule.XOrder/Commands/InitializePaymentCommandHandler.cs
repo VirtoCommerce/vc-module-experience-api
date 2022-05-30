@@ -117,6 +117,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Commands
                 result.ErrorMessage = processPaymentResult.ErrorMessage;
                 result.ActionHtmlForm = processPaymentResult.HtmlForm;
                 result.ActionRedirectUrl = processPaymentResult.RedirectUrl;
+                result.PublicParameters = processPaymentResult.PublicParameters;
                 result.PaymentMethodCode = payment.PaymentMethod.Code;
                 result.PaymentActionType = payment.PaymentMethod.PaymentMethodType.ToString();
             }
