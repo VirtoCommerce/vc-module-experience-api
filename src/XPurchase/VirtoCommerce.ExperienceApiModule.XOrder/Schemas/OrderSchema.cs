@@ -150,7 +150,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                                 var type = GenericTypeHelper.GetActualType<AuthorizePaymentCommand>();
 
                                 var command = (AuthorizePaymentCommand)context.GetArgument(type, _commandName);
-                                //await CheckAuthAsync(context, command.OrderId);
+                                await CheckAuthAsync(context, command.OrderId);
 
                                 return await _mediator.Send(command);
                             })

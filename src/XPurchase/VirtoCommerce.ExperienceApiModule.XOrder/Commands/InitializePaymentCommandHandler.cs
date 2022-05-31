@@ -46,7 +46,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Commands
             return result;
         }
 
-        private Task<InitializePaymentResult> InitializePaymentAsync(ProcessPaymentRequest request)
+        private static Task<InitializePaymentResult> InitializePaymentAsync(ProcessPaymentRequest request)
         {
             var order = request.Order as CustomerOrder;
 
