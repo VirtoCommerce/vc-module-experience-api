@@ -14,13 +14,13 @@ using VirtoCommerce.StoreModule.Core.Model;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Commands
 {
-    public class AuthorizePaymentCommandHandler : IRequestHandler<AuthorizePaymentCommand, AuthorizePaymentResult>
+    public abstract class PaymentCommandHandlerBase
     {
         private readonly ICrudService<CustomerOrder> _customerOrderService;
         private readonly ICrudService<PaymentIn> _paymentService;
         private readonly ICrudService<Store> _storeService;
 
-        public AuthorizePaymentCommandHandler(
+        public PaymentCommandHandlerBase(
             ICrudService<CustomerOrder> customerOrderService,
             ICrudService<PaymentIn> paymentService,
             ICrudService<Store> storeService)
@@ -30,94 +30,55 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Commands
             _storeService = storeService;
         }
 
-        public async Task<AuthorizePaymentResult> Handle(AuthorizePaymentCommand request, CancellationToken cancellationToken)
+        protected async Task<PaymentInfo> GetPaymentInfo(PaymentCommandBase command)
         {
-            var customerOrder = default(CustomerOrder);
-            var payment = default(PaymentIn);
+            var result = new PaymentInfo();
 
-            if (!string.IsNullOrEmpty(request.OrderId))
+            if (!string.IsNullOrEmpty(command.OrderId))
             {
-                customerOrder = await _customerOrderService.GetByIdAsync(request.OrderId, CustomerOrderResponseGroup.Full.ToString());
-                payment = customerOrder?.InPayments?.FirstOrDefault(x => x.Id == request.PaymentId);
+                result.CustomerOrder = await _customerOrderService.GetByIdAsync(command.OrderId, CustomerOrderResponseGroup.Full.ToString());
+                result.Payment = result.CustomerOrder?.InPayments?.FirstOrDefault(x => x.Id == command.PaymentId);
             }
-            else if (!string.IsNullOrEmpty(request.PaymentId))
+            else if (!string.IsNullOrEmpty(command.PaymentId))
             {
-                payment = await _paymentService.GetByIdAsync(request.PaymentId);
-                customerOrder = await _customerOrderService.GetByIdAsync(payment?.OrderId, CustomerOrderResponseGroup.Full.ToString());
+                result.Payment = await _paymentService.GetByIdAsync(command.PaymentId);
+                result.CustomerOrder = await _customerOrderService.GetByIdAsync(result.Payment?.OrderId, CustomerOrderResponseGroup.Full.ToString());
 
                 // take payment from order since Order payment contains instanced PaymentMethod (payment taken from service doesn't)
-                payment = customerOrder?.InPayments?.FirstOrDefault(x => x.Id == request.PaymentId);
+                result.Payment = result.CustomerOrder?.InPayments?.FirstOrDefault(x => x.Id == command.PaymentId);
             }
 
-            if (customerOrder == null)
-            {
-                return ErrorResult($"Cannot find order with ID {request.OrderId}");
-            }
-
-            if (payment == null)
-            {
-                return ErrorResult($"Cannot find payment with ID {request.PaymentId}");
-            }
-
-            if (payment.PaymentStatus == PaymentStatus.Paid)
-            {
-                return ErrorResult($"Document {payment.Number} is already paid");
-            }
-
-            var store = await _storeService.GetByIdAsync(customerOrder.StoreId, StoreResponseGroup.StoreInfo.ToString());
-            if (store == null)
-            {
-                return ErrorResult($"Cannot find store with ID {customerOrder.StoreId}");
-            }
-
-            var parameters = GetParameters(request);
-
-            var validateResult = payment.PaymentMethod.ValidatePostProcessRequest(parameters);
-            if (!validateResult.IsSuccess)
-            {
-                return ErrorResult(validateResult.ErrorMessage);
-            }
-
-            var postProcessPaymentRequest = new PostProcessPaymentRequest
-            {
-                OrderId = customerOrder.Id,
-                Order = customerOrder,
-                PaymentId = payment.Id,
-                Payment = payment,
-                StoreId = customerOrder.StoreId,
-                Store = store,
-                OuterId = validateResult.OuterId,
-                Parameters = parameters
-            };
-
-            var result = await AuthorizePaymentAsync(postProcessPaymentRequest);
-
-            if (result.IsSuccess)
-            {
-                await _customerOrderService.SaveChangesAsync(new[] { customerOrder });
-            }
+            result.Store = await _storeService.GetByIdAsync(result.CustomerOrder?.StoreId, StoreResponseGroup.StoreInfo.ToString());
 
             return result;
         }
 
-        protected virtual Task<AuthorizePaymentResult> AuthorizePaymentAsync(PostProcessPaymentRequest request)
+        protected string ValidateRequest(PaymentInfo payment, PaymentCommandBase command)
         {
-            var payment = request.Payment as PaymentIn;
-            var order = request.Order as CustomerOrder;
-
-            var processPaymentRequestResult = payment.PaymentMethod.PostProcessPayment(request);
-
-            var result = new AuthorizePaymentResult
+            if (payment.CustomerOrder == null)
             {
-                IsSuccess = processPaymentRequestResult.IsSuccess,
-                ErrorMessage = processPaymentRequestResult.ErrorMessage
-            };
+                return $"Cannot find order with ID {command.OrderId}";
+            }
 
-            return Task.FromResult(result);
+            if (payment.Payment == null)
+            {
+                return $"Cannot find payment with ID {command.PaymentId}";
+            }
+
+            if (payment.Payment.PaymentStatus == PaymentStatus.Paid)
+            {
+                return $"Document {payment.Payment.Number} is already paid";
+            }
+
+            if (payment.Store == null)
+            {
+                return $"Cannot find store with ID {payment.CustomerOrder?.StoreId}";
+            }
+
+            return null;
         }
 
-
-        private static NameValueCollection GetParameters(AuthorizePaymentCommand request)
+        protected static NameValueCollection GetParameters(AuthorizePaymentCommand request)
         {
             var parameters = new NameValueCollection();
             foreach (var param in request?.Parameters ?? Array.Empty<KeyValuePair>())
@@ -128,13 +89,82 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Commands
             return parameters;
         }
 
-        private static AuthorizePaymentResult ErrorResult(string error)
+        protected T ErrorResult<T>(string error) where T : PaymentResult, new()
         {
-            return new AuthorizePaymentResult
+            return new T
             {
                 IsSuccess = false,
                 ErrorMessage = error,
             };
+        }
+
+        public class PaymentInfo
+        {
+            public CustomerOrder CustomerOrder { get; set; }
+
+            public PaymentIn Payment { get; set; }
+
+            public Store Store { get; set; }
+        }
+    }
+
+    public class AuthorizePaymentCommandHandler : PaymentCommandHandlerBase, IRequestHandler<AuthorizePaymentCommand, AuthorizePaymentResult>
+    {
+        private readonly ICrudService<CustomerOrder> _customerOrderService;
+
+        public AuthorizePaymentCommandHandler(
+            ICrudService<CustomerOrder> customerOrderService,
+            ICrudService<PaymentIn> paymentService,
+            ICrudService<Store> storeService)
+            : base(customerOrderService, paymentService, storeService)
+        {
+            _customerOrderService = customerOrderService;
+        }
+
+        public async Task<AuthorizePaymentResult> Handle(AuthorizePaymentCommand request, CancellationToken cancellationToken)
+        {
+            var payment = await GetPaymentInfo(request);
+
+            var validationResult = ValidateRequest(payment, request);
+            if (validationResult != null)
+            {
+                return ErrorResult<AuthorizePaymentResult>(validationResult);
+            }
+
+            var parameters = GetParameters(request);
+
+            var validateResult = payment.Payment.PaymentMethod.ValidatePostProcessRequest(parameters);
+            if (!validateResult.IsSuccess)
+            {
+                return ErrorResult<AuthorizePaymentResult>(validateResult.ErrorMessage);
+            }
+
+            var postProcessPaymentRequest = new PostProcessPaymentRequest
+            {
+                OrderId = payment.CustomerOrder.Id,
+                Order = payment.CustomerOrder,
+                PaymentId = payment.Payment.Id,
+                Payment = payment.Payment,
+                StoreId = payment.CustomerOrder.StoreId,
+                Store = payment.Store,
+                OuterId = validateResult.OuterId,
+                Parameters = parameters
+            };
+
+            var processPaymentRequestResult = payment.Payment.PaymentMethod.PostProcessPayment(postProcessPaymentRequest);
+
+            var result = new AuthorizePaymentResult
+            {
+                IsSuccess = processPaymentRequestResult.IsSuccess,
+                ErrorMessage = processPaymentRequestResult.ErrorMessage,
+            };
+
+            if (result.IsSuccess)
+            {
+                await _customerOrderService.SaveChangesAsync(new[] { payment.CustomerOrder });
+            }
+
+            return result;
         }
     }
 }

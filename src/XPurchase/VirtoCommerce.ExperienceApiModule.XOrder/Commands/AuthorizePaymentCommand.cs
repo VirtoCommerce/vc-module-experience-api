@@ -4,14 +4,8 @@ using VirtoCommerce.ExperienceApiModule.XOrder.Models;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Commands
 {
-    public class AuthorizePaymentCommand : ICommand<AuthorizePaymentResult>
+    public class AuthorizePaymentCommand : PaymentCommandBase, ICommand<AuthorizePaymentResult>
     {
-        public string OrderId { get; set; }
-
-        public string PaymentId { get; set; }
-
-        //public string PaymentMethodCode { get; set; }
-
         public KeyValuePair[] Parameters { get; set; }
     }
 }

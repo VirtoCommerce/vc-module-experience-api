@@ -1,9 +1,6 @@
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Models
 {
-    public class AuthorizePaymentResult
+    public class AuthorizePaymentResult : PaymentResult
     {
-        public bool IsSuccess { get; set; }
-
-        public string ErrorMessage { get; set; }
     }
 }

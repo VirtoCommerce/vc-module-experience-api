@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Models
 {
-    public class InitializePaymentResult
+    public class InitializePaymentResult : PaymentResult
     {
         public string StoreId { get; set; }
 
@@ -19,10 +19,6 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Models
         public string ActionRedirectUrl { get; set; }
 
         public string ActionHtmlForm { get; set; }
-
-        public bool IsSuccess { get; set; }
-
-        public string ErrorMessage { get; set; }
 
         public Dictionary<string, string> PublicParameters { get; set; } = new();
     }
