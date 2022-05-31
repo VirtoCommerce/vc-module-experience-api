@@ -142,6 +142,20 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                             })
                             .FieldType);
 
+            _ = schema.Mutation.AddField(FieldBuilder.Create<object, AuthorizePaymentResult>(typeof(AuthorizePaymentResultType))
+                            .Name("authorizePayment")
+                            .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputAuthorizePaymentType>>(), _commandName)
+                            .ResolveAsync(async context =>
+                            {
+                                var type = GenericTypeHelper.GetActualType<AuthorizePaymentCommand>();
+
+                                var command = (AuthorizePaymentCommand)context.GetArgument(type, _commandName);
+                                //await CheckAuthAsync(context, command.OrderId);
+
+                                return await _mediator.Send(command);
+                            })
+                            .FieldType);
+
 
             _ = schema.Mutation.AddField(FieldBuilder.Create<CustomerOrderAggregate, CustomerOrderAggregate>(GraphTypeExtenstionHelper.GetActualType<CustomerOrderType>())
                             .Name("updateOrderDynamicProperties")
