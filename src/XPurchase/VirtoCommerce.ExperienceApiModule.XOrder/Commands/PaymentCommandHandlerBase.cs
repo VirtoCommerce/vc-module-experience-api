@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using VirtoCommerce.ExperienceApiModule.Core.Models;
 using VirtoCommerce.ExperienceApiModule.XOrder.Models;
 using VirtoCommerce.OrdersModule.Core.Model;
-using VirtoCommerce.PaymentModule.Core.Model;
 using VirtoCommerce.Platform.Core.GenericCrud;
 using VirtoCommerce.StoreModule.Core.Model;
 
@@ -50,31 +49,6 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Commands
             return result;
         }
 
-        protected static string ValidateRequest(PaymentInfo payment, PaymentCommandBase command)
-        {
-            if (payment.CustomerOrder == null)
-            {
-                return $"Cannot find order with ID {command.OrderId}";
-            }
-
-            if (payment.Payment == null)
-            {
-                return $"Cannot find payment with ID {command.PaymentId}";
-            }
-
-            if (payment.Payment.PaymentStatus == PaymentStatus.Paid)
-            {
-                return $"Document {payment.Payment.Number} is already paid";
-            }
-
-            if (payment.Store == null)
-            {
-                return $"Cannot find store with ID {payment.CustomerOrder?.StoreId}";
-            }
-
-            return null;
-        }
-
         protected static NameValueCollection GetParameters(AuthorizePaymentCommand request)
         {
             var parameters = new NameValueCollection();
@@ -93,15 +67,6 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Commands
                 IsSuccess = false,
                 ErrorMessage = error,
             };
-        }
-
-        public class PaymentInfo
-        {
-            public CustomerOrder CustomerOrder { get; set; }
-
-            public PaymentIn Payment { get; set; }
-
-            public Store Store { get; set; }
         }
     }
 }

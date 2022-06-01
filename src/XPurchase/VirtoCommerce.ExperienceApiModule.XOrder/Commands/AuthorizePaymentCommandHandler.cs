@@ -1,9 +1,12 @@
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using VirtoCommerce.ExperienceApiModule.XOrder.Models;
+using VirtoCommerce.ExperienceApiModule.XOrder.Validators;
 using VirtoCommerce.OrdersModule.Core.Model;
 using VirtoCommerce.PaymentModule.Model.Requests;
+using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.GenericCrud;
 using VirtoCommerce.StoreModule.Core.Model;
 
@@ -24,35 +27,34 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Commands
 
         public async Task<AuthorizePaymentResult> Handle(AuthorizePaymentCommand request, CancellationToken cancellationToken)
         {
-            var payment = await GetPaymentInfo(request);
+            var paymentInfo = await GetPaymentInfo(request);
 
-            var validationResult = ValidateRequest(payment, request);
-            if (validationResult != null)
+            var validationResult = AbstractTypeFactory<PaymentRequestValidator>.TryCreateInstance().Validate(paymentInfo);
+            if (!validationResult.IsValid)
             {
-                return ErrorResult<AuthorizePaymentResult>(validationResult);
+                return ErrorResult<AuthorizePaymentResult>(validationResult.Errors.FirstOrDefault().ErrorMessage);
             }
 
             var parameters = GetParameters(request);
 
-            var validateResult = payment.Payment.PaymentMethod.ValidatePostProcessRequest(parameters);
-            if (!validateResult.IsSuccess)
+            var validatePostProcessResult = paymentInfo.Payment.PaymentMethod.ValidatePostProcessRequest(parameters);
+            if (!validatePostProcessResult.IsSuccess)
             {
-                return ErrorResult<AuthorizePaymentResult>(validateResult.ErrorMessage);
+                return ErrorResult<AuthorizePaymentResult>(validatePostProcessResult.ErrorMessage);
             }
 
             var postProcessPaymentRequest = new PostProcessPaymentRequest
             {
-                OrderId = payment.CustomerOrder.Id,
-                Order = payment.CustomerOrder,
-                PaymentId = payment.Payment.Id,
-                Payment = payment.Payment,
-                StoreId = payment.CustomerOrder.StoreId,
-                Store = payment.Store,
-                OuterId = validateResult.OuterId,
-                Parameters = parameters
+                OrderId = paymentInfo.CustomerOrder.Id,
+                Order = paymentInfo.CustomerOrder,
+                PaymentId = paymentInfo.Payment.Id,
+                Payment = paymentInfo.Payment,
+                StoreId = paymentInfo.CustomerOrder.StoreId,
+                Store = paymentInfo.Store,
+                Parameters = parameters,
             };
 
-            var processPaymentRequestResult = payment.Payment.PaymentMethod.PostProcessPayment(postProcessPaymentRequest);
+            var processPaymentRequestResult = paymentInfo.Payment.PaymentMethod.PostProcessPayment(postProcessPaymentRequest);
 
             var result = new AuthorizePaymentResult
             {
@@ -62,7 +64,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Commands
 
             if (result.IsSuccess)
             {
-                await _customerOrderService.SaveChangesAsync(new[] { payment.CustomerOrder });
+                await _customerOrderService.SaveChangesAsync(new[] { paymentInfo.CustomerOrder });
             }
 
             return result;

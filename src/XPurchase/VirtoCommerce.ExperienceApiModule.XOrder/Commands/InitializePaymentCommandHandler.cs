@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -23,67 +24,42 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Commands
 
         public async Task<InitializePaymentResult> Handle(InitializePaymentCommand request, CancellationToken cancellationToken)
         {
-            var payment = await GetPaymentInfo(request);
+            var paymentInfo = await GetPaymentInfo(request);
 
-            var validationResult = ValidateRequest(payment, request);
-            if (validationResult != null)
+            var validationResult = AbstractTypeFactory<PaymentRequestValidator>.TryCreateInstance().Validate(paymentInfo);
+            if (!validationResult.IsValid)
             {
-                return ErrorResult<InitializePaymentResult>(validationResult);
+                return ErrorResult<InitializePaymentResult>(validationResult.Errors.FirstOrDefault().ErrorMessage);
             }
 
-            var paymentRequest = new ProcessPaymentRequest
+            var processPaymentRequest = new ProcessPaymentRequest
             {
-                OrderId = payment.CustomerOrder.Id,
-                Order = payment.CustomerOrder,
-                PaymentId = payment.Payment.Id,
-                Payment = payment.Payment,
-                StoreId = payment.Store.Id,
-                Store = payment.Store,
+                OrderId = paymentInfo.CustomerOrder.Id,
+                Order = paymentInfo.CustomerOrder,
+                PaymentId = paymentInfo.Payment.Id,
+                Payment = paymentInfo.Payment,
+                StoreId = paymentInfo.Store.Id,
+                Store = paymentInfo.Store,
             };
 
-            var result = await InitializePaymentAsync(paymentRequest);
-
-            return result;
-        }
-
-        private static Task<InitializePaymentResult> InitializePaymentAsync(ProcessPaymentRequest request)
-        {
-            var order = request.Order as CustomerOrder;
+            var processPaymentResult = paymentInfo.Payment.PaymentMethod.ProcessPayment(processPaymentRequest);
 
             var result = new InitializePaymentResult
             {
-                StoreId = request.StoreId,
-                PaymentId = request.PaymentId,
-                OrderId = request.OrderId,
-                OrderNumber = order?.Number,
+                StoreId = processPaymentRequest.StoreId,
+                PaymentId = processPaymentRequest.PaymentId,
+                OrderId = processPaymentRequest.OrderId,
+                OrderNumber = paymentInfo.CustomerOrder.Number,
+                IsSuccess = processPaymentResult.IsSuccess,
+                ErrorMessage = processPaymentResult.ErrorMessage,
+                ActionHtmlForm = processPaymentResult.HtmlForm,
+                ActionRedirectUrl = processPaymentResult.RedirectUrl,
+                PublicParameters = processPaymentResult.PublicParameters,
+                PaymentMethodCode = paymentInfo.Payment.PaymentMethod.Code,
+                PaymentActionType = paymentInfo.Payment.PaymentMethod.PaymentMethodType.ToString()
             };
 
-            var validationResult = AbstractTypeFactory<ProcessPaymentRequestValidator>.TryCreateInstance().Validate(request);
-            if (!validationResult.IsValid)
-            {
-                result.IsSuccess = false;
-                result.ErrorMessage = string.Join(';', validationResult.Errors);
-            }
-
-            if (request.Payment is PaymentIn payment)
-            {
-                var processPaymentResult = payment.PaymentMethod.ProcessPayment(request);
-
-                if (processPaymentResult.OuterId != null)
-                {
-                    payment.OuterId = processPaymentResult.OuterId;
-                }
-
-                result.IsSuccess = processPaymentResult.IsSuccess;
-                result.ErrorMessage = processPaymentResult.ErrorMessage;
-                result.ActionHtmlForm = processPaymentResult.HtmlForm;
-                result.ActionRedirectUrl = processPaymentResult.RedirectUrl;
-                result.PublicParameters = processPaymentResult.PublicParameters;
-                result.PaymentMethodCode = payment.PaymentMethod.Code;
-                result.PaymentActionType = payment.PaymentMethod.PaymentMethodType.ToString();
-            }
-
-            return Task.FromResult(result);
+            return result;
         }
     }
 }
