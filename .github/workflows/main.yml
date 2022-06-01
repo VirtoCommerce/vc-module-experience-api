@@ -304,3 +304,26 @@ jobs:
           environment-id: ${{ steps.deployConfig.outputs.environmentId }}
           environment-display-name: ${{ steps.deployConfig.outputs.environmentName }}
           environment-type: ${{ steps.deployConfig.outputs.environmentType }}
+          
+  module-katalon-tests:
+    if: ${{ github.event_name == 'pull_request' }}
+    uses: VirtoCommerce/.github/.github/workflows/e2e.yml@main
+    env:
+      katalonRepo: 'VirtoCommerce/vc-quality-gate-katalon'
+      katalonRepoBranch: 'dev'
+      testSuite: 'Test Suites/Modules/Platform_collection'
+      installModules: 'true'
+      installCustomModule: 'true'
+      customModuleId: ${{ steps.artifact_ver.outputs.moduleId }}
+      customModuleUrl: ${{ steps.blobRelease.outputs.packageUrl }}
+   #with:
+      katalonRepo: ${{ github.event.inputs.katalonRepo }}
+      katalonRepoBranch: ${{ github.event.inputs.katalonRepoBranch }}
+      testSuite: ${{ github.event.inputs.testSuite }}
+      installModules: '${{ github.event.inputs.installModules }}'
+      installCustomModule: '${{ github.event.inputs.installCustomModule }}'
+      customModuleId: ${{ github.event.inputs.customModuleId }}
+      customModuleUrl: ${{ github.event.inputs.customModuleUrl }}
+    #secrets:
+      #envPAT: ${{ secrets.REPO_TOKEN }}
+      #katalonApiKey: ${{ secrets.KATALON_API_KEY }}
