@@ -44,7 +44,6 @@ jobs:
     outputs:
       artifactUrl: ${{ steps.artifactUrl.outputs.download_url }}
       jira-keys: ${{ steps.jira_keys.outputs.jira-keys }}
-      moduleId: ${{ steps.artifact_ver.outputs.moduleId }}
 
     steps:
 
@@ -305,19 +304,3 @@ jobs:
           environment-id: ${{ steps.deployConfig.outputs.environmentId }}
           environment-display-name: ${{ steps.deployConfig.outputs.environmentName }}
           environment-type: ${{ steps.deployConfig.outputs.environmentType }}
-          
-  module-katalon-tests:
-    if: ${{ github.event_name == 'pull_request' }}
-    needs: 'ci'
-    uses: VirtoCommerce/.github/.github/workflows/e2e.yml@main
-    with:
-      katalonRepo: 'VirtoCommerce/vc-quality-gate-katalon'
-      katalonRepoBranch: 'dev'
-      testSuite: 'Test Suites/Modules/Platform_collection'
-      installModules: 'true'
-      installCustomModule: 'true'
-      customModuleId:  ${{ needs.ci.outputs.moduleId }}
-      customModuleUrl:  ${{ needs.ci.outputs.artifactUrl }}
-    secrets:
-      envPAT: ${{ secrets.REPO_TOKEN }}
-      katalonApiKey: ${{ secrets.KATALON_API_KEY }}
