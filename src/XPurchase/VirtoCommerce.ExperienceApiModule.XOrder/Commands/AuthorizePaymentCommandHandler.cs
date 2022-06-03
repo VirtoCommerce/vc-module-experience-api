@@ -56,16 +56,18 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Commands
 
             var processPaymentRequestResult = paymentInfo.Payment.PaymentMethod.PostProcessPayment(postProcessPaymentRequest);
 
+            if (processPaymentRequestResult.IsSuccess)
+            {
+                paymentInfo.Payment.Status = processPaymentRequestResult.NewPaymentStatus.ToString();
+
+                await _customerOrderService.SaveChangesAsync(new[] { paymentInfo.CustomerOrder });
+            }
+
             var result = new AuthorizePaymentResult
             {
                 IsSuccess = processPaymentRequestResult.IsSuccess,
                 ErrorMessage = processPaymentRequestResult.ErrorMessage,
             };
-
-            if (result.IsSuccess)
-            {
-                await _customerOrderService.SaveChangesAsync(new[] { paymentInfo.CustomerOrder });
-            }
 
             return result;
         }
