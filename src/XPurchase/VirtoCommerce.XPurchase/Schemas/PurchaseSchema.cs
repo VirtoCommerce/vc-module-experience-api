@@ -75,7 +75,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                     context.SetCurrencies(allCurrencies, getCartQuery.CultureName);
 
                     var cartAggregate = await _mediator.Send(getCartQuery);
-                                        
+
                     if (cartAggregate == null)
                     {
                         var createCartCommand = new CreateCartCommand(getCartQuery.StoreId, getCartQuery.CartType, getCartQuery.CartName, getCartQuery.UserId, getCartQuery.CurrencyCode, getCartQuery.CultureName);
@@ -892,7 +892,10 @@ namespace VirtoCommerce.XPurchase.Schemas
                                                  {
                                                      await CheckAccessToCartAsync(context);
 
-                                                     return await _mediator.Send(context.GetCartCommand<AddCartItemsCommand>());
+                                                     var cartAggregate = await _mediator.Send(context.GetCartCommand<AddCartItemsCommand>());
+
+                                                     context.SetExpandedObjectGraph(cartAggregate);
+                                                     return cartAggregate;
                                                  })
                                                  .FieldType;
 
@@ -987,9 +990,9 @@ namespace VirtoCommerce.XPurchase.Schemas
                                      .Argument(GraphTypeExtenstionHelper.GetActualType<InputChangePurchaseOrderNumber>(), _commandName)
                                      .ResolveAsync(async context =>
                                      {
-                                            var cartAggregate = await _mediator.Send(context.GetCartCommand<ChangePurchaseOrderNumberCommand>());
-                                            context.SetExpandedObjectGraph(cartAggregate);
-                                            return cartAggregate;
+                                         var cartAggregate = await _mediator.Send(context.GetCartCommand<ChangePurchaseOrderNumberCommand>());
+                                         context.SetExpandedObjectGraph(cartAggregate);
+                                         return cartAggregate;
                                      })
                                      .FieldType;
 
