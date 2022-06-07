@@ -13,6 +13,7 @@ using VirtoCommerce.ExperienceApiModule.Core.Infrastructure.Authorization;
 using VirtoCommerce.ExperienceApiModule.XOrder.Authorization;
 using VirtoCommerce.ExperienceApiModule.XOrder.Commands;
 using VirtoCommerce.ExperienceApiModule.XOrder.Extensions;
+using VirtoCommerce.ExperienceApiModule.XOrder.Models;
 using VirtoCommerce.ExperienceApiModule.XOrder.Queries;
 using VirtoCommerce.OrdersModule.Core.Model;
 using VirtoCommerce.OrdersModule.Core.Services;
@@ -120,6 +121,35 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                             {
                                 var type = GenericTypeHelper.GetActualType<ProcessOrderPaymentCommand>();
                                 var command = (ProcessOrderPaymentCommand)context.GetArgument(type, _commandName);
+                                await CheckAuthAsync(context, command.OrderId);
+
+                                return await _mediator.Send(command);
+                            })
+                            .DeprecationReason("Obsolete. Use 'initializePayment' mutation")
+                            .FieldType);
+
+            _ = schema.Mutation.AddField(FieldBuilder.Create<object, InitializePaymentResult>(typeof(InitializePaymentResultType))
+                            .Name("initializePayment")
+                            .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputInitializePaymentType>>(), _commandName)
+                            .ResolveAsync(async context =>
+                            {
+                                var type = GenericTypeHelper.GetActualType<InitializePaymentCommand>();
+
+                                var command = (InitializePaymentCommand)context.GetArgument(type, _commandName);
+                                await CheckAuthAsync(context, command.OrderId);
+
+                                return await _mediator.Send(command);
+                            })
+                            .FieldType);
+
+            _ = schema.Mutation.AddField(FieldBuilder.Create<object, AuthorizePaymentResult>(typeof(AuthorizePaymentResultType))
+                            .Name("authorizePayment")
+                            .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputAuthorizePaymentType>>(), _commandName)
+                            .ResolveAsync(async context =>
+                            {
+                                var type = GenericTypeHelper.GetActualType<AuthorizePaymentCommand>();
+
+                                var command = (AuthorizePaymentCommand)context.GetArgument(type, _commandName);
                                 await CheckAuthAsync(context, command.OrderId);
 
                                 return await _mediator.Send(command);

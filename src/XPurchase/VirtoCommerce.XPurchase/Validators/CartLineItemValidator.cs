@@ -39,7 +39,7 @@ namespace VirtoCommerce.XPurchase.Validators
                     }
 
                     var maxQuantity = cartProduct?.Product?.MaxQuantity;
-                    if (lineItem.Quantity > maxQuantity)
+                    if (maxQuantity > 0 && lineItem.Quantity > maxQuantity)
                     {
                         context.AddFailure(CartErrorDescriber.ProductMaxQuantityError(lineItem, lineItem.Quantity, maxQuantity ?? 0));
                     }
