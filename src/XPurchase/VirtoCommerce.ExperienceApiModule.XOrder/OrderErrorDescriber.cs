@@ -6,7 +6,17 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder
     {
         public static string InvalidStatus(PaymentStatus status, PaymentStatus[] availStatuses)
         {
-            return  $"Unable to process due to invalid payment status: {status}. Only {string.Join(',', availStatuses)} statuses are available for processing.";
+            return $"Unable to process due to invalid payment status: {status}. Only {string.Join(',', availStatuses)} statuses are available for processing.";
+        }
+
+        public static string InvalidStatus(PaymentStatus status)
+        {
+            return $"Unable to process due to invalid payment status: {status}";
+        }
+
+        public static string OrderNotFound()
+        {
+            return $"Can't find customer order";
         }
 
         public static string PaymentNotFound()
@@ -23,6 +33,5 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder
         {
             return $"Can't find a store";
         }
-
     }
 }
