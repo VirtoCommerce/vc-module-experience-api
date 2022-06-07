@@ -1,9 +1,9 @@
-using System.Collections.Generic;
 using GraphQL.Types;
+using VirtoCommerce.ExperienceApiModule.Core.Models;
 
 namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
 {
-    public class KeyValueType : ObjectGraphType<KeyValuePair<string, string>>
+    public class KeyValueType : ObjectGraphType<KeyValuePair>
     {
         public KeyValueType()
         {

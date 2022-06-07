@@ -1,5 +1,7 @@
+using System.Linq;
 using GraphQL;
 using GraphQL.Types;
+using VirtoCommerce.ExperienceApiModule.Core.Models;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
 using VirtoCommerce.ExperienceApiModule.XOrder.Models;
 
@@ -19,7 +21,8 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field(x => x.PaymentActionType, nullable: true);
             Field(x => x.ActionRedirectUrl, nullable: true);
             Field(x => x.ActionHtmlForm, nullable: true);
-            Field<ListGraphType<KeyValueType>>(nameof(InitializePaymentResult.PublicParameters).ToCamelCase(), resolve: context => context.Source.PublicParameters);
+            Field<ListGraphType<KeyValueType>>(nameof(InitializePaymentResult.PublicParameters).ToCamelCase(), resolve: context =>
+                context.Source.PublicParameters?.Select(x => new KeyValuePair { Key = x.Key, Value = x.Value }));
         }
     }
 }

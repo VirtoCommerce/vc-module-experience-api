@@ -27,6 +27,8 @@ X-Purchase-Order provides high performance API for order data.
 |6 |[updateOrderItemDynamicProperties](#updateOrderItemDynamicProperties)|`!lineItemId` `!dynamicProperties`|Updates dynamic properties in order items.|
 |7 |[updateOrderShipmentDynamicProperties](#updateOrderShipmentDynamicProperties)|`!shipmentId` `!dynamicProperties`|Updates dynamic properties in order shipment.|
 |8 |[updateOrderPaymentDynamicProperties](#updateOrderPaymentDynamicProperties)|`!paymentId` `!dynamicProperties`|Updates dynamic properties in order payment.|
+|9 |[initializePayment](#initializePayment)|`orderId` `!paymentId`|Initiates payment processing
+|10|[authorizePayment](#authorizePayment)|`orderId` `!paymentId` `parameters { key value }`|Finalizes first step of the payment processing
 
 > [!NOTE]
 > In arguments column we show additional arguments. if they are marked with an exclamation mark, they are required.
@@ -527,4 +529,72 @@ mutation ($command: InputUpdateOrderPaymentDynamicPropertiesType!)
   	]
   }
 }
+```
+
+### initializePayment
+
+This mutation initiates payment processing
+
+#### 
+
+```
+mutation ($command: InputInitializePaymentType!)
+{
+    initializePayment(command: $command)
+    {
+        isSuccess
+        errorMessage
+        storeId
+        paymentId
+        orderId
+        orderNumber
+        paymentMethodCode
+        paymentActionType
+        actionRedirectUrl
+        publicParameters {
+          key
+          value
+        }
+      }
+}
+```
+
+#### Variables
+
+```
+"command": {
+    "orderId": "d548c750-5a74-4e54-b72b-f5209f44caa6",
+    "paymentId": "0859f1e8-16e8-4924-808b-47e03560085d"
+  }
+```
+
+### authorizePayment
+
+This mutation finalizes first step of the payment processing
+
+#### Query
+
+mutation ($command: InputAuthorizePaymentType!) {
+  authorizePayment(command: $command) {
+    isSuccess
+    errorMessage
+  }
+}
+
+#### Variables
+
+```
+"command": {
+    "orderId": "d548c750-5a74-4e54-b72b-f5209f44caa6",
+    "paymentId": "0859f1e8-16e8-4924-808b-47e03560085d",
+    "parameters": [
+      {
+        key: "key1",
+        value: "value1"
+      },
+      {
+        key: "key2",
+        value: "value2"
+      }
+  }
 ```
