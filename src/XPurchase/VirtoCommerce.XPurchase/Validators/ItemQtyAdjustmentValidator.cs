@@ -33,7 +33,7 @@ namespace VirtoCommerce.XPurchase.Validators
                 }
 
                 var maxQuantity = qtyAdjust.CartProduct?.Product?.MaxQuantity;
-                if (qtyAdjust.NewQuantity > maxQuantity)
+                if (maxQuantity > 0 && qtyAdjust.NewQuantity > maxQuantity)
                 {
                     context.AddFailure(CartErrorDescriber.ProductMaxQuantityError(qtyAdjust.CartProduct, qtyAdjust.NewQuantity, maxQuantity ?? 0));
                 }
