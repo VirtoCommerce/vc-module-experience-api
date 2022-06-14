@@ -48,6 +48,10 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field(x => x.TaxType, true);
             Field(x => x.TaxPercentRate);
 
+            Field(x => x.TrackingNumber, true);
+            Field(x => x.TrackingUrl, true);
+            Field(x => x.DeliveryDate, true);
+
             Field<MoneyType>(nameof(Shipment.Price).ToCamelCase(), resolve: context => new Money(context.Source.Price, context.GetOrderCurrency()));
             Field<MoneyType>(nameof(Shipment.PriceWithTax).ToCamelCase(), resolve: context => new Money(context.Source.PriceWithTax, context.GetOrderCurrency()));
             Field<MoneyType>(nameof(Shipment.Total).ToCamelCase(), resolve: context => new Money(context.Source.Total, context.GetOrderCurrency()));
