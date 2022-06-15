@@ -10,6 +10,7 @@ using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.OrdersModule.Core.Model;
 using VirtoCommerce.PaymentModule.Core.Model;
 using VirtoCommerce.PaymentModule.Core.Model.Search;
+using VirtoCommerce.PaymentModule.Core.Services;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.GenericCrud;
 
@@ -19,7 +20,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
     {
         public CustomerOrderType(
             IDynamicPropertyResolverService dynamicPropertyResolverService,
-            ISearchService<PaymentMethodsSearchCriteria, PaymentMethodsSearchResult, PaymentMethod> paymentMethodsSearchService)
+            IPaymentMethodsSearchService paymentMethodsSearchService)
         {
             Field(x => x.Order.Id);
             Field(x => x.Order.OperationType);
@@ -139,7 +140,8 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                         StoreId = context.Source.Order.StoreId,
                     };
 
-                    var result = await paymentMethodsSearchService.SearchAsync(criteria);
+                    var searchService = (ISearchService<PaymentMethodsSearchCriteria, PaymentMethodsSearchResult, PaymentMethod>)paymentMethodsSearchService;
+                    var result = await searchService.SearchAsync(criteria);
 
                     result.Results?.Apply(x => context.UserContext[x.Id] = context.Source);
 
