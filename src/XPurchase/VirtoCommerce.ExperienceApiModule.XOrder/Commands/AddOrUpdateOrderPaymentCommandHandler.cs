@@ -32,7 +32,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Commands
         {
             var orderAggregate = await _customerOrderAggregateRepository.GetOrderByIdAsync(request.OrderId);
 
-            var paymentId = request.Payment.Id?.Value ?? null;
+            var paymentId = request.Payment.Id?.Value;
             var payment = orderAggregate.Order.InPayments.FirstOrDefault(s => paymentId != null && s.Id == paymentId);
             payment = request.Payment.MapTo(payment);
 
