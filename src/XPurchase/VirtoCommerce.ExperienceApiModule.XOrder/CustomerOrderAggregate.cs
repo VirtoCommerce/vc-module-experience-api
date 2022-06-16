@@ -125,7 +125,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder
             return this;
         }
 
-        public virtual async Task<CustomerOrderAggregate> AddPaymentAsync(PaymentIn payment, IEnumerable<PaymentMethod> availPaymentMethods)
+        public virtual async Task<CustomerOrderAggregate> AddPaymentAsync([DisallowNull] PaymentIn payment, IEnumerable<PaymentMethod> availPaymentMethods)
         {
             var validationContext = new OrderPaymentValidationContext
             {
