@@ -1,12 +1,14 @@
 using GraphQL.Types;
+using VirtoCommerce.ExperienceApiModule.XOrder.Models;
 using VirtoCommerce.OrdersModule.Core.Model;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 {
-    public class InputOrderAddressType : InputObjectGraphType<Address>
+    public class InputOrderAddressType : InputObjectGraphType<ExpOrderAddress>
     {
         public InputOrderAddressType()
         {
+            Field<StringGraphType>("id", resolve: context => context.Source.Key, description: "ID");
             Field(x => x.City, nullable: true).Description("City");
             Field(x => x.CountryCode, nullable: true).Description("Country code");
             Field(x => x.CountryName, nullable: true).Description("Country name");

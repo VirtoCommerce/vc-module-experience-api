@@ -33,5 +33,10 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder
         {
             return $"Can't find a store";
         }
+
+        public static string PaymentMethodUnavailable(string code)
+        {
+            return $"The payment method code:{code} unavailable";
+        }
     }
 }
