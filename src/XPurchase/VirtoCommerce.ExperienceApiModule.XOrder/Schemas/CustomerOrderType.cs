@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using GraphQL;
 using GraphQL.Types;
 using VirtoCommerce.CoreModule.Core.Currency;
@@ -6,12 +8,19 @@ using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
 using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.OrdersModule.Core.Model;
+using VirtoCommerce.PaymentModule.Core.Model;
+using VirtoCommerce.PaymentModule.Core.Model.Search;
+using VirtoCommerce.PaymentModule.Core.Services;
+using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.GenericCrud;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 {
     public class CustomerOrderType : ExtendableGraphType<CustomerOrderAggregate>
     {
-        public CustomerOrderType(IDynamicPropertyResolverService dynamicPropertyResolverService)
+        public CustomerOrderType(
+            IDynamicPropertyResolverService dynamicPropertyResolverService,
+            IPaymentMethodsSearchService paymentMethodsSearchService)
         {
             Field(x => x.Order.Id);
             Field(x => x.Order.OperationType);
@@ -80,7 +89,33 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 
             ExtendableField<NonNullGraphType<ListGraphType<OrderAddressType>>>(nameof(CustomerOrder.Addresses), resolve: x => x.Source.Order.Addresses);
             ExtendableField<NonNullGraphType<ListGraphType<OrderLineItemType>>>(nameof(CustomerOrder.Items), resolve: x => x.Source.Order.Items);
-            ExtendableField<NonNullGraphType<ListGraphType<PaymentInType>>>(nameof(CustomerOrder.InPayments), resolve: x => x.Source.Order.InPayments);
+            ExtendableField<NonNullGraphType<ListGraphType<PaymentInType>>>(nameof(CustomerOrder.InPayments),
+                arguments: new QueryArguments(
+                    new QueryArgument<IntGraphType> { Name = "after" },
+                    new QueryArgument<IntGraphType> { Name = "first" },
+                    new QueryArgument<StringGraphType> { Name = "sort" }
+                ),
+                resolve: x =>
+                {
+                    var skip = x.GetArgument("after", 0);
+                    var take = x.GetArgument("first", 20);
+                    var sort = x.GetArgument<string>("sort");
+
+                    var payments = x.Source.Order.InPayments ?? new List<PaymentIn>();
+                    var queryable = payments.AsQueryable();
+
+                    if (!string.IsNullOrEmpty(sort))
+                    {
+                        var sortInfos = SortInfo.Parse(sort).ToList();
+                        queryable = queryable.OrderBySortInfos(sortInfos);
+                    }
+
+                    queryable = queryable.Skip(skip).Take(take);
+
+                    var result = queryable.ToList();
+                    return result;
+                });
+
             ExtendableField<ListGraphType<OrderShipmentType>>(nameof(CustomerOrder.Shipments), resolve: x => x.Source.Order.Shipments);
 
             Field<NonNullGraphType<ListGraphType<OrderTaxDetailType>>>(nameof(CustomerOrder.TaxDetails), resolve: x => x.Source.Order.TaxDetails);
@@ -94,6 +129,24 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             ExtendableField<ListGraphType<StringGraphType>>("coupons", resolve: x => x.Source.GetCustomerOrderCoupons());
 
             ExtendableField<ListGraphType<OrderDiscountType>>("discounts", resolve: x => x.Source.Order.Discounts);
+
+            FieldAsync<ListGraphType<OrderPaymentMethodType>>("availablePaymentMethods",
+                "Available payment methods",
+                resolve: async context =>
+                {
+                    var criteria = new PaymentMethodsSearchCriteria
+                    {
+                        IsActive = true,
+                        StoreId = context.Source.Order.StoreId,
+                    };
+
+                    var searchService = (ISearchService<PaymentMethodsSearchCriteria, PaymentMethodsSearchResult, PaymentMethod>)paymentMethodsSearchService;
+                    var result = await searchService.SearchAsync(criteria);
+
+                    result.Results?.Apply(x => context.UserContext[x.Id] = context.Source);
+
+                    return result.Results;
+                });
         }
     }
 }
