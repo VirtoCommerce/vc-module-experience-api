@@ -21,10 +21,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Models
 
         public PaymentIn MapTo(PaymentIn payment)
         {
-            if (payment == null)
-            {
-                payment = AbstractTypeFactory<PaymentIn>.TryCreateInstance();
-            }
+            payment ??= AbstractTypeFactory<PaymentIn>.TryCreateInstance();
 
             if (Id?.IsSpecified == true)
             {
@@ -54,7 +51,6 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Models
             if (Amount?.IsSpecified == true)
             {
                 payment.Sum = Amount.Value;
-                payment.Total = Amount.Value;
             }
 
             if (BillingAddress?.IsSpecified == true)
