@@ -52,6 +52,10 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field(x => x.DiscountAmountWithTax);
             Field(x => x.TaxTotal);
 
+            Field(x => x.TrackingNumber, true);
+            Field(x => x.TrackingUrl, true);
+            Field(x => x.DeliveryDate, true);
+
             Field<NonNullGraphType<ListGraphType<InputOrderTaxDetailType>>>(nameof(Shipment.TaxDetails),
                 "Tax details");
             Field<NonNullGraphType<ListGraphType<InputOrderShipmentItemType>>>(nameof(Shipment.Items),
