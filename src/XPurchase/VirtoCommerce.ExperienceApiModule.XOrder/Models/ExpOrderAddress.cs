@@ -29,10 +29,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Models
 
         public Address MapTo(Address address)
         {
-            if (address == null)
-            {
-                address = AbstractTypeFactory<Address>.TryCreateInstance();
-            }
+            address ??= AbstractTypeFactory<Address>.TryCreateInstance();
 
             if (Key?.IsSpecified == true)
             {
