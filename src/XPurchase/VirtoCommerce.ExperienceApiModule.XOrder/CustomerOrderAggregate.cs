@@ -136,15 +136,8 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder
 
             AbstractTypeFactory<OrderPaymentValidator>.TryCreateInstance().ValidateAndThrow(validationContext);
 
-            if (payment?.Currency == null)
-            {
-                payment.Currency = Order.Currency;
-            }
-
-            if (payment.CustomerId == null)
-            {
-                payment.CustomerId = Order.CustomerId;
-            }
+            payment.Currency ??= Order.Currency;
+            payment.CustomerId ??= Order.CustomerId;
 
             if (payment.BillingAddress != null)
             {
