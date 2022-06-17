@@ -151,15 +151,12 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder
             return this;
         }
 
-        protected virtual Task<CustomerOrderAggregate> RemoveExistingPaymentAsync(PaymentIn payment)
+        protected virtual Task<CustomerOrderAggregate> RemoveExistingPaymentAsync([DisallowNull] PaymentIn payment)
         {
-            if (payment != null)
+            var existingPayment = !payment.IsTransient() ? Order.InPayments.FirstOrDefault(s => s.Id == payment.Id) : null;
+            if (existingPayment != null)
             {
-                var existingPayment = !payment.IsTransient() ? Order.InPayments.FirstOrDefault(s => s.Id == payment.Id) : null;
-                if (existingPayment != null)
-                {
-                    Order.InPayments.Remove(existingPayment);
-                }
+                Order.InPayments.Remove(existingPayment);
             }
 
             return Task.FromResult(this);
