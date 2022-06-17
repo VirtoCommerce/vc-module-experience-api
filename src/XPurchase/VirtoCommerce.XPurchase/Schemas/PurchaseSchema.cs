@@ -1139,6 +1139,8 @@ namespace VirtoCommerce.XPurchase.Schemas
                         return null;
                     }
 
+                    context.UserContext["storeId"] = cartAggregate.Cart.StoreId;
+
                     await AuthorizeAsync(context, cartAggregate.Cart);
 
                     context.SetExpandedObjectGraph(cartAggregate);
@@ -1219,6 +1221,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                              var commandType = GenericTypeHelper.GetActualType<AddWishlistItemCommand>();
                              var command = (AddWishlistItemCommand)context.GetArgument(commandType, _commandName);
                              var cartAggregate = await _mediator.Send(command);
+                             context.UserContext["storeId"] = cartAggregate.Cart.StoreId;
                              await CheckAuthAsyncByCartId(context, command.ListId);
                              context.SetExpandedObjectGraph(cartAggregate);
                              return cartAggregate;
