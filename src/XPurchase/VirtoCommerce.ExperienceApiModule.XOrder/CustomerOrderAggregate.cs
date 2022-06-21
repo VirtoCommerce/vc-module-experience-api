@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
+using FluentValidation;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.ExperienceApiModule.Core.Models;
 using VirtoCommerce.ExperienceApiModule.Core.Services;
@@ -9,6 +11,7 @@ using VirtoCommerce.ExperienceApiModule.XOrder.Validators;
 using VirtoCommerce.MarketingModule.Core.Model.Promotions.Search;
 using VirtoCommerce.MarketingModule.Core.Search;
 using VirtoCommerce.OrdersModule.Core.Model;
+using VirtoCommerce.PaymentModule.Core.Model;
 using VirtoCommerce.PaymentModule.Model.Requests;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Domain;
@@ -121,6 +124,42 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder
             }
 
             return this;
+        }
+
+        public virtual async Task<CustomerOrderAggregate> AddPaymentAsync([DisallowNull] PaymentIn payment, IEnumerable<PaymentMethod> availPaymentMethods)
+        {
+            var validationContext = new OrderPaymentValidationContext
+            {
+                Payment = payment,
+                AvailPaymentMethods = availPaymentMethods
+            };
+
+            AbstractTypeFactory<OrderPaymentValidator>.TryCreateInstance().ValidateAndThrow(validationContext);
+
+            payment.Currency ??= Order.Currency;
+            payment.CustomerId ??= Order.CustomerId;
+
+            if (payment.BillingAddress != null)
+            {
+                payment.BillingAddress.Key = null;
+            }
+
+            await RemoveExistingPaymentAsync(payment);
+
+            Order.InPayments.Add(payment);
+
+            return this;
+        }
+
+        protected virtual Task<CustomerOrderAggregate> RemoveExistingPaymentAsync([DisallowNull] PaymentIn payment)
+        {
+            var existingPayment = !payment.IsTransient() ? Order.InPayments.FirstOrDefault(s => s.Id == payment.Id) : null;
+            if (existingPayment != null)
+            {
+                Order.InPayments.Remove(existingPayment);
+            }
+
+            return Task.FromResult(this);
         }
 
         public virtual async Task<IEnumerable<string>> GetCustomerOrderCoupons()

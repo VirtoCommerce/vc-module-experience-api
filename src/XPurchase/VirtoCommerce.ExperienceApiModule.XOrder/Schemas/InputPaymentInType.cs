@@ -1,8 +1,10 @@
+using System;
 using GraphQL.Types;
 using VirtoCommerce.OrdersModule.Core.Model;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 {
+    [Obsolete("Use InputOrderPaymentType. Should be removed in stable v3")]
     public class InputPaymentInType : InputObjectGraphType<PaymentIn>
     {
         public InputPaymentInType()

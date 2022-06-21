@@ -41,6 +41,8 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 
         public void Build(ISchema schema)
         {
+            ValueConverter.Register<ExpOrderAddress, Optional<ExpOrderAddress>>(x => new Optional<ExpOrderAddress>(x));
+
             _ = schema.Query.AddField(new FieldType
             {
                 Name = "order",
@@ -206,6 +208,23 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                                 await CheckAuthAsync(context, command.OrderId);
 
                                 return await _mediator.Send(command);
+                            })
+                            .FieldType);
+
+            _ = schema.Mutation.AddField(FieldBuilder.Create<CustomerOrderAggregate, CustomerOrderAggregate>(GraphTypeExtenstionHelper.GetActualType<CustomerOrderType>())
+                            .Name("addOrUpdateOrderPayment")
+                            .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputAddOrUpdateOrderPaymentType>>(), _commandName)
+                            .ResolveAsync(async context =>
+                            {
+                                var type = GenericTypeHelper.GetActualType<AddOrUpdateOrderPaymentCommand>();
+                                var command = (AddOrUpdateOrderPaymentCommand)context.GetArgument(type, _commandName);
+                                await CheckAuthAsync(context, command.OrderId);
+
+                                var response = await _mediator.Send(command);
+
+                                context.SetExpandedObjectGraph(response);
+
+                                return response;
                             })
                             .FieldType);
         }
