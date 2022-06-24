@@ -213,18 +213,10 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
 
                     return filter switch
                     {
-                        RangeFilter rangeFilter => new RangeAggregationRequest
+                        RangeFilter rangeFilter => new TermAggregationRequest
                         {
                             Id = filter.Stringify(true),
-                            FieldName = rangeFilter.FieldName,
-                            Values = rangeFilter.Values.Select(x => new RangeAggregationRequestValue
-                            {
-                                Id = x.Stringify(),
-                                Lower = x.Lower,
-                                Upper = x.Upper,
-                                IncludeLower = x.IncludeLower,
-                                IncludeUpper = x.IncludeUpper
-                            }).ToList()
+                            Filter = rangeFilter
                         },
                         TermFilter termFilter => new TermAggregationRequest
                         {
