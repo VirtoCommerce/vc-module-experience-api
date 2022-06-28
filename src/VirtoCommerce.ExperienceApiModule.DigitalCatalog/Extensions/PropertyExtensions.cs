@@ -39,6 +39,27 @@ namespace VirtoCommerce.XDigitalCatalog.Extensions
             }).ToList();
         }
 
+        /// <summary>
+        /// Filters and sorts properties by KeyProperty attribute, then flattens the key-value tree
+        /// </summary>
+        public static IList<Property> ExpandKeyPropertiesByValues(this IEnumerable<Property> properties, string cultureName, int take = 0)
+        {
+            properties = properties
+                .Where(x => x.Attributes.Any(a => a.Name.EqualsInvariant(XDigitalCatalogConstants.KeyProperty)))
+                .OrderBy(x =>
+                {
+                    var keyPropertyAttr = x.Attributes.First(x => x.Name.EqualsInvariant(XDigitalCatalogConstants.KeyProperty));
+                    return keyPropertyAttr.Value.TryParse(int.MaxValue);
+                });
+
+            if (take > 0)
+            {
+                properties = properties.Take(take);
+            }
+
+            return properties.ExpandByValues(cultureName);
+        }
+
         public static Property CopyPropertyWithValue(this PropertyValue propertyValue, Property property)
         {
             var clonedProperty = (Property)property.Clone();

@@ -287,6 +287,18 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 return result;
             });
 
+            ExtendableField<ListGraphType<PropertyType>>("keyProperties",
+                arguments: new QueryArguments(new QueryArgument<IntGraphType> { Name = "take" }),
+                resolve: context =>
+                {
+                    var take = context.GetArgument<int>("take");
+                    var cultureName = context.GetValue<string>("cultureName");
+
+                    var result = context.Source.IndexedProduct.Properties.ExpandKeyPropertiesByValues(cultureName, take);
+
+                    return result;
+                });
+
             Field<ListGraphType<AssetType>>(
                 "assets",
                 "Assets",
