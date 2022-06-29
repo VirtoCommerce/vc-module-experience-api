@@ -152,9 +152,19 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field<MoneyType>("discountTotal",
                 "Total discount",
                 resolve: context => context.Source.Cart.DiscountTotal.ToMoney(context.Source.Currency));
+
             Field<MoneyType>("discountTotalWithTax",
                 "Total discount with tax",
                 resolve: context => context.Source.Cart.DiscountTotalWithTax.ToMoney(context.Source.Currency));
+
+            Field<MoneyType>("subTotalDiscount",
+                "Subtotal discount",
+                resolve: context => context.Source.Cart.SubTotalDiscount.ToMoney(context.Source.Currency));
+
+            Field<MoneyType>("subTotalDiscountWithTax",
+                "Subtotal discount with tax",
+                resolve: context => context.Source.Cart.SubTotalDiscountWithTax.ToMoney(context.Source.Currency));
+
             Field<ListGraphType<DiscountType>>("discounts",
                 "Discounts",
                 resolve: context => context.Source.Cart.Discounts);
