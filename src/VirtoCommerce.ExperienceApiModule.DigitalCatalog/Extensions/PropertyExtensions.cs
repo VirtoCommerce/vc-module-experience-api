@@ -44,8 +44,13 @@ namespace VirtoCommerce.XDigitalCatalog.Extensions
         /// </summary>
         public static IList<Property> ExpandKeyPropertiesByValues(this IEnumerable<Property> properties, string cultureName, int take = 0)
         {
+            if (properties.IsNullOrEmpty())
+            {
+                return new List<Property>();
+            }
+
             properties = properties
-                .Where(x => x.Attributes.Any(a => a.Name.EqualsInvariant(XDigitalCatalogConstants.KeyProperty)))
+                .Where(x => x.Attributes?.Any(a => a.Name.EqualsInvariant(XDigitalCatalogConstants.KeyProperty)) == true)
                 .OrderBy(x =>
                 {
                     var keyPropertyAttr = x.Attributes.First(x => x.Name.EqualsInvariant(XDigitalCatalogConstants.KeyProperty));
