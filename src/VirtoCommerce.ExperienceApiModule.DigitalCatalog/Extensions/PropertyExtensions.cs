@@ -50,7 +50,7 @@ namespace VirtoCommerce.XDigitalCatalog.Extensions
             }
 
             properties = properties
-                .Where(x => x.Attributes?.Any(a => a.Name.EqualsInvariant(XDigitalCatalogConstants.KeyProperty)) == true)
+                .Where(x => !x.Attributes.IsNullOrEmpty() && x.Attributes.Any(a => a.Name.EqualsInvariant(XDigitalCatalogConstants.KeyProperty)))
                 .OrderBy(x =>
                 {
                     var keyPropertyAttr = x.Attributes.First(x => x.Name.EqualsInvariant(XDigitalCatalogConstants.KeyProperty));
