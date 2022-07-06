@@ -7,6 +7,7 @@ using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
 using VirtoCommerce.XDigitalCatalog.Middlewares;
 using VirtoCommerce.XDigitalCatalog.Queries;
 using VirtoCommerce.XDigitalCatalog.Schemas;
+using VirtoCommerce.XDigitalCatalog.Schemas.Inventory;
 
 namespace VirtoCommerce.XDigitalCatalog.Extensions
 {
@@ -15,6 +16,7 @@ namespace VirtoCommerce.XDigitalCatalog.Extensions
         public static IServiceCollection AddXCatalog(this IServiceCollection services, IGraphQLBuilder graphQlbuilder)
         {
             services.AddSchemaBuilder<DigitalCatalogSchema>();
+            services.AddSchemaBuilder<InventorySchema>();
 
             graphQlbuilder.AddGraphTypes(typeof(XDigitalCatalogAnchor));
 

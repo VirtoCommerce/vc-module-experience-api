@@ -19,7 +19,7 @@
         <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
         <PackageReference Include="Serialize.Linq" Version="1.8.1" />
         <PackageReference Include="VirtoCommerce.CoreModule.Core" Version="3.200.0" />
-        <PackageReference Include="VirtoCommerce.InventoryModule.Core" Version="3.200.0" />
+        <PackageReference Include="VirtoCommerce.InventoryModule.Core" Version="3.205.0-alpha.374-pt-8000" />
         <PackageReference Include="VirtoCommerce.TaxModule.Core" Version="3.200.0" />
         <PackageReference Include="VirtoCommerce.CatalogModule.Core" Version="3.213.0" />
         <PackageReference Include="VirtoCommerce.MarketingModule.Core" Version="3.200.0" />
