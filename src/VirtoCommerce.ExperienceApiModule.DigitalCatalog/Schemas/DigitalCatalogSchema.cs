@@ -127,6 +127,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                {
                    var store = await _storeService.GetByIdAsync(context.GetArgument<string>("storeId"));
                    context.UserContext["store"] = store;
+                   context.UserContext["catalog"] = store.Catalog;
 
                    //PT-1606:  Need to check what there is no any alternative way to access to the original request arguments in sub selection
                    context.CopyArgumentsToUserContext();
@@ -156,6 +157,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             {
                 var store = await _storeService.GetByIdAsync(context.GetArgument<string>("storeId"));
                 context.UserContext["store"] = store;
+                context.UserContext["catalog"] = store.Catalog;
 
                 //PT-1606:  Need to check what there is no any alternative way to access to the original request arguments in sub selection
                 context.CopyArgumentsToUserContext();

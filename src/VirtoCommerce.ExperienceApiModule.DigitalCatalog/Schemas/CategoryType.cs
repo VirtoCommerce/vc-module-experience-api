@@ -164,9 +164,18 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
         private static bool TryGetParentId(IResolveFieldContext<ExpCategory> context, out string parentId)
         {
-            parentId = context.Source.Category.ParentId;
+            var catalogId = context.UserContext["catalog"];
+            parentId = null;
 
-            return parentId != null;
+            foreach (var outline in context.Source.Category.Outlines)
+            {
+                if (outline.Items.Count > 2 && outline.Items.Any(x => x.Id == (string)catalogId))
+                {
+                    parentId = outline.Items.Take(outline.Items.Count - 1).Select(x => x.Id).LastOrDefault();
+                    return parentId != null;
+                }
+            }
+            return false;
         }
 
         private static async Task<IDictionary<string, ExpCategory>> LoadCategoriesAsync(IMediator mediator, IEnumerable<string> ids, IResolveFieldContext context)
