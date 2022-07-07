@@ -169,7 +169,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             foreach (var outline in context.Source.Category.Outlines)
             {
-                if (outline.Items.Select(x => x.Id == catalogId).FirstOrDefault())
+                if (outline.Items.Select(x => x.Id.Equals(catalogId)).FirstOrDefault())
                 {
                     parentId = outline.Items.Take(outline.Items.Count - 1).Select(x => x.Id).LastOrDefault();
 
