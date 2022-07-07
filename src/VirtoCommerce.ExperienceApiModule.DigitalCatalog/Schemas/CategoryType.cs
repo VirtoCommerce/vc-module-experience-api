@@ -109,7 +109,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             Field<CategoryType, ExpCategory>("parent").ResolveAsync(ctx =>
             {
                 var loader = dataLoader.Context.GetOrAddBatchLoader<string, ExpCategory>("parentsCategoryLoader", (ids) => LoadCategoriesAsync(mediator, ids, ctx));
-                if (TryGetParentId(ctx, out var parentCategoryId))
+                if (TryGetCategoryParentId(ctx, out var parentCategoryId))
                 {
                     return loader.LoadAsync(parentCategoryId);
                 }
@@ -118,7 +118,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             Field<BooleanGraphType>("hasParent",
                 "Have a parent",
-                resolve: context => TryGetParentId(context, out _));
+                resolve: context => TryGetCategoryParentId(context, out _));
             Field<ListGraphType<OutlineType>>("outlines",
                 "Outlines",
                 resolve: context => context.Source.Category.Outlines);
@@ -162,21 +162,19 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             return result;
         }
 
-        private static bool TryGetParentId(IResolveFieldContext<ExpCategory> context, out string parentId)
+        private static bool TryGetCategoryParentId(IResolveFieldContext<ExpCategory> context, out string parentId)
         {
-            var catalogId = (string)context.UserContext["catalog"];
+            var store = context.GetArgumentOrValue<Store>("store");
             parentId = null;
 
-            foreach (var outline in context.Source.Category.Outlines)
+            foreach (var outline in context.Source.Category.Outlines.Where(outline => outline.Items.Any(x => x.Id.Equals(store.Catalog))))
             {
-                if (outline.Items.Any(x => x.Id.Equals(catalogId)))
-                {
-                    parentId = outline.Items.Take(outline.Items.Count - 1).Select(x => x.Id).LastOrDefault();
+                parentId = outline.Items.Take(outline.Items.Count - 1).Select(x => x.Id).LastOrDefault();
 
-                    if (parentId != null && parentId != catalogId)
-                    {
-                        return true;
-                    }
+                //parentId should be a category id, not a catalog id
+                if (parentId != null && parentId != store.Catalog)
+                {
+                    return true;
                 }
             }
             return false;
