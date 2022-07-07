@@ -329,6 +329,35 @@ Get one property with dictionary items for specific culture:
 |24|associations     |ProductAssociationType               |Product associations|
 |25|breadcrumbs      |BreadcrumbType                       |Product navigation information|
 |26|videos           |VideoType                            |Product videos|
+|27|keyProperties    |List of PropertyType                 |Configurable list of properties
+
+#### Product Key Properties
+
+ProductType query has a special configurable filed `keyProperties`. To make a catalog property appear in `keyProperties` list it needs to configured in the Catalog module in Platform: add the `KeyProperty` attribute to Property Attributes. KeyProperties are auto sorted by the attribute value in ascending order.
+
+![image](./media/KeyPropertiesAttr.png)
+
+`keyProperties` can be limited by `take` argument.
+
+#### Example
+Show only first 3 key properties:
+
+```json
+query {
+  products(
+    storeId: "B2B-store"
+    cultureName: "en-US"
+  ) {
+    items 
+    {
+      keyProperties (take:3) {
+        name
+        value
+      }
+    }
+  }
+}
+```
 
 ### CategoryType
 
