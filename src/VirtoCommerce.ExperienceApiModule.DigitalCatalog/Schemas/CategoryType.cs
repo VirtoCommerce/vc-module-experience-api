@@ -164,10 +164,13 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
         private static bool TryGetCategoryParentId(IResolveFieldContext<ExpCategory> context, out string parentId)
         {
-            var store = context.GetArgumentOrValue<Store>("store");
             parentId = null;
+            var outlines = context.Source.Category.Outlines;
+            if (outlines.IsNullOrEmpty()) return false;
 
-            foreach (var outline in context.Source.Category.Outlines.Where(outline => outline.Items.Any(x => x.Id.Equals(store.Catalog))))
+            var store = context.GetArgumentOrValue<Store>("store");
+
+            foreach (var outline in outlines.Where(outline => outline.Items.Any(x => x.Id.Equals(store.Catalog))))
             {
                 parentId = outline.Items.Take(outline.Items.Count - 1).Select(x => x.Id).LastOrDefault();
 
