@@ -109,7 +109,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             Field<CategoryType, ExpCategory>("parent").ResolveAsync(ctx =>
             {
                 var loader = dataLoader.Context.GetOrAddBatchLoader<string, ExpCategory>("parentsCategoryLoader", (ids) => LoadCategoriesAsync(mediator, ids, ctx));
-                if (TryGetParentId(ctx, out var parentCategoryId))
+                if (TryGetCategoryParentId(ctx, out var parentCategoryId))
                 {
                     return loader.LoadAsync(parentCategoryId);
                 }
@@ -118,7 +118,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             Field<BooleanGraphType>("hasParent",
                 "Have a parent",
-                resolve: context => TryGetParentId(context, out _));
+                resolve: context => TryGetCategoryParentId(context, out _));
             Field<ListGraphType<OutlineType>>("outlines",
                 "Outlines",
                 resolve: context => context.Source.Category.Outlines);
@@ -162,11 +162,25 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             return result;
         }
 
-        private static bool TryGetParentId(IResolveFieldContext<ExpCategory> context, out string parentId)
+        private static bool TryGetCategoryParentId(IResolveFieldContext<ExpCategory> context, out string parentId)
         {
-            parentId = context.Source.Category.ParentId;
+            parentId = null;
+            var outlines = context.Source.Category.Outlines;
+            if (outlines.IsNullOrEmpty()) return false;
 
-            return parentId != null;
+            var store = context.GetArgumentOrValue<Store>("store");
+
+            foreach (var outline in outlines.Where(outline => outline.Items.Any(x => x.Id.Equals(store.Catalog))))
+            {
+                parentId = outline.Items.Take(outline.Items.Count - 1).Select(x => x.Id).LastOrDefault();
+
+                //parentId should be a category id, not a catalog id
+                if (parentId != null && parentId != store.Catalog)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         private static async Task<IDictionary<string, ExpCategory>> LoadCategoriesAsync(IMediator mediator, IEnumerable<string> ids, IResolveFieldContext context)
