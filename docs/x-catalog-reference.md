@@ -1,8 +1,8 @@
 # X-Catalog
 
-X-Catalog provides high performance search queries for catalog data directly from search index engine.
+X-Catalog provides high performance search queries for catalog data directly from the search index engine.
 
-## Key features
+## Key Features
 
 - Full-text search ([→](#full-text-search))
 - Fuzzy search ([→](#fuzzy-search))
@@ -14,14 +14,14 @@ X-Catalog provides high performance search queries for catalog data directly fro
 - Facets ([→](#facets))
 - Multi-select faceting search ([→](#muti-select-faceting-search))
 
-## How to use
+## How to Use
 
-Read this [article...](index.md)
+Please refer to [Experience API Overview](index.md) to for more information on how to use X-Catalog.
 
 ## QueryRoot
 ### Product
 
-This query allows you to get a product by Id and calculate all the fields based on the parameters sent.
+This query allows you to get a product by ID and calculate all the fields based on the parameters sent.
 
 #### Definition
 
@@ -55,7 +55,7 @@ product(id: !string, storeId: !string, userId: !string, currencyCode: string, cu
 }
 ```
 
-#### Display Tier Pricing on product page
+#### Display Tier Pricing on Product Page
 
 ```json
 query
@@ -83,7 +83,7 @@ query
 
 ### Products
 
-This connection allows you to search products.
+This connection allows you to search for products.
 
 #### Definition
 
@@ -135,7 +135,7 @@ products(productIds: string[], storeId: !string, userId: !string, currencyCode: 
 
 ### Categories
 
-This connection allows you to search products.
+This connection allows you to search for products.
 
 #### Definition
 
@@ -188,7 +188,7 @@ categories(categoryIds: string[], storeId: !string, userId: !string, currencyCod
 
 ### Properties
 
-This connection allows you to search catalog properties metadata.
+This connection allows you to search for catalog properties metadata.
 
 #### Definition
 
@@ -234,7 +234,7 @@ Enlist properties metadata with dictionary items, specified culture, specific na
 
 #### Example 2
 
-Get properties for specific category:
+Get properties for a specific category:
 
 ```json
 {
@@ -261,7 +261,7 @@ Get properties for specific category:
 
 ### Property
 
-This connection allows you to get metadata for specific catalog property.
+This connection allows you to get metadata for a specific catalog property.
 
 #### Definition
 
@@ -277,7 +277,7 @@ property(id: !string, cultureName: string)
 
 #### Example
 
-Get one property with dictionary items for specific culture:
+Get a single property with dictionary items for a specific culture:
 
 ```json
 {
@@ -294,7 +294,7 @@ Get one property with dictionary items for specific culture:
 }
 ```
 
-## Queriable objects
+## Queriable Objects
 
 ### ProductType
 ![image](./media/ProductType.jpeg)
@@ -333,14 +333,14 @@ Get one property with dictionary items for specific culture:
 
 #### Product Key Properties
 
-ProductType query has a special configurable filed `keyProperties`. To make a catalog property appear in `keyProperties` list it needs to configured in the Catalog module in Platform: add the `KeyProperty` attribute to Property Attributes. KeyProperties are auto sorted by the attribute value in ascending order.
+The `ProductType` query has a special configurable field, `keyProperties`. To make a catalog property appear in the `keyProperties` list, you need to configure it in the Catalog module by adding the `KeyProperty` attribute to `Property Attributes`. `KeyProperties` are auto sorted by the attribute value in the ascending order.
 
 ![image](./media/KeyPropertiesAttr.png)
 
-`keyProperties` can be limited by `take` argument.
+The `keyProperties` field can be limited by the `take` argument.
 
 #### Example
-Show only first 3 key properties:
+The following query enables showing only first three key properties:
 
 ```json
 query {
@@ -382,14 +382,14 @@ query {
 
 ### Full-Text Search
 
-The `query` -  parameter performs the full-text search on the product index document. Expects the full-text search phrase.
+The *query* parameter performs the full text search against the product index document. It expects a full text search phrase.
 
-#### Searchable fields
+#### Searchable Fields
 
-The search conducts a full-text search over product data in the index. A product search returns all product variations a product has.
-We are stored all searchable text data of a product  in one `__content` field in the resulting index document and perform full-text search only for this field.
+The search performs full text search over product data in the index. Product search returns all product variations a product has.
+All searchable text data of a product are stored in the single `__content` field in the resulting index document; the full text search is performed only for this field.
 
-Product document in the index:
+An example of product document in the index may look like this:
 
 ```json
 "__content": [
@@ -415,7 +415,7 @@ The following product properties are stored in the `__content` field and are sea
 Example requests:
 
 ```json
-# Search all products by keyword `sony` and return the  name and primary image url for first 20 found products and total count
+# Search all products by keyword `sony` and return the name and primary image URL for first 20 found products and total count
 {
   products(query: "sony" storeId: "Electronics" first:20) {
       totalCount
@@ -430,14 +430,14 @@ Example requests:
 
 ### Fuzzy Search
 
-When the `fuzzy` query parameter is set to true the search will also return [product]() that contain slight differences to the search text.
+When the `fuzzy` query parameter is set to true, the search will also return [products]() that contain slight differences to the search text.
 For example, when someone searches for ‘unversty’, the fuzzy search would also return products labelled with ‘university’.
-The fuzzy level can be optionally set with the parameter `fuzzyLevel`, otherwise the will be used auto fuzzy level based on the length of the searched text. Min value 3, max value 6.
+The fuzzy level can be optionally set with the parameter `fuzzyLevel`; otherwise, the search will use auto fuzzy level based on the length of the searched text, with the minimum value at 3, and maximum, at 6.
 
 Example requests:
 
 ```json
-# Will return products that have such terms "university", "unversty", "universe" etc.
+# Will return products that contain "university", "unversty", "universe", etc.
 {
   products(query: "unversty" storeId: "Electronics" first:20) {
       totalCount
@@ -450,15 +450,15 @@ Example requests:
 }
 ```
 
-### Filter by category
+### Filter by Category
 
-Filter products that belong to exactly specified category path.
+You can also filter products that belong to the exactly specified category path.
 
 `filter: "category.path:{catalog id/category path}"`
 
 `filter: "category.path:catalogId/cat1d1/cat2id"`
 
-> The search will be performed on `__path` index field of product document
+> The search will be performed on `__path` index field of the product document
 
 Filter by category subtrees, keep only the products that belong to the specified Category or any of its descendant categories.
 
@@ -469,9 +469,9 @@ Filter by category subtrees, keep only the products that belong to the specified
 > The search will be performed on `__outline` index field of product document
 
 
-### Filter by price
+### Filter by Price
 
-Keep only the products which Price match the specified value or [range]()
+This flter will include only the products, the price of which matches the specified value or [range]()
 
 `filter: "price.{currency}.{pricelist?}:{range expression}"`
 
@@ -483,18 +483,18 @@ Keep only products that  with at least one price set
 
 `filter: "is:priced`
 
-> The search will be performed on `price_{currency}` and `price_{currency}_{pricelist}` index fields of product document
-> Please note, that only the indexed prices were used for filtration. Scoped prices based on user groups or dynamic expressions temporary do not support filtration.
+> The search will be performed based on the `price_{currency}` and `price_{currency}_{pricelist}` index fields of the product document.
+> Please note: Only the indexed prices may be used for filtration. Scoped prices based on user groups or dynamic expressions temporary do not support filtration.
 
 ### Filter by SKU
 
-Keep only the product which matches the specified SKU:
+Use this filter to keep only the product that matches the specified SKU:
 
 `filter: "sku:DLL-65789352`
 
-### Filter products or variations
+### Filter Products or Variations
 
-Keep only the products or variations in result. If not set will return both types.
+This includes only either the products or variations in the result. If not set, it will return both types.
 
 `filter: "is:product status:visible"`
 
@@ -502,7 +502,7 @@ Keep only the products or variations in result. If not set will return both type
 
 #### Example
 
-Display products and variations in the list from a specific category
+Display products and variations in the list from a specific category:
 
 ```json
 query {
@@ -653,13 +653,13 @@ Counts the products whose values of the custom property fall in one of the speci
 
 The range facet type counts the products for which the query value is a range specified in the range expression. Range facets are typically used to determine the minimum and maximum value for example product prices to filter products by price with a range slider.
 
-`name` - represents the key of requested facet taken from facet expression and build from range parameters concatenated by `_`. e.g `price_*-100_100-200`
-`ranges.from` - the range’s lower endpoint in number format
-`ranges.to` - the range’s upper endpoint in string format
-`ranges.count` - amount of products fall into the specified range
-`ranges.includeTo` - flag indicates that lower bound is included
-`ranges.includeFrom` - flag indicates that upper bound is included
-`ranges.isSelected` - flag indicates that requested facet term is used in `filter` expression, in order to simplify displaying the already selected facet terms on the frontend.
+`name`: represents the key of requested facet taken from facet expression and build from range parameters concatenated by `_`. e.g `price_*-100_100-200`
+`ranges.from`: the range’s lower endpoint in number format
+`ranges.to`: the range’s upper endpoint in string format
+`ranges.count`: amount of products fall into the specified range
+`ranges.includeTo`: flag indicates that lower bound is included
+`ranges.includeFrom`: flag indicates that upper bound is included
+`ranges.isSelected`: flag indicates that requested facet term is used in `filter` expression, in order to simplify displaying the already selected facet terms on the frontend.
 
 ### Querying product breadcrumbs
 
