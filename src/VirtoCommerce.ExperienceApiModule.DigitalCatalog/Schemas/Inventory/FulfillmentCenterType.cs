@@ -27,7 +27,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas.Inventory
                 {
                     var take = context.GetArgument("take", 10);
 
-                    var result = await fulfillmentCenterGeoService.GetNearest(context.Source.Id, take);
+                    var result = await fulfillmentCenterGeoService.GetNearestAsync(context.Source.Id, take);
                     return result;
                 });
         }
