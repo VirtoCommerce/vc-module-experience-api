@@ -70,7 +70,7 @@ public class InventorySchema : ISchemaBuilder
         schema.Query.AddField(fulfillmentCentersConnectionBuilder.FieldType);
     }
 
-    private async Task<object> ResolveFulfillmentCentersConnectionAsync(IMediator mediator, IResolveConnectionContext<object> context)
+    private static async Task<object> ResolveFulfillmentCentersConnectionAsync(IMediator mediator, IResolveConnectionContext<object> context)
     {
         context.CopyArgumentsToUserContext();
 
