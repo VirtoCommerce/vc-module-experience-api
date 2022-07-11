@@ -352,7 +352,7 @@ Get one property with dictionary items for specific culture:
 
 ### FulfillmentCenterType
 
-#### SchemaF fields
+#### Schema fields
 |#|Name|Type|Description|
 |-|----------|----------|-----------|
 |1|id|StringGraphType|Fulfillment center ID|
@@ -362,7 +362,7 @@ Get one property with dictionary items for specific culture:
 |6|geoLocation|StringGraphType|Fulfillment center geo location. Latitude and longitude are separated with a comma without spaces, e.g. 41.40338,12.17403|
 |9|outerId|StringGraphType|Fulfillment center OuterID|
 |9|address|FulfillmentCenterAddressType|Fulfillment center address|
-|9|nearest|List of FulfillmentCenterType|Special field based on geo location. Contains the top 10 nearest fulfillment centers calculated by distance on the map. Accepts `take` (int) argument to limit the selection|
+|9|nearest|List of FulfillmentCenterType|Special field based on geo location. Contains the top 10 nearest fulfillment centers ordered by distance on the map. Accepts `take` (int) argument to limit the selection|
 
 ## Syntax
 
