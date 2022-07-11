@@ -2,7 +2,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.InventoryModule.Core.Model;
-using VirtoCommerce.InventoryModule.Core.Services;
 using VirtoCommerce.Platform.Core.GenericCrud;
 
 namespace VirtoCommerce.XDigitalCatalog.Queries.Inventory
@@ -11,9 +10,9 @@ namespace VirtoCommerce.XDigitalCatalog.Queries.Inventory
     {
         private readonly ICrudService<FulfillmentCenter> _fulfillmentCenterService;
 
-        public GetFulfillmentCenterQueryHandler(IFulfillmentCenterService fulfillmentCenterService)
+        public GetFulfillmentCenterQueryHandler(ICrudService<FulfillmentCenter> fulfillmentCenterService)
         {
-            _fulfillmentCenterService = (ICrudService<FulfillmentCenter>)fulfillmentCenterService;
+            _fulfillmentCenterService = fulfillmentCenterService;
         }
 
         public async Task<FulfillmentCenter> Handle(GetFulfillmentCenterQuery request, CancellationToken cancellationToken)

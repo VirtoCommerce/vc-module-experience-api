@@ -5,10 +5,8 @@ using System.Threading.Tasks;
 using MediatR;
 using VirtoCommerce.InventoryModule.Core.Model;
 using VirtoCommerce.InventoryModule.Core.Model.Search;
-using VirtoCommerce.InventoryModule.Core.Services;
 using VirtoCommerce.Platform.Core.GenericCrud;
 using VirtoCommerce.StoreModule.Core.Model;
-using VirtoCommerce.StoreModule.Core.Services;
 
 namespace VirtoCommerce.XDigitalCatalog.Queries.Inventory
 {
@@ -17,10 +15,12 @@ namespace VirtoCommerce.XDigitalCatalog.Queries.Inventory
         private readonly ISearchService<FulfillmentCenterSearchCriteria, FulfillmentCenterSearchResult, FulfillmentCenter> _fulfillmentCenterSearchService;
         private readonly ICrudService<Store> _storeService;
 
-        public SearchFulfillmentCentersQueryHandler(IFulfillmentCenterSearchService fulfillmentCenterSearchService, IStoreService storeService)
+        public SearchFulfillmentCentersQueryHandler(
+            ISearchService<FulfillmentCenterSearchCriteria, FulfillmentCenterSearchResult, FulfillmentCenter> fulfillmentCenterSearchService,
+            ICrudService<Store> storeService)
         {
-            _fulfillmentCenterSearchService = (ISearchService<FulfillmentCenterSearchCriteria, FulfillmentCenterSearchResult, FulfillmentCenter>)fulfillmentCenterSearchService;
-            _storeService = (ICrudService<Store>)storeService;
+            _fulfillmentCenterSearchService = fulfillmentCenterSearchService;
+            _storeService = storeService;
         }
 
         public async Task<FulfillmentCenterSearchResult> Handle(SearchFulfillmentCentersQuery request, CancellationToken cancellationToken)
