@@ -20,7 +20,7 @@
         <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
         <PackageReference Include="VirtoCommerce.CartModule.Data" Version="3.200.0" />
         <PackageReference Include="VirtoCommerce.CoreModule.Core" Version="3.200.0" />
-        <PackageReference Include="VirtoCommerce.InventoryModule.Core" Version="3.205.0-alpha.374-pt-8000" />
+        <PackageReference Include="VirtoCommerce.InventoryModule.Core" Version="3.205.0" />
         <PackageReference Include="VirtoCommerce.StoreModule.Core" Version="3.201.0" />
         <PackageReference Include="VirtoCommerce.CustomerModule.Core" Version="3.200.0" />
         <PackageReference Include="VirtoCommerce.MarketingModule.Data" Version="3.200.0" />
