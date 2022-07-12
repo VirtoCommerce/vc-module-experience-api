@@ -294,6 +294,112 @@ Get a single property with dictionary items for a specific culture:
 }
 ```
 
+### Fulfillment Center
+
+This query allows you to get a fulfillment center by ID.
+
+#### Definition
+
+```
+fulfillmentCenter(id: !string)
+```
+
+#### Arguments
+|#|Name        |Type         |Description|
+|--|-----------|-------------|-----------|
+| 1|id |Non null StringGraphType |Fulfillment center id |
+
+
+#### Example
+Get a single fulfillment center with the top 3 nearest fulfillment centers 
+
+```js
+query {
+  fulfillmentCenter(
+    id: "vendor-fulfillment"
+  ) {
+    id
+    name
+    description
+    shortDescription
+    outerId
+    geoLocation
+    address {
+      city
+    }
+    nearest (take: 3) {
+      name
+      id
+    }
+  }
+}
+```
+
+### Fulfillment Centers
+
+This connection allows you to search for fulfillment centers.
+
+#### Definition
+
+```
+fulfillmentCenters(after: String, first: Int, storeId: String, query: String, sort: String, fulfillmentCenterIds: [String])
+```
+
+#### Arguments
+|#|Name        |Type         |Description|
+|--|-----------|-------------|-----------|
+| 1|first |IntGraphType |Pagination size. Default is 20|
+| 2|after |StringGraphType |Pagination cursor|
+| 3|sort |StringGraphType |The sort expression|
+| 4|storeId |StringGraphType |Search fulfillment centers by store ID|
+| 5|query |StringGraphType |Search by fulfillment center name|
+| 6|fulfillmentCenterIds |List of StringGraphType |Get fulfillment centers by provided IDs. Note: this argument is exclusive, if set it will override all other arguments|
+
+
+#### Example 1
+
+Get 2 fulfillment centers by known IDs:
+
+```js
+query {
+  fulfillmentCenters(
+    fulfillmentCenterIds: ["vendor-fulfillment", "los-angeles-fulfillment"]
+  ) {
+    totalCount
+    items {
+      id
+      name
+      shortDescription
+      address {
+        city
+        countryCode
+      }
+    }
+  }
+}
+```
+
+#### Example 2
+
+Get all fulfillment centers attached to B2B Store: 
+
+```js
+query {
+  fulfillmentCenters(
+    storeId: "B2B-store"
+  )
+   {
+    totalCount
+    items {
+      id
+      name
+      outerId
+      geoLocation
+    }
+  }
+}
+```
+
 ## Queriable Objects
 
 ### ProductType
@@ -377,6 +483,21 @@ query {
 |8|outlines  |List of OutlineType    |Category outlines|
 |9|seoInfos  |List of SeoInfoType    |SEO information of the category|
 |9|properties  |List of PropertyType    |Properties of the category|
+
+
+### FulfillmentCenterType
+
+#### Schema fields
+|#|Name|Type|Description|
+|-|----------|----------|-----------|
+|1|id|StringGraphType|Fulfillment center ID|
+|2|name|StringGraphType|Fulfillment center name|
+|4|description|StringGraphType|Full description of the fulfillment center|
+|5|shortDescription|StringGraphType|Short description of the fulfillment center|
+|6|geoLocation|StringGraphType|Fulfillment center geo location. Latitude and longitude are separated with a comma without spaces, e.g. "41.40338,12.17403"|
+|9|outerId|StringGraphType|Fulfillment center outer ID|
+|9|address|FulfillmentCenterAddressType|Fulfillment center address|
+|9|nearest|List of FulfillmentCenterType|Contains the top 10 nearest fulfillment centers ordered by distance between geo-coordinates. Accepts the `take` (int) argument to limit the selection|
 
 ## Syntax
 
