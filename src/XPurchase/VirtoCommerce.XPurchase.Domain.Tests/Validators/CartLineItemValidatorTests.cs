@@ -106,6 +106,31 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
         }
 
         [Fact]
+        public async Task ValidateCartLineItem_PriceChanged_PriceError()
+        {
+            // Arrange
+            var item = _fixture.Create<LineItem>();
+            var lineItem = _context.AllCartProducts.FirstOrDefault();
+            item.ProductId = lineItem.Id;
+
+            item.SalePrice /= 2m;
+
+            // Act
+            var validator = new CartLineItemPriceChangedValidator();
+            var result = await validator.ValidateAsync(new CartLineItemPriceChangedValidationContext
+            {
+                LineItem = item,
+                CartProducts = _context.AllCartProducts.ToDictionary(x => x.Id)
+            });
+
+            // Assert
+            result.IsValid.Should().BeFalse();
+            result.Errors.Should().NotBeEmpty();
+            result.Errors.Should().HaveCount(1);
+            result.Errors.Should().Contain(x => x.ErrorCode == "PRODUCT_PRICE_CHANGED");
+        }
+
+        [Fact]
         public async Task ValidateCartLineItem_RuleSetStrict_ProductMinQuantityError()
         {
             // Arrange
@@ -152,32 +177,6 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             // Assert
             result.IsValid.Should().BeFalse();
             result.Errors.Should().Contain(x => x.ErrorCode == "PRODUCT_MAX_QTY");
-        }
-
-
-        [Fact]
-        public async Task ValidateCartLineItem_PriceChanged_PriceError()
-        {
-            // Arrange
-            var item = _fixture.Create<LineItem>();
-            var lineItem = _context.AllCartProducts.FirstOrDefault();
-            item.ProductId = lineItem.Id;
-
-            item.SalePrice /= 2m;
-
-            // Act
-            var validator = new CartLineItemPriceChangedValidator();
-            var result = await validator.ValidateAsync(new CartLineItemPriceChangedValidationContext
-            {
-                LineItem = item,
-                CartProducts = _context.AllCartProducts.ToDictionary(x => x.Id)
-            });
-
-            // Assert
-            result.IsValid.Should().BeFalse();
-            result.Errors.Should().NotBeEmpty();
-            result.Errors.Should().HaveCount(1);
-            result.Errors.Should().Contain(x => x.ErrorCode == "PRODUCT_PRICE_CHANGED");
         }
     }
 }
