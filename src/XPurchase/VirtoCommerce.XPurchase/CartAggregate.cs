@@ -104,6 +104,8 @@ namespace VirtoCommerce.XPurchase
         public IList<ValidationFailure> ValidationErrors { get; protected set; } = new List<ValidationFailure>();
         public bool IsValidated { get; private set; } = false;
 
+        public IList<ValidationFailure> ValidationWarnings { get; protected set; } = new List<ValidationFailure>();
+
         public virtual CartAggregate GrabCart(ShoppingCart cart, Store store, Member member, Currency currency)
         {
             Id = cart.Id;
@@ -794,7 +796,7 @@ namespace VirtoCommerce.XPurchase
         /// <summary>
         /// Sets ListPrice and SalePrice for line item by Product price
         /// </summary>
-        private static void SetLineItemTierPrice(ProductPrice productPrice, int quantity, LineItem lineItem)
+        public void SetLineItemTierPrice(ProductPrice productPrice, int quantity, LineItem lineItem)
         {
             if (productPrice == null) return;
 

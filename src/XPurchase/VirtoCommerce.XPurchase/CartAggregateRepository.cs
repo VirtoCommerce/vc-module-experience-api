@@ -17,6 +17,7 @@ using VirtoCommerce.Platform.Data.GenericCrud;
 using VirtoCommerce.StoreModule.Core.Services;
 using VirtoCommerce.XPurchase.Queries;
 using VirtoCommerce.XPurchase.Services;
+using VirtoCommerce.XPurchase.Validators;
 
 namespace VirtoCommerce.XPurchase
 {
@@ -149,13 +150,39 @@ namespace VirtoCommerce.XPurchase
                 aggregate.CartProducts[cartProduct.Id] = cartProduct;
             }
 
+            var validator = AbstractTypeFactory<CartLineItemPriceChangedValidator>.TryCreateInstance();
+
             foreach (var lineItem in aggregate.LineItems)
             {
                 var cartProduct = aggregate.CartProducts[lineItem.ProductId];
                 await aggregate.SetItemFulfillmentCenterAsync(lineItem, cartProduct);
+
+                // validate price change
+                var lineItemContext = new CartLineItemPriceChangedValidationContext
+                {
+                    LineItem = lineItem,
+                    CartProducts = aggregate.CartProducts,
+                };
+
+                var result = validator.Validate(lineItemContext);
+                if (!result.IsValid)
+                {
+                    aggregate.ValidationWarnings.AddRange(result.Errors);
+                }
+
+                // update price
+                aggregate.SetLineItemTierPrice(cartProduct.Price, lineItem.Quantity, lineItem);
             }
 
-            await aggregate.RecalculateAsync();
+            // resave cart if price change detected
+            if (aggregate.ValidationWarnings.Any())
+            {
+                await SaveAsync(aggregate);
+            }
+            else
+            {
+                await aggregate.RecalculateAsync();
+            }
 
             return aggregate;
         }

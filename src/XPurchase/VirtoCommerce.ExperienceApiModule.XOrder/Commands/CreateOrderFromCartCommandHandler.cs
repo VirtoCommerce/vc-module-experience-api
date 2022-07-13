@@ -51,9 +51,10 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Commands
 
             await cartAggregate.ValidateAsync(context, "*");
 
-            if (cartAggregate.ValidationErrors.Any())
+            var combinedErrors = cartAggregate.ValidationErrors.Union(cartAggregate.ValidationWarnings);
+            if (combinedErrors.Any())
             {
-                var dictionary = cartAggregate.ValidationErrors.GroupBy(x => x.ErrorCode).ToDictionary(x => x.Key, x => x.Select(x => x.ErrorMessage).FirstOrDefault());
+                var dictionary = combinedErrors.GroupBy(x => x.ErrorCode).ToDictionary(x => x.Key, x => x.Select(x => x.ErrorMessage).FirstOrDefault());
                 throw new ExecutionError("The cart has validation errors", dictionary) { Code = Constants.ValidationErrorCode };
             }
         }
