@@ -83,6 +83,7 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             // Assert
             result.IsValid.Should().BeFalse();
             result.Errors.Should().NotBeEmpty();
+            result.Errors.Count.Should().Be(1);
             Assert.Collection(result.Errors, x =>
             {
                 Assert.Equal("CART_PRODUCT_UNAVAILABLE", x.ErrorCode);
@@ -105,6 +106,7 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             // Assert
             result.IsValid.Should().BeFalse();
             result.Errors.Should().NotBeEmpty();
+            result.Errors.Count.Should().Be(1);
             Assert.Collection(result.Errors, x =>
             {
                 Assert.Equal("UNABLE_SET_LESS_PRICE", x.ErrorCode);
