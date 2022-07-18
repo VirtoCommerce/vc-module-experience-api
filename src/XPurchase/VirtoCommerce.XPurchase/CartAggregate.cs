@@ -37,6 +37,7 @@ namespace VirtoCommerce.XPurchase
         private readonly ITaxProviderSearchService _taxProviderSearchService;
         private readonly ICartProductService _cartProductService;
         private readonly IDynamicPropertyUpdaterService _dynamicPropertyUpdaterService;
+        private readonly IMemberOrdersService _memberOrdersService;
 
         private readonly IMapper _mapper;
 
@@ -46,8 +47,8 @@ namespace VirtoCommerce.XPurchase
             ITaxProviderSearchService taxProviderSearchService,
             ICartProductService cartProductService,
             IDynamicPropertyUpdaterService dynamicPropertyUpdaterService,
-            IMapper mapper
-            )
+            IMapper mapper,
+            IMemberOrdersService memberOrdersService)
         {
             _cartTotalsCalculator = cartTotalsCalculator;
             _marketingEvaluator = marketingEvaluator;
@@ -55,6 +56,7 @@ namespace VirtoCommerce.XPurchase
             _cartProductService = cartProductService;
             _dynamicPropertyUpdaterService = dynamicPropertyUpdaterService;
             _mapper = mapper;
+            _memberOrdersService = memberOrdersService;
         }
 
         public Store Store { get; protected set; }
@@ -103,6 +105,8 @@ namespace VirtoCommerce.XPurchase
         public bool IsValid => !ValidationErrors.Any();
         public IList<ValidationFailure> ValidationErrors { get; protected set; } = new List<ValidationFailure>();
         public bool IsValidated { get; private set; } = false;
+        public bool IsFirstBuyer => Cart.IsAnonymous || _memberOrdersService.IsFirstBuyer(Cart.CustomerId);
+
 
         public virtual CartAggregate GrabCart(ShoppingCart cart, Store store, Member member, Currency currency)
         {

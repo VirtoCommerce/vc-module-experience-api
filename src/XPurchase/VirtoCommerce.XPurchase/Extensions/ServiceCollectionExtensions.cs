@@ -24,15 +24,15 @@ namespace VirtoCommerce.XPurchase.Extensions
 
             services.AddTransient<ICartValidationContextFactory, CartValidationContextFactory>();
             services.AddTransient<ICartAvailMethodsService, CartAvailMethodsService>();
+            services.AddTransient<IMemberOrdersService, MemberOrdersService>();
 
             services.AddMediatR(typeof(XPurchaseAnchor));
-
-
+            
             services.AddTransient<ICartProductService, CartProductService>();
 
             services.AddTransient<CartAggregate>();
             services.AddTransient<Func<CartAggregate>>(provider => () => provider.CreateScope().ServiceProvider.GetRequiredService<CartAggregate>());
-
+            
             services.AddAutoMapper(typeof(XPurchaseAnchor));
 
             return services;
