@@ -22,6 +22,7 @@ using VirtoCommerce.OrdersModule.Core.Services;
 using VirtoCommerce.PaymentModule.Model.Requests;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.GenericCrud;
+using VirtoCommerce.XPurchase.Queries;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 {
@@ -33,15 +34,13 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
         private readonly ICurrencyService _currencyService;
         private readonly IAuthorizationService _authorizationService;
         private readonly ICustomerOrderService _customerOrderService;
-        private readonly ICrudService<ShoppingCart> _cartService;
 
-        public OrderSchema(IMediator mediator, ICurrencyService currencyService, IAuthorizationService authorizationService, ICustomerOrderService customerOrderService, IShoppingCartService cartService)
+        public OrderSchema(IMediator mediator, ICurrencyService currencyService, IAuthorizationService authorizationService, ICustomerOrderService customerOrderService)
         {
             _mediator = mediator;
             _currencyService = currencyService;
             _authorizationService = authorizationService;
             _customerOrderService = customerOrderService;
-            _cartService = (ICrudService<ShoppingCart>)cartService;
         }
 
         public void Build(ISchema schema)
@@ -304,11 +303,11 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 
         private async Task CheckCanAccessUserAsync(IResolveFieldContext context, string cartId)
         {
-            var cart = await _cartService.GetByIdAsync(cartId, "default");
+            var cart = await _mediator.Send(new GetCartByIdQuery { CartId = cartId });
 
             var authorizationResult = await _authorizationService.AuthorizeAsync(
                 context.GetCurrentPrincipal(),
-                cart,
+                cart.Cart,
                 new CanAccessOrderAuthorizationRequirement());
 
             if (!authorizationResult.Succeeded)
