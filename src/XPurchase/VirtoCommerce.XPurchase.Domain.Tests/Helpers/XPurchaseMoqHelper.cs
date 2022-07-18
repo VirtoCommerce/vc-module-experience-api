@@ -174,13 +174,22 @@ namespace VirtoCommerce.XPurchase.Tests.Helpers
 
         protected Store GetStore() => _fixture.Create<Store>();
 
-        protected NewCartItem BuildNewCartItem(string productId, int quantity, decimal productPrice)
+        protected NewCartItem BuildNewCartItem(
+            string productId,
+            int quantity,
+            decimal productPrice,
+            bool? isActive = null,
+            bool? isBuyable = null,
+            bool? trackInventory = null)
         {
             var catalogProductId = _fixture.Create<string>();
 
             var catalogProduct = new CatalogProduct
             {
-                Id = catalogProductId
+                Id = catalogProductId,
+                IsActive = isActive,
+                IsBuyable = isBuyable,
+                TrackInventory = trackInventory
             };
 
             var cartProduct = new CartProduct(catalogProduct);
