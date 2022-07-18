@@ -17,7 +17,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
         public DynamicPropertyType(IMediator mediator)
         {
             Field(x => x.Id).Description("Id");
-            Field(x => x.Name).Description("Name");
+            Field<NonNullGraphType<StringGraphType>>("Name", resolve: context => context.Source.Name);
             Field(x => x.ObjectType).Description("Object type");
             Field<StringGraphType>("label",
                 "Localized property name",
@@ -27,7 +27,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
                 return context.Source.DisplayNames.FirstOrDefault(x => culture.IsNullOrEmpty() || x.Locale.EqualsInvariant(culture))?.Name;
             });
             Field(x => x.DisplayOrder, nullable: true).Description("The order for the dynamic property to display");
-            Field<StringGraphType>(nameof(DynamicProperty.ValueType),
+            Field<NonNullGraphType<StringGraphType>>(nameof(DynamicProperty.ValueType),
                 "Value type",
                 resolve: context => context.Source.ValueType.ToString());
             Field<BooleanGraphType>("isArray", resolve: context => context.Source.IsArray, description: "Is dynamic property value an array");
