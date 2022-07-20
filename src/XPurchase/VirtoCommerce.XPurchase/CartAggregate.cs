@@ -42,6 +42,8 @@ namespace VirtoCommerce.XPurchase
 
         private readonly IMapper _mapper;
 
+        private bool? _isFirstTimeBuyer;
+
         public CartAggregate(
             IMarketingPromoEvaluator marketingEvaluator,
             IShoppingCartTotalsCalculator cartTotalsCalculator,
@@ -106,8 +108,20 @@ namespace VirtoCommerce.XPurchase
         public bool IsValid => !ValidationErrors.Any();
         public IList<ValidationFailure> ValidationErrors { get; protected set; } = new List<ValidationFailure>();
         public bool IsValidated { get; private set; } = false;
-        public bool IsFirstBuyer => Cart.IsAnonymous || _memberOrdersService.IsFirstTimeBuyer(Cart.CustomerId);
 
+        public bool IsFirstBuyer
+        {
+            get
+            {
+                if (_isFirstTimeBuyer != null)
+                {
+                    return _isFirstTimeBuyer.Value;
+                }
+
+                _isFirstTimeBuyer = Cart.IsAnonymous || _memberOrdersService.IsFirstTimeBuyer(Cart.CustomerId);
+                return _isFirstTimeBuyer.Value;
+            }
+        }
 
         public virtual CartAggregate GrabCart(ShoppingCart cart, Store store, Member member, Currency currency)
         {
