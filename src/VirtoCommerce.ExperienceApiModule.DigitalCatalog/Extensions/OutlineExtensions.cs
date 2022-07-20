@@ -138,13 +138,14 @@ namespace VirtoCommerce.XDigitalCatalog.Extensions
                 outlineItems.Remove(item);
                 if (string.IsNullOrWhiteSpace(seoPath)) continue;
 
-                var seoInfoForLanguage = ((SeoInfo)item.SeoInfos?.FirstBestMatchForLanguage(cultureName));
+                var seoInfoForStoreAndLanguage = ((SeoInfo)item.SeoInfos?
+                    .FirstOrDefault(x => (x.StoreId == store.Id) && (x.LanguageCode == cultureName)));
 
                 var breadcrumb = new Breadcrumb(item.SeoObjectType)
                 {
                     ItemId = item.Id,
-                    Title = seoInfoForLanguage?.PageTitle?.EmptyToNull() ?? item.Name,
-                    SemanticUrl = seoInfoForLanguage?.SemanticUrl,
+                    Title = seoInfoForStoreAndLanguage?.PageTitle?.EmptyToNull() ?? item.Name,
+                    SemanticUrl = seoInfoForStoreAndLanguage?.SemanticUrl,
                     SeoPath = seoPath
                 };
                 breadcrumbs.Insert(0, breadcrumb);
