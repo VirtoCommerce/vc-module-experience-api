@@ -138,8 +138,7 @@ namespace VirtoCommerce.XDigitalCatalog.Extensions
                 outlineItems.Remove(item);
                 if (string.IsNullOrWhiteSpace(seoPath)) continue;
 
-                var seoInfoForStoreAndLanguage = ((SeoInfo)item.SeoInfos?
-                    .FirstOrDefault(x => (x.StoreId == store.Id) && (x.LanguageCode == cultureName)));
+                var seoInfoForStoreAndLanguage = SeoInfoForStoreAndLanguage(item, store.Id, cultureName);
 
                 var breadcrumb = new Breadcrumb(item.SeoObjectType)
                 {
@@ -152,6 +151,12 @@ namespace VirtoCommerce.XDigitalCatalog.Extensions
             }
 
             return breadcrumbs;
+        }
+
+        //TODO tests
+        public static SeoInfo SeoInfoForStoreAndLanguage (OutlineItem item, string storeId, string cultureName)
+        {
+            return (SeoInfo)item.SeoInfos?.FirstOrDefault(x => (x.StoreId == storeId) && (x.LanguageCode == cultureName));
         }
     }
 }
