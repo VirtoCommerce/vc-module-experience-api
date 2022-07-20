@@ -15,6 +15,7 @@ using VirtoCommerce.ExperienceApiModule.Core.Models;
 using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.MarketingModule.Core.Model.Promotions;
 using VirtoCommerce.MarketingModule.Core.Services;
+using VirtoCommerce.OrdersModule.Core.Services;
 using VirtoCommerce.PaymentModule.Core.Model;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Domain;
@@ -105,7 +106,7 @@ namespace VirtoCommerce.XPurchase
         public bool IsValid => !ValidationErrors.Any();
         public IList<ValidationFailure> ValidationErrors { get; protected set; } = new List<ValidationFailure>();
         public bool IsValidated { get; private set; } = false;
-        public bool IsFirstBuyer => Cart.IsAnonymous || _memberOrdersService.IsFirstBuyer(Cart.CustomerId);
+        public bool IsFirstBuyer => Cart.IsAnonymous || _memberOrdersService.IsFirstTimeBuyer(Cart.CustomerId);
 
 
         public virtual CartAggregate GrabCart(ShoppingCart cart, Store store, Member member, Currency currency)

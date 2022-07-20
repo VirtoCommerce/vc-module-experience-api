@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using AutoFixture;
 using AutoMapper;
 using Bogus;
@@ -16,6 +15,7 @@ using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.Tests.Helpers;
 using VirtoCommerce.InventoryModule.Core.Model;
 using VirtoCommerce.MarketingModule.Core.Services;
+using VirtoCommerce.OrdersModule.Core.Services;
 using VirtoCommerce.PaymentModule.Core.Model;
 using VirtoCommerce.PaymentModule.Core.Services;
 using VirtoCommerce.PricingModule.Core.Model;
@@ -171,7 +171,7 @@ namespace VirtoCommerce.XPurchase.Tests.Helpers
 
             _memberOrdersServiceMock = new Mock<IMemberOrdersService>();
             _memberOrdersServiceMock
-                .Setup(x => x.IsFirstBuyer(It.IsAny<string>()))
+                .Setup(x => x.IsFirstTimeBuyer(It.IsAny<string>()))
                 .Returns(true);
         }
 
