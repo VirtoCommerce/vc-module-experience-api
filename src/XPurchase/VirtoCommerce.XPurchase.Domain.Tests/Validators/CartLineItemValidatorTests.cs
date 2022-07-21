@@ -106,7 +106,7 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
         }
 
         [Fact]
-        public async Task ValidateCartLineItem_RuleSetStrict_PriceError()
+        public async Task ValidateCartLineItem_PriceChanged_PriceError()
         {
             // Arrange
             var item = _fixture.Create<LineItem>();
@@ -116,11 +116,11 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             item.SalePrice /= 2m;
 
             // Act
-            var validator = new CartLineItemValidator();
-            var result = await validator.ValidateAsync(new LineItemValidationContext
+            var validator = new CartLineItemPriceChangedValidator();
+            var result = await validator.ValidateAsync(new CartLineItemPriceChangedValidationContext
             {
                 LineItem = item,
-                AllCartProducts = _context.AllCartProducts
+                CartProducts = _context.AllCartProducts.ToDictionary(x => x.Id)
             });
 
             // Assert
