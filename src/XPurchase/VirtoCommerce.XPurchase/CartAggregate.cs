@@ -15,6 +15,7 @@ using VirtoCommerce.ExperienceApiModule.Core.Models;
 using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.MarketingModule.Core.Model.Promotions;
 using VirtoCommerce.MarketingModule.Core.Services;
+using VirtoCommerce.OrdersModule.Core.Services;
 using VirtoCommerce.PaymentModule.Core.Model;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Domain;
@@ -37,8 +38,11 @@ namespace VirtoCommerce.XPurchase
         private readonly ITaxProviderSearchService _taxProviderSearchService;
         private readonly ICartProductService _cartProductService;
         private readonly IDynamicPropertyUpdaterService _dynamicPropertyUpdaterService;
+        private readonly IMemberOrdersService _memberOrdersService;
 
         private readonly IMapper _mapper;
+
+        private bool? _isFirstTimeBuyer;
 
         public CartAggregate(
             IMarketingPromoEvaluator marketingEvaluator,
@@ -46,8 +50,8 @@ namespace VirtoCommerce.XPurchase
             ITaxProviderSearchService taxProviderSearchService,
             ICartProductService cartProductService,
             IDynamicPropertyUpdaterService dynamicPropertyUpdaterService,
-            IMapper mapper
-            )
+            IMapper mapper,
+            IMemberOrdersService memberOrdersService)
         {
             _cartTotalsCalculator = cartTotalsCalculator;
             _marketingEvaluator = marketingEvaluator;
@@ -55,6 +59,7 @@ namespace VirtoCommerce.XPurchase
             _cartProductService = cartProductService;
             _dynamicPropertyUpdaterService = dynamicPropertyUpdaterService;
             _mapper = mapper;
+            _memberOrdersService = memberOrdersService;
         }
 
         public Store Store { get; protected set; }
@@ -103,6 +108,20 @@ namespace VirtoCommerce.XPurchase
         public bool IsValid => !ValidationErrors.Any();
         public IList<ValidationFailure> ValidationErrors { get; protected set; } = new List<ValidationFailure>();
         public bool IsValidated { get; private set; } = false;
+
+        public bool IsFirstBuyer
+        {
+            get
+            {
+                if (_isFirstTimeBuyer != null)
+                {
+                    return _isFirstTimeBuyer.Value;
+                }
+
+                _isFirstTimeBuyer = Cart.IsAnonymous || _memberOrdersService.IsFirstTimeBuyer(Cart.CustomerId);
+                return _isFirstTimeBuyer.Value;
+            }
+        }
 
         public IList<ValidationFailure> ValidationWarnings { get; protected set; } = new List<ValidationFailure>();
 

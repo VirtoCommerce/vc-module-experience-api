@@ -15,6 +15,7 @@ using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.Tests.Helpers;
 using VirtoCommerce.InventoryModule.Core.Model;
 using VirtoCommerce.MarketingModule.Core.Services;
+using VirtoCommerce.OrdersModule.Core.Services;
 using VirtoCommerce.PaymentModule.Core.Model;
 using VirtoCommerce.PaymentModule.Core.Services;
 using VirtoCommerce.PricingModule.Core.Model;
@@ -43,6 +44,7 @@ namespace VirtoCommerce.XPurchase.Tests.Helpers
         protected readonly Mock<ITaxProviderSearchService> _taxProviderSearchServiceMock;
         protected readonly Mock<IDynamicPropertyUpdaterService> _dynamicPropertyUpdaterService;
         protected readonly Mock<IMapper> _mapperMock;
+        protected readonly Mock<IMemberOrdersService> _memberOrdersServiceMock;
 
         protected readonly Randomizer Rand = new Randomizer();
 
@@ -166,6 +168,11 @@ namespace VirtoCommerce.XPurchase.Tests.Helpers
             _dynamicPropertyUpdaterService = new Mock<IDynamicPropertyUpdaterService>();
 
             _mapperMock = new Mock<IMapper>();
+
+            _memberOrdersServiceMock = new Mock<IMemberOrdersService>();
+            _memberOrdersServiceMock
+                .Setup(x => x.IsFirstTimeBuyer(It.IsAny<string>()))
+                .Returns(true);
         }
 
         protected ShoppingCart GetCart() => _fixture.Create<ShoppingCart>();
@@ -174,13 +181,22 @@ namespace VirtoCommerce.XPurchase.Tests.Helpers
 
         protected Store GetStore() => _fixture.Create<Store>();
 
-        protected NewCartItem BuildNewCartItem(string productId, int quantity, decimal productPrice)
+        protected NewCartItem BuildNewCartItem(
+            string productId,
+            int quantity,
+            decimal productPrice,
+            bool? isActive = null,
+            bool? isBuyable = null,
+            bool? trackInventory = null)
         {
             var catalogProductId = _fixture.Create<string>();
 
             var catalogProduct = new CatalogProduct
             {
-                Id = catalogProductId
+                Id = catalogProductId,
+                IsActive = isActive,
+                IsBuyable = isBuyable,
+                TrackInventory = trackInventory
             };
 
             var cartProduct = new CartProduct(catalogProduct);
@@ -214,7 +230,8 @@ namespace VirtoCommerce.XPurchase.Tests.Helpers
                 _taxProviderSearchServiceMock.Object,
                 _cartProductServiceMock.Object,
                 _dynamicPropertyUpdaterService.Object,
-                _mapperMock.Object);
+                _mapperMock.Object,
+                _memberOrdersServiceMock.Object);
 
             aggregate.GrabCart(cart, new Store(), GetMember(), GetCurrency());
 

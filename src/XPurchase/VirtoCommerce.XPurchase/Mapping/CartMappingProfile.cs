@@ -230,8 +230,7 @@ namespace VirtoCommerce.XPurchase.Mapping
                 }
 
                 promoEvalcontext.IsEveryone = true;
-                //PT-5429: Map Is First time buyer
-                //promoEvalcontext.IsFirstTimeBuyer = cartAggr.Member.IsFirstTimeBuyer;
+                promoEvalcontext.IsFirstTimeBuyer = cartAggr.IsFirstBuyer;
 
                 return promoEvalcontext;
             });
