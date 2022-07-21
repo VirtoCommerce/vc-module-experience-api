@@ -29,7 +29,7 @@ namespace VirtoCommerce.XPurchase.Tests.Repositories
         private readonly Mock<ShoppingCartSearchServiceStub> _shoppingCartSearchService;
         private readonly Mock<ShoppingCartServiceStub> _shoppingCartService;
         private readonly Mock<ICurrencyService> _currencyService;
-        private readonly Mock<IStoreService> _storeService;
+        private readonly Mock<IStoreServiceStub> _storeService;
         private readonly Mock<IMemberResolver> _memberResolver;
 
         private readonly CartAggregateRepository repository;
@@ -39,7 +39,7 @@ namespace VirtoCommerce.XPurchase.Tests.Repositories
             _shoppingCartSearchService = new Mock<ShoppingCartSearchServiceStub>();
             _shoppingCartService = new Mock<ShoppingCartServiceStub>();
             _currencyService = new Mock<ICurrencyService>();
-            _storeService = new Mock<IStoreService>();
+            _storeService = new Mock<IStoreServiceStub>();
             _memberResolver = new Mock<IMemberResolver>();
 
             repository = new CartAggregateRepository(
@@ -144,7 +144,8 @@ namespace VirtoCommerce.XPurchase.Tests.Repositories
             var shoppingCart = _fixture.Create<ShoppingCart>();
             shoppingCart.StoreId = storeId;
 
-            _storeService.Setup(x => x.GetByIdAsync(It.Is<string>(x => x == storeId), It.IsAny<string>()))
+            var storeService = _storeService.As<ICrudService<Store>>();
+            storeService.Setup(x => x.GetByIdAsync(It.Is<string>(x => x == storeId), It.IsAny<string>()))
                 .ReturnsAsync(store);
 
             var currencies = _fixture.CreateMany<Currency>(1).ToList();
@@ -195,7 +196,8 @@ namespace VirtoCommerce.XPurchase.Tests.Repositories
             shoppingCart.Items = new List<LineItem>() { lineItem };
             shoppingCart.StoreId = storeId;
 
-            _storeService.Setup(x => x.GetByIdAsync(It.Is<string>(x => x == storeId), It.IsAny<string>()))
+            var storeService = _storeService.As<ICrudService<Store>>();
+            storeService.Setup(x => x.GetByIdAsync(It.Is<string>(x => x == storeId), It.IsAny<string>()))
                 .ReturnsAsync(store);
 
             var currencies = _fixture.CreateMany<Currency>(1).ToList();
@@ -253,6 +255,11 @@ namespace VirtoCommerce.XPurchase.Tests.Repositories
             {
                 throw new System.NotImplementedException();
             }
+        }
+
+        public interface IStoreServiceStub : ICrudService<Store>, IStoreService
+        {
+
         }
 
         public class ShoppingCartServiceStub : ICrudService<ShoppingCart>, IShoppingCartService

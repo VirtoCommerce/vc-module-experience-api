@@ -66,7 +66,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Tests.Handlers
             await Assert.ThrowsAsync<ExecutionError>(() => handler.Handle(request, CancellationToken.None));
         }
 
-        private CartAggregate GetCartAggregateMock(ShoppingCart cart)
+        private static CartAggregate GetCartAggregateMock(ShoppingCart cart)
         {
             var cartAggregate = new CartAggregate(Mock.Of<IMarketingPromoEvaluator>(),
                 Mock.Of<IShoppingCartTotalsCalculator>(),
