@@ -11,7 +11,7 @@ namespace VirtoCommerce.XPurchase.Validators
             {
                 var lineItem = lineItemContext.LineItem;
 
-                if (lineItemContext.CartProducts.TryGetValue(lineItem.ProductId, out var cartProduct))
+                if (lineItemContext.CartProducts.TryGetValue(lineItem.ProductId, out var cartProduct) && cartProduct != null)
                 {
                     var tierPrice = cartProduct.Price.GetTierPrice(lineItem.Quantity);
                     if (tierPrice.Price.Amount != lineItem.SalePrice)

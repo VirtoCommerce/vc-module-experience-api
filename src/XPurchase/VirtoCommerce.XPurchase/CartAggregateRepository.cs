@@ -155,6 +155,11 @@ namespace VirtoCommerce.XPurchase
             foreach (var lineItem in aggregate.LineItems)
             {
                 var cartProduct = aggregate.CartProducts[lineItem.ProductId];
+                if (cartProduct == null)
+                {
+                    continue;
+                }
+
                 await aggregate.SetItemFulfillmentCenterAsync(lineItem, cartProduct);
 
                 // validate price change
