@@ -138,19 +138,25 @@ namespace VirtoCommerce.XDigitalCatalog.Extensions
                 outlineItems.Remove(item);
                 if (string.IsNullOrWhiteSpace(seoPath)) continue;
 
-                var seoInfoForLanguage = ((SeoInfo)item.SeoInfos?.FirstBestMatchForLanguage(cultureName));
+                var seoInfoForStoreAndLanguage = SeoInfoForStoreAndLanguage(item, store.Id, cultureName);
 
                 var breadcrumb = new Breadcrumb(item.SeoObjectType)
                 {
                     ItemId = item.Id,
-                    Title = seoInfoForLanguage?.PageTitle?.EmptyToNull() ?? item.Name,
-                    SemanticUrl = seoInfoForLanguage?.SemanticUrl,
+                    Title = seoInfoForStoreAndLanguage?.PageTitle?.EmptyToNull() ?? item.Name,
+                    SemanticUrl = seoInfoForStoreAndLanguage?.SemanticUrl,
                     SeoPath = seoPath
                 };
                 breadcrumbs.Insert(0, breadcrumb);
             }
 
             return breadcrumbs;
+        }
+
+        //TODO tests
+        public static SeoInfo SeoInfoForStoreAndLanguage (OutlineItem item, string storeId, string cultureName)
+        {
+            return (SeoInfo)item.SeoInfos?.FirstOrDefault(x => (x.StoreId == storeId) && (x.LanguageCode == cultureName));
         }
     }
 }
