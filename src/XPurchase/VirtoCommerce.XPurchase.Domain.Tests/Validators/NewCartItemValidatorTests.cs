@@ -2,7 +2,6 @@ using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
 using FluentValidation;
-using FluentValidation.Validators;
 using VirtoCommerce.XPurchase.Tests.Helpers;
 using VirtoCommerce.XPurchase.Validators;
 using Xunit;
@@ -48,65 +47,70 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             result.Errors.Should().Contain(x => x.PropertyName == "CartProduct" && x.ErrorCode.Contains("NotNullValidator"));
         }
 
-        // PT-5433: Write tests for NewCartItemValidator using "strict" ruleset
-        //[Fact]
-        //public async Task ValidateAddItem_RuleSetStrict_Valid()
-        //{
-        //    // Arrange
-        //    var productPrice = _fixture.Create<decimal>();
-        //    var newCartItem = new NewCartItem(Rand.Guid().ToString(), Rand.Int(1, InStockQuantity))
-        //    {
-        //        Price = productPrice
-        //    };
-        //    var validator = new NewCartItemValidator();
+        [Fact]
+        public async Task ValidateAddItem_RuleSetStrict_Valid()
+        {
+            // Arrange
+            var productPrice = _fixture.Create<decimal>();
+            var productId = Rand.Guid().ToString();
+            var quantity = Rand.Int(1, InStockQuantity);
+            var newCartItemPrice = productPrice * quantity;
+            var newCartItem = BuildNewCartItem(productId, quantity, newCartItemPrice, true, true);
+            var validator = new NewCartItemValidator();
 
-        //    // Act
-        //    var result = await validator.ValidateAsync(newCartItem, ruleSet: "strict");
+            // Act
+            var result = await validator.ValidateAsync(newCartItem, options => options.IncludeRuleSets("strict"));
 
-        //    // Assert
-        //    result.IsValid.Should().BeTrue();
-        //    result.Errors.Should().BeEmpty();
-        //}
+            // Assert
+            result.IsValid.Should().BeTrue();
+            result.Errors.Should().BeEmpty();
+        }
 
-        //[Fact]
-        //public async Task ValidateAddItem_RuleSetStrict_PriceError()
-        //{
-        //    // Arrange
-        //    var productPrice = Rand.Decimal(1, _fixture.Create<decimal>() - 1);
-        //    var productId = Rand.Guid().ToString();
-        //    var quantity = Rand.Int(1, InStockQuantity);
-        //    var newCartItem = BuildNewCartItem(productId, quantity, productPrice);
-        //    var validator = new NewCartItemValidator();
+        [Fact]
+        public async Task ValidateAddItem_RuleSetStrict_NoInventory()
+        {
+            // Arrange
+            var productPrice = _fixture.Create<decimal>();
+            var productId = Rand.Guid().ToString();
+            var quantity = Rand.Int(1, InStockQuantity);
+            var newCartItemPrice = productPrice * quantity;
+            var validator = new NewCartItemValidator();
+            var newCartItem = BuildNewCartItem(productId, quantity, newCartItemPrice, isActive: true, isBuyable: true, trackInventory: true);
 
-        //    // Act
-        //    var result = await validator.ValidateAsync(newCartItem, ruleSet: "strict");
+            // Act
+            var result = await validator.ValidateAsync(newCartItem, options => options.IncludeRuleSets("strict"));
 
-        //    // Assert
-        //    result.IsValid.Should().BeFalse();
-        //    result.Errors.Should().NotBeEmpty();
-        //    Assert.Collection(result.Errors, x =>
-        //    {
-        //        Assert.Equal(nameof(newCartItem.Price), x.PropertyName);
-        //    });
-        //}
+            // Assert
+            result.IsValid.Should().BeFalse();
+            result.Errors.Should().NotBeEmpty();
+            result.Errors.Count.Should().Be(1);
+            Assert.Collection(result.Errors, x =>
+            {
+                Assert.Equal("CART_PRODUCT_UNAVAILABLE", x.ErrorCode);
+            });
+        }
 
-        //[Fact]
-        //public async Task ValidateAddItem_RuleSetStrict_UnavailableQuantity()
-        //{
-        //    // Arrange
-        //    var validator = new NewCartItemValidator();
-        //    var productPrice = _fixture.Create<decimal>();
-        //    var productId = Rand.Guid().ToString();
-        //    var quantity = Rand.Int(InStockQuantity + 1, InStockQuantity * 2);
-        //    var newCartItem = BuildNewCartItem(productId, quantity, productPrice);
+        [Fact]
+        public async Task ValidateAddItem_RuleSetStrict_PriceError()
+        {
+            // Arrange
+            var productPrice = Rand.Decimal();
+            var productId = Rand.Guid().ToString();
+            var quantity = Rand.Int(1, InStockQuantity);
+            var newCartItem = BuildNewCartItem(productId, quantity, productPrice, true, true);
+            var validator = new NewCartItemValidator();
 
-        //    // Act
-        //    var result = await validator.ValidateAsync(newCartItem, ruleSet: "strict");
+            // Act
+            var result = await validator.ValidateAsync(newCartItem, options => options.IncludeRuleSets("strict"));
 
-        //    // Assert
-        //    result.IsValid.Should().BeFalse();
-        //    result.Errors.Should().NotBeEmpty();
-        //    Assert.Collection(result.Errors, x => { Assert.Equal(nameof(newCartItem.ProductId), x.PropertyName); Assert.Equal(nameof(PredicateValidator), x.ErrorCode); });
-        //}
+            // Assert
+            result.IsValid.Should().BeFalse();
+            result.Errors.Should().NotBeEmpty();
+            result.Errors.Count.Should().Be(1);
+            Assert.Collection(result.Errors, x =>
+            {
+                Assert.Equal("UNABLE_SET_LESS_PRICE", x.ErrorCode);
+            });
+        }
     }
 }
