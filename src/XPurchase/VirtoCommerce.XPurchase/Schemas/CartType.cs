@@ -229,7 +229,10 @@ namespace VirtoCommerce.XPurchase.Schemas
                     await EnsureThatCartValidatedAsync(context.Source, cartValidationContextFactory, ruleSet);
                     return context.Source.ValidationErrors.OfType<CartValidationError>();
                 });
+
             Field(x => x.Cart.Type, nullable: true).Description("Shopping cart type");
+
+            Field<ListGraphType<ValidationErrorType>>("warnings", "A set of temporary warnings for a cart user", resolve: context => context.Source.ValidationWarnings);
         }
 
         private async Task EnsureThatCartValidatedAsync(CartAggregate cartAggr, ICartValidationContextFactory cartValidationContextFactory, string ruleSet)

@@ -14,9 +14,11 @@ using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.GenericCrud;
 using VirtoCommerce.Platform.Data.GenericCrud;
+using VirtoCommerce.StoreModule.Core.Model;
 using VirtoCommerce.StoreModule.Core.Services;
 using VirtoCommerce.XPurchase.Queries;
 using VirtoCommerce.XPurchase.Services;
+using VirtoCommerce.XPurchase.Validators;
 
 namespace VirtoCommerce.XPurchase
 {
@@ -28,7 +30,7 @@ namespace VirtoCommerce.XPurchase
         private readonly ICrudService<ShoppingCart> _shoppingCartService;
         private readonly ICurrencyService _currencyService;
         private readonly IMemberResolver _memberResolver;
-        private readonly IStoreService _storeService;
+        private readonly ICrudService<Store> _storeService;
 
         public CartAggregateRepository(
             Func<CartAggregate> cartAggregateFactory,
@@ -44,7 +46,7 @@ namespace VirtoCommerce.XPurchase
             _shoppingCartService = (ICrudService<ShoppingCart>)shoppingCartService;
             _currencyService = currencyService;
             _memberResolver = memberResolver;
-            _storeService = storeService;
+            _storeService = (ICrudService<Store>)storeService;
             _cartProductsService = cartProductsService;
         }
 
@@ -149,13 +151,44 @@ namespace VirtoCommerce.XPurchase
                 aggregate.CartProducts[cartProduct.Id] = cartProduct;
             }
 
+            var validator = AbstractTypeFactory<CartLineItemPriceChangedValidator>.TryCreateInstance();
+
             foreach (var lineItem in aggregate.LineItems)
             {
                 var cartProduct = aggregate.CartProducts[lineItem.ProductId];
+                if (cartProduct == null)
+                {
+                    continue;
+                }
+
                 await aggregate.SetItemFulfillmentCenterAsync(lineItem, cartProduct);
+
+                // validate price change
+                var lineItemContext = new CartLineItemPriceChangedValidationContext
+                {
+                    LineItem = lineItem,
+                    CartProducts = aggregate.CartProducts,
+                };
+
+                var result = validator.Validate(lineItemContext);
+                if (!result.IsValid)
+                {
+                    aggregate.ValidationWarnings.AddRange(result.Errors);
+                }
+
+                // update price
+                aggregate.SetLineItemTierPrice(cartProduct.Price, lineItem.Quantity, lineItem);
             }
 
-            await aggregate.RecalculateAsync();
+            // resave cart if price change detected
+            if (aggregate.ValidationWarnings.Any())
+            {
+                await SaveAsync(aggregate);
+            }
+            else
+            {
+                await aggregate.RecalculateAsync();
+            }
 
             return aggregate;
         }

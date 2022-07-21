@@ -26,12 +26,6 @@ namespace VirtoCommerce.XPurchase.Validators
                         context.AddFailure(CartErrorDescriber.ProductQtyChangedError(lineItem, cartProduct.AvailableQuantity));
                     }
 
-                    var tierPrice = cartProduct.Price.GetTierPrice(lineItem.Quantity);
-                    if (tierPrice.Price.Amount != lineItem.SalePrice)
-                    {
-                        context.AddFailure(CartErrorDescriber.ProductPriceChangedError(lineItem, lineItem.SalePrice, lineItem.SalePriceWithTax, tierPrice.Price.Amount, tierPrice.PriceWithTax.Amount));
-                    }
-
                     var minQuantity = cartProduct?.Product?.MinQuantity;
                     if (lineItem.Quantity < minQuantity)
                     {
