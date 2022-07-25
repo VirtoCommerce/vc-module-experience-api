@@ -42,7 +42,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Authorization
                 else if (context.Resource is ShoppingCart cart)
                 {
                     var currentUserId = GetUserId(context);
-                    result = cart.CustomerId == currentUserId || currentUserId == null;
+                    result = cart.CustomerId == currentUserId || (currentUserId == null && cart.IsAnonymous);
                 }
             }
 
