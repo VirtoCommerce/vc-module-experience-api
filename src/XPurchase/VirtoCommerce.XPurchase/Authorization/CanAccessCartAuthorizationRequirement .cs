@@ -42,8 +42,8 @@ namespace VirtoCommerce.XPurchase.Authorization
                         result = carts.All(x => x.CustomerId == user);
                         break;
                     case SearchCartQuery searchQuery:
-                        searchQuery.UserId = GetUserId(context);
-                        result = searchQuery.UserId != null;
+                        var currentUserId = GetUserId(context);
+                        result = searchQuery.UserId == currentUserId;
                         break;
                 }
             }
