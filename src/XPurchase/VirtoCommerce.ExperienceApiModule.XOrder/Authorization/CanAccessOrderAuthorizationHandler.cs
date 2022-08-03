@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.XOrder.Queries;
 using VirtoCommerce.OrdersModule.Core.Model;
 using VirtoCommerce.Platform.Core;
@@ -37,6 +38,11 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Authorization
                 {
                     paymentsQuery.CustomerId = GetUserId(context);
                     result = paymentsQuery.CustomerId != null;
+                }
+                else if (context.Resource is ShoppingCart cart)
+                {
+                    var currentUserId = GetUserId(context);
+                    result = cart.CustomerId == currentUserId || (currentUserId == null && cart.IsAnonymous);
                 }
             }
 
