@@ -5,6 +5,8 @@ using GraphQL.Resolvers;
 using GraphQL.Types;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using VirtoCommerce.CartModule.Core.Model;
+using VirtoCommerce.CartModule.Core.Services;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
@@ -18,6 +20,8 @@ using VirtoCommerce.OrdersModule.Core.Model;
 using VirtoCommerce.OrdersModule.Core.Services;
 using VirtoCommerce.PaymentModule.Model.Requests;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.GenericCrud;
+using VirtoCommerce.XPurchase.Queries;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 {
@@ -94,6 +98,8 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                             .ResolveAsync(async context =>
                             {
                                 var type = GenericTypeHelper.GetActualType<CreateOrderFromCartCommand>();
+                                var command = context.GetArgument(type, _commandName) as CreateOrderFromCartCommand;
+                                await CheckCanAccessUserAsync(context, command.CartId);
                                 var response = (CustomerOrderAggregate)await _mediator.Send(context.GetArgument(type, _commandName));
                                 context.SetExpandedObjectGraph(response);
                                 return response;
@@ -235,7 +241,25 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
         {
             var order = await _customerOrderService.GetByIdAsync(orderId);
 
-            var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), order, new CanAccessOrderAuthorizationRequirement());
+            var authorizationResult = await _authorizationService.AuthorizeAsync(
+                context.GetCurrentPrincipal(),
+                order,
+                new CanAccessOrderAuthorizationRequirement());
+
+            if (!authorizationResult.Succeeded)
+            {
+                throw new AuthorizationError($"Access denied");
+            }
+        }
+
+        private async Task CheckCanAccessUserAsync(IResolveFieldContext context, string cartId)
+        {
+            var cart = await _mediator.Send(new GetCartByIdQuery { CartId = cartId });
+
+            var authorizationResult = await _authorizationService.AuthorizeAsync(
+                context.GetCurrentPrincipal(),
+                cart.Cart,
+                new CanAccessOrderAuthorizationRequirement());
 
             if (!authorizationResult.Succeeded)
             {
