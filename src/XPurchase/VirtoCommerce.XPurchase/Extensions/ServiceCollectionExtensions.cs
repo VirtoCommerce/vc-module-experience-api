@@ -24,6 +24,7 @@ namespace VirtoCommerce.XPurchase.Extensions
 
             services.AddTransient<ICartValidationContextFactory, CartValidationContextFactory>();
             services.AddTransient<ICartAvailMethodsService, CartAvailMethodsService>();
+            services.AddTransient<SettingsExtensions>();
 
             services.AddMediatR(typeof(XPurchaseAnchor));
             

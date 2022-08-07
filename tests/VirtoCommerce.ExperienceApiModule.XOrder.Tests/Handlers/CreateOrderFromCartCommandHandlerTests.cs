@@ -9,6 +9,7 @@ using Moq;
 using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.CartModule.Core.Services;
 using VirtoCommerce.CustomerModule.Core.Model;
+using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.XOrder.Commands;
 using VirtoCommerce.ExperienceApiModule.XOrder.Tests.Helpers;
@@ -68,13 +69,15 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Tests.Handlers
 
         private static CartAggregate GetCartAggregateMock(ShoppingCart cart)
         {
-            var cartAggregate = new CartAggregate(Mock.Of<IMarketingPromoEvaluator>(),
+            var cartAggregate = new CartAggregate(
+                Mock.Of<IMarketingPromoEvaluator>(),
                 Mock.Of<IShoppingCartTotalsCalculator>(),
                 Mock.Of<ITaxProviderSearchService>(),
                 Mock.Of<ICartProductService>(),
                 Mock.Of<IDynamicPropertyUpdaterService>(),
                 Mock.Of<IMapper>(),
-                Mock.Of<IMemberOrdersService>());
+                Mock.Of<IMemberOrdersService>(),
+                Mock.Of<SettingsExtensions>());
 
             var contact = new Contact()
             {

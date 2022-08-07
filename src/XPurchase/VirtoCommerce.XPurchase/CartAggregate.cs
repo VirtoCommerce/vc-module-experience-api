@@ -26,7 +26,9 @@ using VirtoCommerce.TaxModule.Core.Services;
 using VirtoCommerce.XPurchase.Extensions;
 using VirtoCommerce.XPurchase.Services;
 using VirtoCommerce.XPurchase.Validators;
+using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using Store = VirtoCommerce.StoreModule.Core.Model.Store;
+using StoreSetting = VirtoCommerce.StoreModule.Core.ModuleConstants.Settings.General;
 
 namespace VirtoCommerce.XPurchase
 {
@@ -41,6 +43,7 @@ namespace VirtoCommerce.XPurchase
         private readonly IMemberOrdersService _memberOrdersService;
 
         private readonly IMapper _mapper;
+        private readonly SettingsExtensions _settingsExtensions;
 
         private bool? _isFirstTimeBuyer;
 
@@ -51,7 +54,8 @@ namespace VirtoCommerce.XPurchase
             ICartProductService cartProductService,
             IDynamicPropertyUpdaterService dynamicPropertyUpdaterService,
             IMapper mapper,
-            IMemberOrdersService memberOrdersService)
+            IMemberOrdersService memberOrdersService,
+            SettingsExtensions settingsExtensions)
         {
             _cartTotalsCalculator = cartTotalsCalculator;
             _marketingEvaluator = marketingEvaluator;
@@ -60,6 +64,7 @@ namespace VirtoCommerce.XPurchase
             _dynamicPropertyUpdaterService = dynamicPropertyUpdaterService;
             _mapper = mapper;
             _memberOrdersService = memberOrdersService;
+            _settingsExtensions = settingsExtensions;
         }
 
         public Store Store { get; protected set; }
@@ -611,7 +616,15 @@ namespace VirtoCommerce.XPurchase
             if (taxProvider != null)
             {
                 var taxEvalContext = _mapper.Map<TaxEvaluationContext>(this);
-                result = taxProvider.CalculateRates(taxEvalContext);
+
+                if (await _settingsExtensions.GetSettingFromStore<bool>(taxEvalContext.StoreId, StoreSetting.TaxCalculationEnabled))
+                {
+                    result = taxProvider.CalculateRates(taxEvalContext);
+                }
+                else
+                {
+                    result = new List<TaxRate>();
+                }
             }
             return result;
         }

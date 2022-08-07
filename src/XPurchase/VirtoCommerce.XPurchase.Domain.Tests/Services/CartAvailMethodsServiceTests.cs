@@ -21,7 +21,8 @@ namespace VirtoCommerce.XPurchase.Tests.Services
                 _shippingMethodsSearchServiceMock.Object,
                 _taxProviderSearchServiceMock.Object,
                 _cartProductServiceMock.Object,
-                _mapperMock.Object);
+                _mapperMock.Object,
+                _settingsExtensionsMock.Object);
         }
 
         #region GetAvailableShippingRatesAsync

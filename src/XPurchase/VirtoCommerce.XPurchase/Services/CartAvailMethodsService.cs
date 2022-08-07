@@ -15,6 +15,8 @@ using VirtoCommerce.TaxModule.Core.Model;
 using VirtoCommerce.TaxModule.Core.Model.Search;
 using VirtoCommerce.TaxModule.Core.Services;
 using VirtoCommerce.XPurchase.Extensions;
+using VirtoCommerce.ExperienceApiModule.Core.Extensions;
+using StoreSetting = VirtoCommerce.StoreModule.Core.ModuleConstants.Settings.General;
 
 namespace VirtoCommerce.XPurchase.Services
 {
@@ -26,6 +28,7 @@ namespace VirtoCommerce.XPurchase.Services
         private readonly ICartProductService _cartProductService;
 
         private readonly IMapper _mapper;
+        private readonly SettingsExtensions _settingsExtensions;
 
         private readonly int _takeOnSearch = 20;
 
@@ -33,13 +36,15 @@ namespace VirtoCommerce.XPurchase.Services
             IShippingMethodsSearchService shippingMethodsSearchService,
             ITaxProviderSearchService taxProviderSearchService,
             ICartProductService cartProductService,
-            IMapper mapper)
+            IMapper mapper,
+            SettingsExtensions settingsExtensions)
         {
             _paymentMethodsSearchService = paymentMethodsSearchService;
             _shippingMethodsSearchService = shippingMethodsSearchService;
             _taxProviderSearchService = taxProviderSearchService;
             _cartProductService = cartProductService;
             _mapper = mapper;
+            _settingsExtensions = settingsExtensions;
         }
 
         public async Task<IEnumerable<ShippingRate>> GetAvailableShippingRatesAsync(CartAggregate cartAggr)
@@ -61,10 +66,14 @@ namespace VirtoCommerce.XPurchase.Services
 
             var activeAvailableShippingMethods = (await _shippingMethodsSearchService.SearchShippingMethodsAsync(criteria)).Results;
 
-            var availableShippingRates = activeAvailableShippingMethods
+            var availableShippingRates = new List<ShippingRate>();
+            if (await _settingsExtensions.GetSettingFromStore<bool>(cartAggr.Store.Id, StoreSetting.TaxCalculationEnabled))
+            {
+                availableShippingRates = activeAvailableShippingMethods
                 .SelectMany(x => x.CalculateRates(shippingEvaluationContext))
                 .Where(x => x.ShippingMethod == null || x.ShippingMethod.IsActive)
-                .ToArray();
+                .ToList();
+            }
 
             if (availableShippingRates.IsNullOrEmpty())
             {
@@ -85,7 +94,13 @@ namespace VirtoCommerce.XPurchase.Services
                 var taxEvalContext = _mapper.Map<TaxEvaluationContext>(cartAggr);
                 taxEvalContext.Lines.Clear();
                 taxEvalContext.Lines.AddRange(availableShippingRates.SelectMany(x => _mapper.Map<IEnumerable<TaxLine>>(x)));
-                var taxRates = taxProvider.CalculateRates(taxEvalContext);
+
+                var taxRates = new List<TaxRate>();
+                if (await _settingsExtensions.GetSettingFromStore<bool>(cartAggr.Store.Id, StoreSetting.TaxCalculationEnabled))
+                {
+                    taxRates = taxProvider.CalculateRates(taxEvalContext).ToList();
+                }
+
                 foreach (var shippingRate in availableShippingRates)
                 {
                     shippingRate.ApplyTaxRates(taxRates);
@@ -130,7 +145,13 @@ namespace VirtoCommerce.XPurchase.Services
                 var taxEvalContext = _mapper.Map<TaxEvaluationContext>(cartAggr);
                 taxEvalContext.Lines.Clear();
                 taxEvalContext.Lines.AddRange(result.Results.SelectMany(x => _mapper.Map<IEnumerable<TaxLine>>(x)));
-                var taxRates = taxProvider.CalculateRates(taxEvalContext);
+
+                var taxRates = new List<TaxRate>();
+                if (await _settingsExtensions.GetSettingFromStore<bool>(cartAggr.Store.Id, StoreSetting.TaxCalculationEnabled))
+                {
+                    taxRates = taxProvider.CalculateRates(taxEvalContext).ToList();
+                }
+
                 foreach (var paymentMethod in result.Results)
                 {
                     paymentMethod.ApplyTaxRates(taxRates);

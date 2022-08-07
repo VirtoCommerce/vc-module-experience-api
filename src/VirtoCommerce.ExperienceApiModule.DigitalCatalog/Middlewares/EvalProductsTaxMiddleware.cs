@@ -10,6 +10,7 @@ using VirtoCommerce.TaxModule.Core.Model;
 using VirtoCommerce.TaxModule.Core.Model.Search;
 using VirtoCommerce.TaxModule.Core.Services;
 using VirtoCommerce.XDigitalCatalog.Queries;
+using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 
 namespace VirtoCommerce.XDigitalCatalog.Middlewares
 {
@@ -20,7 +21,7 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
         private readonly IGenericPipelineLauncher _pipeline;
 
 
-        public EvalProductsTaxMiddleware(IMapper mapper, ITaxProviderSearchService taxProviderSearchService, IGenericPipelineLauncher pipeline)
+        public EvalProductsTaxMiddleware(IMapper mapper, ITaxProviderSearchService taxProviderSearchService, IGenericPipelineLauncher pipeline, SettingsExtensions settingsExtensions)
         {
             _mapper = mapper;
             _taxProviderSearchService = taxProviderSearchService;
@@ -54,7 +55,9 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
                     await _pipeline.Execute(taxEvalContext);
 
                     taxEvalContext.Lines = parameter.Results.SelectMany(x => _mapper.Map<IEnumerable<TaxLine>>(x)).ToList();
-                    var taxRates = activeTaxProvider.CalculateRates(taxEvalContext);
+
+                    var taxRates = activeTaxProvider.CalculateRates(taxEvalContext).ToList();
+                        
                     if (taxRates.Any())
                     {
                         parameter.Results.Apply(x => x.AllPrices.Apply(p => p.ApplyTaxRates(taxRates)));
