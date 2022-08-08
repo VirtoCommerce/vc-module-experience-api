@@ -1,9 +1,5 @@
 using System.Threading.Tasks;
 using FluentAssertions;
-using Moq;
-using VirtoCommerce.PaymentModule.Core.Services;
-using VirtoCommerce.ShippingModule.Core.Services;
-using VirtoCommerce.TaxModule.Core.Services;
 using VirtoCommerce.XPurchase.Services;
 using VirtoCommerce.XPurchase.Tests.Helpers;
 using Xunit;
@@ -21,8 +17,7 @@ namespace VirtoCommerce.XPurchase.Tests.Services
                 _shippingMethodsSearchServiceMock.Object,
                 _taxProviderSearchServiceMock.Object,
                 _cartProductServiceMock.Object,
-                _mapperMock.Object,
-                _settingsExtensionsMock.Object);
+                _mapperMock.Object);
         }
 
         #region GetAvailableShippingRatesAsync

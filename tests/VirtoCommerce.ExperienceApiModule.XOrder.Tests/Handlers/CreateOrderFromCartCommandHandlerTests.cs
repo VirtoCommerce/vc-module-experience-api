@@ -9,7 +9,6 @@ using Moq;
 using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.CartModule.Core.Services;
 using VirtoCommerce.CustomerModule.Core.Model;
-using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.XOrder.Commands;
 using VirtoCommerce.ExperienceApiModule.XOrder.Tests.Helpers;
@@ -77,7 +76,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Tests.Handlers
                 Mock.Of<IDynamicPropertyUpdaterService>(),
                 Mock.Of<IMapper>(),
                 Mock.Of<IMemberOrdersService>(),
-                Mock.Of<SettingsExtensions>());
+                Mock.Of<ICrudService<Store>>());
 
             var contact = new Contact()
             {

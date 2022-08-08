@@ -6,7 +6,6 @@ using FluentAssertions;
 using Moq;
 using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.CoreModule.Core.Currency;
-using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Models;
 using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
 using VirtoCommerce.TaxModule.Core.Model;
@@ -28,22 +27,21 @@ namespace VirtoCommerce.XDigitalCatalog.Tests.Middlewares
             var mapper = new Mock<IMapper>();
             var taxProviderSearchService = new Mock<ITaxProviderSearchService>();
             var genericPipelineLauncher = new Mock<IGenericPipelineLauncher>();
-            var settingsExtensions = new Mock<SettingsExtensions>();
 
-            var evalProductsTaxMiddleware = new EvalProductsTaxMiddleware(mapper.Object, taxProviderSearchService.Object, genericPipelineLauncher.Object, settingsExtensions.Object);
+            var evalProductsTaxMiddleware = new EvalProductsTaxMiddleware(mapper.Object, taxProviderSearchService.Object, genericPipelineLauncher.Object);
 
             var response = new SearchProductResponse()
             {
                 TotalCount = 1,
-                Results = new List<ExpProduct>() {new ExpProduct() },
-                Query = new SearchProductQuery() {CurrencyCode = "USD"}
+                Results = new List<ExpProduct>() { new ExpProduct() },
+                Query = new SearchProductQuery() { CurrencyCode = "USD" }
             };
 
             //Act
             evalProductsTaxMiddleware.Run(response, resp => Task.CompletedTask);
 
             // Assert
-            taxProviderSearchService.Verify(x=>x.SearchTaxProvidersAsync(It.IsAny<TaxProviderSearchCriteria>()), Times.Never);
+            taxProviderSearchService.Verify(x => x.SearchTaxProvidersAsync(It.IsAny<TaxProviderSearchCriteria>()), Times.Never);
         }
 
         [Fact]
@@ -52,16 +50,15 @@ namespace VirtoCommerce.XDigitalCatalog.Tests.Middlewares
             // Arrange
             var mapper = new Mock<IMapper>();
             var taxProviderSearchService = new Mock<ITaxProviderSearchService>();
-            var settingsExtensions = new Mock<SettingsExtensions>();
             taxProviderSearchService.Setup(x => x.SearchTaxProvidersAsync(It.IsAny<TaxProviderSearchCriteria>()))
                 .ReturnsAsync(() => new TaxProviderSearchResult()
                 {
                     TotalCount = 0,
-                    Results = new List<TaxProvider>() 
+                    Results = new List<TaxProvider>()
                 });
             var genericPipelineLauncher = new Mock<IGenericPipelineLauncher>();
 
-            var evalProductsTaxMiddleware = new EvalProductsTaxMiddleware(mapper.Object, taxProviderSearchService.Object, genericPipelineLauncher.Object, settingsExtensions.Object);
+            var evalProductsTaxMiddleware = new EvalProductsTaxMiddleware(mapper.Object, taxProviderSearchService.Object, genericPipelineLauncher.Object);
 
             var response = new SearchProductResponse()
             {
@@ -70,9 +67,9 @@ namespace VirtoCommerce.XDigitalCatalog.Tests.Middlewares
                 Query = new SearchProductQuery()
                 {
                     CurrencyCode = "USD",
-                    IncludeFields = new List<string>() {"price" }  //ResponseGroup.LoadPrices
+                    IncludeFields = new List<string>() { "price" }  //ResponseGroup.LoadPrices
                 },
-                
+
             };
 
             //Act
@@ -92,16 +89,15 @@ namespace VirtoCommerce.XDigitalCatalog.Tests.Middlewares
 
             var mapper = new Mock<IMapper>();
             var taxProviderSearchService = new Mock<ITaxProviderSearchService>();
-            var settingsExtensions = new Mock<SettingsExtensions>();
             taxProviderSearchService.Setup(x => x.SearchTaxProvidersAsync(It.IsAny<TaxProviderSearchCriteria>()))
                 .ReturnsAsync(() => new TaxProviderSearchResult()
                 {
                     TotalCount = 1,
-                    Results = new List<TaxProvider>() {taxProvider.Object}
+                    Results = new List<TaxProvider>() { taxProvider.Object }
                 });
             var genericPipelineLauncher = new Mock<IGenericPipelineLauncher>();
 
-            var evalProductsTaxMiddleware = new EvalProductsTaxMiddleware(mapper.Object, taxProviderSearchService.Object, genericPipelineLauncher.Object, settingsExtensions.Object);
+            var evalProductsTaxMiddleware = new EvalProductsTaxMiddleware(mapper.Object, taxProviderSearchService.Object, genericPipelineLauncher.Object);
 
             var response = new SearchProductResponse()
             {
@@ -146,11 +142,10 @@ namespace VirtoCommerce.XDigitalCatalog.Tests.Middlewares
             taxProvider.Object.IsActive = true;
 
             taxProvider.Setup(x => x.CalculateRates(It.IsAny<TaxEvaluationContext>()))
-                .Returns(() => new List<TaxRate>() {new TaxRate() {Currency = "USD", Rate = 50, Line = new TaxLine() {Id = "someId", Quantity = 0}}});
+                .Returns(() => new List<TaxRate>() { new TaxRate() { Currency = "USD", Rate = 50, Line = new TaxLine() { Id = "someId", Quantity = 0 } } });
 
             var mapper = new Mock<IMapper>();
             var taxProviderSearchService = new Mock<ITaxProviderSearchService>();
-            var settingsExtensions = new Mock<SettingsExtensions>();
             taxProviderSearchService.Setup(x => x.SearchTaxProvidersAsync(It.IsAny<TaxProviderSearchCriteria>()))
                 .ReturnsAsync(() => new TaxProviderSearchResult()
                 {
@@ -159,7 +154,7 @@ namespace VirtoCommerce.XDigitalCatalog.Tests.Middlewares
                 });
             var genericPipelineLauncher = new Mock<IGenericPipelineLauncher>();
 
-            var evalProductsTaxMiddleware = new EvalProductsTaxMiddleware(mapper.Object, taxProviderSearchService.Object, genericPipelineLauncher.Object, settingsExtensions.Object);
+            var evalProductsTaxMiddleware = new EvalProductsTaxMiddleware(mapper.Object, taxProviderSearchService.Object, genericPipelineLauncher.Object);
 
             var response = new SearchProductResponse()
             {
@@ -167,7 +162,7 @@ namespace VirtoCommerce.XDigitalCatalog.Tests.Middlewares
                 Results = new List<ExpProduct>()  {
                     new ExpProduct()
                     {
-                       
+
                         AllPrices = new List<ProductPrice>()
                         {
                             productPrice
@@ -175,7 +170,7 @@ namespace VirtoCommerce.XDigitalCatalog.Tests.Middlewares
 
                     }
                 },
-                Query = new SearchProductQuery() {CurrencyCode = "USD", IncludeFields = new List<string>() { "price" }},
+                Query = new SearchProductQuery() { CurrencyCode = "USD", IncludeFields = new List<string>() { "price" } },
             };
 
             //Act

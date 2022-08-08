@@ -10,7 +10,6 @@ using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.CustomerModule.Core.Model;
-using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.Tests.Helpers;
@@ -19,6 +18,7 @@ using VirtoCommerce.MarketingModule.Core.Services;
 using VirtoCommerce.OrdersModule.Core.Services;
 using VirtoCommerce.PaymentModule.Core.Model;
 using VirtoCommerce.PaymentModule.Core.Services;
+using VirtoCommerce.Platform.Core.GenericCrud;
 using VirtoCommerce.PricingModule.Core.Model;
 using VirtoCommerce.ShippingModule.Core.Services;
 using VirtoCommerce.StoreModule.Core.Model;
@@ -42,11 +42,11 @@ namespace VirtoCommerce.XPurchase.Tests.Helpers
         protected readonly Mock<IShippingMethodsSearchService> _shippingMethodsSearchServiceMock;
         protected readonly Mock<IShoppingCartTotalsCalculator> _shoppingCartTotalsCalculatorMock;
         protected readonly Mock<IStoreService> _storeServiceMock;
+        protected readonly Mock<ICrudService<Store>> _crudStoreServiceMock;
         protected readonly Mock<ITaxProviderSearchService> _taxProviderSearchServiceMock;
         protected readonly Mock<IDynamicPropertyUpdaterService> _dynamicPropertyUpdaterService;
         protected readonly Mock<IMapper> _mapperMock;
         protected readonly Mock<IMemberOrdersService> _memberOrdersServiceMock;
-        protected readonly Mock<SettingsExtensions> _settingsExtensionsMock;
 
         protected readonly Randomizer Rand = new Randomizer();
 
@@ -166,6 +166,11 @@ namespace VirtoCommerce.XPurchase.Tests.Helpers
                 .Setup(x => x.GetByIdAsync(It.IsAny<string>(), It.IsAny<string>()))
                 .ReturnsAsync(_fixture.Create<Store>());
 
+            _crudStoreServiceMock = new Mock<ICrudService<Store>>();
+            _crudStoreServiceMock
+                .Setup(x => x.GetByIdAsync(It.IsAny<string>(), It.IsAny<string>()))
+                .ReturnsAsync(_fixture.Create<Store>());
+
             _taxProviderSearchServiceMock = new Mock<ITaxProviderSearchService>();
             _dynamicPropertyUpdaterService = new Mock<IDynamicPropertyUpdaterService>();
 
@@ -175,8 +180,6 @@ namespace VirtoCommerce.XPurchase.Tests.Helpers
             _memberOrdersServiceMock
                 .Setup(x => x.IsFirstTimeBuyer(It.IsAny<string>()))
                 .Returns(true);
-
-            _settingsExtensionsMock = new Mock<SettingsExtensions>();
         }
 
         protected ShoppingCart GetCart() => _fixture.Create<ShoppingCart>();
@@ -236,7 +239,7 @@ namespace VirtoCommerce.XPurchase.Tests.Helpers
                 _dynamicPropertyUpdaterService.Object,
                 _mapperMock.Object,
                 _memberOrdersServiceMock.Object,
-                _settingsExtensionsMock.Object);
+                _crudStoreServiceMock.Object);
 
             aggregate.GrabCart(cart, new Store(), GetMember(), GetCurrency());
 

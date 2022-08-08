@@ -7,7 +7,6 @@ using FluentAssertions;
 using Moq;
 using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model;
-using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.MarketingModule.Core.Model.Promotions;
 using VirtoCommerce.PaymentModule.Core.Model;
 using VirtoCommerce.Platform.Core.Common;
@@ -35,7 +34,7 @@ namespace VirtoCommerce.XPurchase.Tests.Aggregates
                 _dynamicPropertyUpdaterService.Object,
                 _mapperMock.Object,
                 _memberOrdersServiceMock.Object,
-                _settingsExtensionsMock.Object);
+                _crudStoreServiceMock.Object);
 
             var cart = GetCart();
             var member = GetMember();

@@ -11,6 +11,7 @@ using VirtoCommerce.CartModule.Core.Services;
 using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.CustomerModule.Core.Model;
+using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Models;
 using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.MarketingModule.Core.Model.Promotions;
@@ -19,6 +20,7 @@ using VirtoCommerce.OrdersModule.Core.Services;
 using VirtoCommerce.PaymentModule.Core.Model;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Domain;
+using VirtoCommerce.Platform.Core.GenericCrud;
 using VirtoCommerce.ShippingModule.Core.Model;
 using VirtoCommerce.TaxModule.Core.Model;
 using VirtoCommerce.TaxModule.Core.Model.Search;
@@ -26,7 +28,6 @@ using VirtoCommerce.TaxModule.Core.Services;
 using VirtoCommerce.XPurchase.Extensions;
 using VirtoCommerce.XPurchase.Services;
 using VirtoCommerce.XPurchase.Validators;
-using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using Store = VirtoCommerce.StoreModule.Core.Model.Store;
 using StoreSetting = VirtoCommerce.StoreModule.Core.ModuleConstants.Settings.General;
 
@@ -43,7 +44,7 @@ namespace VirtoCommerce.XPurchase
         private readonly IMemberOrdersService _memberOrdersService;
 
         private readonly IMapper _mapper;
-        private readonly SettingsExtensions _settingsExtensions;
+        private readonly ICrudService<Store> _crudStoreService;
 
         private bool? _isFirstTimeBuyer;
 
@@ -55,7 +56,7 @@ namespace VirtoCommerce.XPurchase
             IDynamicPropertyUpdaterService dynamicPropertyUpdaterService,
             IMapper mapper,
             IMemberOrdersService memberOrdersService,
-            SettingsExtensions settingsExtensions)
+            ICrudService<Store> crudStoreService)
         {
             _cartTotalsCalculator = cartTotalsCalculator;
             _marketingEvaluator = marketingEvaluator;
@@ -64,7 +65,7 @@ namespace VirtoCommerce.XPurchase
             _dynamicPropertyUpdaterService = dynamicPropertyUpdaterService;
             _mapper = mapper;
             _memberOrdersService = memberOrdersService;
-            _settingsExtensions = settingsExtensions;
+            _crudStoreService = crudStoreService;
         }
 
         public Store Store { get; protected set; }
@@ -616,15 +617,7 @@ namespace VirtoCommerce.XPurchase
             if (taxProvider != null)
             {
                 var taxEvalContext = _mapper.Map<TaxEvaluationContext>(this);
-
-                if (await _settingsExtensions.GetSettingFromStore<bool>(taxEvalContext.StoreId, StoreSetting.TaxCalculationEnabled))
-                {
-                    result = taxProvider.CalculateRates(taxEvalContext);
-                }
-                else
-                {
-                    result = new List<TaxRate>();
-                }
+                result = taxProvider.CalculateRates(taxEvalContext);
             }
             return result;
         }
@@ -812,10 +805,10 @@ namespace VirtoCommerce.XPurchase
         protected async Task<TaxProvider> GetActiveTaxProviderAsync()
         {
             //PT-5417: Do not calculate taxes if Enable Tax Calculation is disabled in Store settings
-            //if (!context.StoreTaxCalculationEnabled)
-            //{
-            //    return;
-            //}
+            if (!await _crudStoreService.GetSettingValue<bool>(Cart.StoreId, StoreSetting.TaxCalculationEnabled))
+            {
+                return null;
+            }
 
             var storeTaxProviders = await _taxProviderSearchService.SearchTaxProvidersAsync(new TaxProviderSearchCriteria
             {
