@@ -7,10 +7,10 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
     {
         public DescriptionType()
         {
-            Field(x => x.Id).Description("Description ID.");
-            Field(x => x.ReviewType).Description("Description type.");
-            Field(x => x.Content).Description("Description text.");
-            Field(x => x.LanguageCode).Description("Description language code.");
+            Field(x => x.Id, true).Description("Description ID.");
+            Field(x => x.ReviewType, true).Description("Description type.");
+            Field(x => x.Content, true).Description("Description text.");
+            Field(x => x.LanguageCode, true).Description("Description language code.");
         }
     }
 }
