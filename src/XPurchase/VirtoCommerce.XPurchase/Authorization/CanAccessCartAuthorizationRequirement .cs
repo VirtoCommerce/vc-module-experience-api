@@ -33,7 +33,7 @@ namespace VirtoCommerce.XPurchase.Authorization
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, CanAccessCartAuthorizationRequirement requirement)
         {
             var result = context.User.IsInRole(PlatformConstants.Security.SystemRoles.Administrator);
-            
+
             if (!result)
             {
                 switch (context.Resource)
@@ -58,7 +58,15 @@ namespace VirtoCommerce.XPurchase.Authorization
                         break;
                     case SearchCartQuery searchQuery:
                         var currentUserId = GetUserId(context);
-                        result = searchQuery.UserId == currentUserId;
+                        if (searchQuery.UserId != null)
+                        {
+                            result = searchQuery.UserId == currentUserId;
+                        }
+                        else
+                        {
+                            searchQuery.UserId = currentUserId;
+                            result = searchQuery.UserId != null;
+                        }
                         break;
                 }
             }
