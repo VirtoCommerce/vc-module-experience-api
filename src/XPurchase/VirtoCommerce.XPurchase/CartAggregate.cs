@@ -826,7 +826,7 @@ namespace VirtoCommerce.XPurchase
             }
 
             //List price should be always greater or equals sale price because it may cause incorrect totals calculation
-            lineItem.ListPrice = lineItem.ListPrice < lineItem.SalePrice
+            lineItem.ListPrice = lineItem.ListPrice >= lineItem.SalePrice
                 ? lineItem.SalePrice
                 : lineItem.ListPrice;
         }
