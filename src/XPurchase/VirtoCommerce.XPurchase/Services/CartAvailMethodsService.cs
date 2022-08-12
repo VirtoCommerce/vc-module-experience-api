@@ -3,12 +3,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using VirtoCommerce.CartModule.Core.Model;
-using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.MarketingModule.Core.Model.Promotions;
 using VirtoCommerce.PaymentModule.Core.Model;
 using VirtoCommerce.PaymentModule.Core.Model.Search;
 using VirtoCommerce.PaymentModule.Core.Services;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.Settings;
 using VirtoCommerce.ShippingModule.Core.Model;
 using VirtoCommerce.ShippingModule.Core.Model.Search;
 using VirtoCommerce.ShippingModule.Core.Services;
@@ -63,14 +63,10 @@ namespace VirtoCommerce.XPurchase.Services
 
             var activeAvailableShippingMethods = (await _shippingMethodsSearchService.SearchShippingMethodsAsync(criteria)).Results;
 
-            var availableShippingRates = new List<ShippingRate>();
-            if (cartAggr.Store.GetSettingValue<bool>(StoreSetting.TaxCalculationEnabled))
-            {
-                availableShippingRates = activeAvailableShippingMethods
+            var availableShippingRates = activeAvailableShippingMethods
                 .SelectMany(x => x.CalculateRates(shippingEvaluationContext))
                 .Where(x => x.ShippingMethod == null || x.ShippingMethod.IsActive)
-                .ToList();
-            }
+                .ToArray();
 
             if (availableShippingRates.IsNullOrEmpty())
             {
@@ -203,18 +199,24 @@ namespace VirtoCommerce.XPurchase.Services
             }).ToList();
         }
 
-        protected async Task<TaxProvider> GetActiveTaxProviderAsync(CartAggregate cartAggregate)
+        protected async Task<TaxProvider> GetActiveTaxProviderAsync(string storeId)
         {
-            if (!cartAggregate.Store.GetSettingValue<bool>(StoreSetting.TaxCalculationEnabled))
-            {
-                return null;
-            }
             var storeTaxProviders = await _taxProviderSearchService.SearchTaxProvidersAsync(new TaxProviderSearchCriteria
             {
-                StoreIds = new[] { cartAggregate.Store.Id }
+                StoreIds = new[] { storeId }
             });
 
             return storeTaxProviders?.Results.FirstOrDefault(x => x.IsActive);
+        }
+
+        protected async Task<TaxProvider> GetActiveTaxProviderAsync(CartAggregate cartAggregate)
+        {
+            if (!cartAggregate.Store?.Settings?.GetSettingValue(StoreSetting.TaxCalculationEnabled.Name, true) == false)
+            {
+                return null;
+            }
+
+            return await GetActiveTaxProviderAsync(cartAggregate.Store.Id);
         }
     }
 }

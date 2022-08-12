@@ -75,8 +75,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Tests.Handlers
                 Mock.Of<ICartProductService>(),
                 Mock.Of<IDynamicPropertyUpdaterService>(),
                 Mock.Of<IMapper>(),
-                Mock.Of<IMemberOrdersService>(),
-                Mock.Of<ICrudService<Store>>());
+                Mock.Of<IMemberOrdersService>());
 
             var contact = new Contact()
             {

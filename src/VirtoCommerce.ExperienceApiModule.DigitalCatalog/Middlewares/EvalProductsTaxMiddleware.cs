@@ -6,10 +6,12 @@ using AutoMapper;
 using PipelineNet.Middleware;
 using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.Settings;
 using VirtoCommerce.TaxModule.Core.Model;
 using VirtoCommerce.TaxModule.Core.Model.Search;
 using VirtoCommerce.TaxModule.Core.Services;
 using VirtoCommerce.XDigitalCatalog.Queries;
+using StoreSetting = VirtoCommerce.StoreModule.Core.ModuleConstants.Settings.General;
 
 namespace VirtoCommerce.XDigitalCatalog.Middlewares
 {
@@ -19,7 +21,10 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
         private readonly ITaxProviderSearchService _taxProviderSearchService;
         private readonly IGenericPipelineLauncher _pipeline;
 
-        public EvalProductsTaxMiddleware(IMapper mapper, ITaxProviderSearchService taxProviderSearchService, IGenericPipelineLauncher pipeline)
+        public EvalProductsTaxMiddleware(IMapper mapper,
+            ITaxProviderSearchService taxProviderSearchService,
+            IGenericPipelineLauncher pipeline)
+        //,ICrudService<Store> storeService)
         {
             _mapper = mapper;
             _taxProviderSearchService = taxProviderSearchService;
@@ -38,9 +43,11 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
             {
                 throw new OperationCanceledException("Query must be set");
             }
-            var responseGroup = EnumUtility.SafeParse(query.GetResponseGroup(), ExpProductResponseGroup.None);
+
             // If tax evaluation requested
-            if (responseGroup.HasFlag(ExpProductResponseGroup.LoadPrices))
+            var responseGroup = EnumUtility.SafeParse(query.GetResponseGroup(), ExpProductResponseGroup.None);
+            if (responseGroup.HasFlag(ExpProductResponseGroup.LoadPrices) &&
+                parameter.Store?.Settings?.GetSettingValue(StoreSetting.TaxCalculationEnabled.Name, true) == true)
             {
                 //Evaluate taxes
                 var storeTaxProviders = await _taxProviderSearchService.SearchTaxProvidersAsync(new TaxProviderSearchCriteria { StoreIds = new[] { query.StoreId } });

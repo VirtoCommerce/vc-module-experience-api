@@ -11,7 +11,6 @@ using VirtoCommerce.CartModule.Core.Services;
 using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.CustomerModule.Core.Model;
-using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Models;
 using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.MarketingModule.Core.Model.Promotions;
@@ -20,7 +19,7 @@ using VirtoCommerce.OrdersModule.Core.Services;
 using VirtoCommerce.PaymentModule.Core.Model;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Domain;
-using VirtoCommerce.Platform.Core.GenericCrud;
+using VirtoCommerce.Platform.Core.Settings;
 using VirtoCommerce.ShippingModule.Core.Model;
 using VirtoCommerce.TaxModule.Core.Model;
 using VirtoCommerce.TaxModule.Core.Model.Search;
@@ -42,9 +41,7 @@ namespace VirtoCommerce.XPurchase
         private readonly ICartProductService _cartProductService;
         private readonly IDynamicPropertyUpdaterService _dynamicPropertyUpdaterService;
         private readonly IMemberOrdersService _memberOrdersService;
-
         private readonly IMapper _mapper;
-        private readonly ICrudService<Store> _crudStoreService;
 
         private bool? _isFirstTimeBuyer;
 
@@ -55,8 +52,7 @@ namespace VirtoCommerce.XPurchase
             ICartProductService cartProductService,
             IDynamicPropertyUpdaterService dynamicPropertyUpdaterService,
             IMapper mapper,
-            IMemberOrdersService memberOrdersService,
-            ICrudService<Store> crudStoreService)
+            IMemberOrdersService memberOrdersService)
         {
             _cartTotalsCalculator = cartTotalsCalculator;
             _marketingEvaluator = marketingEvaluator;
@@ -65,7 +61,6 @@ namespace VirtoCommerce.XPurchase
             _dynamicPropertyUpdaterService = dynamicPropertyUpdaterService;
             _mapper = mapper;
             _memberOrdersService = memberOrdersService;
-            _crudStoreService = crudStoreService;
         }
 
         public Store Store { get; protected set; }
@@ -804,8 +799,7 @@ namespace VirtoCommerce.XPurchase
 
         protected async Task<TaxProvider> GetActiveTaxProviderAsync()
         {
-            //PT-5417: Do not calculate taxes if Enable Tax Calculation is disabled in Store settings
-            if (!await _crudStoreService.GetSettingValue<bool>(Cart.StoreId, StoreSetting.TaxCalculationEnabled))
+            if (Store?.Settings?.GetSettingValue(StoreSetting.TaxCalculationEnabled.Name, true) == false)
             {
                 return null;
             }

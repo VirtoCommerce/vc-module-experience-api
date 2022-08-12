@@ -8,6 +8,7 @@ using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.ExperienceApiModule.Core.Models;
 using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
+using VirtoCommerce.Platform.Core.Settings;
 using VirtoCommerce.TaxModule.Core.Model;
 using VirtoCommerce.TaxModule.Core.Model.Search;
 using VirtoCommerce.TaxModule.Core.Services;
@@ -19,7 +20,6 @@ namespace VirtoCommerce.XDigitalCatalog.Tests.Middlewares
 {
     public class EvalProductsTaxMiddlewareTest
     {
-
         [Fact]
         public void EvalProductsTaxMiddleware_TaxNotCalculatedWithoutResponseGroup_Success()
         {
@@ -69,7 +69,7 @@ namespace VirtoCommerce.XDigitalCatalog.Tests.Middlewares
                     CurrencyCode = "USD",
                     IncludeFields = new List<string>() { "price" }  //ResponseGroup.LoadPrices
                 },
-
+                Store = GetStore(),
             };
 
             //Act
@@ -111,7 +111,7 @@ namespace VirtoCommerce.XDigitalCatalog.Tests.Middlewares
                     CurrencyCode = "USD",
                     IncludeFields = new List<string>() { "price" }  //ResponseGroup.LoadPrices
                 },
-
+                Store = GetStore(),
             };
 
             //Act
@@ -171,6 +171,7 @@ namespace VirtoCommerce.XDigitalCatalog.Tests.Middlewares
                     }
                 },
                 Query = new SearchProductQuery() { CurrencyCode = "USD", IncludeFields = new List<string>() { "price" } },
+                Store = GetStore(),
             };
 
             //Act
@@ -181,6 +182,21 @@ namespace VirtoCommerce.XDigitalCatalog.Tests.Middlewares
             taxProviderSearchService.Verify(x => x.SearchTaxProvidersAsync(It.IsAny<TaxProviderSearchCriteria>()), Times.Once);
             taxProvider.Verify(x => x.CalculateRates(It.IsAny<TaxEvaluationContext>()), Times.Once);
             productPrice.TaxPercentRate.Should().Be(0.5m);
+        }
+
+        private static StoreModule.Core.Model.Store GetStore()
+        {
+            return new StoreModule.Core.Model.Store
+            {
+                Settings = new List<ObjectSettingEntry>()
+                {
+                    new ObjectSettingEntry
+                    {
+                        Name = StoreModule.Core.ModuleConstants.Settings.General.TaxCalculationEnabled.Name,
+                        Value = true,
+                    }
+                }
+            };
         }
     }
 }

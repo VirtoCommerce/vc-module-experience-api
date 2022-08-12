@@ -238,8 +238,7 @@ namespace VirtoCommerce.XPurchase.Tests.Helpers
                 _cartProductServiceMock.Object,
                 _dynamicPropertyUpdaterService.Object,
                 _mapperMock.Object,
-                _memberOrdersServiceMock.Object,
-                _crudStoreServiceMock.Object);
+                _memberOrdersServiceMock.Object);
 
             aggregate.GrabCart(cart, new Store(), GetMember(), GetCurrency());
 
