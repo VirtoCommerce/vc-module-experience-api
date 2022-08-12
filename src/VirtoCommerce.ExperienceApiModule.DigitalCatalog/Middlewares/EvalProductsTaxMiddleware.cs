@@ -24,7 +24,6 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
         public EvalProductsTaxMiddleware(IMapper mapper,
             ITaxProviderSearchService taxProviderSearchService,
             IGenericPipelineLauncher pipeline)
-        //,ICrudService<Store> storeService)
         {
             _mapper = mapper;
             _taxProviderSearchService = taxProviderSearchService;
