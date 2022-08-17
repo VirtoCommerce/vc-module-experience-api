@@ -68,7 +68,8 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Tests.Handlers
 
         private static CartAggregate GetCartAggregateMock(ShoppingCart cart)
         {
-            var cartAggregate = new CartAggregate(Mock.Of<IMarketingPromoEvaluator>(),
+            var cartAggregate = new CartAggregate(
+                Mock.Of<IMarketingPromoEvaluator>(),
                 Mock.Of<IShoppingCartTotalsCalculator>(),
                 Mock.Of<ITaxProviderSearchService>(),
                 Mock.Of<ICartProductService>(),

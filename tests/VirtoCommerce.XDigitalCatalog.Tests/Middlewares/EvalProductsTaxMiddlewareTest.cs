@@ -8,6 +8,7 @@ using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.ExperienceApiModule.Core.Models;
 using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
+using VirtoCommerce.Platform.Core.Settings;
 using VirtoCommerce.TaxModule.Core.Model;
 using VirtoCommerce.TaxModule.Core.Model.Search;
 using VirtoCommerce.TaxModule.Core.Services;
@@ -32,15 +33,15 @@ namespace VirtoCommerce.XDigitalCatalog.Tests.Middlewares
             var response = new SearchProductResponse()
             {
                 TotalCount = 1,
-                Results = new List<ExpProduct>() {new ExpProduct() },
-                Query = new SearchProductQuery() {CurrencyCode = "USD"}
+                Results = new List<ExpProduct>() { new ExpProduct() },
+                Query = new SearchProductQuery() { CurrencyCode = "USD" }
             };
 
             //Act
             evalProductsTaxMiddleware.Run(response, resp => Task.CompletedTask);
 
             // Assert
-            taxProviderSearchService.Verify(x=>x.SearchTaxProvidersAsync(It.IsAny<TaxProviderSearchCriteria>()), Times.Never);
+            taxProviderSearchService.Verify(x => x.SearchTaxProvidersAsync(It.IsAny<TaxProviderSearchCriteria>()), Times.Never);
         }
 
         [Fact]
@@ -53,7 +54,7 @@ namespace VirtoCommerce.XDigitalCatalog.Tests.Middlewares
                 .ReturnsAsync(() => new TaxProviderSearchResult()
                 {
                     TotalCount = 0,
-                    Results = new List<TaxProvider>() 
+                    Results = new List<TaxProvider>()
                 });
             var genericPipelineLauncher = new Mock<IGenericPipelineLauncher>();
 
@@ -66,9 +67,9 @@ namespace VirtoCommerce.XDigitalCatalog.Tests.Middlewares
                 Query = new SearchProductQuery()
                 {
                     CurrencyCode = "USD",
-                    IncludeFields = new List<string>() {"price" }  //ResponseGroup.LoadPrices
+                    IncludeFields = new List<string>() { "price" }  //ResponseGroup.LoadPrices
                 },
-                
+                Store = GetStore(),
             };
 
             //Act
@@ -92,7 +93,7 @@ namespace VirtoCommerce.XDigitalCatalog.Tests.Middlewares
                 .ReturnsAsync(() => new TaxProviderSearchResult()
                 {
                     TotalCount = 1,
-                    Results = new List<TaxProvider>() {taxProvider.Object}
+                    Results = new List<TaxProvider>() { taxProvider.Object }
                 });
             var genericPipelineLauncher = new Mock<IGenericPipelineLauncher>();
 
@@ -110,7 +111,7 @@ namespace VirtoCommerce.XDigitalCatalog.Tests.Middlewares
                     CurrencyCode = "USD",
                     IncludeFields = new List<string>() { "price" }  //ResponseGroup.LoadPrices
                 },
-
+                Store = GetStore(),
             };
 
             //Act
@@ -119,7 +120,7 @@ namespace VirtoCommerce.XDigitalCatalog.Tests.Middlewares
             // Assert
             action.Should().NotThrow();
             taxProviderSearchService.Verify(x => x.SearchTaxProvidersAsync(It.IsAny<TaxProviderSearchCriteria>()), Times.Once);
-            taxProvider.Verify(x=>x.CalculateRates(It.IsAny<TaxEvaluationContext>()), Times.Once);
+            taxProvider.Verify(x => x.CalculateRates(It.IsAny<TaxEvaluationContext>()), Times.Once);
         }
 
         [Fact]
@@ -141,7 +142,7 @@ namespace VirtoCommerce.XDigitalCatalog.Tests.Middlewares
             taxProvider.Object.IsActive = true;
 
             taxProvider.Setup(x => x.CalculateRates(It.IsAny<TaxEvaluationContext>()))
-                .Returns(() => new List<TaxRate>() {new TaxRate() {Currency = "USD", Rate = 50, Line = new TaxLine() {Id = "someId", Quantity = 0}}});
+                .Returns(() => new List<TaxRate>() { new TaxRate() { Currency = "USD", Rate = 50, Line = new TaxLine() { Id = "someId", Quantity = 0 } } });
 
             var mapper = new Mock<IMapper>();
             var taxProviderSearchService = new Mock<ITaxProviderSearchService>();
@@ -161,7 +162,7 @@ namespace VirtoCommerce.XDigitalCatalog.Tests.Middlewares
                 Results = new List<ExpProduct>()  {
                     new ExpProduct()
                     {
-                       
+
                         AllPrices = new List<ProductPrice>()
                         {
                             productPrice
@@ -169,7 +170,8 @@ namespace VirtoCommerce.XDigitalCatalog.Tests.Middlewares
 
                     }
                 },
-                Query = new SearchProductQuery() {CurrencyCode = "USD", IncludeFields = new List<string>() { "price" }},
+                Query = new SearchProductQuery() { CurrencyCode = "USD", IncludeFields = new List<string>() { "price" } },
+                Store = GetStore(),
             };
 
             //Act
@@ -180,6 +182,21 @@ namespace VirtoCommerce.XDigitalCatalog.Tests.Middlewares
             taxProviderSearchService.Verify(x => x.SearchTaxProvidersAsync(It.IsAny<TaxProviderSearchCriteria>()), Times.Once);
             taxProvider.Verify(x => x.CalculateRates(It.IsAny<TaxEvaluationContext>()), Times.Once);
             productPrice.TaxPercentRate.Should().Be(0.5m);
+        }
+
+        private static StoreModule.Core.Model.Store GetStore()
+        {
+            return new StoreModule.Core.Model.Store
+            {
+                Settings = new List<ObjectSettingEntry>()
+                {
+                    new ObjectSettingEntry
+                    {
+                        Name = StoreModule.Core.ModuleConstants.Settings.General.TaxCalculationEnabled.Name,
+                        Value = true,
+                    }
+                }
+            };
         }
     }
 }
