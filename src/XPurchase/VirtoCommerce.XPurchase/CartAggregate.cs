@@ -735,10 +735,10 @@ namespace VirtoCommerce.XPurchase
 
             if (!lineItem.IsReadOnly && product != null)
             {
-                var TierPrice = product.Price.GetTierPrice(quantity).Price;
-                if (TierPrice.Amount > 0)
+                var tierPrice = product.Price.GetTierPrice(quantity).Price;
+                if (tierPrice.Amount > 0)
                 {
-                    lineItem.SalePrice = TierPrice.Amount;
+                    lineItem.SalePrice = tierPrice.Amount;
                     lineItem.ListPrice = lineItem.SalePrice;
                 }
             }
