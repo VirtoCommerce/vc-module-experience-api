@@ -815,10 +815,10 @@ namespace VirtoCommerce.XPurchase
         {
             if (productPrice == null) return;
 
-            var TierPrice = productPrice.GetTierPrice(quantity).Price;
-            if (TierPrice.Amount > 0)
+            var tierPrice = productPrice.GetTierPrice(quantity).Price;
+            if (tierPrice.Amount > 0)
             {
-                lineItem.SalePrice = TierPrice.Amount;
+                lineItem.SalePrice = tierPrice.Amount;
                 lineItem.ListPrice = lineItem.SalePrice;
             }
         }
