@@ -735,11 +735,11 @@ namespace VirtoCommerce.XPurchase
 
             if (!lineItem.IsReadOnly && product != null)
             {
-                var tierPrice = product.Price.GetTierPrice(quantity).Price;
-                if (tierPrice.Amount > 0)
+                var tierPrice = product.Price.GetTierPrice(quantity);
+                if (tierPrice.Price.Amount > 0)
                 {
-                    lineItem.SalePrice = tierPrice.Amount;
-                    lineItem.ListPrice = lineItem.SalePrice;
+                    lineItem.SalePrice = tierPrice.ActualPrice.Amount;
+                    lineItem.ListPrice = tierPrice.Price.Amount;
                 }
             }
             if (quantity > 0)
@@ -815,11 +815,11 @@ namespace VirtoCommerce.XPurchase
         {
             if (productPrice == null) return;
 
-            var tierPrice = productPrice.GetTierPrice(quantity).Price;
-            if (tierPrice.Amount > 0)
+            var tierPrice = productPrice.GetTierPrice(quantity);
+            if (tierPrice.Price.Amount > 0)
             {
-                lineItem.SalePrice = tierPrice.Amount;
-                lineItem.ListPrice = lineItem.SalePrice;
+                lineItem.SalePrice = tierPrice.ActualPrice.Amount;
+                lineItem.ListPrice = tierPrice.Price.Amount;
             }
         }
 
