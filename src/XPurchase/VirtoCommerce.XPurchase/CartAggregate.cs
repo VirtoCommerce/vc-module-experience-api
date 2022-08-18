@@ -19,6 +19,7 @@ using VirtoCommerce.OrdersModule.Core.Services;
 using VirtoCommerce.PaymentModule.Core.Model;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Domain;
+using VirtoCommerce.Platform.Core.Settings;
 using VirtoCommerce.ShippingModule.Core.Model;
 using VirtoCommerce.TaxModule.Core.Model;
 using VirtoCommerce.TaxModule.Core.Model.Search;
@@ -27,6 +28,7 @@ using VirtoCommerce.XPurchase.Extensions;
 using VirtoCommerce.XPurchase.Services;
 using VirtoCommerce.XPurchase.Validators;
 using Store = VirtoCommerce.StoreModule.Core.Model.Store;
+using StoreSetting = VirtoCommerce.StoreModule.Core.ModuleConstants.Settings.General;
 
 namespace VirtoCommerce.XPurchase
 {
@@ -39,7 +41,6 @@ namespace VirtoCommerce.XPurchase
         private readonly ICartProductService _cartProductService;
         private readonly IDynamicPropertyUpdaterService _dynamicPropertyUpdaterService;
         private readonly IMemberOrdersService _memberOrdersService;
-
         private readonly IMapper _mapper;
 
         private bool? _isFirstTimeBuyer;
@@ -798,11 +799,10 @@ namespace VirtoCommerce.XPurchase
 
         protected async Task<TaxProvider> GetActiveTaxProviderAsync()
         {
-            //PT-5417: Do not calculate taxes if Enable Tax Calculation is disabled in Store settings
-            //if (!context.StoreTaxCalculationEnabled)
-            //{
-            //    return;
-            //}
+            if (Store?.Settings?.GetSettingValue(StoreSetting.TaxCalculationEnabled.Name, true) == false)
+            {
+                return null;
+            }
 
             var storeTaxProviders = await _taxProviderSearchService.SearchTaxProvidersAsync(new TaxProviderSearchCriteria
             {

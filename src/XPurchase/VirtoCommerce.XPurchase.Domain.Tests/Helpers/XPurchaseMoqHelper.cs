@@ -18,6 +18,7 @@ using VirtoCommerce.MarketingModule.Core.Services;
 using VirtoCommerce.OrdersModule.Core.Services;
 using VirtoCommerce.PaymentModule.Core.Model;
 using VirtoCommerce.PaymentModule.Core.Services;
+using VirtoCommerce.Platform.Core.GenericCrud;
 using VirtoCommerce.PricingModule.Core.Model;
 using VirtoCommerce.ShippingModule.Core.Services;
 using VirtoCommerce.StoreModule.Core.Model;
@@ -41,6 +42,7 @@ namespace VirtoCommerce.XPurchase.Tests.Helpers
         protected readonly Mock<IShippingMethodsSearchService> _shippingMethodsSearchServiceMock;
         protected readonly Mock<IShoppingCartTotalsCalculator> _shoppingCartTotalsCalculatorMock;
         protected readonly Mock<IStoreService> _storeServiceMock;
+        protected readonly Mock<ICrudService<Store>> _crudStoreServiceMock;
         protected readonly Mock<ITaxProviderSearchService> _taxProviderSearchServiceMock;
         protected readonly Mock<IDynamicPropertyUpdaterService> _dynamicPropertyUpdaterService;
         protected readonly Mock<IMapper> _mapperMock;
@@ -161,6 +163,11 @@ namespace VirtoCommerce.XPurchase.Tests.Helpers
 
             _storeServiceMock = new Mock<IStoreService>();
             _storeServiceMock
+                .Setup(x => x.GetByIdAsync(It.IsAny<string>(), It.IsAny<string>()))
+                .ReturnsAsync(_fixture.Create<Store>());
+
+            _crudStoreServiceMock = new Mock<ICrudService<Store>>();
+            _crudStoreServiceMock
                 .Setup(x => x.GetByIdAsync(It.IsAny<string>(), It.IsAny<string>()))
                 .ReturnsAsync(_fixture.Create<Store>());
 
