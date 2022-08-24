@@ -157,12 +157,18 @@ namespace VirtoCommerce.XPurchase
                 throw new ArgumentNullException(nameof(newCartItem));
             }
 
-            var validationResult = await AbstractTypeFactory<NewCartItemValidator>.TryCreateInstance().ValidateAsync(newCartItem, options => options.IncludeRuleSets(ValidationRuleSet));
-            if (!validationResult.IsValid)
+            if (Cart.Type != "Wishlist")
             {
-                ValidationErrors.AddRange(validationResult.Errors);
+                var validationResult = await AbstractTypeFactory<NewCartItemValidator>.TryCreateInstance().ValidateAsync(newCartItem, options => options.IncludeRuleSets(ValidationRuleSet));
+                if (!validationResult.IsValid)
+                {
+                    ValidationErrors.AddRange(validationResult.Errors);
+                    return this;
+                }
+
             }
-            else if (newCartItem.CartProduct != null)
+
+            if (newCartItem.CartProduct != null)
             {
                 var lineItem = _mapper.Map<LineItem>(newCartItem.CartProduct);
                 lineItem.Quantity = newCartItem.Quantity;
