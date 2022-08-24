@@ -156,7 +156,6 @@ namespace VirtoCommerce.XPurchase
             {
                 throw new ArgumentNullException(nameof(newCartItem));
             }
-
             var validationResult = await AbstractTypeFactory<NewCartItemValidator>.TryCreateInstance().ValidateAsync(newCartItem, options => options.IncludeRuleSets(ValidationRuleSet));
             if (!validationResult.IsValid)
             {
