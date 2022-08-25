@@ -714,15 +714,11 @@ namespace VirtoCommerce.XPurchase
 
             if (!lineItem.IsReadOnly && product != null)
             {
-                var salePrice = product.Price.GetTierPrice(quantity).Price;
-                if (salePrice != 0)
+                var tierPrice = product.Price.GetTierPrice(quantity);
+                if (tierPrice.Price.Amount > 0)
                 {
-                    lineItem.SalePrice = salePrice.Amount;
-                }
-                //List price should be always greater ot equals sale price because it may cause incorrect totals calculation
-                if (lineItem.ListPrice < lineItem.SalePrice)
-                {
-                    lineItem.ListPrice = lineItem.SalePrice;
+                    lineItem.SalePrice = tierPrice.ActualPrice.Amount;
+                    lineItem.ListPrice = tierPrice.Price.Amount;
                 }
             }
             if (quantity > 0)
@@ -798,16 +794,12 @@ namespace VirtoCommerce.XPurchase
         {
             if (productPrice == null) return;
 
-            var salePrice = productPrice.GetTierPrice(quantity).Price;
-            if (salePrice != 0)
+            var tierPrice = productPrice.GetTierPrice(quantity);
+            if (tierPrice.Price.Amount > 0)
             {
-                lineItem.SalePrice = salePrice.Amount;
+                lineItem.SalePrice = tierPrice.ActualPrice.Amount;
+                lineItem.ListPrice = tierPrice.Price.Amount;
             }
-
-            //List price should be always greater or equals sale price because it may cause incorrect totals calculation
-            lineItem.ListPrice = lineItem.ListPrice < lineItem.SalePrice
-                ? lineItem.SalePrice
-                : lineItem.ListPrice;
         }
 
         #region ICloneable
