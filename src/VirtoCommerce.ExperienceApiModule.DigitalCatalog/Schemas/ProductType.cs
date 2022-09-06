@@ -325,6 +325,31 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
                 return context.Source.IndexedProduct.Outlines.GetBreadcrumbsFromOutLine(store, cultureName);
             });
+            
+            FieldAsync(
+                GraphTypeExtenstionHelper.GetActualType<VendorType>(),
+                "vendor",
+                "Product vendor",
+                resolve: async context =>
+                {
+                    ExpVendorType vendor = null;
+
+                    var vendorId = context.Source.IndexedProduct.Vendor;
+                    if (!string.IsNullOrEmpty(vendorId))
+                    {
+                        var query = new GetVendorQuery { Id = vendorId };
+
+                        var response = await mediator.Send(query);
+
+                        vendor = new ExpVendorType
+                        {
+                            Id = response.Id,
+                            Name = response.Name
+                        };
+                    }
+
+                    return vendor;
+                });
 
             Connection<ProductAssociationType>()
               .Name("associations")
