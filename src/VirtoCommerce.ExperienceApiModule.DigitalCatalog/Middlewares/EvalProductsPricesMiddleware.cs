@@ -7,6 +7,7 @@ using PipelineNet.Middleware;
 using VirtoCommerce.ExperienceApiModule.Core.Models;
 using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.GenericCrud;
 using VirtoCommerce.PricingModule.Core.Services;
 using VirtoCommerce.StoreModule.Core.Model;
 using VirtoCommerce.StoreModule.Core.Services;
@@ -19,7 +20,7 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
         private readonly IMapper _mapper;
         private readonly IPricingEvaluatorService _pricingEvaluatorService;
         private readonly IGenericPipelineLauncher _pipeline;
-        private readonly IStoreService _storeService;
+        private readonly ICrudService<Store> _storeService;
 
         public EvalProductsPricesMiddleware(
             IMapper mapper,
@@ -30,7 +31,7 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
             _mapper = mapper;
             _pricingEvaluatorService = pricingEvaluatorService;
             _pipeline = pipeline;
-            _storeService = storeService;
+            _storeService = (ICrudService<Store>)storeService;
         }
 
         public virtual async Task Run(SearchProductResponse parameter, Func<SearchProductResponse, Task> next)
@@ -46,51 +47,33 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
                 throw new OperationCanceledException("Query must be set");
             }
 
-            // Map indexed prices
-            foreach (var expProducts in parameter.Results)
-            {
-                expProducts.AllPrices = _mapper.Map<IEnumerable<ProductPrice>>(expProducts.IndexedPrices, context =>
-                {
-                    context.Items["all_currencies"] = parameter.AllStoreCurrencies;
-                }).ToList();
-
-                if (parameter.Currency != null)
-                {
-                    expProducts.AllPrices = expProducts.AllPrices.Where(x => (x.Currency == null) || x.Currency.Equals(parameter.Currency)).ToList();
-                }
-            }
-
             // If prices evaluation requested
+            // Always evaluate prices with PricingEvaluatorService
             var responseGroup = EnumUtility.SafeParse(query.GetResponseGroup(), ExpProductResponseGroup.None);
-            if (responseGroup.HasFlag(ExpProductResponseGroup.LoadPrices))
+            if (responseGroup.HasFlag(ExpProductResponseGroup.LoadPrices) && parameter.Results.Any())
             {
-                //evaluate prices only if product missed prices in the index storage
-                var productsWithoutPrices = parameter.Results.Where(x => !x.IndexedPrices.Any()).ToArray();
-                if (productsWithoutPrices.Any())
+                // find Store by Id to get Catalog Id
+                var store = await _storeService.GetByIdAsync(query.StoreId, StoreResponseGroup.StoreInfo.ToString());
+
+                var evalContext = AbstractTypeFactory<PricingModule.Core.Model.PriceEvaluationContext>.TryCreateInstance();
+                evalContext.Currency = query.CurrencyCode;
+                evalContext.StoreId = query.StoreId;
+                evalContext.CatalogId = store?.Catalog;
+                evalContext.CustomerId = query.UserId;
+                evalContext.Language = query.CultureName;
+
+                await _pipeline.Execute(evalContext);
+
+                evalContext.ProductIds = parameter.Results.Select(x => x.Id).ToArray();
+                var prices = await _pricingEvaluatorService.EvaluateProductPricesAsync(evalContext);
+
+                foreach (var product in parameter.Results)
                 {
-                    // find Store by Id to get Catalog Id
-                    var store = await _storeService.GetByIdAsync(query.StoreId, StoreResponseGroup.StoreInfo.ToString());
-
-                    var evalContext = AbstractTypeFactory<PricingModule.Core.Model.PriceEvaluationContext>.TryCreateInstance();
-                    evalContext.Currency = query.CurrencyCode;
-                    evalContext.StoreId = query.StoreId;
-                    evalContext.CatalogId = store?.Catalog;
-                    evalContext.CustomerId = query.UserId;
-                    evalContext.Language = query.CultureName;
-
-                    await _pipeline.Execute(evalContext);
-
-                    evalContext.ProductIds = productsWithoutPrices.Select(x => x.Id).ToArray();
-                    var prices = await _pricingEvaluatorService.EvaluateProductPricesAsync(evalContext);
-
-                    foreach (var product in productsWithoutPrices)
+                    product.AllPrices = _mapper.Map<IEnumerable<ProductPrice>>(prices.Where(x => x.ProductId == product.Id), options =>
                     {
-                        product.AllPrices = _mapper.Map<IEnumerable<ProductPrice>>(prices.Where(x => x.ProductId == product.Id), options =>
-                        {
-                            options.Items["all_currencies"] = parameter.AllStoreCurrencies;
-                            options.Items["currency"] = parameter.Currency;
-                        }).ToList();
-                    }
+                        options.Items["all_currencies"] = parameter.AllStoreCurrencies;
+                        options.Items["currency"] = parameter.Currency;
+                    }).ToList();
                 }
             }
             await next(parameter);
