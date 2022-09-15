@@ -9,6 +9,7 @@ using VirtoCommerce.SearchModule.Core.Model;
 
 namespace VirtoCommerce.XDigitalCatalog.Binding
 {
+    [Obsolete("Not used anymore to incorrect logic")]
     public class PriceBinder : IIndexModelBinder
     {
         private static readonly Regex _priceFieldRegExp = new Regex(@"^price_([A-Za-z]{3})_?([a-z0-9]+)?$", RegexOptions.Compiled);
