@@ -27,7 +27,6 @@ namespace VirtoCommerce.XDigitalCatalog
         [BindIndexField(FieldName = "__variations", BinderType = typeof(VariationsBinder))]
         public virtual IList<string> IndexedVariationIds { get; set; } = new List<string>();
 
-        [BindIndexField(FieldName = "__prices", BinderType = typeof(PriceBinder))]
         public virtual IList<Price> IndexedPrices { get; set; } = new List<Price>();
 
         [BindIndexField(BinderType = typeof(KeyBinder))]
