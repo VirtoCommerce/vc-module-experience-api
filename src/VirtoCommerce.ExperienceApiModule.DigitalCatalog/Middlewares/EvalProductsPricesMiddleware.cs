@@ -74,6 +74,8 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
                         options.Items["all_currencies"] = parameter.AllStoreCurrencies;
                         options.Items["currency"] = parameter.Currency;
                     }).ToList();
+
+                    product.ApplyStaticDiscounts();
                 }
             }
             await next(parameter);
