@@ -95,7 +95,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Models
             var retVal = TierPrices.OrderBy(x => x.Quantity).LastOrDefault(x => x.Quantity <= quantity);
             if (retVal == null)
             {
-                retVal = new TierPrice(SalePrice, 1);
+                retVal = new TierPrice(ListPrice, SalePrice, 1);
             }
 
             return retVal;
