@@ -126,7 +126,7 @@ namespace VirtoCommerce.XDigitalCatalog.Mapping
                     var orderedPrices = currencyGroup.OrderBy(x => x.MinQuantity ?? 0).ThenBy(x => x.ListPrice);
                     var nominalPrice = orderedPrices.FirstOrDefault();
                     //and add to nominal price other prices as tier prices
-                    nominalPrice.TierPrices.AddRange(orderedPrices.Select(x => new TierPrice(x.SalePrice, x.MinQuantity ?? 1)));
+                    nominalPrice.TierPrices.AddRange(orderedPrices.Select(x => new TierPrice(x.ListPrice, x.SalePrice, x.MinQuantity ?? 1)));
                     //Add nominal price to product prices list
                     result.Add(nominalPrice);
                 }
