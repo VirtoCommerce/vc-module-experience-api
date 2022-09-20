@@ -16,11 +16,16 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Models
         }
 
         public TierPrice(Money price, long quantity)
+            : this(price, price, quantity)
         {
-            Currency = price.Currency;
+        }
+
+        public TierPrice(Money listPrice, Money salePrice, long quantity)
+        {
+            Currency = salePrice.Currency;
             TaxDetails = new List<TaxDetail>();
-            Price = price;
-            DiscountAmount = new Money(price.Currency);
+            Price = listPrice;
+            DiscountAmount = listPrice - salePrice;
 
             Quantity = quantity;
         }
