@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Builders;
@@ -304,6 +305,11 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
         private async Task CheckCanAccessUserAsync(IResolveFieldContext context, string cartId)
         {
             var cart = await _mediator.Send(new GetCartByIdQuery { CartId = cartId });
+
+            if (cart == null)
+            {
+                throw new ArgumentException($"Cart does not exist, id: '{cartId}'", nameof(cartId));
+            }
 
             var authorizationResult = await _authorizationService.AuthorizeAsync(
                 context.GetCurrentPrincipal(),
