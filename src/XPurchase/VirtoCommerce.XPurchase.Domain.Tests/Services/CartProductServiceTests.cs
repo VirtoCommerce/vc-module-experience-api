@@ -1,14 +1,15 @@
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using AutoMapper;
+using FluentAssertions;
 using Moq;
+using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Services;
+using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
 using VirtoCommerce.InventoryModule.Core.Services;
 using VirtoCommerce.PricingModule.Core.Services;
-using AutoMapper;
 using Xunit;
-using VirtoCommerce.CatalogModule.Core.Model;
-using System.Collections.Generic;
-using System;
-using System.Threading.Tasks;
-using FluentAssertions;
 
 namespace VirtoCommerce.XPurchase.Tests.Services
 {
@@ -18,6 +19,7 @@ namespace VirtoCommerce.XPurchase.Tests.Services
         private readonly Mock<IInventorySearchService> _inventorySearchService;
         private readonly Mock<IPricingEvaluatorService> _pricingEvaluatorService;
         private readonly Mock<IMapper> _mapper;
+        private readonly Mock<IGenericPipelineLauncher> _pipeline;
         private readonly CartProductServiceFake _service;
 
         public CartProductServiceTests()
@@ -26,7 +28,8 @@ namespace VirtoCommerce.XPurchase.Tests.Services
             _inventorySearchService = new Mock<IInventorySearchService>();
             _pricingEvaluatorService = new Mock<IPricingEvaluatorService>();
             _mapper = new Mock<IMapper>();
-            _service = new CartProductServiceFake(_productService.Object, _inventorySearchService.Object, _pricingEvaluatorService.Object, _mapper.Object);
+            _pipeline = new Mock<IGenericPipelineLauncher>();
+            _service = new CartProductServiceFake(_productService.Object, _inventorySearchService.Object, _pricingEvaluatorService.Object, _mapper.Object, _pipeline.Object);
         }
 
         [Fact]
