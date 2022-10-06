@@ -31,12 +31,15 @@ namespace VirtoCommerce.XPurchase.Schemas
                         //Get currencies and store only from one cart.
                         //We intentionally ignore the case when there are ma be the carts with the different currencies and stores in the resulting set
                         var cart = context.GetValueForSource<CartAggregate>().Cart;
+                        var userId = context.GetArgumentOrValue<string>("userId") ?? cart.CustomerId;
+
                         var request = new LoadProductsQuery
                         {
                             StoreId = cart.StoreId,
                             CurrencyCode = cart.Currency,
                             ObjectIds = ids.ToArray(),
-                            IncludeFields = includeFields.ToArray()
+                            IncludeFields = includeFields.ToArray(),
+                            UserId = userId,
                         };
 
                         var response = await mediator.Send(request);
