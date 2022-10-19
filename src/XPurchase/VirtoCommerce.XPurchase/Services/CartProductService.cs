@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Services;
+using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.InventoryModule.Core.Model.Search;
 using VirtoCommerce.InventoryModule.Core.Services;
 using VirtoCommerce.Platform.Core.Common;
@@ -18,6 +19,7 @@ namespace VirtoCommerce.XPurchase.Services
         private readonly IInventorySearchService _inventorySearchService;
         private readonly IPricingEvaluatorService _pricingEvaluatorService;
         private readonly IMapper _mapper;
+        private readonly LoadUserToEvalContextService _loadUserToEvalContextService;
 
         /// <summary>
         /// Default response group
@@ -32,12 +34,14 @@ namespace VirtoCommerce.XPurchase.Services
         public CartProductService(IItemService productService,
             IInventorySearchService inventoryService,
             IPricingEvaluatorService pricingEvaluatorService,
-            IMapper mapper)
+            IMapper mapper,
+            LoadUserToEvalContextService loadUserToEvalContextService)
         {
             _productService = productService;
             _inventorySearchService = inventoryService;
             _pricingEvaluatorService = pricingEvaluatorService;
             _mapper = mapper;
+            _loadUserToEvalContextService = loadUserToEvalContextService;
         }
 
         /// <summary>
@@ -149,6 +153,7 @@ namespace VirtoCommerce.XPurchase.Services
             // There was a call to pipeline execution and stack overflow comes as a result of infinite cart getting,
             // because the LoadCartToEvalContextMiddleware catches pipeline execution.
             // Replaced to direct mapping.
+            await _loadUserToEvalContextService.SetShopperDataFromMember(pricesEvalContext, pricesEvalContext.CustomerId);
             _mapper.Map(aggregate, pricesEvalContext);
 
             var evalPricesTask = await _pricingEvaluatorService.EvaluateProductPricesAsync(pricesEvalContext);
