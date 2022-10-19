@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using AutoMapper;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Services;
-using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
 using VirtoCommerce.InventoryModule.Core.Model.Search;
 using VirtoCommerce.InventoryModule.Core.Services;
 using VirtoCommerce.Platform.Core.Common;
@@ -19,7 +18,6 @@ namespace VirtoCommerce.XPurchase.Services
         private readonly IInventorySearchService _inventorySearchService;
         private readonly IPricingEvaluatorService _pricingEvaluatorService;
         private readonly IMapper _mapper;
-        private readonly IGenericPipelineLauncher _pipeline;
 
         /// <summary>
         /// Default response group
@@ -34,14 +32,12 @@ namespace VirtoCommerce.XPurchase.Services
         public CartProductService(IItemService productService,
             IInventorySearchService inventoryService,
             IPricingEvaluatorService pricingEvaluatorService,
-            IMapper mapper,
-            IGenericPipelineLauncher pipeline)
+            IMapper mapper)
         {
             _productService = productService;
             _inventorySearchService = inventoryService;
             _pricingEvaluatorService = pricingEvaluatorService;
             _mapper = mapper;
-            _pipeline = pipeline;
         }
 
         /// <summary>
@@ -150,7 +146,10 @@ namespace VirtoCommerce.XPurchase.Services
             var pricesEvalContext = _mapper.Map<PriceEvaluationContext>(aggregate);
             pricesEvalContext.ProductIds = products.Select(x => x.Id).ToArray();
 
-            await _pipeline.Execute(pricesEvalContext);
+            // There was a call to pipeline execution and stack overflow comes as a result of infinite cart getting,
+            // because the LoadCartToEvalContextMiddleware catches pipeline execution.
+            // Replaced to direct mapping.
+            _mapper.Map(aggregate, pricesEvalContext);
 
             var evalPricesTask = await _pricingEvaluatorService.EvaluateProductPricesAsync(pricesEvalContext);
 
