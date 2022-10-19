@@ -19,7 +19,6 @@ namespace VirtoCommerce.XPurchase.Tests.Services
         private readonly Mock<IInventorySearchService> _inventorySearchService;
         private readonly Mock<IPricingEvaluatorService> _pricingEvaluatorService;
         private readonly Mock<IMapper> _mapper;
-        private readonly Mock<LoadUserToEvalContextService> _loadUserToEvalContextService;
         private readonly CartProductServiceFake _service;
 
         public CartProductServiceTests()
@@ -28,8 +27,7 @@ namespace VirtoCommerce.XPurchase.Tests.Services
             _inventorySearchService = new Mock<IInventorySearchService>();
             _pricingEvaluatorService = new Mock<IPricingEvaluatorService>();
             _mapper = new Mock<IMapper>();
-            _loadUserToEvalContextService = new Mock<LoadUserToEvalContextService>();
-            _service = new CartProductServiceFake(_productService.Object, _inventorySearchService.Object, _pricingEvaluatorService.Object, _mapper.Object, _loadUserToEvalContextService.Object);
+            _service = new CartProductServiceFake(_productService.Object, _inventorySearchService.Object, _pricingEvaluatorService.Object, _mapper.Object, new LoadUserToEvalContextService(null, null));
         }
 
         [Fact]
