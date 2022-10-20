@@ -60,11 +60,11 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                     context.CopyArgumentsToUserContext();
                     var orderAggregate = await _mediator.Send(request);
 
-                    var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), orderAggregate.Order, new CanAccessOrderAuthorizationRequirement());
+                    var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal().ThrowAuthorizationErrorIfAnonymous(), orderAggregate.Order, new CanAccessOrderAuthorizationRequirement());
 
                     if (!authorizationResult.Succeeded)
                     {
-                        throw new AuthorizationError($"Access denied");
+                        throw new ForbiddenError($"Access denied");
                     }
 
                     var allCurrencies = await _currencyService.GetAllCurrenciesAsync();
@@ -245,10 +245,10 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             //Store all currencies in the user context for future resolve in the schema types
             context.SetCurrencies(allCurrencies, query.CultureName);
 
-            var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), query, new CanAccessOrderAuthorizationRequirement());
+            var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal().ThrowAuthorizationErrorIfAnonymous(), query, new CanAccessOrderAuthorizationRequirement());
             if (!authorizationResult.Succeeded)
             {
-                throw new AuthorizationError($"Access denied");
+                throw new ForbiddenError($"Access denied");
             }
 
             var response = await mediator.Send(query);
@@ -265,10 +265,10 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
         {
             var query = context.ExtractQuery<SearchPaymentsQuery>();
 
-            var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), query, new CanAccessOrderAuthorizationRequirement());
+            var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal().ThrowAuthorizationErrorIfAnonymous(), query, new CanAccessOrderAuthorizationRequirement());
             if (!authorizationResult.Succeeded)
             {
-                throw new AuthorizationError($"Access denied");
+                throw new ForbiddenError($"Access denied");
             }
 
             context.UserContext.Add(nameof(Currency.CultureName).ToCamelCase(), query.CultureName);
@@ -292,13 +292,13 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             var order = await _customerOrderService.GetByIdAsync(orderId);
 
             var authorizationResult = await _authorizationService.AuthorizeAsync(
-                context.GetCurrentPrincipal(),
+                context.GetCurrentPrincipal().ThrowAuthorizationErrorIfAnonymous(),
                 order,
                 new CanAccessOrderAuthorizationRequirement());
 
             if (!authorizationResult.Succeeded)
             {
-                throw new AuthorizationError($"Access denied");
+                throw new ForbiddenError($"Access denied");
             }
         }
 
@@ -312,13 +312,13 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             }
 
             var authorizationResult = await _authorizationService.AuthorizeAsync(
-                context.GetCurrentPrincipal(),
+                context.GetCurrentPrincipal().ThrowAuthorizationErrorIfAnonymous(),
                 cart.Cart,
                 new CanAccessOrderAuthorizationRequirement());
 
             if (!authorizationResult.Succeeded)
             {
-                throw new AuthorizationError($"Access denied");
+                throw new ForbiddenError($"Access denied");
             }
         }
     }

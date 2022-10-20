@@ -84,11 +84,11 @@ public abstract class RequestBuilder<TRequest, TResponse, TResponseGraphType> : 
 
     protected virtual async Task Authorize(IResolveFieldContext context, object resource, IAuthorizationRequirement requirement)
     {
-        var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), resource, requirement);
+        var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal().ThrowAuthorizationErrorIfAnonymous(), resource, requirement);
 
         if (!authorizationResult.Succeeded)
         {
-            throw new AuthorizationError("Access denied");
+            throw new ForbiddenError("Access denied");
         }
     }
 }

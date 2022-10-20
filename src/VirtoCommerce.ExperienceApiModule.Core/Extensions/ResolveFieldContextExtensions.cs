@@ -6,6 +6,7 @@ using GraphQL;
 using GraphQL.Execution;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
+using VirtoCommerce.ExperienceApiModule.Core.Infrastructure.Authorization;
 using VirtoCommerce.ExperienceApiModule.Core.Queries;
 using VirtoCommerce.Platform.Core.Common;
 
@@ -55,7 +56,20 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
         public static string GetCurrentUserId(this IResolveFieldContext resolveContext)
         {
             var claimsPrincipal = GetCurrentPrincipal(resolveContext);
-            return claimsPrincipal?.FindFirstValue(ClaimTypes.NameIdentifier) ?? claimsPrincipal?.FindFirstValue("name") ?? AnonymousUser.UserName;
+            return claimsPrincipal?.GetCurrentUserId();
+        }
+
+        public static string GetCurrentUserId(this ClaimsPrincipal claimsPrincipal)
+        {
+            return claimsPrincipal.FindFirstValue(ClaimTypes.NameIdentifier) ?? claimsPrincipal?.FindFirstValue("name") ?? AnonymousUser.UserName;
+        }
+        public static ClaimsPrincipal ThrowAuthorizationErrorIfAnonymous(this ClaimsPrincipal claimsPrincipal)
+        {
+            if (claimsPrincipal.GetCurrentUserId() == AnonymousUser.UserName)
+            {
+                throw new AuthorizationError($"Can't run the operation under anonymous user or the token expired or invalid.");
+            }
+            return claimsPrincipal;
         }
 
         public static ClaimsPrincipal GetCurrentPrincipal(this IResolveFieldContext resolveContext)

@@ -1400,10 +1400,10 @@ namespace VirtoCommerce.XPurchase.Schemas
 
         private async Task AuthorizeAsync(IResolveFieldContext context, object resource)
         {
-            var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), resource, new CanAccessCartAuthorizationRequirement());
+            var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal().ThrowAuthorizationErrorIfAnonymous(), resource, new CanAccessCartAuthorizationRequirement());
             if (!authorizationResult.Succeeded)
             {
-                throw new AuthorizationError($"Access denied");
+                throw new ForbiddenError($"Access denied");
             }
         }
     }
