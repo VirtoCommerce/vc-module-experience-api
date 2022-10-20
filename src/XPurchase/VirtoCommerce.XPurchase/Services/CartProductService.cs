@@ -153,7 +153,11 @@ namespace VirtoCommerce.XPurchase.Services
             // There was a call to pipeline execution and stack overflow comes as a result of infinite cart getting,
             // because the LoadCartToEvalContextMiddleware catches pipeline execution.
             // Replaced to direct mapping.
-            _mapper.Map(aggregate, pricesEvalContext);
+            if (aggregate != null)
+            {
+                _mapper.Map(aggregate, pricesEvalContext);
+            }
+
             await _loadUserToEvalContextService.SetShopperDataFromMember(pricesEvalContext, pricesEvalContext.CustomerId);            
 
             var evalPricesTask = await _pricingEvaluatorService.EvaluateProductPricesAsync(pricesEvalContext);

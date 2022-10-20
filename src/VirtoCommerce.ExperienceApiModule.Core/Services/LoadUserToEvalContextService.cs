@@ -23,6 +23,8 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Services
 
         public virtual async Task SetShopperDataFromMember(EvaluationContextBase evalContextBase, string customerId)
         {
+            if (customerId.IsNullOrEmpty()) return;
+
             var member = await _memberIdResolver.ResolveMemberByIdAsync(customerId);
             if (member is Contact contact)
             {
