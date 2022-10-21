@@ -14,6 +14,7 @@ namespace VirtoCommerce.ExperienceApiModule.Web.Extensions
         public static GraphQLUserContext BuildGraphQLUserContext(this HttpContext context)
         {
             var principal = context.User;
+            var operatorUserName = default(string);
 
             // Impersonate a user based on their VC account object id by passing that value along with the header VirtoCommerce-User-Name.
             if (principal != null
@@ -34,9 +35,23 @@ namespace VirtoCommerce.ExperienceApiModule.Web.Extensions
                     {
                         principal = signInManager.CreateUserPrincipalAsync(user).GetAwaiter().GetResult();
                     }
+
+                    // try to find LoginOnBehalf operator, if VirtoCommerce-Operator-User-Name header is present
+                    if (context.Request.Headers.TryGetValue("VirtoCommerce-Operator-User-Name", out var operatorUserNameHeader))
+                    {
+                        operatorUserName = operatorUserNameHeader;
+                    }
                 }
             }
-            return new GraphQLUserContext(principal);
+
+            var userContext = new GraphQLUserContext(principal);
+
+            if (!string.IsNullOrEmpty(operatorUserName))
+            {
+                userContext.TryAdd("OperatorUserName", operatorUserName);
+            }
+
+            return userContext;
         }
     }
 }
