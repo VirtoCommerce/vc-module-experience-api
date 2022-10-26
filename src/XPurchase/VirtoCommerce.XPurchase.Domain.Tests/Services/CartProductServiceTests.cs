@@ -6,7 +6,7 @@ using FluentAssertions;
 using Moq;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Services;
-using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
+using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.InventoryModule.Core.Services;
 using VirtoCommerce.PricingModule.Core.Services;
 using Xunit;
@@ -19,7 +19,6 @@ namespace VirtoCommerce.XPurchase.Tests.Services
         private readonly Mock<IInventorySearchService> _inventorySearchService;
         private readonly Mock<IPricingEvaluatorService> _pricingEvaluatorService;
         private readonly Mock<IMapper> _mapper;
-        private readonly Mock<IGenericPipelineLauncher> _pipeline;
         private readonly CartProductServiceFake _service;
 
         public CartProductServiceTests()
@@ -28,8 +27,7 @@ namespace VirtoCommerce.XPurchase.Tests.Services
             _inventorySearchService = new Mock<IInventorySearchService>();
             _pricingEvaluatorService = new Mock<IPricingEvaluatorService>();
             _mapper = new Mock<IMapper>();
-            _pipeline = new Mock<IGenericPipelineLauncher>();
-            _service = new CartProductServiceFake(_productService.Object, _inventorySearchService.Object, _pricingEvaluatorService.Object, _mapper.Object, _pipeline.Object);
+            _service = new CartProductServiceFake(_productService.Object, _inventorySearchService.Object, _pricingEvaluatorService.Object, _mapper.Object, new LoadUserToEvalContextService(null, null));
         }
 
         [Fact]
