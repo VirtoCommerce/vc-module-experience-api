@@ -7,6 +7,7 @@ using VirtoCommerce.ExperienceApiModule.Core;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
+using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.Web.Extensions;
 using VirtoCommerce.ExperienceApiModule.XCMS.Extensions;
 using VirtoCommerce.ExperienceApiModule.XOrder.Extensions;
@@ -58,6 +59,8 @@ namespace VirtoCommerce.ExperienceApiModule.Web
             services.AddXCMS(graphQlBuilder);
 
             services.AddAutoMapper(ModuleInfo.Assembly);
+
+            services.AddTransient<LoadUserToEvalContextService>();
 
             #region Pipelines
             services.AddPipeline<PromotionEvaluationContext>(builder =>
