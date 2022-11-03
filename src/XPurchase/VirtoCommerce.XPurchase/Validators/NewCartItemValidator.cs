@@ -20,11 +20,15 @@ namespace VirtoCommerce.XPurchase.Validators
                         var cartProduct = newCartItem.CartProduct;
 
                         // PRODUCT_FFC_QTY
-                        if (cartProduct.Product.TrackInventory.GetValueOrDefault(false) && cartProduct.Inventory != null)
+                        if (cartProduct.Product.TrackInventory.GetValueOrDefault(false))
                         {
-                            var result = cartProduct.Inventory.AllowPreorder ||
-                                     cartProduct.Inventory.AllowBackorder ||
-                                     cartProduct.AvailableQuantity >= newCartItem.Quantity;
+                            var result = cartProduct.Inventory != null;
+                            if (result)
+                            {
+                                result = cartProduct.Inventory.AllowPreorder ||
+                                         cartProduct.Inventory.AllowBackorder ||
+                                         cartProduct.AvailableQuantity >= newCartItem.Quantity;
+                            }
 
                             if (!result)
                             {
