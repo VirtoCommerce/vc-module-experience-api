@@ -43,7 +43,7 @@ namespace VirtoCommerce.XPurchase.Commands
                 }
                 else
                 {
-                    var error = CartErrorDescriber.BulkInvalidProductError(nameof(CatalogProduct), item.ProductSku);
+                    var error = CartErrorDescriber.ProductInvalidError(nameof(CatalogProduct), item.ProductSku);
                     result.Errors.Add(error);
                 }
             }
@@ -65,16 +65,9 @@ namespace VirtoCommerce.XPurchase.Commands
 
             result.Cart = cartAggregate;
 
-            // transform cart product unavaliable validation erorrs to human readable
             var lineItemErrors = cartAggregate.ValidationErrors
                 .OfType<CartValidationError>()
-                .Where(x => x.ObjectType == "CartProduct" && x.ErrorCode == "CART_PRODUCT_UNAVAILABLE")
-                .Select(x =>
-                {
-                    var sku = products.FirstOrDefault(p => p.Id == x.ObjectId)?.Code ?? x.ObjectId;
-                    var error = CartErrorDescriber.BulkProductUnavailableError(nameof(CatalogProduct), sku);
-                    return error;
-                });
+                .Where(x => x.ObjectType == nameof(CatalogProduct));
 
             result.Errors.AddRange(lineItemErrors);
 

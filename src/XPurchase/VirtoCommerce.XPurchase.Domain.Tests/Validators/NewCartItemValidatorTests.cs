@@ -86,7 +86,7 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             result.Errors.Count.Should().Be(1);
             Assert.Collection(result.Errors, x =>
             {
-                Assert.Equal("CART_PRODUCT_UNAVAILABLE", x.ErrorCode);
+                Assert.Equal("PRODUCT_FFC_QTY", x.ErrorCode);
             });
         }
 
