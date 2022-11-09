@@ -1,9 +1,8 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
-using FluentValidation.Validators;
+using FluentValidation;
 using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.XPurchase.Tests.Helpers;
 using VirtoCommerce.XPurchase.Validators;
@@ -75,7 +74,7 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             var validator = new ItemQtyAdjustmentValidator();
 
             // Act
-            var result = await validator.ValidateAsync(item);
+            var result = await validator.ValidateAsync(item, options => options.IncludeRuleSets("strict"));
             var expected = CartErrorDescriber.LineItemWithGivenIdNotFound(new LineItem
             {
                 Id = item.LineItemId
@@ -109,7 +108,7 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             var validator = new ItemQtyAdjustmentValidator();
 
             // Act
-            var result = await validator.ValidateAsync(item);
+            var result = await validator.ValidateAsync(item, options => options.IncludeRuleSets("strict"));
             var expected = CartErrorDescriber.LineItemIsReadOnly(lineItem);
 
             // Assert
@@ -136,7 +135,7 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             var validator = new ItemQtyAdjustmentValidator();
 
             // Act
-            var result = await validator.ValidateAsync(item);
+            var result = await validator.ValidateAsync(item, options => options.IncludeRuleSets("strict"));
             var expected = CartErrorDescriber.ProductQtyInsufficientError(
                 item.CartProduct,
                 item.NewQuantity,
