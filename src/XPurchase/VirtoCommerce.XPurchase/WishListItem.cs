@@ -1,9 +1,8 @@
-namespace VirtoCommerce.XPurchase.Commands
+namespace VirtoCommerce.XPurchase
 {
-    public class UpdateWishlistItemCommand : WishlistCommand
+    public class WishListItem
     {
         public string LineItemId { get; set; }
-
         public int Quantity { get; set; }
     }
 }

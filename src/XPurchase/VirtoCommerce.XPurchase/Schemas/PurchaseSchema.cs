@@ -1232,12 +1232,12 @@ namespace VirtoCommerce.XPurchase.Schemas
 
             // Update wishlist item
             var updateListItemField = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<WishlistType>())
-                         .Name("updateWishListItem")
-                         .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputUpdateWishlistItemType>>(), _commandName)
+                         .Name("updateWishListItems")
+                         .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputUpdateWishlistItemsType>>(), _commandName)
                          .ResolveAsync(async context =>
                          {
-                             var commandType = GenericTypeHelper.GetActualType<UpdateWishlistItemCommand>();
-                             var command = (UpdateWishlistItemCommand)context.GetArgument(commandType, _commandName);
+                             var commandType = GenericTypeHelper.GetActualType<UpdateWishlistItemsCommand>();
+                             var command = (UpdateWishlistItemsCommand)context.GetArgument(commandType, _commandName);
                              var cartAggregate = await _mediator.Send(command);
                              context.UserContext["storeId"] = cartAggregate.Cart.StoreId;
                              await CheckAuthAsyncByCartId(context, command.ListId);
