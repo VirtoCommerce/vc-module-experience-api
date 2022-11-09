@@ -56,6 +56,7 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             var quantity = Rand.Int(1, InStockQuantity);
             var newCartItemPrice = productPrice * quantity;
             var newCartItem = BuildNewCartItem(productId, quantity, newCartItemPrice, true, true);
+            newCartItem.CartProduct.Product.TrackInventory = false;
             var validator = new NewCartItemValidator();
 
             // Act
