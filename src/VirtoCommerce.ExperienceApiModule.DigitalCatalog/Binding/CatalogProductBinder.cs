@@ -57,7 +57,6 @@ namespace VirtoCommerce.XDigitalCatalog.Binding
                 }
             }
 
-
             return result;
         }
     }

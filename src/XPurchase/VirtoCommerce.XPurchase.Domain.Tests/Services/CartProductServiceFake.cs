@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
+using MediatR;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.Core.Services;
@@ -16,8 +17,9 @@ namespace VirtoCommerce.XPurchase.Tests.Services
             IInventorySearchService inventoryService,
             IPricingEvaluatorService pricingEvaluatorService,
             IMapper mapper,
-            LoadUserToEvalContextService loadUserToEvalContextService)
-            : base(productService, inventoryService, pricingEvaluatorService, mapper, loadUserToEvalContextService)
+            LoadUserToEvalContextService loadUserToEvalContextService,
+            IMediator mediator)
+            : base(productService, inventoryService, pricingEvaluatorService, mapper, loadUserToEvalContextService, mediator)
         {
         }
 
