@@ -1,5 +1,6 @@
 using System;
 using System.Reflection;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.Core.Binding;
@@ -25,6 +26,20 @@ namespace VirtoCommerce.XDigitalCatalog.Binding
             }
 
             var obj = searchDocument[BindingInfo.FieldName];
+
+            // check if __object document field name contains string or jObject
+            if (obj is string sObj)
+            {
+                try
+                {
+                    obj = JObject.Parse(sObj);
+                }
+                catch (JsonReaderException)
+                {
+                    return result;
+                }
+            }
+
             if (obj is JObject jobj)
             {
                 result = (CatalogProduct)jobj.ToObject(_productType);

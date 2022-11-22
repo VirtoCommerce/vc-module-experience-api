@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using MediatR;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.Core.Services;
@@ -10,6 +11,7 @@ using VirtoCommerce.InventoryModule.Core.Services;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.PricingModule.Core.Model;
 using VirtoCommerce.PricingModule.Core.Services;
+using VirtoCommerce.XDigitalCatalog.Queries;
 
 namespace VirtoCommerce.XPurchase.Services
 {
@@ -20,11 +22,13 @@ namespace VirtoCommerce.XPurchase.Services
         private readonly IPricingEvaluatorService _pricingEvaluatorService;
         private readonly IMapper _mapper;
         private readonly LoadUserToEvalContextService _loadUserToEvalContextService;
+        private readonly IMediator _mediator;
 
         /// <summary>
         /// Default response group
         /// </summary>
         protected virtual ItemResponseGroup ResponseGroups => ItemResponseGroup.ItemAssets | ItemResponseGroup.ItemInfo | ItemResponseGroup.Outlines | ItemResponseGroup.Seo;
+        protected virtual string[] IncludeFields => new string[] { "id", "code", "seoInfo", "assets", "imgSrc", "outline" };
 
         /// <summary>
         /// Default page size for pagination
@@ -35,13 +39,15 @@ namespace VirtoCommerce.XPurchase.Services
             IInventorySearchService inventoryService,
             IPricingEvaluatorService pricingEvaluatorService,
             IMapper mapper,
-            LoadUserToEvalContextService loadUserToEvalContextService)
+            LoadUserToEvalContextService loadUserToEvalContextService,
+            IMediator mediator)
         {
             _productService = productService;
             _inventorySearchService = inventoryService;
             _pricingEvaluatorService = pricingEvaluatorService;
             _mapper = mapper;
             _loadUserToEvalContextService = loadUserToEvalContextService;
+            _mediator = mediator;
         }
 
         /// <summary>
@@ -55,7 +61,7 @@ namespace VirtoCommerce.XPurchase.Services
             if (aggregate is null || ids.IsNullOrEmpty())
                 return new List<CartProduct>();
 
-            var products = await GetProductsByIdsAsync(ids);
+            var products = await GetProductsByIdsAsync(ids, aggregate.Store.Id);
             var cartProducts = await GetCartProductsAsync(products);
 
             await Task.WhenAll(LoadDependencies(aggregate, cartProducts));
@@ -71,6 +77,27 @@ namespace VirtoCommerce.XPurchase.Services
         protected virtual async Task<IList<CatalogProduct>> GetProductsByIdsAsync(IEnumerable<string> ids)
         {
             return await _productService.GetByIdsAsync(ids.ToArray(), ResponseGroups.ToString());
+        }
+
+        /// <summary>
+        /// Load <see cref="CatalogProduct"/>s
+        /// </summary>
+        /// <param name="ids">Product ids</param>
+        /// <param name="storeId">Store where to take catalog and currency from</param>
+        /// <returns>List of <see cref="CatalogProduct"/>s</returns>
+        protected virtual async Task<IList<CatalogProduct>> GetProductsByIdsAsync(IEnumerable<string> ids, string storeId)
+        {
+            var productsQuery = new LoadProductsQuery
+            {
+                StoreId = storeId,
+                ObjectIds = ids.ToArray(),
+                IncludeFields = IncludeFields,
+            };
+
+            var response = await _mediator.Send(productsQuery);
+            var products = response.Products.Select(x => x.IndexedProduct).ToList();
+
+            return products;
         }
 
         /// <summary>
@@ -158,7 +185,7 @@ namespace VirtoCommerce.XPurchase.Services
                 _mapper.Map(aggregate, pricesEvalContext);
             }
 
-            await _loadUserToEvalContextService.SetShopperDataFromMember(pricesEvalContext, pricesEvalContext.CustomerId);            
+            await _loadUserToEvalContextService.SetShopperDataFromMember(pricesEvalContext, pricesEvalContext.CustomerId);
 
             var evalPricesTask = await _pricingEvaluatorService.EvaluateProductPricesAsync(pricesEvalContext);
 
