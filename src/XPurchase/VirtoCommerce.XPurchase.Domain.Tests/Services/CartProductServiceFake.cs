@@ -1,4 +1,8 @@
-using VirtoCommerce.XPurchase.Services;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using AutoMapper;
+using MediatR;
+using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.InventoryModule.Core.Services;
 using VirtoCommerce.PricingModule.Core.Services;
@@ -11,10 +15,12 @@ namespace VirtoCommerce.XPurchase.Tests.Services
 {
     public class CartProductServiceFake : CartProductService
     {
-        public CartProductServiceFake(IItemService productService
-            , IInventorySearchService inventoryService
-            , IPricingEvaluatorService pricingEvaluatorService
-            , IMapper mapper) : base(productService, inventoryService, pricingEvaluatorService, mapper)
+        public CartProductServiceFake(IItemService productService,
+            IInventorySearchService inventoryService,
+            IPricingEvaluatorService pricingEvaluatorService,
+            IMapper mapper,
+            IMediator mediator)
+            : base(productService, inventoryService, pricingEvaluatorService, mapper, mediator)
         {
         }
 

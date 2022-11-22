@@ -43,9 +43,9 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
                     {
                         new RegexpNameMapper(@".*", "$0", new [] { "__object.id", "__object.categoryId", "__object.catalogId" }),
                         new RegexpNameMapper(@"(items.)?price[s]?.(?<part>[^\.]+).*$","__prices.$2", new [] { "__prices.currency" }),
-                        new RegexpNameMapper(@"^items.variations", "__variations", new [] { "__variations" }),
                         new RegexpNameMapper(@"^variations", "__variations", new [] { "__variations" }),
                         new RegexpNameMapper(@"^hasVariations", "__variations", new [] { "__variations" }),
+                        new RegexpNameMapper(@"^items.variations", "__variations", new [] { "__variations" }),
                         new RegexpNameMapper(@"^items.hasVariations", "__variations", new [] { "__variations" }),
                         new RegexpNameMapper(@"^items", "__object"),
                         new RegexpNameMapper(@"^(?!__)", "__object."),
