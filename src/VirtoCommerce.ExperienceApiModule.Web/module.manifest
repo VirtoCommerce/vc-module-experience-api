@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <module xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <id>VirtoCommerce.ExperienceApi</id>
   <version>3.241.0</version>
@@ -43,6 +43,7 @@
     <dependency id="VirtoCommerce.Store" version="3.201.0" />
     <dependency id="VirtoCommerce.Catalog" version="3.213.0" />
     <dependency id="VirtoCommerce.Tax" version="3.200.0" />
+    <dependency id="VirtoCommerce.CustomerReviews" version="3.207.0" />
   </dependencies>
   <incompatibilities />
   <groups>
