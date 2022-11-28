@@ -1,12 +1,12 @@
 using System.Threading;
 using System.Threading.Tasks;
-using VirtoCommerce.CustomerModule.Core.Model;
 using VirtoCommerce.CustomerModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
+using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.XDigitalCatalog.Queries
 {
-    public class GetVendorQueryHandler: IQueryHandler<GetVendorQuery, Member>
+    public class GetVendorQueryHandler: IQueryHandler<GetVendorQuery, ExpVendor>
     {
         private readonly IMemberService _memberService;
 
@@ -15,11 +15,15 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             _memberService = memberService;
         }
 
-        public Task<Member> Handle(GetVendorQuery request, CancellationToken cancellationToken)
+        public virtual async Task<ExpVendor> Handle(GetVendorQuery request, CancellationToken cancellationToken)
         {
-            var member = _memberService.GetByIdAsync(request.Id);
+            var member = await _memberService.GetByIdAsync(request.Id);
 
-            return member;
+            var result = AbstractTypeFactory<ExpVendor>.TryCreateInstance();
+            result.Id = member.Id;
+            result.Name = member.Name;
+            result.Type = member.MemberType;
+            return result;
         }
     }
 }
