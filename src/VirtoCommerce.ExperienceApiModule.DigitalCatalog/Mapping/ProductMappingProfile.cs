@@ -135,7 +135,7 @@ namespace VirtoCommerce.XDigitalCatalog.Mapping
                 return result;
             });
 
-            CreateMap<Member, ExpProductVendor>().ConvertUsing((src, dest) =>
+            CreateMap<Member, ExpProductVendor>().ConvertUsing((src, _) =>
             {
                 var result = AbstractTypeFactory<ExpProductVendor>.TryCreateInstance();
                 result.Id = src.Id;

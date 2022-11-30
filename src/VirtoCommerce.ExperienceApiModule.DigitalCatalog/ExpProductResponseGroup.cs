@@ -10,6 +10,7 @@ namespace VirtoCommerce.XDigitalCatalog
 		LoadInventories = 1 << 1,
         LoadFacets = 1 << 2,
         LoadVendors = 1 << 3,
-        Full = LoadPrices | LoadInventories | LoadFacets | LoadVendors
+        LoadRating = 1 << 4,
+        Full = LoadPrices | LoadInventories | LoadFacets | LoadVendors | LoadRating
     }
 }
