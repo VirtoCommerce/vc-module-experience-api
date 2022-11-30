@@ -5,6 +5,7 @@ using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.CoreModule.Core.Seo;
+using VirtoCommerce.CustomerModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.Core.Binding;
 using VirtoCommerce.InventoryModule.Core.Model;
 using VirtoCommerce.MarketingModule.Core.Model.Promotions;
@@ -71,6 +72,8 @@ namespace VirtoCommerce.XDigitalCatalog
         public InventoryInfo Inventory { get; private set; }
 
         public EditorialReview Description { get; set; }
+
+        public ExpProductVendor Vendor { get; set; }
 
         public virtual long AvailableQuantity
         {

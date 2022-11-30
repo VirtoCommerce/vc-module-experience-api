@@ -27,6 +27,10 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             {
                 result |= ExpProductResponseGroup.LoadInventories;
             }
+            if (IncludeFields.Any(x => x.Contains("vendor")))
+            {
+                result |= ExpProductResponseGroup.LoadVendors;
+            }
             if (IncludeFields.Any(x => x.Contains("_facets")))
             {
                 result |= ExpProductResponseGroup.LoadFacets;

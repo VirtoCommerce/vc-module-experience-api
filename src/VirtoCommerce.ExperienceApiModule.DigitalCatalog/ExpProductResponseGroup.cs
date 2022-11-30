@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace VirtoCommerce.XDigitalCatalog
 {
@@ -11,6 +9,7 @@ namespace VirtoCommerce.XDigitalCatalog
 		LoadPrices = 1,
 		LoadInventories = 1 << 1,
         LoadFacets = 1 << 2,
-        Full = LoadPrices | LoadInventories | LoadFacets
+        LoadVendors = 1 << 3,
+        Full = LoadPrices | LoadInventories | LoadFacets | LoadVendors
     }
 }

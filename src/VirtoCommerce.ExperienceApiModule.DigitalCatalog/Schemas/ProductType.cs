@@ -327,11 +327,11 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 return context.Source.IndexedProduct.Outlines.GetBreadcrumbsFromOutLine(store, cultureName);
             });
             
-            FieldAsync(
-                GraphTypeExtenstionHelper.GetActualType<VendorType>(),
+            Field(
+                GraphTypeExtenstionHelper.GetActualType<ProductVendorType>(),
                 "vendor",
                 "Product vendor",
-                resolve: async context => await ResolveVendorAsync(mediator, context));
+                resolve: context => context.Source.Vendor);
 
             Connection<ProductAssociationType>()
               .Name("associations")
@@ -345,21 +345,6 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
               .Name("videos")
               .PageSize(20)
               .ResolveAsync(async context => await ResolveVideosConnectionAsync(mediator, context));
-        }
-
-        public static async Task<object> ResolveVendorAsync(IMediator mediator, IResolveFieldContext<ExpProduct> context)
-        {
-            ExpVendor result = null;
-
-            var vendorId = context.Source.IndexedProduct.Vendor;
-            if (!string.IsNullOrEmpty(vendorId))
-            {
-                var query = AbstractTypeFactory<GetVendorQuery>.TryCreateInstance();
-                query.Id = vendorId;
-                result = await mediator.Send(query);
-            }
-
-            return result;
         }
 
         private static SeoInfo GetFallbackSeoInfo(ExpProduct source, string cultureName)

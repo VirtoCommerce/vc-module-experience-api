@@ -95,11 +95,11 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 return response.Slug;
             }, description: "Request related slug for product");
 
-            FieldAsync(
-                GraphTypeExtenstionHelper.GetActualType<VendorType>(),
+            Field(
+                GraphTypeExtenstionHelper.GetActualType<ProductVendorType>(),
                 "vendor",
                 "Product vendor",
-                resolve: async context => await ProductType.ResolveVendorAsync(mediator, context));
+                resolve: context => context.Source.Vendor);
         }
     }
 }
