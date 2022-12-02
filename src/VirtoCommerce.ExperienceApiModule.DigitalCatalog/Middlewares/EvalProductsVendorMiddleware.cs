@@ -38,7 +38,7 @@ public class EvalProductsVendorMiddleware: IAsyncMiddleware<SearchProductRespons
         var responseGroup = EnumUtility.SafeParse(query.GetResponseGroup(), ExpProductResponseGroup.None);
         if (responseGroup.HasFlag(ExpProductResponseGroup.LoadVendors) && parameter.Results.Any())
         {
-            var members = new List<Member>();
+            var memberByIds = new Dictionary<string, Member>();
 
             var memberIds = parameter.Results
                 .Where(x => x.IndexedProduct.Vendor != null)
@@ -46,21 +46,26 @@ public class EvalProductsVendorMiddleware: IAsyncMiddleware<SearchProductRespons
                 .Distinct()
                 .ToArray();
 
-            var countResult = memberIds.Count();
+            var countResult = memberIds.Length;
 
-            var pageSize = 10;
+            const int pageSize = 10;
 
             for (var i = 0; i < countResult; i += pageSize)
             {
-                members.AddRange(await _memberService.GetByIdsAsync(memberIds));
+                var members = await _memberService.GetByIdsAsync(memberIds);
+                foreach (var member in members)
+                {
+                    memberByIds.Add(member.Id, member);
+                }
             }
 
-            if (members.Any())
+            if (memberByIds.Any())
             {
                 parameter.Results.Apply(product =>
-                    product.Vendor =
-                        _mapper.Map<ExpProductVendor>(members.FirstOrDefault(member =>
-                            member.Id == product.IndexedProduct.Vendor)));
+                {
+                    memberByIds.TryGetValue(product.IndexedProduct.Vendor, out var member);
+                    product.Vendor = _mapper.Map<ExpProductVendor>(member);
+                });
             }
         }
 
