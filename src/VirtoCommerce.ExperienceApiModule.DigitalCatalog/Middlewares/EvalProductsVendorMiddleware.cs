@@ -61,7 +61,9 @@ public class EvalProductsVendorMiddleware: IAsyncMiddleware<SearchProductRespons
 
             if (memberByIds.Any())
             {
-                parameter.Results.Apply(product =>
+                parameter.Results
+                    .Where(x => x.IndexedProduct.Vendor != null)
+                    .Apply(product =>
                 {
                     memberByIds.TryGetValue(product.IndexedProduct.Vendor, out var member);
                     product.Vendor = _mapper.Map<ExpProductVendor>(member);
