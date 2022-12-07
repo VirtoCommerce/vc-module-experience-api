@@ -1,6 +1,6 @@
-namespace VirtoCommerce.XDigitalCatalog;
+namespace VirtoCommerce.ExperienceApiModule.Core;
 
-public class ExpProductVendorRating
+public class ExpRating
 {
     public decimal Value { get; set; }
 

@@ -1,3 +1,5 @@
+using VirtoCommerce.ExperienceApiModule.Core;
+
 namespace VirtoCommerce.XDigitalCatalog;
 
 public class ExpProductVendor
@@ -8,5 +10,5 @@ public class ExpProductVendor
 
     public string Type { get; set; }
 
-    public ExpProductVendorRating Rating { get; set; }
+    public ExpRating Rating { get; set; }
 }

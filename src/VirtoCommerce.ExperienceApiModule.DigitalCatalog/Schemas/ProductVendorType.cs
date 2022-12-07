@@ -12,7 +12,7 @@ public class ProductVendorType: ExtendableGraphType<ExpProductVendor>
         Field(x => x.Id, nullable: false).Description("Vendor ID");
         Field(x => x.Name, nullable: false).Description("Vendor name");
         Field(
-            GraphTypeExtenstionHelper.GetActualType<ProductVendorRatingType>(),
+            GraphTypeExtenstionHelper.GetActualType<RatingType>(),
             "rating",
             "Vendor rating",
             resolve: context =>
