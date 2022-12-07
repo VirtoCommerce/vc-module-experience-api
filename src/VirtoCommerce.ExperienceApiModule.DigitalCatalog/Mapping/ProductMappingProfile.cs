@@ -4,6 +4,7 @@ using System.Linq;
 using AutoMapper;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CoreModule.Core.Currency;
+using VirtoCommerce.CustomerModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.Core.Binding;
 using VirtoCommerce.ExperienceApiModule.Core.Models;
 using VirtoCommerce.MarketingModule.Core.Model.Promotions;
@@ -131,6 +132,15 @@ namespace VirtoCommerce.XDigitalCatalog.Mapping
                     result.Add(nominalPrice);
                 }
 
+                return result;
+            });
+
+            CreateMap<Member, ExpProductVendor>().ConvertUsing((src, _) =>
+            {
+                var result = AbstractTypeFactory<ExpProductVendor>.TryCreateInstance();
+                result.Id = src.Id;
+                result.Name = src.Name;
+                result.Type = src.MemberType;
                 return result;
             });
         }

@@ -9,6 +9,7 @@ using GraphQL.Types;
 using MediatR;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CoreModule.Core.Seo;
+using VirtoCommerce.CustomerModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
@@ -326,49 +327,24 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 return context.Source.IndexedProduct.Outlines.GetBreadcrumbsFromOutLine(store, cultureName);
             });
             
-            FieldAsync(
-                GraphTypeExtenstionHelper.GetActualType<VendorType>(),
+            Field(
+                GraphTypeExtenstionHelper.GetActualType<ProductVendorType>(),
                 "vendor",
                 "Product vendor",
-                resolve: async context =>
-                {
-                    ExpVendorType vendor = null;
-
-                    var vendorId = context.Source.IndexedProduct.Vendor;
-                    if (!string.IsNullOrEmpty(vendorId))
-                    {
-                        var query = new GetVendorQuery { Id = vendorId };
-
-                        var response = await mediator.Send(query);
-
-                        vendor = new ExpVendorType
-                        {
-                            Id = response.Id,
-                            Name = response.Name
-                        };
-                    }
-
-                    return vendor;
-                });
+                resolve: context => context.Source.Vendor);
 
             Connection<ProductAssociationType>()
               .Name("associations")
               .Argument<StringGraphType>("query", "the search phrase")
               .Argument<StringGraphType>("group", "association group (Accessories, RelatedItem)")
               .PageSize(20)
-              .ResolveAsync(async context =>
-              {
-                  return await ResolveAssociationConnectionAsync(mediator, context);
-              });
+              .ResolveAsync(async context => await ResolveAssociationConnectionAsync(mediator, context));
 
 
             Connection<VideoType>()
               .Name("videos")
               .PageSize(20)
-              .ResolveAsync(async context =>
-              {
-                  return await ResolveVideosConnectionAsync(mediator, context);
-              });
+              .ResolveAsync(async context => await ResolveVideosConnectionAsync(mediator, context));
         }
 
         private static SeoInfo GetFallbackSeoInfo(ExpProduct source, string cultureName)

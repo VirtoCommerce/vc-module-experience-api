@@ -7,6 +7,7 @@ namespace VirtoCommerce.XDigitalCatalog
             IndexedProduct = expProduct.IndexedProduct;
             AllPrices = expProduct.AllPrices;
             AllInventories = expProduct.AllInventories;
+            Vendor = expProduct.Vendor;
         }
     }
 }
