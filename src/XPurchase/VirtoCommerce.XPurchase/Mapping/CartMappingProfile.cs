@@ -84,7 +84,7 @@ namespace VirtoCommerce.XPurchase.Mapping
                         Name = lineItem.Name,
                         TaxType = lineItem.TaxType,
                         //Special case when product have 100% discount and need to calculate tax for old value
-                        Amount =  lineItem.Price.List > 0 ? lineItem.Price.List : lineItem.Price.Sale ?? 0M
+                        Amount =  lineItem.ListPrice > 0 ? lineItem.ListPrice : lineItem.SalePrice
                     }
                 };
             });

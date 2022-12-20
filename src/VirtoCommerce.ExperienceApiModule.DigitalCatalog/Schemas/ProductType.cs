@@ -9,7 +9,6 @@ using GraphQL.Types;
 using MediatR;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CoreModule.Core.Seo;
-using VirtoCommerce.CustomerModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
@@ -326,12 +325,14 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
                 return context.Source.IndexedProduct.Outlines.GetBreadcrumbsFromOutLine(store, cultureName);
             });
-            
+
             Field(
                 GraphTypeExtenstionHelper.GetActualType<ProductVendorType>(),
                 "vendor",
                 "Product vendor",
                 resolve: context => context.Source.Vendor);
+
+            Field(x => x.InWishlist).Description("Product added at least in one wishlist");
 
             Connection<ProductAssociationType>()
               .Name("associations")

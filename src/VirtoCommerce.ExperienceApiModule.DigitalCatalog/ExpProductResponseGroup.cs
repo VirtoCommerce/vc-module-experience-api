@@ -6,11 +6,12 @@ namespace VirtoCommerce.XDigitalCatalog
     public enum ExpProductResponseGroup
     {
         None = 0,
-		LoadPrices = 1,
-		LoadInventories = 1 << 1,
+        LoadPrices = 1,
+        LoadInventories = 1 << 1,
         LoadFacets = 1 << 2,
         LoadVendors = 1 << 3,
         LoadRating = 1 << 4,
-        Full = LoadPrices | LoadInventories | LoadFacets | LoadVendors | LoadRating
+        LoadWishlists = 1 << 5,
+        Full = LoadPrices | LoadInventories | LoadFacets | LoadVendors | LoadRating | LoadWishlists
     }
 }
