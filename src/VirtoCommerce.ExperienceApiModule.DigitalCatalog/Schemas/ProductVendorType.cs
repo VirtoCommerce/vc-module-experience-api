@@ -7,7 +7,7 @@ public class ProductVendorType: ExtendableGraphType<ExpProductVendor>
 {
     public ProductVendorType()
     {
-        Name = "Vendor";
+        Name = "ProductVendor";
 
         Field(x => x.Id, nullable: false).Description("Vendor ID");
         Field(x => x.Name, nullable: false).Description("Vendor name");
