@@ -151,6 +151,9 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 return result;
             });
 
+            Field<ListGraphType<CategoryType>>(
+                nameof(ExpCategory.ChildCategories),
+                resolve: context => context.Source.ChildCategories);
         }
 
         private static SeoInfo GetFallbackSeoInfo(ExpCategory source, string cultureName)

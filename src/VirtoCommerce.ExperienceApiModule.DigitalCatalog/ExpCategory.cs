@@ -1,4 +1,4 @@
-using System.Linq;
+using System.Collections.Generic;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.Core.Binding;
 using VirtoCommerce.XDigitalCatalog.Binding;
@@ -16,6 +16,8 @@ namespace VirtoCommerce.XDigitalCatalog
         public virtual string Key { get; set; }
 
         //Level in hierarchy
-        public int Level => Category?.Outline?.Split("/").Count() ?? 0;
+        public int Level => Category?.Outline?.Split("/").Length ?? 0;
+
+        public IList<ExpCategory> ChildCategories { get; set; }
     }
 }
