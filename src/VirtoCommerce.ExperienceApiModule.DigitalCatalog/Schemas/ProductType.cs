@@ -113,7 +113,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                     seoInfo = source.IndexedProduct.SeoInfos.GetBestMatchingSeoInfo(storeId, cultureName);
                 }
 
-                return seoInfo ?? GetFallbackSeoInfo(source, cultureName);
+                return seoInfo ?? SeoInfosExtensions.GetFallbackSeoInfo(source.Id, source.IndexedProduct.Name, cultureName);
             }, description: "Request related SEO info");
 
             Field<ListGraphType<DescriptionType>>("descriptions",
@@ -345,15 +345,6 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
               .Name("videos")
               .PageSize(20)
               .ResolveAsync(async context => await ResolveVideosConnectionAsync(mediator, context));
-        }
-
-        private static SeoInfo GetFallbackSeoInfo(ExpProduct source, string cultureName)
-        {
-            var result = AbstractTypeFactory<SeoInfo>.TryCreateInstance();
-            result.SemanticUrl = source.Id;
-            result.LanguageCode = cultureName;
-            result.Name = source.IndexedProduct.Name;
-            return result;
         }
 
         private static async Task<object> ResolveAssociationConnectionAsync(IMediator mediator, IResolveConnectionContext<ExpProduct> context)
