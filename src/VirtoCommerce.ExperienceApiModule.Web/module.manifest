@@ -31,7 +31,7 @@
   <dependencies>
     <dependency id="VirtoCommerce.Content" version="3.200.0" />
     <dependency id="VirtoCommerce.Core" version="3.203.0" />
-    <dependency id="VirtoCommerce.Cart" version="3.206.0-alpha.582-pt-9697" />
+    <dependency id="VirtoCommerce.Cart" version="3.206.0" />
     <dependency id="VirtoCommerce.Marketing" version="3.200.0" />
     <dependency id="VirtoCommerce.Inventory" version="3.205.0" />
     <dependency id="VirtoCommerce.Payment" version="3.204.0" />
