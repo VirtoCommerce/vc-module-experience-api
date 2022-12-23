@@ -17,6 +17,18 @@ namespace VirtoCommerce.XPurchase
             Product = product;
             Id = product.Id;
         }
+        public CartProduct(XDigitalCatalog.ExpProduct expProduct)
+        {
+            //TODO: rework this 
+            Product = expProduct.IndexedProduct;
+            Id = expProduct.Id;
+            AllPrices = expProduct.AllPrices;
+            AllInventories = expProduct.AllInventories;
+            Inventory = expProduct.Inventory;
+            Price = expProduct.AllPrices?.FirstOrDefault();
+            LoadDependencies = false;
+        }
+        public bool LoadDependencies { get; set; } = true;
 
         public CatalogProduct Product { get; private set; }
 
