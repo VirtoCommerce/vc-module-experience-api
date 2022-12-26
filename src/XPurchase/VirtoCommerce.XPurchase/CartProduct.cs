@@ -17,6 +17,7 @@ namespace VirtoCommerce.XPurchase
             Product = product;
             Id = product.Id;
         }
+        
         public CartProduct(XDigitalCatalog.ExpProduct expProduct)
         {
             //TODO: rework this 
@@ -28,6 +29,7 @@ namespace VirtoCommerce.XPurchase
             Price = expProduct.AllPrices?.FirstOrDefault();
             LoadDependencies = false;
         }
+        
         public bool LoadDependencies { get; set; } = true;
 
         public CatalogProduct Product { get; private set; }
