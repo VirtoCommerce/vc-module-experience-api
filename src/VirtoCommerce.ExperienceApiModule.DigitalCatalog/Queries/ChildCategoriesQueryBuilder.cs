@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,7 +7,6 @@ using Microsoft.AspNetCore.Authorization;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CoreModule.Core.Currency;
-using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.StoreModule.Core.Services;
 using VirtoCommerce.XDigitalCatalog.Extensions;
@@ -48,7 +46,7 @@ public class ChildCategoriesQueryBuilder : CatalogQueryBuilder<ChildCategoriesQu
 
         if (categoryIds.Any())
         {
-            var responseGroup = GetCategoryResponseGroup(context);
+            var responseGroup = GetCategoryResponseGroup(context, request, response);
             var categoriesByIds = new Dictionary<string, Category>();
 
             foreach (var idsBatch in categoryIds.Paginate(_batchSize))
@@ -64,10 +62,10 @@ public class ChildCategoriesQueryBuilder : CatalogQueryBuilder<ChildCategoriesQu
         }
     }
 
-    protected virtual string GetCategoryResponseGroup(IResolveFieldContext<object> context)
+    protected virtual string GetCategoryResponseGroup(IResolveFieldContext<object> context, ChildCategoriesQuery request, ChildCategoriesQueryResponse response)
     {
         var searchCategoryQuery = context.GetCatalogQuery<SearchCategoryQuery>();
-        searchCategoryQuery.IncludeFields = context.SubFields?.Values.GetAllNodesPaths() ?? Array.Empty<string>();
+        searchCategoryQuery.IncludeFields = request.IncludeFields;
 
         return searchCategoryQuery.GetCategoryResponseGroup();
     }

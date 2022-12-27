@@ -1,20 +1,21 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using GraphQL;
 using GraphQL.Types;
 using VirtoCommerce.ExperienceApiModule.Core.BaseQueries;
-using VirtoCommerce.ExperienceApiModule.Core.Extensions;
+using VirtoCommerce.StoreModule.Core.Model;
 
 namespace VirtoCommerce.XDigitalCatalog.Queries
 {
     public class CatalogQueryBase<TResponse> : Query<TResponse>, ICatalogQuery
     {
-        public IEnumerable<string> IncludeFields { get; set; } = Array.Empty<string>();
         public string StoreId { get; set; }
         public string UserId { get; set; }
         public string CultureName { get; set; }
         public string CurrencyCode { get; set; }
+
+        public Store Store { get; set; }
+        public IEnumerable<string> IncludeFields { get; set; } = Array.Empty<string>();
 
         public override IEnumerable<QueryArgument> GetArguments()
         {
@@ -26,7 +27,6 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
 
         public override void Map(IResolveFieldContext context)
         {
-            IncludeFields = context.SubFields?.Values.GetAllNodesPaths().ToArray() ?? Array.Empty<string>();
             StoreId = context.GetArgument<string>(nameof(StoreId));
             UserId = context.GetArgument<string>(nameof(UserId));
             CultureName = context.GetArgument<string>(nameof(CultureName));

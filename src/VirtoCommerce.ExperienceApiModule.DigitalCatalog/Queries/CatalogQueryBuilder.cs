@@ -1,3 +1,5 @@
+using System;
+using System.Linq;
 using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Types;
@@ -18,7 +20,7 @@ public abstract class CatalogQueryBuilder<TQuery, TResult, TResultGraphType>
     private readonly IStoreService _storeService;
     private readonly ICurrencyService _currencyService;
 
-    public CatalogQueryBuilder(
+    protected CatalogQueryBuilder(
         IMediator mediator,
         IAuthorizationService authorizationService,
         IStoreService storeService,
@@ -34,11 +36,17 @@ public abstract class CatalogQueryBuilder<TQuery, TResult, TResultGraphType>
     {
         await base.BeforeMediatorSend(context, request);
 
+        request.IncludeFields = context.SubFields?.Values.GetAllNodesPaths().ToArray() ?? Array.Empty<string>();
+
+        if (!string.IsNullOrEmpty(request.StoreId))
+        {
+            var store = await _storeService.GetByIdAsync(request.StoreId);
+            request.Store = store;
+            context.UserContext["store"] = store;
+        }
+
         // PT-1606: Need to ensure there is no alternative way to access original request arguments in sub selection
         context.CopyArgumentsToUserContext();
-
-        var store = await _storeService.GetByIdAsync(request.StoreId);
-        context.UserContext["store"] = store;
 
         var currencies = await _currencyService.GetAllCurrenciesAsync();
         context.SetCurrencies(currencies, request.CultureName);
