@@ -60,7 +60,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 Type = GraphTypeExtenstionHelper.GetActualType<ProductType>(),
                 Resolver = new AsyncFieldResolver<object, IDataLoaderResult<ExpProduct>>(async context =>
                 {
-                    //PT-1606:  Need to check what there is no any alternative way to access to the original request arguments in sub selection
+                    //PT-1606:  Need to check that there is no any alternative way to access to the original request arguments in sub selection
                     context.CopyArgumentsToUserContext();
 
                     var store = await _storeService.GetByIdAsync(context.GetArgument<string>("storeId"));
@@ -81,7 +81,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             var productsConnectionBuilder = GraphTypeExtenstionHelper.CreateConnection<ProductType, EdgeType<ProductType>, ProductsConnectonType<ProductType>, object>()
                 .Name("products")
                 .Argument<NonNullGraphType<StringGraphType>>("storeId", "The store id where products are searched")
-                .Argument<StringGraphType>("userId", "The customer id for search result impersonalization")
+                .Argument<StringGraphType>("userId", "The customer id for search result impersonation")
                 .Argument<StringGraphType>("currencyCode", "The currency for which all prices data will be returned")
                 .Argument<StringGraphType>("cultureName", "The culture name for cart context product")
                 .Argument<StringGraphType>("query", "The query parameter performs the full-text search")
@@ -95,7 +95,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             productsConnectionBuilder.ResolveAsync(async context =>
             {
-                //PT-1606:  Need to check what there is no any alternative way to access to the original request arguments in sub selection
+                //PT-1606:  Need to check that there is no any alternative way to access to the original request arguments in sub selection
                 context.CopyArgumentsToUserContext();
 
                 var cultureName = context.GetArgument<string>("cultureName");
@@ -128,7 +128,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                    var store = await _storeService.GetByIdAsync(context.GetArgument<string>("storeId"));
                    context.UserContext["store"] = store;
 
-                   //PT-1606:  Need to check what there is no any alternative way to access to the original request arguments in sub selection
+                   //PT-1606:  Need to check that there is no any alternative way to access to the original request arguments in sub selection
                    context.CopyArgumentsToUserContext();
 
                    var loader = _dataLoader.Context.GetOrAddBatchLoader<string, ExpCategory>("categoriesLoader", (ids) => LoadCategoriesAsync(_mediator, ids, context));
@@ -141,11 +141,11 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 .Name("categories")
                 .Argument<StringGraphType>("storeId", "The store id where category are searched")
                 .Argument<StringGraphType>("cultureName", "The language for which all localized category data will be returned")
-                .Argument<StringGraphType>("userId", "The customer id for search result impersonalization")
+                .Argument<StringGraphType>("userId", "The customer id for search result impersonation")
                 .Argument<StringGraphType>("currencyCode", "The currency for which all prices data will be returned")
                 .Argument<StringGraphType>("query", "The query parameter performs the full-text search")
                 .Argument<StringGraphType>("filter", "This parameter applies a filter to the query results")
-                .Argument<BooleanGraphType>("fuzzy", "When the fuzzy query parameter is set to true the search endpoint will also return Categorys that contain slight differences to the search text.")
+                .Argument<BooleanGraphType>("fuzzy", "When the fuzzy query parameter is set to true the search endpoint will also return categories that contain slight differences to the search text.")
                 .Argument<IntGraphType>("fuzzyLevel", "The fuzziness level is quantified in terms of the Damerau-Levenshtein distance, this distance being the number of operations needed to transform one word into another.")
                 .Argument<StringGraphType>("facet", "Facets calculate statistical counts to aid in faceted navigation.")
                 .Argument<StringGraphType>("sort", "The sort expression")
@@ -157,7 +157,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 var store = await _storeService.GetByIdAsync(context.GetArgument<string>("storeId"));
                 context.UserContext["store"] = store;
 
-                //PT-1606:  Need to check what there is no any alternative way to access to the original request arguments in sub selection
+                //PT-1606:  Need to check that there is no any alternative way to access to the original request arguments in sub selection
                 context.CopyArgumentsToUserContext();
                 return await ResolveCategoriesConnectionAsync(_mediator, context);
             });
@@ -166,7 +166,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             var propertiesConnectionBuilder = GraphTypeExtenstionHelper.CreateConnection<PropertyType, object>()
                 .Name("properties")
-                .Argument<NonNullGraphType<StringGraphType>>("storeId", "The store id to get binded catalog")
+                .Argument<NonNullGraphType<StringGraphType>>("storeId", "The store id to get associated catalog")
                 .Argument<ListGraphType<PropertyTypeEnum>>("types", "The owner types (Catalog, Category, Product, Variation)")
                 .Argument<StringGraphType>("filter", "This parameter applies a filter to the query results")
                 .Argument<StringGraphType>("cultureName", "The language for which all localized property dictionary items will be returned")
@@ -177,7 +177,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 var store = await _storeService.GetByIdAsync(context.GetArgument<string>("storeId"));
                 context.UserContext["catalog"] = store.Catalog;
 
-                //PT-1606:  Need to check what there is no any alternative way to access to the original request arguments in sub selection
+                //PT-1606:  Need to check that there is no any alternative way to access to the original request arguments in sub selection
                 context.CopyArgumentsToUserContext();
                 return await ResolvePropertiesConnectionAsync(_mediator, context);
             });
@@ -194,7 +194,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 Type = GraphTypeExtenstionHelper.GetActualType<PropertyType>(),
                 Resolver = new AsyncFieldResolver<PropertyType, IDataLoaderResult<Property>>(context =>
                 {
-                    //PT-1606:  Need to check what there is no any alternative way to access to the original request arguments in sub selection
+                    //PT-1606:  Need to check that there is no any alternative way to access to the original request arguments in sub selection
                     context.CopyArgumentsToUserContext();
                     var loader = _dataLoader.Context.GetOrAddBatchLoader<string, Property>("propertiesLoader", (ids) => LoadPropertiesAsync(_mediator, ids));
                     return Task.FromResult(loader.LoadAsync(context.GetArgument<string>("id")));
