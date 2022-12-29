@@ -135,12 +135,12 @@ products(productIds: string[], storeId: !string, userId: !string, currencyCode: 
 
 ### Categories
 
-This connection allows you to search for products.
+This connection allows you to search for categories.
 
 #### Definition
 
 ```
-categories(categoryIds: string[], storeId: !string, userId: !string, currencyCode: string, cultureName: string, query: string, filter: string, fuzzy: bool, fuzzyLevel: int, facet: string, sort: string)`
+categories(categoryIds: string[], storeId: !string, userId: !string, currencyCode: string, cultureName: string, query: string, filter: string, fuzzy: bool, fuzzyLevel: int, facet: string, sort: string)
 ```
 
 #### Arguments
@@ -154,7 +154,7 @@ categories(categoryIds: string[], storeId: !string, userId: !string, currencyCod
 | 5|cultureName |StringGraphType          |Culture name (e.g. "en-US")|
 | 6|query       |StringGraphType          |The query parameter performs the full-text search|
 | 7|filter      |StringGraphType          |This parameter applies a filter to the query results|
-| 8|fuzzy       |BooleanGraphType         |When the fuzzy query parameter is set to true the search endpoint will also return products that contain slight differences to the search text|
+| 8|fuzzy       |BooleanGraphType         |When the fuzzy query parameter is set to true the search endpoint will also return categories that contain slight differences to the search text|
 | 9|fuzzyLevel  |IntGraphType             |The fuzziness level is quantified in terms of the Damerau-Levenshtein distance, this distance being the number of operations needed to transform one word into another|
 |10|facet       |StringGraphType          |Facets calculate statistical counts to aid in faceted navigation|
 |11|sort        |StringGraphType          |The sort expression|
@@ -183,6 +183,50 @@ categories(categoryIds: string[], storeId: !string, userId: !string, currencyCod
             startCursor
         }
     }
+}
+```
+
+### Child Categories
+
+This query returns child categories for a specified parent category.
+
+#### Definition
+
+```
+childCategories(storeId: !string, userId: string, cultureName: string, currencyCode: string, categoryId: string, maxLevel: int, onlyActive: boolean)
+```
+
+#### Arguments
+
+|#|Name        |Type                    |Description|
+|-|------------|------------------------|-----------|
+|1|storeId     |Non null StringGraphType|Store ID|
+|2|userId      |StringGraphType         |Current user ID|
+|3|currencyCode|StringGraphType         |Currency code (e.g. "USD")|
+|4|cultureName |StringGraphType         |Culture name (e.g. "en-US")|
+|5|categoryId  |StringGraphType         |Parent category ID or null for the root of the catalog|
+|6|maxLevel    |IntGraphType            |The number of child category levels to return. 1 - direct children, 2 - direct children and grandchildren, and so on|
+|7|onlyActive  |BooleanGraphType        |True - return only active child categories, False - return active and inactive child categories|
+
+#### Example
+
+```json
+query {
+  childCategories(
+    storeId: "test"
+    categoryId: null
+    maxLevel: 2
+    onlyActive: true
+  ) {
+    childCategories {
+      id
+      name
+      childCategories {
+        id
+        name
+      }
+    }
+  }
 }
 ```
 
