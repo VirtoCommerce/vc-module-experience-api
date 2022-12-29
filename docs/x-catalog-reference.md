@@ -205,7 +205,7 @@ childCategories(storeId: !string, userId: string, cultureName: string, currencyC
 |3|currencyCode|StringGraphType         |Currency code (e.g. "USD")|
 |4|cultureName |StringGraphType         |Culture name (e.g. "en-US")|
 |5|categoryId  |StringGraphType         |Parent category ID or null for the root of the catalog|
-|6|maxLevel    |IntGraphType            |The number of child category levels to return. levels 1 - direct children, 2 - direct children and grandchildren, ...|
+|6|maxLevel    |IntGraphType            |The number of child category levels to return. 1 - direct children, 2 - direct children and grandchildren, and so on|
 |7|onlyActive  |BooleanGraphType        |True - return only active child categories, False - return active and inactive child categories|
 
 #### Example
