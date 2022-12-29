@@ -28,7 +28,7 @@ namespace VirtoCommerce.XPurchase.Services
         /// Default response group
         /// </summary>
         protected virtual ItemResponseGroup ResponseGroups => ItemResponseGroup.ItemAssets | ItemResponseGroup.ItemInfo | ItemResponseGroup.Outlines | ItemResponseGroup.Seo;
-        protected virtual string[] IncludeFields => new string[] { "id", "code", "seoInfo", "assets", "imgSrc", "outline" };
+        protected virtual string[] IncludeFields => new string[] { "__object", "price", "availabilityData" };
 
         /// <summary>
         /// Default page size for pagination
@@ -61,11 +61,13 @@ namespace VirtoCommerce.XPurchase.Services
             if (aggregate is null || ids.IsNullOrEmpty())
                 return new List<CartProduct>();
 
-            var products = await GetProductsByIdsAsync(ids, aggregate.Store.Id);
-            var cartProducts = await GetCartProductsAsync(products);
+            var cartProducts = await GetCartProductsAsync(ids, aggregate.Store.Id);
 
-            await Task.WhenAll(LoadDependencies(aggregate, cartProducts));
-
+            var productsToLoadDependencies = cartProducts.Where(x => x.LoadDependencies).ToList();
+            if (productsToLoadDependencies.Any())
+            {
+                await Task.WhenAll(LoadDependencies(aggregate, productsToLoadDependencies));
+            }
             return cartProducts;
         }
 
@@ -79,13 +81,14 @@ namespace VirtoCommerce.XPurchase.Services
             return await _productService.GetByIdsAsync(ids.ToArray(), ResponseGroups.ToString());
         }
 
+    
+
         /// <summary>
-        /// Load <see cref="CatalogProduct"/>s
+        /// Map all <see cref="CatalogProduct"/> to <see cref="CartProduct"/>
         /// </summary>
-        /// <param name="ids">Product ids</param>
-        /// <param name="storeId">Store where to take catalog and currency from</param>
-        /// <returns>List of <see cref="CatalogProduct"/>s</returns>
-        protected virtual async Task<IList<CatalogProduct>> GetProductsByIdsAsync(IEnumerable<string> ids, string storeId)
+        /// <param name="catalogProducts">Products from the catalog</param>
+        /// <returns>List of <see cref="CartProduct"/>s</returns>
+        protected async virtual Task<List<CartProduct>> GetCartProductsAsync(IEnumerable<string> ids, string storeId)
         {
             var productsQuery = new LoadProductsQuery
             {
@@ -95,19 +98,8 @@ namespace VirtoCommerce.XPurchase.Services
             };
 
             var response = await _mediator.Send(productsQuery);
-            var products = response.Products.Select(x => x.IndexedProduct).ToList();
-
-            return products;
-        }
-
-        /// <summary>
-        /// Map all <see cref="CatalogProduct"/> to <see cref="CartProduct"/>
-        /// </summary>
-        /// <param name="catalogProducts">Products from the catalog</param>
-        /// <returns>List of <see cref="CartProduct"/>s</returns>
-        protected virtual Task<List<CartProduct>> GetCartProductsAsync(IEnumerable<CatalogProduct> catalogProducts)
-        {
-            return Task.FromResult(catalogProducts.Select(x => new CartProduct(x)).ToList());
+            var result = response.Products.Select(x => new CartProduct(x)).ToList();
+            return result;
         }
 
         /// <summary>
