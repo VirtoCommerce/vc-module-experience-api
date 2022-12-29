@@ -6,10 +6,7 @@ using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.InventoryModule.Core.Services;
 using VirtoCommerce.PricingModule.Core.Services;
-using AutoMapper;
-using VirtoCommerce.CatalogModule.Core.Model;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using VirtoCommerce.XPurchase.Services;
 
 namespace VirtoCommerce.XPurchase.Tests.Services
 {
