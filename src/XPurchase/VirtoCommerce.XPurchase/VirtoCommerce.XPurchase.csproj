@@ -18,11 +18,11 @@
         <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.0.1" />
         <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="8.0.0" />
         <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-        <PackageReference Include="VirtoCommerce.CartModule.Data" Version="3.206.0" />
+        <PackageReference Include="VirtoCommerce.CartModule.Data" Version="3.208.0-alpha.588-pt-10134" />
         <PackageReference Include="VirtoCommerce.CoreModule.Core" Version="3.203.0" />
         <PackageReference Include="VirtoCommerce.InventoryModule.Core" Version="3.205.0" />
-        <PackageReference Include="VirtoCommerce.OrdersModule.Core" Version="3.210.0" />
-        <PackageReference Include="VirtoCommerce.OrdersModule.Data" Version="3.210.0" />
+        <PackageReference Include="VirtoCommerce.OrdersModule.Core" Version="3.218.0-alpha.1063-pt-10134" />
+        <PackageReference Include="VirtoCommerce.OrdersModule.Data" Version="3.218.0-alpha.1063-pt-10134" />
         <PackageReference Include="VirtoCommerce.StoreModule.Core" Version="3.201.0" />
         <PackageReference Include="VirtoCommerce.CustomerModule.Core" Version="3.210.0" />
         <PackageReference Include="VirtoCommerce.MarketingModule.Data" Version="3.200.0" />
