@@ -1,6 +1,11 @@
+using AutoMapper;
 using GraphQL;
+using GraphQL.DataLoader;
+using GraphQL.Resolvers;
 using GraphQL.Types;
 using VirtoCommerce.CoreModule.Core.Currency;
+using VirtoCommerce.CustomerModule.Core.Services;
+using VirtoCommerce.ExperienceApiModule.Core;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
@@ -12,8 +17,14 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 {
     public class OrderShipmentType : ExtendableGraphType<Shipment>
     {
-        public OrderShipmentType(IDynamicPropertyResolverService dynamicPropertyResolverService)
+        private readonly IMemberService _memberService;
+        private readonly IMapper _mapper;
+
+        public OrderShipmentType(IMapper mapper, IMemberService memberService, IDataLoaderContextAccessor dataLoader, IDynamicPropertyResolverService dynamicPropertyResolverService)
         {
+            _mapper = mapper;
+            _memberService = memberService;
+
             Field(x => x.Id);
             Field(x => x.OperationType);
             Field(x => x.ParentOperationId, true);
@@ -66,6 +77,18 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field<NonNullGraphType<ListGraphType<OrderShipmentPackageType>>>(nameof(Shipment.Packages), resolve: x => x.Source.Packages);
             ExtendableField<NonNullGraphType<ListGraphType<PaymentInType>>>(nameof(Shipment.InPayments), resolve: x => x.Source.InPayments);
             Field<NonNullGraphType<ListGraphType<OrderDiscountType>>>(nameof(Shipment.Discounts), resolve: x => x.Source.Discounts);
+
+            var vendorField = new FieldType
+            {
+                Name = "vendor",
+                Type = GraphTypeExtenstionHelper.GetActualType<VendorType>(),
+                Resolver = new FuncFieldResolver<Shipment, IDataLoaderResult<ExpVendor>>(context =>
+                {
+                    var loader = dataLoader.GetVendorDataLoader(_memberService, _mapper, "order_vendor");
+                    return context.Source.VendorId != null ? loader.LoadAsync(context.Source.VendorId) : null;
+                })
+            };
+            AddField(vendorField);
 
             ExtendableField<ListGraphType<DynamicPropertyValueType>>(
                 "dynamicProperties",

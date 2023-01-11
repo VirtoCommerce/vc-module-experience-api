@@ -21,6 +21,7 @@ namespace VirtoCommerce.XPurchase
         public Optional<decimal?> Width { get; set; }
         public Optional<string> Currency { get; set; }
         public Optional<decimal> Price { get; set; }
+        public Optional<string> VendorId { get; set; }
         public Optional<ExpCartAddress> DeliveryAddress { get; set; }
 
         public IList<DynamicPropertyValue> DynamicProperties { get; set; }
@@ -95,6 +96,11 @@ namespace VirtoCommerce.XPurchase
             if (Price?.IsSpecified == true)
             {
                 shipment.Price = Price.Value;
+            }
+
+            if (VendorId?.IsSpecified == true)
+            {
+                shipment.VendorId = VendorId.Value;
             }
 
             if (DeliveryAddress?.IsSpecified == true)

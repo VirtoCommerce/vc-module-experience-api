@@ -14,6 +14,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field(x => x.Currency, nullable: true);
             Field(x => x.Price, nullable: true);
             Field(x => x.Amount, nullable: true);
+            Field(x => x.VendorId, nullable: true);
 
             Field<ListGraphType<InputDynamicPropertyValueType>>("dynamicProperties",
                 "Dynamic properties");

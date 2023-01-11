@@ -1,5 +1,10 @@
+using AutoMapper;
+using GraphQL.DataLoader;
+using GraphQL.Resolvers;
 using GraphQL.Types;
 using VirtoCommerce.CartModule.Core.Model;
+using VirtoCommerce.CustomerModule.Core.Services;
+using VirtoCommerce.ExperienceApiModule.Core;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
@@ -10,8 +15,14 @@ namespace VirtoCommerce.XPurchase.Schemas
 {
     public class ShipmentType : ExtendableGraphType<Shipment>
     {
-        public ShipmentType(IDynamicPropertyResolverService dynamicPropertyResolverService)
+        private readonly IMemberService _memberService;
+        private readonly IMapper _mapper;
+
+        public ShipmentType(IMapper mapper, IMemberService memberService, IDataLoaderContextAccessor dataLoader, IDynamicPropertyResolverService dynamicPropertyResolverService)
         {
+            _memberService = memberService;
+            _mapper = mapper;
+
             Field(x => x.Id, nullable: true).Description("Shipment Id");
             Field(x => x.ShipmentMethodCode, nullable: true).Description("Shipment method code");
             Field(x => x.ShipmentMethodOption, nullable: true).Description("Shipment method option");
@@ -61,6 +72,18 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field<CurrencyType>("currency",
                 "Currency",
                 resolve: context => context.GetCart().Currency);
+
+            var vendorField = new FieldType
+            {
+                Name = "vendor",
+                Type = GraphTypeExtenstionHelper.GetActualType<VendorType>(),
+                Resolver = new FuncFieldResolver<Shipment, IDataLoaderResult<ExpVendor>>(context =>
+                {
+                    var loader = dataLoader.GetVendorDataLoader(_memberService, _mapper, "cart_vendor");
+                    return context.Source.VendorId != null ? loader.LoadAsync(context.Source.VendorId) : null;
+                })
+            };
+            AddField(vendorField);
 
             ExtendableField<ListGraphType<DynamicPropertyValueType>>(
                 "dynamicProperties",
