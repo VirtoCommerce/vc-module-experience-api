@@ -24,7 +24,7 @@
   <iconUrl>Modules/$(VirtoCommerce.ExperienceApi)/Content/logoVC.png</iconUrl>
   <requireLicenseAcceptance>false</requireLicenseAcceptance>
   <releaseNotes />
-  <copyright>Copyright © 2011-2022 Virto Commerce. All rights reserved</copyright>
+  <copyright>Copyright © 2011-2023 Virto Commerce. All rights reserved</copyright>
   <tags>security core</tags>
   <assemblyFile>VirtoCommerce.ExperienceApiModule.Web.dll</assemblyFile>
   <moduleType>VirtoCommerce.ExperienceApiModule.Web.Module, VirtoCommerce.ExperienceApiModule.Web</moduleType>
@@ -39,7 +39,7 @@
     <dependency id="VirtoCommerce.Search" version="3.204.0" />
     <dependency id="VirtoCommerce.Shipping" version="3.200.0" />
     <dependency id="VirtoCommerce.Customer" version="3.210.0" />
-    <dependency id="VirtoCommerce.Orders" version="3.218.0" />
+    <dependency id="VirtoCommerce.Orders" version="3.219.0" />
     <dependency id="VirtoCommerce.Store" version="3.201.0" />
     <dependency id="VirtoCommerce.Catalog" version="3.213.0" />
     <dependency id="VirtoCommerce.Tax" version="3.200.0" />
