@@ -28,7 +28,17 @@ namespace VirtoCommerce.XPurchase.Services
         /// Default response group
         /// </summary>
         protected virtual ItemResponseGroup ResponseGroups => ItemResponseGroup.ItemAssets | ItemResponseGroup.ItemInfo | ItemResponseGroup.Outlines | ItemResponseGroup.Seo;
-        protected virtual string[] IncludeFields => new string[] { "__object", "price", "availabilityData" };
+        protected virtual string[] IncludeFields => new string[]
+        {
+            "__object",
+            "price",
+            "availabilityData",
+            "images",
+            "properties",
+            "description",
+            "slug",
+            "outlines"
+        };
 
         /// <summary>
         /// Default page size for pagination
@@ -81,7 +91,7 @@ namespace VirtoCommerce.XPurchase.Services
             return await _productService.GetByIdsAsync(ids.ToArray(), ResponseGroups.ToString());
         }
 
-    
+
 
         /// <summary>
         /// Map all <see cref="CatalogProduct"/> to <see cref="CartProduct"/>
