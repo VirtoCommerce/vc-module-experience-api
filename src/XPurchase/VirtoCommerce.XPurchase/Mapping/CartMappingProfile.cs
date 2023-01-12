@@ -199,7 +199,7 @@ namespace VirtoCommerce.XPurchase.Mapping
                     if (cartProduct != null)
                     {
                         promoEntry.InStockQuantity = (int)(cartProduct.Inventory?.InStockQuantity ?? 0);
-                        promoEntry.Outline = cartProduct.Product.Outlines.Select(x => context.Mapper.Map<Tools.Models.Outline>(x)).GetOutlinePath(cartProduct.Product.CatalogId);
+                        promoEntry.Outline = cartProduct.Product.Outlines?.Select(x => context.Mapper.Map<Tools.Models.Outline>(x)).GetOutlinePath(cartProduct.Product.CatalogId);
                     }
                     promoEvalcontext.CartPromoEntries.Add(promoEntry);
                 }
