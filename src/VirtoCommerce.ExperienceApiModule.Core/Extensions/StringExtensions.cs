@@ -44,7 +44,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
                 t = Nullable.GetUnderlyingType(t);
             }
 
-            return Convert.ChangeType(value, t);
+            return t.IsEnum ? Enum.Parse(t, value, true) : Convert.ChangeType(value, t);
         }
     }
 }
