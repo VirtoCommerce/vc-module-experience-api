@@ -38,9 +38,18 @@ namespace VirtoCommerce.XDigitalCatalog.Extensions
         public static IList<IFilter> GetChildFilters(this SearchRequest searchRequest) =>
             (searchRequest?.Filter as AndFilter)?.ChildFilters ?? Array.Empty<IFilter>();
 
-        public static string GetFieldName(this IFilter filter) =>
+        public static string GetFieldName(this IFilter filter)
+        {
             // TermFilter names are equal, RangeFilter can contain underscore in the name
-            (filter as INamedFilter)?.FieldName?.Split('_')[0];
+            var fieldName = (filter as INamedFilter)?.FieldName;
+            if (string.IsNullOrEmpty(fieldName))
+                return fieldName;
+
+            if (fieldName.StartsWith("__"))
+                return fieldName;
+
+            return fieldName.Split('_')[0];
+        }
 
         public static void FillIsAppliedForItems(this IFilter filter, IEnumerable<AggregationItem> aggregationItems)
         {
