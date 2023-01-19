@@ -4,7 +4,6 @@ using GraphQL.DataLoader;
 using GraphQL.Types;
 using MediatR;
 using VirtoCommerce.Exp.ExtensionSamples.UseCases.TypeExtension.Queries;
-using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.XDigitalCatalog.Schemas;
 
@@ -15,7 +14,7 @@ namespace VirtoCommerce.Exp.ExtensionSamples
         public ProductType2(
             IMediator mediator,
             IDataLoaderContextAccessor dataLoader)
-            : base(mediator, dataLoader)
+            : base(mediator, dataLoader, null)
         {
             FieldAsync<ProductRatingType>("rating", resolve: async context =>
             {

@@ -17,7 +17,7 @@ namespace VirtoCommerce.XDigitalCatalog.Tests.Shemas
 
         public ProductTypeTests()
         {
-            _productType = new ProductType(_mediatorMock.Object, _dataLoaderContextAccessorMock.Object);
+            _productType = new ProductType(_mediatorMock.Object, _dataLoaderContextAccessorMock.Object, null);
         }
 
         #region Properties

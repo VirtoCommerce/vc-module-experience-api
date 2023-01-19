@@ -25,6 +25,10 @@ namespace VirtoCommerce.ExperienceApiModule.Web
 
         public void Initialize(IServiceCollection services)
         {
+            // fields container
+            var fieldsContainer = new ExtentionFieldsContainer();
+            services.AddSingleton(fieldsContainer);
+
             services.AddApplicationInsightsTelemetryProcessor<IgnorePlainGraphQLTelemetryProcessor>();
             // register custom executror with app insight wrapper
             services.AddTransient(typeof(IGraphQLExecuter<>), typeof(CustomGraphQLExecuter<>));
@@ -52,7 +56,8 @@ namespace VirtoCommerce.ExperienceApiModule.Web
             //Register all xApi boundaries
             services.AddXCatalog(graphQlBuilder);
             services.AddXCore(graphQlBuilder);
-            services.AddXPurchase(graphQlBuilder);
+            //services.AddXPurchase(graphQlBuilder);
+            services.AddXPurchase(graphQlBuilder, fieldsContainer);
             services.AddXOrder(graphQlBuilder);
             services.AddXCMS(graphQlBuilder);
 

@@ -59,10 +59,19 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
         ///    }
         ///}
         /// </example>
-        public ProductType(IMediator mediator, IDataLoaderContextAccessor dataLoader)
+        public ProductType(IMediator mediator, IDataLoaderContextAccessor dataLoader, ExtentionFieldsContainer fieldsContainer)
         {
             Name = "Product";
             Description = "Products are the sellable goods in an e-commerce project.";
+
+            // register type extension fields
+            if (fieldsContainer.Fields.TryGetValue(nameof(ProductType), out var fields))
+            {
+                foreach (var field in fields)
+                {
+                    AddField(field);
+                }
+            }
 
             Field(d => d.IndexedProduct.Id).Description("The unique ID of the product.");
             Field(d => d.IndexedProduct.Code, nullable: false).Description("The product SKU.");
