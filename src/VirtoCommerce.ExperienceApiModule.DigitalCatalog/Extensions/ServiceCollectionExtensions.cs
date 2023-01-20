@@ -6,22 +6,20 @@ using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
 using VirtoCommerce.XDigitalCatalog.Middlewares;
 using VirtoCommerce.XDigitalCatalog.Queries;
-using VirtoCommerce.XDigitalCatalog.Schemas;
-using VirtoCommerce.XDigitalCatalog.Schemas.Inventory;
 
 namespace VirtoCommerce.XDigitalCatalog.Extensions
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddXCatalog(this IServiceCollection services, IGraphQLBuilder graphQlbuilder)
+        public static IServiceCollection AddXCatalog(this IServiceCollection services, IGraphQLBuilder graphQlBuilder)
         {
-            services.AddSchemaBuilder<DigitalCatalogSchema>();
-            services.AddSchemaBuilder<InventorySchema>();
+            var assemblyMarker = typeof(XDigitalCatalogAnchor);
+            graphQlBuilder.AddGraphTypes(assemblyMarker);
+            services.AddMediatR(assemblyMarker);
+            services.AddAutoMapper(assemblyMarker);
+            services.AddSchemaBuilders(assemblyMarker);
 
-            graphQlbuilder.AddGraphTypes(typeof(XDigitalCatalogAnchor));
-
-            services.AddMediatR(typeof(XDigitalCatalogAnchor));
-            //the generic pipeline that is used  for on-the-fly additional data evaluation (prices, inventories, discounts and taxes) for resulting products
+            // The generic pipeline that is used for on-the-fly additional data evaluation (prices, inventories, discounts and taxes) for resulting products
             services.AddPipeline<SearchProductResponse>(builder =>
             {
                 builder.AddMiddleware(typeof(EnsureCatalogProductLoadedMiddleware));
@@ -31,14 +29,13 @@ namespace VirtoCommerce.XDigitalCatalog.Extensions
                 builder.AddMiddleware(typeof(EvalProductsTaxMiddleware));
                 builder.AddMiddleware(typeof(EvalProductsInventoryMiddleware));
                 builder.AddMiddleware(typeof(EvalProductsVendorMiddleware));
+                builder.AddMiddleware(typeof(EvalProductsWishlistsMiddleware));
             });
 
             services.AddPipeline<SearchCategoryResponse>(builder =>
             {
                 builder.AddMiddleware(typeof(EnsureCategoryLoadedMiddleware));
             });
-
-            services.AddAutoMapper(typeof(XDigitalCatalogAnchor));
 
             return services;
         }

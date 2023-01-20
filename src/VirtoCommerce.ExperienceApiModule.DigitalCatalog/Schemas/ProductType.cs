@@ -325,12 +325,14 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
                 return context.Source.IndexedProduct.Outlines.GetBreadcrumbsFromOutLine(store, cultureName);
             });
-            
+
             Field(
                 GraphTypeExtenstionHelper.GetActualType<ProductVendorType>(),
                 "vendor",
                 "Product vendor",
                 resolve: context => context.Source.Vendor);
+
+            Field(x => x.InWishlist).Description("Product added at least in one wishlist");
 
             Connection<ProductAssociationType>()
               .Name("associations")

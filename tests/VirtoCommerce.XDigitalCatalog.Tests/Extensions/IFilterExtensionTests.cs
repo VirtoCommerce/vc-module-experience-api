@@ -79,6 +79,7 @@ namespace VirtoCommerce.XDigitalCatalog.Tests.Extensions
         [InlineData("any Name", "any Name")]
         [InlineData("anyName_2384765", "anyName")]
         [InlineData("anyName_2384765_236745236", "anyName")]
+        [InlineData("__outline", "__outline")]
         public void GetFieldName_NamedFilter_ParsedCorrectly(string fieldName, string expectedName)
         {
             // Arrage

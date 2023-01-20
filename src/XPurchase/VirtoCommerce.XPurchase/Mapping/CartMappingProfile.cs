@@ -84,7 +84,7 @@ namespace VirtoCommerce.XPurchase.Mapping
                         Name = lineItem.Name,
                         TaxType = lineItem.TaxType,
                         //Special case when product have 100% discount and need to calculate tax for old value
-                        Amount =  lineItem.Price.List > 0 ? lineItem.Price.List : lineItem.Price.Sale ?? 0M
+                        Amount =  lineItem.ListPrice > 0 ? lineItem.ListPrice : lineItem.SalePrice
                     }
                 };
             });
@@ -199,7 +199,7 @@ namespace VirtoCommerce.XPurchase.Mapping
                     if (cartProduct != null)
                     {
                         promoEntry.InStockQuantity = (int)(cartProduct.Inventory?.InStockQuantity ?? 0);
-                        promoEntry.Outline = cartProduct.Product.Outlines.Select(x => context.Mapper.Map<Tools.Models.Outline>(x)).GetOutlinePath(cartProduct.Product.CatalogId);
+                        promoEntry.Outline = cartProduct.Product.Outlines?.Select(x => context.Mapper.Map<Tools.Models.Outline>(x)).GetOutlinePath(cartProduct.Product.CatalogId);
                     }
                     promoEvalcontext.CartPromoEntries.Add(promoEntry);
                 }

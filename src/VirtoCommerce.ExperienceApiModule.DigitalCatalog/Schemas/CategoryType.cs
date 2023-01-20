@@ -31,8 +31,11 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             FieldAsync<StringGraphType>("outline", resolve: async context =>
              {
-                 var outlines = context.Source.Category.Outlines;
-                 if (outlines.IsNullOrEmpty()) return null;
+                 var outlines = context.Source.Category?.Outlines;
+                 if (outlines.IsNullOrEmpty())
+                 {
+                     return null;
+                 }
 
                  var loadRelatedCatalogOutlineQuery = context.GetCatalogQuery<LoadRelatedCatalogOutlineQuery>();
                  loadRelatedCatalogOutlineQuery.Outlines = outlines;
@@ -43,8 +46,11 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             FieldAsync<StringGraphType>("slug", resolve: async context =>
             {
-                var outlines = context.Source.Category.Outlines;
-                if (outlines.IsNullOrEmpty()) return null;
+                var outlines = context.Source.Category?.Outlines;
+                if (outlines.IsNullOrEmpty())
+                {
+                    return null;
+                }
 
                 var loadRelatedSlugPathQuery = context.GetCatalogQuery<LoadRelatedSlugPathQuery>();
                 loadRelatedSlugPathQuery.Outlines = outlines;
@@ -151,13 +157,19 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 return result;
             });
 
+            Field<ListGraphType<CategoryType>>(
+                nameof(ExpCategory.ChildCategories),
+                resolve: context => context.Source.ChildCategories);
         }
 
         private static bool TryGetCategoryParentId(IResolveFieldContext<ExpCategory> context, out string parentId)
         {
             parentId = null;
-            var outlines = context.Source.Category.Outlines;
-            if (outlines.IsNullOrEmpty()) return false;
+            var outlines = context.Source.Category?.Outlines;
+            if (outlines.IsNullOrEmpty())
+            {
+                return false;
+            }
 
             var store = context.GetArgumentOrValue<Store>("store");
 

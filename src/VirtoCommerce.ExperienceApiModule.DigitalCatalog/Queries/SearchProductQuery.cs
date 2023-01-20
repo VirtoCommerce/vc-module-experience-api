@@ -39,6 +39,10 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             {
                 result |= ExpProductResponseGroup.LoadFacets;
             }
+            if (IncludeFields.Any(x => x.Contains("inWishlist")))
+            {
+                result |= ExpProductResponseGroup.LoadWishlists;
+            }
             return result.ToString();
         }
 

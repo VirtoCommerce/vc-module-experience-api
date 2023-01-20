@@ -9,10 +9,10 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
         {
             Field(x => x.Id);
             Field(x => x.Code);
-            Field(x => x.LogoUrl);
+            Field(x => x.LogoUrl, nullable: true);
             Field(x => x.IsActive);
             Field(x => x.Priority);
-            Field(x => x.TaxType, true);
+            Field(x => x.TaxType, nullable: true);
             Field(x => x.StoreId);
             Field(x => x.TypeName);
         }

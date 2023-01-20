@@ -1,6 +1,11 @@
+using AutoMapper;
 using GraphQL;
+using GraphQL.DataLoader;
+using GraphQL.Resolvers;
 using GraphQL.Types;
 using VirtoCommerce.CoreModule.Core.Currency;
+using VirtoCommerce.CustomerModule.Core.Services;
+using VirtoCommerce.ExperienceApiModule.Core;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
@@ -12,8 +17,14 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 {
     public class PaymentInType : ExtendableGraphType<PaymentIn>
     {
-        public PaymentInType(IDynamicPropertyResolverService dynamicPropertyResolverService, ICustomerOrderAggregateRepository customerOrderAggregateRepository)
+        private readonly IMemberService _memberService;
+        private readonly IMapper _mapper;
+
+        public PaymentInType(IMapper mapper, IMemberService memberService, IDataLoaderContextAccessor dataLoader, IDynamicPropertyResolverService dynamicPropertyResolverService, ICustomerOrderAggregateRepository customerOrderAggregateRepository)
         {
+            _mapper = mapper;
+            _memberService = memberService;
+
             Field(x => x.Id);
             Field(x => x.OrganizationId, true);
             Field(x => x.OrganizationName, true);
@@ -48,6 +59,18 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             ExtendableField<OrderPaymentMethodType>(nameof(PaymentIn.PaymentMethod), resolve: context => context.Source.PaymentMethod);
             Field<CurrencyType>(nameof(PaymentIn.Currency), resolve: context => context.GetOrderCurrencyByCode(context.Source.Currency));
             ExtendableField<OrderAddressType>(nameof(PaymentIn.BillingAddress), resolve: context => context.Source.BillingAddress);
+
+            var vendorField = new FieldType
+            {
+                Name = "vendor",
+                Type = GraphTypeExtenstionHelper.GetActualType<VendorType>(),
+                Resolver = new FuncFieldResolver<PaymentIn, IDataLoaderResult<ExpVendor>>(context =>
+                {
+                    var loader = dataLoader.GetVendorDataLoader(_memberService, _mapper, "order_vendor");
+                    return context.Source.VendorId != null ? loader.LoadAsync(context.Source.VendorId) : null;
+                })
+            };
+            AddField(vendorField);
 
             Field<ListGraphType<PaymentTransactionType>>(nameof(PaymentIn.Transactions), resolve: x => x.Source.Transactions);
             //PT-5383: Add additional properties to XOrder types:
