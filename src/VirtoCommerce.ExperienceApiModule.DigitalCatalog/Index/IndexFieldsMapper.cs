@@ -51,6 +51,7 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
                         new RegexpNameMapper(@"^(?!__)", "__object."),
 
                         new RegexpNameMapper(@"properties.value$", "properties.values"),
+                        new RegexpNameMapper(@"properties.label", "properties.displayNames"),
                         new RegexpNameMapper(@"imgSrc", "images"),
 
                         new RegexpNameMapper(@"__object.availabilityData.isActive", "__object.isActive"),
