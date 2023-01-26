@@ -327,7 +327,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             });
 
             Field(
-                GraphTypeExtenstionHelper.GetActualType<ProductVendorType>(),
+                GraphTypeExtenstionHelper.GetActualType<VendorType>(),
                 "vendor",
                 "Product vendor",
                 resolve: context => context.Source.Vendor);
