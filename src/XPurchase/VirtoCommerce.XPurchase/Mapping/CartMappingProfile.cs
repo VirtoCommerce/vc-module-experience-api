@@ -65,6 +65,9 @@ namespace VirtoCommerce.XPurchase.Mapping
                 lineItem.Weight = cartProduct.Product.Weight;
                 lineItem.WeightUnit = cartProduct.Product.WeightUnit;
                 lineItem.Width = cartProduct.Product.Width;
+                lineItem.FulfillmentCenterId = cartProduct.Inventory?.FulfillmentCenterId;
+                lineItem.FulfillmentCenterName = cartProduct.Inventory?.FulfillmentCenterName;
+                lineItem.VendorId = cartProduct.Product.Vendor;
 
                 return lineItem;
             });
