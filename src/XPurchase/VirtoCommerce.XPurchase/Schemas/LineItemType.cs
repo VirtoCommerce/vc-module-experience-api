@@ -1,9 +1,12 @@
 using System.Linq;
+using AutoMapper;
 using GraphQL.DataLoader;
 using GraphQL.Resolvers;
 using GraphQL.Types;
 using MediatR;
 using VirtoCommerce.CartModule.Core.Model;
+using VirtoCommerce.CustomerModule.Core.Services;
+using VirtoCommerce.ExperienceApiModule.Core;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
@@ -17,7 +20,7 @@ namespace VirtoCommerce.XPurchase.Schemas
 {
     public class LineItemType : ExtendableGraphType<LineItem>
     {
-        public LineItemType(IMediator mediator, IDataLoaderContextAccessor dataLoader, IDynamicPropertyResolverService dynamicPropertyResolverService)
+        public LineItemType(IMediator mediator, IDataLoaderContextAccessor dataLoader, IDynamicPropertyResolverService dynamicPropertyResolverService, IMapper mapper, IMemberService memberService)
         {
             var productField = new FieldType
             {
@@ -147,6 +150,18 @@ namespace VirtoCommerce.XPurchase.Schemas
                 "Cart line item dynamic property values",
                 QueryArgumentPresets.GetArgumentForDynamicProperties(),
                 context => dynamicPropertyResolverService.LoadDynamicPropertyValues(context.Source, context.GetArgumentOrValue<string>("cultureName")));
+
+            var vendorField = new FieldType
+            {
+                Name = "vendor",
+                Type = GraphTypeExtenstionHelper.GetActualType<VendorType>(),
+                Resolver = new FuncFieldResolver<LineItem, IDataLoaderResult<ExpVendor>>(context =>
+                {
+                    var loader = dataLoader.GetVendorDataLoader(memberService, mapper, "cart_vendor");
+                    return context.Source.VendorId != null ? loader.LoadAsync(context.Source.VendorId) : null;
+                })
+            };
+            AddField(vendorField);
         }
     }
 }
