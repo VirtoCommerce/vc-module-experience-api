@@ -74,7 +74,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                     seoInfo = source.Category.SeoInfos.GetBestMatchingSeoInfo(storeId, cultureName);
                 }
 
-                return seoInfo ?? GetFallbackSeoInfo(source, cultureName);
+                return seoInfo ?? SeoInfosExtensions.GetFallbackSeoInfo(source.Id, source.Category.Name, cultureName);
             }, description: "Request related SEO info");
 
             Field<ListGraphType<CategoryDescriptionType>>("descriptions",
@@ -160,15 +160,6 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             Field<ListGraphType<CategoryType>>(
                 nameof(ExpCategory.ChildCategories),
                 resolve: context => context.Source.ChildCategories);
-        }
-
-        private static SeoInfo GetFallbackSeoInfo(ExpCategory source, string cultureName)
-        {
-            var result = AbstractTypeFactory<SeoInfo>.TryCreateInstance();
-            result.SemanticUrl = source.Id;
-            result.LanguageCode = cultureName;
-            result.Name = source.Category.Name;
-            return result;
         }
 
         private static bool TryGetCategoryParentId(IResolveFieldContext<ExpCategory> context, out string parentId)
