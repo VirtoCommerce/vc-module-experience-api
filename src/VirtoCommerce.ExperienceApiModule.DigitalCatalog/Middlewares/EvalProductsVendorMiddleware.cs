@@ -46,14 +46,14 @@ public class EvalProductsVendorMiddleware : IAsyncMiddleware<SearchProductRespon
 
         if (parameter.Query == null)
         {
-            throw new OperationCanceledException("Query must be set");
+            throw new ArgumentException("Query is null", nameof(parameter));
         }
 
         if (ShouldLoadVendors(parameter))
         {
             var vendorIds = ExtractVendorIds(parameter.Results);
-            var vendors = await LoadVendors(vendorIds);
-            UpdateVendorsInResults(parameter.Results, vendors);
+            var vendorsByIds = await LoadVendors(vendorIds);
+            UpdateVendorsInProducts(parameter.Results, vendorsByIds);
         }
 
 
@@ -63,23 +63,23 @@ public class EvalProductsVendorMiddleware : IAsyncMiddleware<SearchProductRespon
     /// <summary>
     /// Checks if vendors should be loaded
     /// </summary>
-    /// <param name="parameter"></param>
+    /// <param name="searchProductResponse"></param>
     /// <returns></returns>
-    protected virtual bool ShouldLoadVendors(SearchProductResponse parameter)
+    protected virtual bool ShouldLoadVendors(SearchProductResponse searchProductResponse)
     {
-        var responseGroup = EnumUtility.SafeParse(parameter.Query.GetResponseGroup(), ExpProductResponseGroup.None);
-        return responseGroup.HasFlag(ExpProductResponseGroup.LoadVendors) && parameter.Results.Any();
+        var responseGroup = EnumUtility.SafeParse(searchProductResponse.Query.GetResponseGroup(), ExpProductResponseGroup.None);
+        return responseGroup.HasFlag(ExpProductResponseGroup.LoadVendors) && searchProductResponse.Results.Any();
     }
 
     /// <summary>
     /// Extracts vendor ids from products
     /// </summary>
-    /// <param name="results"></param>
+    /// <param name="products"></param>
     /// <returns></returns>
-    protected virtual string[] ExtractVendorIds(IEnumerable<ExpProduct> results)
+    protected virtual string[] ExtractVendorIds(IList<ExpProduct> products)
     {
-        return results
-            .Where(x => x.IndexedProduct.Vendor != null)
+        return products
+            .Where(x => x.IndexedProduct?.Vendor != null)
             .Select(x => x.IndexedProduct.Vendor)
             .Distinct()
             .ToArray();
@@ -88,49 +88,45 @@ public class EvalProductsVendorMiddleware : IAsyncMiddleware<SearchProductRespon
     /// <summary>
     /// Loads vendors by ids
     /// </summary>
-    /// <param name="vendorIds"></param>
+    /// <param name="ids"></param>
     /// <returns></returns>
-    protected virtual async Task<Dictionary<string, Member>> LoadVendors(string[] vendorIds)
+    protected virtual async Task<IDictionary<string, Member>> LoadVendors(IList<string> ids)
     {
-        var vendors = new Dictionary<string, Member>();
-
-        var countResult = vendorIds.Length;
+        var result = new Dictionary<string, Member>();
         const int pageSize = 10;
-        var currentIndex = 0;
 
-        while (currentIndex < countResult)
+        foreach (var idsPage in ids.Paginate(pageSize))
         {
-            var pageMemberIds = vendorIds.Skip(currentIndex).Take(pageSize).ToArray();
-
-            var members = await _memberService.GetByIdsAsync(pageMemberIds);
+            var members = await _memberService.GetByIdsAsync(idsPage.ToArray());
             foreach (var member in members)
             {
-                vendors.TryAdd(member.Id, member);
+                result.TryAdd(member.Id, member);
             }
-            currentIndex += pageSize;
         }
 
-        return vendors;
+        return result;
     }
 
     /// <summary>
     /// Updates vendors in results.
     /// </summary>
-    /// <param name="results"></param>
-    /// <param name="memberByIds"></param>
-    protected virtual void UpdateVendorsInResults(IEnumerable<ExpProduct> results, Dictionary<string, Member> vendors)
+    /// <param name="products"></param>
+    /// <param name="vendorsByIds"></param>
+    protected virtual void UpdateVendorsInProducts(IList<ExpProduct> products, IDictionary<string, Member> vendorsByIds)
     {
-        if (!vendors.Any())
+        if (!vendorsByIds.Any())
         {
             return;
         }
 
-        results
-            .Where(x => x.IndexedProduct.Vendor != null)
+        products
+            .Where(x => x.IndexedProduct?.Vendor != null)
             .Apply(product =>
             {
-                vendors.TryGetValue(product.IndexedProduct.Vendor, out var member);
-                product.Vendor = _mapper.Map<ExpProductVendor>(member);
+                if (vendorsByIds.TryGetValue(product.IndexedProduct.Vendor, out var member))
+                {
+                    product.Vendor = _mapper.Map<ExpProductVendor>(member);
+                }
             });
     }
 }
