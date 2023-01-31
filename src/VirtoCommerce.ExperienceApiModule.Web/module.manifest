@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <module xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <id>VirtoCommerce.ExperienceApi</id>
   <version>3.254.0</version>
@@ -16,6 +16,7 @@
     <author>Alexandr Andreev</author>
     <author>Andrey Kozlov</author>
     <author>Konstantin Savosteev</author>
+    <author>Aleksandr Vishniakov</author>
   </authors>
   <owners>
     <owner>Virto Commerce</owner>
