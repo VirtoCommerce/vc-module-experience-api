@@ -108,7 +108,7 @@ public class EvalProductsVendorMiddleware : IAsyncMiddleware<SearchProductRespon
     }
 
     /// <summary>
-    /// Updates vendors in results.
+    /// Updates vendors in products.
     /// </summary>
     /// <param name="products"></param>
     /// <param name="vendorsByIds"></param>
