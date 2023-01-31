@@ -76,7 +76,7 @@ public class EvalProductsVendorMiddleware : IAsyncMiddleware<SearchProductRespon
     /// </summary>
     /// <param name="products"></param>
     /// <returns></returns>
-    protected virtual string[] ExtractVendorIds(IList<ExpProduct> products)
+    protected virtual IList<string> ExtractVendorIds(IList<ExpProduct> products)
     {
         return products
             .Where(x => x.IndexedProduct?.Vendor != null)
