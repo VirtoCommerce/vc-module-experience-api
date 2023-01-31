@@ -1,10 +1,13 @@
 using System.Linq;
+using AutoMapper;
 using GraphQL;
 using GraphQL.DataLoader;
 using GraphQL.Resolvers;
 using GraphQL.Types;
 using MediatR;
 using VirtoCommerce.CoreModule.Core.Currency;
+using VirtoCommerce.CustomerModule.Core.Services;
+using VirtoCommerce.ExperienceApiModule.Core;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
@@ -19,7 +22,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 {
     public class OrderLineItemType : ExtendableGraphType<LineItem>
     {
-        public OrderLineItemType(IMediator mediator, IDataLoaderContextAccessor dataLoader, IDynamicPropertyResolverService dynamicPropertyResolverService)
+        public OrderLineItemType(IMediator mediator, IDataLoaderContextAccessor dataLoader, IDynamicPropertyResolverService dynamicPropertyResolverService, IMapper mapper, IMemberService memberService)
         {
             Field(x => x.Id);
             Field(x => x.ProductType, true);
@@ -102,6 +105,18 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                 })
             };
             AddField(productField);
+
+            var vendorField = new FieldType
+            {
+                Name = "vendor",
+                Type = GraphTypeExtenstionHelper.GetActualType<VendorType>(),
+                Resolver = new FuncFieldResolver<LineItem, IDataLoaderResult<ExpVendor>>(context =>
+                {
+                    var loader = dataLoader.GetVendorDataLoader(memberService, mapper, "order_vendor");
+                    return context.Source.VendorId != null ? loader.LoadAsync(context.Source.VendorId) : null;
+                })
+            };
+            AddField(vendorField);
 
             ExtendableField<ListGraphType<DynamicPropertyValueType>>(
                 "dynamicProperties",
