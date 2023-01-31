@@ -2,13 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json.Linq;
+using VirtoCommerce.CoreModule.Core.Seo;
+using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Tools;
 
-namespace VirtoCommerce.XDigitalCatalog.Extensions
+namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
 {
     public static class SeoInfosExtensions
     {
-        public static CoreModule.Core.Seo.SeoInfo GetBestMatchingSeoInfo(this IList<CoreModule.Core.Seo.SeoInfo> seoInfos, string storeId, string cultureName)
+        public static SeoInfo GetBestMatchingSeoInfo(this IList<SeoInfo> seoInfos, string storeId, string cultureName)
         {
             if (storeId == null || cultureName == null)
             {
@@ -24,8 +26,17 @@ namespace VirtoCommerce.XDigitalCatalog.Extensions
                     x.ModifiedDate ??= DateTime.Now;
                     return x;
                 })
-                .Select(x => JObject.FromObject(x).ToObject<CoreModule.Core.Seo.SeoInfo>())
+                .Select(x => JObject.FromObject(x).ToObject<SeoInfo>())
                 .FirstOrDefault();
+        }
+
+        public static SeoInfo GetFallbackSeoInfo(string id, string name, string cultureName)
+        {
+            var result = AbstractTypeFactory<SeoInfo>.TryCreateInstance();
+            result.SemanticUrl = id;
+            result.LanguageCode = cultureName;
+            result.Name = name;
+            return result;
         }
     }
 }

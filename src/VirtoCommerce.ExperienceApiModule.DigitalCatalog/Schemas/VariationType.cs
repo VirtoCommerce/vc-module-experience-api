@@ -96,7 +96,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             }, description: "Request related slug for product");
 
             Field(
-                GraphTypeExtenstionHelper.GetActualType<ProductVendorType>(),
+                GraphTypeExtenstionHelper.GetActualType<VendorType>(),
                 "vendor",
                 "Product vendor",
                 resolve: context => context.Source.Vendor);

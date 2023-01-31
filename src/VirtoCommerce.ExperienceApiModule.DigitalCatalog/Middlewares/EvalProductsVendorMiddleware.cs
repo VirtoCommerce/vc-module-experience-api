@@ -6,6 +6,7 @@ using AutoMapper;
 using PipelineNet.Middleware;
 using VirtoCommerce.CustomerModule.Core.Model;
 using VirtoCommerce.CustomerModule.Core.Services;
+using VirtoCommerce.ExperienceApiModule.Core;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.XDigitalCatalog.Queries;
 
@@ -125,7 +126,7 @@ public class EvalProductsVendorMiddleware : IAsyncMiddleware<SearchProductRespon
             {
                 if (vendorsByIds.TryGetValue(product.IndexedProduct.Vendor, out var member))
                 {
-                    product.Vendor = _mapper.Map<ExpProductVendor>(member);
+                    product.Vendor = _mapper.Map<ExpVendor>(member);
                 }
             });
     }
