@@ -48,7 +48,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
         }
 
         /// <summary>
-        /// Handle search products query and returns search result with aggregated facets
+        /// Handle search products query and return search result with facets
         /// </summary>
         /// <param name="request"></param>
         /// <param name="cancellationToken"></param>
@@ -95,17 +95,14 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
 
             var searchRequest = builder.Build();
 
-            // Enrich criteria with Outlines and Outline to Filter Outline Terms and return only child elements
+            // Enrich criteria with outlines to filter outline aggregation items and return only child elements
             ApplyOutlineCriteria(criteria, searchRequest);
 
             var searchResult = await _searchProvider.SearchAsync(KnownDocumentTypes.Product, searchRequest);
+            var resultAggregations = await ConvertAggregations(searchResult, searchRequest, criteria);
 
-            var products = ConvertProducts(searchResult);
-            var resultAggregations = await ConvertResultAggregations(criteria, searchRequest, searchResult);
-
-            // Hilight Appliend Aggregations
-            searchRequest.SetAppliedAggregations(resultAggregations.ToArray());
-
+            // Mark applied aggregation items
+            searchRequest.SetAppliedAggregations(resultAggregations);
 
             var result = new SearchProductResponse
             {
@@ -113,7 +110,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                 AllStoreCurrencies = allStoreCurrencies,
                 Currency = currency,
                 Store = store,
-                Results = products,
+                Results = ConvertProducts(searchResult),
                 Facets = ApplyFacetLocalization(resultAggregations, criteria.LanguageCode),
                 TotalCount = (int)searchResult.TotalCount
             };
@@ -123,42 +120,32 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             return result;
         }
 
-        private static void ApplyOutlineCriteria(ProductIndexedSearchCriteria criteria, SearchRequest searchRequest)
+        protected virtual void ApplyOutlineCriteria(ProductIndexedSearchCriteria criteria, SearchRequest searchRequest)
         {
             criteria.Outlines = searchRequest.GetChildFilters()
-                .Where(f => f is TermFilter && (f.GetFieldName() == "__outline"))
+                .Where(f => f is TermFilter && f.GetFieldName() == "__outline")
                 .SelectMany(f => ((TermFilter)f).Values)
-                .Where(o => !string.IsNullOrEmpty(o)).ToArray();
-            criteria.Outline = criteria.Outlines.OrderByDescending(o => o.Length).FirstOrDefault();
+                .Where(o => !string.IsNullOrEmpty(o))
+                .ToArray();
+
+            criteria.Outline = criteria.Outlines.MaxBy(x => x.Length);
         }
 
-        protected virtual List<ExpProduct> ConvertProducts(SearchResponse searchResult)
-        {
-            return searchResult.Documents?.Select(x => _mapper.Map<ExpProduct>(x)).ToList() ?? new List<ExpProduct>();
-        }
-
-        protected virtual IList<FacetResult> ApplyFacetLocalization(Aggregation[] resultAggregations, string languageCode)
-        {
-            return resultAggregations?.ApplyLanguageSpecificFacetResult(languageCode)
-                                .Select(x => _mapper.Map<FacetResult>(x, options =>
-                                {
-                                    options.Items["cultureName"] = languageCode;
-                                })).ToList();
-        }
-
-        protected virtual Task<Aggregation[]> ConvertResultAggregations(ProductIndexedSearchCriteria criteria, SearchRequest searchRequest, SearchResponse searchResult)
+        protected virtual Task<Aggregation[]> ConvertAggregations(SearchResponse searchResponse, SearchRequest searchRequest, ProductIndexedSearchCriteria criteria)
         {
             // Preconvert resulting aggregations to be properly understandable by catalog module
             var preconvertedAggregations = new List<AggregationResponse>();
-            //Remember term facet ids to distinguish the resulting aggregations are range or term
+
+            // Remember term facet ids to distinguish the resulting aggregations are range or term
             var termsInRequest = new List<string>(searchRequest.Aggregations.Where(x => x is TermAggregationRequest).Select(x => x.Id ?? x.FieldName));
-            foreach (var aggregation in searchResult.Aggregations)
+
+            foreach (var aggregation in searchResponse.Aggregations)
             {
                 if (!termsInRequest.Contains(aggregation.Id))
                 {
                     // There we'll go converting range facet result
                     var fieldName = new Regex(@"^(?<fieldName>[A-Za-z0-9]+)(-.+)*$", RegexOptions.IgnoreCase).Match(aggregation.Id).Groups["fieldName"].Value;
-                    if (!fieldName.IsNullOrEmpty())
+                    if (!string.IsNullOrEmpty(fieldName))
                     {
                         preconvertedAggregations.AddRange(aggregation.Values.Select(x =>
                         {
@@ -167,7 +154,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                             var right = matchId.Groups["right"].Value;
                             x.Id = left == "*" ? $@"under-{right}" : x.Id;
                             x.Id = right == "*" ? $@"over-{left}" : x.Id;
-                            return new AggregationResponse() { Id = $@"{fieldName}-{x.Id}", Values = new List<AggregationResponseValue> { x } };
+                            return new AggregationResponse { Id = $@"{fieldName}-{x.Id}", Values = new List<AggregationResponseValue> { x } };
                         }
                         ));
                     }
@@ -179,10 +166,24 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                 }
             }
 
-            //Call the catalog aggregation converter service to convert AggregationResponse to proper Aggregation type (term, range, filter)
+            // Call the catalog aggregation converter service to convert AggregationResponse to proper Aggregation type (term, range, filter)
             return _aggregationConverter.ConvertAggregationsAsync(preconvertedAggregations, criteria);
         }
 
+        protected virtual IList<ExpProduct> ConvertProducts(SearchResponse searchResponse)
+        {
+            return searchResponse.Documents?.Select(x => _mapper.Map<ExpProduct>(x)).ToList() ?? new List<ExpProduct>();
+        }
+
+        protected virtual IList<FacetResult> ApplyFacetLocalization(Aggregation[] resultAggregations, string languageCode)
+        {
+            return resultAggregations?.ApplyLanguageSpecificFacetResult(languageCode)
+                .Select(x => _mapper.Map<FacetResult>(x, options =>
+                {
+                    options.Items["cultureName"] = languageCode;
+                }))
+                .ToList();
+        }
 
         public virtual async Task<LoadProductResponse> Handle(LoadProductsQuery request, CancellationToken cancellationToken)
         {
