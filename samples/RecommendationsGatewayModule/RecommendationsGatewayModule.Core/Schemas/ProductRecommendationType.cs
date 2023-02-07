@@ -33,7 +33,7 @@ namespace RecommendationsGatewayModule.Core.Schemas
                 Type = GraphTypeExtenstionHelper.GetActualType<ProductType>(),
                 Resolver = new FuncFieldResolver<ProductRecommendation, IDataLoaderResult<ExpProduct>>(context =>
                 {
-                    var includeFields = context.SubFields.Values.GetAllNodesPaths().ToArray();
+                    var includeFields = context.SubFields.Values.GetAllNodesPaths(context).ToArray();
                     var loader = dataLoader.Context.GetOrAddBatchLoader<string, ExpProduct>($"recommendedProducts", (ids) => LoadProductsAsync(mediator, context, ids, includeFields));
 
                     return loader.LoadAsync(context.Source.ProductId);
