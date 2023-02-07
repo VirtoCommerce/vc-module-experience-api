@@ -18,6 +18,7 @@ namespace VirtoCommerce.XPurchase.Commands
 
         public override async Task<CartAggregate> Handle(AddOrUpdateCartPaymentCommand request, CancellationToken cancellationToken)
         {
+            ValidateAddressType(request.Payment.BillingAddress?.Value);
             var cartAggregate = await GetOrCreateCartFromCommandAsync(request);
 
             var paymentId = request.Payment.Id?.Value ?? null;

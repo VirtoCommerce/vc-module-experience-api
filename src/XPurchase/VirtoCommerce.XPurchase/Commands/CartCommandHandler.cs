@@ -3,7 +3,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using VirtoCommerce.CartModule.Core.Model;
+using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.CoreModule.Core.Tax;
+using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.XPurchase.Commands
@@ -63,6 +65,19 @@ namespace VirtoCommerce.XPurchase.Commands
         {
             await CartRepository.SaveAsync(cartAggregate);
             return cartAggregate;
+        }
+
+        protected virtual void ValidateAddressType(ExpCartAddress address)
+        {
+            if (address == null)
+            {
+                return;
+            }
+
+            if (address.AddressType == null || address.AddressType?.Value == 0)
+            {
+                address.AddressType = new Optional<int>((int)AddressType.BillingAndShipping);
+            }
         }
     }
 }

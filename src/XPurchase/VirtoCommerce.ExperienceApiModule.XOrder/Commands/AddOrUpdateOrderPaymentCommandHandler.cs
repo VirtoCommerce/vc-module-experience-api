@@ -3,6 +3,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
+using VirtoCommerce.CoreModule.Core.Common;
+using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.OrdersModule.Core.Services;
 using VirtoCommerce.PaymentModule.Core.Model;
 using VirtoCommerce.PaymentModule.Core.Model.Search;
@@ -30,6 +32,13 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Commands
 
         public async Task<CustomerOrderAggregate> Handle(AddOrUpdateOrderPaymentCommand request, CancellationToken cancellationToken)
         {
+            if (request.Payment.BillingAddress?.Value != null &&
+                (request.Payment.BillingAddress.Value.AddressType == null ||
+                 request.Payment.BillingAddress.Value.AddressType.Value == (int)AddressType.Undefined))
+            {
+                request.Payment.BillingAddress.Value.AddressType = new Optional<int>((int)AddressType.BillingAndShipping);
+            }
+
             var orderAggregate = await _customerOrderAggregateRepository.GetOrderByIdAsync(request.OrderId);
 
             var paymentId = request.Payment.Id?.Value;
