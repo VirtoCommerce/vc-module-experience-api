@@ -36,7 +36,7 @@ public abstract class CatalogQueryBuilder<TQuery, TResult, TResultGraphType>
     {
         await base.BeforeMediatorSend(context, request);
 
-        request.IncludeFields = context.SubFields?.Values.GetAllNodesPaths().ToArray() ?? Array.Empty<string>();
+        request.IncludeFields = context.SubFields?.Values.GetAllNodesPaths(context).ToArray() ?? Array.Empty<string>();
 
         if (!string.IsNullOrEmpty(request.StoreId))
         {

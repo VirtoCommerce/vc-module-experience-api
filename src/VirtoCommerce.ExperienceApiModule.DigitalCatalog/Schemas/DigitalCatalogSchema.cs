@@ -207,7 +207,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
         {
             var query = context.GetCatalogQuery<LoadProductsQuery>();
             query.ObjectIds = ids.ToArray();
-            query.IncludeFields = context.SubFields.Values.GetAllNodesPaths().ToArray();
+            query.IncludeFields = context.SubFields.Values.GetAllNodesPaths(context).ToArray();
 
             var response = await mediator.Send(query);
 
@@ -218,7 +218,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
         {
             var query = context.GetCatalogQuery<LoadCategoryQuery>();
             query.ObjectIds = ids.ToArray();
-            query.IncludeFields = context.SubFields.Values.GetAllNodesPaths().ToArray();
+            query.IncludeFields = context.SubFields.Values.GetAllNodesPaths(context).ToArray();
 
             var response = await mediator.Send(query);
 
@@ -236,7 +236,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
         {
             var first = context.First;
             var skip = Convert.ToInt32(context.After ?? 0.ToString());
-            var includeFields = context.SubFields.Values.GetAllNodesPaths();
+            var includeFields = context.SubFields.Values.GetAllNodesPaths(context).ToArray();
 
             //PT-5371: Need to be able get entire query from context and read all arguments to the query properties
             var query = context.GetCatalogQuery<SearchProductQuery>();
@@ -277,7 +277,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
         {
             var first = context.First;
             var skip = Convert.ToInt32(context.After ?? 0.ToString());
-            var includeFields = context.SubFields.Values.GetAllNodesPaths().Select(x => x.Replace("items.", "")).ToArray();
+            var includeFields = context.SubFields.Values.GetAllNodesPaths(context).Select(x => x.Replace("items.", "")).ToArray();
 
             var query = context.GetCatalogQuery<SearchCategoryQuery>();
 
