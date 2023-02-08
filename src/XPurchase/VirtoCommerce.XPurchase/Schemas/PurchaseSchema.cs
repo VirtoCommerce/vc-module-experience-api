@@ -72,7 +72,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                 Resolver = new AsyncFieldResolver<object>(async context =>
                 {
                     var getCartQuery = context.GetCartQuery<GetCartQuery>();
-                    getCartQuery.IncludeFields = context.SubFields.Values.GetAllNodesPaths().ToArray();
+                    getCartQuery.IncludeFields = context.SubFields.Values.GetAllNodesPaths(context).ToArray();
                     context.CopyArgumentsToUserContext();
 
                     var allCurrencies = await _currencyService.GetAllCurrenciesAsync();
@@ -1316,7 +1316,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             query.Take = first ?? context.PageSize ?? 10;
             query.Sort = context.GetArgument<string>("sort");
             query.Filter = context.GetArgument<string>("filter");
-            query.IncludeFields = context.SubFields.Values.GetAllNodesPaths().ToArray();
+            query.IncludeFields = context.SubFields.Values.GetAllNodesPaths(context).ToArray();
 
             context.CopyArgumentsToUserContext();
 

@@ -78,7 +78,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                 Type = GraphTypeExtenstionHelper.GetActualType<ProductType>(),
                 Resolver = new FuncFieldResolver<LineItem, IDataLoaderResult<ExpProduct>>(context =>
                 {
-                    var includeFields = context.SubFields.Values.GetAllNodesPaths();
+                    var includeFields = context.SubFields.Values.GetAllNodesPaths(context).ToArray();
                     var loader = dataLoader.Context.GetOrAddBatchLoader<string, ExpProduct>("order_lineItems_products", async (ids) =>
                     {
                         //Get currencies and store only from one order.
