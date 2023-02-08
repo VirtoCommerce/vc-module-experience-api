@@ -19,6 +19,7 @@ using VirtoCommerce.OrdersModule.Core.Services;
 using VirtoCommerce.PaymentModule.Core.Model;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Domain;
+using VirtoCommerce.Platform.Core.GenericCrud;
 using VirtoCommerce.Platform.Core.Settings;
 using VirtoCommerce.ShippingModule.Core.Model;
 using VirtoCommerce.TaxModule.Core.Model;
@@ -37,7 +38,7 @@ namespace VirtoCommerce.XPurchase
     {
         private readonly IMarketingPromoEvaluator _marketingEvaluator;
         private readonly IShoppingCartTotalsCalculator _cartTotalsCalculator;
-        private readonly ITaxProviderSearchService _taxProviderSearchService;
+        private readonly ISearchService<TaxProviderSearchCriteria, TaxProviderSearchResult, TaxProvider> _taxProviderSearchService;
         private readonly ICartProductService _cartProductService;
         private readonly IDynamicPropertyUpdaterService _dynamicPropertyUpdaterService;
         private readonly IMemberOrdersService _memberOrdersService;
@@ -56,7 +57,7 @@ namespace VirtoCommerce.XPurchase
         {
             _cartTotalsCalculator = cartTotalsCalculator;
             _marketingEvaluator = marketingEvaluator;
-            _taxProviderSearchService = taxProviderSearchService;
+            _taxProviderSearchService = (ISearchService<TaxProviderSearchCriteria, TaxProviderSearchResult, TaxProvider>)taxProviderSearchService;
             _cartProductService = cartProductService;
             _dynamicPropertyUpdaterService = dynamicPropertyUpdaterService;
             _mapper = mapper;
@@ -408,7 +409,7 @@ namespace VirtoCommerce.XPurchase
                 var shippingMethod = availRates.First(sm => shipment.ShipmentMethodCode.EqualsInvariant(sm.ShippingMethod.Code) && shipment.ShipmentMethodOption.EqualsInvariant(sm.OptionName));
                 shipment.Price = shippingMethod.Rate;
                 shipment.DiscountAmount = shippingMethod.DiscountAmount;
-                //PT-5421: use new model for resolve taxable logic for ShippingRate/ShippingMethod 
+                //PT-5421: use new model for resolve taxable logic for ShippingRate/ShippingMethod
                 //shipment.TaxType = shippingMethod.TaxType;
             }
             return this;
@@ -754,11 +755,6 @@ namespace VirtoCommerce.XPurchase
             return Task.FromResult(this);
         }
 
-        protected virtual async Task<CartAggregate> InnerAddLineItemAsync(LineItem lineItem, CartProduct product = null)
-        {
-            return await InnerAddLineItemAsync(lineItem, product, dynamicProperties: null);
-        }
-
         protected virtual async Task<CartAggregate> InnerAddLineItemAsync(LineItem lineItem, CartProduct product = null, IList<DynamicPropertyValue> dynamicProperties = null)
         {
             var existingLineItem = LineItems.FirstOrDefault(li => li.ProductId == lineItem.ProductId);
@@ -800,7 +796,7 @@ namespace VirtoCommerce.XPurchase
                 return null;
             }
 
-            var storeTaxProviders = await _taxProviderSearchService.SearchTaxProvidersAsync(new TaxProviderSearchCriteria
+            var storeTaxProviders = await _taxProviderSearchService.SearchAsync(new TaxProviderSearchCriteria
             {
                 StoreIds = new[] { Cart.StoreId }
             });

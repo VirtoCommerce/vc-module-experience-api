@@ -1,16 +1,17 @@
 using System.Threading;
 using System.Threading.Tasks;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
-using VirtoCommerce.StoreModule.Core.Services;
+using VirtoCommerce.Platform.Core.GenericCrud;
+using VirtoCommerce.StoreModule.Core.Model;
 using VirtoCommerce.XDigitalCatalog.Extensions;
 
 namespace VirtoCommerce.XDigitalCatalog.Queries
 {
     public class LoadRelatedCatalogOutlineQueryHandler : IQueryHandler<LoadRelatedCatalogOutlineQuery, LoadRelatedCatalogOutlineResponse>
     {
-        private readonly IStoreService _storeService;
+        private readonly ICrudService<Store> _storeService;
 
-        public LoadRelatedCatalogOutlineQueryHandler(IStoreService storeService)
+        public LoadRelatedCatalogOutlineQueryHandler(ICrudService<Store> storeService)
         {
             _storeService = storeService;
         }
