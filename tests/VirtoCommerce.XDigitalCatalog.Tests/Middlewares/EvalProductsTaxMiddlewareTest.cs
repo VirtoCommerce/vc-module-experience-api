@@ -8,6 +8,7 @@ using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.ExperienceApiModule.Core.Models;
 using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
+using VirtoCommerce.Platform.Core.GenericCrud;
 using VirtoCommerce.Platform.Core.Settings;
 using VirtoCommerce.TaxModule.Core.Model;
 using VirtoCommerce.TaxModule.Core.Model.Search;
@@ -25,7 +26,7 @@ namespace VirtoCommerce.XDigitalCatalog.Tests.Middlewares
         {
             // Arrange
             var mapper = new Mock<IMapper>();
-            var taxProviderSearchService = new Mock<ITaxProviderSearchService>();
+            var taxProviderSearchService = new Mock<ISearchService<TaxProviderSearchCriteria, TaxProviderSearchResult, TaxProvider>>().As<ITaxProviderSearchService>();
             var genericPipelineLauncher = new Mock<IGenericPipelineLauncher>();
 
             var evalProductsTaxMiddleware = new EvalProductsTaxMiddleware(mapper.Object, taxProviderSearchService.Object, genericPipelineLauncher.Object);
@@ -41,7 +42,9 @@ namespace VirtoCommerce.XDigitalCatalog.Tests.Middlewares
             evalProductsTaxMiddleware.Run(response, resp => Task.CompletedTask);
 
             // Assert
-            taxProviderSearchService.Verify(x => x.SearchTaxProvidersAsync(It.IsAny<TaxProviderSearchCriteria>()), Times.Never);
+            taxProviderSearchService
+                .As<ISearchService<TaxProviderSearchCriteria, TaxProviderSearchResult, TaxProvider>>()
+                .Verify(x => x.SearchAsync(It.IsAny<TaxProviderSearchCriteria>()), Times.Never);
         }
 
         [Fact]
@@ -50,7 +53,9 @@ namespace VirtoCommerce.XDigitalCatalog.Tests.Middlewares
             // Arrange
             var mapper = new Mock<IMapper>();
             var taxProviderSearchService = new Mock<ITaxProviderSearchService>();
-            taxProviderSearchService.Setup(x => x.SearchTaxProvidersAsync(It.IsAny<TaxProviderSearchCriteria>()))
+            taxProviderSearchService
+                .As<ISearchService<TaxProviderSearchCriteria, TaxProviderSearchResult, TaxProvider>>()
+                .Setup(x => x.SearchAsync(It.IsAny<TaxProviderSearchCriteria>()))
                 .ReturnsAsync(() => new TaxProviderSearchResult()
                 {
                     TotalCount = 0,
@@ -77,7 +82,9 @@ namespace VirtoCommerce.XDigitalCatalog.Tests.Middlewares
 
             // Assert
             action.Should().NotThrow();
-            taxProviderSearchService.Verify(x => x.SearchTaxProvidersAsync(It.IsAny<TaxProviderSearchCriteria>()), Times.Once);
+            taxProviderSearchService
+                .As<ISearchService<TaxProviderSearchCriteria, TaxProviderSearchResult, TaxProvider>>()
+                .Verify(x => x.SearchAsync(It.IsAny<TaxProviderSearchCriteria>()), Times.Once);
         }
 
         [Fact]
@@ -89,7 +96,9 @@ namespace VirtoCommerce.XDigitalCatalog.Tests.Middlewares
 
             var mapper = new Mock<IMapper>();
             var taxProviderSearchService = new Mock<ITaxProviderSearchService>();
-            taxProviderSearchService.Setup(x => x.SearchTaxProvidersAsync(It.IsAny<TaxProviderSearchCriteria>()))
+            taxProviderSearchService
+                .As<ISearchService<TaxProviderSearchCriteria, TaxProviderSearchResult, TaxProvider>>()
+                .Setup(x => x.SearchAsync(It.IsAny<TaxProviderSearchCriteria>()))
                 .ReturnsAsync(() => new TaxProviderSearchResult()
                 {
                     TotalCount = 1,
@@ -119,7 +128,9 @@ namespace VirtoCommerce.XDigitalCatalog.Tests.Middlewares
 
             // Assert
             action.Should().NotThrow();
-            taxProviderSearchService.Verify(x => x.SearchTaxProvidersAsync(It.IsAny<TaxProviderSearchCriteria>()), Times.Once);
+            taxProviderSearchService
+                .As<ISearchService<TaxProviderSearchCriteria, TaxProviderSearchResult, TaxProvider>>()
+                .Verify(x => x.SearchAsync(It.IsAny<TaxProviderSearchCriteria>()), Times.Once);
             taxProvider.Verify(x => x.CalculateRates(It.IsAny<TaxEvaluationContext>()), Times.Once);
         }
 
@@ -146,7 +157,9 @@ namespace VirtoCommerce.XDigitalCatalog.Tests.Middlewares
 
             var mapper = new Mock<IMapper>();
             var taxProviderSearchService = new Mock<ITaxProviderSearchService>();
-            taxProviderSearchService.Setup(x => x.SearchTaxProvidersAsync(It.IsAny<TaxProviderSearchCriteria>()))
+            taxProviderSearchService
+                .As<ISearchService<TaxProviderSearchCriteria, TaxProviderSearchResult, TaxProvider>>()
+                .Setup(x => x.SearchAsync(It.IsAny<TaxProviderSearchCriteria>()))
                 .ReturnsAsync(() => new TaxProviderSearchResult()
                 {
                     TotalCount = 0,
@@ -179,7 +192,9 @@ namespace VirtoCommerce.XDigitalCatalog.Tests.Middlewares
 
             // Assert
             action.Should().NotThrow();
-            taxProviderSearchService.Verify(x => x.SearchTaxProvidersAsync(It.IsAny<TaxProviderSearchCriteria>()), Times.Once);
+            taxProviderSearchService
+                .As<ISearchService<TaxProviderSearchCriteria, TaxProviderSearchResult, TaxProvider>>()
+                .Verify(x => x.SearchAsync(It.IsAny<TaxProviderSearchCriteria>()), Times.Once);
             taxProvider.Verify(x => x.CalculateRates(It.IsAny<TaxEvaluationContext>()), Times.Once);
             productPrice.TaxPercentRate.Should().Be(0.5m);
         }

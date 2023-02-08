@@ -7,10 +7,10 @@ using AutoMapper;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
 using VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index;
+using VirtoCommerce.Platform.Core.GenericCrud;
 using VirtoCommerce.SearchModule.Core.Model;
 using VirtoCommerce.SearchModule.Core.Services;
 using VirtoCommerce.StoreModule.Core.Model;
-using VirtoCommerce.StoreModule.Core.Services;
 
 namespace VirtoCommerce.XDigitalCatalog.Queries
 {
@@ -21,14 +21,14 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
         private readonly IMapper _mapper;
         private readonly ISearchProvider _searchProvider;
         private readonly ISearchPhraseParser _phraseParser;
-        private readonly IStoreService _storeService;
+        private readonly ICrudService<Store> _storeService;
         private readonly IGenericPipelineLauncher _pipeline;
 
         public SearchCategoryQueryHandler(
             ISearchProvider searchProvider
             , IMapper mapper
             , ISearchPhraseParser phraseParser
-            , IStoreService storeService
+            , ICrudService<Store> storeService
             , IGenericPipelineLauncher pipeline)
         {
             _searchProvider = searchProvider;

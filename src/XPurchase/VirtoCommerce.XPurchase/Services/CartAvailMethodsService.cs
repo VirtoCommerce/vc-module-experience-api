@@ -8,6 +8,7 @@ using VirtoCommerce.PaymentModule.Core.Model;
 using VirtoCommerce.PaymentModule.Core.Model.Search;
 using VirtoCommerce.PaymentModule.Core.Services;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.GenericCrud;
 using VirtoCommerce.Platform.Core.Settings;
 using VirtoCommerce.ShippingModule.Core.Model;
 using VirtoCommerce.ShippingModule.Core.Model.Search;
@@ -22,9 +23,9 @@ namespace VirtoCommerce.XPurchase.Services
 {
     public class CartAvailMethodsService : ICartAvailMethodsService
     {
-        private readonly IPaymentMethodsSearchService _paymentMethodsSearchService;
-        private readonly ITaxProviderSearchService _taxProviderSearchService;
-        private readonly IShippingMethodsSearchService _shippingMethodsSearchService;
+        private readonly ISearchService<PaymentMethodsSearchCriteria, PaymentMethodsSearchResult, PaymentMethod> _paymentMethodsSearchService;
+        private readonly ISearchService<TaxProviderSearchCriteria, TaxProviderSearchResult, TaxProvider> _taxProviderSearchService;
+        private readonly ISearchService<ShippingMethodsSearchCriteria, ShippingMethodsSearchResult, ShippingMethod> _shippingMethodsSearchService;
         private readonly ICartProductService _cartProductService;
 
         private readonly IMapper _mapper;
@@ -37,9 +38,9 @@ namespace VirtoCommerce.XPurchase.Services
             ICartProductService cartProductService,
             IMapper mapper)
         {
-            _paymentMethodsSearchService = paymentMethodsSearchService;
-            _shippingMethodsSearchService = shippingMethodsSearchService;
-            _taxProviderSearchService = taxProviderSearchService;
+            _paymentMethodsSearchService = (ISearchService<PaymentMethodsSearchCriteria, PaymentMethodsSearchResult, PaymentMethod>)paymentMethodsSearchService;
+            _shippingMethodsSearchService = (ISearchService<ShippingMethodsSearchCriteria, ShippingMethodsSearchResult, ShippingMethod>)shippingMethodsSearchService;
+            _taxProviderSearchService = (ISearchService<TaxProviderSearchCriteria, TaxProviderSearchResult, TaxProvider>)taxProviderSearchService;
             _cartProductService = cartProductService;
             _mapper = mapper;
         }
@@ -61,7 +62,7 @@ namespace VirtoCommerce.XPurchase.Services
                 StoreId = cartAggr.Store?.Id
             };
 
-            var activeAvailableShippingMethods = (await _shippingMethodsSearchService.SearchShippingMethodsAsync(criteria)).Results;
+            var activeAvailableShippingMethods = (await _shippingMethodsSearchService.SearchAsync(criteria)).Results;
 
             var availableShippingRates = activeAvailableShippingMethods
                 .SelectMany(x => x.CalculateRates(shippingEvaluationContext))
@@ -113,7 +114,7 @@ namespace VirtoCommerce.XPurchase.Services
                 StoreId = cartAggr.Store?.Id,
             };
 
-            var result = await _paymentMethodsSearchService.SearchPaymentMethodsAsync(criteria);
+            var result = await _paymentMethodsSearchService.SearchAsync(criteria);
             if (result.Results.IsNullOrEmpty())
             {
                 return Enumerable.Empty<PaymentMethod>();
@@ -201,7 +202,7 @@ namespace VirtoCommerce.XPurchase.Services
 
         protected async Task<TaxProvider> GetActiveTaxProviderAsync(string storeId)
         {
-            var storeTaxProviders = await _taxProviderSearchService.SearchTaxProvidersAsync(new TaxProviderSearchCriteria
+            var storeTaxProviders = await _taxProviderSearchService.SearchAsync(new TaxProviderSearchCriteria
             {
                 StoreIds = new[] { storeId }
             });

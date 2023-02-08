@@ -4,8 +4,8 @@ using System.Threading.Tasks;
 using MediatR;
 using VirtoCommerce.OrdersModule.Core.Services;
 using VirtoCommerce.PaymentModule.Model.Requests;
+using VirtoCommerce.Platform.Core.GenericCrud;
 using VirtoCommerce.StoreModule.Core.Model;
-using VirtoCommerce.StoreModule.Core.Services;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Commands
 {
@@ -13,13 +13,13 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Commands
     {
         private readonly ICustomerOrderAggregateRepository _customerOrderAggregateRepository;
         private readonly ICustomerOrderService _customerOrderService;
-        private readonly IStoreService _storeService;
+        private readonly ICrudService<Store> _storeService;
 
 
         public ProcessOrderPaymentCommandHandler(
             ICustomerOrderAggregateRepository customerOrderAggregateRepository,
             ICustomerOrderService customerOrderService,
-            IStoreService storeService)
+            ICrudService<Store> storeService)
         {
             _customerOrderAggregateRepository = customerOrderAggregateRepository;
             _customerOrderService = customerOrderService;
