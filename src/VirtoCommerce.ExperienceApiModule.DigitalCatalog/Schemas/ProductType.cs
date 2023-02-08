@@ -158,11 +158,11 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
                     var loadCategoryQuery = context.GetCatalogQuery<LoadCategoryQuery>();
                     loadCategoryQuery.ObjectIds = new[] { categoryId };
-                    loadCategoryQuery.IncludeFields = context.SubFields.Values.GetAllNodesPaths();
+                    loadCategoryQuery.IncludeFields = context.SubFields.Values.GetAllNodesPaths(context).ToArray();
 
-                    var responce = await mediator.Send(loadCategoryQuery);
+                    var response = await mediator.Send(loadCategoryQuery);
 
-                    return responce.Categories.FirstOrDefault();
+                    return response.Categories.FirstOrDefault();
                 });
 
             Field<StringGraphType>(
@@ -197,7 +197,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
                     var query = context.GetCatalogQuery<LoadProductsQuery>();
                     query.ObjectIds = new[] { context.Source.IndexedProduct.MainProductId };
-                    query.IncludeFields = context.SubFields.Values.GetAllNodesPaths();
+                    query.IncludeFields = context.SubFields.Values.GetAllNodesPaths(context).ToArray();
 
                     var response = await mediator.Send(query);
 
@@ -216,7 +216,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
                     var query = context.GetCatalogQuery<LoadProductsQuery>();
                     query.ObjectIds = context.Source.IndexedVariationIds.ToArray();
-                    query.IncludeFields = context.SubFields.Values.GetAllNodesPaths();
+                    query.IncludeFields = context.SubFields.Values.GetAllNodesPaths(context).ToArray();
 
                     var response = await mediator.Send(query);
 

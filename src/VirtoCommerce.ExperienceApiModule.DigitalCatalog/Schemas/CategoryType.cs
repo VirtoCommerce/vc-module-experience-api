@@ -190,7 +190,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
         {
             var loadCategoryQuery = context.GetCatalogQuery<LoadCategoryQuery>();
             loadCategoryQuery.ObjectIds = ids.Where(x => x != null).ToArray();
-            loadCategoryQuery.IncludeFields = context.SubFields.Values.GetAllNodesPaths();
+            loadCategoryQuery.IncludeFields = context.SubFields.Values.GetAllNodesPaths(context).ToArray();
 
             var response = await mediator.Send(loadCategoryQuery);
             return response.Categories.ToDictionary(x => x.Id);
