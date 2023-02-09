@@ -8,8 +8,7 @@ using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.Platform.Core.GenericCrud;
-using VirtoCommerce.StoreModule.Core.Model;
+using VirtoCommerce.StoreModule.Core.Services;
 using VirtoCommerce.XDigitalCatalog.Extensions;
 
 namespace VirtoCommerce.XDigitalCatalog.Queries;
@@ -24,7 +23,7 @@ public class ChildCategoriesQueryBuilder : CatalogQueryBuilder<ChildCategoriesQu
     public ChildCategoriesQueryBuilder(
         IMediator mediator,
         IAuthorizationService authorizationService,
-        ICrudService<Store> storeService,
+        IStoreService storeService,
         ICurrencyService currencyService,
         ICategoryService categoryService)
         : base(mediator, authorizationService, storeService, currencyService)

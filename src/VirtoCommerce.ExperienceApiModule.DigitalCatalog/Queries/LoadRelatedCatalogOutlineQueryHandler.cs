@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.Platform.Core.GenericCrud;
 using VirtoCommerce.StoreModule.Core.Model;
+using VirtoCommerce.StoreModule.Core.Services;
 using VirtoCommerce.XDigitalCatalog.Extensions;
 
 namespace VirtoCommerce.XDigitalCatalog.Queries
@@ -11,9 +12,9 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
     {
         private readonly ICrudService<Store> _storeService;
 
-        public LoadRelatedCatalogOutlineQueryHandler(ICrudService<Store> storeService)
+        public LoadRelatedCatalogOutlineQueryHandler(IStoreService storeService)
         {
-            _storeService = storeService;
+            _storeService = (ICrudService<Store>)storeService;
         }
 
         public virtual async Task<LoadRelatedCatalogOutlineResponse> Handle(LoadRelatedCatalogOutlineQuery request, CancellationToken cancellationToken)

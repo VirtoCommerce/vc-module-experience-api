@@ -17,6 +17,7 @@ using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.GenericCrud;
 using VirtoCommerce.StoreModule.Core.Model;
+using VirtoCommerce.StoreModule.Core.Services;
 using VirtoCommerce.XDigitalCatalog.Extensions;
 using VirtoCommerce.XDigitalCatalog.Queries;
 
@@ -29,12 +30,12 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
         private readonly ICurrencyService _currencyService;
         private readonly ICrudService<Store> _storeService;
 
-        public DigitalCatalogSchema(IMediator mediator, IDataLoaderContextAccessor dataLoader, ICurrencyService currencyService, ICrudService<Store> storeService)
+        public DigitalCatalogSchema(IMediator mediator, IDataLoaderContextAccessor dataLoader, ICurrencyService currencyService, IStoreService storeService)
         {
             _mediator = mediator;
             _dataLoader = dataLoader;
             _currencyService = currencyService;
-            _storeService = storeService;
+            _storeService = (ICrudService<Store>)storeService;
         }
 
         /// <summary>

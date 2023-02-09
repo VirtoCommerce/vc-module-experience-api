@@ -6,6 +6,7 @@ using AutoFixture;
 using AutoMapper;
 using GraphQL;
 using Moq;
+using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.CartModule.Core.Services;
 using VirtoCommerce.CustomerModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.Core.Services;
@@ -21,7 +22,6 @@ using VirtoCommerce.XPurchase;
 using VirtoCommerce.XPurchase.Services;
 using VirtoCommerce.XPurchase.Validators;
 using Xunit;
-using Cart = VirtoCommerce.CartModule.Core.Model;
 using Store = VirtoCommerce.StoreModule.Core.Model.Store;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Tests.Handlers
@@ -32,16 +32,16 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Tests.Handlers
         public async Task Handle_CartHasValidationErrors_ExeptionThrown()
         {
             // Arrange
-            var cart = _fixture.Create<Cart.ShoppingCart>();
-            var lineItem = _fixture.Create<Cart.LineItem>();
-            cart.Items = new List<Cart.LineItem>() { lineItem };
+            var cart = _fixture.Create<ShoppingCart>();
+            var lineItem = _fixture.Create<LineItem>();
+            cart.Items = new List<LineItem>() { lineItem };
 
             var cartAggregate = GetCartAggregateMock(cart);
 
             var cartService = new ShoppingCartServiceStub(cart);
             var aggregationSerive = new Mock<ICartAggregateRepository>();
             aggregationSerive
-                .Setup(x => x.GetCartForShoppingCartAsync(It.Is<Cart.ShoppingCart>(x => x == cart), null))
+                .Setup(x => x.GetCartForShoppingCartAsync(It.Is<ShoppingCart>(x => x == cart), null))
                 .ReturnsAsync(() =>
                 {
                     var error = CartErrorDescriber.ProductPriceChangedError(lineItem, lineItem.SalePrice, lineItem.SalePriceWithTax, 0, 0);
@@ -67,7 +67,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Tests.Handlers
             await Assert.ThrowsAsync<ExecutionError>(() => handler.Handle(request, CancellationToken.None));
         }
 
-        private static CartAggregate GetCartAggregateMock(Cart.ShoppingCart cart)
+        private static CartAggregate GetCartAggregateMock(ShoppingCart cart)
         {
             var cartAggregate = new CartAggregate(
                 Mock.Of<IMarketingPromoEvaluator>(),
@@ -88,11 +88,11 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Tests.Handlers
             return cartAggregate;
         }
 
-        public class ShoppingCartServiceStub : ICrudService<Cart.ShoppingCart>, IShoppingCartService
+        public class ShoppingCartServiceStub : ICrudService<ShoppingCart>, IShoppingCartService
         {
-            private readonly Cart.ShoppingCart _cart;
+            private readonly ShoppingCart _cart;
 
-            public ShoppingCartServiceStub(Cart.ShoppingCart cart)
+            public ShoppingCartServiceStub(ShoppingCart cart)
             {
                 _cart = cart;
             }
@@ -107,32 +107,32 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Tests.Handlers
                 throw new NotImplementedException();
             }
 
-            public Task<IReadOnlyCollection<Cart.ShoppingCart>> GetAsync(List<string> ids, string responseGroup = null)
+            public Task<IReadOnlyCollection<ShoppingCart>> GetAsync(List<string> ids, string responseGroup = null)
             {
                 throw new NotImplementedException();
             }
 
-            public Task<Cart.ShoppingCart> GetByIdAsync(string id, string responseGroup = null)
+            public Task<ShoppingCart> GetByIdAsync(string id, string responseGroup = null)
             {
                 return Task.FromResult(_cart);
             }
 
-            public Task<Cart.ShoppingCart[]> GetByIdsAsync(string[] cartIds, string responseGroup = null)
+            public Task<ShoppingCart[]> GetByIdsAsync(string[] cartIds, string responseGroup = null)
             {
                 throw new NotImplementedException();
             }
 
-            public Task<IEnumerable<Cart.ShoppingCart>> GetByIdsAsync(IEnumerable<string> ids, string responseGroup = null)
+            public Task<IEnumerable<ShoppingCart>> GetByIdsAsync(IEnumerable<string> ids, string responseGroup = null)
             {
                 throw new NotImplementedException();
             }
 
-            public Task SaveChangesAsync(Cart.ShoppingCart[] carts)
+            public Task SaveChangesAsync(ShoppingCart[] carts)
             {
                 throw new NotImplementedException();
             }
 
-            public Task SaveChangesAsync(IEnumerable<Cart.ShoppingCart> models)
+            public Task SaveChangesAsync(IEnumerable<ShoppingCart> models)
             {
                 throw new NotImplementedException();
             }

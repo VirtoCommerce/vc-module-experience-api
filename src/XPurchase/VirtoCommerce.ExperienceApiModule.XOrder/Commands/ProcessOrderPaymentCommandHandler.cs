@@ -6,6 +6,7 @@ using VirtoCommerce.OrdersModule.Core.Services;
 using VirtoCommerce.PaymentModule.Model.Requests;
 using VirtoCommerce.Platform.Core.GenericCrud;
 using VirtoCommerce.StoreModule.Core.Model;
+using VirtoCommerce.StoreModule.Core.Services;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Commands
 {
@@ -19,11 +20,11 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Commands
         public ProcessOrderPaymentCommandHandler(
             ICustomerOrderAggregateRepository customerOrderAggregateRepository,
             ICustomerOrderService customerOrderService,
-            ICrudService<Store> storeService)
+            IStoreService storeService)
         {
             _customerOrderAggregateRepository = customerOrderAggregateRepository;
             _customerOrderService = customerOrderService;
-            _storeService = storeService;
+            _storeService = (ICrudService<Store>)storeService;
         }
 
         public virtual async Task<ProcessPaymentRequestResult> Handle(ProcessOrderPaymentCommand request, CancellationToken cancellationToken)

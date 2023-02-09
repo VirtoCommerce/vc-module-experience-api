@@ -11,6 +11,7 @@ using VirtoCommerce.Platform.Core.GenericCrud;
 using VirtoCommerce.SearchModule.Core.Model;
 using VirtoCommerce.SearchModule.Core.Services;
 using VirtoCommerce.StoreModule.Core.Model;
+using VirtoCommerce.StoreModule.Core.Services;
 
 namespace VirtoCommerce.XDigitalCatalog.Queries
 {
@@ -28,13 +29,13 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             ISearchProvider searchProvider
             , IMapper mapper
             , ISearchPhraseParser phraseParser
-            , ICrudService<Store> storeService
+            , IStoreService storeService
             , IGenericPipelineLauncher pipeline)
         {
             _searchProvider = searchProvider;
             _mapper = mapper;
             _phraseParser = phraseParser;
-            _storeService = storeService;
+            _storeService = (ICrudService<Store>)storeService;
             _pipeline = pipeline;
         }
 
