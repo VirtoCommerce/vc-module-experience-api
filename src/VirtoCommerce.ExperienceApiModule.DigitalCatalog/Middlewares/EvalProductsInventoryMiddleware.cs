@@ -40,24 +40,24 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
             {
                 var inventories = new List<InventoryInfo>();
 
-                var countResult = await _inventorySearchService.SearchInventoriesAsync(new InventorySearchCriteria
-                {
-                    ProductIds = productIds,
-                });
 
-                var pageSize = 10;
+                var pageSize = 50;
+                var skip = 0;
+                InventoryInfoSearchResult searchResult;
 
-                for (var i = 0; i < countResult.TotalCount; i += pageSize)
+                do
                 {
-                    var searchResult = await _inventorySearchService.SearchInventoriesAsync(new InventorySearchCriteria
+                    searchResult = await _inventorySearchService.SearchInventoriesAsync(new InventorySearchCriteria
                     {
                         ProductIds = productIds,
-                        Skip = i,
+                        Skip = skip,
                         Take = pageSize,
                     });
 
                     inventories.AddRange(searchResult.Results);
+                    skip += pageSize;
                 }
+                while (searchResult.Results.Count == pageSize);
 
                 if (inventories.Any())
                 {
