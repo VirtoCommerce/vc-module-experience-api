@@ -35,11 +35,12 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
 
             var productIds = parameter.Results.Select(x => x.Id).ToArray();
             var responseGroup = EnumUtility.SafeParse(query.GetResponseGroup(), ExpProductResponseGroup.None);
+
             // If products availabilities requested
-            if (responseGroup.HasFlag(ExpProductResponseGroup.LoadInventories))
+            if (responseGroup.HasFlag(ExpProductResponseGroup.LoadInventories) &&
+                productIds.Any())
             {
                 var inventories = new List<InventoryInfo>();
-
 
                 var pageSize = 50;
                 var skip = 0;
