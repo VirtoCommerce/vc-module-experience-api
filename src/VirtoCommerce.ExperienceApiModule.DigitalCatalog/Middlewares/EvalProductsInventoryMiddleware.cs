@@ -35,29 +35,30 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
 
             var productIds = parameter.Results.Select(x => x.Id).ToArray();
             var responseGroup = EnumUtility.SafeParse(query.GetResponseGroup(), ExpProductResponseGroup.None);
+
             // If products availabilities requested
-            if (responseGroup.HasFlag(ExpProductResponseGroup.LoadInventories))
+            if (responseGroup.HasFlag(ExpProductResponseGroup.LoadInventories) &&
+                productIds.Any())
             {
                 var inventories = new List<InventoryInfo>();
 
-                var countResult = await _inventorySearchService.SearchInventoriesAsync(new InventorySearchCriteria
-                {
-                    ProductIds = productIds,
-                });
+                var pageSize = 50;
+                var skip = 0;
+                InventoryInfoSearchResult searchResult;
 
-                var pageSize = 10;
-
-                for (var i = 0; i < countResult.TotalCount; i += pageSize)
+                do
                 {
-                    var searchResult = await _inventorySearchService.SearchInventoriesAsync(new InventorySearchCriteria
+                    searchResult = await _inventorySearchService.SearchInventoriesAsync(new InventorySearchCriteria
                     {
                         ProductIds = productIds,
-                        Skip = i,
+                        Skip = skip,
                         Take = pageSize,
                     });
 
                     inventories.AddRange(searchResult.Results);
+                    skip += pageSize;
                 }
+                while (searchResult.Results.Count == pageSize);
 
                 if (inventories.Any())
                 {
