@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -99,6 +100,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             ApplyOutlineCriteria(criteria, searchRequest);
 
             var searchResult = await _searchProvider.SearchAsync(KnownDocumentTypes.Product, searchRequest);
+
             var resultAggregations = await ConvertAggregations(searchResult, searchRequest, criteria);
 
             // Mark applied aggregation items
@@ -141,7 +143,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
 
             foreach (var aggregation in searchResponse.Aggregations)
             {
-                if (!termsInRequest.Contains(aggregation.Id))
+                if (!termsInRequest.Contains(aggregation.Id, StringComparer.OrdinalIgnoreCase))
                 {
                     // There we'll go converting range facet result
                     var fieldName = new Regex(@"^(?<fieldName>[A-Za-z0-9]+)(-.+)*$", RegexOptions.IgnoreCase).Match(aggregation.Id).Groups["fieldName"].Value;

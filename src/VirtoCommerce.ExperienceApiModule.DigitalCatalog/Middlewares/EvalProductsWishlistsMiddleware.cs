@@ -33,7 +33,8 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
             var productIds = parameter.Results.Select(x => x.Id).ToArray();
             var responseGroup = EnumUtility.SafeParse(query.GetResponseGroup(), ExpProductResponseGroup.None);
             // If products availabilities requested
-            if (responseGroup.HasFlag(ExpProductResponseGroup.LoadWishlists))
+            if (responseGroup.HasFlag(ExpProductResponseGroup.LoadWishlists) &&
+                productIds.Any())
             {
                 var productIdsInWishLists = await _wishlistService.FindProductsInWishlistsAsync(query.UserId, query.StoreId, productIds);
 
