@@ -8,5 +8,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Helpers
         public const string UnauthorizedCode = "Unauthorized";
         public const string ForbiddenCode = "Forbidden";
         public const string ValidationErrorCode = "ValidationError";
+
+        public const string LockedCode = "ServiceAccessLocked";
     }
 }
