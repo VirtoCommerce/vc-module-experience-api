@@ -62,15 +62,7 @@ namespace VirtoCommerce.ExperienceApiModule.Web
 
             services.AddTransient<LoadUserToEvalContextService>();
 
-            var redisConnectionString = Configuration.GetConnectionString("RedisConnectionString");
-            if (!string.IsNullOrEmpty(redisConnectionString))
-            {
-                services.AddSingleton<IDistributedLockService, DistributedLockService>();
-            }
-            else
-            {
-                services.AddSingleton<IDistributedLockService, NoLockService>();
-            }
+            services.AddDistributedLockService(Configuration);
 
             #region Pipelines
             services.AddPipeline<PromotionEvaluationContext>(builder =>

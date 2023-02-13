@@ -769,7 +769,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             var removeCartField = FieldBuilder.Create<CartAggregate, bool>(typeof(BooleanGraphType))
                                               .Name("removeCart")
                                               .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputRemoveCartType>>(), _commandName)
-                                              .ResolveSyncronizedAsync("cartId", _distributedLockService, async context =>
+                                              .ResolveSyncronizedAsync("userId", _distributedLockService, async context =>
                                               {
                                                   var command = context.GetArgument(GenericTypeHelper.GetActualType<RemoveCartCommand>(), _commandName) as RemoveCartCommand;
 

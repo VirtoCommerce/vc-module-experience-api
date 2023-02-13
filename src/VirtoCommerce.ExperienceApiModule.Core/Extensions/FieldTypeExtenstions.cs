@@ -30,9 +30,20 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
         {
             Func<IResolveFieldContext<TSourceType>, TReturnType> resolveWrapper = (context) =>
             {
-                var id = context.GetCurrentUserId();
+                //find resource key in context
+                var resourceKey = GetResourceKey(context, resourceKeyProperty);
 
-                return resolve(context);
+                if (!string.IsNullOrEmpty(resourceKey))
+                {
+                    return distributedLockService.Execute(resourceKey, () =>
+                    {
+                        return resolve(context);
+                    });
+                }
+                else
+                {
+                    return resolve(context);
+                }
             };
 
             var resolver = new FuncFieldResolver<TSourceType, TReturnType>(resolveWrapper);
