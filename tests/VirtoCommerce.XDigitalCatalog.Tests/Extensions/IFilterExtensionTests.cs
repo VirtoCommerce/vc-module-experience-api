@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using Moq;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.SearchModule.Core.Model;
 using VirtoCommerce.XDigitalCatalog.Extensions;
@@ -76,18 +75,25 @@ namespace VirtoCommerce.XDigitalCatalog.Tests.Extensions
         }
 
         [Theory]
-        [InlineData("any Name", "any Name")]
-        [InlineData("anyName_2384765", "anyName")]
-        [InlineData("anyName_2384765_236745236", "anyName")]
-        [InlineData("__outline", "__outline")]
-        public void GetFieldName_NamedFilter_ParsedCorrectly(string fieldName, string expectedName)
+        [InlineData("any Name", "any Name", "TermFilter")]
+        [InlineData("price_USD", "price", "RangeFilter")]
+        [InlineData("anyName_2384765_236745236", "anyName_2384765_236745236", "TermFilter")]
+        [InlineData("__outline", "__outline", "TermFilter")]
+        public void GetFieldName_NamedFilter_ParsedCorrectly(string fieldName, string expectedName, string filterType)
         {
             // Arrage
-            var namedFilterMock = new Mock<INamedFilter>();
-            namedFilterMock.SetupGet(x => x.FieldName).Returns(fieldName);
+            IFilter filter = null;
+            if (filterType == "RangeFilter")
+            {
+                filter = new RangeFilter { FieldName = fieldName };
+            }
+            else if (filterType == "TermFilter")
+            {
+                filter = new TermFilter { FieldName = fieldName };
+            }
 
             // Act
-            var actualFieldName = namedFilterMock.As<IFilter>().Object.GetFieldName();
+            var actualFieldName = filter.GetFieldName();
 
             // Assert
             Assert.Equal(expectedName, actualFieldName);
