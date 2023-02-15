@@ -8,7 +8,12 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
 {
     public static class AstFieldExtensions
     {
-        public static IEnumerable<string> GetAllNodesPaths(this IEnumerable<Field> fields, IResolveFieldContext context = null)
+        public static IEnumerable<string> GetAllNodesPaths(this IEnumerable<Field> fields)
+        {
+            return GetAllNodesPaths(fields, context: null);
+        }
+
+        public static IEnumerable<string> GetAllNodesPaths(this IEnumerable<Field> fields, IResolveFieldContext context)
         {
             return fields.SelectMany(x => x.GetAllTreeNodesPaths(context)).Distinct();
         }
