@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using GraphQL;
@@ -8,6 +9,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
 {
     public static class AstFieldExtensions
     {
+        [Obsolete("Use method with the 'context' argument")]
         public static IEnumerable<string> GetAllNodesPaths(this IEnumerable<Field> fields)
         {
             return GetAllNodesPaths(fields, context: null);
