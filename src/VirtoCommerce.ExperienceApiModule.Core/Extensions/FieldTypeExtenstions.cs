@@ -24,6 +24,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
         }
 
         public static FieldBuilder<TSourceType, TReturnType> ResolveSyncronized<TSourceType, TReturnType>(this FieldBuilder<TSourceType, TReturnType> fieldBuilder,
+            string resourceKeyPrefix,
             string resourceKeyProperty,
             IDistributedLockService distributedLockService,
             Func<IResolveFieldContext<TSourceType>, TReturnType> resolve)
@@ -31,7 +32,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
             Func<IResolveFieldContext<TSourceType>, TReturnType> resolveWrapper = (context) =>
             {
                 //find resource key in context
-                var resourceKey = GetResourceKey(context, resourceKeyProperty);
+                var resourceKey = GetResourceKey(context, resourceKeyPrefix, resourceKeyProperty);
 
                 if (!string.IsNullOrEmpty(resourceKey))
                 {
@@ -53,6 +54,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
         }
 
         public static FieldBuilder<TSourceType, TReturnType> ResolveSyncronizedAsync<TSourceType, TReturnType>(this FieldBuilder<TSourceType, TReturnType> fieldBuilder,
+            string resourceKeyPrefix,
             string resourceKeyProperty,
             IDistributedLockService distributedLockService,
             Func<IResolveFieldContext<TSourceType>, Task<TReturnType>> resolve)
@@ -60,7 +62,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
             Func<IResolveFieldContext<TSourceType>, Task<TReturnType>> resolveWrapper = async (context) =>
             {
                 //find resource key in context
-                var resourceKey = GetResourceKey(context, resourceKeyProperty);
+                var resourceKey = GetResourceKey(context, resourceKeyPrefix, resourceKeyProperty);
 
                 if (!string.IsNullOrEmpty(resourceKey))
                 {
@@ -81,7 +83,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
             return fieldBuilder;
         }
 
-        private static string GetResourceKey<TSourceType>(IResolveFieldContext<TSourceType> context, string resourceKeyProperty)
+        private static string GetResourceKey<TSourceType>(IResolveFieldContext<TSourceType> context, string resourceKeyPrefix, string resourceKeyProperty)
         {
             var command = context.GetArgument<IDictionary<string, object>>("command");
             if (command == null)
@@ -90,7 +92,14 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
             }
 
             _ = command.TryGetValue(resourceKeyProperty, out var value);
-            return value as string;
+            var resourseKey = value as string;
+
+            if (string.IsNullOrEmpty(resourseKey))
+            {
+                return null;
+            }
+
+            return $"{resourceKeyPrefix}:{resourseKey}";
         }
     }
 }

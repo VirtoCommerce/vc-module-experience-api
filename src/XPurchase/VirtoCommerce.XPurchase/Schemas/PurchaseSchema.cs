@@ -38,6 +38,7 @@ namespace VirtoCommerce.XPurchase.Schemas
         private readonly IDistributedLockService _distributedLockService;
 
         public const string _commandName = "command";
+        public const string _cartPrefix = "Cart";
 
         public PurchaseSchema(IMediator mediator,
             IAuthorizationService authorizationService,
@@ -147,7 +148,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                                            .Name("addItem")
                                            .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputAddItemType>>(), _commandName)
                                            //PT-5394: Write the unit-tests for successfully mapping input variable to the command
-                                           .ResolveSyncronizedAsync("userId", _distributedLockService, async context =>
+                                           .ResolveSyncronizedAsync(_cartPrefix, "userId", _distributedLockService, async context =>
                                            {
                                                var cartCommand = context.GetCartCommand<AddCartItemCommand>();
 
@@ -169,7 +170,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                 .Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<CartType>())
                 .Name("addGiftItems")
                 .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputAddGiftItemsType>>(), _commandName)
-                .ResolveSyncronizedAsync("userId", _distributedLockService, async context =>
+                .ResolveSyncronizedAsync(_cartPrefix, "userId", _distributedLockService, async context =>
                 {
                     var cartCommand = context.GetCartCommand<AddGiftItemsCommand>();
 
@@ -188,7 +189,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                 .Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<CartType>())
                 .Name("rejectGiftItems")
                 .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputRejectGiftItemsType>>(), _commandName)
-                .ResolveSyncronizedAsync("userId", _distributedLockService, async context =>
+                .ResolveSyncronizedAsync(_cartPrefix, "userId", _distributedLockService, async context =>
                 {
                     var cartCommand = context.GetCartCommand<RejectGiftCartItemsCommand>();
 
@@ -222,7 +223,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             var clearCartField = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<CartType>())
                                              .Name("clearCart")
                                              .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputClearCartType>>(), _commandName)
-                                             .ResolveSyncronizedAsync("userId", _distributedLockService, async context =>
+                                             .ResolveSyncronizedAsync(_cartPrefix, "userId", _distributedLockService, async context =>
                                              {
                                                  var cartCommand = context.GetCartCommand<ClearCartCommand>();
 
@@ -259,7 +260,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             var changeCommentField = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<CartType>())
                                                  .Name("changeComment")
                                                  .Argument(GraphTypeExtenstionHelper.GetActualType<InputChangeCommentType>(), _commandName)
-                                                 .ResolveSyncronizedAsync("userId", _distributedLockService, async context =>
+                                                 .ResolveSyncronizedAsync(_cartPrefix, "userId", _distributedLockService, async context =>
                                                  {
                                                      var cartCommand = context.GetCartCommand<ChangeCommentCommand>();
 
@@ -298,7 +299,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             var changeCartItemPriceField = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<CartType>())
                                                        .Name("changeCartItemPrice")
                                                        .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputChangeCartItemPriceType>>(), _commandName)
-                                                       .ResolveSyncronizedAsync("userId", _distributedLockService, async context =>
+                                                       .ResolveSyncronizedAsync(_cartPrefix, "userId", _distributedLockService, async context =>
                                                        {
                                                            var cartCommand = context.GetCartCommand<ChangeCartItemPriceCommand>();
 
@@ -336,7 +337,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             var changeCartItemQuantityField = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<CartType>())
                                                           .Name("changeCartItemQuantity")
                                                           .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputChangeCartItemQuantityType>>(), _commandName)
-                                                          .ResolveSyncronizedAsync("userId", _distributedLockService, async context =>
+                                                          .ResolveSyncronizedAsync(_cartPrefix, "userId", _distributedLockService, async context =>
                                                           {
                                                               var cartCommand = context.GetCartCommand<ChangeCartItemQuantityCommand>();
 
@@ -374,7 +375,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             var changeCartItemCommentField = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<CartType>())
                                                           .Name("changeCartItemComment")
                                                           .Argument(GraphTypeExtenstionHelper.GetActualType<InputChangeCartItemCommentType>(), _commandName)
-                                                          .ResolveSyncronizedAsync("userId", _distributedLockService, async context =>
+                                                          .ResolveSyncronizedAsync(_cartPrefix, "userId", _distributedLockService, async context =>
                                                           {
                                                               var cartCommand = context.GetCartCommand<ChangeCartItemCommentCommand>();
 
@@ -411,7 +412,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             var removeCartItemField = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<CartType>())
                                                   .Name("removeCartItem")
                                                   .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputRemoveItemType>>(), _commandName)
-                                                  .ResolveSyncronizedAsync("userId", _distributedLockService, async context =>
+                                                  .ResolveSyncronizedAsync(_cartPrefix, "userId", _distributedLockService, async context =>
                                                   {
                                                       var cartCommand = context.GetCartCommand<RemoveCartItemCommand>();
 
@@ -448,7 +449,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             var addCouponField = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<CartType>())
                                              .Name("addCoupon")
                                              .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputAddCouponType>>(), _commandName)
-                                             .ResolveSyncronizedAsync("userId", _distributedLockService, async context =>
+                                             .ResolveSyncronizedAsync(_cartPrefix, "userId", _distributedLockService, async context =>
                                              {
                                                  var cartCommand = context.GetCartCommand<AddCouponCommand>();
 
@@ -485,7 +486,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             var removeCouponField = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<CartType>())
                                                 .Name("removeCoupon")
                                                 .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputRemoveCouponType>>(), _commandName)
-                                                .ResolveSyncronizedAsync("userId", _distributedLockService, async context =>
+                                                .ResolveSyncronizedAsync(_cartPrefix, "userId", _distributedLockService, async context =>
                                                 {
                                                     var cartCommand = context.GetCartCommand<RemoveCouponCommand>();
 
@@ -522,7 +523,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             var removeShipmentField = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<CartType>())
                                                   .Name("removeShipment")
                                                   .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputRemoveShipmentType>>(), _commandName)
-                                                  .ResolveSyncronizedAsync("userId", _distributedLockService, async context =>
+                                                  .ResolveSyncronizedAsync(_cartPrefix, "userId", _distributedLockService, async context =>
                                                   {
                                                       var cartCommand = context.GetCartCommand<RemoveShipmentCommand>();
 
@@ -598,7 +599,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             var addOrUpdateCartShipmentField = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<CartType>())
                                                            .Name("addOrUpdateCartShipment")
                                                            .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputAddOrUpdateCartShipmentType>>(), _commandName)
-                                                           .ResolveSyncronizedAsync("userId", _distributedLockService, async context =>
+                                                           .ResolveSyncronizedAsync(_cartPrefix, "userId", _distributedLockService, async context =>
                                                            {
                                                                var cartCommand = context.GetCartCommand<AddOrUpdateCartShipmentCommand>();
 
@@ -667,7 +668,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             var addOrUpdateCartPaymentField = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<CartType>())
                                                           .Name("addOrUpdateCartPayment")
                                                           .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputAddOrUpdateCartPaymentType>>(), _commandName)
-                                                           .ResolveSyncronizedAsync("userId", _distributedLockService, async context =>
+                                                           .ResolveSyncronizedAsync(_cartPrefix, "userId", _distributedLockService, async context =>
                                                            {
                                                                var cartCommand = context.GetCartCommand<AddOrUpdateCartPaymentCommand>();
 
@@ -706,7 +707,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             var validateCouponField = FieldBuilder.Create<CartAggregate, bool>(typeof(BooleanGraphType))
                                                   .Name("validateCoupon")
                                                   .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputValidateCouponType>>(), _commandName)
-                                                  .ResolveSyncronizedAsync("userId", _distributedLockService, async context =>
+                                                  .ResolveSyncronizedAsync(_cartPrefix, "userId", _distributedLockService, async context =>
                                                   {
                                                       var command = context.GetArgument<ValidateCouponCommand>(_commandName);
 
@@ -738,7 +739,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             var margeCartField = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<CartType>())
                                              .Name("mergeCart")
                                              .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputMergeCartType>>(), _commandName)
-                                             .ResolveSyncronizedAsync("userId", _distributedLockService, async context =>
+                                             .ResolveSyncronizedAsync(_cartPrefix, "userId", _distributedLockService, async context =>
                                              {
                                                  var cartCommand = context.GetCartCommand<MergeCartCommand>();
 
@@ -769,7 +770,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             var removeCartField = FieldBuilder.Create<CartAggregate, bool>(typeof(BooleanGraphType))
                                               .Name("removeCart")
                                               .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputRemoveCartType>>(), _commandName)
-                                              .ResolveSyncronizedAsync("userId", _distributedLockService, async context =>
+                                              .ResolveSyncronizedAsync(_cartPrefix, "userId", _distributedLockService, async context =>
                                               {
                                                   var command = context.GetArgument(GenericTypeHelper.GetActualType<RemoveCartCommand>(), _commandName) as RemoveCartCommand;
 
@@ -795,7 +796,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             var clearShipmentsField = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<CartType>())
                                                   .Name("clearShipments")
                                                   .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputClearShipmentsType>>(), _commandName)
-                                                  .ResolveSyncronizedAsync("userId", _distributedLockService, async context =>
+                                                  .ResolveSyncronizedAsync(_cartPrefix, "userId", _distributedLockService, async context =>
                                                   {
                                                       var cartCommand = context.GetCartCommand<ClearShipmentsCommand>();
 
@@ -827,7 +828,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             var clearPaymentsField = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<CartType>())
                                                  .Name("clearPayments")
                                                  .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputClearPaymentsType>>(), _commandName)
-                                                 .ResolveSyncronizedAsync("userId", _distributedLockService, async context =>
+                                                 .ResolveSyncronizedAsync(_cartPrefix, "userId", _distributedLockService, async context =>
                                                   {
                                                       var cartCommand = context.GetCartCommand<ClearPaymentsCommand>();
 
@@ -867,7 +868,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             var addOrUpdateCartAddress = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<CartType>())
                                                  .Name("addOrUpdateCartAddress")
                                                  .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputAddOrUpdateCartAddressType>>(), _commandName)
-                                                 .ResolveSyncronizedAsync("userId", _distributedLockService, async context =>
+                                                 .ResolveSyncronizedAsync(_cartPrefix, "userId", _distributedLockService, async context =>
                                                   {
                                                       var cartCommand = context.GetCartCommand<AddOrUpdateCartAddressCommand>();
 
@@ -900,7 +901,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             var removeCartAddressField = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<CartType>())
                                               .Name("removeCartAddress")
                                               .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputRemoveCartAddressType>>(), _commandName)
-                                              .ResolveSyncronizedAsync("userId", _distributedLockService, async context =>
+                                              .ResolveSyncronizedAsync(_cartPrefix, "userId", _distributedLockService, async context =>
                                               {
                                                   var cartCommand = context.GetCartCommand<RemoveCartAddressCommand>();
 
@@ -943,7 +944,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             var addItemsCartField = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<CartType>())
                                                  .Name("addItemsCart")
                                                  .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputAddItemsType>>(), _commandName)
-                                                 .ResolveSyncronizedAsync("userId", _distributedLockService, async context =>
+                                                 .ResolveSyncronizedAsync(_cartPrefix, "userId", _distributedLockService, async context =>
                                                  {
                                                      var cartCommand = context.GetCartCommand<AddCartItemsCommand>();
 
@@ -985,7 +986,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             var addItemsBulkCartField = FieldBuilder.Create<BulkCartResult, BulkCartResult>(GraphTypeExtenstionHelper.GetActualType<BulkCartType>())
                                                  .Name("addBulkItemsCart")
                                                  .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputAddBulkItemsType>>(), _commandName)
-                                                 .ResolveSyncronizedAsync("userId", _distributedLockService, async context =>
+                                                 .ResolveSyncronizedAsync(_cartPrefix, "userId", _distributedLockService, async context =>
                                                  {
                                                      var command = context.GetArgument<AddCartItemsBulkCommand>(_commandName);
 
@@ -1030,7 +1031,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             var addCartAddressField = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<CartType>())
                                                  .Name("addCartAddress")
                                                  .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputAddOrUpdateCartAddressType>>(), _commandName)
-                                                 .ResolveSyncronizedAsync("userId", _distributedLockService, async context =>
+                                                 .ResolveSyncronizedAsync(_cartPrefix, "userId", _distributedLockService, async context =>
                                                  {
                                                      var cartCommand = context.GetCartCommand<AddCartAddressCommand>();
 
@@ -1045,7 +1046,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             var updateCartDynamicPropertiesField = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<CartType>())
                                                      .Name("updateCartDynamicProperties")
                                                      .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputUpdateCartDynamicPropertiesType>>(), _commandName)
-                                                     .ResolveSyncronizedAsync("userId", _distributedLockService, async context =>
+                                                     .ResolveSyncronizedAsync(_cartPrefix, "userId", _distributedLockService, async context =>
                                                      {
                                                          var cartCommand = context.GetCartCommand<UpdateCartDynamicPropertiesCommand>();
 
@@ -1060,7 +1061,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             var updateCartItemDynamicPropertiesField = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<CartType>())
                                                         .Name("updateCartItemDynamicProperties")
                                                         .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputUpdateCartItemDynamicPropertiesType>>(), _commandName)
-                                                        .ResolveSyncronizedAsync("userId", _distributedLockService, async context =>
+                                                        .ResolveSyncronizedAsync(_cartPrefix, "userId", _distributedLockService, async context =>
                                                         {
                                                             var cartCommand = context.GetCartCommand<UpdateCartItemDynamicPropertiesCommand>();
 
@@ -1075,7 +1076,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             var updateCartPaymentDynamicPropertiesField = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<CartType>())
                                                             .Name("updateCartPaymentDynamicProperties")
                                                             .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputUpdateCartPaymentDynamicPropertiesType>>(), _commandName)
-                                                            .ResolveSyncronizedAsync("userId", _distributedLockService, async context =>
+                                                            .ResolveSyncronizedAsync(_cartPrefix, "userId", _distributedLockService, async context =>
                                                             {
                                                                 var cartCommand = context.GetCartCommand<UpdateCartPaymentDynamicPropertiesCommand>();
 
@@ -1090,7 +1091,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             var updateCartShipmentDynamicPropertiesField = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<CartType>())
                                                                .Name("updateCartShipmentDynamicProperties")
                                                                .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputUpdateCartShipmentDynamicPropertiesType>>(), _commandName)
-                                                               .ResolveSyncronizedAsync("userId", _distributedLockService, async context =>
+                                                               .ResolveSyncronizedAsync(_cartPrefix, "userId", _distributedLockService, async context =>
                                                                {
                                                                    var cartCommand = context.GetCartCommand<UpdateCartShipmentDynamicPropertiesCommand>();
 
@@ -1105,7 +1106,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             var changePurchaseOrderNumberField = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<CartType>())
                                      .Name("changePurchaseOrderNumber")
                                      .Argument(GraphTypeExtenstionHelper.GetActualType<InputChangePurchaseOrderNumber>(), _commandName)
-                                     .ResolveSyncronizedAsync("userId", _distributedLockService, async context =>
+                                     .ResolveSyncronizedAsync(_cartPrefix, "userId", _distributedLockService, async context =>
                                      {
                                          var cartCommand = context.GetCartCommand<ChangePurchaseOrderNumberCommand>();
 
