@@ -8,22 +8,22 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Infrastructure
 {
     public class DistributedLockService : IDistributedLockService
     {
-        protected readonly IConnectionMultiplexer _redisConnMultiplexer;
+        private readonly IConnectionMultiplexer _connectionMultiplexer;
 
         private readonly TimeSpan _expiry = TimeSpan.FromSeconds(20);
         private readonly TimeSpan _wait = TimeSpan.FromSeconds(10);
         private readonly TimeSpan _retry = TimeSpan.FromSeconds(2);
 
-        public DistributedLockService(IConnectionMultiplexer redisConnMultiplexer)
+        public DistributedLockService(IConnectionMultiplexer connectionMultiplexer)
         {
-            _redisConnMultiplexer = redisConnMultiplexer;
+            _connectionMultiplexer = connectionMultiplexer;
         }
 
         public T Execute<T>(string resourceKey, Func<T> resolver)
         {
-            using (var redlockFactory = RedLockFactory.Create(new RedLockMultiplexer[] { new RedLockMultiplexer(_redisConnMultiplexer) }))
+            using (var redLockFactory = RedLockFactory.Create(new RedLockMultiplexer[] { new RedLockMultiplexer(_connectionMultiplexer) }))
             {
-                using (var redLock = redlockFactory.CreateLock(resourceKey, _expiry, _wait, _retry))
+                using (var redLock = redLockFactory.CreateLock(resourceKey, _expiry, _wait, _retry))
                 {
                     if (redLock.IsAcquired)
                     {
@@ -37,9 +37,9 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Infrastructure
 
         public async Task<T> ExecuteAsync<T>(string resourceKey, Func<Task<T>> resolver)
         {
-            using (var redlockFactory = RedLockFactory.Create(new RedLockMultiplexer[] { new RedLockMultiplexer(_redisConnMultiplexer) }))
+            using (var redLockFactory = RedLockFactory.Create(new RedLockMultiplexer[] { new RedLockMultiplexer(_connectionMultiplexer) }))
             {
-                using (var redLock = await redlockFactory.CreateLockAsync(resourceKey, _expiry, _wait, _retry))
+                using (var redLock = await redLockFactory.CreateLockAsync(resourceKey, _expiry, _wait, _retry))
                 {
                     if (redLock.IsAcquired)
                     {
