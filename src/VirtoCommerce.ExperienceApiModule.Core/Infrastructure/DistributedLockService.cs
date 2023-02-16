@@ -21,34 +21,28 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Infrastructure
 
         public T Execute<T>(string resourceKey, Func<T> resolver)
         {
-            using (var redLockFactory = RedLockFactory.Create(new RedLockMultiplexer[] { new RedLockMultiplexer(_connectionMultiplexer) }))
-            {
-                using (var redLock = redLockFactory.CreateLock(resourceKey, _expiry, _wait, _retry))
-                {
-                    if (redLock.IsAcquired)
-                    {
-                        return resolver();
-                    }
-                }
+            using var redLockFactory = RedLockFactory.Create(new[] { new RedLockMultiplexer(_connectionMultiplexer) });
+            using var redLock = redLockFactory.CreateLock(resourceKey, _expiry, _wait, _retry);
 
-                throw new LockError($"Service is busy.");
+            if (!redLock.IsAcquired)
+            {
+                throw new LockError("Service is busy.");
             }
+
+            return resolver();
         }
 
         public async Task<T> ExecuteAsync<T>(string resourceKey, Func<Task<T>> resolver)
         {
-            using (var redLockFactory = RedLockFactory.Create(new RedLockMultiplexer[] { new RedLockMultiplexer(_connectionMultiplexer) }))
-            {
-                using (var redLock = await redLockFactory.CreateLockAsync(resourceKey, _expiry, _wait, _retry))
-                {
-                    if (redLock.IsAcquired)
-                    {
-                        return await resolver();
-                    }
-                }
+            using var redLockFactory = RedLockFactory.Create(new[] { new RedLockMultiplexer(_connectionMultiplexer) });
+            using var redLock = await redLockFactory.CreateLockAsync(resourceKey, _expiry, _wait, _retry);
 
-                throw new LockError($"Service is busy.");
+            if (!redLock.IsAcquired)
+            {
+                throw new LockError("Service is busy.");
             }
+
+            return await resolver();
         }
     }
 }
