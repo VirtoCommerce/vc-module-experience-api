@@ -48,7 +48,10 @@ namespace VirtoCommerce.XDigitalCatalog.Extensions
             if (fieldName.StartsWith("__"))
                 return fieldName;
 
-            return fieldName.Split('_')[0];
+            if (filter is RangeFilter)
+                return fieldName.Split('_')[0];
+
+            return fieldName;
         }
 
         public static void FillIsAppliedForItems(this IFilter filter, IEnumerable<AggregationItem> aggregationItems)
