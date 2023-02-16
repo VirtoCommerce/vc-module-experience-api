@@ -23,7 +23,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
             return fieldBuilder;
         }
 
-        public static FieldBuilder<TSourceType, TReturnType> ResolveSyncronized<TSourceType, TReturnType>(this FieldBuilder<TSourceType, TReturnType> fieldBuilder,
+        public static FieldBuilder<TSourceType, TReturnType> ResolveSynchronized<TSourceType, TReturnType>(this FieldBuilder<TSourceType, TReturnType> fieldBuilder,
             string resourceKeyPrefix,
             string resourceKeyProperty,
             IDistributedLockService distributedLockService,
@@ -53,7 +53,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
             return fieldBuilder;
         }
 
-        public static FieldBuilder<TSourceType, TReturnType> ResolveSyncronizedAsync<TSourceType, TReturnType>(this FieldBuilder<TSourceType, TReturnType> fieldBuilder,
+        public static FieldBuilder<TSourceType, TReturnType> ResolveSynchronizedAsync<TSourceType, TReturnType>(this FieldBuilder<TSourceType, TReturnType> fieldBuilder,
             string resourceKeyPrefix,
             string resourceKeyProperty,
             IDistributedLockService distributedLockService,
@@ -92,14 +92,14 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
             }
 
             _ = command.TryGetValue(resourceKeyProperty, out var value);
-            var resourseKey = value as string;
+            var resourceKey = value as string;
 
-            if (string.IsNullOrEmpty(resourseKey))
+            if (string.IsNullOrEmpty(resourceKey))
             {
                 return null;
             }
 
-            return $"{resourceKeyPrefix}:{resourseKey}";
+            return $"{resourceKeyPrefix}:{resourceKey}";
         }
     }
 }
