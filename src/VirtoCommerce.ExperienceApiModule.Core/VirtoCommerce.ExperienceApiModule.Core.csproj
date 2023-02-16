@@ -42,7 +42,8 @@
         <PackageReference Include="GraphQL.Relay" Version="0.6.2" />
         <PackageReference Include="GraphQL.Server.Transports.AspNetCore" Version="5.0.2" />
         <PackageReference Include="GraphQL.Server.Transports.AspNetCore.NewtonsoftJson" Version="5.0.2" />
-        
+        <PackageReference Include="StackExchange.Redis" Version="2.6.86" />
+        <PackageReference Include="RedLock.net" Version="2.2.0" />
     </ItemGroup>
 
 </Project>

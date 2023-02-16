@@ -7,6 +7,7 @@ using GraphQL.Server;
 using GraphQL.Types;
 using GraphQL.Validation;
 using MediatR;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
@@ -119,6 +120,21 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
             services.AddTransient<IDynamicPropertyResolverService, DynamicPropertyResolverService>();
             services.AddTransient<IDynamicPropertyUpdaterService, DynamicPropertyUpdaterService>();
             services.AddTransient<IUserManagerCore, UserManagerCore>();
+
+            return services;
+        }
+
+        public static IServiceCollection AddDistributedLockService(this IServiceCollection services, IConfiguration configuration)
+        {
+            var redisConnectionString = configuration.GetConnectionString("RedisConnectionString");
+            if (!string.IsNullOrEmpty(redisConnectionString))
+            {
+                services.AddSingleton<IDistributedLockService, DistributedLockService>();
+            }
+            else
+            {
+                services.AddSingleton<IDistributedLockService, NoLockService>();
+            }
 
             return services;
         }

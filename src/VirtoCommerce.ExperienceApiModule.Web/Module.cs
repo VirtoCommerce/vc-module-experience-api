@@ -2,6 +2,7 @@ using AutoMapper;
 using GraphQL.Server;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
@@ -19,9 +20,10 @@ using VirtoCommerce.XPurchase.Extensions;
 using VirtoCommerce.XPurchase.Middlewares;
 namespace VirtoCommerce.ExperienceApiModule.Web
 {
-    public class Module : IModule
+    public class Module : IModule, IHasConfiguration
     {
         public ManifestModuleInfo ModuleInfo { get; set; }
+        public IConfiguration Configuration { get; set; }
 
         public void Initialize(IServiceCollection services)
         {
@@ -59,6 +61,8 @@ namespace VirtoCommerce.ExperienceApiModule.Web
             services.AddAutoMapper(ModuleInfo.Assembly);
 
             services.AddTransient<LoadUserToEvalContextService>();
+
+            services.AddDistributedLockService(Configuration);
 
             #region Pipelines
             services.AddPipeline<PromotionEvaluationContext>(builder =>
