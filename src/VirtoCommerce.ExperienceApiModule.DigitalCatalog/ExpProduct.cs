@@ -99,11 +99,6 @@ namespace VirtoCommerce.XDigitalCatalog
             foreach (var productPrice in AllPrices)
             {
                 productPrice.DiscountAmount = new Money(Math.Max(0, (productPrice.ListPrice - productPrice.SalePrice).Amount), productPrice.Currency);
-
-                foreach (var tierPrice in productPrice.TierPrices)
-                {
-                    tierPrice.DiscountAmount = new Money(Math.Max(0, (productPrice.ListPrice - tierPrice.Price).Amount), productPrice.Currency);
-                }
             }
         }
 
