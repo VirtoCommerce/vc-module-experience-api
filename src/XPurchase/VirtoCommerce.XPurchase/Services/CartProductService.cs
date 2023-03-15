@@ -105,6 +105,7 @@ namespace VirtoCommerce.XPurchase.Services
                 StoreId = storeId,
                 ObjectIds = ids.ToArray(),
                 IncludeFields = IncludeFields,
+                EvaluatePromotions = false, // Promotions will be applied on the line item level
             };
 
             var response = await _mediator.Send(productsQuery);
