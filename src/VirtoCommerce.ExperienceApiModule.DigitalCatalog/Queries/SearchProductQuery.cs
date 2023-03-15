@@ -15,6 +15,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
         public int Skip { get; set; }
         public int Take { get; set; }
         public string[] ObjectIds { get; set; }
+        public bool EvaluatePromotions { get; set; } = true;
 
         public virtual string GetResponseGroup()
         {
