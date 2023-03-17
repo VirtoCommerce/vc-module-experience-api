@@ -3,7 +3,7 @@ using VirtoCommerce.CatalogModule.Core.Model;
 
 namespace VirtoCommerce.XDigitalCatalog.Schemas
 {
-    class CategoryDescriptionType : ObjectGraphType<CategoryDescription>
+    public class CategoryDescriptionType : ObjectGraphType<CategoryDescription>
     {
         public CategoryDescriptionType()
         {
