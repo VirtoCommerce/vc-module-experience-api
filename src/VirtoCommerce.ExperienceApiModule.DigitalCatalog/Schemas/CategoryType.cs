@@ -162,7 +162,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             return result;
         }
 
-        private static bool TryGetCategoryParentId(IResolveFieldContext<ExpCategory> context, out string parentId)
+        protected virtual bool TryGetCategoryParentId(IResolveFieldContext<ExpCategory> context, out string parentId)
         {
             parentId = null;
             var outlines = context.Source.Category.Outlines;
