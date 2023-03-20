@@ -17,17 +17,16 @@ namespace VirtoCommerce.XPurchase.Authorization
     {
         public CanAccessCartAuthorizationRequirement() : base("CanAccessCart")
         {
-
         }
     }
 
     public class CanAccessCartAuthorizationHandler : PermissionAuthorizationHandlerBase<CanAccessCartAuthorizationRequirement>
     {
-        private readonly Func<UserManager<ApplicationUser>> _userManager;
+        private readonly Func<UserManager<ApplicationUser>> _userManagerFactory;
 
-        public CanAccessCartAuthorizationHandler(Func<UserManager<ApplicationUser>> userManager)
+        public CanAccessCartAuthorizationHandler(Func<UserManager<ApplicationUser>> userManagerFactory)
         {
-            _userManager = userManager;
+            _userManagerFactory = userManagerFactory;
         }
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, CanAccessCartAuthorizationRequirement requirement)
@@ -42,9 +41,11 @@ namespace VirtoCommerce.XPurchase.Authorization
                         result = userId == GetUserId(context);
                         break;
                     case string userId when !context.User.Identity.IsAuthenticated:
-                        var userManager = _userManager();
-                        var userById = await userManager.FindByIdAsync(userId);
-                        result = userById == null;
+                        using (var userManager = _userManagerFactory())
+                        {
+                            var userById = await userManager.FindByIdAsync(userId);
+                            result = userById == null;
+                        }
                         break;
                     case ShoppingCart cart when context.User.Identity.IsAuthenticated:
                         result = cart.CustomerId == GetUserId(context);
@@ -79,8 +80,6 @@ namespace VirtoCommerce.XPurchase.Authorization
             {
                 context.Fail();
             }
-
-            return;
         }
 
         private static string GetUserId(AuthorizationHandlerContext context)

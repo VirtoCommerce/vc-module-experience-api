@@ -15,13 +15,14 @@ using VirtoCommerce.ExperienceApiModule.XOrder.Tests.Helpers;
 using VirtoCommerce.MarketingModule.Core.Services;
 using VirtoCommerce.OrdersModule.Core.Services;
 using VirtoCommerce.Platform.Core.GenericCrud;
-using VirtoCommerce.StoreModule.Core.Model;
+using VirtoCommerce.TaxModule.Core.Model;
+using VirtoCommerce.TaxModule.Core.Model.Search;
 using VirtoCommerce.TaxModule.Core.Services;
 using VirtoCommerce.XPurchase;
 using VirtoCommerce.XPurchase.Services;
 using VirtoCommerce.XPurchase.Validators;
 using Xunit;
-using Cart = VirtoCommerce.CartModule.Core.Model;
+using Store = VirtoCommerce.StoreModule.Core.Model.Store;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Tests.Handlers
 {
@@ -31,8 +32,8 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Tests.Handlers
         public async Task Handle_CartHasValidationErrors_ExeptionThrown()
         {
             // Arrange
-            var cart = _fixture.Create<Cart.ShoppingCart>();
-            var lineItem = _fixture.Create<Cart.LineItem>();
+            var cart = _fixture.Create<ShoppingCart>();
+            var lineItem = _fixture.Create<LineItem>();
             cart.Items = new List<LineItem>() { lineItem };
 
             var cartAggregate = GetCartAggregateMock(cart);
@@ -40,7 +41,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Tests.Handlers
             var cartService = new ShoppingCartServiceStub(cart);
             var aggregationSerive = new Mock<ICartAggregateRepository>();
             aggregationSerive
-                .Setup(x => x.GetCartForShoppingCartAsync(It.Is<Cart.ShoppingCart>(x => x == cart), null))
+                .Setup(x => x.GetCartForShoppingCartAsync(It.Is<ShoppingCart>(x => x == cart), null))
                 .ReturnsAsync(() =>
                 {
                     var error = CartErrorDescriber.ProductPriceChangedError(lineItem, lineItem.SalePrice, lineItem.SalePriceWithTax, 0, 0);
@@ -71,7 +72,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Tests.Handlers
             var cartAggregate = new CartAggregate(
                 Mock.Of<IMarketingPromoEvaluator>(),
                 Mock.Of<IShoppingCartTotalsCalculator>(),
-                Mock.Of<ITaxProviderSearchService>(),
+                new Mock<ISearchService<TaxProviderSearchCriteria, TaxProviderSearchResult, TaxProvider>>().As<ITaxProviderSearchService>().Object,
                 Mock.Of<ICartProductService>(),
                 Mock.Of<IDynamicPropertyUpdaterService>(),
                 Mock.Of<IMapper>(),
@@ -111,7 +112,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Tests.Handlers
                 throw new NotImplementedException();
             }
 
-            public Task<ShoppingCart> GetByIdAsync(string cartId, string responseGroup = null)
+            public Task<ShoppingCart> GetByIdAsync(string id, string responseGroup = null)
             {
                 return Task.FromResult(_cart);
             }

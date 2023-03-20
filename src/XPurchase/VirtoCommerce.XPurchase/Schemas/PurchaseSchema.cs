@@ -1415,7 +1415,7 @@ namespace VirtoCommerce.XPurchase.Schemas
 
         private async Task CheckAuthAsyncByCartIds(IResolveFieldContext context, List<string> cartIds)
         {
-            var carts = await _cartService.GetByIdsAsync(cartIds, CartResponseGroup.Default.ToString());
+            var carts = await _cartService.GetAsync(cartIds, CartResponseGroup.Default.ToString());
 
             await AuthorizeAsync(context, carts);
         }
