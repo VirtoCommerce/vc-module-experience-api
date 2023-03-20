@@ -1,6 +1,8 @@
 using System.Threading;
 using System.Threading.Tasks;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
+using VirtoCommerce.Platform.Core.GenericCrud;
+using VirtoCommerce.StoreModule.Core.Model;
 using VirtoCommerce.StoreModule.Core.Services;
 using VirtoCommerce.XDigitalCatalog.Extensions;
 
@@ -8,11 +10,11 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
 {
     public class LoadRelatedSlugPathQueryHandler : IQueryHandler<LoadRelatedSlugPathQuery, LoadRelatedSlugPathResponse>
     {
-        private readonly IStoreService _storeService;
+        private readonly ICrudService<Store> _storeService;
 
         public LoadRelatedSlugPathQueryHandler(IStoreService storeService)
         {
-            _storeService = storeService;
+            _storeService = (ICrudService<Store>)storeService;
         }
 
         public virtual async Task<LoadRelatedSlugPathResponse> Handle(LoadRelatedSlugPathQuery request, CancellationToken cancellationToken)

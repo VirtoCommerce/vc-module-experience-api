@@ -3,7 +3,7 @@
     <PropertyGroup>
         <Description>Experiene API functionality</Description>
         <TargetFramework>net6.0</TargetFramework>
-        <GenerateDocumentationFile>true</GenerateDocumentationFile>     
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <noWarn>1591</noWarn>
         <IsPackable>True</IsPackable>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
@@ -23,20 +23,20 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="AutoMapper" Version="10.0.0" />
-        <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.0.1" />
-        <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="8.0.0" />
-        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-        <PackageReference Include="PipelineNet" Version="0.9.0" />     
-        <PackageReference Include="VirtoCommerce.CoreModule.Core" Version="3.203.0" />     
-        <PackageReference Include="VirtoCommerce.CustomerModule.Core" Version="3.210.0" />     
+        <PackageReference Include="MediatR" Version="9.0.0" />
+        <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="9.0.0" />
+        <PackageReference Include="AutoMapper" Version="10.1.1" />
+        <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
+        <PackageReference Include="PipelineNet" Version="0.9.0" />
+        <PackageReference Include="VirtoCommerce.CoreModule.Core" Version="3.203.0" />
+        <PackageReference Include="VirtoCommerce.CustomerModule.Core" Version="3.210.0" />
         <PackageReference Include="VirtoCommerce.StoreModule.Core" Version="3.201.0" />
         <PackageReference Include="VirtoCommerce.TaxModule.Core" Version="3.200.0" />
         <PackageReference Include="VirtoCommerce.SearchModule.Core" Version="3.204.0" />
         <PackageReference Include="VirtoCommerce.Platform.Core" Version="3.271.0" />
         <PackageReference Include="VirtoCommerce.Platform.Security" Version="3.271.0" />
         <PackageReference Include="VirtoCommerce.Tools" Version="3.200.0" />
-        <PackageReference Include="MediatR" Version="8.0.1" />
         <PackageReference Include="GraphQL" Version="4.6.0" />
         <PackageReference Include="GraphQL.Authorization" Version="4.0.0" />
         <PackageReference Include="GraphQL.Relay" Version="0.6.2" />

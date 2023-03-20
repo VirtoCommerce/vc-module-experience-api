@@ -94,7 +94,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                 "Shipments",
                 resolve: context => context.Source.Cart.Shipments);
 
-            FieldAsync<ListGraphType<ShippingMethodType>>("availableShippingMethods", resolve: async context =>
+            ExtendableFieldAsync<ListGraphType<ShippingMethodType>>("availableShippingMethods", resolve: async context =>
             {
                 var rates = await cartAvailMethods.GetAvailableShippingRatesAsync(context.Source);
                 //store the pair ShippingMethodType and cart aggregate in the user context for future usage in the ShippingMethodType fields resolvers

@@ -28,6 +28,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             Field(x => x.Category.Code, nullable: false).Description("SKU of category.");
             Field(x => x.Category.Name, nullable: false).Description("Name of category.");
             Field(x => x.Level, nullable: true).Description(@"Level in hierarchy");
+            Field(x => x.Category.Priority).Description(@"The category priority.");
 
             FieldAsync<StringGraphType>("outline", resolve: async context =>
              {
@@ -162,7 +163,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 resolve: context => context.Source.ChildCategories);
         }
 
-        private static bool TryGetCategoryParentId(IResolveFieldContext<ExpCategory> context, out string parentId)
+        protected virtual bool TryGetCategoryParentId(IResolveFieldContext<ExpCategory> context, out string parentId)
         {
             parentId = null;
             var outlines = context.Source.Category?.Outlines;

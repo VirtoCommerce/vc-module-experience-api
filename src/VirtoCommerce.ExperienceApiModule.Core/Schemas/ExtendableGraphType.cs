@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Resolvers;
 using GraphQL.Types;
@@ -30,6 +31,31 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
                             context.CopyArgumentsToUserContext();
                             return resolve(context);
                         })
+                    : null
+            });
+        }
+
+        public FieldType ExtendableFieldAsync<TGraphType>(
+          string name,
+          string description = null,
+          QueryArguments arguments = null,
+          Func<IResolveFieldContext<TSourceType>, Task<object>> resolve = null,
+          string deprecationReason = null)
+          where TGraphType : IGraphType
+        {
+            return AddField(new FieldType
+            {
+                Name = name,
+                Description = description,
+                DeprecationReason = deprecationReason,
+                Type = GraphTypeExtenstionHelper.GetActualComplexType<TGraphType>(),
+                Arguments = arguments,
+                Resolver = resolve != null
+                    ? new FuncFieldResolver<TSourceType, Task<object>>(context =>
+                    {
+                        context.CopyArgumentsToUserContext();
+                        return resolve(context);
+                    })
                     : null
             });
         }

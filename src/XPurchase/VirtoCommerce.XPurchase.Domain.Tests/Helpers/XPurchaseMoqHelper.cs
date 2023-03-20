@@ -17,16 +17,20 @@ using VirtoCommerce.InventoryModule.Core.Model;
 using VirtoCommerce.MarketingModule.Core.Services;
 using VirtoCommerce.OrdersModule.Core.Services;
 using VirtoCommerce.PaymentModule.Core.Model;
+using VirtoCommerce.PaymentModule.Core.Model.Search;
 using VirtoCommerce.PaymentModule.Core.Services;
 using VirtoCommerce.Platform.Core.GenericCrud;
 using VirtoCommerce.PricingModule.Core.Model;
+using VirtoCommerce.ShippingModule.Core.Model;
+using VirtoCommerce.ShippingModule.Core.Model.Search;
 using VirtoCommerce.ShippingModule.Core.Services;
-using VirtoCommerce.StoreModule.Core.Model;
-using VirtoCommerce.StoreModule.Core.Services;
+using VirtoCommerce.TaxModule.Core.Model;
+using VirtoCommerce.TaxModule.Core.Model.Search;
 using VirtoCommerce.TaxModule.Core.Services;
 using VirtoCommerce.XPurchase.Services;
 using VirtoCommerce.XPurchase.Tests.Helpers.Stubs;
 using VirtoCommerce.XPurchase.Validators;
+using Store = VirtoCommerce.StoreModule.Core.Model.Store;
 
 namespace VirtoCommerce.XPurchase.Tests.Helpers
 {
@@ -41,7 +45,6 @@ namespace VirtoCommerce.XPurchase.Tests.Helpers
         protected readonly Mock<IPaymentMethodsSearchService> _paymentMethodsSearchServiceMock;
         protected readonly Mock<IShippingMethodsSearchService> _shippingMethodsSearchServiceMock;
         protected readonly Mock<IShoppingCartTotalsCalculator> _shoppingCartTotalsCalculatorMock;
-        protected readonly Mock<IStoreService> _storeServiceMock;
         protected readonly Mock<ICrudService<Store>> _crudStoreServiceMock;
         protected readonly Mock<ITaxProviderSearchService> _taxProviderSearchServiceMock;
         protected readonly Mock<IDynamicPropertyUpdaterService> _dynamicPropertyUpdaterService;
@@ -157,21 +160,16 @@ namespace VirtoCommerce.XPurchase.Tests.Helpers
                 .Setup(x => x.EvaluatePromotionAsync(It.IsAny<IEvaluationContext>()))
                 .ReturnsAsync(new StubPromotionResult());
 
-            _paymentMethodsSearchServiceMock = new Mock<IPaymentMethodsSearchService>();
-            _shippingMethodsSearchServiceMock = new Mock<IShippingMethodsSearchService>();
+            _paymentMethodsSearchServiceMock = new Mock<ISearchService<PaymentMethodsSearchCriteria, PaymentMethodsSearchResult, PaymentMethod>>().As<IPaymentMethodsSearchService>();
+            _shippingMethodsSearchServiceMock = new Mock<ISearchService<ShippingMethodsSearchCriteria, ShippingMethodsSearchResult, ShippingMethod>>().As<IShippingMethodsSearchService>();
             _shoppingCartTotalsCalculatorMock = new Mock<IShoppingCartTotalsCalculator>();
-
-            _storeServiceMock = new Mock<IStoreService>();
-            _storeServiceMock
-                .Setup(x => x.GetByIdAsync(It.IsAny<string>(), It.IsAny<string>()))
-                .ReturnsAsync(_fixture.Create<Store>());
 
             _crudStoreServiceMock = new Mock<ICrudService<Store>>();
             _crudStoreServiceMock
                 .Setup(x => x.GetByIdAsync(It.IsAny<string>(), It.IsAny<string>()))
                 .ReturnsAsync(_fixture.Create<Store>());
 
-            _taxProviderSearchServiceMock = new Mock<ITaxProviderSearchService>();
+            _taxProviderSearchServiceMock = new Mock<ISearchService<TaxProviderSearchCriteria, TaxProviderSearchResult, TaxProvider>>().As<ITaxProviderSearchService>();
             _dynamicPropertyUpdaterService = new Mock<IDynamicPropertyUpdaterService>();
 
             _mapperMock = new Mock<IMapper>();

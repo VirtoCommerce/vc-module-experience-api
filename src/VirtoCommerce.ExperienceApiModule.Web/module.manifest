@@ -1,11 +1,11 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <module xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <id>VirtoCommerce.ExperienceApi</id>
-  <version>3.262.0</version>
+  <version>3.300.0</version>
   <version-tag />
   <platformVersion>3.271.0</platformVersion>
-  <title>Commerce experience API module</title>
-  <description />
+  <title>Commerce Experience API</title>
+  <description>An intermediated layer between clients and enterprise services powered by GraphQL protocol</description>
   <authors>
     <author>Eugeny Tatarincev</author>
     <author>Yan Brovkin</author>
