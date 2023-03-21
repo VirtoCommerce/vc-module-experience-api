@@ -13,6 +13,8 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
 {
     public class IndexSearchRequestBuilder
     {
+        public string UserId { get; set; }
+
         private const string ScoreSortingFieldName = "score";
         private SearchRequest SearchRequest { get; set; }
         private string _cultureName { get; set; }
@@ -33,6 +35,12 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
                 Aggregations = new List<AggregationRequest>(),
                 IncludeFields = new List<string>(),
             };
+        }
+
+        public IndexSearchRequestBuilder WithUserId(string userId)
+        {
+            UserId = userId;
+            return this;
         }
 
         public IndexSearchRequestBuilder WithFuzzy(bool fuzzy, int? fuzzyLevel = null)
