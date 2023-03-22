@@ -1,4 +1,3 @@
-using AutoMapper;
 using GraphQL.Server;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,6 +29,7 @@ namespace VirtoCommerce.XDigitalCatalog.Extensions
                 builder.AddMiddleware(typeof(EvalProductsInventoryMiddleware));
                 builder.AddMiddleware(typeof(EvalProductsVendorMiddleware));
                 builder.AddMiddleware(typeof(EvalProductsWishlistsMiddleware));
+                builder.AddMiddleware(typeof(EnsurePropertyMetadataLoadedMiddleware));
             });
 
             services.AddPipeline<SearchCategoryResponse>(builder =>
