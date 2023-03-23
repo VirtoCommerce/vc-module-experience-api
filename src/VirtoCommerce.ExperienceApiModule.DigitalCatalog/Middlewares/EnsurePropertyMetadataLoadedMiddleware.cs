@@ -35,9 +35,8 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
             {
                 var propertyIds = parameter.Results
                     .SelectMany(x => x.IndexedProduct.Properties)
-                    .Where(property => property.Attributes is null)
+                    .Where(property => property.Id is not null)
                     .Select(property => property.Id)
-                    .Where(propertyId => propertyId is not null)
                     .Distinct()
                     .ToList();
 
@@ -48,7 +47,7 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
 
                     foreach (var productResult in parameter.Results)
                     {
-                        foreach (var property in productResult.IndexedProduct.Properties.Where(property => property.Attributes is null))
+                        foreach (var property in productResult.IndexedProduct.Properties.Where(x => x.Id is not null))
                         {
                             if (propertiesDictionary.TryGetValue(property.Id, out var loadedProperty))
                             {
