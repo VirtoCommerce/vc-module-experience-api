@@ -1,9 +1,9 @@
-using AutoMapper;
 using GraphQL.Server;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
+using VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index;
 using VirtoCommerce.XDigitalCatalog.Middlewares;
 using VirtoCommerce.XDigitalCatalog.Queries;
 
@@ -35,6 +35,11 @@ namespace VirtoCommerce.XDigitalCatalog.Extensions
             services.AddPipeline<SearchCategoryResponse>(builder =>
             {
                 builder.AddMiddleware(typeof(EnsureCategoryLoadedMiddleware));
+            });
+
+            services.AddPipeline<IndexSearchRequestBuilder>(builder =>
+            {
+                builder.AddMiddleware(typeof(EvalSearchRequestUserGroupsMiddleware));
             });
 
             return services;
