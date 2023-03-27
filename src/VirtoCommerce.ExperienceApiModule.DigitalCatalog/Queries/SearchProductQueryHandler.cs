@@ -62,6 +62,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             var responseGroup = EnumUtility.SafeParse(request.GetResponseGroup(), ExpProductResponseGroup.None);
 
             var builder = new IndexSearchRequestBuilder()
+                                            .WithUserId(request.UserId)
                                             .WithCurrency(currency.Code)
                                             .WithFuzzy(request.Fuzzy, request.FuzzyLevel)
                                             .ParseFilters(_phraseParser, request.Filter)
@@ -93,6 +94,8 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                 builder.ParseFacets(_phraseParser, request.Facet, predefinedAggregations)
                    .ApplyMultiSelectFacetSearch();
             }
+
+            await _pipeline.Execute(builder);
 
             var searchRequest = builder.Build();
 
