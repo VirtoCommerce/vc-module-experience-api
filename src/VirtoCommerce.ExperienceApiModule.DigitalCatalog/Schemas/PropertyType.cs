@@ -28,6 +28,8 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             Field(x => x.Multivalue, nullable: false).Description("Is property has multiple values.");
 
+            Field(x => x.DisplayOrder, nullable: true).Description("The display order of the property.");
+
             Field<StringGraphType>(
                 "label",
                 resolve: context =>

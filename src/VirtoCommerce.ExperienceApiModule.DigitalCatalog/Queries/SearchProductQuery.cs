@@ -44,7 +44,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             {
                 result |= ExpProductResponseGroup.LoadWishlists;
             }
-            if (IncludeFields.Any(x => x.Contains("keyProperties")))
+            if (IncludeFields.ContainsAny("properties", "keyProperties"))
             {
                 result |= ExpProductResponseGroup.LoadPropertyMetadata;
             }

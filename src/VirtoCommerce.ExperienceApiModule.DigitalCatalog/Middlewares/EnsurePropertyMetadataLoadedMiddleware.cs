@@ -17,43 +17,44 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
             _propertyService = propertyService;
         }
 
-        public async Task Run(SearchProductResponse parameter, Func<SearchProductResponse, Task> next)
+        public Task Run(SearchProductResponse parameter, Func<SearchProductResponse, Task> next)
         {
             if (parameter == null)
             {
                 throw new ArgumentNullException(nameof(parameter));
             }
 
-            var query = parameter.Query;
-            if (query == null)
+            if (parameter.Query == null)
             {
                 throw new OperationCanceledException("Query must be set");
             }
 
-            var responseGroup = EnumUtility.SafeParse(query.GetResponseGroup(), ExpProductResponseGroup.None);
+            return RunInternal(parameter, next);
+        }
+
+        private async Task RunInternal(SearchProductResponse parameter, Func<SearchProductResponse, Task> next)
+        {
+            var responseGroup = EnumUtility.SafeParse(parameter.Query.GetResponseGroup(), ExpProductResponseGroup.None);
             if (responseGroup.HasFlag(ExpProductResponseGroup.LoadPropertyMetadata))
             {
-                var propertyIds = parameter.Results
+                var productProperties = parameter.Results
                     .SelectMany(x => x.IndexedProduct.Properties)
-                    .Where(property => property.Id is not null)
-                    .Select(property => property.Id)
-                    .Distinct()
-                    .ToList();
+                    .Where(property => property?.Id is not null)
+                    .ToArray();
+                var propertyIds = productProperties.Select(x => x.Id).Distinct().ToArray();
 
                 if (propertyIds.Any())
                 {
-                    var properties = await _propertyService.GetByIdsAsync(propertyIds);
-                    var propertiesDictionary = properties.ToDictionary(x => x.Id);
+                    var properties = (await _propertyService.GetByIdsAsync(propertyIds)).ToDictionary(x => x.Id);
 
-                    foreach (var productResult in parameter.Results)
+                    foreach (var property in productProperties)
                     {
-                        foreach (var property in productResult.IndexedProduct.Properties.Where(x => x.Id is not null))
-                        {
-                            if (propertiesDictionary.TryGetValue(property.Id, out var loadedProperty))
-                            {
-                                property.Attributes = loadedProperty.Attributes;
-                            }
-                        }
+                        if (!properties.TryGetValue(property.Id, out var loadedProperty))
+                            continue;
+
+                        var isInherited = property.IsInherited;
+                        property.TryInheritFrom(loadedProperty);
+                        property.IsInherited = isInherited;
                     }
                 }
 

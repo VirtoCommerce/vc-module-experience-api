@@ -24,7 +24,7 @@ namespace VirtoCommerce.XDigitalCatalog.Tests.Shemas
         public void PropertyType_ShouldHaveProperFieldAmount()
         {
             // Assert
-            _propertyType.Fields.Should().HaveCount(10);
+            _propertyType.Fields.Should().HaveCount(11);
         }
 
         [Fact]
