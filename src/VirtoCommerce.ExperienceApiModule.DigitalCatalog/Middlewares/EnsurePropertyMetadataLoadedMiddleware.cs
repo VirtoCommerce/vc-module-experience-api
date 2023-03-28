@@ -50,7 +50,9 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
                     foreach (var property in productProperties)
                     {
                         if (!properties.TryGetValue(property.Id, out var loadedProperty))
+                        {
                             continue;
+                        }
 
                         var isInherited = property.IsInherited;
                         property.TryInheritFrom(loadedProperty);
