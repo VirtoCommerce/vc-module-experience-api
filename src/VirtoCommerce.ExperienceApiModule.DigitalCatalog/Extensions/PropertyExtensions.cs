@@ -40,6 +40,24 @@ namespace VirtoCommerce.XDigitalCatalog.Extensions
         }
 
         /// <summary>
+        /// Sorts properties by Priority attribute, then flattens the key-value tree
+        /// </summary>
+        public static IList<Property> ExpandOrderedByValues(this IEnumerable<Property> properties, string cultureName)
+        {
+            if (properties.IsNullOrEmpty())
+            {
+                return new List<Property>();
+            }
+
+            properties = properties
+                .OrderByDescending(x => x.IsManageable)
+                .ThenBy(x => x.DisplayOrder ?? int.MaxValue)
+                .ThenBy(x => x.Name);
+
+            return properties.ExpandByValues(cultureName);
+        }
+
+        /// <summary>
         /// Filters and sorts properties by KeyProperty attribute, then flattens the key-value tree
         /// </summary>
         public static IList<Property> ExpandKeyPropertiesByValues(this IEnumerable<Property> properties, string cultureName, int take = 0)

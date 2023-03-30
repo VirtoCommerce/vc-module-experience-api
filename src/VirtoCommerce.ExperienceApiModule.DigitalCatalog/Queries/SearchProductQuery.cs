@@ -44,6 +44,10 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             {
                 result |= ExpProductResponseGroup.LoadWishlists;
             }
+            if (IncludeFields.ContainsAny("properties", "keyProperties"))
+            {
+                result |= ExpProductResponseGroup.LoadPropertyMetadata;
+            }
             return result.ToString();
         }
 
@@ -56,7 +60,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                 result |= ItemResponseGroup.WithImages;
             }
 
-            if (IncludeFields.ContainsAny("properties", "brandName"))
+            if (IncludeFields.ContainsAny("properties", "keyProperties", "brandName"))
             {
                 result |= ItemResponseGroup.WithProperties;
             }
