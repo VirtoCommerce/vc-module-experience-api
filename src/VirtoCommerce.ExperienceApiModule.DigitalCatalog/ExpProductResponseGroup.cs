@@ -12,6 +12,7 @@ namespace VirtoCommerce.XDigitalCatalog
         LoadVendors = 1 << 3,
         LoadRating = 1 << 4,
         LoadWishlists = 1 << 5,
-        Full = LoadPrices | LoadInventories | LoadFacets | LoadVendors | LoadRating | LoadWishlists
+        LoadPropertyMetadata = 1 << 6,
+        Full = LoadPrices | LoadInventories | LoadFacets | LoadVendors | LoadRating | LoadWishlists | LoadPropertyMetadata
     }
 }
