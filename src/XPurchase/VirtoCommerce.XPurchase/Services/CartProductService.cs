@@ -9,6 +9,7 @@ using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.InventoryModule.Core.Model.Search;
 using VirtoCommerce.InventoryModule.Core.Services;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.Security;
 using VirtoCommerce.PricingModule.Core.Model;
 using VirtoCommerce.PricingModule.Core.Services;
 using VirtoCommerce.XDigitalCatalog.Queries;
@@ -70,8 +71,8 @@ namespace VirtoCommerce.XPurchase.Services
         {
             if (aggregate is null || ids.IsNullOrEmpty())
                 return new List<CartProduct>();
-
-            var cartProducts = await GetCartProductsAsync(ids, aggregate.Store.Id);
+            //TODO: use user id from GraphQL context
+            var cartProducts = await GetCartProductsAsync(ids, aggregate.Store.Id, aggregate.Cart.CustomerId);
 
             var productsToLoadDependencies = cartProducts.Where(x => x.LoadDependencies).ToList();
             if (productsToLoadDependencies.Any())
@@ -98,10 +99,11 @@ namespace VirtoCommerce.XPurchase.Services
         /// </summary>
         /// <param name="catalogProducts">Products from the catalog</param>
         /// <returns>List of <see cref="CartProduct"/>s</returns>
-        protected async virtual Task<List<CartProduct>> GetCartProductsAsync(IEnumerable<string> ids, string storeId)
+        protected async virtual Task<List<CartProduct>> GetCartProductsAsync(IEnumerable<string> ids, string storeId, string userId)
         {
             var productsQuery = new LoadProductsQuery
             {
+                UserId = userId,
                 StoreId = storeId,
                 ObjectIds = ids.ToArray(),
                 IncludeFields = IncludeFields,
