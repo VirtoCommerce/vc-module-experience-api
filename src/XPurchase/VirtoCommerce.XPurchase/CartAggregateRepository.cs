@@ -162,7 +162,6 @@ namespace VirtoCommerce.XPurchase
                 }
 
                 await aggregate.SetItemFulfillmentCenterAsync(lineItem, cartProduct);
-                await aggregate.UpdateVendor(lineItem, cartProduct);
 
                 // validate price change
                 var lineItemContext = new CartLineItemPriceChangedValidationContext
