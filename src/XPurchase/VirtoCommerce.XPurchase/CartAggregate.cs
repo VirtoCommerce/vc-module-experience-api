@@ -185,6 +185,7 @@ namespace VirtoCommerce.XPurchase
 
                 CartProducts[newCartItem.CartProduct.Id] = newCartItem.CartProduct;
                 await SetItemFulfillmentCenterAsync(lineItem, newCartItem.CartProduct);
+                await UpdateVendor(lineItem, newCartItem.CartProduct);
                 await InnerAddLineItemAsync(lineItem, newCartItem.CartProduct, newCartItem.DynamicProperties);
             }
 
@@ -635,6 +636,13 @@ namespace VirtoCommerce.XPurchase
         {
             lineItem.FulfillmentCenterId = cartProduct?.Inventory?.FulfillmentCenterId;
             lineItem.FulfillmentCenterName = cartProduct?.Inventory?.FulfillmentCenterName;
+
+            return Task.FromResult(this);
+        }
+
+        public virtual Task<CartAggregate> UpdateVendor(LineItem lineItem, CartProduct cartProduct)
+        {
+            lineItem.VendorId = cartProduct?.Product?.Vendor;
 
             return Task.FromResult(this);
         }
