@@ -56,6 +56,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                         //Gift is not part of cart, can't use CartAggregate. Getting store and currency from the context.
                         var request = new LoadProductsQuery
                         {
+                            UserId = context.GetArgumentOrValue<string>("userId") ?? context.GetCurrentUserId(),
                             StoreId = context.GetValue<string>("storeId"),
                             CurrencyCode = context.GetArgumentOrValue<string>("currencyCode"),
                             ObjectIds = ids.ToArray(),
