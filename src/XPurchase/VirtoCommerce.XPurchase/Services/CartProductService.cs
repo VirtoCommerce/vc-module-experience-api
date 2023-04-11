@@ -71,7 +71,7 @@ namespace VirtoCommerce.XPurchase.Services
             if (aggregate is null || ids.IsNullOrEmpty())
                 return new List<CartProduct>();
 
-            var cartProducts = await GetCartProductsAsync(ids, aggregate.Store.Id, aggregate.Cart.Currency);
+            var cartProducts = await GetCartProductsAsync(ids, aggregate.Store.Id, aggregate.Cart.Currency, aggregate.Cart.CustomerId);
 
             var productsToLoadDependencies = cartProducts.Where(x => x.LoadDependencies).ToList();
             if (productsToLoadDependencies.Any())
@@ -98,13 +98,14 @@ namespace VirtoCommerce.XPurchase.Services
         /// </summary>
         /// <param name="catalogProducts">Products from the catalog</param>
         /// <returns>List of <see cref="CartProduct"/>s</returns>
-        protected async virtual Task<List<CartProduct>> GetCartProductsAsync(IEnumerable<string> ids, string storeId, string currencyCode)
+        protected async virtual Task<List<CartProduct>> GetCartProductsAsync(IEnumerable<string> ids, string storeId, string currencyCode, string userId)
         {
             var productsQuery = new LoadProductsQuery
             {
                 StoreId = storeId,
                 CurrencyCode = currencyCode,
                 ObjectIds = ids.ToArray(),
+                UserId = userId,
                 IncludeFields = IncludeFields,
                 EvaluatePromotions = false, // Promotions will be applied on the line item level
             };
