@@ -58,9 +58,9 @@ namespace VirtoCommerce.XPurchase
 
         public async Task<CartAggregate> GetCartByIdAsync(string cartId, string language = null)
         {
-            if (CartAggregateLoadSuppressor.IsSupressed)
+            if (CartAggregateContextCache.IsCartCached)
             {
-                return null;
+                return CartAggregateContextCache.CurrentCart;
             }
 
             var cart = await _shoppingCartService.GetByIdAsync(cartId);
@@ -73,9 +73,9 @@ namespace VirtoCommerce.XPurchase
 
         public Task<CartAggregate> GetCartForShoppingCartAsync(ShoppingCart cart, string language = null)
         {
-            if (CartAggregateLoadSuppressor.IsSupressed)
+            if (CartAggregateContextCache.IsCartCached)
             {
-                return Task.FromResult<CartAggregate>(null);
+                return Task.FromResult<CartAggregate>(CartAggregateContextCache.CurrentCart);
             }
 
             return InnerGetCartAggregateFromCartAsync(cart, language ?? Language.InvariantLanguage.CultureName);
@@ -83,9 +83,9 @@ namespace VirtoCommerce.XPurchase
 
         public async Task<CartAggregate> GetCartAsync(string cartName, string storeId, string userId, string language, string currencyCode, string type = null, string responseGroup = null)
         {
-            if (CartAggregateLoadSuppressor.IsSupressed)
+            if (CartAggregateContextCache.IsCartCached)
             {
-                return null;
+                return CartAggregateContextCache.CurrentCart;
             }
 
             var criteria = new ShoppingCartSearchCriteria
@@ -133,38 +133,38 @@ namespace VirtoCommerce.XPurchase
                 throw new ArgumentNullException(nameof(cart));
             }
 
-            using (CartAggregateLoadSuppressor.Supress())
+
+            var storeLoadTask = _storeService.GetByIdAsync(cart.StoreId);
+            var allCurrenciesLoadTask = _currencyService.GetAllCurrenciesAsync();
+
+            await Task.WhenAll(storeLoadTask, allCurrenciesLoadTask);
+
+            var store = storeLoadTask.Result;
+            var allCurrencies = allCurrenciesLoadTask.Result;
+
+            if (store == null)
             {
+                throw new OperationCanceledException($"store with id {cart.StoreId} not found");
+            }
 
-                var storeLoadTask = _storeService.GetByIdAsync(cart.StoreId);
-                var allCurrenciesLoadTask = _currencyService.GetAllCurrenciesAsync();
+            // Set Default Currency 
+            if (string.IsNullOrEmpty(cart.Currency))
+            {
+                cart.Currency = store.DefaultCurrency;
+            }
+            // Actualize Cart Language From Context
+            if (!string.IsNullOrEmpty(language) && cart.LanguageCode != language)
+            {
+                cart.LanguageCode = language;
+            }
 
-                await Task.WhenAll(storeLoadTask, allCurrenciesLoadTask);
+            var currency = allCurrencies.GetCurrencyForLanguage(cart.Currency, language ?? store.DefaultLanguage);
 
-                var store = storeLoadTask.Result;
-                var allCurrencies = allCurrenciesLoadTask.Result;
+            var member = await _memberResolver.ResolveMemberByIdAsync(cart.CustomerId);
+            var aggregate = _cartAggregateFactory();
 
-                if (store == null)
-                {
-                    throw new OperationCanceledException($"store with id {cart.StoreId} not found");
-                }
-
-                // Set Default Currency 
-                if (string.IsNullOrEmpty(cart.Currency))
-                {
-                    cart.Currency = store.DefaultCurrency;
-                }
-                // Actualize Cart Language From Context
-                if (!string.IsNullOrEmpty(language) && cart.LanguageCode != language)
-                {
-                    cart.LanguageCode = language;
-                }
-
-                var currency = allCurrencies.GetCurrencyForLanguage(cart.Currency, language ?? store.DefaultLanguage);
-
-                var member = await _memberResolver.ResolveMemberByIdAsync(cart.CustomerId);
-                var aggregate = _cartAggregateFactory();
-
+            using (CartAggregateContextCache.Cache(aggregate))
+            {
                 aggregate.GrabCart(cart, store, member, currency);
 
 

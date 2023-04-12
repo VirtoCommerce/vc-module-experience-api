@@ -3,7 +3,10 @@ using System.Threading;
 
 namespace VirtoCommerce.XPurchase
 {
-    public static class CartAggregateLoadSuppressor
+    /// <summary>
+    /// Prevent from loading CartAggregate from the database and run middleware for the current asynchronous control flow
+    /// </summary>
+    public static class CartAggregateContextCache
     {
         private class DisposableActionGuard : IDisposable
         {
@@ -29,20 +32,25 @@ namespace VirtoCommerce.XPurchase
             }
         }
 
-        private static readonly AsyncLocal<bool> Storage = new AsyncLocal<bool>();
+        private static readonly AsyncLocal<CartAggregate> Storage = new AsyncLocal<CartAggregate>();
+
+        /// <summary>
+        /// Get Current Cart Aggregate from the current asynchronous control flow
+        /// </summary>
+        public static CartAggregate CurrentCart => Storage.Value;
 
         /// <summary>
         /// The flag indicates that CartAggregateLoad are suppressed for the current asynchronous control flow
         /// </summary>
-        public static bool IsSupressed => Storage.Value;
+        public static bool IsCartCached => Storage.Value != null;
 
         /// <summary>
         /// The flag indicates that CartAggregateLoad are suppressed for the current asynchronous control flow
         /// </summary>
-        public static IDisposable Supress()
+        public static IDisposable Cache(CartAggregate cartAggregate)
         {
-            Storage.Value = true;
-            return new DisposableActionGuard(() => { Storage.Value = false; });
+            Storage.Value = cartAggregate;
+            return new DisposableActionGuard(() => { Storage.Value = cartAggregate; });
         }
     }
 }
