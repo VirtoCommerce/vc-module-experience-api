@@ -130,9 +130,16 @@ namespace VirtoCommerce.XPurchase
             {
                 throw new OperationCanceledException($"store with id {cart.StoreId} not found");
             }
+
+            // Set Default Currency 
             if (string.IsNullOrEmpty(cart.Currency))
             {
                 cart.Currency = store.DefaultCurrency;
+            }
+            // Actualize Cart Language From Context
+            if (!string.IsNullOrEmpty(language) && cart.LanguageCode != language)
+            {
+                cart.LanguageCode = language;
             }
 
             language = !string.IsNullOrEmpty(cart.LanguageCode) ? cart.LanguageCode : store.DefaultLanguage;
