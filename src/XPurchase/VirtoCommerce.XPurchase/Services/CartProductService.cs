@@ -102,7 +102,7 @@ namespace VirtoCommerce.XPurchase.Services
         {
             var productsQuery = new LoadProductsQuery
             {
-                UserId = userId,
+                UserId = null,
                 StoreId = storeId,
                 CurrencyCode = currencyCode,
                 ObjectIds = ids.ToArray(),
