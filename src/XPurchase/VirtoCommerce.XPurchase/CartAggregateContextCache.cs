@@ -35,18 +35,20 @@ namespace VirtoCommerce.XPurchase
         private static readonly AsyncLocal<CartAggregate> Storage = new AsyncLocal<CartAggregate>();
 
         /// <summary>
-        /// Get Current Cart Aggregate from the current asynchronous control flow
+        /// Get Current Cart Aggregate from the current asynchronous control flow.
         /// </summary>
         public static CartAggregate CurrentCart => Storage.Value;
 
         /// <summary>
-        /// The flag indicates that CartAggregateLoad are suppressed for the current asynchronous control flow
+        /// Get flag indicates that CartAggregateLoad are suppressed for the current asynchronous control flow.
         /// </summary>
         public static bool IsCartCached => Storage.Value != null;
 
         /// <summary>
-        /// The flag indicates that CartAggregateLoad are suppressed for the current asynchronous control flow
+        /// Add CartAggregate to the current asynchronous control flow.
         /// </summary>
+        /// <param name="cartAggregate"></param>
+        /// <returns></returns>
         public static IDisposable Cache(CartAggregate cartAggregate)
         {
             Storage.Value = cartAggregate;
