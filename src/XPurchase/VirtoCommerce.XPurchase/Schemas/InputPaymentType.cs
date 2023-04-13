@@ -15,6 +15,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field(x => x.Price, nullable: true);
             Field(x => x.Amount, nullable: true);
             Field(x => x.VendorId, nullable: true);
+            Field(x => x.Comment, nullable: true).Description("Text comment");
 
             Field<ListGraphType<InputDynamicPropertyValueType>>("dynamicProperties",
                 "Dynamic properties");

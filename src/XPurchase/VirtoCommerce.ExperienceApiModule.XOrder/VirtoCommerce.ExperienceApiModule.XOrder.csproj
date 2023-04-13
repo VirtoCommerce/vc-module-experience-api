@@ -19,8 +19,7 @@
         <PackageReference Include="VirtoCommerce.OrdersModule.Core" Version="3.220.0" />
         <PackageReference Include="VirtoCommerce.OrdersModule.Data" Version="3.220.0" />
         <PackageReference Include="VirtoCommerce.PaymentModule.Core" Version="3.204.0" />
-        <PackageReference Include="VirtoCommerce.Platform.Core" Version="3.271.0" />
-        <PackageReference Include="VirtoCommerce.CartModule.Core" Version="3.210.0" />
+        <PackageReference Include="VirtoCommerce.Platform.Core" Version="3.282.0" />
     </ItemGroup>
 
     <ItemGroup>
