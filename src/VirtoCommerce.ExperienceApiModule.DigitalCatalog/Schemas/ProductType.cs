@@ -251,7 +251,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 "Product images",
                 resolve: context =>
                 {
-                    var images = context.Source.IndexedProduct.Images;
+                    var images = context.Source.IndexedProduct.Images ?? Array.Empty<Image>();
 
                     return context.GetValue<string>("cultureName") switch
                     {
@@ -304,7 +304,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 "Assets",
                 resolve: context =>
                 {
-                    var assets = context.Source.IndexedProduct.Assets;
+                    var assets = context.Source.IndexedProduct.Assets ?? Array.Empty<Asset>();
 
                     return context.GetValue<string>("cultureName") switch
                     {
