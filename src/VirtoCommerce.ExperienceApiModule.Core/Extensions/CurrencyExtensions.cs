@@ -26,7 +26,8 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
             return new Currency(
                 cultureName != null ? new Language(cultureName) : Language.InvariantLanguage,
                 currency.Code,
-                currency.Name, currency.Symbol,
+                currency.Name,
+                currency.Symbol,
                 currency.ExchangeRate
             )
             {

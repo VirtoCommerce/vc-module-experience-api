@@ -86,6 +86,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                         var order = context.GetValueForSource<CustomerOrderAggregate>().Order;
                         var request = new LoadProductsQuery
                         {
+                            UserId = context.GetArgumentOrValue<string>("userId") ?? context.GetCurrentUserId(),
                             StoreId = order.StoreId,
                             CurrencyCode = order.Currency,
                             ObjectIds = ids.ToArray(),
