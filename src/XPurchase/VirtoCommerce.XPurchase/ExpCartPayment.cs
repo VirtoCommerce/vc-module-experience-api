@@ -14,6 +14,7 @@ namespace VirtoCommerce.XPurchase
         public Optional<string> Currency { get; set; }
         public Optional<decimal> Price { get; set; }
         public Optional<decimal> Amount { get; set; }
+        public Optional<string> Purpose { get; set; }
         public Optional<string> Comment { get; set; }
         public Optional<string> VendorId { get; set; }
 
@@ -56,6 +57,11 @@ namespace VirtoCommerce.XPurchase
             if (Amount?.IsSpecified == true)
             {
                 payment.Amount = Amount.Value;
+            }
+
+            if (Purpose?.IsSpecified == true)
+            {
+                payment.Purpose = Purpose.Value;
             }
 
             if (Comment?.IsSpecified == true)
