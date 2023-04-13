@@ -19,6 +19,7 @@ using VirtoCommerce.StoreModule.Core.Services;
 using VirtoCommerce.XPurchase.Queries;
 using VirtoCommerce.XPurchase.Services;
 using VirtoCommerce.XPurchase.Validators;
+using CartAggregateBuilder = VirtoCommerce.XPurchase.AsyncObjectBuilder<VirtoCommerce.XPurchase.CartAggregate>;
 
 namespace VirtoCommerce.XPurchase
 {
@@ -58,9 +59,9 @@ namespace VirtoCommerce.XPurchase
 
         public async Task<CartAggregate> GetCartByIdAsync(string cartId, string language = null)
         {
-            if (CartAggregateContextCache.IsCartCached)
+            if (CartAggregateBuilder.IsBuilding(out var cartAggregate))
             {
-                return CartAggregateContextCache.CurrentCart;
+                return cartAggregate;
             }
 
             var cart = await _shoppingCartService.GetByIdAsync(cartId);
@@ -73,9 +74,9 @@ namespace VirtoCommerce.XPurchase
 
         public Task<CartAggregate> GetCartForShoppingCartAsync(ShoppingCart cart, string language = null)
         {
-            if (CartAggregateContextCache.IsCartCached)
+            if (CartAggregateBuilder.IsBuilding(out var cartAggregate))
             {
-                return Task.FromResult<CartAggregate>(CartAggregateContextCache.CurrentCart);
+                return Task.FromResult(cartAggregate);
             }
 
             return InnerGetCartAggregateFromCartAsync(cart, language ?? Language.InvariantLanguage.CultureName);
@@ -83,9 +84,9 @@ namespace VirtoCommerce.XPurchase
 
         public async Task<CartAggregate> GetCartAsync(string cartName, string storeId, string userId, string language, string currencyCode, string type = null, string responseGroup = null)
         {
-            if (CartAggregateContextCache.IsCartCached)
+            if (CartAggregateBuilder.IsBuilding(out var cartAggregate))
             {
-                return CartAggregateContextCache.CurrentCart;
+                return cartAggregate;
             }
 
             var criteria = new ShoppingCartSearchCriteria
@@ -133,7 +134,6 @@ namespace VirtoCommerce.XPurchase
                 throw new ArgumentNullException(nameof(cart));
             }
 
-
             var storeLoadTask = _storeService.GetByIdAsync(cart.StoreId);
             var allCurrenciesLoadTask = _currencyService.GetAllCurrenciesAsync();
 
@@ -163,7 +163,7 @@ namespace VirtoCommerce.XPurchase
             var member = await _memberResolver.ResolveMemberByIdAsync(cart.CustomerId);
             var aggregate = _cartAggregateFactory();
 
-            using (CartAggregateContextCache.Cache(aggregate))
+            using (CartAggregateBuilder.Build(aggregate))
             {
                 aggregate.GrabCart(cart, store, member, currency);
 
@@ -217,7 +217,6 @@ namespace VirtoCommerce.XPurchase
                 }
 
                 return aggregate;
-
             }
         }
 
