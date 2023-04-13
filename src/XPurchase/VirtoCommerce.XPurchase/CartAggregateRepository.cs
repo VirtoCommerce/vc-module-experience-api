@@ -158,7 +158,8 @@ namespace VirtoCommerce.XPurchase
                 cart.LanguageCode = language;
             }
 
-            var currency = allCurrencies.GetCurrencyForLanguage(cart.Currency, language ?? store.DefaultLanguage);
+            language = !string.IsNullOrEmpty(cart.LanguageCode) ? cart.LanguageCode : store.DefaultLanguage;
+            var currency = allCurrencies.GetCurrencyForLanguage(cart.Currency, language);
 
             var member = await _memberResolver.ResolveMemberByIdAsync(cart.CustomerId);
             var aggregate = _cartAggregateFactory();
