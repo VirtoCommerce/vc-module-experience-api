@@ -40,6 +40,28 @@ namespace VirtoCommerce.ExperienceApiModule.XCMS.Schemas
                     return result.Menus;
                 })
             });
+
+            _ = schema.Query.AddField(new FieldType
+            {
+                Name = "menu",
+                Arguments = new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "storeId" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "cultureName" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }
+                ),
+                Type = GraphTypeExtenstionHelper.GetActualType<MenuLinkListType>(),
+                Resolver = new AsyncFieldResolver<object>(async context =>
+                {
+                    var result = await _mediator.Send(new GetMenuQuery
+                    {
+                        StoreId = context.GetArgument<string>("storeId"),
+                        CultureName = context.GetArgument<string>("cultureName"),
+                        Name = context.GetArgument<string>("name"),
+                    });
+
+                    return result.MenuList;
+                })
+            });
         }
     }
 }
