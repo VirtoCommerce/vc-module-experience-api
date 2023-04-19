@@ -15,7 +15,7 @@ namespace VirtoCommerce.XPurchase.Queries
 
         public Task<CartAggregate> Handle(GetWishlistQuery request, CancellationToken cancellationToken)
         {
-            return _cartAggrRepository.GetCartByIdAsync(request.ListId);
+            return _cartAggrRepository.GetCartByIdAsync(request.ListId, request.CultureName);
         }
     }
 }
