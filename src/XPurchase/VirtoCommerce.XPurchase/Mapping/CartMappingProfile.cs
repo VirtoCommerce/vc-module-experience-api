@@ -211,7 +211,9 @@ namespace VirtoCommerce.XPurchase.Mapping
                 promoEvalcontext.StoreId = cartAggr.Cart.StoreId;
                 promoEvalcontext.Coupons = cartAggr.Cart.Coupons?.ToList();
                 promoEvalcontext.Currency = cartAggr.Cart.Currency;
-                promoEvalcontext.CustomerId = cartAggr.Cart.CustomerId;
+                promoEvalcontext.CustomerId = promoEvalcontext.UserId = cartAggr.Cart.CustomerId;
+                promoEvalcontext.ContactId = cartAggr.Member?.Id;
+                promoEvalcontext.OrganizaitonId = cartAggr.Cart.OrganizationId;
                 promoEvalcontext.UserGroups = cartAggr.Member?.Groups.ToArray();
                 promoEvalcontext.IsRegisteredUser = !cartAggr.Cart.IsAnonymous;
                 promoEvalcontext.Language = cartAggr.Cart.LanguageCode;
