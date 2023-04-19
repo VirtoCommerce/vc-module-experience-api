@@ -15,7 +15,7 @@
         <PackageReference Include="VirtoCommerce.Platform.Core" Version="3.271.0" />
         <PackageReference Include="VirtoCommerce.Platform.Security" Version="3.271.0" />
         <PackageReference Include="VirtoCommerce.CartModule.Core" Version="3.210.0" />
-        <PackageReference Include="VirtoCommerce.MarketingModule.Core" Version="3.210.0-alpha.805-pt-11187" />
+        <PackageReference Include="VirtoCommerce.MarketingModule.Core" Version="3.210.0" />
         <PackageReference Include="GraphQL" Version="4.6.0" />
         <PackageReference Include="GraphQL.Authorization" Version="4.0.0" />
         <PackageReference Include="GraphQL.Relay" Version="0.6.2" />
