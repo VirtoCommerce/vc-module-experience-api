@@ -1124,7 +1124,8 @@ namespace VirtoCommerce.XPurchase.Schemas
             {
                 Name = "wishlist",
                 Arguments = new QueryArguments(
-                        new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "listId", Description = "List Id" }),
+                        new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "listId", Description = "List Id" },
+                        new QueryArgument<StringGraphType> { Name = "cultureName", Description = "Culture name (\"en-Us\")" }),
                 Type = GraphTypeExtenstionHelper.GetActualType<WishlistType>(),
                 Resolver = new AsyncFieldResolver<object>(async context =>
                 {
