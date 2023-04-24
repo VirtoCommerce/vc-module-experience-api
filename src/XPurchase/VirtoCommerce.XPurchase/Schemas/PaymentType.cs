@@ -26,6 +26,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field(x => x.Id, nullable: true).Description("Payment Id");
             Field(x => x.OuterId, nullable: true).Description("Value of payment outer id");
             Field(x => x.PaymentGatewayCode, nullable: true).Description("Value of payment gateway code");
+            Field(x => x.Purpose, nullable: true);
             Field<CurrencyType>("currency",
                 "Currency",
                 resolve: context => context.GetCart().Currency);
@@ -64,6 +65,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field<ListGraphType<DiscountType>>("discounts",
                 "Discounts",
                 resolve: context => context.Source.Discounts);
+            Field(x => x.Comment, nullable: true).Description("Text comment");
 
             var vendorField = new FieldType
             {

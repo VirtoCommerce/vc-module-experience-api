@@ -14,6 +14,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Models
         public Optional<string> Currency { get; set; }
         public Optional<decimal> Price { get; set; }
         public Optional<decimal> Amount { get; set; }
+        public Optional<string> Comment { get; set; }
         public Optional<string> VendorId { get; set; }
 
         public Optional<ExpOrderAddress> BillingAddress { get; set; }
@@ -59,9 +60,14 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Models
                 payment.VendorId = VendorId.Value;
             }
 
+            if (Comment?.IsSpecified == true)
+            {
+                payment.Comment = Comment.Value;
+            }
+
             if (BillingAddress?.IsSpecified == true)
             {
-                payment.BillingAddress = BillingAddress.Value?.MapTo(payment.BillingAddress) ?? null;
+                payment.BillingAddress = BillingAddress.Value?.MapTo(payment.BillingAddress);
             }
 
             return payment;
