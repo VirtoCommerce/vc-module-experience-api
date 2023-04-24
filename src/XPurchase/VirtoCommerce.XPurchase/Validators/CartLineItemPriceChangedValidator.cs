@@ -15,7 +15,7 @@ namespace VirtoCommerce.XPurchase.Validators
                 {
                     if (cartProduct.Price is null)
                     {
-                        context.AddFailure(CartErrorDescriber.ProductPriceChangedError(lineItem, lineItem.SalePrice, lineItem.SalePriceWithTax, 0.0m, 0.0m));
+                        context.AddFailure(CartErrorDescriber.ProductUnavailableError(lineItem));
                     }
                     else
                     {
