@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -33,7 +34,15 @@ namespace VirtoCommerce.ExperienceApiModule.XCMS.Queries
 
             return new GetMenusResponse
             {
-                Menus = result,
+                Menus = result.Select(x => new Menu
+                {
+                    Name = x.Name,
+                    OuterId = x.OuterId,
+                    Items = x.MenuLinks?.Select(y => new MenuItem
+                    {
+                        Link = y
+                    }).ToList() ?? new List<MenuItem>()
+                }),
             };
         }
     }
