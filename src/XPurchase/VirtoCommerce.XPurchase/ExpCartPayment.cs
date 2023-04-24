@@ -14,6 +14,8 @@ namespace VirtoCommerce.XPurchase
         public Optional<string> Currency { get; set; }
         public Optional<decimal> Price { get; set; }
         public Optional<decimal> Amount { get; set; }
+        public Optional<string> Purpose { get; set; }
+        public Optional<string> Comment { get; set; }
         public Optional<string> VendorId { get; set; }
 
         public Optional<ExpCartAddress> BillingAddress { get; set; }
@@ -57,6 +59,16 @@ namespace VirtoCommerce.XPurchase
                 payment.Amount = Amount.Value;
             }
 
+            if (Purpose?.IsSpecified == true)
+            {
+                payment.Purpose = Purpose.Value;
+            }
+
+            if (Comment?.IsSpecified == true)
+            {
+                payment.Comment = Comment.Value;
+            }
+
             if (VendorId?.IsSpecified == true)
             {
                 payment.VendorId = VendorId.Value;
@@ -64,7 +76,7 @@ namespace VirtoCommerce.XPurchase
 
             if (BillingAddress?.IsSpecified == true)
             {
-                payment.BillingAddress = BillingAddress.Value?.MapTo(payment.BillingAddress) ?? null;
+                payment.BillingAddress = BillingAddress.Value?.MapTo(payment.BillingAddress);
             }
 
             return payment;

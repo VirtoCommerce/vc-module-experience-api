@@ -23,6 +23,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field(x => x.Currency, nullable: true).Description("Currency value");
             Field(x => x.Price, nullable: true).Description("Price value");
             Field(x => x.VendorId, nullable: true).Description("Vendor ID");
+            Field(x => x.Comment, nullable: true).Description("Text comment");
             //Field(x=> x.Items);
 
             Field<ListGraphType<InputDynamicPropertyValueType>>("dynamicProperties",

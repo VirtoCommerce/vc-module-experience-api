@@ -72,6 +72,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field<CurrencyType>("currency",
                 "Currency",
                 resolve: context => context.GetCart().Currency);
+            Field(x => x.Comment, nullable: true).Description("Text comment");
 
             var vendorField = new FieldType
             {
