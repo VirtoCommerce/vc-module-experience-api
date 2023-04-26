@@ -68,7 +68,6 @@ namespace VirtoCommerce.ExperienceApiModule.XCMS.Schemas
                 Name = "page",
                 Arguments = new QueryArguments(
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "storeId" },
-                    new QueryArgument<StringGraphType> { Name = "cultureName" },
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "keyword" }
                 ),
                 Type = GraphTypeExtenstionHelper.GetActualType<ListGraphType<PageType>>(),
