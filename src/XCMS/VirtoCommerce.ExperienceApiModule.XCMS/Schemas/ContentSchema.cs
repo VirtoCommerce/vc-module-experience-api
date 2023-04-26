@@ -77,7 +77,6 @@ namespace VirtoCommerce.ExperienceApiModule.XCMS.Schemas
                     var result = await _mediator.Send(new GetPageQuery
                     {
                         StoreId = context.GetArgument<string>("storeId"),
-                        CultureName = context.GetArgument<string>("cultureName"),
                         Keyword = context.GetArgument<string>("keyword"),
                     });
 
