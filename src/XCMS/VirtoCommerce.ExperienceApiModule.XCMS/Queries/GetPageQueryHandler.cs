@@ -21,7 +21,6 @@ namespace VirtoCommerce.ExperienceApiModule.XCMS.Queries
             var criteria = new ContentSearchCriteria
             {
                 StoreId = request.StoreId,
-                //CultureName = request.CultureName,
                 Keyword = request.Keyword
             };
             var result = await _searchContentService.SearchContentAsync(criteria);
