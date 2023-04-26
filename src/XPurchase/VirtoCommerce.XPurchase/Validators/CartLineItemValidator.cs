@@ -14,7 +14,9 @@ namespace VirtoCommerce.XPurchase.Validators
                 var allCartProducts = lineItemContext.AllCartProducts;
 
                 var cartProduct = allCartProducts.FirstOrDefault(x => x.Id.EqualsInvariant(lineItem.ProductId));
-                if (cartProduct == null || !AbstractTypeFactory<ProductIsBuyableSpecification>.TryCreateInstance().IsSatisfiedBy(cartProduct))
+                if (cartProduct is null
+                    || cartProduct.Price is null
+                    || !AbstractTypeFactory<ProductIsBuyableSpecification>.TryCreateInstance().IsSatisfiedBy(cartProduct))
                 {
                     context.AddFailure(CartErrorDescriber.ProductUnavailableError(lineItem));
                 }

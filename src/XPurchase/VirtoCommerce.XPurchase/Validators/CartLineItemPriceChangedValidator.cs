@@ -13,10 +13,17 @@ namespace VirtoCommerce.XPurchase.Validators
 
                 if (lineItemContext.CartProducts.TryGetValue(lineItem.ProductId, out var cartProduct) && cartProduct != null)
                 {
-                    var tierPrice = cartProduct.Price.GetTierPrice(lineItem.Quantity);
-                    if (tierPrice.ActualPrice.Amount != lineItem.SalePrice)
+                    if (cartProduct.Price is null)
                     {
-                        context.AddFailure(CartErrorDescriber.ProductPriceChangedError(lineItem, lineItem.SalePrice, lineItem.SalePriceWithTax, tierPrice.ActualPrice.Amount, tierPrice.ActualPriceWithTax.Amount));
+                        context.AddFailure(CartErrorDescriber.ProductUnavailableError(lineItem));
+                    }
+                    else
+                    {
+                        var tierPrice = cartProduct.Price.GetTierPrice(lineItem.Quantity);
+                        if (tierPrice.ActualPrice.Amount != lineItem.SalePrice)
+                        {
+                            context.AddFailure(CartErrorDescriber.ProductPriceChangedError(lineItem, lineItem.SalePrice, lineItem.SalePriceWithTax, tierPrice.ActualPrice.Amount, tierPrice.ActualPriceWithTax.Amount));
+                        }
                     }
                 }
             });
