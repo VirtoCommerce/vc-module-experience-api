@@ -1,9 +1,9 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <module>
   <id>VirtoCommerce.ExperienceApi</id>
-  <version>3.311.0</version>
+  <version>3.312.0</version>
   <version-tag />
-  <platformVersion>3.282.0</platformVersion>
+  <platformVersion>3.302.0</platformVersion>
   <title>Commerce Experience API</title>
   <description>An intermediated layer between clients and enterprise services powered by GraphQL protocol</description>
   <authors>
