@@ -9,7 +9,7 @@
 
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.13" />
-        <PackageReference Include="VirtoCommerce.Platform.Core" Version="3.271.0" />
+        <PackageReference Include="VirtoCommerce.Platform.Core" Version="3.302.0" />
         <PackageReference Include="Scriban" Version="2.1.1" />
     </ItemGroup>
 
