@@ -207,15 +207,7 @@ namespace VirtoCommerce.XPurchase
                     aggregate.SetLineItemTierPrice(cartProduct.Price, lineItem.Quantity, lineItem);
                 }
 
-                // resave cart if price change detected
-                if (aggregate.ValidationWarnings.Any())
-                {
-                    await SaveAsync(aggregate);
-                }
-                else
-                {
-                    await aggregate.RecalculateAsync();
-                }
+                await aggregate.RecalculateAsync();
 
                 return aggregate;
             }

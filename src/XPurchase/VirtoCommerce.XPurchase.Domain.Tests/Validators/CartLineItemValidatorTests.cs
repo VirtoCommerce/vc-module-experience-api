@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -46,6 +47,7 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
         [InlineData("Product_null")]
         [InlineData("Product_IsActive_false")]
         [InlineData("Product_IsBuyable_false")]
+        [InlineData("Product_ZeroPrice")]
         public async Task ValidateCartLineItem_RuleSetStrict_UnavailableError(string scenario)
         {
             // Arrange
@@ -66,6 +68,11 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
                 case "Product_IsBuyable_false":
                     cartProduct.Product.IsBuyable = false;
                     break;
+
+                case "Product_ZeroPrice":
+                    cartProduct.ApplyPrices(Array.Empty<PricingModule.Core.Model.Price>(), null);
+                    break;
+
             }
 
             // Act

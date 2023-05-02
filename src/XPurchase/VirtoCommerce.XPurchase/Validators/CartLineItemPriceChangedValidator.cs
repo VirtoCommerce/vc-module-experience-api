@@ -3,6 +3,9 @@ using FluentValidation;
 namespace VirtoCommerce.XPurchase.Validators
 {
 
+    /// <summary>
+    /// Represents a cart lineitem price changed validator which transformed to cart warning.
+    /// </summary>
     public class CartLineItemPriceChangedValidator : AbstractValidator<CartLineItemPriceChangedValidationContext>
     {
         public CartLineItemPriceChangedValidator()
@@ -11,19 +14,13 @@ namespace VirtoCommerce.XPurchase.Validators
             {
                 var lineItem = lineItemContext.LineItem;
 
-                if (lineItemContext.CartProducts.TryGetValue(lineItem.ProductId, out var cartProduct) && cartProduct != null)
+                if (lineItemContext.CartProducts.TryGetValue(lineItem.ProductId, out var cartProduct) &&
+                    cartProduct?.Price != null)
                 {
-                    if (cartProduct.Price is null)
+                    var tierPrice = cartProduct.Price.GetTierPrice(lineItem.Quantity);
+                    if (tierPrice.ActualPrice.Amount > 0 && tierPrice.ActualPrice.Amount != lineItem.SalePrice)
                     {
-                        context.AddFailure(CartErrorDescriber.ProductUnavailableError(lineItem));
-                    }
-                    else
-                    {
-                        var tierPrice = cartProduct.Price.GetTierPrice(lineItem.Quantity);
-                        if (tierPrice.ActualPrice.Amount != lineItem.SalePrice)
-                        {
-                            context.AddFailure(CartErrorDescriber.ProductPriceChangedError(lineItem, lineItem.SalePrice, lineItem.SalePriceWithTax, tierPrice.ActualPrice.Amount, tierPrice.ActualPriceWithTax.Amount));
-                        }
+                        context.AddFailure(CartErrorDescriber.ProductPriceChangedError(lineItem, lineItem.SalePrice, lineItem.SalePriceWithTax, tierPrice.ActualPrice.Amount, tierPrice.ActualPriceWithTax.Amount));
                     }
                 }
             });
