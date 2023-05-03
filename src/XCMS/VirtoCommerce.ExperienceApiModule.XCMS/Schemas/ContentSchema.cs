@@ -1,3 +1,4 @@
+using System;
 using GraphQL;
 using GraphQL.Resolvers;
 using GraphQL.Types;
@@ -63,25 +64,56 @@ namespace VirtoCommerce.ExperienceApiModule.XCMS.Schemas
                 })
             });
 
-            _ = schema.Query.AddField(new FieldType
-            {
-                Name = "page",
-                Arguments = new QueryArguments(
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "storeId" },
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "keyword" }
-                ),
-                Type = GraphTypeExtenstionHelper.GetActualType<ListGraphType<PageType>>(),
-                Resolver = new AsyncFieldResolver<object>(async context =>
-                {
-                    var result = await _mediator.Send(new GetPageQuery
-                    {
-                        StoreId = context.GetArgument<string>("storeId"),
-                        Keyword = context.GetArgument<string>("keyword"),
-                    });
+            var pagesConnectionBuilder = GraphTypeExtenstionHelper.CreateConnection<PageType, object>()
+                .Name("pages")
+                .Argument<NonNullGraphType<StringGraphType>>("storeId", "The store id where pages are searched")
+                .Argument<NonNullGraphType<StringGraphType>>("keyword", "The keyword parameter performs the full-text search")
+                .Argument<StringGraphType>("cultureName", "The language for which all localized category data will be returned")
+                .PageSize(20);
 
-                    return result.Pages;
-                })
+            pagesConnectionBuilder.ResolveAsync(async context =>
+            {
+                var first = context.First;
+                var skip = Convert.ToInt32(context.After ?? 0.ToString());
+
+                var query = new GetPageQuery
+                {
+                    Take = first ?? context.PageSize ?? 10,
+                    Skip = skip,
+                    StoreId = context.GetArgument<string>("storeId"),
+                    CultureName = context.GetArgument<string>("cultureName"),
+                    Keyword = context.GetArgument<string>("keyword"),
+                };
+
+                var response = await _mediator.Send(query);
+
+                var result = new PagedConnection<PageItem>(response.Pages, query.Skip, query.Take, response.TotalCount);
+                return result;
             });
+
+            schema.Query.AddField(pagesConnectionBuilder.FieldType);
+
+            //_ = schema.Query.AddField(new FieldType
+            //{
+            //    Name = "pages",
+            //    Arguments = new QueryArguments(
+            //        new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "storeId" },
+            //        new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "keyword" },
+            //        new QueryArgument<StringGraphType> { Name = "cultureName" }
+            //    ),
+            //    Type = GraphTypeExtenstionHelper.GetActualType<ListGraphType<PageType>>(),
+            //    Resolver = new AsyncFieldResolver<object>(async context =>
+            //    {
+            //        var result = await _mediator.Send(new GetPageQuery
+            //        {
+            //            StoreId = context.GetArgument<string>("storeId"),
+            //            CultureName = context.GetArgument<string>("cultureName"),
+            //            Keyword = context.GetArgument<string>("keyword"),
+            //        });
+
+            //        return result.Pages;
+            //    })
+            //});
         }
     }
 }
