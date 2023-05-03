@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <module>
   <id>VirtoCommerce.ExperienceApi</id>
-  <version>3.315.0</version>
+  <version>3.316.0</version>
   <version-tag />
   <platformVersion>3.302.0</platformVersion>
   <title>Commerce Experience API</title>
@@ -35,12 +35,12 @@
     <dependency id="VirtoCommerce.Cart" version="3.219.0" />
     <dependency id="VirtoCommerce.Marketing" version="3.210.0" />
     <dependency id="VirtoCommerce.Inventory" version="3.205.0" />
-    <dependency id="VirtoCommerce.Payment" version="3.204.0" />
+    <dependency id="VirtoCommerce.Payment" version="3.208.0" />
     <dependency id="VirtoCommerce.Pricing" version="3.201.0" />
     <dependency id="VirtoCommerce.Search" version="3.204.0" />
     <dependency id="VirtoCommerce.Shipping" version="3.200.0" />
     <dependency id="VirtoCommerce.Customer" version="3.210.0" />
-    <dependency id="VirtoCommerce.Orders" version="3.220.0" />
+    <dependency id="VirtoCommerce.Orders" version="3.231.0" />
     <dependency id="VirtoCommerce.Store" version="3.201.0" />
     <dependency id="VirtoCommerce.Catalog" version="3.262.0" />
     <dependency id="VirtoCommerce.Tax" version="3.200.0" />
