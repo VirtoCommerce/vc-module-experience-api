@@ -92,28 +92,6 @@ namespace VirtoCommerce.ExperienceApiModule.XCMS.Schemas
             });
 
             schema.Query.AddField(pagesConnectionBuilder.FieldType);
-
-            //_ = schema.Query.AddField(new FieldType
-            //{
-            //    Name = "pages",
-            //    Arguments = new QueryArguments(
-            //        new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "storeId" },
-            //        new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "keyword" },
-            //        new QueryArgument<StringGraphType> { Name = "cultureName" }
-            //    ),
-            //    Type = GraphTypeExtenstionHelper.GetActualType<ListGraphType<PageType>>(),
-            //    Resolver = new AsyncFieldResolver<object>(async context =>
-            //    {
-            //        var result = await _mediator.Send(new GetPageQuery
-            //        {
-            //            StoreId = context.GetArgument<string>("storeId"),
-            //            CultureName = context.GetArgument<string>("cultureName"),
-            //            Keyword = context.GetArgument<string>("keyword"),
-            //        });
-
-            //        return result.Pages;
-            //    })
-            //});
         }
     }
 }

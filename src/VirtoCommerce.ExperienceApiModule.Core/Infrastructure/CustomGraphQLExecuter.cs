@@ -12,6 +12,7 @@ using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using VirtoCommerce.Platform.Core.Common;
 
@@ -32,18 +33,19 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Infrastructure
             IOptions<GraphQLOptions> options,
             IEnumerable<IDocumentExecutionListener> listeners,
             IEnumerable<IValidationRule> validationRules,
-            TelemetryClient telemetryClient,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            IServiceProvider serviceProvider)
             : base(schema, documentExecuter, options, listeners, validationRules)
         {
-            _telemetryClient = telemetryClient;
+            _telemetryClient = serviceProvider.GetService<TelemetryClient>();
             _httpContextAccessor = httpContextAccessor;
         }
 
         public override async Task<ExecutionResult> ExecuteAsync(string operationName, string query, Inputs variables, IDictionary<string, object> context, IServiceProvider requestServices, CancellationToken cancellationToken = default)
         {
             // process Playground schema introspection queries without AppInsights logging
-            if (operationName == "IntrospectionQuery")
+            if (_telemetryClient == null ||
+                operationName == "IntrospectionQuery")
             {
                 return await base.ExecuteAsync(operationName, query, variables, context, requestServices, cancellationToken);
             }
