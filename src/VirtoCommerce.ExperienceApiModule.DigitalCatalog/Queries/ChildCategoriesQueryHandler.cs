@@ -3,9 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using AutoMapper;
+using MediatR;
+using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
+using VirtoCommerce.ExperienceApiModule.Core;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
+using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.GenericCrud;
+using VirtoCommerce.SearchModule.Core.Services;
+using VirtoCommerce.StoreModule.Core.Model;
+using VirtoCommerce.StoreModule.Core.Services;
+using VirtoCommerce.XDigitalCatalog.Facets;
 
 namespace VirtoCommerce.XDigitalCatalog.Queries;
 
@@ -13,9 +23,37 @@ public class ChildCategoriesQueryHandler : IQueryHandler<ChildCategoriesQuery, C
 {
     private readonly ICategoryTreeService _categoryTreeService;
 
-    public ChildCategoriesQueryHandler(ICategoryTreeService categoryTreeService)
+    private readonly IMapper _mapper;
+    private readonly ISearchProvider _searchProvider;
+    private readonly IStoreCurrencyResolver _storeCurrencyResolver;
+    private readonly ICrudService<Store> _storeService;
+    private readonly IGenericPipelineLauncher _pipeline;
+    private readonly IAggregationConverter _aggregationConverter;
+    private readonly ISearchPhraseParser _phraseParser;
+    private readonly IMediator _mediator;
+
+    public ChildCategoriesQueryHandler(
+        ICategoryTreeService categoryTreeService,
+
+        ISearchProvider searchProvider,
+        IMapper mapper,
+        IStoreCurrencyResolver storeCurrencyResolver,
+        ICrudService<Store> storeService,
+        IGenericPipelineLauncher pipeline,
+        IAggregationConverter aggregationConverter,
+        ISearchPhraseParser phraseParser,
+        IMediator mediator)
     {
         _categoryTreeService = categoryTreeService;
+
+        _searchProvider = searchProvider;
+        _mapper = mapper;
+        _storeCurrencyResolver = storeCurrencyResolver;
+        _storeService = storeService;
+        _pipeline = pipeline;
+        _aggregationConverter = aggregationConverter;
+        _phraseParser = phraseParser;
+        _mediator = mediator;
     }
 
     public virtual async Task<ChildCategoriesQueryResponse> Handle(ChildCategoriesQuery request, CancellationToken cancellationToken)
@@ -46,8 +84,51 @@ public class ChildCategoriesQueryHandler : IQueryHandler<ChildCategoriesQuery, C
             level--;
         }
 
-        result.ChildCategories = root.ChildCategories ?? Array.Empty<ExpCategory>();
+        result.ChildCategories = root.ChildCategories?.ToList() ?? new List<ExpCategory>();
+
+        // try resolve products via facets
+        if (!string.IsNullOrEmpty(request.ProductFilter))
+        {
+            var outlineFacets = await LoadProductFacets(request);
+            if (outlineFacets != null)
+            {
+                foreach (var expCategory in result.ChildCategories.ToList())
+                {
+                    var term = outlineFacets.Terms.FirstOrDefault(x => x.Label == expCategory.Key);
+                    if (term == null)
+                    {
+                        result.ChildCategories.Remove(expCategory);
+                    }
+                }
+            }
+        }
 
         return result;
+    }
+
+    private async Task<TermFacetResult> LoadProductFacets(ChildCategoriesQuery childCategoriesQuery)
+    {
+        var productsRequest = new SearchProductQuery()
+        {
+            StoreId = childCategoriesQuery?.StoreId,
+            CultureName = childCategoriesQuery?.CultureName,
+            CurrencyCode = childCategoriesQuery?.CurrencyCode,
+            UserId = childCategoriesQuery?.UserId ?? AnonymousUser.UserName,
+            Filter = childCategoriesQuery.ProductFilter,
+            Take = 0,
+            IncludeFields = new List<string>
+            {
+                "term_facets.name",
+                "term_facets.label",
+                "term_facets.terms.label",
+                "term_facets.terms.term",
+                "term_facets.terms.count"
+            },
+        };
+
+        var result = await _mediator.Send(productsRequest);
+
+        var outlineFacet = result.Facets.FirstOrDefault(x => x.Name.EqualsInvariant("__outline"));
+        return outlineFacet as TermFacetResult;
     }
 }

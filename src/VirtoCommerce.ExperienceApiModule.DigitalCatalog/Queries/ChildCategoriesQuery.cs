@@ -9,6 +9,7 @@ public class ChildCategoriesQuery : CatalogQueryBase<ChildCategoriesQueryRespons
     public string CategoryId { get; set; }
     public int MaxLevel { get; set; }
     public bool OnlyActive { get; set; }
+    public string ProductFilter { get; set; }
 
     public override IEnumerable<QueryArgument> GetArguments()
     {
@@ -20,6 +21,7 @@ public class ChildCategoriesQuery : CatalogQueryBase<ChildCategoriesQueryRespons
         yield return Argument<StringGraphType>(nameof(CategoryId));
         yield return Argument<IntGraphType>(nameof(MaxLevel));
         yield return Argument<BooleanGraphType>(nameof(OnlyActive));
+        yield return Argument<StringGraphType>(nameof(ProductFilter));
     }
 
     public override void Map(IResolveFieldContext context)
@@ -29,5 +31,6 @@ public class ChildCategoriesQuery : CatalogQueryBase<ChildCategoriesQueryRespons
         CategoryId = context.GetArgument<string>(nameof(CategoryId));
         MaxLevel = context.GetArgument<int>(nameof(MaxLevel));
         OnlyActive = context.GetArgument<bool>(nameof(OnlyActive));
+        ProductFilter = context.GetArgument<string>(nameof(ProductFilter));
     }
 }
