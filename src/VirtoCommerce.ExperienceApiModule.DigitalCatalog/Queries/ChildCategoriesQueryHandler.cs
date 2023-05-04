@@ -142,10 +142,15 @@ public class ChildCategoriesQueryHandler : IQueryHandler<ChildCategoriesQuery, C
 
         var productsResult = await _mediator.Send(productsRequest);
 
-        if (productsResult.Facets.FirstOrDefault(x => x.Name.EqualsInvariant("__outline")) is TermFacetResult outlineFacet)
+        var facetNames = new[] { "__path", "__outline" };
+        var facets = productsResult.Facets.OfType<TermFacetResult>().Where(x => facetNames.Contains(x.Name));
+        foreach (var facet in facets)
         {
-            var outlineNodeIds = outlineFacet.Terms.Select(x => x.Label).ToList();
-            result.AddRange(outlineNodeIds);
+            foreach (var term in facet.Terms)
+            {
+                var terms = term.Term.Split('/', System.StringSplitOptions.RemoveEmptyEntries | System.StringSplitOptions.TrimEntries);
+                result.AddRange(terms);
+            }
         }
 
         return result;
