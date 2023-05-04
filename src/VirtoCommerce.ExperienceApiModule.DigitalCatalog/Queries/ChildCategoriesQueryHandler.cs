@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -77,37 +76,52 @@ public class ChildCategoriesQueryHandler : IQueryHandler<ChildCategoriesQuery, C
             foreach (var parent in parents)
             {
                 var parentNode = parentNodes.FirstOrDefault(x => x.Id == parent.Key);
-                parent.ChildCategories = parentNode?.ChildIds.Select(id => new ExpCategory { Key = id }).ToArray() ?? Array.Empty<ExpCategory>();
+                parent.ChildCategories = parentNode?.ChildIds.Select(id => new ExpCategory { Key = id }).ToList() ?? new List<ExpCategory>();
             }
 
             parents = parents.SelectMany(x => x.ChildCategories).ToList();
             level--;
         }
 
-        result.ChildCategories = root.ChildCategories?.ToList() ?? new List<ExpCategory>();
+        result.ChildCategories = root.ChildCategories ?? new List<ExpCategory>();
 
         // try resolve products via facets
         if (!string.IsNullOrEmpty(request.ProductFilter))
         {
-            var outlineFacets = await LoadProductFacets(request);
-            if (outlineFacets != null)
+            var outlineIds = await GetProductOutlineIds(request);
+            if (outlineIds.Any())
             {
-                foreach (var expCategory in result.ChildCategories.ToList())
-                {
-                    var term = outlineFacets.Terms.FirstOrDefault(x => x.Label == expCategory.Key);
-                    if (term == null)
-                    {
-                        result.ChildCategories.Remove(expCategory);
-                    }
-                }
+                FilterChildCategories(result.ChildCategories, outlineIds);
             }
         }
 
         return result;
     }
 
-    private async Task<TermFacetResult> LoadProductFacets(ChildCategoriesQuery childCategoriesQuery)
+    private void FilterChildCategories(IList<ExpCategory> categories, HashSet<string> outlines)
     {
+        if (categories.IsNullOrEmpty())
+        {
+            return;
+        }
+
+        foreach (var category in categories.ToList())
+        {
+            if (!outlines.TryGetValue(category.Key, out var _))
+            {
+                categories.Remove(category);
+            }
+            else
+            {
+                FilterChildCategories(category.ChildCategories, outlines);
+            }
+        }
+    }
+
+    private async Task<HashSet<string>> GetProductOutlineIds(ChildCategoriesQuery childCategoriesQuery)
+    {
+        var result = new HashSet<string>();
+
         var productsRequest = new SearchProductQuery()
         {
             StoreId = childCategoriesQuery?.StoreId,
@@ -126,9 +140,14 @@ public class ChildCategoriesQueryHandler : IQueryHandler<ChildCategoriesQuery, C
             },
         };
 
-        var result = await _mediator.Send(productsRequest);
+        var productsResult = await _mediator.Send(productsRequest);
 
-        var outlineFacet = result.Facets.FirstOrDefault(x => x.Name.EqualsInvariant("__outline"));
-        return outlineFacet as TermFacetResult;
+        if (productsResult.Facets.FirstOrDefault(x => x.Name.EqualsInvariant("__outline")) is TermFacetResult outlineFacet)
+        {
+            var outlineNodeIds = outlineFacet.Terms.Select(x => x.Label).ToList();
+            result.AddRange(outlineNodeIds);
+        }
+
+        return result;
     }
 }
