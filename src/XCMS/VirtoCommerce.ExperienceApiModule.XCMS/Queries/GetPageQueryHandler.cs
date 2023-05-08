@@ -21,15 +21,18 @@ namespace VirtoCommerce.ExperienceApiModule.XCMS.Queries
             var criteria = new ContentSearchCriteria
             {
                 StoreId = request.StoreId,
-                Keyword = request.Keyword
+                Keyword = request.Keyword,
+                LanguageCode = request.CultureName,
+                Take = request.Take,
+                Skip = request.Skip,
             };
             var result = await _searchContentService.SearchContentAsync(criteria);
             var pages = result.Results.Select(x => new PageItem
             {
-                Title = x.Name,
+                Name = x.Name,
                 RelativeUrl = x.RelativeUrl
             });
-            return new GetPageResponse { Pages = pages };
+            return new GetPageResponse { Pages = pages, TotalCount = result.TotalCount };
         }
     }
 }
