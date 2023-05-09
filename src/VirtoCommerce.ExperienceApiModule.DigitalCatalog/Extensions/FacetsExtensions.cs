@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 
@@ -16,17 +17,32 @@ namespace VirtoCommerce.XDigitalCatalog.Extensions
         /// <returns></returns>
         public static string AddLanguageSpecificFacets(this string requestFacets, string cultureName)
         {
-            var result = requestFacets;
-            if (cultureName != null)
+            if (string.IsNullOrEmpty(requestFacets) || string.IsNullOrEmpty(cultureName))
             {
-                var facets = string.Empty;
-                foreach (var facet in requestFacets?.Split(" ") ?? new string[0])
-                {
-                    facets = $"{facets} {facet} {facet}_{cultureName.ToLowerInvariant()}";
-                }
-                result = facets;
+                return requestFacets;
             }
-            return result.Trim();
+
+            var resultBuilder = new StringBuilder();
+            var facets = requestFacets.Split(' ');
+            foreach (var facet in facets)
+            {
+                if (facet.StartsWith("__"))
+                {
+                    resultBuilder.Append(' ');
+                    resultBuilder.Append(facet);
+                }
+                else
+                {
+                    resultBuilder.Append(' ');
+                    resultBuilder.Append(facet);
+                    resultBuilder.Append(' ');
+                    resultBuilder.Append(facet);
+                    resultBuilder.Append('_');
+                    resultBuilder.Append(cultureName.ToLowerInvariant());
+                }
+            }
+
+            return resultBuilder.ToString().Trim();
         }
 
         /// <summary>

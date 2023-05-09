@@ -93,6 +93,10 @@ public class ChildCategoriesQueryHandler : IQueryHandler<ChildCategoriesQuery, C
             {
                 FilterChildCategories(result.ChildCategories, outlineIds);
             }
+            else
+            {
+                result.ChildCategories = new List<ExpCategory>();
+            }
         }
 
         return result;
@@ -130,6 +134,7 @@ public class ChildCategoriesQueryHandler : IQueryHandler<ChildCategoriesQuery, C
             UserId = childCategoriesQuery?.UserId ?? AnonymousUser.UserName,
             Filter = childCategoriesQuery.ProductFilter,
             Take = 0,
+            Facet = "__outline",
             IncludeFields = new List<string>
             {
                 "term_facets.name",
@@ -142,7 +147,7 @@ public class ChildCategoriesQueryHandler : IQueryHandler<ChildCategoriesQuery, C
 
         var productsResult = await _mediator.Send(productsRequest);
 
-        var facetNames = new[] { "__path", "__outline" };
+        var facetNames = new[] { "__outline" };
         var facets = productsResult.Facets.OfType<TermFacetResult>().Where(x => facetNames.Contains(x.Name));
         foreach (var facet in facets)
         {
