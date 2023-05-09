@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Authorization;
 using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.CartModule.Core.Model.Search;
 using VirtoCommerce.CartModule.Core.Services;
-using VirtoCommerce.CartModule.Data.Model;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.ExperienceApiModule.Core;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
@@ -20,7 +19,6 @@ using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure.Authorization;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.GenericCrud;
-using VirtoCommerce.Platform.Data.GenericCrud;
 using VirtoCommerce.XPurchase.Authorization;
 using VirtoCommerce.XPurchase.Commands;
 using VirtoCommerce.XPurchase.Extensions;
@@ -34,7 +32,7 @@ namespace VirtoCommerce.XPurchase.Schemas
         private readonly IAuthorizationService _authorizationService;
         private readonly ICurrencyService _currencyService;
         private readonly ICrudService<ShoppingCart> _cartService;
-        private readonly SearchService<ShoppingCartSearchCriteria, ShoppingCartSearchResult, ShoppingCart, ShoppingCartEntity> _shoppingCartSearchService;
+        private readonly ISearchService<ShoppingCartSearchCriteria, ShoppingCartSearchResult, ShoppingCart> _shoppingCartSearchService;
         private readonly IDistributedLockService _distributedLockService;
 
         public const string _commandName = "command";
@@ -51,7 +49,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             _authorizationService = authorizationService;
             _currencyService = currencyService;
             _cartService = (ICrudService<ShoppingCart>)cartService;
-            _shoppingCartSearchService = (SearchService<ShoppingCartSearchCriteria, ShoppingCartSearchResult, ShoppingCart, ShoppingCartEntity>)shoppingCartSearchService;
+            _shoppingCartSearchService = (ISearchService<ShoppingCartSearchCriteria, ShoppingCartSearchResult, ShoppingCart>)shoppingCartSearchService;
             _distributedLockService = distributedLockService;
         }
 
