@@ -16,7 +16,6 @@
         <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.13" />
         <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
         <PackageReference Include="VirtoCommerce.CoreModule.Core" Version="3.203.0" />
-        <PackageReference Include="VirtoCommerce.OrdersModule.Core" Version="3.231.0" />
         <PackageReference Include="VirtoCommerce.OrdersModule.Data" Version="3.231.0" />
         <PackageReference Include="VirtoCommerce.PaymentModule.Core" Version="3.208.0" />
         <PackageReference Include="VirtoCommerce.Platform.Core" Version="3.302.0" />

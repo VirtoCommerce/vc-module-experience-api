@@ -14,7 +14,7 @@ namespace VirtoCommerce.XPurchase.Commands
         {
             var cartAggr = await GetOrCreateCartFromCommandAsync(request);
             var secondCart = await GetCartById(request.SecondCartId, request.CultureName);
-            if (secondCart != null)
+            if (secondCart != null && secondCart.Id != cartAggr.Id)
             {
                 cartAggr = await cartAggr.MergeWithCartAsync(secondCart);
                 await CartRepository.SaveAsync(cartAggr);
