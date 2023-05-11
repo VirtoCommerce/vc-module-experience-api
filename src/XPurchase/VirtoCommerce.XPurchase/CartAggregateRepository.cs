@@ -2,6 +2,21 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using VirtoCommerce.CartModule.Core.Model;
+using VirtoCommerce.CartModule.Core.Model.Search;
+using VirtoCommerce.CartModule.Core.Services;
+using VirtoCommerce.CoreModule.Core.Common;
+using VirtoCommerce.CoreModule.Core.Currency;
+using VirtoCommerce.CustomerModule.Core.Services;
+using VirtoCommerce.ExperienceApiModule.Core;
+using VirtoCommerce.ExperienceApiModule.Core.Extensions;
+using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.GenericCrud;
+using VirtoCommerce.StoreModule.Core.Model;
+using VirtoCommerce.StoreModule.Core.Services;
+using VirtoCommerce.XPurchase.Queries;
+using VirtoCommerce.XPurchase.Services;
+using VirtoCommerce.XPurchase.Validators;
 using CartAggregateBuilder = VirtoCommerce.XPurchase.AsyncObjectBuilder<VirtoCommerce.XPurchase.CartAggregate>;
 
 namespace VirtoCommerce.XPurchase
@@ -10,7 +25,7 @@ namespace VirtoCommerce.XPurchase
     {
         private readonly Func<CartAggregate> _cartAggregateFactory;
         private readonly ICartProductService _cartProductsService;
-        private readonly SearchService<ShoppingCartSearchCriteria, ShoppingCartSearchResult, ShoppingCart, ShoppingCartEntity> _shoppingCartSearchService;
+        private readonly ISearchService<ShoppingCartSearchCriteria, ShoppingCartSearchResult, ShoppingCart> _shoppingCartSearchService;
         private readonly ICrudService<ShoppingCart> _shoppingCartService;
         private readonly ICurrencyService _currencyService;
         private readonly IMemberResolver _memberResolver;
@@ -26,7 +41,7 @@ namespace VirtoCommerce.XPurchase
             ICartProductService cartProductsService)
         {
             _cartAggregateFactory = cartAggregateFactory;
-            _shoppingCartSearchService = (SearchService<ShoppingCartSearchCriteria, ShoppingCartSearchResult, ShoppingCart, ShoppingCartEntity>)shoppingCartSearchService;
+            _shoppingCartSearchService = (ISearchService<ShoppingCartSearchCriteria, ShoppingCartSearchResult, ShoppingCart>)shoppingCartSearchService;
             _shoppingCartService = (ICrudService<ShoppingCart>)shoppingCartService;
             _currencyService = currencyService;
             _memberResolver = memberResolver;
