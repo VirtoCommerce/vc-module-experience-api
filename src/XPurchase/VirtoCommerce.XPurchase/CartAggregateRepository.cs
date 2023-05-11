@@ -2,23 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using VirtoCommerce.CartModule.Core.Model;
-using VirtoCommerce.CartModule.Core.Model.Search;
-using VirtoCommerce.CartModule.Core.Services;
-using VirtoCommerce.CartModule.Data.Model;
-using VirtoCommerce.CoreModule.Core.Common;
-using VirtoCommerce.CoreModule.Core.Currency;
-using VirtoCommerce.CustomerModule.Core.Services;
-using VirtoCommerce.ExperienceApiModule.Core;
-using VirtoCommerce.ExperienceApiModule.Core.Extensions;
-using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.Platform.Core.GenericCrud;
-using VirtoCommerce.Platform.Data.GenericCrud;
-using VirtoCommerce.StoreModule.Core.Model;
-using VirtoCommerce.StoreModule.Core.Services;
-using VirtoCommerce.XPurchase.Queries;
-using VirtoCommerce.XPurchase.Services;
-using VirtoCommerce.XPurchase.Validators;
 using CartAggregateBuilder = VirtoCommerce.XPurchase.AsyncObjectBuilder<VirtoCommerce.XPurchase.CartAggregate>;
 
 namespace VirtoCommerce.XPurchase
@@ -207,15 +190,7 @@ namespace VirtoCommerce.XPurchase
                     aggregate.SetLineItemTierPrice(cartProduct.Price, lineItem.Quantity, lineItem);
                 }
 
-                // resave cart if price change detected
-                if (aggregate.ValidationWarnings.Any())
-                {
-                    await SaveAsync(aggregate);
-                }
-                else
-                {
-                    await aggregate.RecalculateAsync();
-                }
+                await aggregate.RecalculateAsync();
 
                 return aggregate;
             }
