@@ -206,6 +206,7 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
             if (!string.IsNullOrEmpty(parseResult.Keyword))
             {
                 parseResult.Keyword = parseResult.Keyword.AddLanguageSpecificFacets(_cultureName);
+
                 var termFacetExpressions = parseResult.Keyword.Split(" ");
                 parseResult.Filters.AddRange(termFacetExpressions.Select(x => new TermFilter
                 {
@@ -238,7 +239,7 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
                         {
                             FieldName = termFilter.FieldName,
                             Id = filter.Stringify(),
-                            Filter = termFilter
+                            Size = 0
                         },
                         _ => null,
                     };
