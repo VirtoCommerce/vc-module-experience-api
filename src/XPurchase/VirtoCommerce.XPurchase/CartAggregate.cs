@@ -746,7 +746,7 @@ namespace VirtoCommerce.XPurchase
             if (!lineItem.IsReadOnly && product != null)
             {
                 var tierPrice = product.Price.GetTierPrice(quantity);
-                if (tierPrice.Price.Amount > 0)
+                if (CheckPricePolicy(tierPrice))
                 {
                     lineItem.SalePrice = tierPrice.ActualPrice.Amount;
                     lineItem.ListPrice = tierPrice.Price.Amount;
@@ -761,6 +761,16 @@ namespace VirtoCommerce.XPurchase
                 Cart.Items.Remove(lineItem);
             }
             return Task.FromResult(this);
+        }
+
+        /// <summary>
+        /// Represents a price policy for a product. By default, product price should be greater than zero.
+        /// </summary>
+        /// <param name="product"></param>
+        /// <returns></returns>
+        protected virtual bool CheckPricePolicy(TierPrice tierPrice)
+        {
+            return tierPrice.Price.Amount > 0;
         }
 
         protected virtual async Task<CartAggregate> InnerAddLineItemAsync(LineItem lineItem, CartProduct product = null, IList<DynamicPropertyValue> dynamicProperties = null)

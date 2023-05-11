@@ -1118,6 +1118,47 @@ namespace VirtoCommerce.XPurchase.Schemas
 
             schema.Mutation.AddField(changePurchaseOrderNumberField);
 
+            //Mutations
+            /// <example>
+            /// This is an example JSON request for a mutation
+            /// {
+            ///   "query": "mutation ($command:InputAddItemType!){ refreshCart(command: $command) {  total { formatedAmount } } }",
+            ///   "variables": {
+            ///      "command": {
+            ///          "storeId": "Electronics",
+            ///          "cartName": "default",
+            ///          "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
+            ///          "language": "en-US",
+            ///          "currency": "USD",
+            ///          "cartType": "cart",
+            ///          "cartId": "",
+            ///      }
+            ///   }
+            /// }
+            /// </example>
+            var refreshCartField = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<CartType>())
+                                           .Name("refreshCart")
+                                           .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<RefreshCartType>>(), _commandName)
+                                           //PT-5394: Write the unit-tests for successfully mapping input variable to the command
+                                           .ResolveSynchronizedAsync(CartPrefix, "userId", _distributedLockService, async context =>
+                                           {
+                                               var cartCommand = context.GetCartCommand<RefreshCartCommand>();
+
+                                               await CheckAuthByCartCommandAsync(context, cartCommand);
+
+                                               //PT-5327: Need to refactor later to prevent ugly code duplication
+                                               //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
+                                               var cartAggregate = await _mediator.Send(cartCommand);
+
+                                               //store cart aggregate in the user context for future usage in the graph types resolvers
+                                               context.SetExpandedObjectGraph(cartAggregate);
+                                               return cartAggregate;
+                                           })
+                                           .FieldType;
+
+            schema.Mutation.AddField(refreshCartField);
+
+
             #region Wishlists
 
             // Queries

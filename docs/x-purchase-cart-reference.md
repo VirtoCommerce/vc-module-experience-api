@@ -138,6 +138,7 @@ Every mutation contains base arguments for working with cart context:
 |21|[updateCartPaymentDynamicProperties](#updatecartpaymentdynamicproperties)|`!paymentId` `!dynamicProperties`|Updates dynamic properties in cart payment.|
 |22|[addCartAddress](#addcartaddress)|`!address`([type](https://github.com/VirtoCommerce/vc-module-experience-api/blob/dev/src/XPurchase/VirtoCommerce.XPurchase/Schemas/InputAddOrUpdateCartAddressType.cs))|Add address for cart or update it by type
 |23|[addWishlistBulkItem](#addwishlistbulkitem)|`!listIds` `!productId`|Add product to few wish lists.|
+|24|[refreshCart](#refreshCart)||Refresh the contents of a shopping cart without making any modifications to the items in it.|
 
 > [!NOTE]
 > In arguments column we only show additional arguments. if they are marked with an exclamation mark, they are required.
@@ -151,7 +152,7 @@ This mutation validates item and add it to cart, recalculate promotion rewards a
 ```
 mutation ($command:InputAddItemType!)
 {
-    (command: $command)
+    addItem(command: $command)
     {
         name
         items
@@ -168,21 +169,52 @@ mutation ($command:InputAddItemType!)
 #### Variables
 
 ```json
-"command": {
-    "storeId": "Electronics",
-    "cartName": "default",
-    "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
-    "cultureName": "en-US",
-    "currencyCode": "USD",
-    "cartType": "cart",
-    "productId": "9cbd8f316e254a679ba34a900fccb076",
-    "quantity": 1,
-    "dynamicProperties": [
-        {
-            "name": "ItemProperty",
-            "value": "test value"
-        }
-    ]
+{
+    "command": {
+        "storeId": "Electronics",
+        "cartName": "default",
+        "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
+        "cultureName": "en-US",
+        "currencyCode": "USD",
+        "cartType": "cart",
+        "productId": "9cbd8f316e254a679ba34a900fccb076",
+        "quantity": 1,
+        "dynamicProperties": [
+            {
+                "name": "ItemProperty",
+                "value": "test value"
+            }
+        ]
+    }
+}
+```
+
+### RefreshCart
+
+This mutation loads the cart from its persistent storage, then immediately saves it back without any modifications. This effectively triggers any relevant price updates and clears any warnings that may have been present.
+
+#### Query
+
+```
+mutation ($command:RefreshCartType!)
+{
+    refreshCart(command: $command)
+    {
+        itemsCount
+        itemsQuantity
+    }
+}
+```
+
+#### Variables
+
+```json
+{
+  "command": {
+    "storeId": "B2B-store",
+    "userId": "39e3f3c5-7dd3-40ce-b48b-99549c1cd702",
+    "cartId": "d77a2584-6b45-4b34-818a-9302ec15da5d"
+  }
 }
 ```
 
@@ -195,7 +227,7 @@ This mutation removes all items from cart, reset promotion rewards based on amou
 ```json
 mutation ($command:InputClearCartType!)
 {
-    (command: $command)
+    clearCart(command: $command)
     {
         name
         items
@@ -212,13 +244,15 @@ mutation ($command:InputClearCartType!)
 #### Variables
 
 ```json
-"command": {
-    "storeId": "Electronics",
-    "cartName": "default",
-    "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
-    "cultureName": "en-US",
-    "currencyCode": "USD",
-    "cartType": "cart"
+{
+    "command": {
+        "storeId": "Electronics",
+        "cartName": "default",
+        "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
+        "cultureName": "en-US",
+        "currencyCode": "USD",
+        "cartType": "cart"
+    }
 }
 ```
 
@@ -231,7 +265,7 @@ This mutation changes cart comment.
 ```json
 mutation ($command:InputChangeCommentType!)
 {
-    (command: $command)
+    сhangeComment(command: $command)
     {
         name
         comment
@@ -242,14 +276,16 @@ mutation ($command:InputChangeCommentType!)
 #### Variables
 
 ```json
-"command": {
-    "storeId": "Electronics",
-    "cartName": "default",
-    "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
-    "cultureName": "en-US",
-    "currencyCode": "USD",
-    "cartType": "cart",
-    "comment": "Hi, Virto! :)"
+{
+    "command": {
+        "storeId": "Electronics",
+        "cartName": "default",
+        "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
+        "cultureName": "en-US",
+        "currencyCode": "USD",
+        "cartType": "cart",
+        "comment": "Hi, Virto! :)"
+    }
 }
 ```
 
@@ -262,7 +298,7 @@ This mutation changes cart item price.
 ```json
 mutation ($command:InputChangeCartItemPriceType!)
 {
-    (command: $command)
+    changeCartItemPrice(command: $command)
     {
         id
         items
@@ -281,15 +317,17 @@ mutation ($command:InputChangeCartItemPriceType!)
 #### Variables
 
 ```json
-"command": {
-    "storeId": "Electronics",
-    "cartName": "default",
-    "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
-    "cultureName": "en-US",
-    "currencyCode": "USD",
-    "cartType": "cart",
-    "productId": "9cbd8f316e254a679ba34a900fccb076",
-    "price": 777
+{
+    "command": {
+        "storeId": "Electronics",
+        "cartName": "default",
+        "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
+        "cultureName": "en-US",
+        "currencyCode": "USD",
+        "cartType": "cart",
+        "productId": "9cbd8f316e254a679ba34a900fccb076",
+        "price": 777
+    }
 }
 ```
 
@@ -302,7 +340,7 @@ This mutation changes cart item quantity.
 ```json
 mutation ($command:InputChangeCartItemQuantityType!)
 {
-    (command: $command)
+    changeCartItemQuantity(command: $command)
     {
         id
         items
@@ -320,15 +358,17 @@ mutation ($command:InputChangeCartItemQuantityType!)
 #### Variables
 
 ```json
-"command": {
-    "storeId": "Electronics",
-    "cartName": "default",
-    "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
-    "cultureName": "en-US",
-    "currencyCode": "USD",
-    "cartType": "cart",
-    "lineItemId": "9cbd8f316e254a679ba34a900fccb076",
-    "quantity": 7
+{
+    "command": {
+        "storeId": "Electronics",
+        "cartName": "default",
+        "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
+        "cultureName": "en-US",
+        "currencyCode": "USD",
+        "cartType": "cart",
+        "lineItemId": "9cbd8f316e254a679ba34a900fccb076",
+        "quantity": 7
+    }
 }
 ```
 
@@ -341,7 +381,7 @@ This mutation changes cart item comment.
 ```json
 mutation ($command:InputChangeCartItemCommentType!)
 {
-    (command: $command)
+    changeCartItemComment(command: $command)
     {
         id
         items
@@ -356,15 +396,17 @@ mutation ($command:InputChangeCartItemCommentType!)
 #### Variables
 
 ```json
-"command": {
-    "storeId": "Electronics",
-    "cartName": "default",
-    "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
-    "cultureName": "en-US",
-    "currencyCode": "USD",
-    "cartType": "cart",
-    "lineItemId": "9cbd8f316e254a679ba34a900fccb076",
-    "comment": "nice product"
+{
+    "command": {
+        "storeId": "Electronics",
+        "cartName": "default",
+        "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
+        "cultureName": "en-US",
+        "currencyCode": "USD",
+        "cartType": "cart",
+        "lineItemId": "9cbd8f316e254a679ba34a900fccb076",
+        "comment": "nice product"
+    }
 }
 ```
 
@@ -377,7 +419,7 @@ This mutation removes item from cart.
 ```json
 mutation ($command:InputRemoveItemType!)
 {
-    (command: $command)
+    removeCartItem(command: $command)
     {
         id
         items
@@ -394,14 +436,16 @@ mutation ($command:InputRemoveItemType!)
 #### Variables
 
 ```json
-"command": {
-    "storeId": "Electronics",
-    "cartName": "default",
-    "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
-    "cultureName": "en-US",
-    "currencyCode": "USD",
-    "cartType": "cart",
-    "lineItemId": "9cbd8f316e254a679ba34a900fccb076",
+{
+    "command": {
+        "storeId": "Electronics",
+        "cartName": "default",
+        "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
+        "cultureName": "en-US",
+        "currencyCode": "USD",
+        "cartType": "cart",
+        "lineItemId": "9cbd8f316e254a679ba34a900fccb076",
+    }
 }
 ```
 
@@ -414,7 +458,7 @@ This mutation checks and adds coupon to cart.
 ```json
 mutation ($command:InputAddCouponType!)
 {
-    (command: $command)
+    addCoupon(command: $command)
     {
         name
         coupons
@@ -429,14 +473,16 @@ mutation ($command:InputAddCouponType!)
 #### Variables
 
 ```json
-"command": {
-    "storeId": "Electronics",
-    "cartName": "default",
-    "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
-    "cultureName": "en-US",
-    "currencyCode": "USD",
-    "cartType": "cart",
-    "couponCode": "freeItemsCouponCode",
+{
+    "command": {
+        "storeId": "Electronics",
+        "cartName": "default",
+        "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
+        "cultureName": "en-US",
+        "currencyCode": "USD",
+        "cartType": "cart",
+        "couponCode": "freeItemsCouponCode",
+    }
 }
 ```
 
@@ -449,7 +495,7 @@ This mutation removes coupon from cart.
 ```json
 mutation ($command:InputRemoveCouponType!)
 {
-    (command: $command)
+    removeCoupon(command: $command)
     {
         name
         coupons
@@ -464,14 +510,16 @@ mutation ($command:InputRemoveCouponType!)
 #### Variables
 
 ```json
-"command": {
-    "storeId": "Electronics",
-    "cartName": "default",
-    "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
-    "cultureName": "en-US",
-    "currencyCode": "USD",
-    "cartType": "cart",
-    "couponCode": "freeItemsCouponCode",
+{
+    "command": {
+        "storeId": "Electronics",
+        "cartName": "default",
+        "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
+        "cultureName": "en-US",
+        "currencyCode": "USD",
+        "cartType": "cart",
+        "couponCode": "freeItemsCouponCode",
+    }
 }
 ```
 
@@ -484,7 +532,7 @@ This mutation removes shipment from cart.
 ```json
 mutation ($command:InputRemoveShipmentType!)
 {
-    (command: $command)
+    removeShipment(command: $command)
     {
         name
         availableShippingMethods
@@ -500,14 +548,16 @@ mutation ($command:InputRemoveShipmentType!)
 #### Variables
 
 ```json
-"command": {
-    "storeId": "Electronics",
-    "cartName": "default",
-    "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
-    "cultureName": "en-US",
-    "currencyCode": "USD",
-    "cartType": "cart",
-    "shipmentId": "7777-7777-7777-7777",
+{
+    "command": {
+        "storeId": "Electronics",
+        "cartName": "default",
+        "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
+        "cultureName": "en-US",
+        "currencyCode": "USD",
+        "cartType": "cart",
+        "shipmentId": "7777-7777-7777-7777",
+    }
 }
 ```
 
@@ -520,7 +570,7 @@ This mutation adds or updates shipment of cart. This mutation supports partial u
 ```json
 mutation ($command:InputAddOrUpdateCartShipmentType!)
 {
-    (command: $command)
+    addOrUpdateCartShipment(command: $command)
     {
         name
         availableShippingMethods
@@ -536,26 +586,28 @@ mutation ($command:InputAddOrUpdateCartShipmentType!)
 #### Variables
 
 ```json
-"command": {
-    "storeId": "Electronics",
-    "cartName": "default",
-    "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
-    "cultureName": "en-US",
-    "currencyCode": "USD",
-    "cartType": "cart",
-    "shipment": {
-        "fulfillmentCenterId": "7777-7777-7777-7777",
-        "height": 7,
-        "shipmentMethodCode": "code",
-        "currency": "USD",
-        "price": 98,
-        "dynamicProperties": [
-            {
-                "name": "ShipmentProperty",
-                "value": "test value"
-            }
-        ]
-    },
+{
+    "command": {
+        "storeId": "Electronics",
+        "cartName": "default",
+        "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
+        "cultureName": "en-US",
+        "currencyCode": "USD",
+        "cartType": "cart",
+        "shipment": {
+            "fulfillmentCenterId": "7777-7777-7777-7777",
+            "height": 7,
+            "shipmentMethodCode": "code",
+            "currency": "USD",
+            "price": 98,
+            "dynamicProperties": [
+                {
+                    "name": "ShipmentProperty",
+                    "value": "test value"
+                }
+            ]
+        },
+    }
 }
 ```
 
@@ -571,7 +623,7 @@ This mutation adds or updates payment of cart. This mutation supports partial up
 ```json
 mutation ($command:InputAddOrUpdateCartPaymentType!)
 {
-    (command: $command)
+    addOrUpdateCartPayment(command: $command)
     {
         name
         availablePaymentMethods
@@ -586,26 +638,28 @@ mutation ($command:InputAddOrUpdateCartPaymentType!)
 #### Variables
 
 ```json
-"command": {
-    "storeId": "Electronics",
-    "cartName": "default",
-    "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
-    "cultureName": "en-US",
-    "currencyCode": "USD",
-    "cartType": "cart",
-    "payment": {
-        "outerId": "7777-7777-7777-7777",
-        "paymentGatewayCode": "code",
-        "currency": "USD",
-        "price": 98,
-        "amount": 55,
-        "dynamicProperties": [
-            {
-                "name": "PaymentProperty",
-                "value": "test value"
-            }
-        ]
-    },
+{
+    "command": {
+        "storeId": "Electronics",
+        "cartName": "default",
+        "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
+        "cultureName": "en-US",
+        "currencyCode": "USD",
+        "cartType": "cart",
+        "payment": {
+            "outerId": "7777-7777-7777-7777",
+            "paymentGatewayCode": "code",
+            "currency": "USD",
+            "price": 98,
+            "amount": 55,
+            "dynamicProperties": [
+                {
+                    "name": "PaymentProperty",
+                    "value": "test value"
+                }
+            ]
+        },
+    }
 }
 ```
 
@@ -621,23 +675,23 @@ This mutation validates coupon.
 ```json
 mutation ($command:InputValidateCouponType!)
 {
-    (command: $command)
+    validateCoupon(command: $command)
 }
 ```
 
 #### Variables
 
 ```json
-"command": {
-    "storeId": "Electronics",
-    "cartName": "default",
-    "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
-    "cultureName": "en-US",
-    "currencyCode": "USD",
-    "cartType": "cart",
-    "coupon": {
-        "code": "freeItemsCouponCode"
-    },
+{
+    "command": {
+        "storeId": "Electronics",
+        "cartName": "default",
+        "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
+        "cultureName": "en-US",
+        "currencyCode": "USD",
+        "cartType": "cart",
+        "coupon": "freeItemsCouponCode"
+    }
 }
 ```
 
@@ -650,7 +704,7 @@ This mutation merges two carts. You can use it to merge anonymous cart with user
 ```json
 mutation ($command:InputMergeCartType!)
 {
-    (command: $command)
+    mergeCart(command: $command)
     {
         id
         isAnonymous
@@ -661,14 +715,16 @@ mutation ($command:InputMergeCartType!)
 #### Variables
 
 ```json
-"command": {
-    "storeId": "Electronics",
-    "cartName": "default",
-    "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
-    "cultureName": "en-US",
-    "currencyCode": "USD",
-    "cartType": "cart",
-    "secondCartId": "7777-7777-7777-7777",
+{
+    "command": {
+        "storeId": "Electronics",
+        "cartName": "default",
+        "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
+        "cultureName": "en-US",
+        "currencyCode": "USD",
+        "cartType": "cart",
+        "secondCartId": "7777-7777-7777-7777",
+    }
 }
 ```
 
@@ -680,15 +736,17 @@ This mutation removes cart.
 ```json
 mutation ($command:InputRemoveCartType!)
 {
-    (command: $command)
+    removeCart(command: $command)
 }
 ```
 
 #### Variables
 
 ```
-"command": {
-    "cartId": "7777-7777-7777-7777"
+{
+    "command": {
+        "cartId": "7777-7777-7777-7777"
+    }
 }
 ```
 
@@ -701,7 +759,7 @@ This mutation removes all shipments from cart.
 ```json
 mutation ($command:InputClearShipmentsType!)
 {
-    (command: $command)
+    clearShipments(command: $command)
     {
         name
         availableShippingMethods
@@ -717,13 +775,15 @@ mutation ($command:InputClearShipmentsType!)
 #### Variables
 
 ```json
-"command": {
-    "storeId": "Electronics",
-    "cartName": "default",
-    "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
-    "cultureName": "en-US",
-    "currencyCode": "USD",
-    "cartType": "cart"
+{
+    "command": {
+        "storeId": "Electronics",
+        "cartName": "default",
+        "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
+        "cultureName": "en-US",
+        "currencyCode": "USD",
+        "cartType": "cart"
+    }
 }
 ```
 
@@ -736,7 +796,7 @@ This mutation removes all payments from cart.
 ```json
 mutation ($command:InputClearPaymentsType!)
 {
-    (command: $command)
+    clearPayments(command: $command)
     {
         name
         availablePaymentMethods
@@ -752,13 +812,15 @@ mutation ($command:InputClearPaymentsType!)
 #### Variables
 
 ```json
-"command": {
-    "storeId": "Electronics",
-    "cartName": "default",
-    "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
-    "cultureName": "en-US",
-    "currencyCode": "USD",
-    "cartType": "cart"
+{
+    "command": {
+        "storeId": "Electronics",
+        "cartName": "default",
+        "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
+        "cultureName": "en-US",
+        "currencyCode": "USD",
+        "cartType": "cart"
+    }
 }
 ```
 
@@ -792,29 +854,31 @@ mutation ($command: InputUpdateCartDynamicPropertiesType!)
 #### Variables
 
 ```json
-"command": {
-    "storeId": "Electronics",
-    "cartName": "default",
-    "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
-    "cultureName": "en-US",
-    "currencyCode": "USD",
-    "cartType": "cart",
-    "dynamicProperties": [
-        {
-            "name": "Example string property",
-            "value": "12345678"
-        },
-        {
-            "name": "Example multilanguage property",
-            "locale":"de-DE",
-            "value": "hallo welt"
-        },
-        {
-            "name": "Example dictionary property",
-            "value": "578fadeb1d2a40b3b08b1daf8db09463"
-        }
-  	]
-  }
+{
+    "command": {
+        "storeId": "Electronics",
+        "cartName": "default",
+        "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
+        "cultureName": "en-US",
+        "currencyCode": "USD",
+        "cartType": "cart",
+        "dynamicProperties": [
+            {
+                "name": "Example string property",
+                "value": "12345678"
+            },
+            {
+                "name": "Example multilanguage property",
+                "locale":"de-DE",
+                "value": "hallo welt"
+            },
+            {
+                "name": "Example dictionary property",
+                "value": "578fadeb1d2a40b3b08b1daf8db09463"
+            }
+  	    ]
+      }
+    }
 }
 ```
 
@@ -852,30 +916,32 @@ mutation ($command: InputUpdateCartItemDynamicPropertiesType!)
 #### Variables
 
 ```json
-"command": {
-    "storeId": "Electronics",
-    "cartName": "default",
-    "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
-    "cultureName": "en-US",
-    "currencyCode": "USD",
-    "cartType": "cart",
-    "lineItemId": "dab09410-aa1a-4daf-8a32-4e41abee77b8",
-    "dynamicProperties": [
-        {
-            "name": "Example string property",
-            "value": "12345678"
-        },
-        {
-            "name": "Example multilanguage property",
-            "locale":"de-DE",
-            "value": "hallo welt"
-        },
-        {
-            "name": "Example dictionary property",
-            "value": "578fadeb1d2a40b3b08b1daf8db09463"
-        }
-  	]
-  }
+{
+    "command": {
+        "storeId": "Electronics",
+        "cartName": "default",
+        "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
+        "cultureName": "en-US",
+        "currencyCode": "USD",
+        "cartType": "cart",
+        "lineItemId": "dab09410-aa1a-4daf-8a32-4e41abee77b8",
+        "dynamicProperties": [
+            {
+                "name": "Example string property",
+                "value": "12345678"
+            },
+            {
+                "name": "Example multilanguage property",
+                "locale":"de-DE",
+                "value": "hallo welt"
+            },
+            {
+                "name": "Example dictionary property",
+                "value": "578fadeb1d2a40b3b08b1daf8db09463"
+            }
+  	    ]
+      }
+    }
 }
 ```
 
@@ -913,30 +979,32 @@ mutation ($command: InputUpdateCartItemDynamicPropertiesType!)
 #### Variables
 
 ```json
-"command": {
-    "storeId": "Electronics",
-    "cartName": "default",
-    "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
-    "cultureName": "en-US",
-    "currencyCode": "USD",
-    "cartType": "cart",
-    "shipmentId": "79b8f095-9740-4353-998b-e1c4dd577ee6",
-    "dynamicProperties": [
-        {
-            "name": "Example string property",
-            "value": "12345678"
-        },
-        {
-            "name": "Example multilanguage property",
-            "locale":"de-DE",
-            "value": "hallo welt"
-        },
-        {
-            "name": "Example dictionary property",
-            "value": "578fadeb1d2a40b3b08b1daf8db09463"
-        }
-  	]
-  }
+{
+    "command": {
+        "storeId": "Electronics",
+        "cartName": "default",
+        "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
+        "cultureName": "en-US",
+        "currencyCode": "USD",
+        "cartType": "cart",
+        "shipmentId": "79b8f095-9740-4353-998b-e1c4dd577ee6",
+        "dynamicProperties": [
+            {
+                "name": "Example string property",
+                "value": "12345678"
+            },
+            {
+                "name": "Example multilanguage property",
+                "locale":"de-DE",
+                "value": "hallo welt"
+            },
+            {
+                "name": "Example dictionary property",
+                "value": "578fadeb1d2a40b3b08b1daf8db09463"
+            }
+  	    ]
+      }
+    }
 }
 ```
 
@@ -974,30 +1042,32 @@ mutation ($command: InputUpdateCartItemDynamicPropertiesType!)
 #### Variables
 
 ```json
-"command": {
-    "storeId": "Electronics",
-    "cartName": "default",
-    "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
-    "cultureName": "en-US",
-    "currencyCode": "USD",
-    "cartType": "cart",
-    "paymentId": "0859f1e8-16e8-4924-808b-47e03560085d",
-    "dynamicProperties": [
-        {
-            "name": "Example string property",
-            "value": "12345678"
-        },
-        {
-            "name": "Example multilanguage property",
-            "locale":"de-DE",
-            "value": "hallo welt"
-        },
-        {
-            "name": "Example dictionary property",
-            "value": "578fadeb1d2a40b3b08b1daf8db09463"
-        }
-  	]
-  }
+{
+    "command": {
+        "storeId": "Electronics",
+        "cartName": "default",
+        "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
+        "cultureName": "en-US",
+        "currencyCode": "USD",
+        "cartType": "cart",
+        "paymentId": "0859f1e8-16e8-4924-808b-47e03560085d",
+        "dynamicProperties": [
+            {
+                "name": "Example string property",
+                "value": "12345678"
+            },
+            {
+                "name": "Example multilanguage property",
+                "locale":"de-DE",
+                "value": "hallo welt"
+            },
+            {
+                "name": "Example dictionary property",
+                "value": "578fadeb1d2a40b3b08b1daf8db09463"
+            }
+  	    ]
+      }
+    }
 }
 ```
 
@@ -1037,30 +1107,32 @@ mutation addOrUpdateCartAddress ($command: InputAddOrUpdateCartAddressType!) {
 #### Variables
 
 ```json
-"command": {
-    "storeId": "Electronics",
-    "cartName": "default",
-    "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
-    "cultureName": "en-US",
-    "currencyCode": "USD",
-    "cartType": "cart",
-    "address": {
-      "city": "City name",
-      "countryCode": "CountryCode",
-      "countryName": "Country name",
-      "email": "example@email.com",
-      "firstName": "recipient name",
-      "middleName": "recipient name",
-      "lastName": "recipient name",
-      "line1": "example address line 1",
-      "line2": "example address line 1",
-      "organization": "Organizatoin name",
-      "phone": "77777-77777",
-      "postalCode": "12345",
-      "regionId": "RegionCode",
-      "regionName": "Region name",
-      "zip": "123",
-      "addressType": 3
+{
+    "command": {
+        "storeId": "Electronics",
+        "cartName": "default",
+        "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
+        "cultureName": "en-US",
+        "currencyCode": "USD",
+        "cartType": "cart",
+        "address": {
+          "city": "City name",
+          "countryCode": "CountryCode",
+          "countryName": "Country name",
+          "email": "example@email.com",
+          "firstName": "recipient name",
+          "middleName": "recipient name",
+          "lastName": "recipient name",
+          "line1": "example address line 1",
+          "line2": "example address line 1",
+          "organization": "Organizatoin name",
+          "phone": "77777-77777",
+          "postalCode": "12345",
+          "regionId": "RegionCode",
+          "regionName": "Region name",
+          "zip": "123",
+          "addressType": 3
+        }
     }
 }
 ```
@@ -1092,8 +1164,10 @@ mutation addWishlistBulkItem ($command: InputAddWishlistBulkItemType!) {
 #### Variables
 
 ```json
-"command": {
-   "listIds": ["ce682f58-3bbd-42e5-a576-08c82a86ca11", "1b249c7a-5b7b-434d-a9b5-56a67ff993fe"],
-   "productId" : "92e671024a8648de97dedcd488f58455"
+{
+    "command": {
+       "listIds": ["ce682f58-3bbd-42e5-a576-08c82a86ca11", "1b249c7a-5b7b-434d-a9b5-56a67ff993fe"],
+       "productId" : "92e671024a8648de97dedcd488f58455"
+    }
 }
 ```
