@@ -2,18 +2,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using AutoMapper;
 using MediatR;
-using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.Core;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
-using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.Platform.Core.GenericCrud;
-using VirtoCommerce.SearchModule.Core.Services;
-using VirtoCommerce.StoreModule.Core.Model;
-using VirtoCommerce.StoreModule.Core.Services;
 using VirtoCommerce.XDigitalCatalog.Facets;
 
 namespace VirtoCommerce.XDigitalCatalog.Queries;
@@ -22,36 +15,14 @@ public class ChildCategoriesQueryHandler : IQueryHandler<ChildCategoriesQuery, C
 {
     private readonly ICategoryTreeService _categoryTreeService;
 
-    private readonly IMapper _mapper;
-    private readonly ISearchProvider _searchProvider;
-    private readonly IStoreCurrencyResolver _storeCurrencyResolver;
-    private readonly ICrudService<Store> _storeService;
-    private readonly IGenericPipelineLauncher _pipeline;
-    private readonly IAggregationConverter _aggregationConverter;
-    private readonly ISearchPhraseParser _phraseParser;
     private readonly IMediator _mediator;
 
     public ChildCategoriesQueryHandler(
         ICategoryTreeService categoryTreeService,
-
-        ISearchProvider searchProvider,
-        IMapper mapper,
-        IStoreCurrencyResolver storeCurrencyResolver,
-        ICrudService<Store> storeService,
-        IGenericPipelineLauncher pipeline,
-        IAggregationConverter aggregationConverter,
-        ISearchPhraseParser phraseParser,
         IMediator mediator)
     {
         _categoryTreeService = categoryTreeService;
 
-        _searchProvider = searchProvider;
-        _mapper = mapper;
-        _storeCurrencyResolver = storeCurrencyResolver;
-        _storeService = storeService;
-        _pipeline = pipeline;
-        _aggregationConverter = aggregationConverter;
-        _phraseParser = phraseParser;
         _mediator = mediator;
     }
 
