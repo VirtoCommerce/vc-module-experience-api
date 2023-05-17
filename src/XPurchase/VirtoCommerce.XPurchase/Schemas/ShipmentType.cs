@@ -15,14 +15,8 @@ namespace VirtoCommerce.XPurchase.Schemas
 {
     public class ShipmentType : ExtendableGraphType<Shipment>
     {
-        private readonly IMemberService _memberService;
-        private readonly IMapper _mapper;
-
         public ShipmentType(IMapper mapper, IMemberService memberService, IDataLoaderContextAccessor dataLoader, IDynamicPropertyResolverService dynamicPropertyResolverService)
         {
-            _memberService = memberService;
-            _mapper = mapper;
-
             Field(x => x.Id, nullable: true).Description("Shipment Id");
             Field(x => x.ShipmentMethodCode, nullable: true).Description("Shipment method code");
             Field(x => x.ShipmentMethodOption, nullable: true).Description("Shipment method option");

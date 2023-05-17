@@ -17,14 +17,8 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 {
     public class PaymentInType : ExtendableGraphType<PaymentIn>
     {
-        private readonly IMemberService _memberService;
-        private readonly IMapper _mapper;
-
         public PaymentInType(IMapper mapper, IMemberService memberService, IDataLoaderContextAccessor dataLoader, IDynamicPropertyResolverService dynamicPropertyResolverService, ICustomerOrderAggregateRepository customerOrderAggregateRepository)
         {
-            _mapper = mapper;
-            _memberService = memberService;
-
             Field(x => x.Id);
             Field(x => x.OrganizationId, true);
             Field(x => x.OrganizationName, true);

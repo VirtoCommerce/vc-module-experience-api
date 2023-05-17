@@ -15,14 +15,8 @@ namespace VirtoCommerce.XPurchase.Schemas
 {
     public class PaymentType : ExtendableGraphType<Payment>
     {
-        private readonly IMemberService _memberService;
-        private readonly IMapper _mapper;
-
         public PaymentType(IMapper mapper, IMemberService memberService, IDataLoaderContextAccessor dataLoader, IDynamicPropertyResolverService dynamicPropertyResolverService)
         {
-            _mapper = mapper;
-            _memberService = memberService;
-
             Field(x => x.Id, nullable: true).Description("Payment Id");
             Field(x => x.OuterId, nullable: true).Description("Value of payment outer id");
             Field(x => x.PaymentGatewayCode, nullable: true).Description("Value of payment gateway code");

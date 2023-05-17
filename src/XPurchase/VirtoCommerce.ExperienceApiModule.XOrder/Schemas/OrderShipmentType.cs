@@ -17,14 +17,8 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 {
     public class OrderShipmentType : ExtendableGraphType<Shipment>
     {
-        private readonly IMemberService _memberService;
-        private readonly IMapper _mapper;
-
         public OrderShipmentType(IMapper mapper, IMemberService memberService, IDataLoaderContextAccessor dataLoader, IDynamicPropertyResolverService dynamicPropertyResolverService)
         {
-            _mapper = mapper;
-            _memberService = memberService;
-
             Field(x => x.Id);
             Field(x => x.OperationType);
             Field(x => x.ParentOperationId, true);
