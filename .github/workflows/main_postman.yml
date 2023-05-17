@@ -1,0 +1,90 @@
+name: Experience API Integration tests(postman)
+
+on:
+ workflow_dispatch:
+  testBranch:
+         description: "Branch of tests"
+         required: false
+         default: "dev"
+
+
+jobs:
+  e2e-tests:
+    runs-on: ubuntu-18.04 # katalon action runs correctly on ubuntu-18.04
+    env:
+      SONAR_TOKEN: ${{secrets.SONAR_TOKEN}}
+      GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
+      NUGET_KEY: ${{ secrets.NUGET_KEY }}
+      BLOB_SAS: ${{ secrets.BLOB_TOKEN }}
+      TESTRAIL_DOMAIN: ${{ secrets.TESTRAIL_DOMAIN }}
+      TESTRAIL_USERNAME: ${{ secrets.TESTRAIL_USERNAME }}
+      TESTRAIL_APIKEY: ${{ secrets.TESTRAIL_APIKEY }}
+      TESTRAIL_PROJECTID: "18"
+      TESTRAIL_TITLE: "Postman API Tests"
+      TESTRAIL_SUITEID: "2297" 
+      
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+    - name: Setup newman reporter testrail
+      run: npm install newman-reporter-testrail --global
+
+    - name: Install VirtoCommerce.GlobalTool
+      uses: VirtoCommerce/vc-github-actions/setup-vcbuild@master
+
+    - name: Get Image Version
+      uses: VirtoCommerce/vc-github-actions/get-image-version@master
+      id: image
+
+    # Temporary commented for speedup workflow test
+    - name: Build
+      run: vc-build Compile
+
+    - name: Packaging
+      run: vc-build Compress -skip Clean+Restore+Compile+Test
+
+    - name: Docker Login
+      uses: azure/docker-login@v1
+      with:
+        login-server: ghcr.io
+        username: $GITHUB_ACTOR
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Docker Env
+      uses: VirtoCommerce/vc-github-actions/docker-env@master
+      with:
+        githubUser: ${{ env.GITHUB_ACTOR }}
+        githubToken: ${{ env.GITHUB_TOKEN }}
+        platformDockerTag: 'dev-linux-latest'
+        storefrontDockerTag: 'dev-linux-latest'
+        platformImage: ghcr.io/virtocommerce/platform
+        storefrontImage: ghcr.io/virtocommerce/storefront
+        validateSwagger: 'false'
+        installModule: 'true'
+        moduleId: ${{ steps.image.outputs.moduleId }}
+
+    - name: Getting tests
+      shell: sh
+      run: git clone https://github.com/VirtoCommerce/vc-quality-gate-katalon.git --branch dev
+
+    - name: Katalon Studio Github Action
+      uses: VirtoCommerce/vc-github-actions/katalon-studio-github-action@master
+      with:
+        version: '8.0.5'
+        projectPath: '${{ github.workspace }}/vc-quality-gate-katalon/platform_storefront.prj'
+        args: '-noSplash -retry=0 -testSuitePath="Test Suites/DynamicPropertyCreation" -browserType="Chrome" -apiKey= ${{ secrets.KATALON_API_KEY }} -g_urlBack="http://localhost:8090" -g_urlFront="http://localhost:8080" -executionProfile="Regression-QA" --config -webui.autoUpdateDrivers=true'
+
+    - name: Katalon Report Uploader
+      if: always( )
+      uses: katalon-studio/report-uploader@v0.0.7.11
+      env:
+        PASSWORD: ${{ secrets.KATALON_API_KEY }}
+        PROJECT_ID: 223504
+        TYPE: junit
+        REPORT_PATH: ${{ github.workspace }}/vc-quality-gate-katalon/Reports
+
+    - name: Newman Action
+      run: newman run "./tests/postman/platform_xapi_collection_QA.json" --folder "Ready_for_CI" --reporters cli,testrail -e "./tests/postman/localhostenv.json"
