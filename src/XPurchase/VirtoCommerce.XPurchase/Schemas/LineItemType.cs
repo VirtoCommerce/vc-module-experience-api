@@ -157,8 +157,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                 Type = GraphTypeExtenstionHelper.GetActualType<VendorType>(),
                 Resolver = new FuncFieldResolver<LineItem, IDataLoaderResult<ExpVendor>>(context =>
                 {
-                    var loader = dataLoader.GetVendorDataLoader(memberService, mapper, "cart_vendor");
-                    return context.Source.VendorId != null ? loader.LoadAsync(context.Source.VendorId) : null;
+                    return dataLoader.LoadVendor(memberService, mapper, loaderKey: "cart_vendor", vendorId: context.Source.VendorId);
                 })
             };
             AddField(vendorField);

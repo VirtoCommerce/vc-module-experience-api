@@ -113,8 +113,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                 Type = GraphTypeExtenstionHelper.GetActualType<VendorType>(),
                 Resolver = new FuncFieldResolver<LineItem, IDataLoaderResult<ExpVendor>>(context =>
                 {
-                    var loader = dataLoader.GetVendorDataLoader(memberService, mapper, "order_vendor");
-                    return context.Source.VendorId != null ? loader.LoadAsync(context.Source.VendorId) : null;
+                    return dataLoader.LoadVendor(memberService, mapper, loaderKey: "order_vendor", vendorId: context.Source.VendorId);
                 })
             };
             AddField(vendorField);
