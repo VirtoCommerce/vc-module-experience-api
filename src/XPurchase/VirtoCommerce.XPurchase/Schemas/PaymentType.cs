@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using AutoMapper;
 using GraphQL.DataLoader;
 using GraphQL.Resolvers;
@@ -74,10 +73,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                 Type = GraphTypeExtenstionHelper.GetActualType<VendorType>(),
                 Resolver = new FuncFieldResolver<Payment, IDataLoaderResult<ExpVendor>>(context =>
                 {
-                    var loader = dataLoader.GetVendorDataLoader(_memberService, _mapper, "cart_vendor");
-                    return context.Source.VendorId != null
-                        ? loader.LoadAsync(context.Source.VendorId)
-                        : new DataLoaderResult<ExpVendor>(Task.FromResult<ExpVendor>(null));
+                    return dataLoader.LoadVendor(memberService, mapper, loaderKey: "cart_vendor", vendorId: context.Source.VendorId);
                 })
             };
             AddField(vendorField);

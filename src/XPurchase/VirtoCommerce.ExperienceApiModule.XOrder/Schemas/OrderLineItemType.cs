@@ -1,5 +1,4 @@
 using System.Linq;
-using System.Threading.Tasks;
 using AutoMapper;
 using GraphQL;
 using GraphQL.DataLoader;
@@ -115,10 +114,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                 Type = GraphTypeExtenstionHelper.GetActualType<VendorType>(),
                 Resolver = new FuncFieldResolver<LineItem, IDataLoaderResult<ExpVendor>>(context =>
                 {
-                    var loader = dataLoader.GetVendorDataLoader(memberService, mapper, "order_vendor");
-                    return context.Source.VendorId != null
-                        ? loader.LoadAsync(context.Source.VendorId)
-                        : new DataLoaderResult<ExpVendor>(Task.FromResult<ExpVendor>(null));
+                    return dataLoader.LoadVendor(memberService, mapper, loaderKey: "order_vendor", vendorId: context.Source.VendorId);
                 })
             };
             AddField(vendorField);
