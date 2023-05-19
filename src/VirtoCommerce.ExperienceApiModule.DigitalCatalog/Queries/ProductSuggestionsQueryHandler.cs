@@ -3,17 +3,21 @@ using System.Threading.Tasks;
 using VirtoCommerce.CatalogModule.Core.Search.Indexed;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.GenericCrud;
 using VirtoCommerce.SearchModule.Core.Model;
+using VirtoCommerce.StoreModule.Core.Model;
 
 namespace VirtoCommerce.XDigitalCatalog.Queries;
 
 public class ProductSuggestionsQueryHandler : IQueryHandler<ProductSuggestionsQuery, ProductSuggestionsQueryResponse>
 {
     private readonly IProductSuggestionService _productSuggestionService;
+    private readonly ICrudService<Store> _storeService;
 
-    public ProductSuggestionsQueryHandler(IProductSuggestionService productSuggestionService)
+    public ProductSuggestionsQueryHandler(IProductSuggestionService productSuggestionService, ICrudService<Store> storeService)
     {
         _productSuggestionService = productSuggestionService;
+        _storeService = storeService;
     }
 
     public async Task<ProductSuggestionsQueryResponse> Handle(ProductSuggestionsQuery query, CancellationToken cancellationToken)
@@ -29,6 +33,13 @@ public class ProductSuggestionsQueryHandler : IQueryHandler<ProductSuggestionsQu
         request.Query = query.Query;
         request.Fields = query.Fields;
         request.Size = query.Size;
+
+        // get catalog id by store
+        if (!string.IsNullOrWhiteSpace(query.StoreId))
+        {
+            var store = await _storeService.GetByIdAsync(query.StoreId);
+            //request.CatalogId = store.CatalogId;
+        }
 
         var response = await _productSuggestionService.GetSuggestionsAsync(request);
 
