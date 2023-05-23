@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using AutoMapper;
 using GraphQL.DataLoader;
 using VirtoCommerce.CustomerModule.Core.Services;
@@ -28,6 +29,20 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
                 return memberByIds;
             });
             return loader;
+        }
+
+        public static IDataLoaderResult<ExpVendor> LoadVendor(
+            this IDataLoaderContextAccessor dataLoader,
+            IMemberService memberService,
+            IMapper mapper,
+            string loaderKey,
+            string vendorId)
+        {
+            var loader = dataLoader.GetVendorDataLoader(memberService, mapper, loaderKey);
+
+            return vendorId != null
+                ? loader.LoadAsync(vendorId)
+                : new DataLoaderResult<ExpVendor>(Task.FromResult<ExpVendor>(null));
         }
     }
 }

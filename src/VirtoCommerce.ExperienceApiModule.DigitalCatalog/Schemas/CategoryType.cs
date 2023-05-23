@@ -116,11 +116,10 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             Field<CategoryType, ExpCategory>("parent").ResolveAsync(ctx =>
             {
                 var loader = dataLoader.Context.GetOrAddBatchLoader<string, ExpCategory>("parentsCategoryLoader", (ids) => LoadCategoriesAsync(mediator, ids, ctx));
-                if (TryGetCategoryParentId(ctx, out var parentCategoryId))
-                {
-                    return loader.LoadAsync(parentCategoryId);
-                }
-                return null;
+
+                return TryGetCategoryParentId(ctx, out var parentCategoryId)
+                    ? loader.LoadAsync(parentCategoryId)
+                    : new DataLoaderResult<ExpCategory>(Task.FromResult<ExpCategory>(null));
             });
 
             Field<BooleanGraphType>("hasParent",

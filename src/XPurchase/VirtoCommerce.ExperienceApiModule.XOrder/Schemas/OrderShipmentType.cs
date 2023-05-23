@@ -17,14 +17,8 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 {
     public class OrderShipmentType : ExtendableGraphType<Shipment>
     {
-        private readonly IMemberService _memberService;
-        private readonly IMapper _mapper;
-
         public OrderShipmentType(IMapper mapper, IMemberService memberService, IDataLoaderContextAccessor dataLoader, IDynamicPropertyResolverService dynamicPropertyResolverService)
         {
-            _mapper = mapper;
-            _memberService = memberService;
-
             Field(x => x.Id);
             Field(x => x.OperationType);
             Field(x => x.ParentOperationId, true);
@@ -84,8 +78,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                 Type = GraphTypeExtenstionHelper.GetActualType<VendorType>(),
                 Resolver = new FuncFieldResolver<Shipment, IDataLoaderResult<ExpVendor>>(context =>
                 {
-                    var loader = dataLoader.GetVendorDataLoader(_memberService, _mapper, "order_vendor");
-                    return context.Source.VendorId != null ? loader.LoadAsync(context.Source.VendorId) : null;
+                    return dataLoader.LoadVendor(memberService, mapper, loaderKey: "order_vendor", vendorId: context.Source.VendorId);
                 })
             };
             AddField(vendorField);

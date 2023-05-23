@@ -1,9 +1,8 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <module>
   <id>VirtoCommerce.ExperienceApi</id>
-  <version>3.321.0</version>
+  <version>3.322.0</version>
   <version-tag />
-
   <platformVersion>3.302.0</platformVersion>
   <dependencies>
     <dependency id="VirtoCommerce.Cart" version="3.219.0" />
@@ -21,7 +20,6 @@
     <dependency id="VirtoCommerce.Store" version="3.201.0" />
     <dependency id="VirtoCommerce.Tax" version="3.200.0" />
   </dependencies>
-
   <title>Commerce Experience API</title>
   <description>An intermediated layer between clients and enterprise services powered by GraphQL protocol</description>
   <authors>
