@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using VirtoCommerce.CatalogModule.Core.Search.Indexed;
@@ -31,14 +32,13 @@ public class ProductSuggestionsQueryHandler : IQueryHandler<ProductSuggestionsQu
 
         var request = AbstractTypeFactory<SuggestionRequest>.TryCreateInstance();
         request.Query = query.Query;
-        request.Fields = query.Fields;
         request.Size = query.Size;
 
         // get catalog id by store
         if (!string.IsNullOrWhiteSpace(query.StoreId))
         {
             var store = await _storeService.GetByIdAsync(query.StoreId);
-            request.CatalogId = store.Catalog;
+            request.QueryContext = new Dictionary<string, object> { { "catalog", store.Catalog } };
         }
 
         var response = await _productSuggestionService.GetSuggestionsAsync(request);
