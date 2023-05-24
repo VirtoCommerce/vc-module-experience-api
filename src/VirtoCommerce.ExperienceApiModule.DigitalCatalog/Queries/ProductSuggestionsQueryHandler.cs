@@ -1,11 +1,10 @@
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using VirtoCommerce.CatalogModule.Core.Model.Search.Indexed;
 using VirtoCommerce.CatalogModule.Core.Search.Indexed;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.GenericCrud;
-using VirtoCommerce.SearchModule.Core.Model;
 using VirtoCommerce.StoreModule.Core.Model;
 
 namespace VirtoCommerce.XDigitalCatalog.Queries;
@@ -30,15 +29,14 @@ public class ProductSuggestionsQueryHandler : IQueryHandler<ProductSuggestionsQu
             return result;
         }
 
-        var request = AbstractTypeFactory<SuggestionRequest>.TryCreateInstance();
+        var request = AbstractTypeFactory<ProductSuggestionRequest>.TryCreateInstance();
         request.Query = query.Query;
         request.Size = query.Size;
 
-        // get catalog id by store
         if (!string.IsNullOrWhiteSpace(query.StoreId))
         {
             var store = await _storeService.GetByIdAsync(query.StoreId);
-            request.QueryContext = new Dictionary<string, object> { { "catalog", store.Catalog } };
+            request.CatalogId = store.Catalog;
         }
 
         var response = await _productSuggestionService.GetSuggestionsAsync(request);
