@@ -29,15 +29,16 @@ public class ProductSuggestionsQueryHandler : IQueryHandler<ProductSuggestionsQu
             return result;
         }
 
-        var request = AbstractTypeFactory<ProductSuggestionRequest>.TryCreateInstance();
-        request.Query = query.Query;
-        request.Size = query.Size;
-
         var store = await _storeService.GetByIdAsync(query.StoreId);
         if (store is null)
         {
             return result;
         }
+
+        var request = AbstractTypeFactory<ProductSuggestionRequest>.TryCreateInstance();
+        request.CatalogId = store.Catalog;
+        request.Query = query.Query;
+        request.Size = query.Size;
 
         var response = await _productSuggestionService.GetSuggestionsAsync(request);
 
