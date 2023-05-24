@@ -13,7 +13,7 @@ public class ProductSuggestionsQuery : Query<ProductSuggestionsQueryResponse>
 
     public override IEnumerable<QueryArgument> GetArguments()
     {
-        yield return Argument<StringGraphType>(nameof(StoreId));
+        yield return Argument<NonNullGraphType<StringGraphType>>(nameof(StoreId));
         yield return Argument<StringGraphType>(nameof(Query));
         yield return Argument<IntGraphType>(nameof(Size));
     }

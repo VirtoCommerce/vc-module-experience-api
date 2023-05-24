@@ -33,10 +33,10 @@ public class ProductSuggestionsQueryHandler : IQueryHandler<ProductSuggestionsQu
         request.Query = query.Query;
         request.Size = query.Size;
 
-        if (!string.IsNullOrWhiteSpace(query.StoreId))
+        var store = await _storeService.GetByIdAsync(query.StoreId);
+        if (store is null)
         {
-            var store = await _storeService.GetByIdAsync(query.StoreId);
-            request.CatalogId = store?.Catalog;
+            return result;
         }
 
         var response = await _productSuggestionService.GetSuggestionsAsync(request);
