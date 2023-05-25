@@ -1,19 +1,23 @@
 using System.Threading;
 using System.Threading.Tasks;
+using VirtoCommerce.CatalogModule.Core.Model.Search.Indexed;
 using VirtoCommerce.CatalogModule.Core.Search.Indexed;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.SearchModule.Core.Model;
+using VirtoCommerce.Platform.Core.GenericCrud;
+using VirtoCommerce.StoreModule.Core.Model;
 
 namespace VirtoCommerce.XDigitalCatalog.Queries;
 
 public class ProductSuggestionsQueryHandler : IQueryHandler<ProductSuggestionsQuery, ProductSuggestionsQueryResponse>
 {
     private readonly IProductSuggestionService _productSuggestionService;
+    private readonly ICrudService<Store> _storeService;
 
-    public ProductSuggestionsQueryHandler(IProductSuggestionService productSuggestionService)
+    public ProductSuggestionsQueryHandler(IProductSuggestionService productSuggestionService, ICrudService<Store> storeService)
     {
         _productSuggestionService = productSuggestionService;
+        _storeService = storeService;
     }
 
     public async Task<ProductSuggestionsQueryResponse> Handle(ProductSuggestionsQuery query, CancellationToken cancellationToken)
@@ -25,9 +29,15 @@ public class ProductSuggestionsQueryHandler : IQueryHandler<ProductSuggestionsQu
             return result;
         }
 
-        var request = AbstractTypeFactory<SuggestionRequest>.TryCreateInstance();
+        var store = await _storeService.GetByIdAsync(query.StoreId);
+        if (store is null)
+        {
+            return result;
+        }
+
+        var request = AbstractTypeFactory<ProductSuggestionRequest>.TryCreateInstance();
+        request.CatalogId = store.Catalog;
         request.Query = query.Query;
-        request.Fields = query.Fields;
         request.Size = query.Size;
 
         var response = await _productSuggestionService.GetSuggestionsAsync(request);
