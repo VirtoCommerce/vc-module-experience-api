@@ -186,14 +186,14 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
                     }
 
                 case RangeFilter rangeFilter:
-                    if (filter.GetFieldName().EqualsInvariant("price"))
+                    if (rangeFilter.FieldName.EqualsInvariant("price"))
                     {
                         rangeFilter.FieldName = $"price_{_currencyCode}".ToLowerInvariant();
                     }
                     break;
             }
 
-            return filter;
+            return result;
         }
 
         public IndexSearchRequestBuilder ParseFacets(ISearchPhraseParser phraseParser,
