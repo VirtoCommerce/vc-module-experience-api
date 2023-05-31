@@ -32,7 +32,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Commands
             var validationResult = AbstractTypeFactory<PaymentRequestValidator>.TryCreateInstance().Validate(paymentInfo);
             if (!validationResult.IsValid)
             {
-                return ErrorResult<AuthorizePaymentResult>(validationResult.Errors.FirstOrDefault().ErrorMessage);
+                return ErrorResult<AuthorizePaymentResult>(validationResult.Errors.FirstOrDefault()?.ErrorMessage);
             }
 
             var parameters = GetParameters(request);
