@@ -69,7 +69,9 @@ namespace VirtoCommerce.XPurchase.Services
         public async Task<IList<CartProduct>> GetCartProductsByIdsAsync(CartAggregate aggregate, IEnumerable<string> ids)
         {
             if (aggregate is null || ids.IsNullOrEmpty())
+            {
                 return new List<CartProduct>();
+            }
 
             var cartProducts = await GetCartProductsAsync(ids, aggregate.Store.Id, aggregate.Cart.Currency, aggregate.Cart.CustomerId);
 
@@ -135,7 +137,9 @@ namespace VirtoCommerce.XPurchase.Services
         protected virtual async Task ApplyInventoriesToCartProductAsync(CartAggregate aggregate, List<CartProduct> products)
         {
             if (products.IsNullOrEmpty())
+            {
                 return;
+            }
 
             var ids = products.Select(x => x.Id).ToArray();
 
@@ -176,8 +180,10 @@ namespace VirtoCommerce.XPurchase.Services
         /// <param name="products">List of <see cref="CartProduct"/>s</param>
         protected virtual async Task ApplyPricesToCartProductAsync(CartAggregate aggregate, List<CartProduct> products)
         {
-            if (products.IsNullOrEmpty())
+            if (aggregate is null || products.IsNullOrEmpty())
+            {
                 return;
+            }
 
             var pricesEvalContext = _mapper.Map<PriceEvaluationContext>(aggregate);
             pricesEvalContext.ProductIds = products.Select(x => x.Id).ToArray();
@@ -185,10 +191,7 @@ namespace VirtoCommerce.XPurchase.Services
             // There was a call to pipeline execution and stack overflow comes as a result of infinite cart getting,
             // because the LoadCartToEvalContextMiddleware catches pipeline execution.
             // Replaced to direct mapping.
-            if (aggregate != null)
-            {
-                _mapper.Map(aggregate, pricesEvalContext);
-            }
+            _mapper.Map(aggregate, pricesEvalContext);
 
             await _loadUserToEvalContextService.SetShopperDataFromMember(pricesEvalContext, pricesEvalContext.CustomerId);
 

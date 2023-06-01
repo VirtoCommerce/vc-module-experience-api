@@ -103,7 +103,7 @@ public class ChildCategoriesQueryHandler : IQueryHandler<ChildCategoriesQuery, C
             CultureName = childCategoriesQuery?.CultureName,
             CurrencyCode = childCategoriesQuery?.CurrencyCode,
             UserId = childCategoriesQuery?.UserId ?? AnonymousUser.UserName,
-            Filter = childCategoriesQuery.ProductFilter,
+            Filter = childCategoriesQuery?.ProductFilter,
             Take = 0,
             Facet = "__outline",
             IncludeFields = new List<string>
