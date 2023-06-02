@@ -20,7 +20,8 @@ namespace VirtoCommerce.XPurchase.Commands
             var cartAggregate = await GetOrCreateCartFromCommandAsync(request);
             var lineItem = cartAggregate.Cart.Items.FirstOrDefault(x => x.Id.Equals(request.LineItemId));
 
-            if ((await _cartProductService.GetCartProductsByIdsAsync(cartAggregate, new[] { lineItem.ProductId })).FirstOrDefault() == null)
+            if (lineItem != null &&
+                (await _cartProductService.GetCartProductsByIdsAsync(cartAggregate, new[] { lineItem.ProductId })).FirstOrDefault() == null)
             {
                 return cartAggregate;
             }

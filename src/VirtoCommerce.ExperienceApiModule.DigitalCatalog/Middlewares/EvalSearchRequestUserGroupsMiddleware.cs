@@ -37,7 +37,7 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
             }
 
             var userGroupsValue = string.Join(',', userGroups);
-            parameter.AddTerms(new[] { $"user_groups:{userGroupsValue}" });
+            parameter?.AddTerms(new[] { $"user_groups:{userGroupsValue}" });
 
             await next(parameter);
         }
