@@ -31,7 +31,8 @@ namespace VirtoCommerce.XPurchase.Commands
                 await cartAggregate.UpdateCartShipmentDynamicProperties(shipment, request.Shipment.DynamicProperties);
             }
 
-            return await SaveCartAsync(cartAggregate);
+            cartAggregate = await SaveCartAsync(cartAggregate);
+            return await GetCartById(cartAggregate.Cart.Id, request.CultureName);
         }
     }
 }
