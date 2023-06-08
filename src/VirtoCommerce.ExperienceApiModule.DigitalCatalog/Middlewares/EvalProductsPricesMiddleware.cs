@@ -61,6 +61,7 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
                 evalContext.CatalogId = store?.Catalog;
                 evalContext.CustomerId = query.UserId;
                 evalContext.Language = query.CultureName;
+                evalContext.CertainDate = DateTime.UtcNow;
 
                 await _pipeline.Execute(evalContext);
 
