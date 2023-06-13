@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using GraphQL.DataLoader;
 using GraphQL.Resolvers;
@@ -41,6 +42,8 @@ namespace VirtoCommerce.XPurchase.Schemas
                             IncludeFields = includeFields.ToArray(),
                             UserId = userId,
                         };
+
+                        context.UserContext.TryAdd("storeId", cart.StoreId);
 
                         var response = await mediator.Send(request);
 
