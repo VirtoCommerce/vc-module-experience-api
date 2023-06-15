@@ -26,7 +26,6 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Queries
             var searchCriteria = new CustomerOrderSearchCriteriaBuilder(_searchPhraseParser)
                                         .ParseFilters(request.Filter)
                                         .WithCustomerId(request.CustomerId)
-                                        .WithOrganizationId(request.OrganizationId)
                                         .WithPaging(request.Skip, request.Take)
                                         .WithSorting(request.Sort)
                                         .Build();

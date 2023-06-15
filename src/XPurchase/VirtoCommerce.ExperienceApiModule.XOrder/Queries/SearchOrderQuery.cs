@@ -15,7 +15,6 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Queries
         public string Filter { get; set; }
         public string CultureName { get; set; }
         public string CustomerId { get; set; }
-        public string OrganizationId { get; set; }
 
         public virtual void Map(IResolveFieldContext context)
         {
@@ -26,7 +25,6 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Queries
             Filter = connectionContext.GetArgument<string>("filter");
             Sort = connectionContext.GetArgument<string>("sort");
             CustomerId = connectionContext.GetArgumentOrValue<string>("userId");
-            OrganizationId = connectionContext.GetArgumentOrValue<string>("organizationId");
         }
     }
 }

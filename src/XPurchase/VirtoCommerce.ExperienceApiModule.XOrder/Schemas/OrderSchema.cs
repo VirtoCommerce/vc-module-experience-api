@@ -269,7 +269,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 
         private async Task<object> ResolveOrganizationOrdersConnectionAsync(IMediator mediator, IResolveConnectionContext<object> context)
         {
-            var query = context.ExtractQuery<SearchOrderQuery>();
+            var query = context.ExtractQuery<SearchOrganizationOrderQuery>();
 
             context.CopyArgumentsToUserContext();
             var allCurrencies = await _currencyService.GetAllCurrenciesAsync();

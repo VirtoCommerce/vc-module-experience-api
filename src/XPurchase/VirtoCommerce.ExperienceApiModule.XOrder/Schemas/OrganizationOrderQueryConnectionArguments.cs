@@ -16,7 +16,10 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
         public virtual OrganizationOrderQueryConnectionArguments AddArguments(QueryArguments arguments)
         {
             foreach (var argument in arguments)
+            {
                 Add(argument);
+            }
+
             return this;
         }
     }
