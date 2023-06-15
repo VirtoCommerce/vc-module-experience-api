@@ -50,7 +50,7 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
 
         private bool IsCatalogPersonalizationModuleInstalled()
         {
-            return _moduleCatalog.Modules.FirstOrDefault(m => m.ModuleName == "VirtoCommerce.CatalogPersonalization") != null;
+            return _moduleCatalog.Modules.Any(m => m.ModuleName == "VirtoCommerce.CatalogPersonalization");
         }
 
         private async Task<IList<string>> GetUserGroupsInheritedAsync(Contact contact)
