@@ -27,6 +27,9 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
 
         public async Task Run(IndexSearchRequestBuilder parameter, Func<IndexSearchRequestBuilder, Task> next)
         {
+            /// Please note that this solution is temporary. In the upcoming release, we are actively working on resolving this issue by introducing optional dependencies.
+            /// With optional dependencies, the XAPI will seamlessly integrate with the Catalog Personalization Module if it is installed, and gracefully handle scenarios where the module is not present.
+            /// This approach will provide a more robust and flexible solution, enabling smoother interactions between the XAPI and the Catalog Personalization Module.
             if (IsCatalogPersonalizationModuleInstalled())
             {
                 var userGroups = new List<string> { "__any" };
@@ -48,6 +51,11 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
             await next(parameter);
         }
 
+
+        /// <summary>
+        /// Checks if the Catalog Personalization Module is installed.
+        /// </summary>
+        /// <returns></returns>
         private bool IsCatalogPersonalizationModuleInstalled()
         {
             return _moduleCatalog.Modules.Any(m => m.ModuleName == "VirtoCommerce.CatalogPersonalization");
