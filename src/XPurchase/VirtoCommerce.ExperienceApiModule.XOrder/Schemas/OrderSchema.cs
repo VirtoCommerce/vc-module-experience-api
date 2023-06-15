@@ -6,8 +6,6 @@ using GraphQL.Resolvers;
 using GraphQL.Types;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using VirtoCommerce.CartModule.Core.Model;
-using VirtoCommerce.CartModule.Core.Services;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
@@ -22,7 +20,6 @@ using VirtoCommerce.OrdersModule.Core.Model;
 using VirtoCommerce.OrdersModule.Core.Services;
 using VirtoCommerce.PaymentModule.Model.Requests;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.Platform.Core.GenericCrud;
 using VirtoCommerce.XPurchase.Queries;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
@@ -86,6 +83,15 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 
             orderConnectionBuilder.ResolveAsync(async context => await ResolveOrdersConnectionAsync(_mediator, context));
             schema.Query.AddField(orderConnectionBuilder.FieldType);
+
+            var organizationOrdersConnectionBuilder = GraphTypeExtenstionHelper
+                .CreateConnection<CustomerOrderType, object>()
+                .Name("organizationOrders")
+                .PageSize(20)
+                .Arguments();
+
+            organizationOrdersConnectionBuilder.ResolveAsync(async context => await ResolveOrganizationOrdersConnectionAsync(_mediator, context));
+            schema.Query.AddField(organizationOrdersConnectionBuilder.FieldType);
 
             var paymentsConnectionBuilder = GraphTypeExtenstionHelper
                 .CreateConnection<PaymentInType, object>()
@@ -237,6 +243,31 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
         }
 
         private async Task<object> ResolveOrdersConnectionAsync(IMediator mediator, IResolveConnectionContext<object> context)
+        {
+            var query = context.ExtractQuery<SearchOrderQuery>();
+
+            context.CopyArgumentsToUserContext();
+            var allCurrencies = await _currencyService.GetAllCurrenciesAsync();
+            //Store all currencies in the user context for future resolve in the schema types
+            context.SetCurrencies(allCurrencies, query.CultureName);
+
+            var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), query, new CanAccessOrderAuthorizationRequirement());
+            if (!authorizationResult.Succeeded)
+            {
+                throw new AuthorizationError($"Access denied");
+            }
+
+            var response = await mediator.Send(query);
+
+            foreach (var customerOrderAggregate in response.Results)
+            {
+                context.SetExpandedObjectGraph(customerOrderAggregate);
+            }
+
+            return new PagedConnection<CustomerOrderAggregate>(response.Results, query.Skip, query.Take, response.TotalCount);
+        }
+
+        private async Task<object> ResolveOrganizationOrdersConnectionAsync(IMediator mediator, IResolveConnectionContext<object> context)
         {
             var query = context.ExtractQuery<SearchOrderQuery>();
 

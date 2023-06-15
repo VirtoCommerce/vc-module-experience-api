@@ -7,14 +7,13 @@ using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Queries
 {
-    public class SearchOrderQuery : IQuery<SearchOrderResponse>, IExtendableQuery
+    public class SearchOrganizationOrderQuery : IQuery<SearchOrderResponse>, IExtendableQuery
     {
         public string Sort { get; set; }
         public int Skip { get; set; }
         public int Take { get; set; }
         public string Filter { get; set; }
         public string CultureName { get; set; }
-        public string CustomerId { get; set; }
         public string OrganizationId { get; set; }
 
         public virtual void Map(IResolveFieldContext context)
@@ -25,7 +24,6 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Queries
             CultureName = connectionContext.GetArgument<string>(nameof(Currency.CultureName).ToCamelCase());
             Filter = connectionContext.GetArgument<string>("filter");
             Sort = connectionContext.GetArgument<string>("sort");
-            CustomerId = connectionContext.GetArgumentOrValue<string>("userId");
             OrganizationId = connectionContext.GetArgumentOrValue<string>("organizationId");
         }
     }
