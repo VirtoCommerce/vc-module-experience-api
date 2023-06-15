@@ -79,25 +79,25 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                 .CreateConnection<CustomerOrderType, object>()
                 .Name("orders")
                 .PageSize(20)
-                .Arguments();
+                .OrderArguments();
 
-            orderConnectionBuilder.ResolveAsync(async context => await ResolveOrdersConnectionAsync(_mediator, context));
+            orderConnectionBuilder.ResolveAsync(async context => await ResolveOrdersConnectionAsync<SearchCustomerOrderQuery>(_mediator, context));
             schema.Query.AddField(orderConnectionBuilder.FieldType);
 
             var organizationOrdersConnectionBuilder = GraphTypeExtenstionHelper
                 .CreateConnection<CustomerOrderType, object>()
                 .Name("organizationOrders")
                 .PageSize(20)
-                .Arguments();
+                .OrganizationOrderArguments();
 
-            organizationOrdersConnectionBuilder.ResolveAsync(async context => await ResolveOrganizationOrdersConnectionAsync(_mediator, context));
+            organizationOrdersConnectionBuilder.ResolveAsync(async context => await ResolveOrdersConnectionAsync<SearchOrganizationOrderQuery>(_mediator, context));
             schema.Query.AddField(organizationOrdersConnectionBuilder.FieldType);
 
             var paymentsConnectionBuilder = GraphTypeExtenstionHelper
                 .CreateConnection<PaymentInType, object>()
                 .Name("payments")
                 .PageSize(20)
-                .Arguments();
+                .OrderArguments();
 
             paymentsConnectionBuilder.ResolveAsync(async context => await ResolvePaymentsConnectionAsync(_mediator, context));
             schema.Query.AddField(paymentsConnectionBuilder.FieldType);
@@ -242,34 +242,9 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                             .FieldType);
         }
 
-        private async Task<object> ResolveOrdersConnectionAsync(IMediator mediator, IResolveConnectionContext<object> context)
+        private async Task<object> ResolveOrdersConnectionAsync<T>(IMediator mediator, IResolveConnectionContext<object> context) where T : SearchOrderQuery
         {
-            var query = context.ExtractQuery<SearchOrderQuery>();
-
-            context.CopyArgumentsToUserContext();
-            var allCurrencies = await _currencyService.GetAllCurrenciesAsync();
-            //Store all currencies in the user context for future resolve in the schema types
-            context.SetCurrencies(allCurrencies, query.CultureName);
-
-            var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), query, new CanAccessOrderAuthorizationRequirement());
-            if (!authorizationResult.Succeeded)
-            {
-                throw new AuthorizationError($"Access denied");
-            }
-
-            var response = await mediator.Send(query);
-
-            foreach (var customerOrderAggregate in response.Results)
-            {
-                context.SetExpandedObjectGraph(customerOrderAggregate);
-            }
-
-            return new PagedConnection<CustomerOrderAggregate>(response.Results, query.Skip, query.Take, response.TotalCount);
-        }
-
-        private async Task<object> ResolveOrganizationOrdersConnectionAsync(IMediator mediator, IResolveConnectionContext<object> context)
-        {
-            var query = context.ExtractQuery<SearchOrganizationOrderQuery>();
+            var query = context.ExtractQuery<T>();
 
             context.CopyArgumentsToUserContext();
             var allCurrencies = await _currencyService.GetAllCurrenciesAsync();

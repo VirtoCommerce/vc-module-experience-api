@@ -37,7 +37,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Authorization
                 {
                     result = order.CustomerId == GetUserId(context);
                 }
-                else if (context.Resource is SearchOrderQuery query)
+                else if (context.Resource is SearchCustomerOrderQuery query)
                 {
                     query.CustomerId = GetUserId(context);
                     result = query.CustomerId != null;

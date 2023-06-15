@@ -4,16 +4,16 @@ using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Queries
 {
-    public class SearchOrganizationOrderQuery : SearchOrderQuery
+    public class SearchCustomerOrderQuery : SearchOrderQuery
     {
-        public string OrganizationId { get; set; }
+        public string CustomerId { get; set; }
 
         public override void Map(IResolveFieldContext context)
         {
             base.Map(context);
 
             var connectionContext = (IResolveConnectionContext)context;
-            OrganizationId = connectionContext.GetArgumentOrValue<string>("organizationId");
+            CustomerId = connectionContext.GetArgumentOrValue<string>("userId");
         }
     }
 }

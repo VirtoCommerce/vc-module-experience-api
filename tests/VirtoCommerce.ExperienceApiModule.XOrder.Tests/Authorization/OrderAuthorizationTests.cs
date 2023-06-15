@@ -70,13 +70,13 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Tests.Authorization
 
         public static IEnumerable<object[]> GetSearchOrderQuery()
         {
-            yield return new object[] { new SearchOrderQuery { CustomerId = "userId" } };
-            yield return new object[] { new SearchOrderQuery { CustomerId = null } };
+            yield return new object[] { new SearchCustomerOrderQuery { CustomerId = "userId" } };
+            yield return new object[] { new SearchCustomerOrderQuery { CustomerId = null } };
         }
 
         [Theory]
         [MemberData(nameof(GetSearchOrderQuery))]
-        public async Task CanAccessOrderAuthorizationHandler_SearchOrdersBelongToUser_ShouldSucceed(SearchOrderQuery query)
+        public async Task CanAccessOrderAuthorizationHandler_SearchOrdersBelongToUser_ShouldSucceed(SearchCustomerOrderQuery query)
         {
             //Arrange    
             var requirements = new[] { new CanAccessOrderAuthorizationRequirement() };
@@ -96,7 +96,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Tests.Authorization
 
         [Theory]
         [MemberData(nameof(GetSearchOrderQuery))]
-        public async Task CanAccessOrderAuthorizationHandler_SearchOrdersWithoutAuth_ShouldFail(SearchOrderQuery query)
+        public async Task CanAccessOrderAuthorizationHandler_SearchOrdersWithoutAuth_ShouldFail(SearchCustomerOrderQuery query)
         {
             //Arrange    
             var requirements = new[] { new CanAccessOrderAuthorizationRequirement() };
