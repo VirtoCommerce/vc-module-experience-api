@@ -6,6 +6,7 @@ using GraphQL.Resolvers;
 using GraphQL.Types;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
@@ -20,6 +21,7 @@ using VirtoCommerce.OrdersModule.Core.Model;
 using VirtoCommerce.OrdersModule.Core.Services;
 using VirtoCommerce.PaymentModule.Model.Requests;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.Security;
 using VirtoCommerce.XPurchase.Queries;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
@@ -32,13 +34,20 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
         private readonly ICurrencyService _currencyService;
         private readonly IAuthorizationService _authorizationService;
         private readonly ICustomerOrderService _customerOrderService;
+        private readonly Func<UserManager<ApplicationUser>> _userManagerFactory;
 
-        public OrderSchema(IMediator mediator, ICurrencyService currencyService, IAuthorizationService authorizationService, ICustomerOrderService customerOrderService)
+        public OrderSchema(
+            IMediator mediator,
+            ICurrencyService currencyService,
+            IAuthorizationService authorizationService,
+            ICustomerOrderService customerOrderService,
+            Func<UserManager<ApplicationUser>> userManagerFactory)
         {
             _mediator = mediator;
             _currencyService = currencyService;
             _authorizationService = authorizationService;
             _customerOrderService = customerOrderService;
+            _userManagerFactory = userManagerFactory;
         }
 
         public void Build(ISchema schema)
@@ -57,11 +66,12 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                     context.CopyArgumentsToUserContext();
                     var orderAggregate = await _mediator.Send(request);
 
+                    await CheckUserPasswordExpiredState(context.GetCurrentUserId());
                     var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), orderAggregate.Order, new CanAccessOrderAuthorizationRequirement());
 
                     if (!authorizationResult.Succeeded)
                     {
-                        throw new AuthorizationError($"Access denied");
+                        AuthorizationError.ThrowAccessDeniedError();
                     }
 
                     var allCurrencies = await _currencyService.GetAllCurrenciesAsync();
@@ -251,10 +261,11 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             //Store all currencies in the user context for future resolve in the schema types
             context.SetCurrencies(allCurrencies, query.CultureName);
 
+            await CheckUserPasswordExpiredState(context.GetCurrentUserId());
             var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), query, new CanAccessOrderAuthorizationRequirement());
             if (!authorizationResult.Succeeded)
             {
-                throw new AuthorizationError($"Access denied");
+                AuthorizationError.ThrowAccessDeniedError();
             }
 
             var response = await mediator.Send(query);
@@ -271,10 +282,11 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
         {
             var query = context.ExtractQuery<SearchPaymentsQuery>();
 
+            await CheckUserPasswordExpiredState(context.GetCurrentUserId());
             var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), query, new CanAccessOrderAuthorizationRequirement());
             if (!authorizationResult.Succeeded)
             {
-                throw new AuthorizationError($"Access denied");
+                AuthorizationError.ThrowAccessDeniedError();
             }
 
             context.UserContext.Add(nameof(Currency.CultureName).ToCamelCase(), query.CultureName);
@@ -293,8 +305,22 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             return new PagedConnection<PaymentIn>(response.Results, query.Skip, query.Take, response.TotalCount);
         }
 
+        private async Task CheckUserPasswordExpiredState(string userId)
+        {
+            var userManager = _userManagerFactory();
+
+            var user = await userManager.FindByIdAsync(userId);
+
+            if (user?.PasswordExpired == true)
+            {
+                AuthorizationError.ThrowPasswordExpiredError();
+            }
+        }
+
         private async Task CheckAuthAsync(IResolveFieldContext context, string orderId)
         {
+            await CheckUserPasswordExpiredState(context.GetCurrentUserId());
+
             var order = await _customerOrderService.GetByIdAsync(orderId);
 
             var authorizationResult = await _authorizationService.AuthorizeAsync(
@@ -304,12 +330,14 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 
             if (!authorizationResult.Succeeded)
             {
-                throw new AuthorizationError($"Access denied");
+                AuthorizationError.ThrowAccessDeniedError();
             }
         }
 
         private async Task CheckCanAccessUserAsync(IResolveFieldContext context, string cartId)
         {
+            await CheckUserPasswordExpiredState(context.GetCurrentUserId());
+
             var cart = await _mediator.Send(new GetCartByIdQuery { CartId = cartId });
 
             if (cart == null)
@@ -324,7 +352,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 
             if (!authorizationResult.Succeeded)
             {
-                throw new AuthorizationError($"Access denied");
+                AuthorizationError.ThrowAccessDeniedError();
             }
         }
     }
