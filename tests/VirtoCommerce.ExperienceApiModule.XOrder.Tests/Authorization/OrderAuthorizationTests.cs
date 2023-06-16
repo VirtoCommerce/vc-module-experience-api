@@ -53,8 +53,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Tests.Authorization
             //Arrange    
             var requirements = new[] { new CanAccessOrderAuthorizationRequirement() };
             var userId = "userId";
-            var user = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim("name", userId) }));
-            //var mockService =
+            var user = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim("name", userId), new Claim("memberId", "memberId") }));
 
             var resource = new CustomerOrder { CustomerId = "AnotherUserId", OrganizationId = "organization1" };
 
@@ -192,7 +191,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Tests.Authorization
             //Arrange    
             var requirements = new[] { new CanAccessOrderAuthorizationRequirement() };
 
-            var user = new ClaimsPrincipal(new ClaimsIdentity());
+            var user = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim("name", "userId"), new Claim("memberId", "memberId") }));
 
             var context = new AuthorizationHandlerContext(requirements, user, query);
             var subject = new CanAccessOrderAuthorizationHandler(_memberServiceMock.Object);

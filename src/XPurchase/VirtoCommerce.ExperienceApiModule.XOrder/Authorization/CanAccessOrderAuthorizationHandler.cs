@@ -70,12 +70,12 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Authorization
 
         protected virtual async Task<bool> IsCustomerOrganization(AuthorizationHandlerContext context, string organizationId)
         {
-            if (string.IsNullOrEmpty(organizationId))
+            var memberId = GetMemberId(context);
+            if (string.IsNullOrEmpty(organizationId) || string.IsNullOrEmpty(memberId))
             {
                 return false;
             }
 
-            var memberId = GetMemberId(context);
             var member = await _memberService.GetByIdAsync(memberId);
             return MemberAssignedToOrganization(member, organizationId);
         }
