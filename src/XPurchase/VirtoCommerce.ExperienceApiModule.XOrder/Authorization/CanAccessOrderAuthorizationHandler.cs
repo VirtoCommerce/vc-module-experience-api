@@ -35,7 +35,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Authorization
             {
                 if (context.Resource is CustomerOrder order)
                 {
-                    result = order.CustomerId == GetUserId(context);
+                    result = order.CustomerId == GetUserId(context) || await IsCustomerOrganization(context, order.OrganizationId);
                 }
                 else if (context.Resource is SearchCustomerOrderQuery query)
                 {
@@ -44,12 +44,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Authorization
                 }
                 else if (context.Resource is SearchOrganizationOrderQuery organizationOrderQuery)
                 {
-                    if (!string.IsNullOrEmpty(organizationOrderQuery.OrganizationId))
-                    {
-                        var memberId = GetMemberId(context);
-                        var member = await _memberService.GetByIdAsync(memberId);
-                        result = MemberAssignedToOrganization(member, organizationOrderQuery.OrganizationId);
-                    }
+                    result = await IsCustomerOrganization(context, organizationOrderQuery.OrganizationId);
                 }
                 else if (context.Resource is SearchPaymentsQuery paymentsQuery)
                 {
@@ -73,6 +68,18 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Authorization
             }
         }
 
+        protected virtual async Task<bool> IsCustomerOrganization(AuthorizationHandlerContext context, string organizationId)
+        {
+            if (string.IsNullOrEmpty(organizationId))
+            {
+                return false;
+            }
+
+            var memberId = GetMemberId(context);
+            var member = await _memberService.GetByIdAsync(memberId);
+            return MemberAssignedToOrganization(member, organizationId);
+        }
+
         private static string GetUserId(AuthorizationHandlerContext context)
         {
             //PT-5375 use ClaimTypes instead of "name"
@@ -84,7 +91,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Authorization
             return context.User.FindFirstValue("memberId");
         }
 
-        public static bool MemberAssignedToOrganization(Member member, string organizationId)
+        private static bool MemberAssignedToOrganization(Member member, string organizationId)
         {
             return member?.MemberType switch
             {

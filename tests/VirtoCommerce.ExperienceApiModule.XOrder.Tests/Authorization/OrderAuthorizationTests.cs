@@ -48,6 +48,27 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Tests.Authorization
         }
 
         [Fact]
+        public async Task CanAccessOrderAuthorizationHandler_OrderBelongUserOrganization_ShouldSucceed()
+        {
+            //Arrange    
+            var requirements = new[] { new CanAccessOrderAuthorizationRequirement() };
+            var userId = "userId";
+            var user = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim("name", userId) }));
+            //var mockService =
+
+            var resource = new CustomerOrder { CustomerId = "AnotherUserId", OrganizationId = "organization1" };
+
+            var context = new AuthorizationHandlerContext(requirements, user, resource);
+            var subject = new CanAccessOrderAuthorizationHandler(_memberServiceMock.Object);
+
+            //Act
+            await subject.HandleAsync(context);
+
+            //Assert
+            context.HasSucceeded.Should().BeTrue();
+        }
+
+        [Fact]
         public async Task CanAccessOrderAuthorizationHandler_OrderBelongAnotherUser_ShouldFail()
         {
             //Arrange    
@@ -66,7 +87,6 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Tests.Authorization
             //Assert
             context.HasFailed.Should().BeTrue();
         }
-
 
         public static IEnumerable<object[]> GetSearchOrderQuery()
         {
