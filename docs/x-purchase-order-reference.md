@@ -212,6 +212,103 @@ With this connection you can get all user's orders.
 
 </p>
 
+### Organization orders connection
+With this connection you can get all organization's orders.
+```
+{
+  organizationOrders(
+    first: 10
+    after: "0"
+    organizationId: "33ae18d0-b7ba-4844-8c19-afd49489401b"
+    sort: "createdDate:desc"
+    cultureName: "en-US"
+  ) {
+    totalCount
+    items {
+      id
+      customerId
+      customerName
+      createdDate
+      addresses {
+        postalCode
+      }
+      currency {
+        code
+      }
+      items {
+        sku
+        name
+        quantity
+      }
+      total {
+        amount
+      }
+      cancelledDate
+    }
+  }
+}
+
+```
+<details>
+<summary>Example result (click to expand)</summary>
+
+```
+{
+  "data": {
+    "organizationOrders": {
+      "totalCount": 2,
+      "items": [
+        {
+          "id": "f59c58f0-167f-48e4-8dfc-2180c63b674a",
+          "customerId": "01b2a227-4256-4b78-a08c-6262ff6c8f5f",
+          "customerName": "Stan One",
+          "createdDate": "2023-06-14T10:53:20.303895",
+          "addresses": [],
+          "currency": {
+            "code": "USD"
+          },
+          "items": [
+            {
+              "sku": "53MF87",
+              "name": "Stainless Steel Carriage Bolt, 18-8, NL-19(SM) Finish, 20 DiaThread Size, 50 PK",
+              "quantity": 1
+            }
+          ],
+          "total": {
+            "amount": 125
+          },
+          "cancelledDate": null
+        },
+        {
+          "id": "66389b4a-6694-4329-8d2b-2d8f4f1d7837",
+          "customerId": "18bcd271-4ef3-463e-82c0-f310256fa7ee",
+          "customerName": "Adam Brock",
+          "createdDate": "2023-06-14T10:48:01.9463786",
+          "addresses": [],
+          "currency": {
+            "code": "USD"
+          },
+          "items": [
+            {
+              "sku": "53MF87",
+              "name": "Stainless Steel Carriage Bolt, 18-8, NL-19(SM) Finish, 20 DiaThread Size, 50 PK",
+              "quantity": 1
+            }
+          ],
+          "total": {
+            "amount": 125
+          },
+          "cancelledDate": null
+        }
+      ]
+    }
+  }
+}
+```
+</details>
+
+</p>
+
 ### CreateOrderFromCart
 
 This mutation creates an order from the cart with given id.
