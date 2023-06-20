@@ -4,7 +4,7 @@ using VirtoCommerce.ExperienceApiModule.XOrder.Queries;
 
 namespace VirtoCommerce.Exp.ExtensionSamples.UseCases.TypeExtension.Queries
 {
-    public class ExtendedSearchOrderQuery : SearchOrderQuery
+    public class ExtendedSearchCustomerOrderQuery : SearchCustomerOrderQuery
     {
         public string Test { get; set; }
 

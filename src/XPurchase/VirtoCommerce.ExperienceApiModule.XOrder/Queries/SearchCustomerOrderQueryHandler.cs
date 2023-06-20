@@ -6,13 +6,13 @@ using VirtoCommerce.SearchModule.Core.Services;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Queries
 {
-    public class SearchOrderQueryHandler : IQueryHandler<SearchOrderQuery, SearchOrderResponse>
+    public class SearchCustomerOrderQueryHandler : IQueryHandler<SearchCustomerOrderQuery, SearchOrderResponse>
     {
         private readonly ICustomerOrderAggregateRepository _customerOrderAggregateRepository;
         private readonly ISearchPhraseParser _searchPhraseParser;
         private readonly IIndexedCustomerOrderSearchService _customerOrderSearchService;
 
-        public SearchOrderQueryHandler(ISearchPhraseParser searchPhraseParser,
+        public SearchCustomerOrderQueryHandler(ISearchPhraseParser searchPhraseParser,
             ICustomerOrderAggregateRepository customerOrderAggregateRepository,
             IIndexedCustomerOrderSearchService customerOrderSearchService)
         {
@@ -21,7 +21,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Queries
             _customerOrderSearchService = customerOrderSearchService;
         }
 
-        public virtual async Task<SearchOrderResponse> Handle(SearchOrderQuery request, CancellationToken cancellationToken)
+        public virtual async Task<SearchOrderResponse> Handle(SearchCustomerOrderQuery request, CancellationToken cancellationToken)
         {
             var searchCriteria = new CustomerOrderSearchCriteriaBuilder(_searchPhraseParser)
                                         .ParseFilters(request.Filter)

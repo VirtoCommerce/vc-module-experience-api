@@ -48,6 +48,12 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder
             return this;
         }
 
+        public CustomerOrderSearchCriteriaBuilder WithOrganizationId(string organizationId)
+        {
+            _searchCriteria.Keyword += !string.IsNullOrEmpty(organizationId) ? $" organizationId:\"{organizationId}\"" : string.Empty;
+            return this;
+        }
+
         public CustomerOrderSearchCriteriaBuilder WithPaging(int skip, int take)
         {
             _searchCriteria.Skip = skip;
