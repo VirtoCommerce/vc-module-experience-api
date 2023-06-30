@@ -6,7 +6,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
     {
         public InputConfirmOrderPaymentType()
         {
-            Field<NonNullGraphType<InputPaymentInType>>("payment");
+            Field<NonNullGraphType<InputOrderPaymentType>>("payment");
         }
     }
 }

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using VirtoCommerce.CartModule.Core.Model;
-using VirtoCommerce.CartModule.Data.Services;
+using VirtoCommerce.CartModule.Core.Services;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.CustomerModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.XOrder;
@@ -35,11 +35,11 @@ namespace VirtoCommerce.XPurchase.Tests.Handlers
                 CustomerId = Guid.NewGuid().ToString(),
             };
 
-            var cartService = new Mock<ShoppingCartService>(null, null, null, null);
+            var cartService = new Mock<IShoppingCartService>();
             var deleteCalled = false;
-            cartService.Setup(x => x.GetByIdAsync(It.IsAny<string>(), It.IsAny<string>()))
-                .ReturnsAsync(cart);
-            cartService.Setup(x => x.DeleteAsync(It.IsAny<IEnumerable<string>>(), It.IsAny<bool>()))
+            cartService.Setup(x => x.GetAsync(It.IsAny<IList<string>>(), It.IsAny<string>(), It.IsAny<bool>()))
+                .ReturnsAsync(new[] { cart });
+            cartService.Setup(x => x.DeleteAsync(It.IsAny<IList<string>>(), It.IsAny<bool>()))
                 .Returns(() =>
                         {
                             deleteCalled = true;

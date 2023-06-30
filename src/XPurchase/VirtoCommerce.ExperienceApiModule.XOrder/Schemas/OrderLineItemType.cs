@@ -5,7 +5,6 @@ using GraphQL.DataLoader;
 using GraphQL.Resolvers;
 using GraphQL.Types;
 using MediatR;
-using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.CustomerModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.Core;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
@@ -17,6 +16,7 @@ using VirtoCommerce.OrdersModule.Core.Model;
 using VirtoCommerce.XDigitalCatalog;
 using VirtoCommerce.XDigitalCatalog.Queries;
 using VirtoCommerce.XDigitalCatalog.Schemas;
+using Money = VirtoCommerce.CoreModule.Core.Currency.Money;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 {

@@ -66,7 +66,7 @@ namespace VirtoCommerce.XPurchase.Services
         /// <param name="aggregate">Cart aggregate</param>
         /// <param name="ids">Product ids</param>
         /// <returns>List of <see cref="CartProduct"/>s</returns>
-        public async Task<IList<CartProduct>> GetCartProductsByIdsAsync(CartAggregate aggregate, IEnumerable<string> ids)
+        public async Task<IList<CartProduct>> GetCartProductsByIdsAsync(CartAggregate aggregate, IList<string> ids)
         {
             if (aggregate is null || ids.IsNullOrEmpty())
             {
@@ -88,9 +88,9 @@ namespace VirtoCommerce.XPurchase.Services
         /// </summary>
         /// <param name="ids">Product ids</param>
         /// <returns>List of <see cref="CatalogProduct"/>s</returns>
-        protected virtual async Task<IList<CatalogProduct>> GetProductsByIdsAsync(IEnumerable<string> ids)
+        protected virtual async Task<IList<CatalogProduct>> GetProductsByIdsAsync(IList<string> ids)
         {
-            return await _productService.GetByIdsAsync(ids.ToArray(), ResponseGroups.ToString());
+            return await _productService.GetAsync(ids, ResponseGroups.ToString());
         }
 
 
@@ -98,16 +98,15 @@ namespace VirtoCommerce.XPurchase.Services
         /// <summary>
         /// Map all <see cref="CatalogProduct"/> to <see cref="CartProduct"/>
         /// </summary>
-        /// <param name="catalogProducts">Products from the catalog</param>
         /// <returns>List of <see cref="CartProduct"/>s</returns>
-        protected async virtual Task<List<CartProduct>> GetCartProductsAsync(IEnumerable<string> ids, string storeId, string currencyCode, string userId)
+        protected virtual async Task<List<CartProduct>> GetCartProductsAsync(IList<string> ids, string storeId, string currencyCode, string userId)
         {
             var productsQuery = new LoadProductsQuery
             {
                 UserId = userId,
                 StoreId = storeId,
                 CurrencyCode = currencyCode,
-                ObjectIds = ids.ToArray(),
+                ObjectIds = ids,
                 IncludeFields = IncludeFields,
                 EvaluatePromotions = false, // Promotions will be applied on the line item level
             };

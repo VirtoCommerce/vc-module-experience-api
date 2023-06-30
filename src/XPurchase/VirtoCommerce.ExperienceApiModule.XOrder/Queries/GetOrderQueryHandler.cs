@@ -12,6 +12,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Queries
     {
         private readonly ICustomerOrderAggregateRepository _customerOrderAggregateRepository;
         private readonly ICustomerOrderSearchService _customerOrderSearchService;
+
         public GetOrderQueryHandler(ICustomerOrderAggregateRepository customerOrderAggregateRepository, ICustomerOrderSearchService customerOrderSearchService)
         {
             _customerOrderAggregateRepository = customerOrderAggregateRepository;
@@ -27,7 +28,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Queries
             }
             else if (!string.IsNullOrEmpty(request.Number))
             {
-                var response = await _customerOrderSearchService.SearchCustomerOrdersAsync(new CustomerOrderSearchCriteria { Number = request.Number });
+                var response = await _customerOrderSearchService.SearchAsync(new CustomerOrderSearchCriteria { Number = request.Number });
                 result = await _customerOrderAggregateRepository.GetAggregateFromOrderAsync(response.Results.FirstOrDefault());
             }
             else

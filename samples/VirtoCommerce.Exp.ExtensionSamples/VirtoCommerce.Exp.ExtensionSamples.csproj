@@ -1,29 +1,27 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
-
-    <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
-        <noWarn>1591</noWarn>
-        <Description></Description>
-        <IsPackable>True</IsPackable>
-        <ApplicationIcon />
-        <OutputType>Library</OutputType>
-        <StartupObject />
-    </PropertyGroup>
-    <ItemGroup>
-        <PackageReference Include="GraphQL.DataLoader" Version="4.6.0" />
-        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.13" />
-        <PackageReference Include="GraphQL" Version="4.6.0" />
-        <PackageReference Include="GraphQL.Authorization" Version="4.0.0" />
-        <PackageReference Include="GraphQL.Relay" Version="0.6.2" />
-        <PackageReference Include="GraphQL.Server.Transports.AspNetCore" Version="5.0.2" />
-        <PackageReference Include="GraphQL.Server.Transports.AspNetCore.NewtonsoftJson" Version="5.0.2" />
-    </ItemGroup>
-    <ItemGroup>
-      <ProjectReference Include="..\..\src\VirtoCommerce.ExperienceApiModule.Core\VirtoCommerce.ExperienceApiModule.Core.csproj" />
-      <ProjectReference Include="..\..\src\VirtoCommerce.ExperienceApiModule.DigitalCatalog\VirtoCommerce.XDigitalCatalog.csproj" />
-      <ProjectReference Include="..\..\src\XPurchase\VirtoCommerce.ExperienceApiModule.XOrder\VirtoCommerce.ExperienceApiModule.XOrder.csproj" />
-      <ProjectReference Include="..\..\src\XPurchase\VirtoCommerce.XPurchase\VirtoCommerce.XPurchase.csproj" />
-      <ProjectReference Include="..\PetsStoreClient\PetsStoreClient.csproj" />
-    </ItemGroup>
-
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <noWarn>1591</noWarn>
+    <Description></Description>
+    <IsPackable>True</IsPackable>
+    <ApplicationIcon />
+    <OutputType>Library</OutputType>
+    <StartupObject />
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="GraphQL" Version="4.6.0" />
+    <PackageReference Include="GraphQL.Authorization" Version="4.0.0" />
+    <PackageReference Include="GraphQL.DataLoader" Version="4.6.0" />
+    <PackageReference Include="GraphQL.Relay" Version="0.6.2" />
+    <PackageReference Include="GraphQL.Server.Transports.AspNetCore" Version="5.0.2" />
+    <PackageReference Include="GraphQL.Server.Transports.AspNetCore.NewtonsoftJson" Version="5.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.13" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\VirtoCommerce.ExperienceApiModule.Core\VirtoCommerce.ExperienceApiModule.Core.csproj" />
+    <ProjectReference Include="..\..\src\VirtoCommerce.ExperienceApiModule.DigitalCatalog\VirtoCommerce.XDigitalCatalog.csproj" />
+    <ProjectReference Include="..\..\src\XPurchase\VirtoCommerce.ExperienceApiModule.XOrder\VirtoCommerce.ExperienceApiModule.XOrder.csproj" />
+    <ProjectReference Include="..\..\src\XPurchase\VirtoCommerce.XPurchase\VirtoCommerce.XPurchase.csproj" />
+    <ProjectReference Include="..\PetsStoreClient\PetsStoreClient.csproj" />
+  </ItemGroup>
 </Project>

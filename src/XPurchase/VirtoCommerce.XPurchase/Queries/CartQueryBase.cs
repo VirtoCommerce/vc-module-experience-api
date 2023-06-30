@@ -18,7 +18,7 @@ namespace VirtoCommerce.XPurchase.Queries
 
     public class CartQueryBase<TResponse> : ICartQuery, IQuery<TResponse>
     {
-        public IEnumerable<string> IncludeFields { get; set; } = Array.Empty<string>();
+        public IList<string> IncludeFields { get; set; } = Array.Empty<string>();
         public string StoreId { get; set; }
         public string CartType { get; set; }
         public string CartName { get; set; }
