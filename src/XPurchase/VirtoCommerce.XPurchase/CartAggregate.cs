@@ -648,6 +648,16 @@ namespace VirtoCommerce.XPurchase
             return Task.FromResult(this);
         }
 
+        public virtual Task<CartAggregate> UpdateOrganization(ShoppingCart cart, Member member)
+        {
+            if (member is Contact contact)
+            {
+                cart.OrganizationId = contact.Organizations?.FirstOrDefault();
+            }
+
+            return Task.FromResult(this);
+        }
+
         public virtual async Task<CartAggregate> UpdateCartDynamicProperties(IList<DynamicPropertyValue> dynamicProperties)
         {
             await _dynamicPropertyUpdaterService.UpdateDynamicPropertyValues(Cart, dynamicProperties);
@@ -827,7 +837,10 @@ namespace VirtoCommerce.XPurchase
         /// </summary>
         public void SetLineItemTierPrice(ProductPrice productPrice, int quantity, LineItem lineItem)
         {
-            if (productPrice == null) return;
+            if (productPrice == null)
+            {
+                return;
+            }
 
             var tierPrice = productPrice.GetTierPrice(quantity);
             if (tierPrice.Price.Amount > 0)
