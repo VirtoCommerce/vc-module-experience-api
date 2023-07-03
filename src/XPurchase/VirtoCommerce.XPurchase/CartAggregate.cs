@@ -838,7 +838,9 @@ namespace VirtoCommerce.XPurchase
         public void SetLineItemTierPrice(ProductPrice productPrice, int quantity, LineItem lineItem)
         {
             if (productPrice == null)
+            {
                 return;
+            }
 
             var tierPrice = productPrice.GetTierPrice(quantity);
             if (tierPrice.Price.Amount > 0)
