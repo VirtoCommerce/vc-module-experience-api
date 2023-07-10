@@ -430,6 +430,8 @@ namespace VirtoCommerce.XPurchase.Schemas
                                                       return cartAggregate;
                                                   }).FieldType;
 
+            schema.Mutation.AddField(removeCartItemField);
+
             var removeCartItemsField = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<CartType>())
                                                   .Name("removeCartItems")
                                                   .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputRemoveItemType>>(), _commandName)
