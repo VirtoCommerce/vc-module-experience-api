@@ -430,7 +430,25 @@ namespace VirtoCommerce.XPurchase.Schemas
                                                       return cartAggregate;
                                                   }).FieldType;
 
-            schema.Mutation.AddField(removeCartItemField);
+            var removeCartItemsField = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<CartType>())
+                                                  .Name("removeCartItems")
+                                                  .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputRemoveItemType>>(), _commandName)
+                                                  .ResolveSynchronizedAsync(CartPrefix, "userId", _distributedLockService, async context =>
+                                                  {
+                                                      var cartCommand = context.GetCartCommand<RemoveCartItemsCommand>();
+
+                                                      await CheckAuthByCartCommandAsync(context, cartCommand);
+
+                                                      //PT-5327: Need to refactor later to prevent ugly code duplication
+                                                      //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
+                                                      var cartAggregate = await _mediator.Send(cartCommand);
+
+                                                      //store cart aggregate in the user context for future usage in the graph types resolvers
+                                                      context.SetExpandedObjectGraph(cartAggregate);
+                                                      return cartAggregate;
+                                                  }).FieldType;
+
+            schema.Mutation.AddField(removeCartItemsField);
 
             /// <example>
             /// This is an example JSON request for a mutation

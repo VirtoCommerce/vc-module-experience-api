@@ -339,6 +339,19 @@ namespace VirtoCommerce.XPurchase
             return Task.FromResult(this);
         }
 
+        public virtual Task<CartAggregate> RemoveItemsAsync(string[] lineItemIds)
+        {
+            EnsureCartExists();
+
+            var lineItems = Cart.Items.Where(x => lineItemIds.Contains(x.Id)).ToList();
+            if (lineItems.Any())
+            {
+                lineItems.ForEach(x => Cart.Items.Remove(x));
+            }
+
+            return Task.FromResult(this);
+        }
+
         public virtual Task<CartAggregate> AddCouponAsync(string couponCode)
         {
             EnsureCartExists();
