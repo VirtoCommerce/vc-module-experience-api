@@ -47,16 +47,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
         public virtual async Task<SearchCategoryResponse> Handle(SearchCategoryQuery request, CancellationToken cancellationToken)
         {
             var essentialTerms = new List<string>();
-            Store store = null;
-
-            if (store is null && !string.IsNullOrWhiteSpace(request.StoreId))
-            {
-                store = await _storeService.GetByIdAsync(request.StoreId);
-                if (store == null)
-                {
-                    throw new ArgumentException($"Store with Id: {request.StoreId} is absent");
-                }
-            }
+            var store = await GetStore(request);
 
             essentialTerms.Add($"__outline:{store.Catalog}");
 
@@ -95,12 +86,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
 
         public virtual async Task<LoadCategoryResponse> Handle(LoadCategoryQuery request, CancellationToken cancellationToken)
         {
-            Store store = null;
-
-            if (!string.IsNullOrWhiteSpace(request.StoreId))
-            {
-                store = await _storeService.GetByIdAsync(request.StoreId);
-            }
+            var store = await GetStore(request);
 
             var searchRequest = _mapper.Map<SearchCategoryQuery>(request);
 
@@ -133,6 +119,22 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             }
 
             return new LoadCategoryResponse(result.Results);
+        }
+
+        private async Task<Store> GetStore<T>(CatalogQueryBase<T> request)
+        {
+            var store = request.Store;
+
+            if (store is null && !string.IsNullOrWhiteSpace(request.StoreId))
+            {
+                store = await _storeService.GetByIdAsync(request.StoreId);
+                if (store == null)
+                {
+                    throw new ArgumentException($"Store with Id: {request.StoreId} is absent");
+                }
+            }
+
+            return store;
         }
     }
 }
