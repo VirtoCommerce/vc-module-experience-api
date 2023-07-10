@@ -22,10 +22,11 @@ namespace VirtoCommerce.XDigitalCatalog.Mapping
         {
             CreateMap<LoadProductsQuery, SearchProductQuery>();
             CreateMap<LoadCategoryQuery, SearchCategoryQuery>();
+            CreateMap<SearchCategoryQuery, SearchCategoryQuery>();
+            CreateMap<SearchCategoryQuery, ChildCategoriesQuery>();
 
             CreateMap<SearchProductAssociationsQuery, ProductAssociationSearchCriteria>();
 
-            CreateMap<LoadCategoryQuery, ChildCategoriesQuery>();
 
             CreateMap<SearchDocument, ExpProduct>().ConvertUsing(src => new GenericModelBinder<ExpProduct>().BindModel(src) as ExpProduct);
 

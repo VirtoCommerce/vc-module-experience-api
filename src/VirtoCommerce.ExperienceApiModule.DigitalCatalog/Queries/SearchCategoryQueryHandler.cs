@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -81,17 +82,6 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
 
             await _pipeline.Execute(result);
 
-            return result;
-        }
-
-        public virtual async Task<LoadCategoryResponse> Handle(LoadCategoryQuery request, CancellationToken cancellationToken)
-        {
-            var store = await GetStore(request);
-
-            var searchRequest = _mapper.Map<SearchCategoryQuery>(request);
-
-            var result = await Handle(searchRequest, cancellationToken);
-
             if (request.GetLoadChildCategories())
             {
                 foreach (var expCategory in result.Results)
@@ -110,13 +100,26 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                     var response = await _mediator.Send(childCategoriesQuery, cancellationToken);
                     var categoryIds = response.ChildCategories.Select(x => x.Key).ToArray();
 
-                    searchRequest.ObjectIds = categoryIds;
+                    var regex = new Regex("^childCategories\\.");
+                    var childCategoriesSearchQuery = _mapper.Map<SearchCategoryQuery>(request);
+                    childCategoriesSearchQuery.ObjectIds = categoryIds;
+                    childCategoriesSearchQuery.IncludeFields = request.IncludeFields.Where(x => x.StartsWith("childCategories.")).Select(x => regex.Replace(x, string.Empty, 1)).ToList();
 
-                    var childCategories = await Handle(searchRequest, cancellationToken);
+                    var childCategories = await Handle(childCategoriesSearchQuery, cancellationToken);
 
                     expCategory.ChildCategories = childCategories.Results.ToList();
                 }
             }
+
+            return result;
+        }
+
+        public virtual async Task<LoadCategoryResponse> Handle(LoadCategoryQuery request, CancellationToken cancellationToken)
+        {
+            var searchRequest = _mapper.Map<SearchCategoryQuery>(request);
+            searchRequest.Store = await GetStore(request);
+
+            var result = await Handle(searchRequest, cancellationToken);
 
             return new LoadCategoryResponse(result.Results);
         }
