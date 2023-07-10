@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
+using MediatR;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
 using VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index;
@@ -24,19 +25,23 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
         private readonly ISearchPhraseParser _phraseParser;
         private readonly ICrudService<Store> _storeService;
         private readonly IGenericPipelineLauncher _pipeline;
+        private readonly IMediator _mediator;
+
 
         public SearchCategoryQueryHandler(
-            ISearchProvider searchProvider
-            , IMapper mapper
-            , ISearchPhraseParser phraseParser
-            , IStoreService storeService
-            , IGenericPipelineLauncher pipeline)
+            ISearchProvider searchProvider,
+            IMapper mapper,
+            ISearchPhraseParser phraseParser,
+            IStoreService storeService,
+            IGenericPipelineLauncher pipeline,
+            IMediator mediator)
         {
             _searchProvider = searchProvider;
             _mapper = mapper;
             _phraseParser = phraseParser;
             _storeService = (ICrudService<Store>)storeService;
             _pipeline = pipeline;
+            _mediator = mediator;
         }
 
         public virtual async Task<SearchCategoryResponse> Handle(SearchCategoryQuery request, CancellationToken cancellationToken)
@@ -44,16 +49,16 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             var essentialTerms = new List<string>();
             Store store = null;
 
-            if (!string.IsNullOrWhiteSpace(request.StoreId))
+            if (store is null && !string.IsNullOrWhiteSpace(request.StoreId))
             {
                 store = await _storeService.GetByIdAsync(request.StoreId);
                 if (store == null)
                 {
                     throw new ArgumentException($"Store with Id: {request.StoreId} is absent");
                 }
-
-                essentialTerms.Add($"__outline:{store.Catalog}");
             }
+
+            essentialTerms.Add($"__outline:{store.Catalog}");
 
             var searchRequest = new IndexSearchRequestBuilder()
                                           .WithFuzzy(request.Fuzzy, request.FuzzyLevel)
@@ -90,9 +95,42 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
 
         public virtual async Task<LoadCategoryResponse> Handle(LoadCategoryQuery request, CancellationToken cancellationToken)
         {
+            Store store = null;
+
+            if (!string.IsNullOrWhiteSpace(request.StoreId))
+            {
+                store = await _storeService.GetByIdAsync(request.StoreId);
+            }
+
             var searchRequest = _mapper.Map<SearchCategoryQuery>(request);
 
             var result = await Handle(searchRequest, cancellationToken);
+
+            if (request.GetLoadChildCategories())
+            {
+                foreach (var expCategory in result.Results)
+                {
+                    if (expCategory.ChildCategories != null)
+                    {
+                        continue;
+                    }
+
+                    var childCategoriesQuery = _mapper.Map<ChildCategoriesQuery>(request);
+                    childCategoriesQuery.OnlyActive = true;
+                    childCategoriesQuery.Store = store;
+                    childCategoriesQuery.CategoryId = expCategory.Id;
+                    childCategoriesQuery.MaxLevel = expCategory.Level;
+
+                    var response = await _mediator.Send(childCategoriesQuery, cancellationToken);
+                    var categoryIds = response.ChildCategories.Select(x => x.Key).ToArray();
+
+                    searchRequest.ObjectIds = categoryIds;
+
+                    var childCategories = await Handle(searchRequest, cancellationToken);
+
+                    expCategory.ChildCategories = childCategories.Results.ToList();
+                }
+            }
 
             return new LoadCategoryResponse(result.Results);
         }
