@@ -56,5 +56,10 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
 
             return result.ToString();
         }
+
+        public bool GetLoadChildCategories()
+        {
+            return IncludeFields.ContainsAny("childCategories");
+        }
     }
 }
