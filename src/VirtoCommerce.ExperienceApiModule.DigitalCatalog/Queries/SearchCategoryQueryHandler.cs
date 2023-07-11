@@ -9,6 +9,7 @@ using MediatR;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
 using VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index;
+using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.GenericCrud;
 using VirtoCommerce.SearchModule.Core.Model;
 using VirtoCommerce.SearchModule.Core.Services;
@@ -27,7 +28,6 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
         private readonly ICrudService<Store> _storeService;
         private readonly IGenericPipelineLauncher _pipeline;
         private readonly IMediator _mediator;
-
 
         public SearchCategoryQueryHandler(
             ISearchProvider searchProvider,
@@ -84,6 +84,27 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
 
             if (request.GetLoadChildCategories())
             {
+                var childCategoriesQuery = new ChildCategoriesQuery
+                {
+                    OnlyActive = true,
+                    Store = store,
+                    StoreId = request.StoreId,
+                    UserId = request.UserId,
+                    CultureName = request.CultureName,
+                    CurrencyCode = request.CurrencyCode,
+                };
+
+                var childCategoriesSearchQuery = new SearchCategoryQuery
+                {
+                    Store = store,
+                    StoreId = request.StoreId,
+                    UserId = request.UserId,
+                    CultureName = request.CultureName,
+                    CurrencyCode = request.CurrencyCode,
+                };
+
+                var regex = new Regex("^childCategories\\.");
+
                 foreach (var expCategory in result.Results)
                 {
                     if (expCategory.ChildCategories != null)
@@ -91,18 +112,19 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                         continue;
                     }
 
-                    var childCategoriesQuery = _mapper.Map<ChildCategoriesQuery>(request);
-                    childCategoriesQuery.OnlyActive = true;
-                    childCategoriesQuery.Store = store;
                     childCategoriesQuery.CategoryId = expCategory.Id;
                     childCategoriesQuery.MaxLevel = expCategory.Level;
 
                     var response = await _mediator.Send(childCategoriesQuery, cancellationToken);
                     var categoryIds = response.ChildCategories.Select(x => x.Key).ToArray();
 
-                    var regex = new Regex("^childCategories\\.");
-                    var childCategoriesSearchQuery = _mapper.Map<SearchCategoryQuery>(request);
+                    if (categoryIds.IsNullOrEmpty())
+                    {
+                        continue;
+                    }
+
                     childCategoriesSearchQuery.ObjectIds = categoryIds;
+                    childCategoriesSearchQuery.Take = categoryIds.Length;
                     childCategoriesSearchQuery.IncludeFields = request.IncludeFields.Where(x => x.StartsWith("childCategories.")).Select(x => regex.Replace(x, string.Empty, 1)).ToList();
 
                     var childCategories = await Handle(childCategoriesSearchQuery, cancellationToken);
