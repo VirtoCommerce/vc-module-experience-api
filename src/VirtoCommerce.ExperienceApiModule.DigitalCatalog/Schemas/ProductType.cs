@@ -76,7 +76,10 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             FieldAsync<StringGraphType>("outline", resolve: async context =>
             {
                 var outlines = context.Source.IndexedProduct.Outlines;
-                if (outlines.IsNullOrEmpty()) return null;
+                if (outlines.IsNullOrEmpty())
+                {
+                    return null;
+                }
 
                 var loadRelatedCatalogOutlineQuery = context.GetCatalogQuery<LoadRelatedCatalogOutlineQuery>();
                 loadRelatedCatalogOutlineQuery.Outlines = outlines;
@@ -88,7 +91,10 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             FieldAsync<StringGraphType>("slug", resolve: async context =>
             {
                 var outlines = context.Source.IndexedProduct.Outlines;
-                if (outlines.IsNullOrEmpty()) return null;
+                if (outlines.IsNullOrEmpty())
+                {
+                    return null;
+                }
 
                 var loadRelatedSlugPathQuery = context.GetCatalogQuery<LoadRelatedSlugPathQuery>();
                 loadRelatedSlugPathQuery.Outlines = outlines;
@@ -272,6 +278,11 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 "prices",
                 "Product prices",
                 resolve: context => context.Source.AllPrices);
+
+            Field<PriceType>(
+                "minVariationPrice",
+                "Minimim product variation price",
+                resolve: context => context.Source.MinVariationPrice);
 
             ExtendableField<ListGraphType<PropertyType>>("properties",
                 arguments: new QueryArguments(new QueryArgument<ListGraphType<StringGraphType>> { Name = "names" }),

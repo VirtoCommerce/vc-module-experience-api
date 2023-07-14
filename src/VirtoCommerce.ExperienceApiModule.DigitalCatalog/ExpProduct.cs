@@ -28,7 +28,8 @@ namespace VirtoCommerce.XDigitalCatalog
         [BindIndexField(FieldName = "__variations", BinderType = typeof(VariationsBinder))]
         public virtual IList<string> IndexedVariationIds { get; set; } = new List<string>();
 
-        public virtual IList<Price> IndexedPrices { get; set; } = new List<Price>();
+        [BindIndexField(FieldName = "__minvariationprice", BinderType = typeof(MinVariationPriceBinder))]
+        public IList<Price> IndexedMinVariationPrices { get; set; } = new List<Price>();
 
         [BindIndexField(BinderType = typeof(KeyBinder))]
         public virtual string Key { get; set; }
@@ -58,6 +59,8 @@ namespace VirtoCommerce.XDigitalCatalog
                 return new CatalogProductIsInStockSpecification().IsSatisfiedBy(this);
             }
         }
+
+        public ProductPrice MinVariationPrice { get; set; }
 
         public IList<ProductPrice> AllPrices { get; set; } = new List<ProductPrice>();
 

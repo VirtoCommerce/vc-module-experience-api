@@ -24,6 +24,10 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             {
                 result |= ExpProductResponseGroup.LoadPrices;
             }
+            if (IncludeFields.Any(x => x.Contains("minVariationPrice")))
+            {
+                result |= ExpProductResponseGroup.LoadVariationPrices;
+            }
             if (IncludeFields.Any(x => x.Contains("availabilityData")))
             {
                 result |= ExpProductResponseGroup.LoadInventories;
