@@ -22,17 +22,32 @@ namespace VirtoCommerce.XDigitalCatalog.Binding
             }
 
             var pricesDocumentRecord = searchDocument[BindingInfo.FieldName];
-            if (pricesDocumentRecord is Array array)
+            switch (pricesDocumentRecord)
             {
-                result = array
-                    .OfType<JObject>()
-                    .Select(x => (IndexedPrice)x.ToObject(typeof(IndexedPrice)))
-                    .Select(x => new Price
+                case Array jArray:
                     {
-                        Currency = x.Currency,
-                        List = x.Value
-                    })
-                    .ToList();
+                        result = jArray
+                            .OfType<JObject>()
+                            .Select(x => x.ToObject<IndexedPrice>())
+                            .Select(x => new Price
+                            {
+                                Currency = x.Currency,
+                                List = x.Value,
+                            })
+                            .ToList();
+                        break;
+                    }
+
+                case JObject jObject:
+                    {
+                        var indexedPrice = jObject.ToObject<IndexedPrice>();
+                        result.Add(new Price
+                        {
+                            Currency = indexedPrice.Currency,
+                            List = indexedPrice.Value,
+                        });
+                        break;
+                    }
             }
 
             return result;
