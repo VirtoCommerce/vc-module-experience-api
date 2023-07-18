@@ -26,31 +26,32 @@ namespace VirtoCommerce.XDigitalCatalog.Binding
             {
                 case Array jArray:
                     {
-                        result = jArray
-                            .OfType<JObject>()
-                            .Select(x => x.ToObject<IndexedPrice>())
-                            .Select(x => new Price
-                            {
-                                Currency = x.Currency,
-                                List = x.Value,
-                            })
-                            .ToList();
+                        foreach (var jObject in jArray.OfType<JObject>())
+                        {
+                            AddPrice(result, jObject);
+                        }
+
                         break;
                     }
 
                 case JObject jObject:
                     {
-                        var indexedPrice = jObject.ToObject<IndexedPrice>();
-                        result.Add(new Price
-                        {
-                            Currency = indexedPrice.Currency,
-                            List = indexedPrice.Value,
-                        });
+                        AddPrice(result, jObject);
                         break;
                     }
             }
 
             return result;
+        }
+
+        private static void AddPrice(List<Price> result, JObject jObject)
+        {
+            var indexedPrice = jObject.ToObject<IndexedPrice>();
+            result.Add(new Price
+            {
+                Currency = indexedPrice.Currency,
+                List = indexedPrice.Value,
+            });
         }
 
         private sealed class IndexedPrice
