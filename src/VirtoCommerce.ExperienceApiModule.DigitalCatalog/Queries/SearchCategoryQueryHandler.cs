@@ -52,7 +52,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
 
             essentialTerms.Add($"__outline:{store.Catalog}");
 
-            var searchRequest = new IndexSearchRequestBuilder()
+            var searchRequestBuilder = new IndexSearchRequestBuilder()
                                           .WithFuzzy(request.Fuzzy, request.FuzzyLevel)
                                           .ParseFilters(_phraseParser, request.Filter)
                                           .WithSearchPhrase(request.Query)
@@ -61,8 +61,14 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                                           .AddSorting(request.Sort)
                                           //Limit search result with store catalog
                                           .AddTerms(essentialTerms)
-                                          .WithIncludeFields(IndexFieldsMapper.MapToIndexIncludes(request.IncludeFields).ToArray())
-                                          .Build();
+                                          .WithIncludeFields(IndexFieldsMapper.MapToIndexIncludes(request.IncludeFields).ToArray());
+
+            if (request.ObjectIds.IsNullOrEmpty())
+            {
+                searchRequestBuilder.AddTerms(new[] { "status:visible" }, skipIfExists: true);
+            }
+
+            var searchRequest = searchRequestBuilder.Build();
 
             var searchResult = await _searchProvider.SearchAsync(KnownDocumentTypes.Category, searchRequest);
 
