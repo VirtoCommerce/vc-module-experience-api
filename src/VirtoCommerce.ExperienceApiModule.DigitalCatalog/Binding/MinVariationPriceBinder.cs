@@ -53,11 +53,5 @@ namespace VirtoCommerce.XDigitalCatalog.Binding
                 List = indexedPrice.Value,
             });
         }
-
-        private sealed class IndexedPrice
-        {
-            public string Currency { get; set; }
-            public decimal Value { get; set; }
-        }
     }
 }
