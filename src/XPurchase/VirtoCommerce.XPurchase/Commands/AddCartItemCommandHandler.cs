@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -27,7 +28,7 @@ namespace VirtoCommerce.XPurchase.Commands
                 CartProduct = product
             });
 
-            return await SaveCartAsync(cartAggregate);
+            throw new Exception();
         }
     }
 }
