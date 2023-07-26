@@ -2,10 +2,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
-using VirtoCommerce.OrdersModule.Core.Model;
 using VirtoCommerce.OrdersModule.Core.Model.Search;
 using VirtoCommerce.OrdersModule.Core.Services;
-using VirtoCommerce.Platform.Core.GenericCrud;
 using VirtoCommerce.SearchModule.Core.Services;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Queries
@@ -14,7 +12,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Queries
     {
         private readonly IMapper _mapper;
         private readonly ISearchPhraseParser _searchPhraseParser;
-        private readonly ISearchService<PaymentSearchCriteria, PaymentSearchResult, PaymentIn> _paymentsSearchService;
+        private readonly IPaymentSearchService _paymentsSearchService;
 
         public SearchPaymentsQueryHandler(IMapper mapper,
             ISearchPhraseParser searchPhraseParser,
@@ -22,7 +20,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Queries
         {
             _mapper = mapper;
             _searchPhraseParser = searchPhraseParser;
-            _paymentsSearchService = (ISearchService<PaymentSearchCriteria, PaymentSearchResult, PaymentIn>)paymentsSearchService;
+            _paymentsSearchService = paymentsSearchService;
         }
 
         public virtual async Task<PaymentSearchResult> Handle(SearchPaymentsQuery request, CancellationToken cancellationToken)

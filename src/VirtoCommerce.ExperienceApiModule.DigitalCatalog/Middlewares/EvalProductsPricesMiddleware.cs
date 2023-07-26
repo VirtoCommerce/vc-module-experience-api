@@ -7,7 +7,6 @@ using PipelineNet.Middleware;
 using VirtoCommerce.ExperienceApiModule.Core.Models;
 using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.Platform.Core.GenericCrud;
 using VirtoCommerce.PricingModule.Core.Services;
 using VirtoCommerce.StoreModule.Core.Model;
 using VirtoCommerce.StoreModule.Core.Services;
@@ -20,7 +19,7 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
         private readonly IMapper _mapper;
         private readonly IPricingEvaluatorService _pricingEvaluatorService;
         private readonly IGenericPipelineLauncher _pipeline;
-        private readonly ICrudService<Store> _storeService;
+        private readonly IStoreService _storeService;
 
         public EvalProductsPricesMiddleware(
             IMapper mapper,
@@ -31,7 +30,7 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
             _mapper = mapper;
             _pricingEvaluatorService = pricingEvaluatorService;
             _pipeline = pipeline;
-            _storeService = (ICrudService<Store>)storeService;
+            _storeService = storeService;
         }
 
         public virtual async Task Run(SearchProductResponse parameter, Func<SearchProductResponse, Task> next)
@@ -53,7 +52,7 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
             if (responseGroup.HasFlag(ExpProductResponseGroup.LoadPrices) && parameter.Results.Any())
             {
                 // find Store by Id to get Catalog Id
-                var store = await _storeService.GetByIdAsync(query.StoreId, StoreResponseGroup.StoreInfo.ToString());
+                var store = await _storeService.GetNoCloneAsync(query.StoreId, StoreResponseGroup.StoreInfo.ToString());
                 var evalContext = await GetPriceEvaluationContext(query, store);
 
                 evalContext.ProductIds = parameter.Results.Select(x => x.Id).ToArray();

@@ -1,20 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
-    <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
-        <noWarn>1591</noWarn>
-        <Description></Description>
-        <IsPackable>True</IsPackable>
-    </PropertyGroup>
-
-    <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.13" />
-        <PackageReference Include="VirtoCommerce.Platform.Core" Version="3.302.0" />
-        <PackageReference Include="Scriban" Version="2.1.1" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\RecommendationsGatewayModule.Core\RecommendationsGatewayModule.Core.csproj" />
-    </ItemGroup>
-
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <noWarn>1591</noWarn>
+    <Description></Description>
+    <IsPackable>True</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.13" />
+    <PackageReference Include="Scriban" Version="2.1.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\RecommendationsGatewayModule.Core\RecommendationsGatewayModule.Core.csproj" />
+  </ItemGroup>
 </Project>

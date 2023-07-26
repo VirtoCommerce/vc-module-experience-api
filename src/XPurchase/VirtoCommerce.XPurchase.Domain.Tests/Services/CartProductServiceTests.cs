@@ -52,7 +52,7 @@ namespace VirtoCommerce.XPurchase.Tests.Services
                 new CatalogProduct() { Id = productId2 }
             };
 
-            _productService.Setup(x => x.GetByIdsAsync(ids, It.IsAny<string>(), null)).ReturnsAsync(testCatalogProduct.ToArray());
+            _productService.Setup(x => x.GetAsync(ids, It.IsAny<string>(), It.IsAny<bool>())).ReturnsAsync(testCatalogProduct.ToArray());
 
             //Act
             var result = await _service.GetProductsByIdsFakeAsync(ids);

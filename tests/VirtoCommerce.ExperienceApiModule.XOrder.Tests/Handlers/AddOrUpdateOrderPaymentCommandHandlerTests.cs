@@ -12,7 +12,6 @@ using VirtoCommerce.OrdersModule.Core.Services;
 using VirtoCommerce.PaymentModule.Core.Model;
 using VirtoCommerce.PaymentModule.Core.Model.Search;
 using VirtoCommerce.PaymentModule.Core.Services;
-using VirtoCommerce.Platform.Core.GenericCrud;
 using Xunit;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Tests.Handlers
@@ -30,14 +29,14 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Tests.Handlers
 
             var orderAggregateRepositoryMock = new Mock<ICustomerOrderAggregateRepository>();
             var customerOrderServiceMock = new Mock<ICustomerOrderService>();
-            var paymentMethodsSearchServiceMock = new Mock<IMockPaymentMethodsSearchService>();
+            var paymentMethodsSearchServiceMock = new Mock<IPaymentMethodsSearchService>();
 
             orderAggregateRepositoryMock
                 .Setup(x => x.GetOrderByIdAsync(It.Is<string>(x => x == orderAggregate.Order.Id)))
                 .ReturnsAsync(orderAggregate);
 
             paymentMethodsSearchServiceMock
-                .Setup(x => x.SearchAsync(It.Is<PaymentMethodsSearchCriteria>(x => x.IsActive.Value && x.StoreId == orderAggregate.Order.StoreId)))
+                .Setup(x => x.SearchAsync(It.Is<PaymentMethodsSearchCriteria>(x => x.IsActive.Value && x.StoreId == orderAggregate.Order.StoreId), It.IsAny<bool>()))
                 .ReturnsAsync(new PaymentMethodsSearchResult
                 {
                     TotalCount = 1,
@@ -65,12 +64,6 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Tests.Handlers
             aggregate.Order.InPayments.Should().ContainSingle(x => x.Price == payment.Price.Value);
             aggregate.Order.InPayments.Should().ContainSingle(x => x.Sum == payment.Amount.Value);
             aggregate.Order.InPayments.Should().ContainSingle(x => x.BillingAddress != null);
-        }
-
-
-        // Interface for mocking as IPaymentMethodsSearchService and ISearchService
-        public interface IMockPaymentMethodsSearchService : IPaymentMethodsSearchService, ISearchService<PaymentMethodsSearchCriteria, PaymentMethodsSearchResult, PaymentMethod>
-        {
         }
     }
 }

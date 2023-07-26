@@ -19,7 +19,6 @@ using VirtoCommerce.OrdersModule.Core.Services;
 using VirtoCommerce.PaymentModule.Core.Model;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Domain;
-using VirtoCommerce.Platform.Core.GenericCrud;
 using VirtoCommerce.Platform.Core.Settings;
 using VirtoCommerce.ShippingModule.Core.Model;
 using VirtoCommerce.TaxModule.Core.Model;
@@ -38,7 +37,7 @@ namespace VirtoCommerce.XPurchase
     {
         private readonly IMarketingPromoEvaluator _marketingEvaluator;
         private readonly IShoppingCartTotalsCalculator _cartTotalsCalculator;
-        private readonly ISearchService<TaxProviderSearchCriteria, TaxProviderSearchResult, TaxProvider> _taxProviderSearchService;
+        private readonly ITaxProviderSearchService _taxProviderSearchService;
         private readonly ICartProductService _cartProductService;
         private readonly IDynamicPropertyUpdaterService _dynamicPropertyUpdaterService;
         private readonly IMemberOrdersService _memberOrdersService;
@@ -57,7 +56,7 @@ namespace VirtoCommerce.XPurchase
         {
             _cartTotalsCalculator = cartTotalsCalculator;
             _marketingEvaluator = marketingEvaluator;
-            _taxProviderSearchService = (ISearchService<TaxProviderSearchCriteria, TaxProviderSearchResult, TaxProvider>)taxProviderSearchService;
+            _taxProviderSearchService = taxProviderSearchService;
             _cartProductService = cartProductService;
             _dynamicPropertyUpdaterService = dynamicPropertyUpdaterService;
             _mapper = mapper;

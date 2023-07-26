@@ -7,22 +7,18 @@ using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.Platform.Core.GenericCrud;
 
 namespace VirtoCommerce.XPurchase.Commands
 {
     public class AddCartItemsBulkCommandHandler : IRequestHandler<AddCartItemsBulkCommand, BulkCartResult>
     {
-        private readonly ICartAggregateRepository _cartAggrRepository;
-        private readonly ISearchService<ProductSearchCriteria, ProductSearchResult, CatalogProduct> _productSearchService;
+        private readonly IProductSearchService _productSearchService;
         private readonly IMediator _mediator;
 
         public AddCartItemsBulkCommandHandler(
-            ICartAggregateRepository cartAggrRepository,
             IProductSearchService productSearchService,
             IMediator mediator)
         {
-            _cartAggrRepository = cartAggrRepository;
             _productSearchService = productSearchService;
             _mediator = mediator;
         }

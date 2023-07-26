@@ -11,8 +11,6 @@ using VirtoCommerce.CustomerModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.Core;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.Platform.Core.GenericCrud;
-using VirtoCommerce.StoreModule.Core.Model;
 using VirtoCommerce.StoreModule.Core.Services;
 using VirtoCommerce.XPurchase.Queries;
 using VirtoCommerce.XPurchase.Services;
@@ -25,11 +23,11 @@ namespace VirtoCommerce.XPurchase
     {
         private readonly Func<CartAggregate> _cartAggregateFactory;
         private readonly ICartProductService _cartProductsService;
-        private readonly ISearchService<ShoppingCartSearchCriteria, ShoppingCartSearchResult, ShoppingCart> _shoppingCartSearchService;
-        private readonly ICrudService<ShoppingCart> _shoppingCartService;
+        private readonly IShoppingCartSearchService _shoppingCartSearchService;
+        private readonly IShoppingCartService _shoppingCartService;
         private readonly ICurrencyService _currencyService;
         private readonly IMemberResolver _memberResolver;
-        private readonly ICrudService<Store> _storeService;
+        private readonly IStoreService _storeService;
 
         public CartAggregateRepository(
             Func<CartAggregate> cartAggregateFactory,
@@ -41,11 +39,11 @@ namespace VirtoCommerce.XPurchase
             ICartProductService cartProductsService)
         {
             _cartAggregateFactory = cartAggregateFactory;
-            _shoppingCartSearchService = (ISearchService<ShoppingCartSearchCriteria, ShoppingCartSearchResult, ShoppingCart>)shoppingCartSearchService;
-            _shoppingCartService = (ICrudService<ShoppingCart>)shoppingCartService;
+            _shoppingCartSearchService = shoppingCartSearchService;
+            _shoppingCartService = shoppingCartService;
             _currencyService = currencyService;
             _memberResolver = memberResolver;
-            _storeService = (ICrudService<Store>)storeService;
+            _storeService = storeService;
             _cartProductsService = cartProductsService;
         }
 

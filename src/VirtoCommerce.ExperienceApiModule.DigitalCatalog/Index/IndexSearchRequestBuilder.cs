@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Linq;
 using VirtoCommerce.ExperienceApiModule.Core.Index;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.SearchModule.Core.Extenstions;
+using VirtoCommerce.SearchModule.Core.Extensions;
 using VirtoCommerce.SearchModule.Core.Model;
 using VirtoCommerce.SearchModule.Core.Services;
 using VirtoCommerce.XDigitalCatalog.Extensions;

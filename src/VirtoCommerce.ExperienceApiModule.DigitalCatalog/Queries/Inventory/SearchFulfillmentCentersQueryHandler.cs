@@ -3,21 +3,21 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-using VirtoCommerce.InventoryModule.Core.Model;
 using VirtoCommerce.InventoryModule.Core.Model.Search;
-using VirtoCommerce.Platform.Core.GenericCrud;
-using VirtoCommerce.StoreModule.Core.Model;
+using VirtoCommerce.InventoryModule.Core.Services;
+using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.StoreModule.Core.Services;
 
 namespace VirtoCommerce.XDigitalCatalog.Queries.Inventory
 {
     public class SearchFulfillmentCentersQueryHandler : IRequestHandler<SearchFulfillmentCentersQuery, FulfillmentCenterSearchResult>
     {
-        private readonly ISearchService<FulfillmentCenterSearchCriteria, FulfillmentCenterSearchResult, FulfillmentCenter> _fulfillmentCenterSearchService;
-        private readonly ICrudService<Store> _storeService;
+        private readonly IFulfillmentCenterSearchService _fulfillmentCenterSearchService;
+        private readonly IStoreService _storeService;
 
         public SearchFulfillmentCentersQueryHandler(
-            ISearchService<FulfillmentCenterSearchCriteria, FulfillmentCenterSearchResult, FulfillmentCenter> fulfillmentCenterSearchService,
-            ICrudService<Store> storeService)
+            IFulfillmentCenterSearchService fulfillmentCenterSearchService,
+            IStoreService storeService)
         {
             _fulfillmentCenterSearchService = fulfillmentCenterSearchService;
             _storeService = storeService;
@@ -27,13 +27,15 @@ namespace VirtoCommerce.XDigitalCatalog.Queries.Inventory
         {
             if (!string.IsNullOrEmpty(request.StoreId))
             {
-                var store = await _storeService.GetByIdAsync(request.StoreId);
+                var store = await _storeService.GetNoCloneAsync(request.StoreId);
                 if (store != null)
                 {
-                    var fulfillmentCenterIds = new List<string>();
+                    var fulfillmentCenterIds = new List<string>
+                    {
+                        store.MainFulfillmentCenterId,
+                        store.MainReturnsFulfillmentCenterId,
+                    };
 
-                    fulfillmentCenterIds.Add(store.MainFulfillmentCenterId);
-                    fulfillmentCenterIds.Add(store.MainReturnsFulfillmentCenterId);
                     fulfillmentCenterIds.AddRange(store.AdditionalFulfillmentCenterIds);
                     fulfillmentCenterIds.AddRange(store.ReturnsFulfillmentCenterIds);
 

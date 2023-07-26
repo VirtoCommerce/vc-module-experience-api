@@ -2,15 +2,16 @@ using System.Threading;
 using System.Threading.Tasks;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.InventoryModule.Core.Model;
-using VirtoCommerce.Platform.Core.GenericCrud;
+using VirtoCommerce.InventoryModule.Core.Services;
+using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.XDigitalCatalog.Queries.Inventory
 {
     internal class GetFulfillmentCenterQueryHandler : IQueryHandler<GetFulfillmentCenterQuery, FulfillmentCenter>
     {
-        private readonly ICrudService<FulfillmentCenter> _fulfillmentCenterService;
+        private readonly IFulfillmentCenterService _fulfillmentCenterService;
 
-        public GetFulfillmentCenterQueryHandler(ICrudService<FulfillmentCenter> fulfillmentCenterService)
+        public GetFulfillmentCenterQueryHandler(IFulfillmentCenterService fulfillmentCenterService)
         {
             _fulfillmentCenterService = fulfillmentCenterService;
         }

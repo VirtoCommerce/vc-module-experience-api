@@ -51,7 +51,7 @@ public class ChildCategoriesQueryBuilder : CatalogQueryBuilder<ChildCategoriesQu
 
             foreach (var idsBatch in categoryIds.Paginate(_batchSize))
             {
-                var categories = await _categoryService.GetByIdsAsync(idsBatch.ToArray(), responseGroup);
+                var categories = await _categoryService.GetAsync(idsBatch, responseGroup);
                 categoriesByIds.AddRange(categories.ToDictionary(x => x.Id));
             }
 

@@ -214,14 +214,13 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 "variations",
                 resolve: async context =>
                 {
-                    var productIds = context.Source.IndexedVariationIds.ToArray();
-                    if (productIds.IsNullOrEmpty())
+                    if (context.Source.IndexedVariationIds.IsNullOrEmpty())
                     {
                         return new List<ExpVariation>();
                     }
 
                     var query = context.GetCatalogQuery<LoadProductsQuery>();
-                    query.ObjectIds = context.Source.IndexedVariationIds.ToArray();
+                    query.ObjectIds = context.Source.IndexedVariationIds;
                     query.IncludeFields = context.SubFields.Values.GetAllNodesPaths(context).ToArray();
 
                     var response = await mediator.Send(query);

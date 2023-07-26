@@ -61,7 +61,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field<NonNullGraphType<ListGraphType<InputOrderShipmentItemType>>>(nameof(Shipment.Items),
                 "Shipment items");
             Field<NonNullGraphType<ListGraphType<InputOrderShipmentPackageType>>>(nameof(Shipment.Packages));
-            Field<NonNullGraphType<ListGraphType<InputPaymentInType>>>(nameof(Shipment.InPayments));
+            Field<NonNullGraphType<ListGraphType<InputOrderPaymentType>>>(nameof(Shipment.InPayments));
             Field<NonNullGraphType<ListGraphType<InputOrderDiscountType>>>(nameof(Shipment.Discounts),
                 "Discounts");
         }
