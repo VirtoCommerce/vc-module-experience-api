@@ -4,17 +4,16 @@ using VirtoCommerce.CatalogModule.Core.Model.Search.Indexed;
 using VirtoCommerce.CatalogModule.Core.Search.Indexed;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.Platform.Core.GenericCrud;
-using VirtoCommerce.StoreModule.Core.Model;
+using VirtoCommerce.StoreModule.Core.Services;
 
 namespace VirtoCommerce.XDigitalCatalog.Queries;
 
 public class ProductSuggestionsQueryHandler : IQueryHandler<ProductSuggestionsQuery, ProductSuggestionsQueryResponse>
 {
     private readonly IProductSuggestionService _productSuggestionService;
-    private readonly ICrudService<Store> _storeService;
+    private readonly IStoreService _storeService;
 
-    public ProductSuggestionsQueryHandler(IProductSuggestionService productSuggestionService, ICrudService<Store> storeService)
+    public ProductSuggestionsQueryHandler(IProductSuggestionService productSuggestionService, IStoreService storeService)
     {
         _productSuggestionService = productSuggestionService;
         _storeService = storeService;
@@ -29,7 +28,7 @@ public class ProductSuggestionsQueryHandler : IQueryHandler<ProductSuggestionsQu
             return result;
         }
 
-        var store = await _storeService.GetByIdAsync(query.StoreId);
+        var store = await _storeService.GetNoCloneAsync(query.StoreId);
         if (store is null)
         {
             return result;

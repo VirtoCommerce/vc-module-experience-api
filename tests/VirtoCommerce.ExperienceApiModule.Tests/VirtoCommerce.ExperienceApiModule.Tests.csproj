@@ -1,33 +1,28 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
-    <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
-        <IsPackable>False</IsPackable>
-    </PropertyGroup>
-
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-        <OutputPath>bin\</OutputPath>
-        <NoWarn>1701;1702;1705;1591</NoWarn>
-    </PropertyGroup>
-
-    <ItemGroup>
-        <PackageReference Include="AutoFixture" Version="4.11.0" />
-        <PackageReference Include="coverlet.collector" Version="3.2.0">
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-          <PrivateAssets>all</PrivateAssets>
-        </PackageReference>
-        <PackageReference Include="FluentAssertions" Version="5.10.3" />
-        <PackageReference Include="GraphQL" Version="4.6.0" />
-        <PackageReference Include="GraphQL.Relay" Version="0.6.2" />
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <IsPackable>False</IsPackable>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>bin\</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="AutoFixture" Version="4.11.0" />
+    <PackageReference Include="coverlet.collector" Version="6.0.0">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="FluentAssertions" Version="5.10.3" />
+    <PackageReference Include="GraphQL" Version="4.6.0" />
+    <PackageReference Include="GraphQL.Relay" Version="0.6.2" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
-        <PackageReference Include="Moq" Version="4.13.1" />
-        <PackageReference Include="NEST" Version="7.6.1" />
-        <PackageReference Include="xunit" Version="2.4.1" />
-        <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <ProjectReference Include="..\..\src\VirtoCommerce.ExperienceApiModule.Core\VirtoCommerce.ExperienceApiModule.Core.csproj" />
-        <ProjectReference Include="..\..\src\VirtoCommerce.ExperienceApiModule.DigitalCatalog\VirtoCommerce.XDigitalCatalog.csproj" />
-    </ItemGroup>
+    <PackageReference Include="Moq" Version="4.13.1" />
+    <PackageReference Include="NEST" Version="7.6.1" />
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\VirtoCommerce.ExperienceApiModule.Core\VirtoCommerce.ExperienceApiModule.Core.csproj" />
+    <ProjectReference Include="..\..\src\VirtoCommerce.ExperienceApiModule.DigitalCatalog\VirtoCommerce.XDigitalCatalog.csproj" />
+  </ItemGroup>
 </Project>

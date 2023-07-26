@@ -5,21 +5,23 @@ using System.Threading.Tasks;
 using VirtoCommerce.ExperienceApiModule.Core.Models;
 using VirtoCommerce.ExperienceApiModule.XOrder.Models;
 using VirtoCommerce.OrdersModule.Core.Model;
-using VirtoCommerce.Platform.Core.GenericCrud;
+using VirtoCommerce.OrdersModule.Core.Services;
+using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.StoreModule.Core.Model;
+using VirtoCommerce.StoreModule.Core.Services;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Commands
 {
     public abstract class PaymentCommandHandlerBase
     {
-        private readonly ICrudService<CustomerOrder> _customerOrderService;
-        private readonly ICrudService<PaymentIn> _paymentService;
-        private readonly ICrudService<Store> _storeService;
+        private readonly ICustomerOrderService _customerOrderService;
+        private readonly IPaymentService _paymentService;
+        private readonly IStoreService _storeService;
 
-        public PaymentCommandHandlerBase(
-            ICrudService<CustomerOrder> customerOrderService,
-            ICrudService<PaymentIn> paymentService,
-            ICrudService<Store> storeService)
+        protected PaymentCommandHandlerBase(
+            ICustomerOrderService customerOrderService,
+            IPaymentService paymentService,
+            IStoreService storeService)
         {
             _customerOrderService = customerOrderService;
             _paymentService = paymentService;

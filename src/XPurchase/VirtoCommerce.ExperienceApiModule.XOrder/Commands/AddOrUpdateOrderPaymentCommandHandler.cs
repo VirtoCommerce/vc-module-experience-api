@@ -4,11 +4,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using VirtoCommerce.OrdersModule.Core.Services;
-using VirtoCommerce.PaymentModule.Core.Model;
 using VirtoCommerce.PaymentModule.Core.Model.Search;
 using VirtoCommerce.PaymentModule.Core.Services;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.Platform.Core.GenericCrud;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Commands
 {
@@ -16,7 +14,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Commands
     {
         private readonly ICustomerOrderAggregateRepository _customerOrderAggregateRepository;
         private readonly ICustomerOrderService _customerOrderService;
-        private readonly ISearchService<PaymentMethodsSearchCriteria, PaymentMethodsSearchResult, PaymentMethod> _paymentMethodsSearchService;
+        private readonly IPaymentMethodsSearchService _paymentMethodsSearchService;
 
         public AddOrUpdateOrderPaymentCommandHandler(
             ICustomerOrderAggregateRepository customerOrderAggregateRepository,
@@ -25,7 +23,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Commands
         {
             _customerOrderAggregateRepository = customerOrderAggregateRepository;
             _customerOrderService = customerOrderService;
-            _paymentMethodsSearchService = (ISearchService<PaymentMethodsSearchCriteria, PaymentMethodsSearchResult, PaymentMethod>)paymentMethodsSearchService;
+            _paymentMethodsSearchService = paymentMethodsSearchService;
         }
 
         public async Task<CustomerOrderAggregate> Handle(AddOrUpdateOrderPaymentCommand request, CancellationToken cancellationToken)

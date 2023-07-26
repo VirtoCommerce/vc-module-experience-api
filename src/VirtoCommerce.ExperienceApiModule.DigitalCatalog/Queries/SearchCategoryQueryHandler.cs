@@ -10,7 +10,6 @@ using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
 using VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.Platform.Core.GenericCrud;
 using VirtoCommerce.SearchModule.Core.Model;
 using VirtoCommerce.SearchModule.Core.Services;
 using VirtoCommerce.StoreModule.Core.Model;
@@ -25,7 +24,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
         private readonly IMapper _mapper;
         private readonly ISearchProvider _searchProvider;
         private readonly ISearchPhraseParser _phraseParser;
-        private readonly ICrudService<Store> _storeService;
+        private readonly IStoreService _storeService;
         private readonly IGenericPipelineLauncher _pipeline;
         private readonly IMediator _mediator;
 
@@ -40,7 +39,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             _searchProvider = searchProvider;
             _mapper = mapper;
             _phraseParser = phraseParser;
-            _storeService = (ICrudService<Store>)storeService;
+            _storeService = storeService;
             _pipeline = pipeline;
             _mediator = mediator;
         }

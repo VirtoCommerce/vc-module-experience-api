@@ -19,7 +19,6 @@ using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure.Authorization;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.Platform.Core.GenericCrud;
 using VirtoCommerce.Platform.Core.Security;
 using VirtoCommerce.XPurchase.Authorization;
 using VirtoCommerce.XPurchase.Commands;
@@ -33,15 +32,16 @@ namespace VirtoCommerce.XPurchase.Schemas
         private readonly IMediator _mediator;
         private readonly IAuthorizationService _authorizationService;
         private readonly ICurrencyService _currencyService;
-        private readonly ICrudService<ShoppingCart> _cartService;
-        private readonly ISearchService<ShoppingCartSearchCriteria, ShoppingCartSearchResult, ShoppingCart> _shoppingCartSearchService;
+        private readonly IShoppingCartService _cartService;
+        private readonly IShoppingCartSearchService _shoppingCartSearchService;
         private readonly IDistributedLockService _distributedLockService;
         private readonly Func<UserManager<ApplicationUser>> _userManagerFactory;
 
         public const string _commandName = "command";
         public const string CartPrefix = "Cart";
 
-        public PurchaseSchema(IMediator mediator,
+        public PurchaseSchema(
+            IMediator mediator,
             IAuthorizationService authorizationService,
             ICurrencyService currencyService,
             IShoppingCartService cartService,
@@ -52,8 +52,8 @@ namespace VirtoCommerce.XPurchase.Schemas
             _mediator = mediator;
             _authorizationService = authorizationService;
             _currencyService = currencyService;
-            _cartService = (ICrudService<ShoppingCart>)cartService;
-            _shoppingCartSearchService = (ISearchService<ShoppingCartSearchCriteria, ShoppingCartSearchResult, ShoppingCart>)shoppingCartSearchService;
+            _cartService = cartService;
+            _shoppingCartSearchService = shoppingCartSearchService;
             _distributedLockService = distributedLockService;
             _userManagerFactory = userManagerFactory;
         }

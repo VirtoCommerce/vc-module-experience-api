@@ -15,7 +15,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
         public string CurrencyCode { get; set; }
 
         public Store Store { get; set; }
-        public IEnumerable<string> IncludeFields { get; set; } = Array.Empty<string>();
+        public IList<string> IncludeFields { get; set; } = Array.Empty<string>();
 
         public override IEnumerable<QueryArgument> GetArguments()
         {

@@ -8,8 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.ExperienceApiModule.Core.BaseQueries;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
-using VirtoCommerce.Platform.Core.GenericCrud;
-using VirtoCommerce.StoreModule.Core.Model;
+using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.StoreModule.Core.Services;
 
 namespace VirtoCommerce.XDigitalCatalog.Queries;
@@ -19,7 +18,7 @@ public abstract class CatalogQueryBuilder<TQuery, TResult, TResultGraphType>
     where TQuery : CatalogQueryBase<TResult>
     where TResultGraphType : IGraphType
 {
-    private readonly ICrudService<Store> _storeService;
+    private readonly IStoreService _storeService;
     private readonly ICurrencyService _currencyService;
 
     protected CatalogQueryBuilder(
@@ -29,7 +28,7 @@ public abstract class CatalogQueryBuilder<TQuery, TResult, TResultGraphType>
         ICurrencyService currencyService)
         : base(mediator, authorizationService)
     {
-        _storeService = (ICrudService<Store>)storeService;
+        _storeService = storeService;
         _currencyService = currencyService;
     }
 
