@@ -27,6 +27,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             if (IncludeFields.Any(x => x.Contains("availabilityData")))
             {
                 result |= ExpProductResponseGroup.LoadInventories;
+                result |= ExpProductResponseGroup.LoadPrices;
             }
             if (IncludeFields.Any(x => x.Contains("vendor")))
             {
