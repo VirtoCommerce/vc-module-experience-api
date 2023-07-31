@@ -119,6 +119,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                     return loader.LoadAsync(context.Source.ShipmentMethodCode);
                 })
             };
+            AddField(nameField);
         }
     }
 }
