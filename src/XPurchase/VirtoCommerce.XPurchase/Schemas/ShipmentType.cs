@@ -10,9 +10,10 @@ using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
 using VirtoCommerce.ExperienceApiModule.Core.Services;
-using VirtoCommerce.ShippingModule.Core.Model.Search;
+using VirtoCommerce.ShippingModule.Core.Model;
 using VirtoCommerce.ShippingModule.Core.Services;
 using VirtoCommerce.XPurchase.Extensions;
+using VirtoCommerce.XPurchase.Services;
 
 namespace VirtoCommerce.XPurchase.Schemas
 {
@@ -22,7 +23,8 @@ namespace VirtoCommerce.XPurchase.Schemas
             IMemberService memberService,
             IDataLoaderContextAccessor dataLoader,
             IDynamicPropertyResolverService dynamicPropertyResolverService,
-            IShippingMethodsSearchService shippingMethodsSearchService)
+            IShippingMethodsSearchService shippingMethodsSearchService,
+            ICartAvailMethodsService availableMethodsService)
         {
             Field(x => x.Id, nullable: true).Description("Shipment Id");
             Field(x => x.ShipmentMethodCode, nullable: true).Description("Shipment method code");
@@ -94,29 +96,22 @@ namespace VirtoCommerce.XPurchase.Schemas
 
             var nameField = new FieldType
             {
-                Name = "name",
-                Type = typeof(StringGraphType),
-                Resolver = new FuncFieldResolver<Shipment, IDataLoaderResult<string>>(context =>
+                Name = "shippingMethod",
+                Type = typeof(ShippingMethodType),
+                Resolver = new FuncFieldResolver<Shipment, IDataLoaderResult<ShippingRate>>(context =>
                 {
-                    var loader = dataLoader.Context.GetOrAddBatchLoader<string, string>("shipping_type_names", async (codes) =>
+                    var loader = dataLoader.Context.GetOrAddBatchLoader<string, ShippingRate>("cart_shipping_methods", async (codes) =>
                     {
                         var cart = context.GetValueForSource<CartAggregate>();
 
-                        var criteria = new ShippingMethodsSearchCriteria
-                        {
-                            IsActive = true,
-                            WithoutTransient = true,
-                            StoreId = cart?.Store?.Id
-                        };
+                        var availableShippingMethods = await availableMethodsService.GetAvailableShippingRatesAsync(cart);
 
-                        var shippingMethods = (await shippingMethodsSearchService.SearchAsync(criteria)).Results;
-
-                        return shippingMethods
-                            .DistinctBy(x => x.Code)
-                            .ToDictionary(x => x.Code, x => x.Name);
+                        return availableShippingMethods
+                            .Where(x => x.ShippingMethod != null)
+                            .ToDictionary(x => $"{x.ShippingMethod.Code}-{x.OptionName}");
                     });
 
-                    return loader.LoadAsync(context.Source.ShipmentMethodCode);
+                    return loader.LoadAsync($"{context.Source.ShipmentMethodCode}-{context.Source.ShipmentMethodOption}");
                 })
             };
             AddField(nameField);
