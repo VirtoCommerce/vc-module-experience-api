@@ -11,7 +11,6 @@ using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
 using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.ShippingModule.Core.Model;
-using VirtoCommerce.ShippingModule.Core.Services;
 using VirtoCommerce.XPurchase.Extensions;
 using VirtoCommerce.XPurchase.Services;
 
@@ -23,7 +22,6 @@ namespace VirtoCommerce.XPurchase.Schemas
             IMemberService memberService,
             IDataLoaderContextAccessor dataLoader,
             IDynamicPropertyResolverService dynamicPropertyResolverService,
-            IShippingMethodsSearchService shippingMethodsSearchService,
             ICartAvailMethodsService availableMethodsService)
         {
             Field(x => x.Id, nullable: true).Description("Shipment Id");
