@@ -1,3 +1,4 @@
+using System.Linq;
 using AutoMapper;
 using GraphQL.DataLoader;
 using GraphQL.Resolvers;
@@ -9,13 +10,19 @@ using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
 using VirtoCommerce.ExperienceApiModule.Core.Services;
+using VirtoCommerce.ShippingModule.Core.Model;
 using VirtoCommerce.XPurchase.Extensions;
+using VirtoCommerce.XPurchase.Services;
 
 namespace VirtoCommerce.XPurchase.Schemas
 {
     public class ShipmentType : ExtendableGraphType<Shipment>
     {
-        public ShipmentType(IMapper mapper, IMemberService memberService, IDataLoaderContextAccessor dataLoader, IDynamicPropertyResolverService dynamicPropertyResolverService)
+        public ShipmentType(IMapper mapper,
+            IMemberService memberService,
+            IDataLoaderContextAccessor dataLoader,
+            IDynamicPropertyResolverService dynamicPropertyResolverService,
+            ICartAvailMethodsService availableMethodsService)
         {
             Field(x => x.Id, nullable: true).Description("Shipment Id");
             Field(x => x.ShipmentMethodCode, nullable: true).Description("Shipment method code");
@@ -84,6 +91,28 @@ namespace VirtoCommerce.XPurchase.Schemas
                 "Cart shipment dynamic property values",
                 QueryArgumentPresets.GetArgumentForDynamicProperties(),
                 context => dynamicPropertyResolverService.LoadDynamicPropertyValues(context.Source, context.GetArgumentOrValue<string>("cultureName")));
+
+            var nameField = new FieldType
+            {
+                Name = "shippingMethod",
+                Type = typeof(ShippingMethodType),
+                Resolver = new FuncFieldResolver<Shipment, IDataLoaderResult<ShippingRate>>(context =>
+                {
+                    var loader = dataLoader.Context.GetOrAddBatchLoader<string, ShippingRate>("cart_shipping_methods", async (codes) =>
+                    {
+                        var cart = context.GetValueForSource<CartAggregate>();
+
+                        var availableShippingMethods = await availableMethodsService.GetAvailableShippingRatesAsync(cart);
+
+                        return availableShippingMethods
+                            .Where(x => x.ShippingMethod != null)
+                            .ToDictionary(x => $"{x.ShippingMethod.Code}-{x.OptionName}");
+                    });
+
+                    return loader.LoadAsync($"{context.Source.ShipmentMethodCode}-{context.Source.ShipmentMethodOption}");
+                })
+            };
+            AddField(nameField);
         }
     }
 }
