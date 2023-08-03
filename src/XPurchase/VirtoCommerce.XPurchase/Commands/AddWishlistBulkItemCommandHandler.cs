@@ -22,6 +22,7 @@ namespace VirtoCommerce.XPurchase.Commands
             {
                 var cartAggregate = await _cartAggregateRepository.GetCartByIdAsync(listId);
 
+                cartAggregate.ValidationRuleSet = new string[] { "default" };
                 await cartAggregate.AddItemsAsync(new List<NewCartItem> {
                     new NewCartItem(request.ProductId, request.Quantity ?? 1)
                 });
