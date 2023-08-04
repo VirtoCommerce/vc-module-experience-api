@@ -4,6 +4,7 @@ using GraphQL.Builders;
 using GraphQL.Types;
 using GraphQL.Types.Relay;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.Exceptions;
 
 namespace VirtoCommerce.ExperienceApiModule.Core.Helpers
 {
@@ -69,6 +70,11 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Helpers
             //Try first find the actual TNodeType  in the  AbstractTypeFactory
             var actualNodeType = GetActualType<TNodeType>();
             var createMethodInfo = typeof(ConnectionBuilder<>).MakeGenericType(typeof(TSourceType)).GetMethods().FirstOrDefault(x => x.Name.EqualsInvariant(nameof(ConnectionBuilder.Create)) && x.GetGenericArguments().Count() == 3);
+            if (createMethodInfo == null)
+            {
+                throw new PlatformException("No suitable 'ConnectionBuilder.Create' method with three generic types found");
+            }
+
             var genericEgdeType = typeof(TEdgeType).GetGenericTypeDefinition().MakeGenericType(new[] { actualNodeType });
             var genericConnectionType = typeof(TConnectionType).GetGenericTypeDefinition().MakeGenericType(new[] { actualNodeType });
             var connectionBuilder = (ConnectionBuilder<TSourceType>)createMethodInfo.MakeGenericMethod(actualNodeType, genericEgdeType, genericConnectionType).Invoke(null, new[] { Type.Missing });
