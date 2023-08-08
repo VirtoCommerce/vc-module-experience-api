@@ -35,7 +35,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Services
                 return;
             }
 
-            if (user.PasswordExpired == true)
+            if (user.PasswordExpired)
             {
                 AuthorizationError.ThrowPasswordExpiredError();
             }
