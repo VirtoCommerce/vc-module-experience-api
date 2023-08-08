@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
+using VirtoCommerce.ExperienceApiModule.Core.Infrastructure.Authorization;
 using VirtoCommerce.Platform.Core.Security;
 
 namespace VirtoCommerce.ExperienceApiModule.Core.Services
@@ -21,6 +22,28 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Services
             var result = await userManager.IsLockedOutAsync(user);
 
             return result;
+        }
+
+        public async Task CheckUserState(string userId)
+        {
+            var userManager = _userManagerFactory();
+
+            var user = await userManager.FindByIdAsync(userId);
+
+            if (user == null)
+            {
+                return;
+            }
+
+            if (user.PasswordExpired == true)
+            {
+                AuthorizationError.ThrowPasswordExpiredError();
+            }
+
+            if (await userManager.IsLockedOutAsync(user))
+            {
+                AuthorizationError.ThrowUserLockedError();
+            }
         }
     }
 }
