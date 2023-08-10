@@ -128,7 +128,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 
             ExtendableField<ListGraphType<OrderDiscountType>>("discounts", resolve: x => x.Source.Order.Discounts);
 
-            FieldAsync<ListGraphType<OrderPaymentMethodType>>("availablePaymentMethods",
+            ExtendableFieldAsync<ListGraphType<OrderPaymentMethodType>>("availablePaymentMethods",
                 "Available payment methods",
                 resolve: async context =>
                 {
