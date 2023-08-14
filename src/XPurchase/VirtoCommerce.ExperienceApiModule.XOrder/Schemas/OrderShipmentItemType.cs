@@ -13,6 +13,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field(x => x.BarCode, true);
             Field(x => x.Quantity);
             Field(x => x.OuterId, true);
+            Field(x => x.Status, true);
         }
     }
 }
