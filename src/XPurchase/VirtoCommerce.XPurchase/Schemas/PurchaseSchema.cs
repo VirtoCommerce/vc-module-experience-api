@@ -8,7 +8,6 @@ using GraphQL.Resolvers;
 using GraphQL.Types;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.CartModule.Core.Model.Search;
 using VirtoCommerce.CartModule.Core.Services;
@@ -18,8 +17,8 @@ using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure.Authorization;
+using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.Platform.Core.Security;
 using VirtoCommerce.XPurchase.Authorization;
 using VirtoCommerce.XPurchase.Commands;
 using VirtoCommerce.XPurchase.Extensions;
@@ -35,7 +34,7 @@ namespace VirtoCommerce.XPurchase.Schemas
         private readonly IShoppingCartService _cartService;
         private readonly IShoppingCartSearchService _shoppingCartSearchService;
         private readonly IDistributedLockService _distributedLockService;
-        private readonly Func<UserManager<ApplicationUser>> _userManagerFactory;
+        private readonly IUserManagerCore _userManagerCore;
 
         public const string _commandName = "command";
         public const string CartPrefix = "Cart";
@@ -47,7 +46,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             IShoppingCartService cartService,
             IShoppingCartSearchService shoppingCartSearchService,
             IDistributedLockService distributedLockService,
-            Func<UserManager<ApplicationUser>> userManagerFactory)
+            IUserManagerCore userManagerCore)
         {
             _mediator = mediator;
             _authorizationService = authorizationService;
@@ -55,7 +54,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             _cartService = cartService;
             _shoppingCartSearchService = shoppingCartSearchService;
             _distributedLockService = distributedLockService;
-            _userManagerFactory = userManagerFactory;
+            _userManagerCore = userManagerCore;
         }
 
         public void Build(ISchema schema)
@@ -1429,18 +1428,6 @@ namespace VirtoCommerce.XPurchase.Schemas
             return new PagedConnection<CartAggregate>(response.Results, query.Skip, query.Take, response.TotalCount);
         }
 
-        private async Task CheckUserPasswordExpiredState(string userId)
-        {
-            var userManager = _userManagerFactory();
-
-            var user = await userManager.FindByIdAsync(userId);
-
-            if (user?.PasswordExpired == true)
-            {
-                AuthorizationError.ThrowPasswordExpiredError();
-            }
-        }
-
         private async Task CheckAuthByCartCommandAsync(IResolveFieldContext context, CartCommand cartCommand)
         {
             if (!string.IsNullOrEmpty(cartCommand.CartId))
@@ -1499,7 +1486,7 @@ namespace VirtoCommerce.XPurchase.Schemas
 
         private async Task AuthorizeAsync(IResolveFieldContext context, object resource)
         {
-            await CheckUserPasswordExpiredState(context.GetCurrentUserId());
+            await _userManagerCore.CheckUserState(context.GetCurrentUserId());
 
             var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), resource, new CanAccessCartAuthorizationRequirement());
             if (!authorizationResult.Succeeded)

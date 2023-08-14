@@ -121,7 +121,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             ExtendableField<ListGraphType<PaymentType>>("payments",
                 "Payments",
                 resolve: context => context.Source.Cart.Payments);
-            FieldAsync<ListGraphType<PaymentMethodType>>("availablePaymentMethods",
+            ExtendableFieldAsync<ListGraphType<PaymentMethodType>>("availablePaymentMethods",
                 "Available payment methods",
                 resolve: async context =>
             {
