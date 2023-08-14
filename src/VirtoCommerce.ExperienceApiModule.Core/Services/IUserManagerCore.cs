@@ -6,5 +6,6 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Services
     public interface IUserManagerCore
     {
         Task<bool> IsLockedOutAsync(ApplicationUser user);
+        Task CheckUserState(string userId);
     }
 }

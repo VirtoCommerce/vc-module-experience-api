@@ -31,5 +31,13 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Infrastructure.Authorization
         {
             throw new AuthorizationError($"This user has their password expired. Please change the password using 'changePassword' command.");
         }
+
+        /// <summary>
+        /// Throws "User locked" error
+        /// </summary>
+        public static void ThrowUserLockedError()
+        {
+            throw new AuthorizationError($"This user is locked.");
+        }
     }
 }
