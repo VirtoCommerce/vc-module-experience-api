@@ -37,7 +37,7 @@ namespace VirtoCommerce.XDigitalCatalog.Binding
                             }
                             catch (JsonReaderException)
                             {
-                                // do nothing;
+                                // Intentionally left empty
                             }
                         }
 
@@ -68,23 +68,6 @@ namespace VirtoCommerce.XDigitalCatalog.Binding
                 Currency = indexedPrice.Currency,
                 List = indexedPrice.Value,
             });
-        }
-
-        private static void AddPrice(List<Price> result, Dictionary<string, object> valuePairs)
-        {
-            var price = new Price();
-
-            if (valuePairs.TryGetValue(nameof(IndexedPrice.Currency), out var currency))
-            {
-                price.Currency = currency as string;
-            }
-
-            if (valuePairs.TryGetValue(nameof(IndexedPrice.Value), out var value))
-            {
-                price.List = Convert.ToDecimal(value);
-            }
-
-            result.Add(price);
         }
     }
 }
