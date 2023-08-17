@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using VirtoCommerce.ExperienceApiModule.Core.Binding;
 using VirtoCommerce.PricingModule.Core.Model;
@@ -26,7 +27,22 @@ namespace VirtoCommerce.XDigitalCatalog.Binding
             {
                 case Array jArray:
                     {
-                        foreach (var jObject in jArray.OfType<JObject>())
+                        var jObjects = new List<JObject>();
+                        foreach (var sObj in jArray.OfType<string>())
+                        {
+                            try
+                            {
+                                var jObj = JObject.Parse(sObj);
+                                jObjects.Add(jObj);
+                            }
+                            catch (JsonReaderException)
+                            {
+                                // Intentionally left empty
+                            }
+                        }
+
+                        jObjects = jObjects.Any() ? jObjects : jArray.OfType<JObject>().ToList();
+                        foreach (var jObject in jObjects)
                         {
                             AddPrice(result, jObject);
                         }
