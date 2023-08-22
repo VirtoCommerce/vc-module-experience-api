@@ -7,7 +7,7 @@ namespace VirtoCommerce.XPurchase.Schemas
     {
         public BulkCartType()
         {
-            Field<CartType>("cart",
+            ExtendableField<CartType>("cart",
                 "Cart",
                 resolve: context => context.Source.Cart);
 
