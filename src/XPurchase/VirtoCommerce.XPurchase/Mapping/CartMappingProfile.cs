@@ -50,12 +50,12 @@ namespace VirtoCommerce.XPurchase.Mapping
                     lineItem.TaxDetails = cartProduct.Price.TaxDetails;
                     lineItem.TaxPercentRate = cartProduct.Price.TaxPercentRate;
                     lineItem.Discounts = cartProduct.Price.Discounts;
+                    lineItem.ListPrice = cartProduct.Price.ListPrice.InternalAmount;
                 }
 
                 lineItem.Height = cartProduct.Product.Height;
                 lineItem.ImageUrl = cartProduct.Product.ImgSrc;
                 lineItem.Length = cartProduct.Product.Length;
-                lineItem.ListPrice = cartProduct.Price.ListPrice.InternalAmount;
                 lineItem.MeasureUnit = cartProduct.Product.MeasureUnit;
                 lineItem.Name = cartProduct.Product.Name;
                 lineItem.ProductId = cartProduct.Product.Id;
