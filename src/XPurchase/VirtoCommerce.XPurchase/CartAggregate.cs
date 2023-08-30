@@ -165,7 +165,13 @@ namespace VirtoCommerce.XPurchase
             }
             else if (newCartItem.CartProduct != null)
             {
+                if (newCartItem.IsWishlist && newCartItem.CartProduct.Price == null)
+                {
+                    newCartItem.CartProduct.Price = new ProductPrice(Currency);
+                }
+
                 var lineItem = _mapper.Map<LineItem>(newCartItem.CartProduct);
+
                 lineItem.Quantity = newCartItem.Quantity;
 
                 if (newCartItem.Price != null)
@@ -211,7 +217,8 @@ namespace VirtoCommerce.XPurchase
                         Comment = item.Comment,
                         DynamicProperties = item.DynamicProperties,
                         Price = item.Price,
-                        CartProduct = product
+                        IsWishlist = item.IsWishlist,
+                        CartProduct = product,
                     });
                 }
             }

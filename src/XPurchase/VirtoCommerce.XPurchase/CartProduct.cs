@@ -34,7 +34,7 @@ namespace VirtoCommerce.XPurchase
 
         public CatalogProduct Product { get; private set; }
 
-        public ProductPrice Price { get; private set; }
+        public ProductPrice Price { get; set; }
 
         public IList<ProductPrice> AllPrices { get; private set; } = new List<ProductPrice>();
 
