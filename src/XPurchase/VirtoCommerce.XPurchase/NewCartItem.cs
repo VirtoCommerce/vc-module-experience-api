@@ -31,5 +31,7 @@ namespace VirtoCommerce.XPurchase
         /// Dynamic properties
         /// </summary>
         public IList<DynamicPropertyValue> DynamicProperties { get; set; }
+
+        public bool IsWishlist { get; set; }
     }
 }
