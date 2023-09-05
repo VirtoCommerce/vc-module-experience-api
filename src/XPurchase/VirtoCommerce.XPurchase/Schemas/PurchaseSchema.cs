@@ -359,7 +359,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             /// <example>
             /// This is an example JSON request for a mutation
             /// {
-            ///   "query": "mutation ($command:InputChangeCartItemCommentType!){ changeCartItemComment(command: $command) {  total { formatedAmount } } }",
+            ///   "query": "mutation ($command:InputChangeCartItemCommentType!){ changeCartItemComment(command: $command) }",
             ///   "variables": {
             ///      "command": {
             ///          "storeId": "Electronics",
@@ -393,6 +393,44 @@ namespace VirtoCommerce.XPurchase.Schemas
                                                           }).FieldType;
 
             schema.Mutation.AddField(changeCartItemCommentField);
+
+            /// <example>
+            /// This is an example JSON request for a mutation
+            /// {
+            ///   "query": "mutation ($command:InputChangeCartItemSelectedType!){ changeCartItemSelected(command: $command) {  total { formatedAmount } } }",
+            ///   "variables": {
+            ///      "command": {
+            ///          "storeId": "Electronics",
+            ///          "cartName": "default",
+            ///          "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
+            ///          "language": "en-US",
+            ///          "currency": "USD",
+            ///          "cartType": "cart",
+            ///          "lineItemId": "9cbd8f316e254a679ba34a900fccb076",
+            ///          "selectedFormCheckout": false
+            ///      }
+            ///   }
+            /// }
+            /// </example>
+            var changeCartItemSelectedField = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<CartType>())
+                                                          .Name("changeCartItemSelected")
+                                                          .Argument(GraphTypeExtenstionHelper.GetActualType<InputChangeCartItemSelectedType>(), _commandName)
+                                                          .ResolveSynchronizedAsync(CartPrefix, "userId", _distributedLockService, async context =>
+                                                          {
+                                                              var cartCommand = context.GetCartCommand<ChangeCartItemSelectedCommand>();
+
+                                                              await CheckAuthByCartCommandAsync(context, cartCommand);
+
+                                                              //PT-5327: Need to refactor later to prevent ugly code duplication
+                                                              //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
+                                                              var cartAggregate = await _mediator.Send(cartCommand);
+
+                                                              //store cart aggregate in the user context for future usage in the graph types resolvers
+                                                              context.SetExpandedObjectGraph(cartAggregate);
+                                                              return cartAggregate;
+                                                          }).FieldType;
+
+            schema.Mutation.AddField(changeCartItemSelectedField);
 
             /// <example>
             /// This is an example JSON request for a mutation

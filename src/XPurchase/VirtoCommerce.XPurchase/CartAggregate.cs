@@ -332,6 +332,19 @@ namespace VirtoCommerce.XPurchase
             return Task.FromResult(this);
         }
 
+        public virtual Task<CartAggregate> ChangeItemSelectedAsync(ItemSelectedForCheckout itemSelectedForCheckout)
+        {
+            EnsureCartExists();
+
+            var lineItem = Cart.Items.FirstOrDefault(x => x.Id == itemSelectedForCheckout.LineItemId);
+            if (lineItem != null)
+            {
+                lineItem.SelectedForCheckout = itemSelectedForCheckout.SelectedForCheckout;
+            }
+
+            return Task.FromResult(this);
+        }
+
         public virtual Task<CartAggregate> RemoveItemAsync(string lineItemId)
         {
             EnsureCartExists();
