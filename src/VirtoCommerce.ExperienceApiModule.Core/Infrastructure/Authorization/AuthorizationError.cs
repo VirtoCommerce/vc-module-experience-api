@@ -47,7 +47,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Infrastructure.Authorization
         /// </summary>
         public static AuthorizationError Forbidden()
         {
-            return new AuthorizationError("Access denied") { Code = Constants.ForbiddenCode };
+            return new AuthorizationError("Access denied.") { Code = Constants.ForbiddenCode };
         }
 
         /// <summary>
