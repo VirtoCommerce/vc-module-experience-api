@@ -397,7 +397,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             /// <example>
             /// This is an example JSON request for a mutation
             /// {
-            ///   "query": "mutation ($command:InputChangeCartItemSelectedType!){ changeCartItemSelected(command: $command) {  total { formatedAmount } } }",
+            ///   "query": "mutation ($command:InputChangeCartItemSelectedType!){ changeCartItemSelected(command: $command) { id } }",
             ///   "variables": {
             ///      "command": {
             ///          "storeId": "Electronics",
@@ -407,7 +407,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             ///          "currency": "USD",
             ///          "cartType": "cart",
             ///          "lineItemId": "9cbd8f316e254a679ba34a900fccb076",
-            ///          "selectedFormCheckout": false
+            ///          "selectedForCheckout": false
             ///      }
             ///   }
             /// }
