@@ -47,7 +47,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Infrastructure.Authorization
         /// </summary>
         public static AuthorizationError Forbidden()
         {
-            return new AuthorizationError("Access denied.") { Code = Constants.ForbiddenCode };
+            return new AuthorizationError("Access denied.", Constants.ForbiddenCode);
         }
 
         /// <summary>
@@ -55,7 +55,15 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Infrastructure.Authorization
         /// </summary>
         public static AuthorizationError Forbidden(string message)
         {
-            return new AuthorizationError(message) { Code = Constants.ForbiddenCode };
+            return new AuthorizationError(message, Constants.ForbiddenCode);
+        }
+
+        /// <summary>
+        /// Creates "Permission required" error
+        /// </summary>
+        public static AuthorizationError PermissionRequired(string permission)
+        {
+            return new AuthorizationError($"User doesn't have the required permission '{permission}'.", Constants.ForbiddenCode);
         }
 
         /// <summary>
