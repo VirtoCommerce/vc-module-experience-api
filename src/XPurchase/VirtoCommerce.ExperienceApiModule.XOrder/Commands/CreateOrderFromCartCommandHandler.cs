@@ -47,6 +47,8 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Commands
             var selectedLineItems = cartAggregate.SelectedLineItems.Select(x => x.Id).ToArray();
             await cartAggregate.RemoveItemsAsync(selectedLineItems);
 
+            await _cartRepository.SaveAsync(cartAggregate);
+
             // Remark: There is potential issue, because there is no transaction thru two actions above. If a cart deletion fails, the order remains. That causes data inconsistency.
             // Unfortunately, current architecture does not allow us to support such scenarios in a transactional manner.
             return result;
