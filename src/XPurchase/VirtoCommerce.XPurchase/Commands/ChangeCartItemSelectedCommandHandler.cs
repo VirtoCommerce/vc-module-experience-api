@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -13,8 +14,10 @@ namespace VirtoCommerce.XPurchase.Commands
         public override async Task<CartAggregate> Handle(ChangeCartItemSelectedCommand request, CancellationToken cancellationToken)
         {
             var cartAggregate = await GetOrCreateCartFromCommandAsync(request);
-            var item = new ItemSelectedForCheckout(request.LineItemId, request.SelectedForCheckout);
-            await cartAggregate.ChangeItemSelectedAsync(item);
+
+            var lineItemsIds = new List<string> { request.LineItemId };
+            var item = new ItemSelectedForCheckout(lineItemsIds, request.SelectedForCheckout);
+            await cartAggregate.ChangeItemsSelectedAsync(item);
 
             return await SaveCartAsync(cartAggregate);
         }

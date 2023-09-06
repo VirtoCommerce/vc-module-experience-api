@@ -6,10 +6,8 @@ namespace VirtoCommerce.XPurchase.Schemas
     {
         public InputChangeCartItemSelectedType()
         {
-            Field<NonNullGraphType<StringGraphType>>("lineItemId",
-                "Line item Id");
-            Field<NonNullGraphType<BooleanGraphType>>("selectedForCheckout",
-                "Is item selected for checkout");
+            Field<NonNullGraphType<StringGraphType>>("lineItemId", "Line item Id");
+            Field<NonNullGraphType<BooleanGraphType>>("selectedForCheckout", "Is item selected for checkout");
         }
     }
 }

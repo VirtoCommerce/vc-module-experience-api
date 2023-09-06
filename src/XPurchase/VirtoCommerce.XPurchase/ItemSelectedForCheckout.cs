@@ -1,14 +1,20 @@
+using System.Collections.Generic;
+
 namespace VirtoCommerce.XPurchase
 {
     public class ItemSelectedForCheckout
     {
-        public string LineItemId { get; }
+        public IList<string> LineItemIds { get; } = new List<string>();
         public bool SelectedForCheckout { get; }
 
-        public ItemSelectedForCheckout(string lineItemId, bool selectedForCheckout)
+        public ItemSelectedForCheckout(IList<string> lineItemIds, bool selectedForCheckout)
         {
-            LineItemId = lineItemId;
+            LineItemIds = lineItemIds;
             SelectedForCheckout = selectedForCheckout;
+        }
+
+        public ItemSelectedForCheckout()
+        {
         }
     }
 }

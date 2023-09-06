@@ -91,9 +91,9 @@ namespace VirtoCommerce.XPurchase
         }
 
         public ShoppingCart Cart { get; protected set; }
-        public IEnumerable<LineItem> GiftItems => Cart?.Items.Where(x => x.IsGift);
-        public IEnumerable<LineItem> LineItems => Cart?.Items.Where(x => !x.IsGift);
-        public IEnumerable<LineItem> SelectedLineItems => LineItems?.Where(x => x.SelectedForCheckout) ?? Enumerable.Empty<LineItem>();
+        public IEnumerable<LineItem> GiftItems => Cart?.Items.Where(x => x.IsGift) ?? Enumerable.Empty<LineItem>();
+        public IEnumerable<LineItem> LineItems => Cart?.Items.Where(x => !x.IsGift) ?? Enumerable.Empty<LineItem>();
+        public IEnumerable<LineItem> SelectedLineItems => LineItems.Where(x => x.SelectedForCheckout);
 
         /// <summary>
         /// Represents the dictionary of all CartProducts data for each  existing cart line item
@@ -333,14 +333,17 @@ namespace VirtoCommerce.XPurchase
             return Task.FromResult(this);
         }
 
-        public virtual Task<CartAggregate> ChangeItemSelectedAsync(ItemSelectedForCheckout itemSelectedForCheckout)
+        public virtual Task<CartAggregate> ChangeItemsSelectedAsync(ItemSelectedForCheckout itemSelectedForCheckout)
         {
             EnsureCartExists();
 
-            var lineItem = Cart.Items.FirstOrDefault(x => x.Id == itemSelectedForCheckout.LineItemId);
-            if (lineItem != null)
+            foreach (var lineItemId in itemSelectedForCheckout.LineItemIds)
             {
-                lineItem.SelectedForCheckout = itemSelectedForCheckout.SelectedForCheckout;
+                var lineItem = Cart.Items.FirstOrDefault(x => x.Id == lineItemId);
+                if (lineItem != null)
+                {
+                    lineItem.SelectedForCheckout = itemSelectedForCheckout.SelectedForCheckout;
+                }
             }
 
             return Task.FromResult(this);
