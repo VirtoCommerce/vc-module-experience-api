@@ -65,7 +65,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Commands
             }
         }
 
-        [Obsolete()]
+        [Obsolete("Use ValidateCart(CartAggregate cartAggregate)()", DiagnosticId = "VC0005", UrlFormat = "https://docs.virtocommerce.org/products/products-virto3-versions/")]
         protected virtual async Task ValidateCart(ShoppingCart cart)
         {
             var cartAggregate = await _cartRepository.GetCartForShoppingCartAsync(cart);
