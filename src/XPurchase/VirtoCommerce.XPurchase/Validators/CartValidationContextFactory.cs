@@ -8,11 +8,13 @@ namespace VirtoCommerce.XPurchase.Validators
     {
         private readonly ICartAvailMethodsService _availMethods;
         private readonly ICartProductService _cartProducts;
+
         public CartValidationContextFactory(ICartAvailMethodsService availMethods, ICartProductService cartProducs)
         {
             _availMethods = availMethods;
             _cartProducts = cartProducs;
         }
+
         public async Task<CartValidationContext> CreateValidationContextAsync(CartAggregate cartAggr)
         {
             var availPaymentsTask = _availMethods.GetAvailablePaymentMethodsAsync(cartAggr);
@@ -25,10 +27,8 @@ namespace VirtoCommerce.XPurchase.Validators
                 CartAggregate = cartAggr,
                 AllCartProducts = cartProductsTask.Result,
                 AvailPaymentMethods = availPaymentsTask.Result,
-                AvailShippingRates = availShippingRatesTask.Result
-
+                AvailShippingRates = availShippingRatesTask.Result,
             };
-
         }
     }
 }

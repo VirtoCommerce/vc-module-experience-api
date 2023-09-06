@@ -93,6 +93,7 @@ namespace VirtoCommerce.XPurchase
         public ShoppingCart Cart { get; protected set; }
         public IEnumerable<LineItem> GiftItems => Cart?.Items.Where(x => x.IsGift);
         public IEnumerable<LineItem> LineItems => Cart?.Items.Where(x => !x.IsGift);
+        public IEnumerable<LineItem> SelectedLineItems => LineItems?.Where(x => x.SelectedForCheckout) ?? Enumerable.Empty<LineItem>();
 
         /// <summary>
         /// Represents the dictionary of all CartProducts data for each  existing cart line item

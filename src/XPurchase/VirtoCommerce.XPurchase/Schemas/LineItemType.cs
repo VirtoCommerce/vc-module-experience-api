@@ -86,6 +86,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field(x => x.IsGift, nullable: true).Description("flag of line item is a gift");
             Field(x => x.IsReadOnly, nullable: true).Description("Shows whether this is read-only");
             Field(x => x.IsReccuring, nullable: true).Description("Shows whether the line item is recurring");
+            Field(x => x.SelectedForCheckout, nullable: true).Description("Shows whether the line item is selected for buying");
             Field(x => x.LanguageCode, nullable: true).Description("Culture name in the ISO 3166-1 alpha-3 format");
             Field(x => x.Length, nullable: true).Description("Length value");
             Field(x => x.MeasureUnit, nullable: true).Description("Measurement unit value");

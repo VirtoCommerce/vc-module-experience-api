@@ -21,11 +21,10 @@ namespace VirtoCommerce.XPurchase.Tests.Handlers
     {
 
         /// <summary>
-        /// To test if soft cart delete is calling in the create order routine
+        /// To test if line items are deleted in the create order routine
         /// </summary>
-        /// <returns></returns>
         [Fact]
-        public async Task Handle_CreateOrder_EnsureCartDeleted()
+        public async Task Handle_CreateOrder_EnsureSelectedLineItemsDeleted()
         {
             // Arrange
             var cart = new ShoppingCart()
@@ -33,18 +32,24 @@ namespace VirtoCommerce.XPurchase.Tests.Handlers
                 Name = "default",
                 Currency = "USD",
                 CustomerId = Guid.NewGuid().ToString(),
+                Items = new List<LineItem>
+                {
+                    new LineItem()
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        SelectedForCheckout = true,
+                    },
+                    new LineItem()
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        SelectedForCheckout = false,
+                    },
+                }
             };
 
             var cartService = new Mock<IShoppingCartService>();
-            var deleteCalled = false;
             cartService.Setup(x => x.GetAsync(It.IsAny<IList<string>>(), It.IsAny<string>(), It.IsAny<bool>()))
                 .ReturnsAsync(new[] { cart });
-            cartService.Setup(x => x.DeleteAsync(It.IsAny<IList<string>>(), It.IsAny<bool>()))
-                .Returns(() =>
-                        {
-                            deleteCalled = true;
-                            return Task.CompletedTask;
-                        });
 
             var customerAggrRep = new Mock<ICustomerOrderAggregateRepository>();
             customerAggrRep.Setup(x => x.CreateOrderFromCart(It.IsAny<ShoppingCart>()))
@@ -60,12 +65,16 @@ namespace VirtoCommerce.XPurchase.Tests.Handlers
             contextFactory.Setup(x => x.CreateValidationContextAsync(It.IsAny<CartAggregate>()))
                 .ReturnsAsync(new CartValidationContext());
 
-            // Take action
-            var handler = new CreateOrderFromCartCommandHandler(cartService.Object, customerAggrRep.Object, cartAggrRep.Object, contextFactory.Object);
+            var handler = new CreateOrderFromCartCommandHandler(cartService.Object, customerAggrRep.Object, cartAggrRep.Object, contextFactory.Object)
+            {
+                ValidatonRuleSet = "default"
+            };
+
+            // Act
             await handler.Handle(new CreateOrderFromCartCommand(""), CancellationToken.None);
 
             // Assert
-            deleteCalled.Should().BeTrue();
+            cart.Items.Count.Should().Be(1);
         }
     }
 }
