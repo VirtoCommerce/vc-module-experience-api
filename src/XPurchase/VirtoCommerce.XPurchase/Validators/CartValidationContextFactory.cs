@@ -9,22 +9,22 @@ namespace VirtoCommerce.XPurchase.Validators
         private readonly ICartAvailMethodsService _availMethods;
         private readonly ICartProductService _cartProducts;
 
-        public CartValidationContextFactory(ICartAvailMethodsService availMethods, ICartProductService cartProducs)
+        public CartValidationContextFactory(ICartAvailMethodsService availMethods, ICartProductService cartProducts)
         {
             _availMethods = availMethods;
-            _cartProducts = cartProducs;
+            _cartProducts = cartProducts;
         }
 
-        public async Task<CartValidationContext> CreateValidationContextAsync(CartAggregate cartAggr)
+        public async Task<CartValidationContext> CreateValidationContextAsync(CartAggregate cartAggregate)
         {
-            var availPaymentsTask = _availMethods.GetAvailablePaymentMethodsAsync(cartAggr);
-            var availShippingRatesTask = _availMethods.GetAvailableShippingRatesAsync(cartAggr);
-            var cartProductsTask = _cartProducts.GetCartProductsByIdsAsync(cartAggr, cartAggr.Cart.Items.Select(x => x.ProductId).ToArray());
+            var availPaymentsTask = _availMethods.GetAvailablePaymentMethodsAsync(cartAggregate);
+            var availShippingRatesTask = _availMethods.GetAvailableShippingRatesAsync(cartAggregate);
+            var cartProductsTask = _cartProducts.GetCartProductsByIdsAsync(cartAggregate, cartAggregate.Cart.Items.Select(x => x.ProductId).ToArray());
             await Task.WhenAll(availPaymentsTask, availShippingRatesTask, cartProductsTask);
 
             return new CartValidationContext
             {
-                CartAggregate = cartAggr,
+                CartAggregate = cartAggregate,
                 AllCartProducts = cartProductsTask.Result,
                 AvailPaymentMethods = availPaymentsTask.Result,
                 AvailShippingRates = availShippingRatesTask.Result,

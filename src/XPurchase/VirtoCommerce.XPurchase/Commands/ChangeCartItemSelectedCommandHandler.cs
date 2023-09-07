@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -6,8 +5,8 @@ namespace VirtoCommerce.XPurchase.Commands
 {
     public class ChangeCartItemSelectedCommandHandler : CartCommandHandler<ChangeCartItemSelectedCommand>
     {
-        public ChangeCartItemSelectedCommandHandler(ICartAggregateRepository cartRepository)
-            : base(cartRepository)
+        public ChangeCartItemSelectedCommandHandler(ICartAggregateRepository cartAggregateRepository)
+            : base(cartAggregateRepository)
         {
         }
 
@@ -15,9 +14,7 @@ namespace VirtoCommerce.XPurchase.Commands
         {
             var cartAggregate = await GetOrCreateCartFromCommandAsync(request);
 
-            var lineItemsIds = new List<string> { request.LineItemId };
-            var item = new ItemSelectedForCheckout(lineItemsIds, request.SelectedForCheckout);
-            await cartAggregate.ChangeItemsSelectedAsync(item);
+            await cartAggregate.ChangeItemsSelectedAsync(new[] { request.LineItemId }, request.SelectedForCheckout);
 
             return await SaveCartAsync(cartAggregate);
         }

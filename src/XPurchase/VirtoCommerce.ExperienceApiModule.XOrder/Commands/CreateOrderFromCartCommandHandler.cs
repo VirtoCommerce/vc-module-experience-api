@@ -20,7 +20,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Commands
         private readonly ICartAggregateRepository _cartRepository;
         private readonly ICartValidationContextFactory _cartValidationContextFactory;
 
-        public string ValidatonRuleSet { get; set; } = "*";
+        public string ValidationRuleSet { get; set; } = "*";
 
         public CreateOrderFromCartCommandHandler(
             IShoppingCartService cartService,
@@ -44,8 +44,8 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Commands
             var result = await _customerOrderAggregateRepository.CreateOrderFromCart(cart);
 
             // remove selected items after order create
-            var selectedLineItems = cartAggregate.SelectedLineItems.Select(x => x.Id).ToArray();
-            await cartAggregate.RemoveItemsAsync(selectedLineItems);
+            var selectedLineItemIds = cartAggregate.SelectedLineItems.Select(x => x.Id).ToArray();
+            await cartAggregate.RemoveItemsAsync(selectedLineItemIds);
 
             await _cartRepository.SaveAsync(cartAggregate);
 
@@ -57,7 +57,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Commands
         protected virtual async Task ValidateCart(CartAggregate cartAggregate)
         {
             var context = await _cartValidationContextFactory.CreateValidationContextAsync(cartAggregate);
-            await cartAggregate.ValidateAsync(context, ValidatonRuleSet);
+            await cartAggregate.ValidateAsync(context, ValidationRuleSet);
 
             var errors = cartAggregate.ValidationErrors;
             if (errors.Any())

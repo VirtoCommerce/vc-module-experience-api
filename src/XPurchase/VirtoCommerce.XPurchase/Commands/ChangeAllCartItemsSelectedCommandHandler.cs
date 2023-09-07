@@ -6,8 +6,8 @@ namespace VirtoCommerce.XPurchase.Commands
 {
     public class ChangeAllCartItemsSelectedCommandHandler : CartCommandHandler<ChangeAllCartItemsSelectedCommand>
     {
-        public ChangeAllCartItemsSelectedCommandHandler(ICartAggregateRepository cartAggrRepository)
-            : base(cartAggrRepository)
+        public ChangeAllCartItemsSelectedCommandHandler(ICartAggregateRepository cartAggregateRepository)
+            : base(cartAggregateRepository)
         {
         }
 
@@ -15,9 +15,8 @@ namespace VirtoCommerce.XPurchase.Commands
         {
             var cartAggregate = await GetOrCreateCartFromCommandAsync(request);
 
-            var items = cartAggregate.LineItems.Select(x => x.Id).ToList();
-            var item = new ItemSelectedForCheckout(items, request.SelectedForCheckout);
-            await cartAggregate.ChangeItemsSelectedAsync(item);
+            var lineItemIds = cartAggregate.LineItems.Select(x => x.Id).ToArray();
+            await cartAggregate.ChangeItemsSelectedAsync(lineItemIds, request.SelectedForCheckout);
 
             return await SaveCartAsync(cartAggregate);
         }

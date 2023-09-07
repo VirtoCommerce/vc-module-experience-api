@@ -67,7 +67,7 @@ namespace VirtoCommerce.XPurchase.Tests.Handlers
 
             var handler = new CreateOrderFromCartCommandHandler(cartService.Object, customerAggrRep.Object, cartAggrRep.Object, contextFactory.Object)
             {
-                ValidatonRuleSet = "default"
+                ValidationRuleSet = "default"
             };
 
             // Act
