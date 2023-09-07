@@ -32,6 +32,8 @@ namespace VirtoCommerce.XPurchase.Extensions
             shoppingCart.Discounts?.Clear();
             shoppingCart.DiscountAmount = 0M;
 
+            var subTotalFromSalePrice = shoppingCart.Items.Sum(x => (x.SalePrice > 0 ? x.SalePrice : x.ListPrice) * x.Quantity);
+
             var cartRewards = rewards.OfType<CartSubtotalReward>();
             foreach (var reward in cartRewards.Where(reward => reward.IsValid))
             {
@@ -43,7 +45,7 @@ namespace VirtoCommerce.XPurchase.Extensions
                     Coupon = reward.Coupon,
                     Currency = shoppingCart.Currency,
                     Description = reward.Promotion?.Description,
-                    DiscountAmount = reward.GetRewardAmount(shoppingCart.SubTotal, 1),
+                    DiscountAmount = reward.GetRewardAmount(subTotalFromSalePrice, 1),
                     PromotionId = reward.PromotionId ?? reward.Promotion?.Id,
                 };
                 if (shoppingCart.Discounts == null)
