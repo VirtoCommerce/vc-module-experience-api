@@ -15,6 +15,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field(x => x.Price, nullable: true);
             Field(x => x.Amount, nullable: true);
             Field(x => x.VendorId, nullable: true).Description("Payment vendor ID value");
+            Field(x => x.Comment, nullable: true).Description("Text comment");
 
             Field<InputOrderAddressType>("billingAddress");
             Field<ListGraphType<InputDynamicPropertyValueType>>("dynamicProperties", "Dynamic properties");

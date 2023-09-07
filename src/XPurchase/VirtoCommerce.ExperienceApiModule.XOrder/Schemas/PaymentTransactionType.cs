@@ -1,9 +1,9 @@
 using GraphQL;
 using GraphQL.Types;
-using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
 using VirtoCommerce.ExperienceApiModule.XOrder.Extensions;
 using VirtoCommerce.OrdersModule.Core.Model;
+using Money = VirtoCommerce.CoreModule.Core.Currency.Money;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 {

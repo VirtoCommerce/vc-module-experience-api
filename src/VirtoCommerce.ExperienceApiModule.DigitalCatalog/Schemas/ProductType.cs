@@ -76,7 +76,10 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             FieldAsync<StringGraphType>("outline", resolve: async context =>
             {
                 var outlines = context.Source.IndexedProduct.Outlines;
-                if (outlines.IsNullOrEmpty()) return null;
+                if (outlines.IsNullOrEmpty())
+                {
+                    return null;
+                }
 
                 var loadRelatedCatalogOutlineQuery = context.GetCatalogQuery<LoadRelatedCatalogOutlineQuery>();
                 loadRelatedCatalogOutlineQuery.Outlines = outlines;
@@ -88,7 +91,10 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             FieldAsync<StringGraphType>("slug", resolve: async context =>
             {
                 var outlines = context.Source.IndexedProduct.Outlines;
-                if (outlines.IsNullOrEmpty()) return null;
+                if (outlines.IsNullOrEmpty())
+                {
+                    return null;
+                }
 
                 var loadRelatedSlugPathQuery = context.GetCatalogQuery<LoadRelatedSlugPathQuery>();
                 loadRelatedSlugPathQuery.Outlines = outlines;
@@ -208,14 +214,13 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 "variations",
                 resolve: async context =>
                 {
-                    var productIds = context.Source.IndexedVariationIds.ToArray();
-                    if (productIds.IsNullOrEmpty())
+                    if (context.Source.IndexedVariationIds.IsNullOrEmpty())
                     {
                         return new List<ExpVariation>();
                     }
 
                     var query = context.GetCatalogQuery<LoadProductsQuery>();
-                    query.ObjectIds = context.Source.IndexedVariationIds.ToArray();
+                    query.ObjectIds = context.Source.IndexedVariationIds;
                     query.IncludeFields = context.SubFields.Values.GetAllNodesPaths(context).ToArray();
 
                     var response = await mediator.Send(query);
@@ -242,7 +247,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 "Product images",
                 resolve: context =>
                 {
-                    var images = context.Source.IndexedProduct.Images;
+                    var images = context.Source.IndexedProduct.Images ?? Array.Empty<Image>();
 
                     return context.GetValue<string>("cultureName") switch
                     {
@@ -263,6 +268,11 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 "prices",
                 "Product prices",
                 resolve: context => context.Source.AllPrices);
+
+            Field<PriceType>(
+                "minVariationPrice",
+                "Minimim product variation price",
+                resolve: context => context.Source.MinVariationPrice);
 
             ExtendableField<ListGraphType<PropertyType>>("properties",
                 arguments: new QueryArguments(new QueryArgument<ListGraphType<StringGraphType>> { Name = "names" }),
@@ -295,7 +305,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 "Assets",
                 resolve: context =>
                 {
-                    var assets = context.Source.IndexedProduct.Assets;
+                    var assets = context.Source.IndexedProduct.Assets ?? Array.Empty<Asset>();
 
                     return context.GetValue<string>("cultureName") switch
                     {

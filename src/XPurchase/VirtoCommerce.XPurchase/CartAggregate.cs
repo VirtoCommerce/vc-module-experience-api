@@ -19,7 +19,6 @@ using VirtoCommerce.OrdersModule.Core.Services;
 using VirtoCommerce.PaymentModule.Core.Model;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Domain;
-using VirtoCommerce.Platform.Core.GenericCrud;
 using VirtoCommerce.Platform.Core.Settings;
 using VirtoCommerce.ShippingModule.Core.Model;
 using VirtoCommerce.TaxModule.Core.Model;
@@ -38,7 +37,7 @@ namespace VirtoCommerce.XPurchase
     {
         private readonly IMarketingPromoEvaluator _marketingEvaluator;
         private readonly IShoppingCartTotalsCalculator _cartTotalsCalculator;
-        private readonly ISearchService<TaxProviderSearchCriteria, TaxProviderSearchResult, TaxProvider> _taxProviderSearchService;
+        private readonly ITaxProviderSearchService _taxProviderSearchService;
         private readonly ICartProductService _cartProductService;
         private readonly IDynamicPropertyUpdaterService _dynamicPropertyUpdaterService;
         private readonly IMemberOrdersService _memberOrdersService;
@@ -57,7 +56,7 @@ namespace VirtoCommerce.XPurchase
         {
             _cartTotalsCalculator = cartTotalsCalculator;
             _marketingEvaluator = marketingEvaluator;
-            _taxProviderSearchService = (ISearchService<TaxProviderSearchCriteria, TaxProviderSearchResult, TaxProvider>)taxProviderSearchService;
+            _taxProviderSearchService = taxProviderSearchService;
             _cartProductService = cartProductService;
             _dynamicPropertyUpdaterService = dynamicPropertyUpdaterService;
             _mapper = mapper;
@@ -166,7 +165,13 @@ namespace VirtoCommerce.XPurchase
             }
             else if (newCartItem.CartProduct != null)
             {
+                if (newCartItem.IsWishlist && newCartItem.CartProduct.Price == null)
+                {
+                    newCartItem.CartProduct.Price = new ProductPrice(Currency);
+                }
+
                 var lineItem = _mapper.Map<LineItem>(newCartItem.CartProduct);
+
                 lineItem.Quantity = newCartItem.Quantity;
 
                 if (newCartItem.Price != null)
@@ -186,6 +191,7 @@ namespace VirtoCommerce.XPurchase
 
                 CartProducts[newCartItem.CartProduct.Id] = newCartItem.CartProduct;
                 await SetItemFulfillmentCenterAsync(lineItem, newCartItem.CartProduct);
+                await UpdateVendor(lineItem, newCartItem.CartProduct);
                 await InnerAddLineItemAsync(lineItem, newCartItem.CartProduct, newCartItem.DynamicProperties);
             }
 
@@ -211,7 +217,8 @@ namespace VirtoCommerce.XPurchase
                         Comment = item.Comment,
                         DynamicProperties = item.DynamicProperties,
                         Price = item.Price,
-                        CartProduct = product
+                        IsWishlist = item.IsWishlist,
+                        CartProduct = product,
                     });
                 }
             }
@@ -333,6 +340,19 @@ namespace VirtoCommerce.XPurchase
             if (lineItem != null)
             {
                 Cart.Items.Remove(lineItem);
+            }
+
+            return Task.FromResult(this);
+        }
+
+        public virtual Task<CartAggregate> RemoveItemsAsync(string[] lineItemIds)
+        {
+            EnsureCartExists();
+
+            var lineItems = Cart.Items.Where(x => lineItemIds.Contains(x.Id)).ToList();
+            if (lineItems.Any())
+            {
+                lineItems.ForEach(x => Cart.Items.Remove(x));
             }
 
             return Task.FromResult(this);
@@ -640,6 +660,23 @@ namespace VirtoCommerce.XPurchase
             return Task.FromResult(this);
         }
 
+        public virtual Task<CartAggregate> UpdateVendor(LineItem lineItem, CartProduct cartProduct)
+        {
+            lineItem.VendorId = cartProduct?.Product?.Vendor;
+
+            return Task.FromResult(this);
+        }
+
+        public virtual Task<CartAggregate> UpdateOrganization(ShoppingCart cart, Member member)
+        {
+            if (member is Contact contact)
+            {
+                cart.OrganizationId = contact.Organizations?.FirstOrDefault();
+            }
+
+            return Task.FromResult(this);
+        }
+
         public virtual async Task<CartAggregate> UpdateCartDynamicProperties(IList<DynamicPropertyValue> dynamicProperties)
         {
             await _dynamicPropertyUpdaterService.UpdateDynamicPropertyValues(Cart, dynamicProperties);
@@ -738,7 +775,7 @@ namespace VirtoCommerce.XPurchase
             if (!lineItem.IsReadOnly && product != null)
             {
                 var tierPrice = product.Price.GetTierPrice(quantity);
-                if (tierPrice.Price.Amount > 0)
+                if (CheckPricePolicy(tierPrice))
                 {
                     lineItem.SalePrice = tierPrice.ActualPrice.Amount;
                     lineItem.ListPrice = tierPrice.Price.Amount;
@@ -753,6 +790,16 @@ namespace VirtoCommerce.XPurchase
                 Cart.Items.Remove(lineItem);
             }
             return Task.FromResult(this);
+        }
+
+        /// <summary>
+        /// Represents a price policy for a product. By default, product price should be greater than zero.
+        /// </summary>
+        /// <param name="product"></param>
+        /// <returns></returns>
+        protected virtual bool CheckPricePolicy(TierPrice tierPrice)
+        {
+            return tierPrice.Price.Amount > 0;
         }
 
         protected virtual async Task<CartAggregate> InnerAddLineItemAsync(LineItem lineItem, CartProduct product = null, IList<DynamicPropertyValue> dynamicProperties = null)
@@ -809,7 +856,10 @@ namespace VirtoCommerce.XPurchase
         /// </summary>
         public void SetLineItemTierPrice(ProductPrice productPrice, int quantity, LineItem lineItem)
         {
-            if (productPrice == null) return;
+            if (productPrice == null)
+            {
+                return;
+            }
 
             var tierPrice = productPrice.GetTierPrice(quantity);
             if (tierPrice.Price.Amount > 0)

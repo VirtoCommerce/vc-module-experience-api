@@ -6,7 +6,6 @@ using AutoMapper;
 using PipelineNet.Middleware;
 using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.Platform.Core.GenericCrud;
 using VirtoCommerce.Platform.Core.Settings;
 using VirtoCommerce.TaxModule.Core.Model;
 using VirtoCommerce.TaxModule.Core.Model.Search;
@@ -19,15 +18,16 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
     public class EvalProductsTaxMiddleware : IAsyncMiddleware<SearchProductResponse>
     {
         private readonly IMapper _mapper;
-        private readonly ISearchService<TaxProviderSearchCriteria, TaxProviderSearchResult, TaxProvider> _taxProviderSearchService;
+        private readonly ITaxProviderSearchService _taxProviderSearchService;
         private readonly IGenericPipelineLauncher _pipeline;
 
-        public EvalProductsTaxMiddleware(IMapper mapper,
+        public EvalProductsTaxMiddleware(
+            IMapper mapper,
             ITaxProviderSearchService taxProviderSearchService,
             IGenericPipelineLauncher pipeline)
         {
             _mapper = mapper;
-            _taxProviderSearchService = (ISearchService<TaxProviderSearchCriteria, TaxProviderSearchResult, TaxProvider>)taxProviderSearchService;
+            _taxProviderSearchService = taxProviderSearchService;
             _pipeline = pipeline;
         }
 
@@ -56,12 +56,12 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
             {
                 //Evaluate taxes
                 var storeTaxProviders = await _taxProviderSearchService.SearchAsync(new TaxProviderSearchCriteria
-                    { StoreIds = new[] { query.StoreId } });
+                { StoreIds = new[] { query.StoreId } });
                 var activeTaxProvider = storeTaxProviders.Results.FirstOrDefault(x => x.IsActive);
                 if (activeTaxProvider != null)
                 {
                     var taxEvalContext = new TaxEvaluationContext
-                        { Currency = query.CurrencyCode, StoreId = query.StoreId, CustomerId = query.UserId };
+                    { Currency = query.CurrencyCode, StoreId = query.StoreId, CustomerId = query.UserId };
 
                     await _pipeline.Execute(taxEvalContext);
 

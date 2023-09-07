@@ -50,12 +50,12 @@ namespace VirtoCommerce.XPurchase.Mapping
                     lineItem.TaxDetails = cartProduct.Price.TaxDetails;
                     lineItem.TaxPercentRate = cartProduct.Price.TaxPercentRate;
                     lineItem.Discounts = cartProduct.Price.Discounts;
+                    lineItem.ListPrice = cartProduct.Price.ListPrice.InternalAmount;
                 }
 
                 lineItem.Height = cartProduct.Product.Height;
                 lineItem.ImageUrl = cartProduct.Product.ImgSrc;
                 lineItem.Length = cartProduct.Product.Length;
-                lineItem.ListPrice = cartProduct.Price.ListPrice.InternalAmount;
                 lineItem.MeasureUnit = cartProduct.Product.MeasureUnit;
                 lineItem.Name = cartProduct.Product.Name;
                 lineItem.ProductId = cartProduct.Product.Id;
@@ -211,7 +211,9 @@ namespace VirtoCommerce.XPurchase.Mapping
                 promoEvalcontext.StoreId = cartAggr.Cart.StoreId;
                 promoEvalcontext.Coupons = cartAggr.Cart.Coupons?.ToList();
                 promoEvalcontext.Currency = cartAggr.Cart.Currency;
-                promoEvalcontext.CustomerId = cartAggr.Cart.CustomerId;
+                promoEvalcontext.CustomerId = promoEvalcontext.UserId = cartAggr.Cart.CustomerId;
+                promoEvalcontext.ContactId = cartAggr.Member?.Id;
+                promoEvalcontext.OrganizaitonId = cartAggr.Cart.OrganizationId;
                 promoEvalcontext.UserGroups = cartAggr.Member?.Groups.ToArray();
                 promoEvalcontext.IsRegisteredUser = !cartAggr.Cart.IsAnonymous;
                 promoEvalcontext.Language = cartAggr.Cart.LanguageCode;

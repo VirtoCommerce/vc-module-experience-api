@@ -21,6 +21,7 @@ namespace VirtoCommerce.XPurchase
         public Optional<decimal?> Width { get; set; }
         public Optional<string> Currency { get; set; }
         public Optional<decimal> Price { get; set; }
+        public Optional<string> Comment { get; set; }
         public Optional<string> VendorId { get; set; }
         public Optional<ExpCartAddress> DeliveryAddress { get; set; }
 
@@ -98,6 +99,11 @@ namespace VirtoCommerce.XPurchase
                 shipment.Price = Price.Value;
             }
 
+            if (Comment?.IsSpecified == true)
+            {
+                shipment.Comment = Comment.Value;
+            }
+
             if (VendorId?.IsSpecified == true)
             {
                 shipment.VendorId = VendorId.Value;
@@ -105,7 +111,7 @@ namespace VirtoCommerce.XPurchase
 
             if (DeliveryAddress?.IsSpecified == true)
             {
-                shipment.DeliveryAddress = DeliveryAddress.Value?.MapTo(shipment.DeliveryAddress) ?? null;
+                shipment.DeliveryAddress = DeliveryAddress.Value?.MapTo(shipment.DeliveryAddress);
             }
 
             return shipment;

@@ -30,6 +30,8 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Tests.Helpers
             _fixture.Register(() => _fixture.Build<PaymentIn>()
                 .Without(x => x.DynamicProperties)
                 .Without(x => x.ChildrenOperations)
+                .Without(x => x.Refunds)
+                .Without(x => x.Captures)
                 .Create());
 
             _fixture.Register(() => _fixture.Build<Shipment>()

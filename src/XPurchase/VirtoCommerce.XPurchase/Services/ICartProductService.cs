@@ -11,6 +11,6 @@ namespace VirtoCommerce.XPurchase.Services
         /// <param name="aggregate">Cart data to use</param>
         /// <param name="ids">Product ids</param>
         /// <returns>List of <see cref="CartProduct"/></returns>
-        Task<IList<CartProduct>> GetCartProductsByIdsAsync(CartAggregate aggregate, IEnumerable<string> ids);
+        Task<IList<CartProduct>> GetCartProductsByIdsAsync(CartAggregate aggregate, IList<string> ids);
     }
 }

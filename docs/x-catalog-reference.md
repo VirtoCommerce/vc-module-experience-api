@@ -193,7 +193,7 @@ This query returns child categories for a specified parent category.
 #### Definition
 
 ```
-childCategories(storeId: !string, userId: string, cultureName: string, currencyCode: string, categoryId: string, maxLevel: int, onlyActive: boolean)
+childCategories(storeId: !string, userId: string, cultureName: string, currencyCode: string, categoryId: string, maxLevel: int, onlyActive: boolean, productFilter: string)
 ```
 
 #### Arguments
@@ -207,6 +207,8 @@ childCategories(storeId: !string, userId: string, cultureName: string, currencyC
 |5|categoryId  |StringGraphType         |Parent category ID or null for the root of the catalog|
 |6|maxLevel    |IntGraphType            |The number of child category levels to return. 1 - direct children, 2 - direct children and grandchildren, and so on|
 |7|onlyActive  |BooleanGraphType        |True - return only active child categories, False - return active and inactive child categories|
+|8|productFilter|StringGraphType        |Parameter is used to apply a filter to the query results, allowing you to retrieve only the categories that contain products that meet the specified filters.|
+
 
 #### Example
 
@@ -214,10 +216,13 @@ childCategories(storeId: !string, userId: string, cultureName: string, currencyC
 query {
   childCategories(
     storeId: "test"
-    categoryId: null
+    userId: "067839fd-f223-49ba-b703-55569caa5e72"
+    cultureName: "en-US"
+    currencyCode: "USD"
+    categoryId: "532a6b5a-cf15-461a-836e-71bad60d49a3"
     maxLevel: 2
     onlyActive: true
-  ) {
+    productFilter: "category.subtree:fc596540864a41bf8ab78734ee7353a3/532a6b5a-cf15-461a-836e-71bad60d49a3 price:(0 TO) instock_quantity:(0 TO)") {
     childCategories {
       id
       name

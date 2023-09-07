@@ -35,7 +35,7 @@ namespace VirtoCommerce.Exp.ExtensionSamples
             #region Type override: add a new properties
             //use such lines to override exists query and command handler
             services.OverrideQueryType<GetCartQuery, GetCartQueryExtended>().WithQueryHandler<CustomGetCartQueryHandler>();
-            services.OverrideQueryType<SearchOrderQuery, ExtendedSearchOrderQuery>().WithQueryHandler<ExtendedSearchOrderQueryHandler>();
+            services.OverrideQueryType<SearchCustomerOrderQuery, ExtendedSearchCustomerOrderQuery>().WithQueryHandler<ExtendedSearchCustomerOrderQueryHandler>();
             services.OverrideArgumentType<OrderQueryConnectionArguments, ExtendedOrderQueryConnectionArguments>();
             services.AddGraphQL(_ =>
             {

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
 using GraphQL.DataLoader;
@@ -5,6 +6,7 @@ using GraphQL.Resolvers;
 using GraphQL.Types;
 using MediatR;
 using VirtoCommerce.CartModule.Core.Model;
+using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.CustomerModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.Core;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
@@ -20,7 +22,7 @@ namespace VirtoCommerce.XPurchase.Schemas
 {
     public class LineItemType : ExtendableGraphType<LineItem>
     {
-        public LineItemType(IMediator mediator, IDataLoaderContextAccessor dataLoader, IDynamicPropertyResolverService dynamicPropertyResolverService, IMapper mapper, IMemberService memberService)
+        public LineItemType(IMediator mediator, IDataLoaderContextAccessor dataLoader, IDynamicPropertyResolverService dynamicPropertyResolverService, IMapper mapper, IMemberService memberService, ICurrencyService currencyService)
         {
             var productField = new FieldType
             {
@@ -44,6 +46,12 @@ namespace VirtoCommerce.XPurchase.Schemas
                             IncludeFields = includeFields.ToArray(),
                             UserId = userId,
                         };
+
+                        var allCurrencies = await currencyService.GetAllCurrenciesAsync();
+                        var cultureName = context.GetArgumentOrValue<string>("cultureName") ?? cart.LanguageCode;
+                        context.SetCurrencies(allCurrencies, cultureName);
+                        context.UserContext.TryAdd("currencyCode", cart.Currency);
+                        context.UserContext.TryAdd("storeId", cart.StoreId);
 
                         var response = await mediator.Send(request);
 
@@ -157,8 +165,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                 Type = GraphTypeExtenstionHelper.GetActualType<VendorType>(),
                 Resolver = new FuncFieldResolver<LineItem, IDataLoaderResult<ExpVendor>>(context =>
                 {
-                    var loader = dataLoader.GetVendorDataLoader(memberService, mapper, "cart_vendor");
-                    return context.Source.VendorId != null ? loader.LoadAsync(context.Source.VendorId) : null;
+                    return dataLoader.LoadVendor(memberService, mapper, loaderKey: "cart_vendor", vendorId: context.Source.VendorId);
                 })
             };
             AddField(vendorField);

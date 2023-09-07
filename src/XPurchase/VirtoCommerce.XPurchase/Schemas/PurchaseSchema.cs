@@ -11,16 +11,14 @@ using Microsoft.AspNetCore.Authorization;
 using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.CartModule.Core.Model.Search;
 using VirtoCommerce.CartModule.Core.Services;
-using VirtoCommerce.CartModule.Data.Model;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.ExperienceApiModule.Core;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure.Authorization;
+using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.Platform.Core.GenericCrud;
-using VirtoCommerce.Platform.Data.GenericCrud;
 using VirtoCommerce.XPurchase.Authorization;
 using VirtoCommerce.XPurchase.Commands;
 using VirtoCommerce.XPurchase.Extensions;
@@ -33,26 +31,30 @@ namespace VirtoCommerce.XPurchase.Schemas
         private readonly IMediator _mediator;
         private readonly IAuthorizationService _authorizationService;
         private readonly ICurrencyService _currencyService;
-        private readonly ICrudService<ShoppingCart> _cartService;
-        private readonly SearchService<ShoppingCartSearchCriteria, ShoppingCartSearchResult, ShoppingCart, ShoppingCartEntity> _shoppingCartSearchService;
+        private readonly IShoppingCartService _cartService;
+        private readonly IShoppingCartSearchService _shoppingCartSearchService;
         private readonly IDistributedLockService _distributedLockService;
+        private readonly IUserManagerCore _userManagerCore;
 
         public const string _commandName = "command";
         public const string CartPrefix = "Cart";
 
-        public PurchaseSchema(IMediator mediator,
+        public PurchaseSchema(
+            IMediator mediator,
             IAuthorizationService authorizationService,
             ICurrencyService currencyService,
             IShoppingCartService cartService,
             IShoppingCartSearchService shoppingCartSearchService,
-            IDistributedLockService distributedLockService)
+            IDistributedLockService distributedLockService,
+            IUserManagerCore userManagerCore)
         {
             _mediator = mediator;
             _authorizationService = authorizationService;
             _currencyService = currencyService;
-            _cartService = (ICrudService<ShoppingCart>)cartService;
-            _shoppingCartSearchService = (SearchService<ShoppingCartSearchCriteria, ShoppingCartSearchResult, ShoppingCart, ShoppingCartEntity>)shoppingCartSearchService;
+            _cartService = cartService;
+            _shoppingCartSearchService = shoppingCartSearchService;
             _distributedLockService = distributedLockService;
+            _userManagerCore = userManagerCore;
         }
 
         public void Build(ISchema schema)
@@ -428,6 +430,26 @@ namespace VirtoCommerce.XPurchase.Schemas
                                                   }).FieldType;
 
             schema.Mutation.AddField(removeCartItemField);
+
+            var removeCartItemsField = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<CartType>())
+                                                  .Name("removeCartItems")
+                                                  .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputRemoveItemsType>>(), _commandName)
+                                                  .ResolveSynchronizedAsync(CartPrefix, "userId", _distributedLockService, async context =>
+                                                  {
+                                                      var cartCommand = context.GetCartCommand<RemoveCartItemsCommand>();
+
+                                                      await CheckAuthByCartCommandAsync(context, cartCommand);
+
+                                                      //PT-5327: Need to refactor later to prevent ugly code duplication
+                                                      //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
+                                                      var cartAggregate = await _mediator.Send(cartCommand);
+
+                                                      //store cart aggregate in the user context for future usage in the graph types resolvers
+                                                      context.SetExpandedObjectGraph(cartAggregate);
+                                                      return cartAggregate;
+                                                  }).FieldType;
+
+            schema.Mutation.AddField(removeCartItemsField);
 
             /// <example>
             /// This is an example JSON request for a mutation
@@ -1120,6 +1142,47 @@ namespace VirtoCommerce.XPurchase.Schemas
 
             schema.Mutation.AddField(changePurchaseOrderNumberField);
 
+            //Mutations
+            /// <example>
+            /// This is an example JSON request for a mutation
+            /// {
+            ///   "query": "mutation ($command:InputAddItemType!){ refreshCart(command: $command) {  total { formatedAmount } } }",
+            ///   "variables": {
+            ///      "command": {
+            ///          "storeId": "Electronics",
+            ///          "cartName": "default",
+            ///          "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
+            ///          "language": "en-US",
+            ///          "currency": "USD",
+            ///          "cartType": "cart",
+            ///          "cartId": "",
+            ///      }
+            ///   }
+            /// }
+            /// </example>
+            var refreshCartField = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<CartType>())
+                                           .Name("refreshCart")
+                                           .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<RefreshCartType>>(), _commandName)
+                                           //PT-5394: Write the unit-tests for successfully mapping input variable to the command
+                                           .ResolveSynchronizedAsync(CartPrefix, "userId", _distributedLockService, async context =>
+                                           {
+                                               var cartCommand = context.GetCartCommand<RefreshCartCommand>();
+
+                                               await CheckAuthByCartCommandAsync(context, cartCommand);
+
+                                               //PT-5327: Need to refactor later to prevent ugly code duplication
+                                               //We need to add cartAggregate to the context to be able use it on nested cart types resolvers (e.g for currency)
+                                               var cartAggregate = await _mediator.Send(cartCommand);
+
+                                               //store cart aggregate in the user context for future usage in the graph types resolvers
+                                               context.SetExpandedObjectGraph(cartAggregate);
+                                               return cartAggregate;
+                                           })
+                                           .FieldType;
+
+            schema.Mutation.AddField(refreshCartField);
+
+
             #region Wishlists
 
             // Queries
@@ -1128,7 +1191,8 @@ namespace VirtoCommerce.XPurchase.Schemas
             {
                 Name = "wishlist",
                 Arguments = new QueryArguments(
-                        new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "listId", Description = "List Id" }),
+                        new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "listId", Description = "List Id" },
+                        new QueryArgument<StringGraphType> { Name = "cultureName", Description = "Culture name (\"en-Us\")" }),
                 Type = GraphTypeExtenstionHelper.GetActualType<WishlistType>(),
                 Resolver = new AsyncFieldResolver<object>(async context =>
                 {
@@ -1422,10 +1486,12 @@ namespace VirtoCommerce.XPurchase.Schemas
 
         private async Task AuthorizeAsync(IResolveFieldContext context, object resource)
         {
+            await _userManagerCore.CheckUserState(context.GetCurrentUserId());
+
             var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), resource, new CanAccessCartAuthorizationRequirement());
             if (!authorizationResult.Succeeded)
             {
-                throw new AuthorizationError($"Access denied");
+                AuthorizationError.ThrowAccessDeniedError();
             }
         }
     }

@@ -235,7 +235,7 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Index
         public void ParseFacets_FacetPhraseIsNull_ShouldSkipParsing(string facetPhrase)
         {
             // Arrange
-            
+
 
             // Act
             var actual = _indexSearchRequestBuilder.ParseFacets(_phraseParserMock.Object, facetPhrase).Build();
@@ -326,7 +326,8 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Index
                 {
                     Id = filter.As<IFilter>().Stringify(),
                     FieldName = filter.FieldName,
-                    Filter = filter
+                    Size = 0,
+                    Filter = null
                 });
             }
 
@@ -334,7 +335,8 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Index
             {
                 Id = termFilter.As<IFilter>().Stringify(),
                 FieldName = termFilter.FieldName,
-                Filter = termFilter
+                Size = 0,
+                Filter = null
             });
 
             actual.Aggregations.Count.Should().Be(
@@ -350,7 +352,7 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Index
         public void BuildRequestFromDefault_ReturnDefaultRequest()
         {
             // Arrange
-            
+
 
             // Act
             var actual = _indexSearchRequestBuilder.Build();
@@ -368,7 +370,7 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Index
         public void AddSorting_SortStringIsNull_ShouldSkipParsing(string sort)
         {
             // Arrange
-            
+
 
             // Act
             var actual = _indexSearchRequestBuilder.AddSorting(sort).Build();

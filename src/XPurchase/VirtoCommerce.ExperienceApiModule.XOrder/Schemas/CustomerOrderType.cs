@@ -2,17 +2,15 @@ using System.Collections.Generic;
 using System.Linq;
 using GraphQL;
 using GraphQL.Types;
-using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
 using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.OrdersModule.Core.Model;
-using VirtoCommerce.PaymentModule.Core.Model;
 using VirtoCommerce.PaymentModule.Core.Model.Search;
 using VirtoCommerce.PaymentModule.Core.Services;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.Platform.Core.GenericCrud;
+using Money = VirtoCommerce.CoreModule.Core.Currency.Money;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 {
@@ -130,7 +128,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 
             ExtendableField<ListGraphType<OrderDiscountType>>("discounts", resolve: x => x.Source.Order.Discounts);
 
-            FieldAsync<ListGraphType<OrderPaymentMethodType>>("availablePaymentMethods",
+            ExtendableFieldAsync<ListGraphType<OrderPaymentMethodType>>("availablePaymentMethods",
                 "Available payment methods",
                 resolve: async context =>
                 {
@@ -140,8 +138,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                         StoreId = context.Source.Order.StoreId,
                     };
 
-                    var searchService = (ISearchService<PaymentMethodsSearchCriteria, PaymentMethodsSearchResult, PaymentMethod>)paymentMethodsSearchService;
-                    var result = await searchService.SearchAsync(criteria);
+                    var result = await paymentMethodsSearchService.SearchAsync(criteria);
 
                     result.Results?.Apply(x => context.UserContext[x.Id] = context.Source);
 

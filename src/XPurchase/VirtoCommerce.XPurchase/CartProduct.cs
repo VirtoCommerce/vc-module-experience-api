@@ -17,7 +17,7 @@ namespace VirtoCommerce.XPurchase
             Product = product;
             Id = product.Id;
         }
-        
+
         public CartProduct(XDigitalCatalog.ExpProduct expProduct)
         {
             //TODO: rework this 
@@ -29,12 +29,12 @@ namespace VirtoCommerce.XPurchase
             Price = expProduct.AllPrices?.FirstOrDefault();
             LoadDependencies = false;
         }
-        
+
         public bool LoadDependencies { get; set; } = true;
 
         public CatalogProduct Product { get; private set; }
 
-        public ProductPrice Price { get; private set; }
+        public ProductPrice Price { get; set; }
 
         public IList<ProductPrice> AllPrices { get; private set; } = new List<ProductPrice>();
 
@@ -97,10 +97,14 @@ namespace VirtoCommerce.XPurchase
                 //For each currency need get nominal price (with min qty)
                 var orderedPrices = currencyGroup.OrderBy(x => x.MinQuantity ?? 0).ThenBy(x => x.ListPrice);
                 var nominalPrice = orderedPrices.FirstOrDefault();
-                //and add to nominal price other prices as tier prices
-                nominalPrice.TierPrices.AddRange(orderedPrices.Select(x => new TierPrice(x.ListPrice, x.SalePrice, x.MinQuantity ?? 1)));
-                //Add nominal price to product prices list
-                AllPrices.Add(nominalPrice);
+
+                if (nominalPrice != null)
+                {
+                    //and add to nominal price other prices as tier prices
+                    nominalPrice.TierPrices.AddRange(orderedPrices.Select(x => new TierPrice(x.ListPrice, x.SalePrice, x.MinQuantity ?? 1)));
+                    //Add nominal price to product prices list
+                    AllPrices.Add(nominalPrice);
+                }
             }
             //Set current product price for current currency
             Price = AllPrices.FirstOrDefault(x => x.Currency.Equals(currency));

@@ -26,13 +26,17 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
 
             if (itemsIds.Any())
             {
-                string responseGroup = parameter.Query.GetCategoryResponseGroup();
-                var categories = await _categoryService.GetByIdsAsync(itemsIds, responseGroup);
+                var responseGroup = parameter.Query.GetCategoryResponseGroup();
+                var categories = await _categoryService.GetAsync(itemsIds, responseGroup);
 
                 foreach (var category in categories)
                 {
                     var item = parameter.Results.FirstOrDefault(expProduct => expProduct.Key == category.Id);
-                    if (item is null) continue;
+                    if (item is null)
+                    {
+                        continue;
+                    }
+
                     item.Category ??= category;
                 }
             }

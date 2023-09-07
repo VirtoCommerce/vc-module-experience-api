@@ -7,15 +7,9 @@ using Moq;
 using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.CartModule.Core.Model.Search;
 using VirtoCommerce.CartModule.Core.Services;
-using VirtoCommerce.CartModule.Data.Model;
-using VirtoCommerce.CartModule.Data.Repositories;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.CustomerModule.Core.Model;
 using VirtoCommerce.CustomerModule.Core.Services;
-using VirtoCommerce.Platform.Core.Caching;
-using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.Platform.Core.GenericCrud;
-using VirtoCommerce.Platform.Data.GenericCrud;
 using VirtoCommerce.PricingModule.Core.Model;
 using VirtoCommerce.StoreModule.Core.Model;
 using VirtoCommerce.StoreModule.Core.Services;
@@ -26,20 +20,20 @@ namespace VirtoCommerce.XPurchase.Tests.Repositories
 {
     public class CartAggregateRepositoryTests : XPurchaseMoqHelper
     {
-        private readonly Mock<ShoppingCartSearchServiceStub> _shoppingCartSearchService;
-        private readonly Mock<ShoppingCartServiceStub> _shoppingCartService;
+        private readonly Mock<IShoppingCartSearchService> _shoppingCartSearchService;
+        private readonly Mock<IShoppingCartService> _shoppingCartService;
         private readonly Mock<ICurrencyService> _currencyService;
-        private readonly Mock<IStoreServiceStub> _storeService;
+        private readonly Mock<IStoreService> _storeService;
         private readonly Mock<IMemberResolver> _memberResolver;
 
         private readonly CartAggregateRepository repository;
 
         public CartAggregateRepositoryTests()
         {
-            _shoppingCartSearchService = new Mock<ShoppingCartSearchServiceStub>();
-            _shoppingCartService = new Mock<ShoppingCartServiceStub>();
+            _shoppingCartSearchService = new Mock<IShoppingCartSearchService>();
+            _shoppingCartService = new Mock<IShoppingCartService>();
             _currencyService = new Mock<ICurrencyService>();
-            _storeService = new Mock<IStoreServiceStub>();
+            _storeService = new Mock<IStoreService>();
             _memberResolver = new Mock<IMemberResolver>();
 
             repository = new CartAggregateRepository(
@@ -53,8 +47,6 @@ namespace VirtoCommerce.XPurchase.Tests.Repositories
                 );
         }
 
-        #region RemoveCartAsync
-
         [Fact]
         public async Task RemoveCartAsync_ShouldCallShoppingCart()
         {
@@ -67,10 +59,6 @@ namespace VirtoCommerce.XPurchase.Tests.Repositories
             // Assert
             _shoppingCartService.Verify(x => x.DeleteAsync(new List<string> { cartId }, It.IsAny<bool>()), Times.Once);
         }
-
-        #endregion RemoveCartAsync
-
-        #region SaveAsync
 
         /// <summary>
         /// If this test fails check GetValidCartAggregate() from MoqHelper
@@ -88,16 +76,12 @@ namespace VirtoCommerce.XPurchase.Tests.Repositories
             _shoppingCartService.Verify(x => x.SaveChangesAsync(new List<ShoppingCart> { cartAggregate.Cart }), Times.Once);
         }
 
-        #endregion SaveAsync
-
-        #region GetCartAsync
-
         [Fact]
         public async Task GetCartAsync_ShoppingCartNotFound_ReturnNull()
         {
             // Arrange
             _shoppingCartSearchService
-                .Setup(x => x.SearchAsync(It.IsAny<ShoppingCartSearchCriteria>()))
+                .Setup(x => x.SearchAsync(It.IsAny<ShoppingCartSearchCriteria>(), It.IsAny<bool>()))
                 .ReturnsAsync(new ShoppingCartSearchResult
                 {
                     Results = new List<ShoppingCart>()
@@ -114,12 +98,8 @@ namespace VirtoCommerce.XPurchase.Tests.Repositories
 
             // Assert
             result.Should().BeNull();
-            _shoppingCartSearchService.Verify(x => x.SearchAsync(It.IsAny<ShoppingCartSearchCriteria>()), Times.Once);
+            _shoppingCartSearchService.Verify(x => x.SearchAsync(It.IsAny<ShoppingCartSearchCriteria>(), It.IsAny<bool>()), Times.Once);
         }
-
-        #endregion GetCartAsync
-
-        #region InnerGetCartAggregateFromCartAsync
 
         [Fact]
         public async Task GetCartForShoppingCartAsync_CartFound_AggregateReturnedCorrectly()
@@ -144,9 +124,8 @@ namespace VirtoCommerce.XPurchase.Tests.Repositories
             var shoppingCart = _fixture.Create<ShoppingCart>();
             shoppingCart.StoreId = storeId;
 
-            var storeService = _storeService.As<ICrudService<Store>>();
-            storeService.Setup(x => x.GetByIdAsync(It.Is<string>(x => x == storeId), It.IsAny<string>()))
-                .ReturnsAsync(store);
+            _storeService.Setup(x => x.GetAsync(new[] { storeId }, It.IsAny<string>(), It.IsAny<bool>()))
+                .ReturnsAsync(new[] { store });
 
             var currencies = _fixture.CreateMany<Currency>(1).ToList();
 
@@ -157,7 +136,7 @@ namespace VirtoCommerce.XPurchase.Tests.Repositories
             _memberResolver.Setup(x => x.ResolveMemberByIdAsync(It.Is<string>(x => x == shoppingCart.CustomerId)))
                 .ReturnsAsync(customer);
 
-            _cartProductServiceMock.Setup(x => x.GetCartProductsByIdsAsync(It.Is<CartAggregate>(x => x == cartAggregate), It.IsAny<IEnumerable<string>>()))
+            _cartProductServiceMock.Setup(x => x.GetCartProductsByIdsAsync(It.Is<CartAggregate>(x => x == cartAggregate), It.IsAny<IList<string>>()))
                 .ReturnsAsync(new List<CartProduct>());
 
             // Act
@@ -196,9 +175,8 @@ namespace VirtoCommerce.XPurchase.Tests.Repositories
             shoppingCart.Items = new List<LineItem>() { lineItem };
             shoppingCart.StoreId = storeId;
 
-            var storeService = _storeService.As<ICrudService<Store>>();
-            storeService.Setup(x => x.GetByIdAsync(It.Is<string>(x => x == storeId), It.IsAny<string>()))
-                .ReturnsAsync(store);
+            _storeService.Setup(x => x.GetAsync(new[] { storeId }, It.IsAny<string>(), It.IsAny<bool>()))
+                .ReturnsAsync(new[] { store });
 
             var currencies = _fixture.CreateMany<Currency>(1).ToList();
 
@@ -209,7 +187,7 @@ namespace VirtoCommerce.XPurchase.Tests.Repositories
             _memberResolver.Setup(x => x.ResolveMemberByIdAsync(It.Is<string>(x => x == shoppingCart.CustomerId)))
                 .ReturnsAsync(customer);
 
-            _cartProductServiceMock.Setup(x => x.GetCartProductsByIdsAsync(It.Is<CartAggregate>(x => x == cartAggregate), It.IsAny<IEnumerable<string>>()))
+            _cartProductServiceMock.Setup(x => x.GetCartProductsByIdsAsync(It.Is<CartAggregate>(x => x == cartAggregate), It.IsAny<IList<string>>()))
                 .ReturnsAsync(() =>
                 {
                     var product = _fixture.Create<CartProduct>();
@@ -235,74 +213,6 @@ namespace VirtoCommerce.XPurchase.Tests.Repositories
 
             // Assert
             result.ValidationWarnings.Should().HaveCount(1);
-        }
-
-        #endregion InnerGetCartAggregateFromCartAsync
-
-
-        public class ShoppingCartSearchServiceStub : SearchService<ShoppingCartSearchCriteria, ShoppingCartSearchResult, ShoppingCart, ShoppingCartEntity>, IShoppingCartSearchService
-        {
-            public ShoppingCartSearchServiceStub() : base(() => Mock.Of<ICartRepository>(), Mock.Of<IPlatformMemoryCache>(), Mock.Of<ShoppingCartServiceStub>())
-            {
-            }
-
-            public virtual Task<ShoppingCartSearchResult> SearchCartAsync(ShoppingCartSearchCriteria criteria)
-            {
-                throw new System.NotImplementedException();
-            }
-
-            protected override IQueryable<ShoppingCartEntity> BuildQuery(IRepository repository, ShoppingCartSearchCriteria criteria)
-            {
-                throw new System.NotImplementedException();
-            }
-        }
-
-        public interface IStoreServiceStub : ICrudService<Store>, IStoreService
-        {
-
-        }
-
-        public class ShoppingCartServiceStub : ICrudService<ShoppingCart>, IShoppingCartService
-        {
-            public virtual Task DeleteAsync(IEnumerable<string> ids, bool softDelete = false)
-            {
-                throw new System.NotImplementedException();
-            }
-
-            public Task DeleteAsync(string[] cartIds, bool softDelete = false)
-            {
-                throw new System.NotImplementedException();
-            }
-
-            public Task<IReadOnlyCollection<ShoppingCart>> GetAsync(List<string> ids, string responseGroup = null)
-            {
-                throw new System.NotImplementedException();
-            }
-
-            public Task<ShoppingCart> GetByIdAsync(string id, string responseGroup = null)
-            {
-                throw new System.NotImplementedException();
-            }
-
-            public Task<IEnumerable<ShoppingCart>> GetByIdsAsync(IEnumerable<string> ids, string responseGroup = null)
-            {
-                throw new System.NotImplementedException();
-            }
-
-            public Task<ShoppingCart[]> GetByIdsAsync(string[] cartIds, string responseGroup = null)
-            {
-                throw new System.NotImplementedException();
-            }
-
-            public virtual Task SaveChangesAsync(IEnumerable<ShoppingCart> models)
-            {
-                throw new System.NotImplementedException();
-            }
-
-            public Task SaveChangesAsync(ShoppingCart[] carts)
-            {
-                throw new System.NotImplementedException();
-            }
         }
     }
 }

@@ -33,6 +33,11 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 resolve: context => context.Source.IndexedProduct.Code
             );
 
+            Field<StringGraphType>(
+                "productType",
+                description: "The type of product",
+                resolve: context => context.Source.IndexedProduct.ProductType);
+
             Field<IntGraphType>(
                 "minQuantity",
                 description: "Min. quantity.",

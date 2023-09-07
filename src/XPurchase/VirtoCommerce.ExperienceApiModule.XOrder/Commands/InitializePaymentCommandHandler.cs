@@ -4,20 +4,19 @@ using System.Threading.Tasks;
 using MediatR;
 using VirtoCommerce.ExperienceApiModule.XOrder.Models;
 using VirtoCommerce.ExperienceApiModule.XOrder.Validators;
-using VirtoCommerce.OrdersModule.Core.Model;
+using VirtoCommerce.OrdersModule.Core.Services;
 using VirtoCommerce.PaymentModule.Model.Requests;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.Platform.Core.GenericCrud;
-using VirtoCommerce.StoreModule.Core.Model;
+using VirtoCommerce.StoreModule.Core.Services;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Commands
 {
     public class InitializePaymentCommandHandler : PaymentCommandHandlerBase, IRequestHandler<InitializePaymentCommand, InitializePaymentResult>
     {
         public InitializePaymentCommandHandler(
-            ICrudService<CustomerOrder> customerOrderService,
-            ICrudService<PaymentIn> paymentService,
-            ICrudService<Store> storeService)
+            ICustomerOrderService customerOrderService,
+            IPaymentService paymentService,
+            IStoreService storeService)
             : base(customerOrderService, paymentService, storeService)
         {
         }
@@ -29,7 +28,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Commands
             var validationResult = AbstractTypeFactory<PaymentRequestValidator>.TryCreateInstance().Validate(paymentInfo);
             if (!validationResult.IsValid)
             {
-                return ErrorResult<InitializePaymentResult>(validationResult.Errors.FirstOrDefault().ErrorMessage);
+                return ErrorResult<InitializePaymentResult>(validationResult.Errors.FirstOrDefault()?.ErrorMessage);
             }
 
             var processPaymentRequest = new ProcessPaymentRequest

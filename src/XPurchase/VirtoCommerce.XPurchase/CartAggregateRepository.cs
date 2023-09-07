@@ -5,20 +5,17 @@ using System.Threading.Tasks;
 using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.CartModule.Core.Model.Search;
 using VirtoCommerce.CartModule.Core.Services;
-using VirtoCommerce.CartModule.Data.Model;
 using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.CustomerModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.Core;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.Platform.Core.GenericCrud;
-using VirtoCommerce.Platform.Data.GenericCrud;
-using VirtoCommerce.StoreModule.Core.Model;
 using VirtoCommerce.StoreModule.Core.Services;
 using VirtoCommerce.XPurchase.Queries;
 using VirtoCommerce.XPurchase.Services;
 using VirtoCommerce.XPurchase.Validators;
+using CartAggregateBuilder = VirtoCommerce.XPurchase.AsyncObjectBuilder<VirtoCommerce.XPurchase.CartAggregate>;
 
 namespace VirtoCommerce.XPurchase
 {
@@ -26,11 +23,11 @@ namespace VirtoCommerce.XPurchase
     {
         private readonly Func<CartAggregate> _cartAggregateFactory;
         private readonly ICartProductService _cartProductsService;
-        private readonly SearchService<ShoppingCartSearchCriteria, ShoppingCartSearchResult, ShoppingCart, ShoppingCartEntity> _shoppingCartSearchService;
-        private readonly ICrudService<ShoppingCart> _shoppingCartService;
+        private readonly IShoppingCartSearchService _shoppingCartSearchService;
+        private readonly IShoppingCartService _shoppingCartService;
         private readonly ICurrencyService _currencyService;
         private readonly IMemberResolver _memberResolver;
-        private readonly ICrudService<Store> _storeService;
+        private readonly IStoreService _storeService;
 
         public CartAggregateRepository(
             Func<CartAggregate> cartAggregateFactory,
@@ -42,11 +39,11 @@ namespace VirtoCommerce.XPurchase
             ICartProductService cartProductsService)
         {
             _cartAggregateFactory = cartAggregateFactory;
-            _shoppingCartSearchService = (SearchService<ShoppingCartSearchCriteria, ShoppingCartSearchResult, ShoppingCart, ShoppingCartEntity>)shoppingCartSearchService;
-            _shoppingCartService = (ICrudService<ShoppingCart>)shoppingCartService;
+            _shoppingCartSearchService = shoppingCartSearchService;
+            _shoppingCartService = shoppingCartService;
             _currencyService = currencyService;
             _memberResolver = memberResolver;
-            _storeService = (ICrudService<Store>)storeService;
+            _storeService = storeService;
             _cartProductsService = cartProductsService;
         }
 
@@ -58,6 +55,11 @@ namespace VirtoCommerce.XPurchase
 
         public async Task<CartAggregate> GetCartByIdAsync(string cartId, string language = null)
         {
+            if (CartAggregateBuilder.IsBuilding(out var cartAggregate))
+            {
+                return cartAggregate;
+            }
+
             var cart = await _shoppingCartService.GetByIdAsync(cartId);
             if (cart != null)
             {
@@ -68,11 +70,21 @@ namespace VirtoCommerce.XPurchase
 
         public Task<CartAggregate> GetCartForShoppingCartAsync(ShoppingCart cart, string language = null)
         {
+            if (CartAggregateBuilder.IsBuilding(out var cartAggregate))
+            {
+                return Task.FromResult(cartAggregate);
+            }
+
             return InnerGetCartAggregateFromCartAsync(cart, language ?? Language.InvariantLanguage.CultureName);
         }
 
         public async Task<CartAggregate> GetCartAsync(string cartName, string storeId, string userId, string language, string currencyCode, string type = null, string responseGroup = null)
         {
+            if (CartAggregateBuilder.IsBuilding(out var cartAggregate))
+            {
+                return cartAggregate;
+            }
+
             var criteria = new ShoppingCartSearchCriteria
             {
                 StoreId = storeId,
@@ -106,7 +118,7 @@ namespace VirtoCommerce.XPurchase
             var searchResult = await _shoppingCartSearchService.SearchAsync(criteria);
             var cartAggregates = await GetCartsForShoppingCartsAsync(searchResult.Results);
 
-            return new SearchCartResponse() { Results = cartAggregates, TotalCount = searchResult.TotalCount };
+            return new SearchCartResponse { Results = cartAggregates, TotalCount = searchResult.TotalCount };
         }
 
         public virtual Task RemoveCartAsync(string cartId) => _shoppingCartService.DeleteAsync(new[] { cartId }, softDelete: true);
@@ -130,67 +142,72 @@ namespace VirtoCommerce.XPurchase
             {
                 throw new OperationCanceledException($"store with id {cart.StoreId} not found");
             }
+
+            // Set Default Currency 
             if (string.IsNullOrEmpty(cart.Currency))
             {
                 cart.Currency = store.DefaultCurrency;
             }
+            // Actualize Cart Language From Context
+            if (!string.IsNullOrEmpty(language) && cart.LanguageCode != language)
+            {
+                cart.LanguageCode = language;
+            }
 
-            var currency = allCurrencies.GetCurrencyForLanguage(cart.Currency, language ?? store.DefaultLanguage);
+            language = !string.IsNullOrEmpty(cart.LanguageCode) ? cart.LanguageCode : store.DefaultLanguage;
+            var currency = allCurrencies.GetCurrencyForLanguage(cart.Currency, language);
 
             var member = await _memberResolver.ResolveMemberByIdAsync(cart.CustomerId);
             var aggregate = _cartAggregateFactory();
 
-            aggregate.GrabCart(cart, store, member, currency);
-
-
-            //Load cart products explicitly if no validation is requested
-            var cartProducts = await _cartProductsService.GetCartProductsByIdsAsync(aggregate, aggregate.Cart.Items.Select(x => x.ProductId).ToArray());
-            //Populate aggregate.CartProducts with the  products data for all cart  line items
-            foreach (var cartProduct in cartProducts)
+            using (CartAggregateBuilder.Build(aggregate))
             {
-                aggregate.CartProducts[cartProduct.Id] = cartProduct;
-            }
+                aggregate.GrabCart(cart, store, member, currency);
 
-            var validator = AbstractTypeFactory<CartLineItemPriceChangedValidator>.TryCreateInstance();
 
-            foreach (var lineItem in aggregate.LineItems)
-            {
-                var cartProduct = aggregate.CartProducts[lineItem.ProductId];
-                if (cartProduct == null)
+                //Load cart products explicitly if no validation is requested
+                var cartProducts = await _cartProductsService.GetCartProductsByIdsAsync(aggregate, aggregate.Cart.Items.Select(x => x.ProductId).ToArray());
+                //Populate aggregate.CartProducts with the  products data for all cart  line items
+                foreach (var cartProduct in cartProducts)
                 {
-                    continue;
+                    aggregate.CartProducts[cartProduct.Id] = cartProduct;
                 }
 
-                await aggregate.SetItemFulfillmentCenterAsync(lineItem, cartProduct);
+                var validator = AbstractTypeFactory<CartLineItemPriceChangedValidator>.TryCreateInstance();
 
-                // validate price change
-                var lineItemContext = new CartLineItemPriceChangedValidationContext
+                foreach (var lineItem in aggregate.LineItems)
                 {
-                    LineItem = lineItem,
-                    CartProducts = aggregate.CartProducts,
-                };
+                    var cartProduct = aggregate.CartProducts[lineItem.ProductId];
+                    if (cartProduct == null)
+                    {
+                        continue;
+                    }
 
-                var result = validator.Validate(lineItemContext);
-                if (!result.IsValid)
-                {
-                    aggregate.ValidationWarnings.AddRange(result.Errors);
+                    await aggregate.SetItemFulfillmentCenterAsync(lineItem, cartProduct);
+                    await aggregate.UpdateVendor(lineItem, cartProduct);
+                    await aggregate.UpdateOrganization(cart, member);
+
+                    // validate price change
+                    var lineItemContext = new CartLineItemPriceChangedValidationContext
+                    {
+                        LineItem = lineItem,
+                        CartProducts = aggregate.CartProducts,
+                    };
+
+                    var result = await validator.ValidateAsync(lineItemContext);
+                    if (!result.IsValid)
+                    {
+                        aggregate.ValidationWarnings.AddRange(result.Errors);
+                    }
+
+                    // update price
+                    aggregate.SetLineItemTierPrice(cartProduct.Price, lineItem.Quantity, lineItem);
                 }
 
-                // update price
-                aggregate.SetLineItemTierPrice(cartProduct.Price, lineItem.Quantity, lineItem);
-            }
-
-            // resave cart if price change detected
-            if (aggregate.ValidationWarnings.Any())
-            {
-                await SaveAsync(aggregate);
-            }
-            else
-            {
                 await aggregate.RecalculateAsync();
-            }
 
-            return aggregate;
+                return aggregate;
+            }
         }
 
         protected virtual async Task<IList<CartAggregate>> GetCartsForShoppingCartsAsync(IList<ShoppingCart> carts, string cultureName = null)

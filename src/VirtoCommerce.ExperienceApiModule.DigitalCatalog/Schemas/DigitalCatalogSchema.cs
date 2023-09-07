@@ -15,8 +15,6 @@ using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.Platform.Core.GenericCrud;
-using VirtoCommerce.StoreModule.Core.Model;
 using VirtoCommerce.StoreModule.Core.Services;
 using VirtoCommerce.XDigitalCatalog.Extensions;
 using VirtoCommerce.XDigitalCatalog.Queries;
@@ -28,14 +26,14 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
         private readonly IMediator _mediator;
         private readonly IDataLoaderContextAccessor _dataLoader;
         private readonly ICurrencyService _currencyService;
-        private readonly ICrudService<Store> _storeService;
+        private readonly IStoreService _storeService;
 
         public DigitalCatalogSchema(IMediator mediator, IDataLoaderContextAccessor dataLoader, ICurrencyService currencyService, IStoreService storeService)
         {
             _mediator = mediator;
             _dataLoader = dataLoader;
             _currencyService = currencyService;
-            _storeService = (ICrudService<Store>)storeService;
+            _storeService = storeService;
         }
 
         /// <summary>
@@ -43,7 +41,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
         /// </summary>
         /// <remarks>
         /// IMPORTANT!
-        /// We can't use the fluent syntax for new types registration provided by dotnet graphql here,
+        /// We can't use the fluent syntax for new types registration provided by dotnet GraphQL here,
         /// because we have the strict requirement for underlying types extensions and must use
         /// GraphTypeExtenstionHelper to resolve the effective type on execution time
         /// </remarks>

@@ -5,7 +5,6 @@ using GraphQL.DataLoader;
 using GraphQL.Resolvers;
 using GraphQL.Types;
 using MediatR;
-using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.CustomerModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.Core;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
@@ -17,6 +16,7 @@ using VirtoCommerce.OrdersModule.Core.Model;
 using VirtoCommerce.XDigitalCatalog;
 using VirtoCommerce.XDigitalCatalog.Queries;
 using VirtoCommerce.XDigitalCatalog.Schemas;
+using Money = VirtoCommerce.CoreModule.Core.Currency.Money;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 {
@@ -45,6 +45,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field(x => x.CancelledDate, true);
             Field(x => x.CancelReason, true);
             Field(x => x.ObjectType);
+            Field(x => x.Status, true);
 
             Field(x => x.CategoryId, true);
             Field(x => x.CatalogId);
@@ -113,8 +114,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                 Type = GraphTypeExtenstionHelper.GetActualType<VendorType>(),
                 Resolver = new FuncFieldResolver<LineItem, IDataLoaderResult<ExpVendor>>(context =>
                 {
-                    var loader = dataLoader.GetVendorDataLoader(memberService, mapper, "order_vendor");
-                    return context.Source.VendorId != null ? loader.LoadAsync(context.Source.VendorId) : null;
+                    return dataLoader.LoadVendor(memberService, mapper, loaderKey: "order_vendor", vendorId: context.Source.VendorId);
                 })
             };
             AddField(vendorField);

@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Linq;
 using VirtoCommerce.ExperienceApiModule.Core.Index;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.SearchModule.Core.Extenstions;
+using VirtoCommerce.SearchModule.Core.Extensions;
 using VirtoCommerce.SearchModule.Core.Model;
 using VirtoCommerce.SearchModule.Core.Services;
 using VirtoCommerce.XDigitalCatalog.Extensions;
@@ -137,48 +137,63 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
             {
                 FilterSyntaxMapper.MapFilterAdditionalSyntax(filter);
 
-                if (filter is TermFilter termFilter)
-                {
-                    var wildcardValues = termFilter.Values.Where(x => new[] { "?", "*" }.Any(x.Contains)).ToArray();
+                var convertedFilter = ConvertFilter(filter);
 
-                    if (wildcardValues.Any())
-                    {
-                        var orFilter = new OrFilter
-                        {
-                            ChildFilters = new List<IFilter>()
-                        };
-
-                        var wildcardTermFilters = wildcardValues.Select(x => new WildCardTermFilter
-                        {
-                            FieldName = termFilter.FieldName,
-                            Value = x
-                        }).ToList();
-
-                        orFilter.ChildFilters.AddRange(wildcardTermFilters);
-
-                        termFilter.Values = termFilter.Values.Except(wildcardValues).ToList();
-
-                        if (termFilter.Values.Any())
-                        {
-                            orFilter.ChildFilters.Add(termFilter);
-                        }
-
-                        filters.Add(orFilter);
-                    }
-                    else
-                    {
-                        filters.Add(termFilter);
-                    }
-                }
-                else
-                {
-                    filters.Add(filter);
-                }
+                filters.Add(convertedFilter);
             }
 
             AddFiltersToSearchRequest(filters.ToArray());
 
             return this;
+        }
+
+        private IFilter ConvertFilter(IFilter filter)
+        {
+            var result = filter;
+
+            switch (filter)
+            {
+                case TermFilter termFilter:
+                    {
+                        var wildcardValues = termFilter.Values.Where(x => new[] { "?", "*" }.Any(x.Contains)).ToArray();
+
+                        if (wildcardValues.Any())
+                        {
+                            var orFilter = new OrFilter
+                            {
+                                ChildFilters = new List<IFilter>()
+                            };
+
+                            var wildcardTermFilters = wildcardValues.Select(x => new WildCardTermFilter
+                            {
+                                FieldName = termFilter.FieldName,
+                                Value = x
+                            }).ToList();
+
+                            orFilter.ChildFilters.AddRange(wildcardTermFilters);
+
+                            termFilter.Values = termFilter.Values.Except(wildcardValues).ToList();
+
+                            if (termFilter.Values.Any())
+                            {
+                                orFilter.ChildFilters.Add(termFilter);
+                            }
+
+                            // return OrFilter with added termFilters instead 
+                            result = orFilter;
+                        }
+                        break;
+                    }
+
+                case RangeFilter rangeFilter:
+                    if (rangeFilter.FieldName.EqualsInvariant("price"))
+                    {
+                        rangeFilter.FieldName = $"price_{_currencyCode}".ToLowerInvariant();
+                    }
+                    break;
+            }
+
+            return result;
         }
 
         public IndexSearchRequestBuilder ParseFacets(ISearchPhraseParser phraseParser,
@@ -206,6 +221,7 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
             if (!string.IsNullOrEmpty(parseResult.Keyword))
             {
                 parseResult.Keyword = parseResult.Keyword.AddLanguageSpecificFacets(_cultureName);
+
                 var termFacetExpressions = parseResult.Keyword.Split(" ");
                 parseResult.Filters.AddRange(termFacetExpressions.Select(x => new TermFilter
                 {
@@ -238,7 +254,7 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
                         {
                             FieldName = termFilter.FieldName,
                             Id = filter.Stringify(),
-                            Filter = termFilter
+                            Size = 0
                         },
                         _ => null,
                     };

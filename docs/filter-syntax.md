@@ -86,6 +86,20 @@ Inside the double quotes block you might use any unsafe characters, to escape do
 
 `\"my cool property\":\"&~!'\"`
 
+When term value contains `"` or `\`, these characters are escaped twice.
+
+Field name: `my property`
+
+Field value: `value with \ and " in the middle`
+
+1. Building the term filter:
+
+`"my property":"value with \\ and \" in the middle"`
+
+2. Putting this term filter into the GraphQL filter:
+
+`filter:"\"my property\":\"value with \\\\ and \\\" in the middle\""`
+
 ## More examples
 `color:Black,White`
 

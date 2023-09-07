@@ -6,13 +6,12 @@ using GraphQL.Resolvers;
 using GraphQL.Types;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using VirtoCommerce.CartModule.Core.Model;
-using VirtoCommerce.CartModule.Core.Services;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure.Authorization;
+using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.XOrder.Authorization;
 using VirtoCommerce.ExperienceApiModule.XOrder.Commands;
 using VirtoCommerce.ExperienceApiModule.XOrder.Extensions;
@@ -22,7 +21,6 @@ using VirtoCommerce.OrdersModule.Core.Model;
 using VirtoCommerce.OrdersModule.Core.Services;
 using VirtoCommerce.PaymentModule.Model.Requests;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.Platform.Core.GenericCrud;
 using VirtoCommerce.XPurchase.Queries;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
@@ -35,13 +33,20 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
         private readonly ICurrencyService _currencyService;
         private readonly IAuthorizationService _authorizationService;
         private readonly ICustomerOrderService _customerOrderService;
+        private readonly IUserManagerCore _userManagerCore;
 
-        public OrderSchema(IMediator mediator, ICurrencyService currencyService, IAuthorizationService authorizationService, ICustomerOrderService customerOrderService)
+        public OrderSchema(
+            IMediator mediator,
+            ICurrencyService currencyService,
+            IAuthorizationService authorizationService,
+            ICustomerOrderService customerOrderService,
+            IUserManagerCore userManagerCore)
         {
             _mediator = mediator;
             _currencyService = currencyService;
             _authorizationService = authorizationService;
             _customerOrderService = customerOrderService;
+            _userManagerCore = userManagerCore;
         }
 
         public void Build(ISchema schema)
@@ -60,11 +65,12 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                     context.CopyArgumentsToUserContext();
                     var orderAggregate = await _mediator.Send(request);
 
+                    await _userManagerCore.CheckUserState(context.GetCurrentUserId());
                     var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), orderAggregate.Order, new CanAccessOrderAuthorizationRequirement());
 
                     if (!authorizationResult.Succeeded)
                     {
-                        throw new AuthorizationError($"Access denied");
+                        AuthorizationError.ThrowAccessDeniedError();
                     }
 
                     var allCurrencies = await _currencyService.GetAllCurrenciesAsync();
@@ -82,16 +88,25 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                 .CreateConnection<CustomerOrderType, object>()
                 .Name("orders")
                 .PageSize(20)
-                .Arguments();
+                .OrderArguments();
 
-            orderConnectionBuilder.ResolveAsync(async context => await ResolveOrdersConnectionAsync(_mediator, context));
+            orderConnectionBuilder.ResolveAsync(async context => await ResolveOrdersConnectionAsync<SearchCustomerOrderQuery>(_mediator, context));
             schema.Query.AddField(orderConnectionBuilder.FieldType);
+
+            var organizationOrdersConnectionBuilder = GraphTypeExtenstionHelper
+                .CreateConnection<CustomerOrderType, object>()
+                .Name("organizationOrders")
+                .PageSize(20)
+                .OrganizationOrderArguments();
+
+            organizationOrdersConnectionBuilder.ResolveAsync(async context => await ResolveOrdersConnectionAsync<SearchOrganizationOrderQuery>(_mediator, context));
+            schema.Query.AddField(organizationOrdersConnectionBuilder.FieldType);
 
             var paymentsConnectionBuilder = GraphTypeExtenstionHelper
                 .CreateConnection<PaymentInType, object>()
                 .Name("payments")
                 .PageSize(20)
-                .Arguments();
+                .OrderArguments();
 
             paymentsConnectionBuilder.ResolveAsync(async context => await ResolvePaymentsConnectionAsync(_mediator, context));
             schema.Query.AddField(paymentsConnectionBuilder.FieldType);
@@ -236,19 +251,20 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                             .FieldType);
         }
 
-        private async Task<object> ResolveOrdersConnectionAsync(IMediator mediator, IResolveConnectionContext<object> context)
+        private async Task<object> ResolveOrdersConnectionAsync<T>(IMediator mediator, IResolveConnectionContext<object> context) where T : SearchOrderQuery
         {
-            var query = context.ExtractQuery<SearchOrderQuery>();
+            var query = context.ExtractQuery<T>();
 
             context.CopyArgumentsToUserContext();
             var allCurrencies = await _currencyService.GetAllCurrenciesAsync();
             //Store all currencies in the user context for future resolve in the schema types
             context.SetCurrencies(allCurrencies, query.CultureName);
 
+            await _userManagerCore.CheckUserState(context.GetCurrentUserId());
             var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), query, new CanAccessOrderAuthorizationRequirement());
             if (!authorizationResult.Succeeded)
             {
-                throw new AuthorizationError($"Access denied");
+                AuthorizationError.ThrowAccessDeniedError();
             }
 
             var response = await mediator.Send(query);
@@ -265,10 +281,11 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
         {
             var query = context.ExtractQuery<SearchPaymentsQuery>();
 
+            await _userManagerCore.CheckUserState(context.GetCurrentUserId());
             var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), query, new CanAccessOrderAuthorizationRequirement());
             if (!authorizationResult.Succeeded)
             {
-                throw new AuthorizationError($"Access denied");
+                AuthorizationError.ThrowAccessDeniedError();
             }
 
             context.UserContext.Add(nameof(Currency.CultureName).ToCamelCase(), query.CultureName);
@@ -289,6 +306,8 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 
         private async Task CheckAuthAsync(IResolveFieldContext context, string orderId)
         {
+            await _userManagerCore.CheckUserState(context.GetCurrentUserId());
+
             var order = await _customerOrderService.GetByIdAsync(orderId);
 
             var authorizationResult = await _authorizationService.AuthorizeAsync(
@@ -298,12 +317,14 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 
             if (!authorizationResult.Succeeded)
             {
-                throw new AuthorizationError($"Access denied");
+                AuthorizationError.ThrowAccessDeniedError();
             }
         }
 
         private async Task CheckCanAccessUserAsync(IResolveFieldContext context, string cartId)
         {
+            await _userManagerCore.CheckUserState(context.GetCurrentUserId());
+
             var cart = await _mediator.Send(new GetCartByIdQuery { CartId = cartId });
 
             if (cart == null)
@@ -318,7 +339,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 
             if (!authorizationResult.Succeeded)
             {
-                throw new AuthorizationError($"Access denied");
+                AuthorizationError.ThrowAccessDeniedError();
             }
         }
     }

@@ -9,7 +9,6 @@ using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.InventoryModule.Core.Model.Search;
 using VirtoCommerce.InventoryModule.Core.Services;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.Platform.Core.Security;
 using VirtoCommerce.PricingModule.Core.Model;
 using VirtoCommerce.PricingModule.Core.Services;
 using VirtoCommerce.XDigitalCatalog.Queries;
@@ -67,12 +66,14 @@ namespace VirtoCommerce.XPurchase.Services
         /// <param name="aggregate">Cart aggregate</param>
         /// <param name="ids">Product ids</param>
         /// <returns>List of <see cref="CartProduct"/>s</returns>
-        public async Task<IList<CartProduct>> GetCartProductsByIdsAsync(CartAggregate aggregate, IEnumerable<string> ids)
+        public async Task<IList<CartProduct>> GetCartProductsByIdsAsync(CartAggregate aggregate, IList<string> ids)
         {
             if (aggregate is null || ids.IsNullOrEmpty())
+            {
                 return new List<CartProduct>();
-            //TODO: use user id from GraphQL context
-            var cartProducts = await GetCartProductsAsync(ids, aggregate.Store.Id, aggregate.Cart.CustomerId);
+            }
+
+            var cartProducts = await GetCartProductsAsync(ids, aggregate.Store.Id, aggregate.Cart.Currency, aggregate.Cart.CustomerId);
 
             var productsToLoadDependencies = cartProducts.Where(x => x.LoadDependencies).ToList();
             if (productsToLoadDependencies.Any())
@@ -87,9 +88,9 @@ namespace VirtoCommerce.XPurchase.Services
         /// </summary>
         /// <param name="ids">Product ids</param>
         /// <returns>List of <see cref="CatalogProduct"/>s</returns>
-        protected virtual async Task<IList<CatalogProduct>> GetProductsByIdsAsync(IEnumerable<string> ids)
+        protected virtual async Task<IList<CatalogProduct>> GetProductsByIdsAsync(IList<string> ids)
         {
-            return await _productService.GetByIdsAsync(ids.ToArray(), ResponseGroups.ToString());
+            return await _productService.GetAsync(ids, ResponseGroups.ToString());
         }
 
 
@@ -97,15 +98,15 @@ namespace VirtoCommerce.XPurchase.Services
         /// <summary>
         /// Map all <see cref="CatalogProduct"/> to <see cref="CartProduct"/>
         /// </summary>
-        /// <param name="catalogProducts">Products from the catalog</param>
         /// <returns>List of <see cref="CartProduct"/>s</returns>
-        protected async virtual Task<List<CartProduct>> GetCartProductsAsync(IEnumerable<string> ids, string storeId, string userId)
+        protected virtual async Task<List<CartProduct>> GetCartProductsAsync(IList<string> ids, string storeId, string currencyCode, string userId)
         {
             var productsQuery = new LoadProductsQuery
             {
                 UserId = userId,
                 StoreId = storeId,
-                ObjectIds = ids.ToArray(),
+                CurrencyCode = currencyCode,
+                ObjectIds = ids,
                 IncludeFields = IncludeFields,
                 EvaluatePromotions = false, // Promotions will be applied on the line item level
             };
@@ -135,7 +136,9 @@ namespace VirtoCommerce.XPurchase.Services
         protected virtual async Task ApplyInventoriesToCartProductAsync(CartAggregate aggregate, List<CartProduct> products)
         {
             if (products.IsNullOrEmpty())
+            {
                 return;
+            }
 
             var ids = products.Select(x => x.Id).ToArray();
 
@@ -176,8 +179,10 @@ namespace VirtoCommerce.XPurchase.Services
         /// <param name="products">List of <see cref="CartProduct"/>s</param>
         protected virtual async Task ApplyPricesToCartProductAsync(CartAggregate aggregate, List<CartProduct> products)
         {
-            if (products.IsNullOrEmpty())
+            if (aggregate is null || products.IsNullOrEmpty())
+            {
                 return;
+            }
 
             var pricesEvalContext = _mapper.Map<PriceEvaluationContext>(aggregate);
             pricesEvalContext.ProductIds = products.Select(x => x.Id).ToArray();
@@ -185,10 +190,7 @@ namespace VirtoCommerce.XPurchase.Services
             // There was a call to pipeline execution and stack overflow comes as a result of infinite cart getting,
             // because the LoadCartToEvalContextMiddleware catches pipeline execution.
             // Replaced to direct mapping.
-            if (aggregate != null)
-            {
-                _mapper.Map(aggregate, pricesEvalContext);
-            }
+            _mapper.Map(aggregate, pricesEvalContext);
 
             await _loadUserToEvalContextService.SetShopperDataFromMember(pricesEvalContext, pricesEvalContext.CustomerId);
 
