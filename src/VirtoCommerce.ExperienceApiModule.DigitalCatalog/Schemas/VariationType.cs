@@ -48,14 +48,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             ExtendableField<AvailabilityDataType>(
                 "availabilityData",
                 "Availability data",
-                resolve: context => new ExpAvailabilityData
-                {
-                    AvailableQuantity = context.Source.AvailableQuantity,
-                    InventoryAll = context.Source.AllInventories,
-                    IsBuyable = context.Source.IsBuyable,
-                    IsAvailable = context.Source.IsAvailable,
-                    IsInStock = context.Source.IsInStock
-                });
+                resolve: context => AbstractTypeFactory<ExpAvailabilityData>.TryCreateInstance().FromProduct(context.Source));
 
             Field<ListGraphType<ImageType>>("images",
                 "Product images",

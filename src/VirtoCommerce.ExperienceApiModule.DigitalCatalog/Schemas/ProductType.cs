@@ -235,16 +235,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 GraphTypeExtenstionHelper.GetActualType<AvailabilityDataType>(),
                 "availabilityData",
                 "Product availability data",
-                resolve: context => new ExpAvailabilityData
-                {
-                    AvailableQuantity = context.Source.AvailableQuantity,
-                    InventoryAll = context.Source.AllInventories,
-                    IsBuyable = context.Source.IsBuyable,
-                    IsAvailable = context.Source.IsAvailable,
-                    IsInStock = context.Source.IsInStock,
-                    IsActive = context.Source.IndexedProduct.IsActive ?? false,
-                    IsTrackInventory = context.Source.IndexedProduct.TrackInventory ?? false,
-                });
+                resolve: context => AbstractTypeFactory<ExpAvailabilityData>.TryCreateInstance().FromProduct(context.Source));
 
             Field<ListGraphType<ImageType>>(
                 "images",

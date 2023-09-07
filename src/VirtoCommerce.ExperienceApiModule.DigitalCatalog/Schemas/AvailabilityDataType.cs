@@ -28,6 +28,9 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             ExtendableField<ListGraphType<InventoryInfoType>>("inventories",
                 "Inventories",
                 resolve: context => context.Source.InventoryAll);
+            Field<BooleanGraphType>("IsEstimated",
+               "Is estimated",
+               resolve: context => context.Source.IsEstimated);
         }
     }
 }
