@@ -178,7 +178,7 @@ namespace VirtoCommerce.XDigitalCatalog
             Inventory = null;
             AllInventories = inventories.Where(x => x.ProductId == Id && availFullfilmentCentersIds.Contains(x.FulfillmentCenterId)).ToList();
 
-            Inventory = inventories.OrderByDescending(x => Math.Max(0, x.InStockQuantity - x.ReservedQuantity)).FirstOrDefault();
+            Inventory = AllInventories.OrderByDescending(x => Math.Max(0, x.InStockQuantity - x.ReservedQuantity)).FirstOrDefault();
 
             if (store.MainFulfillmentCenterId != null)
             {
