@@ -29,30 +29,9 @@ namespace VirtoCommerce.XPurchase.Extensions
         public static void ApplyRewards(this CartAggregate aggregate, ICollection<PromotionReward> rewards)
         {
             var shoppingCart = aggregate.Cart;
+
             shoppingCart.Discounts?.Clear();
             shoppingCart.DiscountAmount = 0M;
-
-            var cartRewards = rewards.OfType<CartSubtotalReward>();
-            foreach (var reward in cartRewards.Where(reward => reward.IsValid))
-            {
-                //When a discount is applied to the cart subtotal, the tax calculation has already been applied, and is reflected in the tax subtotal.
-                //Therefore, a discount applying to the cart subtotal will occur after tax.
-                //For instance, if the cart subtotal is $100, and $15 is the tax subtotal, a cart - wide discount of 10 % will yield a total of $105($100 subtotal – $10 discount + $15 tax on the original $100).
-                var discount = new Discount
-                {
-                    Coupon = reward.Coupon,
-                    Currency = shoppingCart.Currency,
-                    Description = reward.Promotion?.Description,
-                    DiscountAmount = reward.GetRewardAmount(shoppingCart.SubTotal, 1),
-                    PromotionId = reward.PromotionId ?? reward.Promotion?.Id,
-                };
-                if (shoppingCart.Discounts == null)
-                {
-                    shoppingCart.Discounts = new List<Discount>();
-                }
-                shoppingCart.Discounts.Add(discount);
-                shoppingCart.DiscountAmount += discount.DiscountAmount;
-            }
 
             // remove the (added) gifts, if corresponding valid reward is missing
             foreach (var lineItem in aggregate.GiftItems.ToList() ?? Enumerable.Empty<LineItem>())
@@ -80,6 +59,31 @@ namespace VirtoCommerce.XPurchase.Extensions
             {
                 payment.ApplyRewards(shoppingCart.Currency, paymentRewards);
             }
+
+            var subTotalExcludeDiscount = shoppingCart.Items.Sum(li => (li.ListPrice - li.DiscountAmount) * li.Quantity);
+
+            var cartRewards = rewards.OfType<CartSubtotalReward>();
+            foreach (var reward in cartRewards.Where(reward => reward.IsValid))
+            {
+                //When a discount is applied to the cart subtotal, the tax calculation has already been applied, and is reflected in the tax subtotal.
+                //Therefore, a discount applying to the cart subtotal will occur after tax.
+                //For instance, if the cart subtotal is $100, and $15 is the tax subtotal, a cart - wide discount of 10 % will yield a total of $105($100 subtotal – $10 discount + $15 tax on the original $100).
+                var discount = new Discount
+                {
+                    Coupon = reward.Coupon,
+                    Currency = shoppingCart.Currency,
+                    Description = reward.Promotion?.Description,
+                    DiscountAmount = reward.GetRewardAmount(subTotalExcludeDiscount, 1),
+                    PromotionId = reward.PromotionId ?? reward.Promotion?.Id,
+                };
+                if (shoppingCart.Discounts == null)
+                {
+                    shoppingCart.Discounts = new List<Discount>();
+                }
+                shoppingCart.Discounts.Add(discount);
+                shoppingCart.DiscountAmount += discount.DiscountAmount;
+            }
+
         }
 
         public static void ApplyRewards(this LineItem lineItem, string currency, IEnumerable<CatalogItemAmountReward> rewards)
