@@ -58,6 +58,7 @@ namespace VirtoCommerce.XPurchase.Mapping
                 lineItem.Length = cartProduct.Product.Length;
                 lineItem.MeasureUnit = cartProduct.Product.MeasureUnit;
                 lineItem.Name = cartProduct.Product.Name;
+                lineItem.ProductOuterId = cartProduct.Product.OuterId;
                 lineItem.ProductId = cartProduct.Product.Id;
                 lineItem.ProductType = cartProduct.Product.ProductType;
                 lineItem.Sku = cartProduct.Product.Code;
