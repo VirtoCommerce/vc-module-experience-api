@@ -1595,12 +1595,14 @@ namespace VirtoCommerce.XPurchase.Schemas
 
         private async Task AuthorizeAsync(IResolveFieldContext context, object resource)
         {
-            await _userManagerCore.CheckUserState(context.GetCurrentUserId());
-
+            await _userManagerCore.CheckUserState(context.GetCurrentUserId(), allowAnonymous: true);
             var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), resource, new CanAccessCartAuthorizationRequirement());
+
             if (!authorizationResult.Succeeded)
             {
-                AuthorizationError.ThrowAccessDeniedError();
+                throw context.IsAuthenticated()
+                    ? AuthorizationError.Forbidden()
+                    : AuthorizationError.AnonymousAccessDenied();
             }
         }
     }

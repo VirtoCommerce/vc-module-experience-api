@@ -52,6 +52,11 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
             return resolveContext.GetValue(key, default(T));
         }
 
+        public static bool IsAuthenticated(this IResolveFieldContext resolveContext)
+        {
+            return resolveContext.GetCurrentPrincipal().Identity?.IsAuthenticated == true;
+        }
+
         public static string GetCurrentUserId(this IResolveFieldContext resolveContext)
         {
             var claimsPrincipal = GetCurrentPrincipal(resolveContext);
@@ -145,7 +150,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
             var result = allCurrencies?.FirstOrDefault(x => x.Code.EqualsInvariant(currencyCode));
             if (result == null)
             {
-                throw new OperationCanceledException($"the currency with code '{ currencyCode }' is not registered");
+                throw new OperationCanceledException($"the currency with code '{currencyCode}' is not registered");
             }
 
             return result;
