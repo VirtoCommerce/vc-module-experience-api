@@ -19,7 +19,7 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Services
             // Arrange
             var dynamicPropertySearchServiceMock = new Mock<IDynamicPropertySearchService>();
             dynamicPropertySearchServiceMock
-                .Setup(x => x.SearchDynamicPropertiesAsync(It.Is<DynamicPropertySearchCriteria>(x => x.ObjectType == entity.ObjectType)))
+                .Setup(x => x.SearchAsync(It.Is<DynamicPropertySearchCriteria>(x => x.ObjectType == entity.ObjectType), It.IsAny<bool>()))
                 .Returns(Task.FromResult(new DynamicPropertySearchResult { Results = Properties }));
 
             // Act

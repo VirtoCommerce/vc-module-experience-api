@@ -52,7 +52,7 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
             // If tax evaluation requested
             var responseGroup = EnumUtility.SafeParse(query.GetResponseGroup(), ExpProductResponseGroup.None);
             if (responseGroup.HasFlag(ExpProductResponseGroup.LoadPrices) &&
-                parameter.Store?.Settings?.GetSettingValue(StoreSetting.TaxCalculationEnabled.Name, true) == true)
+                parameter.Store?.Settings?.GetValue<bool>(StoreSetting.TaxCalculationEnabled) == true)
             {
                 //Evaluate taxes
                 var storeTaxProviders = await _taxProviderSearchService.SearchAsync(new TaxProviderSearchCriteria

@@ -42,7 +42,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Queries
                 var criteria = AbstractTypeFactory<DynamicPropertySearchCriteria>.TryCreateInstance();
                 criteria.Keyword = request.IdOrName;
                 criteria.ObjectType = request.ObjectType;
-                var searchResult = await _dynamicPropertySearchService.SearchDynamicPropertiesAsync(criteria);
+                var searchResult = await _dynamicPropertySearchService.SearchAsync(criteria);
 
                 property = searchResult.Results.FirstOrDefault(x => x.Name == request.IdOrName);
             }
@@ -63,7 +63,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Queries
                                         .WithObjectType(request.ObjectType)
                                         .Build();
 
-            var searchResult = await _dynamicPropertySearchService.SearchDynamicPropertiesAsync(searchCriteria);
+            var searchResult = await _dynamicPropertySearchService.SearchAsync(searchCriteria);
 
             return new SearchDynamicPropertiesResponse
             {
@@ -82,7 +82,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Queries
                                         .WithSorting(request.Sort)
                                         .Build();
 
-            var searchResult = await _dynamicPropertyDictionaryItemsSearchService.SearchDictionaryItemsAsync(searchCriteria);
+            var searchResult = await _dynamicPropertyDictionaryItemsSearchService.SearchAsync(searchCriteria);
 
             return new SearchDynamicPropertyDictionaryItemResponse
             {
