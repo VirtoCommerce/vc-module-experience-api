@@ -138,7 +138,9 @@ namespace VirtoCommerce.XDigitalCatalog.Extensions
 
                 outlineItems.Remove(item);
                 if (string.IsNullOrWhiteSpace(seoPath))
+                {
                     continue;
+                }
 
                 var seoInfoForStoreAndLanguage = SeoInfoForStoreAndLanguage(item, store.Id, cultureName);
 
