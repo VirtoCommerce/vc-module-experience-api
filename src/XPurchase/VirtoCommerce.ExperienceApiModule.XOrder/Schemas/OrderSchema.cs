@@ -65,13 +65,12 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                     context.CopyArgumentsToUserContext();
                     var orderAggregate = await _mediator.Send(request);
 
-                    await _userManagerCore.CheckUserState(context.GetCurrentUserId());
-                    var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), orderAggregate.Order, new CanAccessOrderAuthorizationRequirement());
-
-                    if (!authorizationResult.Succeeded)
+                    if (orderAggregate == null)
                     {
-                        AuthorizationError.ThrowAccessDeniedError();
+                        return null;
                     }
+
+                    await AuthorizeAsync(context, orderAggregate.Order, allowAnonymous: false);
 
                     var allCurrencies = await _currencyService.GetAllCurrenciesAsync();
                     //Store all currencies in the user context for future resolve in the schema types
@@ -118,7 +117,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                             {
                                 var type = GenericTypeHelper.GetActualType<CreateOrderFromCartCommand>();
                                 var command = context.GetArgument(type, _commandName) as CreateOrderFromCartCommand;
-                                await CheckCanAccessUserAsync(context, command.CartId);
+                                await CheckCanAccessCartAsync(context, command.CartId);
                                 var response = (CustomerOrderAggregate)await _mediator.Send(context.GetArgument(type, _commandName));
                                 context.SetExpandedObjectGraph(response);
                                 return response;
@@ -254,18 +253,12 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
         private async Task<object> ResolveOrdersConnectionAsync<T>(IMediator mediator, IResolveConnectionContext<object> context) where T : SearchOrderQuery
         {
             var query = context.ExtractQuery<T>();
+            await AuthorizeAsync(context, query, allowAnonymous: false);
 
             context.CopyArgumentsToUserContext();
             var allCurrencies = await _currencyService.GetAllCurrenciesAsync();
             //Store all currencies in the user context for future resolve in the schema types
             context.SetCurrencies(allCurrencies, query.CultureName);
-
-            await _userManagerCore.CheckUserState(context.GetCurrentUserId());
-            var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), query, new CanAccessOrderAuthorizationRequirement());
-            if (!authorizationResult.Succeeded)
-            {
-                AuthorizationError.ThrowAccessDeniedError();
-            }
 
             var response = await mediator.Send(query);
 
@@ -280,13 +273,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
         private async Task<object> ResolvePaymentsConnectionAsync(IMediator mediator, IResolveConnectionContext<object> context)
         {
             var query = context.ExtractQuery<SearchPaymentsQuery>();
-
-            await _userManagerCore.CheckUserState(context.GetCurrentUserId());
-            var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), query, new CanAccessOrderAuthorizationRequirement());
-            if (!authorizationResult.Succeeded)
-            {
-                AuthorizationError.ThrowAccessDeniedError();
-            }
+            await AuthorizeAsync(context, query, allowAnonymous: true);
 
             context.UserContext.Add(nameof(Currency.CultureName).ToCamelCase(), query.CultureName);
 
@@ -306,40 +293,30 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 
         private async Task CheckAuthAsync(IResolveFieldContext context, string orderId)
         {
-            await _userManagerCore.CheckUserState(context.GetCurrentUserId());
+            var order = await _customerOrderService.GetByIdAsync(orderId)
+                ?? throw new ArgumentException($"Order does not exist, ID: '{orderId}'", nameof(orderId));
 
-            var order = await _customerOrderService.GetByIdAsync(orderId);
-
-            var authorizationResult = await _authorizationService.AuthorizeAsync(
-                context.GetCurrentPrincipal(),
-                order,
-                new CanAccessOrderAuthorizationRequirement());
-
-            if (!authorizationResult.Succeeded)
-            {
-                AuthorizationError.ThrowAccessDeniedError();
-            }
+            await AuthorizeAsync(context, order, allowAnonymous: true);
         }
 
-        private async Task CheckCanAccessUserAsync(IResolveFieldContext context, string cartId)
+        private async Task CheckCanAccessCartAsync(IResolveFieldContext context, string cartId)
         {
-            await _userManagerCore.CheckUserState(context.GetCurrentUserId());
+            var cart = await _mediator.Send(new GetCartByIdQuery { CartId = cartId })
+                ?? throw new ArgumentException($"Cart does not exist, ID: '{cartId}'", nameof(cartId));
 
-            var cart = await _mediator.Send(new GetCartByIdQuery { CartId = cartId });
+            await AuthorizeAsync(context, cart.Cart, allowAnonymous: true);
+        }
 
-            if (cart == null)
-            {
-                throw new ArgumentException($"Cart does not exist, id: '{cartId}'", nameof(cartId));
-            }
-
-            var authorizationResult = await _authorizationService.AuthorizeAsync(
-                context.GetCurrentPrincipal(),
-                cart.Cart,
-                new CanAccessOrderAuthorizationRequirement());
+        private async Task AuthorizeAsync(IResolveFieldContext context, object resource, bool allowAnonymous)
+        {
+            await _userManagerCore.CheckUserState(context.GetCurrentUserId(), allowAnonymous);
+            var authorizationResult = await _authorizationService.AuthorizeAsync(context.GetCurrentPrincipal(), resource, new CanAccessOrderAuthorizationRequirement());
 
             if (!authorizationResult.Succeeded)
             {
-                AuthorizationError.ThrowAccessDeniedError();
+                throw !allowAnonymous || context.IsAuthenticated()
+                    ? AuthorizationError.Forbidden()
+                    : AuthorizationError.AnonymousAccessDenied();
             }
         }
     }

@@ -24,25 +24,35 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Services
             return result;
         }
 
-        public async Task CheckUserState(string userId)
+        [Obsolete("Use CheckUserState(string userId, bool allowAnonymous)", DiagnosticId = "VC0005", UrlFormat = "https://docs.virtocommerce.org/products/products-virto3-versions/")]
+        public Task CheckUserState(string userId)
+        {
+            return CheckUserState(userId, allowAnonymous: true);
+        }
+
+        public async Task CheckUserState(string userId, bool allowAnonymous)
         {
             var userManager = _userManagerFactory();
-
             var user = await userManager.FindByIdAsync(userId);
 
             if (user == null)
             {
-                return;
+                if (allowAnonymous)
+                {
+                    return;
+                }
+
+                throw AuthorizationError.AnonymousAccessDenied();
             }
 
             if (user.PasswordExpired)
             {
-                AuthorizationError.ThrowPasswordExpiredError();
+                throw AuthorizationError.PasswordExpired();
             }
 
             if (await userManager.IsLockedOutAsync(user))
             {
-                AuthorizationError.ThrowUserLockedError();
+                throw AuthorizationError.UserLocked();
             }
         }
     }
