@@ -27,7 +27,7 @@ namespace VirtoCommerce.XDigitalCatalog
             IsAvailable = product.IsAvailable;
             IsInStock = product.IsInStock;
             IsActive = product.IndexedProduct?.IsActive ?? false;
-            IsTrackInventory = product?.IndexedProduct?.TrackInventory ?? false;
+            IsTrackInventory = product.IndexedProduct?.TrackInventory ?? false;
             return this;
         }
     }
