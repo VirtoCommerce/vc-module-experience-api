@@ -212,7 +212,7 @@ namespace VirtoCommerce.XPurchase.Services
 
         protected async Task<TaxProvider> GetActiveTaxProviderAsync(CartAggregate cartAggregate)
         {
-            if (!cartAggregate.Store?.Settings?.GetSettingValue(StoreSetting.TaxCalculationEnabled.Name, true) == false)
+            if (!cartAggregate.Store?.Settings?.GetValue<bool>(StoreSetting.TaxCalculationEnabled) == false)
             {
                 return null;
             }

@@ -10,9 +10,9 @@ namespace VirtoCommerce.XPurchase.Commands
 {
     public abstract class CartCommandHandler<TCartCommand> : IRequestHandler<TCartCommand, CartAggregate> where TCartCommand : CartCommand
     {
-        protected CartCommandHandler(ICartAggregateRepository cartAggrRepository)
+        protected CartCommandHandler(ICartAggregateRepository cartAggregateRepository)
         {
-            CartRepository = cartAggrRepository;
+            CartRepository = cartAggregateRepository;
         }
 
         protected ICartAggregateRepository CartRepository { get; private set; }

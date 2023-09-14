@@ -69,7 +69,7 @@ namespace VirtoCommerce.XPurchase.Validators
 
         protected virtual void ApplyRuleForItems(CartValidationContext cartContext, ValidationContext<CartValidationContext> context)
         {
-            cartContext.CartAggregate.Cart.Items?.Apply(item =>
+            cartContext.CartAggregate.SelectedLineItems.Apply(item =>
             {
                 var lineItemContext = new LineItemValidationContext
                 {

@@ -4,6 +4,6 @@ namespace VirtoCommerce.XPurchase.Validators
 {
     public interface ICartValidationContextFactory
     {
-        Task<CartValidationContext> CreateValidationContextAsync(CartAggregate cartAggr);
+        Task<CartValidationContext> CreateValidationContextAsync(CartAggregate cartAggregate);
     }
 }
