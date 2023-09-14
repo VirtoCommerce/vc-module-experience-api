@@ -88,7 +88,9 @@ public abstract class RequestBuilder<TRequest, TResponse, TResponseGraphType> : 
 
         if (!authorizationResult.Succeeded)
         {
-            throw new AuthorizationError("Access denied");
+            throw context.IsAuthenticated()
+                ? AuthorizationError.Forbidden()
+                : AuthorizationError.AnonymousAccessDenied();
         }
     }
 }
