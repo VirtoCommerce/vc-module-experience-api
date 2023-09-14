@@ -195,7 +195,7 @@ namespace VirtoCommerce.XPurchase.Mapping
 
                 promoEvalcontext.CartPromoEntries = new List<ProductPromoEntry>();
 
-                foreach (var lineItem in cartAggr.LineItems)
+                foreach (var lineItem in cartAggr.SelectedLineItems)
                 {
                     var promoEntry = context.Mapper.Map<ProductPromoEntry>(lineItem);
                     var cartProduct = cartAggr.CartProducts[lineItem.ProductId];
@@ -253,7 +253,7 @@ namespace VirtoCommerce.XPurchase.Mapping
                 taxEvalcontext.CustomerId = cartAggr.Cart.CustomerId;
                 //map customer after PT-5425
 
-                foreach (var lineItem in cartAggr.LineItems ?? Array.Empty<LineItem>())
+                foreach (var lineItem in cartAggr.SelectedLineItems)
                 {
                     taxEvalcontext.Lines.Add(new TaxLine()
                     {
