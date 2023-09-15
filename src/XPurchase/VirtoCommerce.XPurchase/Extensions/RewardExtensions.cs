@@ -34,7 +34,7 @@ namespace VirtoCommerce.XPurchase.Extensions
             shoppingCart.DiscountAmount = 0M;
 
             // remove the (added) gifts, if corresponding valid reward is missing
-            foreach (var lineItem in aggregate.GiftItems.ToList() ?? Enumerable.Empty<LineItem>())
+            foreach (var lineItem in aggregate.GiftItems?.ToList() ?? Enumerable.Empty<LineItem>())
             {
                 if (!rewards.OfType<GiftReward>().Any(re => re.IsValid && lineItem.EqualsReward(re)))
                 {

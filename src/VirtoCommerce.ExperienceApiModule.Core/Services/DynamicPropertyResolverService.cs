@@ -33,7 +33,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Services
             var criteria = AbstractTypeFactory<DynamicPropertySearchCriteria>.TryCreateInstance();
             criteria.ObjectType = entity.ObjectType;
             criteria.Take = int.MaxValue;
-            var searchResult = await _dynamicPropertySearchService.SearchDynamicPropertiesAsync(criteria);
+            var searchResult = await _dynamicPropertySearchService.SearchAsync(criteria);
 
             var entryDynamicProperties = entity.DynamicProperties ?? Enumerable.Empty<DynamicObjectProperty>();
             var existingDynamicProperties = searchResult.Results
