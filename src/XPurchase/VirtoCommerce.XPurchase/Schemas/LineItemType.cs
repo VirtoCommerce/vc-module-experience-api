@@ -91,7 +91,8 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field(x => x.Length, nullable: true).Description("Length value");
             Field(x => x.MeasureUnit, nullable: true).Description("Measurement unit value");
             Field(x => x.Name, nullable: true).Description("Line item name value");
-            Field(x => x.Note, nullable: true).Description("Line item comment value");
+            Field(x => x.ProductOuterId, nullable: true).Description("Product outer Id");
+            Field(x => x.Note, nullable: true).Description("Line item comment");
             Field(x => x.ObjectType, nullable: true).Description("Line item quantity value");
             Field(x => x.ProductId, nullable: true).Description("Product ID value");
             Field(x => x.ProductType, nullable: true).Description("Product type: Physical, Digital, or Subscription");

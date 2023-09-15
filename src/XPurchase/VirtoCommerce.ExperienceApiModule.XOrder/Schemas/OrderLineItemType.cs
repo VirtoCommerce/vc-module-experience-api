@@ -35,6 +35,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field(x => x.FulfillmentCenterId, true);
             Field(x => x.FulfillmentCenterName, true);
             Field(x => x.OuterId, true);
+            Field(x => x.ProductOuterId, true);
             Field(x => x.WeightUnit, true);
             Field(x => x.Weight, true);
             Field(x => x.MeasureUnit, true);
