@@ -60,10 +60,10 @@ namespace VirtoCommerce.XPurchase.Schemas
                 resolve: context => context.Source.Cart.SubTotalWithTax.ToMoney(context.Source.Currency));
             Field<MoneyType>("extendedPriceTotal",
                 "Total extended price",
-                resolve: context => context.Source.LineItems.Sum(i => i.ExtendedPrice).ToMoney(context.Source.Currency));
+                resolve: context => context.Source.SelectedLineItems.Sum(i => i.ExtendedPrice).ToMoney(context.Source.Currency));
             Field<MoneyType>("extendedPriceTotalWithTax",
                 "Total extended price with tax",
-                resolve: context => context.Source.LineItems.Sum(i => i.ExtendedPriceWithTax).ToMoney(context.Source.Currency));
+                resolve: context => context.Source.SelectedLineItems.Sum(i => i.ExtendedPriceWithTax).ToMoney(context.Source.Currency));
             Field<CurrencyType>("currency",
                 "Currency",
                 resolve: context => context.Source.Currency);

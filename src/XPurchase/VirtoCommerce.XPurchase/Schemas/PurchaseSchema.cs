@@ -359,7 +359,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             /// <example>
             /// This is an example JSON request for a mutation
             /// {
-            ///   "query": "mutation ($command:InputChangeCartItemCommentType!){ changeCartItemComment(command: $command) {  total { formatedAmount } } }",
+            ///   "query": "mutation ($command:InputChangeCartItemCommentType!){ changeCartItemComment(command: $command) }",
             ///   "variables": {
             ///      "command": {
             ///          "storeId": "Electronics",
@@ -393,6 +393,115 @@ namespace VirtoCommerce.XPurchase.Schemas
                                                           }).FieldType;
 
             schema.Mutation.AddField(changeCartItemCommentField);
+
+            #region Change selected items
+
+            /// <example>
+            /// This is an example JSON request for a mutation
+            /// {
+            ///   "query": "mutation ($command:InputChangeCartItemSelectedType!){ changeCartItemSelected(command: $command) { id } }",
+            ///   "variables": {
+            ///      "command": {
+            ///          "storeId": "Electronics",
+            ///          "cartName": "default",
+            ///          "userId": "b57d06db-1638-4d37-9734-fd01a9bc59aa",
+            ///          "language": "en-US",
+            ///          "currency": "USD",
+            ///          "cartType": "cart",
+            ///          "lineItemId": "9cbd8f316e254a679ba34a900fccb076",
+            ///          "selectedForCheckout": false
+            ///      }
+            ///   }
+            /// }
+            /// </example>
+            var changeCartItemSelectedField = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<CartType>())
+                                                          .Name("changeCartItemSelected")
+                                                          .Argument(GraphTypeExtenstionHelper.GetActualType<InputChangeCartItemSelectedType>(), _commandName)
+                                                          .ResolveSynchronizedAsync(CartPrefix, "userId", _distributedLockService, async context =>
+                                                          {
+                                                              var cartCommand = context.GetCartCommand<ChangeCartItemSelectedCommand>();
+
+                                                              await CheckAuthByCartCommandAsync(context, cartCommand);
+
+                                                              var cartAggregate = await _mediator.Send(cartCommand);
+
+                                                              context.SetExpandedObjectGraph(cartAggregate);
+                                                              return cartAggregate;
+                                                          }).FieldType;
+
+            schema.Mutation.AddField(changeCartItemSelectedField);
+
+            var selectCartItems = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<CartType>())
+                                              .Name("selectCartItems")
+                                              .Argument(GraphTypeExtenstionHelper.GetActualType<InputChangeCartItemsSelectedType>(), _commandName)
+                                              .ResolveSynchronizedAsync(CartPrefix, "userId", _distributedLockService, async context =>
+                                              {
+                                                  var cartCommand = context.GetCartCommand<ChangeCartItemsSelectedCommand>();
+                                                  cartCommand.SelectedForCheckout = true;
+
+                                                  await CheckAuthByCartCommandAsync(context, cartCommand);
+
+                                                  var cartAggregate = await _mediator.Send(cartCommand);
+                                                  context.SetExpandedObjectGraph(cartAggregate);
+
+                                                  return cartAggregate;
+                                              }).FieldType;
+
+            schema.Mutation.AddField(selectCartItems);
+
+            var unSelectCartItems = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<CartType>())
+                                                .Name("unSelectCartItems")
+                                                .Argument(GraphTypeExtenstionHelper.GetActualType<InputChangeCartItemsSelectedType>(), _commandName)
+                                                .ResolveSynchronizedAsync(CartPrefix, "userId", _distributedLockService, async context =>
+                                                {
+                                                    var cartCommand = context.GetCartCommand<ChangeCartItemsSelectedCommand>();
+
+                                                    await CheckAuthByCartCommandAsync(context, cartCommand);
+
+                                                    var cartAggregate = await _mediator.Send(cartCommand);
+                                                    context.SetExpandedObjectGraph(cartAggregate);
+
+                                                    return cartAggregate;
+                                                }).FieldType;
+
+            schema.Mutation.AddField(unSelectCartItems);
+
+            var selectAllCartItems = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<CartType>())
+                                                 .Name("selectAllCartItems")
+                                                 .Argument(GraphTypeExtenstionHelper.GetActualType<InputChangeAllCartItemsSelectedType>(), _commandName)
+                                                 .ResolveSynchronizedAsync(CartPrefix, "userId", _distributedLockService, async context =>
+                                                 {
+                                                     var cartCommand = context.GetCartCommand<ChangeAllCartItemsSelectedCommand>();
+                                                     cartCommand.SelectedForCheckout = true;
+
+                                                     await CheckAuthByCartCommandAsync(context, cartCommand);
+
+                                                     var cartAggregate = await _mediator.Send(cartCommand);
+                                                     context.SetExpandedObjectGraph(cartAggregate);
+
+                                                     return cartAggregate;
+                                                 }).FieldType;
+
+            schema.Mutation.AddField(selectAllCartItems);
+
+            var unSelectAllCartItems = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<CartType>())
+                                                   .Name("unSelectAllCartItems")
+                                                   .Argument(GraphTypeExtenstionHelper.GetActualType<InputChangeAllCartItemsSelectedType>(), _commandName)
+                                                   .ResolveSynchronizedAsync(CartPrefix, "userId", _distributedLockService, async context =>
+                                                   {
+                                                       var cartCommand = context.GetCartCommand<ChangeAllCartItemsSelectedCommand>();
+
+                                                       await CheckAuthByCartCommandAsync(context, cartCommand);
+
+                                                       var cartAggregate = await _mediator.Send(cartCommand);
+                                                       context.SetExpandedObjectGraph(cartAggregate);
+
+                                                       return cartAggregate;
+                                                   }).FieldType;
+
+            schema.Mutation.AddField(unSelectAllCartItems);
+
+            #endregion
 
             /// <example>
             /// This is an example JSON request for a mutation
