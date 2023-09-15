@@ -91,8 +91,9 @@ namespace VirtoCommerce.XPurchase
         }
 
         public ShoppingCart Cart { get; protected set; }
-        public IEnumerable<LineItem> GiftItems => Cart?.Items.Where(x => x.IsGift);
-        public IEnumerable<LineItem> LineItems => Cart?.Items.Where(x => !x.IsGift);
+        public IEnumerable<LineItem> GiftItems => Cart?.Items.Where(x => x.IsGift) ?? Enumerable.Empty<LineItem>();
+        public IEnumerable<LineItem> LineItems => Cart?.Items.Where(x => !x.IsGift) ?? Enumerable.Empty<LineItem>();
+        public IEnumerable<LineItem> SelectedLineItems => LineItems.Where(x => x.SelectedForCheckout);
 
         /// <summary>
         /// Represents the dictionary of all CartProducts data for each  existing cart line item
@@ -108,7 +109,7 @@ namespace VirtoCommerce.XPurchase
 
         public bool IsValid => !ValidationErrors.Any();
         public IList<ValidationFailure> ValidationErrors { get; protected set; } = new List<ValidationFailure>();
-        public bool IsValidated { get; private set; } = false;
+        public bool IsValidated { get; private set; }
 
         public bool IsFirstBuyer
         {
@@ -332,6 +333,22 @@ namespace VirtoCommerce.XPurchase
             return Task.FromResult(this);
         }
 
+        public virtual Task<CartAggregate> ChangeItemsSelectedAsync(IList<string> lineItemIds, bool selectedForCheckout)
+        {
+            EnsureCartExists();
+
+            foreach (var lineItemId in lineItemIds)
+            {
+                var lineItem = Cart.Items.FirstOrDefault(x => x.Id == lineItemId);
+                if (lineItem != null)
+                {
+                    lineItem.SelectedForCheckout = selectedForCheckout;
+                }
+            }
+
+            return Task.FromResult(this);
+        }
+
         public virtual Task<CartAggregate> RemoveItemAsync(string lineItemId)
         {
             EnsureCartExists();
@@ -476,10 +493,7 @@ namespace VirtoCommerce.XPurchase
             };
             await AbstractTypeFactory<CartPaymentValidator>.TryCreateInstance().ValidateAsync(validationContext, options => options.IncludeRuleSets(ValidationRuleSet).ThrowOnFailures());
 
-            if (payment.Currency == null)
-            {
-                payment.Currency = Cart.Currency;
-            }
+            payment.Currency ??= Cart.Currency;
             await RemoveExistingPaymentAsync(payment);
             if (payment.BillingAddress != null)
             {
@@ -795,8 +809,6 @@ namespace VirtoCommerce.XPurchase
         /// <summary>
         /// Represents a price policy for a product. By default, product price should be greater than zero.
         /// </summary>
-        /// <param name="product"></param>
-        /// <returns></returns>
         protected virtual bool CheckPricePolicy(TierPrice tierPrice)
         {
             return tierPrice.Price.Amount > 0;
@@ -873,13 +885,13 @@ namespace VirtoCommerce.XPurchase
 
         public virtual object Clone()
         {
-            var result = MemberwiseClone() as CartAggregate;
+            var result = (CartAggregate)MemberwiseClone();
 
-            result.Cart = Cart?.Clone() as ShoppingCart;
-            result.CartProducts = CartProducts.ToDictionary(kvp => kvp.Key, kvp => kvp.Value?.Clone() as CartProduct);
-            result.Currency = Currency.Clone() as Currency;
-            result.Member = Member?.Clone() as Member;
-            result.Store = Store.Clone() as Store;
+            result.Cart = Cart?.CloneTyped();
+            result.CartProducts = CartProducts.ToDictionary(kvp => kvp.Key, kvp => kvp.Value?.CloneTyped());
+            result.Currency = Currency.CloneTyped();
+            result.Member = Member?.CloneTyped();
+            result.Store = Store.CloneTyped();
 
             return result;
         }
