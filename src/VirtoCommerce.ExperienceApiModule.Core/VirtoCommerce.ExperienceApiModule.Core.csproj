@@ -32,7 +32,7 @@
     <PackageReference Include="StackExchange.Redis" Version="2.6.86" />
     <PackageReference Include="VirtoCommerce.CoreModule.Core" Version="3.400.0" />
     <PackageReference Include="VirtoCommerce.CustomerModule.Core" Version="3.400.0" />
-    <PackageReference Include="VirtoCommerce.Platform.Security" Version="3.400.0" />
+    <PackageReference Include="VirtoCommerce.Platform.Security" Version="3.413.0" />
     <PackageReference Include="VirtoCommerce.SearchModule.Core" Version="3.401.0" />
     <PackageReference Include="VirtoCommerce.StoreModule.Core" Version="3.400.0" />
     <PackageReference Include="VirtoCommerce.TaxModule.Core" Version="3.400.0" />

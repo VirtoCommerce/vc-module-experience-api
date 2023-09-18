@@ -32,13 +32,13 @@ namespace VirtoCommerce.XPurchase.Validators
                     var minQuantity = qtyAdjust.CartProduct?.Product?.MinQuantity;
                     if (qtyAdjust.NewQuantity < minQuantity)
                     {
-                        context.AddFailure(CartErrorDescriber.ProductMinQuantityError(qtyAdjust.CartProduct, qtyAdjust.NewQuantity, minQuantity ?? 0));
+                        context.AddFailure(CartErrorDescriber.ProductMinQuantityError(qtyAdjust.CartProduct, qtyAdjust.NewQuantity, minQuantity.Value));
                     }
 
                     var maxQuantity = qtyAdjust.CartProduct?.Product?.MaxQuantity;
                     if (maxQuantity > 0 && qtyAdjust.NewQuantity > maxQuantity)
                     {
-                        context.AddFailure(CartErrorDescriber.ProductMaxQuantityError(qtyAdjust.CartProduct, qtyAdjust.NewQuantity, maxQuantity ?? 0));
+                        context.AddFailure(CartErrorDescriber.ProductMaxQuantityError(qtyAdjust.CartProduct, qtyAdjust.NewQuantity, maxQuantity.Value));
                     }
                 });
             });
