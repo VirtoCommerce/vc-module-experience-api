@@ -220,7 +220,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
                     var response = await mediator.Send(query);
 
-                    return response.Products.Select(expProduct => new ExpVariation(expProduct));
+                    return response.Products.Where(x => x.IndexedProduct?.IsActive == true).Select(expProduct => new ExpVariation(expProduct));
                 });
 
             Field<BooleanGraphType>(
