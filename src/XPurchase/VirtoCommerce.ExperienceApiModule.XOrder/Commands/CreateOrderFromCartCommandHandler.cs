@@ -47,6 +47,10 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Commands
             var selectedLineItemIds = cartAggregate.SelectedLineItems.Select(x => x.Id).ToArray();
             await cartAggregate.RemoveItemsAsync(selectedLineItemIds);
 
+            // clear payments and shipments
+            cartAggregate.Cart.Shipments?.Clear();
+            cartAggregate.Cart.Payments?.Clear();
+
             await _cartRepository.SaveAsync(cartAggregate);
 
             // Remark: There is potential issue, because there is no transaction thru two actions above. If a cart deletion fails, the order remains. That causes data inconsistency.
