@@ -176,11 +176,5 @@ namespace VirtoCommerce.XPurchase
 
             return result;
         }
-
-        public static CartValidationError AllLineItemsUnselected(IEntity entity)
-        {
-            var result = new CartValidationError(entity, $"All line items unselected. Please select at least one line item.", "ALL_LINE_ITEMS_UNSELECTED");
-            return result;
-        }
     }
 }

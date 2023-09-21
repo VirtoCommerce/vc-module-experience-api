@@ -1,4 +1,3 @@
-using System.Linq;
 using FluentValidation;
 using VirtoCommerce.Platform.Core.Common;
 
@@ -37,12 +36,6 @@ namespace VirtoCommerce.XPurchase.Validators
                 RuleFor(x => x).Custom((cartContext, context) =>
                 {
                     ApplyRuleForPayments(cartContext, context);
-                }));
-
-            RuleSet("orderCreate", () =>
-                RuleFor(x => x).Custom((cartContext, context) =>
-                {
-                    ApplyRuleForOrderCreate(cartContext, context);
                 }));
         }
 
@@ -86,15 +79,6 @@ namespace VirtoCommerce.XPurchase.Validators
                 var result = LineItemValidator.Validate(lineItemContext);
                 result.Errors.Apply(x => context.AddFailure(x));
             });
-        }
-
-        protected virtual void ApplyRuleForOrderCreate(CartValidationContext cartContext, ValidationContext<CartValidationContext> context)
-        {
-            // don't use RuleFor here
-            if (!cartContext.CartAggregate.SelectedLineItems.Any())
-            {
-                context.AddFailure(CartErrorDescriber.AllLineItemsUnselected(cartContext.CartAggregate.Cart));
-            }
         }
     }
 }
