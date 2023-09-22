@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using System.Reflection;
-using AutoMapper;
 using GraphQL.Authorization;
 using GraphQL.Server;
 using GraphQL.Types;
@@ -13,7 +12,6 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure.Authorization;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure.Internal;
-using VirtoCommerce.ExperienceApiModule.Core.Schemas;
 using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.Platform.Core.Common;
 
@@ -110,12 +108,11 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
 
         public static IServiceCollection AddXCore(this IServiceCollection services, IGraphQLBuilder graphQlbuilder)
         {
-            graphQlbuilder.AddGraphTypes(typeof(XCoreAnchor));
-
-            services.AddSchemaBuilder<DynamicPropertySchema>();
-            services.AddSchemaBuilder<CoreSchema>();
-            services.AddMediatR(typeof(XCoreAnchor));
-            services.AddAutoMapper(typeof(XCoreAnchor));
+            var assemblyMarker = typeof(XCoreAnchor);
+            graphQlbuilder.AddGraphTypes(assemblyMarker);
+            services.AddMediatR(assemblyMarker);
+            services.AddAutoMapper(assemblyMarker);
+            services.AddSchemaBuilders(assemblyMarker);
 
             services.AddTransient<IDynamicPropertyResolverService, DynamicPropertyResolverService>();
             services.AddTransient<IDynamicPropertyUpdaterService, DynamicPropertyUpdaterService>();
