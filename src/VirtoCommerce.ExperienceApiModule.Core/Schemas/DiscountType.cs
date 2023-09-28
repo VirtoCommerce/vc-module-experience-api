@@ -1,6 +1,5 @@
 using GraphQL.Types;
 using VirtoCommerce.CoreModule.Core.Common;
-using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 
 namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
@@ -12,16 +11,16 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
             Field(x => x.Coupon, nullable: true).Description("Coupon");
             Field(x => x.Description, nullable: true).Description("Value of discount description");
             Field(x => x.PromotionId, nullable: true).Description("Value of promotion id");
-            Field<DecimalGraphType>("amount",
+            Field<NonNullGraphType<DecimalGraphType>>("amount",
                 "Discount amount",
                 resolve: context => context.Source.DiscountAmount);
-            Field<MoneyType>("moneyAmount",
+            Field<NonNullGraphType<MoneyType>>("moneyAmount",
                 "Discount amount in the specified currency",
                 resolve: context => context.Source.DiscountAmount.ToMoney(context.GetCurrencyByCode(context.Source.Currency)));
-            Field<DecimalGraphType>("amountWithTax",
+            Field<NonNullGraphType<DecimalGraphType>>("amountWithTax",
                 "Discount amount with tax",
                 resolve: context => context.Source.DiscountAmountWithTax);
-            Field<MoneyType>("moneyAmountWithTax",
+            Field<NonNullGraphType<MoneyType>>("moneyAmountWithTax",
                 "Discount amount with tax in the specified currency",
                 resolve: context => context.Source.DiscountAmountWithTax.ToMoney(context.GetCurrencyByCode(context.Source.Currency)));
         }

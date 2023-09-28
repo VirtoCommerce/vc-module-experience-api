@@ -31,7 +31,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                 Resolver = new FuncFieldResolver<LineItem, IDataLoaderResult<ExpProduct>>(context =>
                 {
                     var includeFields = context.SubFields.Values.GetAllNodesPaths(context).ToArray();
-                    var loader = dataLoader.Context.GetOrAddBatchLoader<string, ExpProduct>("order_lineItems_products", async (ids) =>
+                    var loader = dataLoader.Context.GetOrAddBatchLoader<string, ExpProduct>("cart_lineItems_products", async (ids) =>
                     {
                         //Get currencies and store only from one cart.
                         //We intentionally ignore the case when there are ma be the carts with the different currencies and stores in the resulting set
@@ -63,44 +63,44 @@ namespace VirtoCommerce.XPurchase.Schemas
             AddField(productField);
 
             //Field<MoneyType>("paymentPlan", resolve: context => context.Source.PaymentPlan);
-            Field<IntGraphType>("inStockQuantity",
+            Field<NonNullGraphType<IntGraphType>>("inStockQuantity",
                 "In stock quantity",
                 resolve: context => context.GetCart().CartProducts[context.Source.ProductId]?.AvailableQuantity ?? 0);
             Field<StringGraphType>("warehouseLocation",
                 "Warehouse location",
                 resolve: context => context.GetCart().CartProducts[context.Source.ProductId]?.Inventory?.FulfillmentCenter?.Address?.ToString());
 
-            Field<BooleanGraphType>("IsValid",
+            Field<NonNullGraphType<BooleanGraphType>>("IsValid",
                 "Shows whether this is valid",
                 resolve: context => !context.GetCart().ValidationErrors.GetEntityCartErrors(context.Source).Any());
-            Field<ListGraphType<ValidationErrorType>>("validationErrors",
+            Field<NonNullGraphType<ListGraphType<NonNullGraphType<ValidationErrorType>>>>("validationErrors",
                 "Validation errors",
                 resolve: context => context.GetCart().ValidationErrors.GetEntityCartErrors(context.Source));
 
-            Field(x => x.CatalogId, nullable: true).Description("Catalog ID value");
+            Field(x => x.CatalogId, nullable: false).Description("Catalog ID value");
             Field(x => x.CategoryId, nullable: true).Description("Category ID value");
-            Field(x => x.CreatedDate, nullable: true).Description("Line item create date");
+            Field(x => x.CreatedDate, nullable: false).Description("Line item create date");
             Field(x => x.Height, nullable: true).Description("Height value");
             Field(x => x.Id, nullable: false).Description("Line item ID");
             Field(x => x.ImageUrl, nullable: true).Description("Value of line item image absolute URL");
-            Field(x => x.IsGift, nullable: true).Description("flag of line item is a gift");
-            Field(x => x.IsReadOnly, nullable: true).Description("Shows whether this is read-only");
-            Field(x => x.IsReccuring, nullable: true).Description("Shows whether the line item is recurring");
-            Field(x => x.SelectedForCheckout, nullable: true).Description("Shows whether the line item is selected for buying");
+            Field(x => x.IsGift, nullable: false).Description("flag of line item is a gift");
+            Field(x => x.IsReadOnly, nullable: false).Description("Shows whether this is read-only");
+            Field(x => x.IsReccuring, nullable: false).Description("Shows whether the line item is recurring");
+            Field(x => x.SelectedForCheckout, nullable: false).Description("Shows whether the line item is selected for buying");
             Field(x => x.LanguageCode, nullable: true).Description("Culture name in the ISO 3166-1 alpha-3 format");
             Field(x => x.Length, nullable: true).Description("Length value");
             Field(x => x.MeasureUnit, nullable: true).Description("Measurement unit value");
-            Field(x => x.Name, nullable: true).Description("Line item name value");
+            Field(x => x.Name, nullable: false).Description("Line item name value");
             Field(x => x.ProductOuterId, nullable: true).Description("Product outer Id");
             Field(x => x.Note, nullable: true).Description("Line item comment");
-            Field(x => x.ObjectType, nullable: true).Description("Line item quantity value");
-            Field(x => x.ProductId, nullable: true).Description("Product ID value");
+            Field(x => x.ObjectType, nullable: false).Description("Line item quantity value");
+            Field(x => x.ProductId, nullable: false).Description("Product ID value");
             Field(x => x.ProductType, nullable: true).Description("Product type: Physical, Digital, or Subscription");
-            Field(x => x.Quantity, nullable: true).Description("Line item quantity value");
-            Field(x => x.RequiredShipping, nullable: true).Description("Requirement for line item shipping");
+            Field(x => x.Quantity, nullable: false).Description("Line item quantity value");
+            Field(x => x.RequiredShipping, nullable: false).Description("Requirement for line item shipping");
             Field(x => x.ShipmentMethodCode, nullable: true).Description("Line item shipping method code value");
-            Field(x => x.Sku, nullable: true).Description("Product SKU value");
-            Field(x => x.TaxPercentRate, nullable: true).Description("Total shipping tax amount value");
+            Field(x => x.Sku, nullable: false).Description("Product SKU value");
+            Field(x => x.TaxPercentRate, nullable: false).Description("Total shipping tax amount value");
             Field(x => x.TaxType, nullable: true).Description("Shipping tax type value");
             Field(x => x.ThumbnailImageUrl, nullable: true).Description("Value of line item thumbnail image absolute URL");
             Field(x => x.VolumetricWeight, nullable: true).Description("Volumetric weight value");
@@ -109,49 +109,49 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field(x => x.Width, nullable: true).Description("Width value");
             Field(x => x.FulfillmentCenterId, nullable: true).Description("Line item fulfillment center ID value");
             Field(x => x.FulfillmentCenterName, nullable: true).Description("Line item fulfillment center name value");
-            Field<ListGraphType<DiscountType>>("discounts",
+            Field<NonNullGraphType<ListGraphType<NonNullGraphType<DiscountType>>>>("discounts",
                 "Discounts",
                 resolve: context => context.Source.Discounts);
-            Field<ListGraphType<TaxDetailType>>("taxDetails",
+            Field<NonNullGraphType<ListGraphType<NonNullGraphType<TaxDetailType>>>>("taxDetails",
                 "Tax details",
                 resolve: context => context.Source.TaxDetails);
-            Field<MoneyType>("discountAmount",
+            Field<NonNullGraphType<MoneyType>>("discountAmount",
                 "Discount amount",
                 resolve: context => context.Source.DiscountAmount.ToMoney(context.GetCart().Currency));
-            Field<MoneyType>("discountAmountWithTax",
+            Field<NonNullGraphType<MoneyType>>("discountAmountWithTax",
                 "Discount amount with tax",
                 resolve: context => context.Source.DiscountAmountWithTax.ToMoney(context.GetCart().Currency));
-            Field<MoneyType>("discountTotal",
+            Field<NonNullGraphType<MoneyType>>("discountTotal",
                 "Total discount",
                 resolve: context => context.Source.DiscountTotal.ToMoney(context.GetCart().Currency));
-            Field<MoneyType>("discountTotalWithTax",
+            Field<NonNullGraphType<MoneyType>>("discountTotalWithTax",
                 "Total discount with tax",
                 resolve: context => context.Source.DiscountTotalWithTax.ToMoney(context.GetCart().Currency));
-            Field<MoneyType>("extendedPrice",
+            Field<NonNullGraphType<MoneyType>>("extendedPrice",
                 "Extended price",
                 resolve: context => context.Source.ExtendedPrice.ToMoney(context.GetCart().Currency));
-            Field<MoneyType>("extendedPriceWithTax",
+            Field<NonNullGraphType<MoneyType>>("extendedPriceWithTax",
                 "Extended price with tax",
                 resolve: context => context.Source.ExtendedPriceWithTax.ToMoney(context.GetCart().Currency));
-            Field<MoneyType>("listPrice",
+            Field<NonNullGraphType<MoneyType>>("listPrice",
                 "List price",
                 resolve: context => context.Source.ListPrice.ToMoney(context.GetCart().Currency));
-            Field<MoneyType>("listPriceWithTax",
+            Field<NonNullGraphType<MoneyType>>("listPriceWithTax",
                 "List price with tax",
                 resolve: context => context.Source.ListPriceWithTax.ToMoney(context.GetCart().Currency));
-            Field<MoneyType>("placedPrice",
+            Field<NonNullGraphType<MoneyType>>("placedPrice",
                 "Placed price",
                 resolve: context => context.Source.PlacedPrice.ToMoney(context.GetCart().Currency));
-            Field<MoneyType>("placedPriceWithTax",
+            Field<NonNullGraphType<MoneyType>>("placedPriceWithTax",
                 "Placed price with tax",
                 resolve: context => context.Source.PlacedPriceWithTax.ToMoney(context.GetCart().Currency));
-            Field<MoneyType>("salePrice",
+            Field<NonNullGraphType<MoneyType>>("salePrice",
                 "Sale price",
                 resolve: context => context.Source.SalePrice.ToMoney(context.GetCart().Currency));
-            Field<MoneyType>("salePriceWithTax",
+            Field<NonNullGraphType<MoneyType>>("salePriceWithTax",
                 "Sale price with tax",
                 resolve: context => context.Source.SalePriceWithTax.ToMoney(context.GetCart().Currency));
-            Field<MoneyType>("taxTotal",
+            Field<NonNullGraphType<MoneyType>>("taxTotal",
                 "Tax total",
                 resolve: context => context.Source.TaxTotal.ToMoney(context.GetCart().Currency));
 

@@ -83,7 +83,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             };
             AddField(vendorField);
 
-            ExtendableField<ListGraphType<DynamicPropertyValueType>>(
+            ExtendableField<NonNullGraphType<ListGraphType<NonNullGraphType<DynamicPropertyValueType>>>>(
                 "dynamicProperties",
                 "Customer order Shipment dynamic property values",
                 QueryArgumentPresets.GetArgumentForDynamicProperties(),
