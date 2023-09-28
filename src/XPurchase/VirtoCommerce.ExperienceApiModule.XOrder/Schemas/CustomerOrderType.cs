@@ -113,9 +113,9 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 
             ExtendableField<NonNullGraphType<ListGraphType<NonNullGraphType<OrderAddressType>>>>(nameof(CustomerOrder.Addresses),
                 resolve: x => x.Source.Order.Addresses);
-            ExtendableField<NonNullGraphType<ListGraphType<OrderLineItemType>>>(nameof(CustomerOrder.Items),
+            ExtendableField<NonNullGraphType<ListGraphType<NonNullGraphType<OrderLineItemType>>>>(nameof(CustomerOrder.Items),
                 resolve: x => x.Source.Order.Items);
-            ExtendableField<NonNullGraphType<ListGraphType<PaymentInType>>>(nameof(CustomerOrder.InPayments),
+            ExtendableField<NonNullGraphType<ListGraphType<NonNullGraphType<PaymentInType>>>>(nameof(CustomerOrder.InPayments),
                 arguments: new QueryArguments(
                     new QueryArgument<IntGraphType> { Name = "after" },
                     new QueryArgument<IntGraphType> { Name = "first" },

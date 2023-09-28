@@ -68,7 +68,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             };
             AddField(vendorField);
 
-            Field<ListGraphType<PaymentTransactionType>>(nameof(PaymentIn.Transactions), resolve: x => x.Source.Transactions);
+            Field<NonNullGraphType<ListGraphType<NonNullGraphType<PaymentTransactionType>>>>(nameof(PaymentIn.Transactions), resolve: x => x.Source.Transactions);
             //PT-5383: Add additional properties to XOrder types:
             //public IList<Operation> ChildrenOperations);
 
@@ -87,7 +87,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                 }
             );
 
-            ExtendableField<ListGraphType<DynamicPropertyValueType>>(
+            ExtendableField<NonNullGraphType<ListGraphType<NonNullGraphType<DynamicPropertyValueType>>>>(
                 "dynamicProperties",
                 "Customer order Payment dynamic property values",
                 QueryArgumentPresets.GetArgumentForDynamicProperties(),
