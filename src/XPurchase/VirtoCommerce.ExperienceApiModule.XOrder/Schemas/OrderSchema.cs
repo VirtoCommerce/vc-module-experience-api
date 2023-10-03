@@ -315,13 +315,6 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             return cart;
         }
 
-        private async Task CheckCanAccessCartAsync(IResolveFieldContext context, string cartId)
-        {
-            var cart = await GetCartAggregateAsync(cartId);
-
-            await AuthorizeAsync(context, cart.Cart, allowAnonymous: true);
-        }
-
         private async Task AuthorizeAsync(IResolveFieldContext context, object resource, bool allowAnonymous)
         {
             await _userManagerCore.CheckUserState(context.GetCurrentUserId(), allowAnonymous);
