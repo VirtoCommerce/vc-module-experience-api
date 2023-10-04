@@ -24,7 +24,7 @@ using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Settings;
 using VirtoCommerce.XPurchase;
 using VirtoCommerce.XPurchase.Queries;
-using OrderSettings = VirtoCommerce.OrdersModule.Core.ModuleConstants.Settings.General;
+using XOrderSettings = VirtoCommerce.ExperienceApiModule.XOrder.XOrderConstants.Settings.General;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 {
@@ -123,7 +123,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 
                                 // check anonymous access to order create
                                 var cartAggregate = await GetCartAggregateAsync(command.CartId);
-                                var createAnonymousOrderEnabled = cartAggregate.Store.Settings.GetValue<bool>(OrderSettings.CreateAnonymousOrder);
+                                var createAnonymousOrderEnabled = cartAggregate.Store.Settings.GetValue<bool>(XOrderSettings.CreateAnonymousOrder);
                                 await AuthorizeAsync(context, cartAggregate.Cart, allowAnonymous: createAnonymousOrderEnabled);
 
                                 var response = (CustomerOrderAggregate)await _mediator.Send(context.GetArgument(type, _commandName));
