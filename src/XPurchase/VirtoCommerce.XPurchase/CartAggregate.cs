@@ -850,7 +850,7 @@ namespace VirtoCommerce.XPurchase
 
         protected async Task<TaxProvider> GetActiveTaxProviderAsync()
         {
-            if (Store?.Settings?.GetValue<bool>(StoreSetting.TaxCalculationEnabled) == false)
+            if (Store?.Settings?.GetValue<bool>(StoreSetting.TaxCalculationEnabled) != true)
             {
                 return null;
             }
