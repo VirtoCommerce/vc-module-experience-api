@@ -11,7 +11,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder
             {
                 public static SettingDescriptor CreateAnonymousOrder { get; } = new SettingDescriptor
                 {
-                    Name = "XOrder.CreateAnonymousOrder.Enable",
+                    Name = "XOrder.CreateAnonymousOrderEnabled",
                     ValueType = SettingValueType.Boolean,
                     GroupName = "Orders|General",
                     DefaultValue = true
