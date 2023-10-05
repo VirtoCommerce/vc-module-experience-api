@@ -3,10 +3,8 @@ using GraphQL.Types;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
-using VirtoCommerce.ExperienceApiModule.Core.Models;
 using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
 using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.Web.Extensions;
@@ -78,8 +76,6 @@ namespace VirtoCommerce.ExperienceApiModule.Web
             {
                 builder.AddMiddleware(typeof(LoadCartToEvalContextMiddleware));
             });
-
-            services.AddOptions<GraphQLPlaygroundOptions>().Bind(Configuration.GetSection("VirtoCommerce:GraphQLPlayground")).ValidateDataAnnotations();
         }
 
         public void PostInitialize(IApplicationBuilder appBuilder)
@@ -87,8 +83,7 @@ namespace VirtoCommerce.ExperienceApiModule.Web
             // add http for Schema at default url /graphql
             appBuilder.UseGraphQL<ISchema>();
 
-            var playgroundOptions = appBuilder.ApplicationServices.GetRequiredService<IOptions<GraphQLPlaygroundOptions>>().Value;
-            if (playgroundOptions.Enable)
+            if (Configuration.GetValue("VirtoCommerce:GraphQLPlayground:Enable", true))
             {
                 // Use GraphQL Playground at default URL /ui/playground
                 appBuilder.UseGraphQLPlayground();
