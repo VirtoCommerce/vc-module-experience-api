@@ -171,7 +171,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                 resolve: context => context.Source.Cart.Addresses);
 
             // Gifts
-            FieldAsync<ListGraphType<GiftItemType>>("gifts", "Gifts", resolve: async context =>
+            FieldAsync<NonNullGraphType<ListGraphType<NonNullGraphType<GiftItemType>>>>("gifts", "Gifts", resolve: async context =>
             {
                 var availableGifts = await cartAvailMethods.GetAvailableGiftsAsync(context.Source);
                 return availableGifts.Where(x => x.LineItemId != null);
