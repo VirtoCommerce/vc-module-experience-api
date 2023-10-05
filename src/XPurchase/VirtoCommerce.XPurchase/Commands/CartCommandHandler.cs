@@ -7,7 +7,6 @@ using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.CoreModule.Core.Tax;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.DynamicProperties;
-using Address = VirtoCommerce.CartModule.Core.Model.Address;
 
 namespace VirtoCommerce.XPurchase.Commands
 {
@@ -55,7 +54,7 @@ namespace VirtoCommerce.XPurchase.Commands
             cart.Items = new List<LineItem>();
             cart.Shipments = new List<Shipment>();
             cart.Payments = new List<Payment>();
-            cart.Addresses = new List<Address>();
+            cart.Addresses = new List<CartModule.Core.Model.Address>();
             cart.TaxDetails = new List<TaxDetail>();
             cart.Coupons = new List<string>();
             cart.Discounts = new List<Discount>();
