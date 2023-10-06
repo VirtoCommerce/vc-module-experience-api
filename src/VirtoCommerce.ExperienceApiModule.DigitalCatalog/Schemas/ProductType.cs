@@ -178,6 +178,8 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             Field(d => d.IndexedProduct.OuterId, nullable: true).Description("The outer identifier");
 
+            Field(d => d.IndexedProduct.Gtin, nullable: true).Description("Global Trade Item Number");
+
             Field<StringGraphType>(
                 "brandName",
                 description: "Get brandName for product.",
