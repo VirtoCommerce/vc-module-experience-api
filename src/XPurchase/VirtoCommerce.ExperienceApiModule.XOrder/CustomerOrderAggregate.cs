@@ -46,6 +46,12 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder
             Order.Status = status;
         }
 
+        public void TransferOrder(string userId, string userName)
+        {
+            Order.CustomerId = userId;
+            Order.CustomerName = userName;
+        }
+
         public ProcessPaymentRequestResult ProcessOrderPayment(ProcessPaymentRequest request)
         {
             var result = new ProcessPaymentRequestResult();
