@@ -7,16 +7,16 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
     {
         public OrderShipmentPackageType()
         {
-            Field(x => x.Id);
-            Field(x => x.BarCode, true);
-            Field(x => x.PackageType, true);
-            Field(x => x.WeightUnit);
-            Field(x => x.Weight, true);
-            Field(x => x.MeasureUnit);
-            Field(x => x.Height, true);
-            Field(x => x.Length, true);
-            Field(x => x.Width, true);
-            Field<NonNullGraphType<ListGraphType<OrderShipmentItemType>>>(nameof(ShipmentPackage.Items), resolve: x => x.Source.Items);
+            Field(x => x.Id, nullable: false);
+            Field(x => x.BarCode, nullable: true);
+            Field(x => x.PackageType, nullable: true);
+            Field(x => x.WeightUnit, nullable: true);
+            Field(x => x.Weight, nullable: true);
+            Field(x => x.MeasureUnit, nullable: true);
+            Field(x => x.Height, nullable: true);
+            Field(x => x.Length, nullable: true);
+            Field(x => x.Width, nullable: true);
+            Field<NonNullGraphType<ListGraphType<NonNullGraphType<OrderShipmentItemType>>>>(nameof(ShipmentPackage.Items), resolve: x => x.Source.Items);
         }
     }
 }
