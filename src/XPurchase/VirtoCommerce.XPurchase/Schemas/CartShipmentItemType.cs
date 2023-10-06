@@ -7,7 +7,7 @@ namespace VirtoCommerce.XPurchase.Schemas
     {
         public CartShipmentItemType()
         {
-            Field(x => x.Quantity, nullable: true).Description("Quantity");
+            Field(x => x.Quantity, nullable: false).Description("Quantity");
             ExtendableField<LineItemType>("lineItem", resolve: context => context.Source.LineItem);
         }
     }

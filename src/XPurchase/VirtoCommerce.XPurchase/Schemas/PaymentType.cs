@@ -17,46 +17,46 @@ namespace VirtoCommerce.XPurchase.Schemas
     {
         public PaymentType(IMapper mapper, IMemberService memberService, IDataLoaderContextAccessor dataLoader, IDynamicPropertyResolverService dynamicPropertyResolverService)
         {
-            Field(x => x.Id, nullable: true).Description("Payment Id");
+            Field(x => x.Id, nullable: false).Description("Payment Id");
             Field(x => x.OuterId, nullable: true).Description("Value of payment outer id");
             Field(x => x.PaymentGatewayCode, nullable: true).Description("Value of payment gateway code");
             Field(x => x.Purpose, nullable: true);
-            Field<CurrencyType>("currency",
+            Field<NonNullGraphType<CurrencyType>>("currency",
                 "Currency",
                 resolve: context => context.GetCart().Currency);
-            Field<MoneyType>("amount",
+            Field<NonNullGraphType<MoneyType>>("amount",
                 "Amount",
                 resolve: context => context.Source.Amount.ToMoney(context.GetCart().Currency));
             ExtendableField<CartAddressType>("billingAddress",
                 "Billing address",
                 resolve: context => context.Source.BillingAddress);
-            Field<MoneyType>("price",
+            Field<NonNullGraphType<MoneyType>>("price",
                 "Price",
                 resolve: context => context.Source.Price.ToMoney(context.GetCart().Currency));
-            Field<MoneyType>("priceWithTax",
+            Field<NonNullGraphType<MoneyType>>("priceWithTax",
                 "Price with tax",
                 resolve: context => context.Source.PriceWithTax.ToMoney(context.GetCart().Currency));
-            Field<MoneyType>("total",
+            Field<NonNullGraphType<MoneyType>>("total",
                 "Total",
                 resolve: context => context.Source.Total.ToMoney(context.GetCart().Currency));
-            Field<MoneyType>("totalWithTax",
+            Field<NonNullGraphType<MoneyType>>("totalWithTax",
                 "Total with tax",
                 resolve: context => context.Source.TotalWithTax.ToMoney(context.GetCart().Currency));
-            Field<MoneyType>("discountAmount",
+            Field<NonNullGraphType<MoneyType>>("discountAmount",
                 "Discount amount",
                 resolve: context => context.Source.DiscountAmount.ToMoney(context.GetCart().Currency));
-            Field<MoneyType>("discountAmountWithTax",
+            Field<NonNullGraphType<MoneyType>>("discountAmountWithTax",
                 "Discount amount with tax",
                 resolve: context => context.Source.DiscountAmountWithTax.ToMoney(context.GetCart().Currency));
-            Field<MoneyType>("taxTotal",
+            Field<NonNullGraphType<MoneyType>>("taxTotal",
                 "Tax total",
                 resolve: context => context.Source.TaxTotal.ToMoney(context.GetCart().Currency));
-            Field(x => x.TaxPercentRate, nullable: true).Description("Tax percent rate");
+            Field(x => x.TaxPercentRate, nullable: false).Description("Tax percent rate");
             Field(x => x.TaxType, nullable: true).Description("Tax type");
-            Field<ListGraphType<TaxDetailType>>("taxDetails",
+            Field<NonNullGraphType<ListGraphType<NonNullGraphType<TaxDetailType>>>>("taxDetails",
                 "Tax details",
                 resolve: context => context.Source.TaxDetails);
-            Field<ListGraphType<DiscountType>>("discounts",
+            Field< NonNullGraphType<ListGraphType<DiscountType>>>("discounts",
                 "Discounts",
                 resolve: context => context.Source.Discounts);
             Field(x => x.Comment, nullable: true).Description("Text comment");
@@ -72,7 +72,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             };
             AddField(vendorField);
 
-            ExtendableField<ListGraphType<DynamicPropertyValueType>>(
+            ExtendableField<NonNullGraphType<ListGraphType<NonNullGraphType<DynamicPropertyValueType>>>>(
                 "dynamicProperties",
                 "Cart payment dynamic property values",
                 QueryArgumentPresets.GetArgumentForDynamicProperties(),

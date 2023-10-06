@@ -51,7 +51,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                     }
 
                     var includeFields = context.SubFields.Values.GetAllNodesPaths(context).ToArray();
-                    var loader = dataLoader.Context.GetOrAddBatchLoader<string, ExpProduct>("order_lineItems_products", async (ids) =>
+                    var loader = dataLoader.Context.GetOrAddBatchLoader<string, ExpProduct>("cart_gifts_products", async (ids) =>
                     {
                         //Gift is not part of cart, can't use CartAggregate. Getting store and currency from the context.
                         var request = new LoadProductsQuery
