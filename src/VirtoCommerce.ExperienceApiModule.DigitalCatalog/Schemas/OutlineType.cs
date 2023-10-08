@@ -7,7 +7,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
     {
         public OutlineType()
         {
-            Field<ListGraphType<OutlineItemType>>("items",
+            Field<ListGraphType<NonNullGraphType<OutlineItemType>>>("items",
                 "Outline items",
                 resolve: context => context.Source.Items);
         }

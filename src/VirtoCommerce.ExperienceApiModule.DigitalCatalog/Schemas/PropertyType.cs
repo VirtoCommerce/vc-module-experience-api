@@ -20,7 +20,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             Name = "Property";
             Description = "Products attributes.";
 
-            Field(x => x.Id, nullable: true).Description("The unique ID of the product.");
+            Field(x => x.Id, nullable: false).Description("The unique ID of the property.");
 
             Field(x => x.Name, nullable: false).Description("The name of the property.");
 
@@ -30,7 +30,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             Field(x => x.DisplayOrder, nullable: true).Description("The display order of the property.");
 
-            Field<StringGraphType>(
+            Field<NonNullGraphType<StringGraphType>>(
                 "label",
                 resolve: context =>
                 {
@@ -48,19 +48,19 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 });
             //.RootAlias("__object.properties.displayNames");
 
-            Field<StringGraphType>(
+            Field<NonNullGraphType<StringGraphType>>(
                 "type",
                 resolve: context => context.Source.Type.ToString()
             );
 
-            Field<StringGraphType>(
+            Field<NonNullGraphType<StringGraphType>>(
                 "valueType",
                 // since PropertyType is used both for property metadata queries and product/category/catalog queries
                 // to infer "valueType" need to look in ValueType property in case of metadata query or in the first value in case
                 // when the Property object was created dynamically by grouping
                 resolve: context => context.Source.Values.IsNullOrEmpty()
                         ? context.Source.ValueType.ToString()
-                        : context.Source.Values.Select(x => x.ValueType).FirstOrDefault().ToString(),
+                        : context.Source.Values.Select(x => x.ValueType).First().ToString(),
             description: "ValueType of the property.");
 
             Field<PropertyValueGraphType>(

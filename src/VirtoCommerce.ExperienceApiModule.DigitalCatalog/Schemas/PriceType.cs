@@ -8,32 +8,32 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
     {
         public PriceType()
         {
-            Field<MoneyType>("list",
+            Field<NonNullGraphType<MoneyType>>("list",
                 "Price list",
                 resolve: context => context.Source.ListPrice);
-            Field<MoneyType>("listWithTax",
+            Field<NonNullGraphType<MoneyType>>("listWithTax",
                 "Price list with tax",
                 resolve: context => context.Source.ListPriceWithTax);
-            Field<MoneyType>("sale",
+            Field<NonNullGraphType<MoneyType>>("sale",
                 "Sale price",
                 resolve: context => context.Source.SalePrice);
-            Field<MoneyType>("saleWithTax",
+            Field<NonNullGraphType<MoneyType>>("saleWithTax",
                 "Sale price with tax",
                 resolve: context => context.Source.SalePriceWithTax);
-            Field<MoneyType>("actual",
+            Field<NonNullGraphType<MoneyType>>("actual",
                 "Actual price",
                 resolve: context => context.Source.ActualPrice);
-            Field<MoneyType>("actualWithTax",
+            Field<NonNullGraphType<MoneyType>>("actualWithTax",
                 "Actual price with tax",
                 resolve: context => context.Source.ActualPriceWithTax);
-            Field<MoneyType>("discountAmount",
+            Field<NonNullGraphType<MoneyType>>("discountAmount",
                 "Discount amount",
                 resolve: context => context.Source.DiscountAmount);
-            Field<MoneyType>("discountAmountWithTax",
+            Field<NonNullGraphType<MoneyType>>("discountAmountWithTax",
                 "Discount amount with tax",
                 resolve: context => context.Source.DiscountAmountWithTax);
-            Field(d => d.DiscountPercent, nullable: true);
-            Field<StringGraphType>("currency",
+            Field(d => d.DiscountPercent, nullable: false);
+            Field<NonNullGraphType<StringGraphType>>("currency",
                 "Currency",
                 resolve: context => context.Source.Currency.Code);
             Field<DateTimeGraphType>("validFrom",
@@ -48,10 +48,10 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             Field<DateTimeGraphType>("endDate",
                 "End date",
                 resolve: context => context.Source.EndDate);
-            Field<ListGraphType<TierPriceType>>("tierPrices",
+            Field<NonNullGraphType<ListGraphType<NonNullGraphType<TierPriceType>>>>("tierPrices",
                 "Tier prices",
                 resolve: context => context.Source.TierPrices);
-            Field<ListGraphType<CatalogDiscountType>>("discounts",
+            Field<NonNullGraphType<ListGraphType<NonNullGraphType<CatalogDiscountType>>>>("discounts",
                 "Discounts",
                 resolve: context => context.Source.Discounts);
 
