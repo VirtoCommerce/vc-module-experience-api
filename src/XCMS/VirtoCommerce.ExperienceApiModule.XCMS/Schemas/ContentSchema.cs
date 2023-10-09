@@ -28,7 +28,7 @@ namespace VirtoCommerce.ExperienceApiModule.XCMS.Schemas
                     new QueryArgument<StringGraphType> { Name = "cultureName" },
                     new QueryArgument<StringGraphType> { Name = "keyword" }
                 ),
-                Type = GraphTypeExtenstionHelper.GetActualType<ListGraphType<MenuLinkListType>>(),
+                Type = GraphTypeExtenstionHelper.GetActualType<NonNullGraphType<ListGraphType<NonNullGraphType<MenuLinkListType>>>>(),
                 Resolver = new AsyncFieldResolver<object>(async context =>
                 {
                     var result = await _mediator.Send(new GetMenusQuery
