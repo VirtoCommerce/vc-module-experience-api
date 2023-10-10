@@ -5,5 +5,9 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 {
     public class PropertyValueTypeType: EnumerationGraphType<PropertyValueType>
     {
+        public PropertyValueTypeType()
+        {
+            Name = nameof(PropertyValueTypeType);
+        }
     }
 }
