@@ -4,5 +4,9 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
 {
     public class DynamicPropertyValueTypeType: EnumerationGraphType<Platform.Core.DynamicProperties.DynamicPropertyValueType>
     {
+        public DynamicPropertyValueTypeType()
+        {
+            Name = nameof(DynamicPropertyValueTypeType);
+        }
     }
 }
