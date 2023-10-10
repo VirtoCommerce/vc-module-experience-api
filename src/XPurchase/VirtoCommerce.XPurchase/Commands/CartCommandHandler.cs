@@ -3,8 +3,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using VirtoCommerce.CartModule.Core.Model;
+using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.CoreModule.Core.Tax;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.DynamicProperties;
 
 namespace VirtoCommerce.XPurchase.Commands
 {
@@ -55,6 +57,8 @@ namespace VirtoCommerce.XPurchase.Commands
             cart.Addresses = new List<CartModule.Core.Model.Address>();
             cart.TaxDetails = new List<TaxDetail>();
             cart.Coupons = new List<string>();
+            cart.Discounts = new List<Discount>();
+            cart.DynamicProperties = new List<DynamicObjectProperty>();
 
             return CartRepository.GetCartForShoppingCartAsync(cart);
         }
