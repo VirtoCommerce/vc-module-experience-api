@@ -1,0 +1,8 @@
+{
+  "settings": {
+    "XOrder.CreateAnonymousOrderEnabled": {
+      "title": "Allow anonymous users to create orders (XAPI)",
+      "description": "This setting is store level."
+    }
+  }
+}

@@ -9,9 +9,11 @@ using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
 using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.Web.Extensions;
 using VirtoCommerce.ExperienceApiModule.XCMS.Extensions;
+using VirtoCommerce.ExperienceApiModule.XOrder;
 using VirtoCommerce.ExperienceApiModule.XOrder.Extensions;
 using VirtoCommerce.MarketingModule.Core.Model.Promotions;
 using VirtoCommerce.Platform.Core.Modularity;
+using VirtoCommerce.Platform.Core.Settings;
 using VirtoCommerce.PricingModule.Core.Model;
 using VirtoCommerce.TaxModule.Core.Model;
 using VirtoCommerce.XDigitalCatalog.Extensions;
@@ -88,6 +90,11 @@ namespace VirtoCommerce.ExperienceApiModule.Web
                 // Use GraphQL Playground at default URL /ui/playground
                 appBuilder.UseGraphQLPlayground();
             }
+
+            // settings
+            var settingsRegistrar = appBuilder.ApplicationServices.GetRequiredService<ISettingsRegistrar>();
+            settingsRegistrar.RegisterSettings(XOrderConstants.Settings.General.AllSettings, ModuleInfo.Id);
+            settingsRegistrar.RegisterSettingsForType(XOrderConstants.Settings.StoreLevelSettings, nameof(Store));
         }
 
         public void Uninstall()
