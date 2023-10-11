@@ -21,7 +21,10 @@ using VirtoCommerce.OrdersModule.Core.Model;
 using VirtoCommerce.OrdersModule.Core.Services;
 using VirtoCommerce.PaymentModule.Model.Requests;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.Settings;
+using VirtoCommerce.XPurchase;
 using VirtoCommerce.XPurchase.Queries;
+using XOrderSettings = VirtoCommerce.ExperienceApiModule.XOrder.XOrderConstants.Settings.General;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 {
@@ -117,7 +120,12 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                             {
                                 var type = GenericTypeHelper.GetActualType<CreateOrderFromCartCommand>();
                                 var command = context.GetArgument(type, _commandName) as CreateOrderFromCartCommand;
-                                await CheckCanAccessCartAsync(context, command.CartId);
+
+                                // check anonymous access to order create
+                                var cartAggregate = await GetCartAggregateAsync(command.CartId);
+                                var createAnonymousOrderEnabled = cartAggregate.Store.Settings.GetValue<bool>(XOrderSettings.CreateAnonymousOrder);
+                                await AuthorizeAsync(context, cartAggregate.Cart, allowAnonymous: createAnonymousOrderEnabled);
+
                                 var response = (CustomerOrderAggregate)await _mediator.Send(context.GetArgument(type, _commandName));
                                 context.SetExpandedObjectGraph(response);
                                 return response;
@@ -299,12 +307,12 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             await AuthorizeAsync(context, order, allowAnonymous: true);
         }
 
-        private async Task CheckCanAccessCartAsync(IResolveFieldContext context, string cartId)
+        private async Task<CartAggregate> GetCartAggregateAsync(string cartId)
         {
             var cart = await _mediator.Send(new GetCartByIdQuery { CartId = cartId })
                 ?? throw new ArgumentException($"Cart does not exist, ID: '{cartId}'", nameof(cartId));
 
-            await AuthorizeAsync(context, cart.Cart, allowAnonymous: true);
+            return cart;
         }
 
         private async Task AuthorizeAsync(IResolveFieldContext context, object resource, bool allowAnonymous)
