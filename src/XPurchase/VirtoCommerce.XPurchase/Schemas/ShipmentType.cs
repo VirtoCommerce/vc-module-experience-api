@@ -16,7 +16,7 @@ using VirtoCommerce.XPurchase.Services;
 
 namespace VirtoCommerce.XPurchase.Schemas
 {
-    public class ShipmentType : ExtendableGraphType<Shipment>
+    public class ShipmentType : ExtendableAuditableEntityType<Shipment>
     {
         public ShipmentType(IMapper mapper,
             IMemberService memberService,
@@ -24,7 +24,6 @@ namespace VirtoCommerce.XPurchase.Schemas
             IDynamicPropertyResolverService dynamicPropertyResolverService,
             ICartAvailMethodsService availableMethodsService)
         {
-            Field(x => x.Id, nullable: false).Description("Shipment Id");
             Field(x => x.ShipmentMethodCode, nullable: true).Description("Shipment method code");
             Field(x => x.ShipmentMethodOption, nullable: true).Description("Shipment method option");
             Field(x => x.FulfillmentCenterId, nullable: true).Description("Fulfillment center id");

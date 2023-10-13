@@ -33,7 +33,7 @@ using StoreSetting = VirtoCommerce.StoreModule.Core.ModuleConstants.Settings.Gen
 namespace VirtoCommerce.XPurchase
 {
     [DebuggerDisplay("CartId = {Cart.Id}")]
-    public class CartAggregate : Entity, IAggregateRoot, ICloneable
+    public class CartAggregate : AuditableEntity, IAggregateRoot, ICloneable
     {
         private readonly IMarketingPromoEvaluator _marketingEvaluator;
         private readonly IShoppingCartTotalsCalculator _cartTotalsCalculator;
@@ -129,7 +129,8 @@ namespace VirtoCommerce.XPurchase
 
         public virtual CartAggregate GrabCart(ShoppingCart cart, Store store, Member member, Currency currency)
         {
-            Id = cart.Id;
+            UpdateAggregate(cart);
+
             Cart = cart;
             Member = member;
             Currency = currency;
@@ -137,6 +138,17 @@ namespace VirtoCommerce.XPurchase
             Cart.IsAnonymous = member == null;
             Cart.CustomerName = member?.Name ?? "Anonymous";
             Cart.Items ??= new List<LineItem>();
+
+            return this;
+        }
+
+        public virtual CartAggregate UpdateAggregate(ShoppingCart cart)
+        {
+            Id = cart.Id;
+            CreatedBy = cart.CreatedBy;
+            CreatedDate = cart.CreatedDate;
+            ModifiedBy = cart.ModifiedBy;
+            ModifiedDate = cart.ModifiedDate;
 
             return this;
         }

@@ -3,7 +3,7 @@ using VirtoCommerce.ExperienceApiModule.Core.Schemas;
 
 namespace VirtoCommerce.XPurchase.Schemas
 {
-    public class CartShipmentItemType : ExtendableGraphType<ShipmentItem>
+    public class CartShipmentItemType : ExtendableAuditableEntityType<ShipmentItem>
     {
         public CartShipmentItemType()
         {

@@ -13,14 +13,13 @@ using VirtoCommerce.XPurchase.Validators;
 
 namespace VirtoCommerce.XPurchase.Schemas
 {
-    public class CartType : ExtendableGraphType<CartAggregate>
+    public class CartType : ExtendableAuditableEntityType<CartAggregate>
     {
         public CartType(
             ICartAvailMethodsService cartAvailMethods,
             IDynamicPropertyResolverService dynamicPropertyResolverService,
             ICartValidationContextFactory cartValidationContextFactory)
         {
-            Field(x => x.Cart.Id, nullable: false).Description("Shopping cart ID");
             Field(x => x.Cart.Name, nullable: false).Description("Shopping cart name");
             Field(x => x.Cart.Status, nullable: true).Description("Shopping cart status");
             Field(x => x.Cart.StoreId, nullable: false).Description("Shopping cart store ID");

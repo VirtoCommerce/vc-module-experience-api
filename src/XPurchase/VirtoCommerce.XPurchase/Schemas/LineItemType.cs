@@ -20,7 +20,7 @@ using VirtoCommerce.XPurchase.Extensions;
 
 namespace VirtoCommerce.XPurchase.Schemas
 {
-    public class LineItemType : ExtendableGraphType<LineItem>
+    public class LineItemType : ExtendableAuditableEntityType<LineItem>
     {
         public LineItemType(IMediator mediator, IDataLoaderContextAccessor dataLoader, IDynamicPropertyResolverService dynamicPropertyResolverService, IMapper mapper, IMemberService memberService, ICurrencyService currencyService)
         {
@@ -79,9 +79,7 @@ namespace VirtoCommerce.XPurchase.Schemas
 
             Field(x => x.CatalogId, nullable: false).Description("Catalog ID value");
             Field(x => x.CategoryId, nullable: true).Description("Category ID value");
-            Field(x => x.CreatedDate, nullable: false).Description("Line item create date");
             Field(x => x.Height, nullable: true).Description("Height value");
-            Field(x => x.Id, nullable: false).Description("Line item ID");
             Field(x => x.ImageUrl, nullable: true).Description("Value of line item image absolute URL");
             Field(x => x.IsGift, nullable: false).Description("flag of line item is a gift");
             Field(x => x.IsReadOnly, nullable: false).Description("Shows whether this is read-only");

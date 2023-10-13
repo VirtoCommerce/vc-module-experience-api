@@ -13,11 +13,10 @@ using VirtoCommerce.XPurchase.Extensions;
 
 namespace VirtoCommerce.XPurchase.Schemas
 {
-    public class PaymentType : ExtendableGraphType<Payment>
+    public class PaymentType : ExtendableAuditableEntityType<Payment>
     {
         public PaymentType(IMapper mapper, IMemberService memberService, IDataLoaderContextAccessor dataLoader, IDynamicPropertyResolverService dynamicPropertyResolverService)
         {
-            Field(x => x.Id, nullable: false).Description("Payment Id");
             Field(x => x.OuterId, nullable: true).Description("Value of payment outer id");
             Field(x => x.PaymentGatewayCode, nullable: true).Description("Value of payment gateway code");
             Field(x => x.Purpose, nullable: true);

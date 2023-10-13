@@ -6,7 +6,7 @@ using VirtoCommerce.XPurchase.Extensions;
 
 namespace VirtoCommerce.XPurchase.Schemas
 {
-    public class PaymentMethodType : ObjectGraphType<PaymentMethod>
+    public class PaymentMethodType : EntityType<PaymentMethod>
     {
         public PaymentMethodType()
         {

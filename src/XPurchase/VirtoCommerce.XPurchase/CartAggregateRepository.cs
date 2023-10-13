@@ -51,6 +51,7 @@ namespace VirtoCommerce.XPurchase
         {
             await cartAggregate.RecalculateAsync();
             await _shoppingCartService.SaveChangesAsync(new List<ShoppingCart> { cartAggregate.Cart });
+            cartAggregate.UpdateAggregate(cartAggregate.Cart);
         }
 
         public async Task<CartAggregate> GetCartByIdAsync(string cartId, string language = null)
