@@ -53,12 +53,10 @@ namespace VirtoCommerce.XPurchase.Schemas
 
             Field<NonNullGraphType<IntGraphType>>("paymentMethodType",
                 "Value of payment method type",
-                resolve: context => (int)context.Source.PaymentMethodType,
-                deprecationReason: "Use type field");
+                resolve: context => (int)context.Source.PaymentMethodType);
             Field<NonNullGraphType<IntGraphType>>("paymentMethodGroupType",
                 "Value of payment group type",
-                resolve: context => (int)context.Source.PaymentMethodGroupType,
-                deprecationReason: "Use group type field");
+                resolve: context => (int)context.Source.PaymentMethodGroupType);
 
             //PT-5441: Extend the paymentmethod domain model
             //Field<ListGraphType<DiscountType>>("discounts", resolve: context => context.Source.Discounts);
