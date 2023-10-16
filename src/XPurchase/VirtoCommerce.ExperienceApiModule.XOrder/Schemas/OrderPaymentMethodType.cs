@@ -47,10 +47,10 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field<ListGraphType<NonNullGraphType<OrderTaxDetailType>>>(nameof(PaymentMethod.TaxDetails),
                 resolve: x => x.Source.TaxDetails);
 
-            Field<NonNullGraphType<PaymentMethodTypeType>>(nameof(PaymentMethod.PaymentMethodType),
-                resolve: context => context.Source.PaymentMethodType);
-            Field<NonNullGraphType<PaymentMethodGroupTypeType>>(nameof(PaymentMethod.PaymentMethodGroupType),
-                resolve: context => context.Source.PaymentMethodGroupType);
+            Field<NonNullGraphType<IntGraphType>>(nameof(PaymentMethod.PaymentMethodType),
+                resolve: context => (int)context.Source.PaymentMethodType);
+            Field<NonNullGraphType<IntGraphType>>(nameof(PaymentMethod.PaymentMethodGroupType),
+                resolve: context => (int)context.Source.PaymentMethodGroupType);
 
             //PT-5383: Add additional properties to XOrder types:
             //public ICollection<ObjectSettingEntry> Settings);
