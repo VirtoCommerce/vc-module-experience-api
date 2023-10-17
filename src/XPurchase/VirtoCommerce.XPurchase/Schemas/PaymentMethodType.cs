@@ -51,12 +51,12 @@ namespace VirtoCommerce.XPurchase.Schemas
                 "Tax details",
                 resolve: context => context.Source.TaxDetails);
 
-            Field<NonNullGraphType<PaymentMethodTypeType>>("paymentMethodType",
+            Field<NonNullGraphType<StringGraphType>>("paymentMethodType",
                 "Value of payment method type",
-                resolve: context => context.Source.PaymentMethodType);
-            Field<NonNullGraphType<PaymentMethodGroupTypeType>>("paymentMethodGroupType",
+                resolve: context => context.Source.PaymentMethodType.ToString());
+            Field<NonNullGraphType<StringGraphType>>("paymentMethodGroupType",
                 "Value of payment group type",
-                resolve: context => context.Source.PaymentMethodGroupType);
+                resolve: context => context.Source.PaymentMethodGroupType.ToString());
 
             //PT-5441: Extend the paymentmethod domain model
             //Field<ListGraphType<DiscountType>>("discounts", resolve: context => context.Source.Discounts);
