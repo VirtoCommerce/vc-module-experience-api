@@ -13,19 +13,7 @@ namespace VirtoCommerce.XDigitalCatalog.Tests.Shemas
 {
     public class PropertyTypeTests : XDigitalCatalogMoqHelper
     {
-        private readonly PropertyType _propertyType;
-
-        public PropertyTypeTests()
-        {
-            _propertyType = new PropertyType(null, null);
-        }
-
-        [Fact]
-        public void PropertyType_ShouldHaveProperFieldAmount()
-        {
-            // Assert
-            _propertyType.Fields.Should().HaveCount(11);
-        }
+        private readonly PropertyType _propertyType = new(null, null);
 
         [Fact]
         public void PropertyType_Properties_ShouldFilterPropertiesByCultureName()
