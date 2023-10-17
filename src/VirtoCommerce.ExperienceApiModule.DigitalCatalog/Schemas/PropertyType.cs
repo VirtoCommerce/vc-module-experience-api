@@ -70,7 +70,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 description: "ValueType of the property.",
                 deprecationReason: "Use propertyValueType instead.");
 
-            Field<NonNullGraphType<PropertyValueTypeType>>(
+            Field<NonNullGraphType<PropertyValueTypeEnum>>(
                 "propertyValueType",
                 // since PropertyType is used both for property metadata queries and product/category/catalog queries
                 // to infer "valueType" need to look in ValueType property in case of metadata query or in the first value in case
