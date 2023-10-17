@@ -27,7 +27,11 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
                 return context.Source.DisplayNames.FirstOrDefault(x => culture.IsNullOrEmpty() || x.Locale.EqualsInvariant(culture))?.Name;
             });
             Field(x => x.DisplayOrder, nullable: true).Description("The order for the dynamic property to display");
-            Field<NonNullGraphType<DynamicPropertyValueTypeType>>(nameof(DynamicProperty.ValueType),
+            Field<NonNullGraphType<StringGraphType>>(nameof(DynamicProperty.ValueType),
+                "Value type",
+                deprecationReason: "Use dynamicPropertyValueType instead",
+                resolve: context => context.Source.ValueType.ToString());
+            Field<NonNullGraphType<DynamicPropertyValueTypeEnum>>("dynamicPropertyValueType",
                 "Value type",
                 resolve: context => context.Source.ValueType);
             Field<NonNullGraphType<BooleanGraphType>>("isArray", resolve: context => context.Source.IsArray, description: "Is dynamic property value an array");

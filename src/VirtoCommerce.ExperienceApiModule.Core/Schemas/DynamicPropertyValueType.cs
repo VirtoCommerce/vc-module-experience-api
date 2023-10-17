@@ -20,7 +20,10 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
             Field<StringGraphType>("name",
                 "Property name",
                 resolve: context => context.Source.PropertyName);
-            Field<NonNullGraphType<DynamicPropertyValueTypeType>>(nameof(DynamicPropertyObjectValue.ValueType),
+            Field<NonNullGraphType<StringGraphType>>(nameof(DynamicPropertyObjectValue.ValueType),
+                "Value type",
+                resolve: context => context.Source.ValueType.ToString());
+            Field<NonNullGraphType<DynamicPropertyValueTypeEnum>>("dynamicPropertyValueType",
                 "Value type",
                 resolve: context => context.Source.ValueType);
             Field<DynamicPropertyValueGraphType>(nameof(DynamicPropertyObjectValue.Value),
