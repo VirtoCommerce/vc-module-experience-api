@@ -15,13 +15,16 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Infrastructure
     {
         private readonly IEnumerable<ISchemaBuilder> _schemaBuilders;
         private readonly IServiceProvider _services;
+        private readonly ISchemaFilter _schemaFilter;
 
         private readonly Lazy<ISchema> _schema;
 
-        public SchemaFactory(IEnumerable<ISchemaBuilder> schemaBuilders, IServiceProvider services)
+        public SchemaFactory(IEnumerable<ISchemaBuilder> schemaBuilders, IServiceProvider services, ISchemaFilter schemaFilter)
         {
             _schemaBuilders = schemaBuilders;
             _services = services;
+            _schemaFilter = schemaFilter;
+
             _schema = new Lazy<ISchema>(GetSchema());
         }
 
@@ -62,7 +65,8 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Infrastructure
             var schema = new Schema(_services)
             {
                 Query = new ObjectGraphType { Name = "Query" },
-                Mutation = new ObjectGraphType { Name = "Mutations" }
+                Mutation = new ObjectGraphType { Name = "Mutations" },
+                Filter = _schemaFilter,
             };
 
             foreach (var builder in _schemaBuilders)
