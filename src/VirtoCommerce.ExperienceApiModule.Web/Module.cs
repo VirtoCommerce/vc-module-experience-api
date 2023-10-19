@@ -1,10 +1,13 @@
+using GraphQL.Introspection;
 using GraphQL.Server;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
+using VirtoCommerce.ExperienceApiModule.Core.Models;
 using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
 using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.Web.Extensions;
@@ -51,6 +54,7 @@ namespace VirtoCommerce.ExperienceApiModule.Web
             //Register custom GraphQL dependencies
             services.AddPermissionAuthorization();
 
+            services.AddSingleton<ISchemaFilter, CustomSchemaFilter>();
             services.AddSingleton<ISchema, SchemaFactory>();
 
             //Register all xApi boundaries
@@ -78,21 +82,26 @@ namespace VirtoCommerce.ExperienceApiModule.Web
             {
                 builder.AddMiddleware(typeof(LoadCartToEvalContextMiddleware));
             });
+
+            services.Configure<GraphQLPlaygroundOptions>(Configuration.GetSection("VirtoCommerce:GraphQLPlayground"));
         }
 
         public void PostInitialize(IApplicationBuilder appBuilder)
         {
+            var serviceProvider = appBuilder.ApplicationServices;
+
             // add http for Schema at default url /graphql
             appBuilder.UseGraphQL<ISchema>();
 
-            if (Configuration.GetValue("VirtoCommerce:GraphQLPlayground:Enable", true))
+            var playgroundOptions = serviceProvider.GetRequiredService<IOptions<GraphQLPlaygroundOptions>>().Value;
+            if (playgroundOptions.Enable)
             {
                 // Use GraphQL Playground at default URL /ui/playground
                 appBuilder.UseGraphQLPlayground();
             }
 
             // settings
-            var settingsRegistrar = appBuilder.ApplicationServices.GetRequiredService<ISettingsRegistrar>();
+            var settingsRegistrar = serviceProvider.GetRequiredService<ISettingsRegistrar>();
             settingsRegistrar.RegisterSettings(XOrderConstants.Settings.General.AllSettings, ModuleInfo.Id);
             settingsRegistrar.RegisterSettingsForType(XOrderConstants.Settings.StoreLevelSettings, nameof(Store));
         }
