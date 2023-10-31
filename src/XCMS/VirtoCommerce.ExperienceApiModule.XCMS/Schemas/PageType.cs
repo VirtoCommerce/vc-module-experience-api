@@ -6,8 +6,8 @@ namespace VirtoCommerce.ExperienceApiModule.XCMS.Schemas
     {
         public PageType()
         {
-            Field(x => x.Name, nullable: true).Description("Page title");
-            Field(x => x.RelativeUrl, nullable: true).Description("Page relative url");
+            Field(x => x.Name, nullable: false).Description("Page title");
+            Field(x => x.RelativeUrl, nullable: false).Description("Page relative url");
         }
     }
 }

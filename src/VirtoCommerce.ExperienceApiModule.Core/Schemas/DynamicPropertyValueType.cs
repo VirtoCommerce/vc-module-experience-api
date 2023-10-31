@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using GraphQL.Types;
 using MediatR;
@@ -24,6 +23,9 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
             Field<NonNullGraphType<StringGraphType>>(nameof(DynamicPropertyObjectValue.ValueType),
                 "Value type",
                 resolve: context => context.Source.ValueType.ToString());
+            Field<NonNullGraphType<DynamicPropertyValueTypeEnum>>("dynamicPropertyValueType",
+                "Value type",
+                resolve: context => context.Source.ValueType);
             Field<DynamicPropertyValueGraphType>(nameof(DynamicPropertyObjectValue.Value),
                 "Property value",
                 resolve: context => context.Source.Value);

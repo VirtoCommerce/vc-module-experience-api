@@ -10,8 +10,8 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
     {
         public DictionaryItemType()
         {
-            Field(x => x.Id).Description("Id");
-            Field(x => x.Name).Description("Name");
+            Field(x => x.Id, nullable: false).Description("Id");
+            Field(x => x.Name, nullable: false).Description("Name");
             Field<StringGraphType>("label",
                 "Localized dictionary item value",
                 resolve: context =>
