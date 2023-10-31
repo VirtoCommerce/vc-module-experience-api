@@ -25,6 +25,7 @@ namespace VirtoCommerce.XPurchase
         public Optional<string> RegionName { get; set; }
         public Optional<string> Zip { get; set; }
         public Optional<string> OuterId { get; set; }
+        public Optional<string> Description { get; set; }
         public Optional<int> AddressType { get; set; }
 
         public Address MapTo(Address address)
@@ -122,6 +123,11 @@ namespace VirtoCommerce.XPurchase
             if (OuterId?.IsSpecified == true)
             {
                 address.OuterId = OuterId.Value;
+            }
+
+            if (Description?.IsSpecified == true)
+            {
+                address.Description = Description.Value;
             }
 
             if (AddressType?.IsSpecified == true)
