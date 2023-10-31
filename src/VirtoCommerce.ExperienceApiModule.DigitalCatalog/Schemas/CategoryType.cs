@@ -7,6 +7,7 @@ using GraphQL.DataLoader;
 using GraphQL.Types;
 using MediatR;
 using VirtoCommerce.CatalogModule.Core.Model;
+using VirtoCommerce.CoreModule.Core.Outlines;
 using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
@@ -27,8 +28,8 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             Field(x => x.Category.ImgSrc, nullable: true).Description("The category image.");
             Field(x => x.Category.Code, nullable: false).Description("SKU of category.");
             Field(x => x.Category.Name, nullable: false).Description("Name of category.");
-            Field(x => x.Level, nullable: true).Description(@"Level in hierarchy");
-            Field(x => x.Category.Priority).Description(@"The category priority.");
+            Field(x => x.Level, nullable: false).Description(@"Level in hierarchy");
+            Field(x => x.Category.Priority, nullable: false).Description(@"The category priority.");
 
             FieldAsync<StringGraphType>("outline", resolve: async context =>
              {
@@ -62,7 +63,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             Field(x => x.Category.Path, nullable: true).Description("Category path in to the requested catalog  (all parent categories names concatenated. E.g. (parent1/parent2))");
 
-            Field<SeoInfoType>("seoInfo", resolve: context =>
+            Field<NonNullGraphType<SeoInfoType>>("seoInfo", resolve: context =>
             {
                 var source = context.Source;
                 var storeId = context.GetArgumentOrValue<string>("storeId");
@@ -78,7 +79,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 return seoInfo ?? SeoInfosExtensions.GetFallbackSeoInfo(source.Id, source.Category.Name, cultureName);
             }, description: "Request related SEO info");
 
-            Field<ListGraphType<CategoryDescriptionType>>("descriptions",
+            Field<NonNullGraphType<ListGraphType<NonNullGraphType<CategoryDescriptionType>>>>("descriptions",
                   arguments: new QueryArguments(new QueryArgument<StringGraphType> { Name = "type" }),
                   resolve: context =>
                   {
@@ -122,16 +123,16 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                     : new DataLoaderResult<ExpCategory>(Task.FromResult<ExpCategory>(null));
             });
 
-            Field<BooleanGraphType>("hasParent",
+            Field<NonNullGraphType<BooleanGraphType>>("hasParent",
                 "Have a parent",
                 resolve: context => TryGetCategoryParentId(context, out _));
-            Field<ListGraphType<OutlineType>>("outlines",
+            Field<NonNullGraphType<ListGraphType<NonNullGraphType<OutlineType>>>>("outlines",
                 "Outlines",
-                resolve: context => context.Source.Category.Outlines);
-            Field<ListGraphType<ImageType>>("images",
+                resolve: context => context.Source.Category.Outlines ?? Array.Empty<Outline>());
+            Field<NonNullGraphType<ListGraphType<NonNullGraphType<ImageType>>>>("images",
                 "Images",
-                resolve: context => context.Source.Category.Images);
-            Field<ListGraphType<BreadcrumbType>>("breadcrumbs",
+                resolve: context => context.Source.Category.Images ?? Array.Empty<Image>());
+            Field<NonNullGraphType<ListGraphType<NonNullGraphType<BreadcrumbType>>>>("breadcrumbs",
                 "Breadcrumbs",
                 resolve: context =>
             {
@@ -143,7 +144,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             });
 
-            ExtendableField<ListGraphType<PropertyType>>("properties",
+            ExtendableField<NonNullGraphType<ListGraphType<NonNullGraphType<PropertyType>>>>("properties",
                 arguments: new QueryArguments(new QueryArgument<ListGraphType<StringGraphType>> { Name = "names" }),
                 resolve: context =>
             {
@@ -157,9 +158,9 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 return result;
             });
 
-            Field<ListGraphType<CategoryType>>(
+            Field<NonNullGraphType<ListGraphType<NonNullGraphType<CategoryType>>>>(
                 nameof(ExpCategory.ChildCategories),
-                resolve: context => context.Source.ChildCategories);
+                resolve: context => context.Source.ChildCategories ?? Array.Empty<ExpCategory>());
         }
 
         protected virtual bool TryGetCategoryParentId(IResolveFieldContext<ExpCategory> context, out string parentId)
