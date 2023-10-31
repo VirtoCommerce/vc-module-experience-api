@@ -16,9 +16,9 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
     {
         public DynamicPropertyType(IMediator mediator)
         {
-            Field(x => x.Id).Description("Id");
+            Field(x => x.Id, nullable: false).Description("Id");
             Field<NonNullGraphType<StringGraphType>>("Name", resolve: context => context.Source.Name);
-            Field(x => x.ObjectType).Description("Object type");
+            Field(x => x.ObjectType, nullable: false).Description("Object type");
             Field<StringGraphType>("label",
                 "Localized property name",
                 resolve: context =>
@@ -29,11 +29,15 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
             Field(x => x.DisplayOrder, nullable: true).Description("The order for the dynamic property to display");
             Field<NonNullGraphType<StringGraphType>>(nameof(DynamicProperty.ValueType),
                 "Value type",
+                deprecationReason: "Use dynamicPropertyValueType instead",
                 resolve: context => context.Source.ValueType.ToString());
-            Field<BooleanGraphType>("isArray", resolve: context => context.Source.IsArray, description: "Is dynamic property value an array");
-            Field<BooleanGraphType>("isDictionary", resolve: context => context.Source.IsDictionary, description: "Is dynamic property value a dictionary");
-            Field<BooleanGraphType>("isMultilingual", resolve: context => context.Source.IsMultilingual, description: "Is dynamic property value multilingual");
-            Field<BooleanGraphType>("isRequired", resolve: context => context.Source.IsRequired, description: "Is dynamic property value required");
+            Field<NonNullGraphType<DynamicPropertyValueTypeEnum>>("dynamicPropertyValueType",
+                "Value type",
+                resolve: context => context.Source.ValueType);
+            Field<NonNullGraphType<BooleanGraphType>>("isArray", resolve: context => context.Source.IsArray, description: "Is dynamic property value an array");
+            Field<NonNullGraphType<BooleanGraphType>>("isDictionary", resolve: context => context.Source.IsDictionary, description: "Is dynamic property value a dictionary");
+            Field<NonNullGraphType<BooleanGraphType>>("isMultilingual", resolve: context => context.Source.IsMultilingual, description: "Is dynamic property value multilingual");
+            Field<NonNullGraphType<BooleanGraphType>>("isRequired", resolve: context => context.Source.IsRequired, description: "Is dynamic property value required");
 
             Connection<DictionaryItemType>()
               .Name("dictionaryItems")
