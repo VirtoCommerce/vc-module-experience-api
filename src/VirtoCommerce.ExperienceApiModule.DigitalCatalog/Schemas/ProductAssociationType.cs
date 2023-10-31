@@ -21,12 +21,12 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             Name = "ProductAssociation";
             Description = "product association.";
 
-            Field(d => d.Type, nullable: true);
-            Field(d => d.Priority, nullable: true);
+            Field(d => d.Type, nullable: false);
+            Field(d => d.Priority, nullable: false);
             Field("Quantity", x => x.Quantity, nullable: true, type: typeof(IntGraphType));
             Field(d => d.AssociatedObjectId, nullable: true);
             Field(d => d.AssociatedObjectType, nullable: true);
-            Field<ListGraphType<StringGraphType>>("tags", resolve: context => context.Source.Tags?.ToList() ?? new List<string>());
+            Field<NonNullGraphType<ListGraphType<NonNullGraphType<StringGraphType>>>>("tags", resolve: context => context.Source.Tags?.ToList() ?? new List<string>());
 
             var productField = new FieldType
             {

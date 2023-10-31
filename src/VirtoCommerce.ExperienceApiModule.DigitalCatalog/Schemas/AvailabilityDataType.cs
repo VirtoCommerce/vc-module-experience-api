@@ -10,25 +10,25 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             Name = "AvailabilityData";
 
             Field(x => x.AvailableQuantity, nullable: false).Description("Available quantity");
-            Field<BooleanGraphType>("IsBuyable",
+            Field<NonNullGraphType<BooleanGraphType>>("IsBuyable",
                 "Is buyable",
                 resolve: context => context.Source.IsBuyable);
-            Field<BooleanGraphType>("IsAvailable",
+            Field<NonNullGraphType<BooleanGraphType>>("IsAvailable",
                 "Is available",
                 resolve: context => context.Source.IsAvailable);
-            Field<BooleanGraphType>("IsInStock",
+            Field<NonNullGraphType<BooleanGraphType>>("IsInStock",
                 "Is in stock",
                 resolve: context => context.Source.IsInStock);
-            Field<BooleanGraphType>("IsActive",
+            Field<NonNullGraphType<BooleanGraphType>>("IsActive",
                 "Is active",
                 resolve: context => context.Source.IsActive);
-            Field<BooleanGraphType>("IsTrackInventory",
+            Field<NonNullGraphType<BooleanGraphType>>("IsTrackInventory",
                 "Is track inventory",
                 resolve: context => context.Source.IsTrackInventory);
-            ExtendableField<ListGraphType<InventoryInfoType>>("inventories",
+            ExtendableField<NonNullGraphType<ListGraphType<NonNullGraphType<InventoryInfoType>>>>("inventories",
                 "Inventories",
                 resolve: context => context.Source.InventoryAll);
-            Field<BooleanGraphType>("IsEstimated",
+            Field<NonNullGraphType<BooleanGraphType>>("IsEstimated",
                "Is estimated",
                resolve: context => context.Source.IsEstimated);
         }

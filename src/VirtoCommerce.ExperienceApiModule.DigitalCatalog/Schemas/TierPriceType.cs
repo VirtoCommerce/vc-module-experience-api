@@ -8,13 +8,13 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
     {
         public TierPriceType()
         {
-            Field<MoneyType>("price",
+            Field<NonNullGraphType<MoneyType>>("price",
                 "Price",
                 resolve: context => context.Source.Price);
-            Field<MoneyType>("priceWithTax",
+            Field<NonNullGraphType<MoneyType>>("priceWithTax",
                 "Price with tax",
                 resolve: context => context.Source.PriceWithTax);
-            Field<LongGraphType>("quantity",
+            Field<NonNullGraphType<LongGraphType>>("quantity",
                 "Quantity",
                 resolve: context => context.Source.Quantity);
         }
