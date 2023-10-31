@@ -34,7 +34,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
             _ = schema.Query.AddField(new FieldType
             {
                 Name = "countries",
-                Type = GraphTypeExtenstionHelper.GetActualType<ListGraphType<CountryType>>(),
+                Type = GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<ListGraphType<NonNullGraphType<CountryType>>>>(),
                 Resolver = new AsyncFieldResolver<object>(async context =>
                 {
                     var result = await _mediator.Send(new GetCountriesQuery());
@@ -59,7 +59,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
             {
                 Name = "regions",
                 Arguments = new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "countryId" }),
-                Type = GraphTypeExtenstionHelper.GetActualType<ListGraphType<CountryRegionType>>(),
+                Type = GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<ListGraphType<NonNullGraphType<CountryRegionType>>>>(),
                 Resolver = new AsyncFieldResolver<object>(async context =>
                 {
                     var result = await _mediator.Send(new GetRegionsQuery
