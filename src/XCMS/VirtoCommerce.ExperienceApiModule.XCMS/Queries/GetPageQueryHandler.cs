@@ -29,8 +29,8 @@ namespace VirtoCommerce.ExperienceApiModule.XCMS.Queries
             var result = await _searchContentService.SearchContentAsync(criteria);
             var pages = result.Results.Select(x => new PageItem
             {
-                Name = x.Name,
-                RelativeUrl = x.RelativeUrl
+                Name = x.DisplayName,
+                RelativeUrl = x.Permalink
             });
             return new GetPageResponse { Pages = pages, TotalCount = result.TotalCount };
         }
