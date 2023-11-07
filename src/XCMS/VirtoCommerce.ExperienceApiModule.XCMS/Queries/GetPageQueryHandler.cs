@@ -30,7 +30,7 @@ namespace VirtoCommerce.ExperienceApiModule.XCMS.Queries
             var pages = result.Results.Select(x => new PageItem
             {
                 Name = x.DisplayName,
-                RelativeUrl = x.Permalink
+                RelativeUrl = string.IsNullOrEmpty(x.Permalink) ? x.RelativeUrl : x.Permalink
             });
             return new GetPageResponse { Pages = pages, TotalCount = result.TotalCount };
         }
