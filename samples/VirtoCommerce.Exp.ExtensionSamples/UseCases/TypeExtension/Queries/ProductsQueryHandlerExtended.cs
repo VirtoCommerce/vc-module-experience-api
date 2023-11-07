@@ -1,9 +1,10 @@
-using System.Threading;
-using System.Threading.Tasks;
 using AutoMapper;
 using VirtoCommerce.CatalogModule.Core.Search;
+using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
+using VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index;
 using VirtoCommerce.SearchModule.Core.Services;
+using VirtoCommerce.StoreModule.Core.Model;
 using VirtoCommerce.StoreModule.Core.Services;
 using VirtoCommerce.XDigitalCatalog.Queries;
 
@@ -16,11 +17,16 @@ namespace VirtoCommerce.Exp.ExtensionSamples.UseCases.TypeExtension.Queries
         {
         }
 
-        public override Task<SearchProductResponse> Handle(SearchProductQuery request, CancellationToken cancellationToken)
+        protected override IndexSearchRequestBuilder GetIndexedSearchRequestBuilder(SearchProductQuery request, Store store, Currency currency)
         {
-            var request2 = request as SearchProductQueryExtended;
+            var builder = base.GetIndexedSearchRequestBuilder(request, store, currency);
 
-            return base.Handle(request, cancellationToken);
+            if (request is SearchProductQueryExtended)
+            {
+                // extract search criteria by calling builder.Build() and modify it
+            }
+
+            return builder;
         }
     }
 }
