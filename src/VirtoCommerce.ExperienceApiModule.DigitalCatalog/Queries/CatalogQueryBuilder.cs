@@ -18,8 +18,8 @@ public abstract class CatalogQueryBuilder<TQuery, TResult, TResultGraphType>
     where TQuery : CatalogQueryBase<TResult>
     where TResultGraphType : IGraphType
 {
-    private readonly IStoreService _storeService;
-    private readonly ICurrencyService _currencyService;
+    protected readonly IStoreService _storeService;
+    protected readonly ICurrencyService _currencyService;
 
     protected CatalogQueryBuilder(
         IMediator mediator,
@@ -32,7 +32,6 @@ public abstract class CatalogQueryBuilder<TQuery, TResult, TResultGraphType>
         _currencyService = currencyService;
     }
 
-
     protected override async Task BeforeMediatorSend(IResolveFieldContext<object> context, TQuery request)
     {
         await base.BeforeMediatorSend(context, request);
@@ -44,6 +43,7 @@ public abstract class CatalogQueryBuilder<TQuery, TResult, TResultGraphType>
             var store = await _storeService.GetByIdAsync(request.StoreId);
             request.Store = store;
             context.UserContext["store"] = store;
+            context.UserContext["catalog"] = store.Catalog;
         }
 
         // PT-1606: Need to ensure there is no alternative way to access original request arguments in sub selection

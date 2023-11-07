@@ -13,6 +13,7 @@ using VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.SearchModule.Core.Model;
 using VirtoCommerce.SearchModule.Core.Services;
+using VirtoCommerce.StoreModule.Core.Model;
 using VirtoCommerce.StoreModule.Core.Services;
 using VirtoCommerce.XDigitalCatalog.Extensions;
 using VirtoCommerce.XDigitalCatalog.Facets;
@@ -29,13 +30,13 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
         private readonly ISearchPhraseParser _phraseParser;
 
         public SearchProductQueryHandler(
-            ISearchProvider searchProvider
-            , IMapper mapper
-            , IStoreCurrencyResolver storeCurrencyResolver
-            , IStoreService storeService
-            , IGenericPipelineLauncher pipeline
-            , IAggregationConverter aggregationConverter
-            , ISearchPhraseParser phraseParser)
+            ISearchProvider searchProvider,
+            IMapper mapper,
+            IStoreCurrencyResolver storeCurrencyResolver,
+            IStoreService storeService,
+            IGenericPipelineLauncher pipeline,
+            IAggregationConverter aggregationConverter,
+            ISearchPhraseParser phraseParser)
         {
             _searchProvider = searchProvider;
             _mapper = mapper;
@@ -59,21 +60,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             var store = await _storeService.GetByIdAsync(request.StoreId);
             var responseGroup = EnumUtility.SafeParse(request.GetResponseGroup(), ExpProductResponseGroup.None);
 
-            var builder = new IndexSearchRequestBuilder()
-                                            .WithUserId(request.UserId)
-                                            .WithCurrency(currency.Code)
-                                            .WithFuzzy(request.Fuzzy, request.FuzzyLevel)
-                                            .ParseFilters(_phraseParser, request.Filter)
-                                            .WithSearchPhrase(request.Query)
-                                            .WithPaging(request.Skip, request.Take)
-                                            .AddObjectIds(request.ObjectIds)
-                                            .AddSorting(request.Sort)
-                                            .WithIncludeFields(IndexFieldsMapper.MapToIndexIncludes(request.IncludeFields).ToArray());
-
-            if (request.ObjectIds.IsNullOrEmpty())
-            {
-                AddDefaultTerms(builder, store.Catalog);
-            }
+            var builder = GetIndexedSearchRequestBuilder(request, store, currency);
 
             var criteria = new ProductIndexedSearchCriteria
             {
@@ -121,6 +108,27 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             await _pipeline.Execute(result);
 
             return result;
+        }
+
+        protected virtual IndexSearchRequestBuilder GetIndexedSearchRequestBuilder(SearchProductQuery request, Store store, CoreModule.Core.Currency.Currency currency)
+        {
+            var builder = new IndexSearchRequestBuilder()
+                                            .WithUserId(request.UserId)
+                                            .WithCurrency(currency.Code)
+                                            .WithFuzzy(request.Fuzzy, request.FuzzyLevel)
+                                            .ParseFilters(_phraseParser, request.Filter)
+                                            .WithSearchPhrase(request.Query)
+                                            .WithPaging(request.Skip, request.Take)
+                                            .AddObjectIds(request.ObjectIds)
+                                            .AddSorting(request.Sort)
+                                            .WithIncludeFields(IndexFieldsMapper.MapToIndexIncludes(request.IncludeFields).ToArray());
+
+            if (request.ObjectIds.IsNullOrEmpty())
+            {
+                AddDefaultTerms(builder, store.Catalog);
+            }
+
+            return builder;
         }
 
         protected virtual void ApplyOutlineCriteria(ProductIndexedSearchCriteria criteria, SearchRequest searchRequest)

@@ -1,4 +1,4 @@
-using AutoMapper;
+using GraphQL;
 using GraphQL.Server;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -61,6 +61,9 @@ namespace VirtoCommerce.Exp.ExtensionSamples
             //Domain types overrides
             AbstractTypeFactory<ExpProduct>.OverrideType<ExpProduct, ExpProduct2>();
 
+            // Override products query
+            services.OverrideQueryType<SearchProductQuery, SearchProductQueryExtended>().WithQueryHandler<ProductsQueryHandlerExtended>();
+
             services.AddAutoMapper(typeof(XExtensionAnchor));
             services.AddMediatR(typeof(XExtensionAnchor));
             #endregion
@@ -91,7 +94,7 @@ namespace VirtoCommerce.Exp.ExtensionSamples
             #region Extension scenarios
             #region UseCase Validators: Extend validation logic / replace validators by custom ones
             // Example: replace cart validator
-            AbstractTypeFactory<CartValidator>.OverrideType<CartValidator, CartValidator2>(); 
+            AbstractTypeFactory<CartValidator>.OverrideType<CartValidator, CartValidator2>();
             #endregion
             #endregion
         }
