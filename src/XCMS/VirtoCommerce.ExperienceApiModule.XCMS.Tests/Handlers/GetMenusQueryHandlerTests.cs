@@ -20,22 +20,29 @@ namespace VirtoCommerce.ExperienceApiModule.XCMS.Tests.Handlers
             // Arrange
             var menus = new List<MenuLinkList>
             {
-                new MenuLinkList
+                new()
                 {
                     Name = "MainMenu",
                     Language = "en-US",
                 },
-                new MenuLinkList
+                new()
                 {
                     Name = "SubMenu",
                     Language = "ru-RU",
-                }
+                },
+            };
+            var menusSearchResult = new MenuLinkListSearchResult
+            {
+                Results = menus,
             };
 
-            var menuServiceMock = new Mock<IMenuService>();
+            var menuServiceMock = new Mock<IMenuLinkListSearchService>();
             menuServiceMock
-                .Setup(x => x.GetListsByStoreIdAsync(It.Is<string>(x => x == "Store")))
-                .ReturnsAsync(menus);
+                .Setup(x => x.SearchAsync(It.Is<MenuLinkListSearchCriteria>(c => c.Skip == 0 && c.StoreId == "Store"), It.IsAny<bool>()))
+                .ReturnsAsync(menusSearchResult);
+            menuServiceMock
+                .Setup(x => x.SearchAsync(It.Is<MenuLinkListSearchCriteria>(c => c.Skip > 0 || c.StoreId != "Store"), It.IsAny<bool>()))
+                .ReturnsAsync(new MenuLinkListSearchResult());
 
             var handler = new GetMenusQueryHandler(menuServiceMock.Object);
 

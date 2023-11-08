@@ -11,9 +11,9 @@ namespace VirtoCommerce.ExperienceApiModule.XCMS.Queries
 {
     public class GetMenuQueryHandler : IQueryHandler<GetMenuQuery, GetMenuResponse>
     {
-        private readonly IMenuService _menuService;
+        private readonly IMenuLinkListSearchService _menuService;
 
-        public GetMenuQueryHandler(IMenuService menuService)
+        public GetMenuQueryHandler(IMenuLinkListSearchService menuService)
         {
             _menuService = menuService;
         }
@@ -21,7 +21,11 @@ namespace VirtoCommerce.ExperienceApiModule.XCMS.Queries
         public async Task<GetMenuResponse> Handle(GetMenuQuery request, CancellationToken cancellationToken)
         {
             var result = new GetMenuResponse();
-            var menuLinkLists = (await _menuService.GetListsByStoreIdAsync(request.StoreId)).ToList();
+
+            var criteria = AbstractTypeFactory<MenuLinkListSearchCriteria>.TryCreateInstance();
+            criteria.StoreId =  request.StoreId;
+
+            var menuLinkLists = await _menuService.SearchAllAsync(criteria);
 
             var menuLinkList = GetMenuLinkList(menuLinkLists, request.CultureName, request.Name);
 
