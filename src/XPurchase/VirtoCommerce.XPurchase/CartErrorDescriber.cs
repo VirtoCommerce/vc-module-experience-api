@@ -95,31 +95,31 @@ namespace VirtoCommerce.XPurchase
 
         public static CartValidationError ProductUnavailableError(IEntity entity)
         {
-            var result = new CartValidationError(entity, "The product is not longer available for purchase", "CART_PRODUCT_UNAVAILABLE");
+            var result = new CartValidationError(entity, "The product is no longer available for purchase", "CART_PRODUCT_UNAVAILABLE");
             return result;
         }
 
-        public static CartValidationError ProductUnavailableError(string type, string sku)
+        public static CartValidationError ProductUnavailableError(string type, string id)
         {
-            var result = new CartValidationError(type, sku, $"Product with SKU {sku} was not added to cart. The product is not longer available for purchase.", "CART_PRODUCT_UNAVAILABLE");
+            var result = new CartValidationError(type, id, $"Product with ID {id} was not added to cart. The product is not longer available for purchase.", "CART_PRODUCT_UNAVAILABLE");
             return result;
         }
 
-        public static CartValidationError ProductInactiveError(string type, string sku)
+        public static CartValidationError ProductInactiveError(string type, string id)
         {
-            var result = new CartValidationError(type, sku, $"Product with SKU {sku} was not added to cart. The product is inactive.", "CART_PRODUCT_INACTIVE");
+            var result = new CartValidationError(type, id, $"Product with ID {id} was not added to cart. The product is inactive.", "CART_PRODUCT_INACTIVE");
             return result;
         }
 
-        public static CartValidationError ProductNoPriceError(string type, string sku)
+        public static CartValidationError ProductNoPriceError(string type, string id)
         {
-            var result = new CartValidationError(type, sku, $"Product with SKU {sku} was not added to cart. Price is invalid.", "PRODUCT_PRICE_INVALID");
+            var result = new CartValidationError(type, id, $"Product with ID {id} was not added to cart. Price is invalid.", "PRODUCT_PRICE_INVALID");
             return result;
         }
 
-        public static CartValidationError ProductAvailableQuantityError(string type, string sku, int qty, long availableQty)
+        public static CartValidationError ProductAvailableQuantityError(string type, string id, int qty, long availableQty)
         {
-            var result = new CartValidationError(type, sku, $"Product with SKU {sku} was not added to cart. Maximum available qunantity is {availableQty}.", "PRODUCT_FFC_QTY");
+            var result = new CartValidationError(type, id, $"Product with Id {id} was not added to cart. Maximum available quantity is {availableQty}.", "PRODUCT_FFC_QTY");
             result.FormattedMessagePlaceholderValues = new Dictionary<string, object>
             {
                 ["qty"] = qty,
@@ -153,9 +153,9 @@ namespace VirtoCommerce.XPurchase
             return result;
         }
 
-        public static CartValidationError ProductMinQuantityError(string type, string code, int qty, int minQty)
+        public static CartValidationError ProductMinQuantityError(string type, string id, int qty, int minQty)
         {
-            var result = new CartValidationError(type, code, $"Product {code} quantity {qty} is less than minumum {minQty}", "PRODUCT_MIN_QTY");
+            var result = new CartValidationError(type, id, $"Product {id} quantity {qty} is less than minumum {minQty}", "PRODUCT_MIN_QTY");
             result.FormattedMessagePlaceholderValues = new Dictionary<string, object>
             {
                 ["qty"] = qty,
@@ -165,9 +165,9 @@ namespace VirtoCommerce.XPurchase
             return result;
         }
 
-        public static CartValidationError ProductMaxQuantityError(string type, string code, int qty, int maxQty)
+        public static CartValidationError ProductMaxQuantityError(string type, string id, int qty, int maxQty)
         {
-            var result = new CartValidationError(type, code, $"Product {code} quantity {qty} is greater than maximum {maxQty}", "PRODUCT_MAX_QTY");
+            var result = new CartValidationError(type, id, $"Product {id} quantity {qty} is greater than maximum {maxQty}", "PRODUCT_MAX_QTY");
             result.FormattedMessagePlaceholderValues = new Dictionary<string, object>
             {
                 ["qty"] = qty,

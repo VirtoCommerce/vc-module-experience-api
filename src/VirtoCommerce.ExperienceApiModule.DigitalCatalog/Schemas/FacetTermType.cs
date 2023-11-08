@@ -7,10 +7,10 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
     {
         public FacetTermType()
         {
-            Field(d => d.Term, nullable: true).Description("term");
-            Field(d => d.Count, nullable: true).Description("count");
-            Field(d => d.IsSelected, nullable: true).Description("is selected state");
-            Field(d => d.Label);
+            Field(d => d.Term, nullable: false).Description("term");
+            Field(d => d.Count, nullable: false).Description("count");
+            Field(d => d.IsSelected, nullable: false).Description("is selected state");
+            Field(d => d.Label, nullable: false);
         }
     }
 }

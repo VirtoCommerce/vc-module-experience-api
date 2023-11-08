@@ -1,6 +1,8 @@
+using System;
 using System.Linq;
 using GraphQL.Types;
 using MediatR;
+using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Models;
@@ -15,19 +17,19 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
     {
         public VariationType(IMediator mediator)
         {
-            Field<StringGraphType>(
+            Field<NonNullGraphType<StringGraphType>>(
                 "id",
                 description: "Id of variation.",
                 resolve: context => context.Source.IndexedProduct.Id
             );
 
-            Field<StringGraphType>(
+            Field<NonNullGraphType<StringGraphType>>(
                 "name",
                 description: "Name of variation.",
                 resolve: context => context.Source.IndexedProduct.Name
             );
 
-            Field<StringGraphType>(
+            Field<NonNullGraphType<StringGraphType>>(
                 "code",
                 description: "SKU of variation.",
                 resolve: context => context.Source.IndexedProduct.Code
@@ -50,34 +52,34 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 resolve: context => context.Source.IndexedProduct.MaxQuantity
             );
 
-            ExtendableField<AvailabilityDataType>(
+            ExtendableField<NonNullGraphType<AvailabilityDataType>>(
                 "availabilityData",
                 "Availability data",
                 resolve: context => AbstractTypeFactory<ExpAvailabilityData>.TryCreateInstance().FromProduct(context.Source));
 
-            Field<ListGraphType<ImageType>>("images",
+            Field<NonNullGraphType<ListGraphType<NonNullGraphType<ImageType>>>>("images",
                 "Product images",
-                resolve: context => context.Source.IndexedProduct.Images);
+                resolve: context => context.Source.IndexedProduct.Images ?? Array.Empty<Image>());
 
-            Field<PriceType>("price",
+            Field<NonNullGraphType<PriceType>>("price",
                 "Product price",
                 resolve: context => context.Source.AllPrices.FirstOrDefault() ?? new ProductPrice(context.GetCurrencyByCode(context.GetValue<string>("currencyCode"))));
 
-            Field<ListGraphType<PriceType>>("prices",
+            Field<NonNullGraphType<ListGraphType<NonNullGraphType<PriceType>>>>("prices",
                 "Product prices",
                 resolve: context => context.Source.AllPrices);
 
-            ExtendableField<ListGraphType<PropertyType>>("properties", resolve: context =>
+            ExtendableField<NonNullGraphType<ListGraphType<NonNullGraphType<PropertyType>>>>("properties", resolve: context =>
             {
                 var cultureName = context.GetValue<string>("cultureName");
                 return context.Source.IndexedProduct.Properties.ExpandByValues(cultureName);
             });
 
-            Field<ListGraphType<AssetType>>("assets",
+            Field<NonNullGraphType<ListGraphType<NonNullGraphType<AssetType>>>>("assets",
                 "Assets",
-                resolve: context => context.Source.IndexedProduct.Assets);
+                resolve: context => context.Source.IndexedProduct.Assets ?? Array.Empty<Asset>());
 
-            Field<ListGraphType<OutlineType>>("outlines",
+            Field<ListGraphType<NonNullGraphType<OutlineType>>>("outlines",
                 "Outlines",
                 resolve: context => context.Source.IndexedProduct.Outlines);
 
