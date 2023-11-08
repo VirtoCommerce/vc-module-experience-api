@@ -48,7 +48,9 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Queries
 
         private async Task<SeoInfo> GetBestMatchingSeoInfo(Store store, string slug, string currentCulture)
         {
-            var seoInfos = await _seoBySlugResolver.FindSeoBySlugAsync(slug);
+            var seoInfos = (await _seoBySlugResolver.FindSeoBySlugAsync(slug))
+                .Where(x => x.StoreId == store.Id)
+                .ToArray();
             var bestMatchSeoInfo = seoInfos.GetBestMatchingSeoInfo(store.Id, currentCulture, slug);
             return bestMatchSeoInfo;
         }
