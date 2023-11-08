@@ -3,7 +3,7 @@
     <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="VirtoCommerce.ContentModule.Core" Version="3.413.0-alpha.922-pt-14120" />
+    <PackageReference Include="VirtoCommerce.ContentModule.Core" Version="3.414.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\VirtoCommerce.ExperienceApiModule.Core\VirtoCommerce.ExperienceApiModule.Core.csproj" />
