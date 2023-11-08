@@ -95,7 +95,7 @@ namespace VirtoCommerce.XPurchase
 
         public static CartValidationError ProductUnavailableError(IEntity entity)
         {
-            var result = new CartValidationError(entity, "The product is not longer available for purchase", "CART_PRODUCT_UNAVAILABLE");
+            var result = new CartValidationError(entity, "The product is no longer available for purchase", "CART_PRODUCT_UNAVAILABLE");
             return result;
         }
 
@@ -119,7 +119,7 @@ namespace VirtoCommerce.XPurchase
 
         public static CartValidationError ProductAvailableQuantityError(string type, string id, int qty, long availableQty)
         {
-            var result = new CartValidationError(type, id, $"Product with Id {id} was not added to cart. Maximum available qunantity is {availableQty}.", "PRODUCT_FFC_QTY");
+            var result = new CartValidationError(type, id, $"Product with Id {id} was not added to cart. Maximum available quantity is {availableQty}.", "PRODUCT_FFC_QTY");
             result.FormattedMessagePlaceholderValues = new Dictionary<string, object>
             {
                 ["qty"] = qty,
