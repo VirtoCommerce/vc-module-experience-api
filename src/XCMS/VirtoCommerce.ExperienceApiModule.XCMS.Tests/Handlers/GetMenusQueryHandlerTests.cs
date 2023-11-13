@@ -22,20 +22,22 @@ namespace VirtoCommerce.ExperienceApiModule.XCMS.Tests.Handlers
             {
                 new MenuLinkList
                 {
+                    StoreId = "Store",
                     Name = "MainMenu",
                     Language = "en-US",
                 },
                 new MenuLinkList
                 {
+                    StoreId = "Store",
                     Name = "SubMenu",
                     Language = "ru-RU",
                 }
             };
 
-            var menuServiceMock = new Mock<IMenuService>();
+            var menuServiceMock = new Mock<IMenuLinkListSearchService>();
             menuServiceMock
-                .Setup(x => x.GetListsByStoreIdAsync(It.Is<string>(x => x == "Store")))
-                .ReturnsAsync(menus);
+                .Setup(x => x.SearchAsync(It.IsAny<MenuLinkListSearchCriteria>(), It.IsAny<bool>()))
+                .ReturnsAsync(new MenuLinkListSearchResult { Results = menus.Where(x => x.StoreId == request.StoreId).ToList() });
 
             var handler = new GetMenusQueryHandler(menuServiceMock.Object);
 
@@ -51,7 +53,7 @@ namespace VirtoCommerce.ExperienceApiModule.XCMS.Tests.Handlers
             yield return new object[]
             {
                 // request
-                new GetMenusQuery { StoreId = "NonExistant", },
+                new GetMenusQuery { StoreId = "NonExistent", },
                 // expected
                 new List<string>()
             };
