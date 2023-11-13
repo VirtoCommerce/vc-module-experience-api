@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using VirtoCommerce.ContentModule.Core.Model;
 using VirtoCommerce.ContentModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.Platform.Core.Common;
@@ -12,19 +11,16 @@ namespace VirtoCommerce.ExperienceApiModule.XCMS.Queries
 {
     public class GetMenusQueryHandler : IQueryHandler<GetMenusQuery, GetMenusResponse>
     {
-        private readonly IMenuLinkListSearchService _menuService;
+        private readonly IMenuService _menuService;
 
-        public GetMenusQueryHandler(IMenuLinkListSearchService menuService)
+        public GetMenusQueryHandler(IMenuService menuService)
         {
             _menuService = menuService;
         }
 
         public async Task<GetMenusResponse> Handle(GetMenusQuery request, CancellationToken cancellationToken)
         {
-            var criteria = AbstractTypeFactory<MenuLinkListSearchCriteria>.TryCreateInstance();
-            criteria.StoreId = request.StoreId;
-
-            var result = await _menuService.SearchAllAsync(criteria);
+            var result = await _menuService.GetListsByStoreIdAsync(request.StoreId);
 
             if (!string.IsNullOrEmpty(request.CultureName))
             {
