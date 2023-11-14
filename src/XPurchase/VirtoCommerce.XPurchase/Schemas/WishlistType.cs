@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using GraphQL.Types;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
 
@@ -16,6 +16,8 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field<CurrencyType>("currency", "Currency", resolve: context => context.Source.Currency);
             ExtendableField<ListGraphType<LineItemType>>("items", "Items", resolve: context => context.Source.LineItems);
             Field<IntGraphType>("itemsCount", "Item count", resolve: context => context.Source.LineItems.Count());
+            Field(x => x.Scope, nullable: true).Description("Possile values: private, organization");
+            Field(x => x.Cart.Description, nullable: true).Description("Wishlist description");
         }
     }
 }
