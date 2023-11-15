@@ -11,20 +11,27 @@ using VirtoCommerce.ExperienceApiModule.Core.Schemas;
 using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.XOrder.Extensions;
 using VirtoCommerce.OrdersModule.Core.Model;
+using VirtoCommerce.Platform.Core.Settings;
 using Money = VirtoCommerce.CoreModule.Core.Currency.Money;
+using OrderSettings = VirtoCommerce.OrdersModule.Core.ModuleConstants.Settings.General;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 {
     public class OrderShipmentType : ExtendableGraphType<Shipment>
     {
-        public OrderShipmentType(IMapper mapper, IMemberService memberService, IDataLoaderContextAccessor dataLoader, IDynamicPropertyResolverService dynamicPropertyResolverService)
+        public OrderShipmentType(
+            IMapper mapper,
+            IMemberService memberService,
+            IDataLoaderContextAccessor dataLoader,
+            IDynamicPropertyResolverService dynamicPropertyResolverService,
+            ILocalizableSettingService localizableSettingService)
         {
             Field(x => x.Id, nullable: false);
             Field(x => x.OperationType, nullable: false);
             Field(x => x.ParentOperationId, nullable: true);
             Field(x => x.Number, nullable: false);
             Field(x => x.IsApproved, nullable: false);
-            Field(x => x.Status, nullable: true);
+            LocalizedField(x => x.Status, OrderSettings.ShipmentStatus, localizableSettingService, nullable: true);
             Field(x => x.Comment, nullable: true);
             Field(x => x.OuterId, nullable: true);
             Field(x => x.IsCancelled, nullable: false);
@@ -95,7 +102,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                 "dynamicProperties",
                 "Customer order Shipment dynamic property values",
                 QueryArgumentPresets.GetArgumentForDynamicProperties(),
-                context => dynamicPropertyResolverService.LoadDynamicPropertyValues(context.Source, context.GetArgumentOrValue<string>("cultureName")));
+                context => dynamicPropertyResolverService.LoadDynamicPropertyValues(context.Source, context.GetCultureName()));
         }
     }
 }
