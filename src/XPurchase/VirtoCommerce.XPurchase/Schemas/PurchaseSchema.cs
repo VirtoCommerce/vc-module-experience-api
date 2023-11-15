@@ -1475,6 +1475,22 @@ namespace VirtoCommerce.XPurchase.Schemas
 
             schema.Mutation.AddField(addWishlistBulkItemField);
 
+            // Add products to wishlist
+            var addWishlistItemsField = FieldBuilder.Create<BulkCartResult, BulkCartResult>(GraphTypeExtenstionHelper.GetActualType<WishlistResultType>())
+                                     .Name("addWishlistItems")
+                                     .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputAddWishlistItemsType>>(), _commandName)
+                                     .ResolveAsync(async context =>
+                                     {
+                                         var command = context.GetArgument<AddWishlistItemsCommand>(_commandName);
+                                         await CheckAuthAsyncByCartId(context, command.ListId);
+                                         var result = await _mediator.Send(command);
+                                         context.SetExpandedObjectGraph(result.Cart);
+                                         return result;
+                                     })
+                                     .FieldType;
+
+            schema.Mutation.AddField(addWishlistItemsField);
+
             // Remove product from list
             var removeListItemField = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<WishlistType>())
                          .Name("removeWishlistItem")

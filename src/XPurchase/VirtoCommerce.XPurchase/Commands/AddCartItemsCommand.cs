@@ -13,5 +13,7 @@ namespace VirtoCommerce.XPurchase.Commands
         }
 
         public NewCartItem[] CartItems { get; set; }
+
+        public string[] ValidationRuleSet { get; set; }
     }
 }

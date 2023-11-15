@@ -14,5 +14,7 @@ namespace VirtoCommerce.XPurchase.Commands
         public string CultureName { get; set; }
 
         public IList<NewBulkCartItem> CartItems { get; set; } = new List<NewBulkCartItem>();
+
+        public string[] ValidationRuleSet { get; set; }
     }
 }
