@@ -12,6 +12,8 @@ using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.CartModule.Core.Model.Search;
 using VirtoCommerce.CartModule.Core.Services;
 using VirtoCommerce.CoreModule.Core.Currency;
+using VirtoCommerce.CustomerModule.Core.Model;
+using VirtoCommerce.CustomerModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.Core;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
@@ -35,6 +37,7 @@ namespace VirtoCommerce.XPurchase.Schemas
         private readonly IShoppingCartSearchService _shoppingCartSearchService;
         private readonly IDistributedLockService _distributedLockService;
         private readonly IUserManagerCore _userManagerCore;
+        private readonly IMemberResolver _memberResolver;
 
         public const string _commandName = "command";
         public const string CartPrefix = "Cart";
@@ -46,7 +49,8 @@ namespace VirtoCommerce.XPurchase.Schemas
             IShoppingCartService cartService,
             IShoppingCartSearchService shoppingCartSearchService,
             IDistributedLockService distributedLockService,
-            IUserManagerCore userManagerCore)
+            IUserManagerCore userManagerCore,
+            IMemberResolver memberResolver)
         {
             _mediator = mediator;
             _authorizationService = authorizationService;
@@ -55,6 +59,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             _shoppingCartSearchService = shoppingCartSearchService;
             _distributedLockService = distributedLockService;
             _userManagerCore = userManagerCore;
+            _memberResolver = memberResolver;
         }
 
         public void Build(ISchema schema)
@@ -1357,6 +1362,29 @@ namespace VirtoCommerce.XPurchase.Schemas
 
             schema.Mutation.AddField(addListField);
 
+            // Change list
+            var changeListField = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<WishlistType>())
+                                                 .Name("changeWishlist")
+                                                 .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputChangeWishlistType>>(), _commandName)
+                                                 .ResolveAsync(async context =>
+                                                 {
+                                                     var commandType = GenericTypeHelper.GetActualType<ChangeWishlistCommand>();
+                                                     var command = (ChangeWishlistCommand)context.GetArgument(commandType, _commandName);
+
+                                                     command.UserId = context.GetCurrentUserId();
+                                                     command.Contact = await _memberResolver.ResolveMemberByIdAsync(command.UserId) as Contact;
+                                                     command.Cart = await _cartService.GetByIdAsync(command.ListId);
+
+                                                     await AuthorizeAsync(context, command);
+
+                                                     var cartAggregate = await _mediator.Send(command);
+                                                     context.SetExpandedObjectGraph(cartAggregate);
+                                                     return cartAggregate;
+                                                 })
+                                                .FieldType;
+
+            schema.Mutation.AddField(changeListField);
+
             // Rename list
             var renameListField = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<WishlistType>())
                                      .Name("renameWishlist")
@@ -1370,6 +1398,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                                          context.SetExpandedObjectGraph(cartAggregate);
                                          return cartAggregate;
                                      })
+                                     .DeprecationReason("Obsolete. Use 'changeWishlist' instead.")
                                      .FieldType;
 
             schema.Mutation.AddField(renameListField);
