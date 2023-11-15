@@ -21,11 +21,7 @@ public abstract class LocalizedSettingQueryHandler<TQuery> : IQueryHandler<TQuer
     public async Task<LocalizedSettingResponse> Handle(TQuery request, CancellationToken cancellationToken)
     {
         var result = AbstractTypeFactory<LocalizedSettingResponse>.TryCreateInstance();
-
-        if (!string.IsNullOrEmpty(request.CultureName))
-        {
-            result.Items = await _localizableSettingService.GetValuesAsync(Setting.Name, request.CultureName);
-        }
+        result.Items = await _localizableSettingService.GetValuesAsync(Setting.Name, request.CultureName);
 
         return result;
     }
