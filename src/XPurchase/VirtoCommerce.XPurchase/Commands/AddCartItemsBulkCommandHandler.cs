@@ -10,7 +10,7 @@ using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.XPurchase.Commands
 {
-    public class AddCartItemsBulkCommandHandler : IRequestHandler<AddCartItemsBulkCommand, BulkCartResult>, IRequestHandler<AddWishlistItemsCommand, BulkCartResult>
+    public class AddCartItemsBulkCommandHandler : IRequestHandler<AddCartItemsBulkCommand, BulkCartResult>
     {
         private readonly IProductSearchService _productSearchService;
         private readonly IMediator _mediator;
@@ -56,7 +56,6 @@ namespace VirtoCommerce.XPurchase.Commands
                 CurrencyCode = request.CurrencyCode,
                 CultureName = request.CultureName,
                 CartItems = cartItemsToAdd.ToArray(),
-                ValidationRuleSet = request.ValidationRuleSet,
             };
 
             var cartAggregate = await _mediator.Send(command, cancellationToken);
@@ -70,13 +69,6 @@ namespace VirtoCommerce.XPurchase.Commands
             result.Errors.AddRange(lineItemErrors);
 
             return result;
-        }
-
-        public Task<BulkCartResult> Handle(AddWishlistItemsCommand request, CancellationToken cancellationToken)
-        {
-            request.ValidationRuleSet = new string[] { "default" };
-
-            return Handle(request as AddCartItemsBulkCommand, cancellationToken);
         }
 
         protected virtual async Task<IList<CatalogProduct>> FindProductsBySkuAsync(AddCartItemsBulkCommand request)
