@@ -13,12 +13,14 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
 {
     public class IndexSearchRequestBuilder
     {
-        public string UserId { get; set; }
+        public const string ScoreSortingFieldName = "score";
 
-        private const string ScoreSortingFieldName = "score";
+        public string UserId { get; private set; }
+        public string StoreId { get; private set; }
+        public string CultureName { get; private set; }
+        public string CurrencyCode { get; private set; }
+
         private SearchRequest SearchRequest { get; set; }
-        private string _cultureName { get; set; }
-        private string _currencyCode { get; set; }
 
         public IndexSearchRequestBuilder()
         {
@@ -35,6 +37,12 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
                 Aggregations = new List<AggregationRequest>(),
                 IncludeFields = new List<string>(),
             };
+        }
+
+        public IndexSearchRequestBuilder WithStoreId(string storeId)
+        {
+            StoreId = storeId;
+            return this;
         }
 
         public IndexSearchRequestBuilder WithUserId(string userId)
@@ -65,7 +73,7 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
 
         public IndexSearchRequestBuilder WithCultureName(string cultureName)
         {
-            _cultureName = cultureName;
+            CultureName = cultureName;
             return this;
         }
 
@@ -188,7 +196,7 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
                 case RangeFilter rangeFilter:
                     if (rangeFilter.FieldName.EqualsInvariant("price"))
                     {
-                        rangeFilter.FieldName = $"price_{_currencyCode}".ToLowerInvariant();
+                        rangeFilter.FieldName = $"price_{CurrencyCode}".ToLowerInvariant();
                     }
                     break;
             }
@@ -220,7 +228,7 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
             //Term facets
             if (!string.IsNullOrEmpty(parseResult.Keyword))
             {
-                parseResult.Keyword = parseResult.Keyword.AddLanguageSpecificFacets(_cultureName);
+                parseResult.Keyword = parseResult.Keyword.AddLanguageSpecificFacets(CultureName);
 
                 var termFacetExpressions = parseResult.Keyword.Split(" ");
                 parseResult.Filters.AddRange(termFacetExpressions.Select(x => new TermFilter
@@ -267,7 +275,7 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
 
         public IndexSearchRequestBuilder WithCurrency(string currencyCode)
         {
-            _currencyCode = currencyCode;
+            CurrencyCode = currencyCode;
             return this;
         }
 
@@ -299,8 +307,8 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
                     case "title":
                         sortFields.Add(new SortingField("name", sortingField.IsDescending));
                         break;
-                    case "price" when !string.IsNullOrEmpty(_currencyCode):
-                        sortFields.Add(new SortingField($"price_{_currencyCode}".ToLowerInvariant(), sortingField.IsDescending));
+                    case "price" when !string.IsNullOrEmpty(CurrencyCode):
+                        sortFields.Add(new SortingField($"price_{CurrencyCode}".ToLowerInvariant(), sortingField.IsDescending));
                         break;
 
                     default:
