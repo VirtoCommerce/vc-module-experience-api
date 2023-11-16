@@ -18,8 +18,8 @@ public abstract class CatalogQueryBuilder<TQuery, TResult, TResultGraphType>
     where TQuery : CatalogQueryBase<TResult>
     where TResultGraphType : IGraphType
 {
-    protected readonly IStoreService _storeService;
-    protected readonly ICurrencyService _currencyService;
+    private readonly IStoreService _storeService;
+    private readonly ICurrencyService _currencyService;
 
     protected CatalogQueryBuilder(
         IMediator mediator,

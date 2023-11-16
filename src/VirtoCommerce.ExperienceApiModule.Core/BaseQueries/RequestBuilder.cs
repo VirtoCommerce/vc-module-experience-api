@@ -16,8 +16,8 @@ public abstract class RequestBuilder<TRequest, TResponse, TResponseGraphType> : 
     where TRequest : IRequest<TResponse>
     where TResponseGraphType : IGraphType
 {
-    protected readonly IMediator _mediator;
-    protected readonly IAuthorizationService _authorizationService;
+    private readonly IMediator _mediator;
+    private readonly IAuthorizationService _authorizationService;
 
     protected abstract string Name { get; }
 
