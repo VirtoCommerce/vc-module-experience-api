@@ -19,9 +19,9 @@ namespace VirtoCommerce.XPurchase.Commands
 
         public override async Task<CartAggregate> Handle(ChangeWishlistCommand request, CancellationToken cancellationToken)
         {
-            var cartAggregate = request.Cart == null
+            var cartAggregate = request.WishlistUserContext.Cart == null
                 ? await CartRepository.GetCartByIdAsync(request.ListId)
-                : await CartRepository.GetCartForShoppingCartAsync(request.Cart);
+                : await CartRepository.GetCartForShoppingCartAsync(request.WishlistUserContext.Cart);
 
             if (request.ListName != null)
             {
@@ -40,7 +40,7 @@ namespace VirtoCommerce.XPurchase.Commands
 
         protected virtual async Task ChangeScope(ChangeWishlistCommand request, CartAggregate cartAggregate)
         {
-            var contact = request.Contact ?? await _memberResolver.ResolveMemberByIdAsync(request.UserId) as Contact;
+            var contact = request.WishlistUserContext.CurrentContact ?? await _memberResolver.ResolveMemberByIdAsync(request.UserId) as Contact;
 
             if (request.Scope?.EqualsInvariant(XPurchaseConstants.OrganizationScope) == true)
             {
@@ -51,7 +51,7 @@ namespace VirtoCommerce.XPurchase.Commands
             else if (request.Scope?.EqualsInvariant(XPurchaseConstants.PrivateScope) == true)
             {
                 cartAggregate.Cart.OrganizationId = null;
-                cartAggregate.Cart.CustomerId = request.UserId;
+                cartAggregate.Cart.CustomerId = request.WishlistUserContext.CurrentUserId;
                 cartAggregate.Cart.CustomerName = contact?.Name;
             }
         }

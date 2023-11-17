@@ -1,6 +1,3 @@
-using VirtoCommerce.CartModule.Core.Model;
-using VirtoCommerce.CustomerModule.Core.Model;
-
 namespace VirtoCommerce.XPurchase.Commands
 {
     public class ChangeWishlistCommand : WishlistCommand
@@ -10,9 +7,5 @@ namespace VirtoCommerce.XPurchase.Commands
         public string Scope { get; set; }
 
         public string Description { get; set; }
-
-        public Contact Contact { get; set; }
-
-        public ShoppingCart Cart { get; set; }
     }
 }

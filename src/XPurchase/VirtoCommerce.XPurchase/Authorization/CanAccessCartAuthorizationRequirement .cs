@@ -70,14 +70,14 @@ namespace VirtoCommerce.XPurchase.Authorization
                             result = searchQuery.UserId != null;
                         }
                         break;
-                    case ChangeWishlistCommand changeWishlistCommand:
-                        if (changeWishlistCommand.Cart.OrganizationId != null)
+                    case WishlistUserContext wishlistUserContext:
+                        if (wishlistUserContext.Cart.OrganizationId != null)
                         {
-                            result = changeWishlistCommand.Cart.OrganizationId == changeWishlistCommand.Contact?.Organizations?.FirstOrDefault();
+                            result = wishlistUserContext.Cart.OrganizationId == wishlistUserContext.CurrentContact?.Organizations?.FirstOrDefault();
                         }
                         else
                         {
-                            result = changeWishlistCommand.Cart.CustomerId == changeWishlistCommand.UserId;
+                            result = wishlistUserContext.Cart.CustomerId == wishlistUserContext.CurrentUserId;
                         }
                         break;
                 }
