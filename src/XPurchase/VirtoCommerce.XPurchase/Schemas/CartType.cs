@@ -75,15 +75,27 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field<NonNullGraphType<ListGraphType<NonNullGraphType<TaxDetailType>>>>("taxDetails",
                 "Tax details",
                 resolve: context => context.Source.Cart.TaxDetails);
-            Field<NonNullGraphType<MoneyType>>(nameof(ShoppingCart.Fee).ToCamelCase(), resolve: context => context.Source.Cart.Fee.ToMoney(context.Source.Currency));
+
+            Field<NonNullGraphType<MoneyType>>(nameof(ShoppingCart.Fee).ToCamelCase(),
+                "Shopping cart fee",
+                resolve: context => context.Source.Cart.Fee.ToMoney(context.Source.Currency));
+            Field<NonNullGraphType<MoneyType>>(nameof(ShoppingCart.FeeWithTax).ToCamelCase(),
+                "Shopping cart fee with tax",
+                resolve: context => context.Source.Cart.FeeWithTax.ToMoney(context.Source.Currency));
+            Field<NonNullGraphType<MoneyType>>(nameof(ShoppingCart.FeeTotal).ToCamelCase(),
+                "Total fee",
+                resolve: context => context.Source.Cart.FeeTotal.ToMoney(context.Source.Currency));
+            Field<NonNullGraphType<MoneyType>>(nameof(ShoppingCart.FeeTotalWithTax).ToCamelCase(),
+                "Total fee with tax",
+                resolve: context => context.Source.Cart.FeeTotalWithTax.ToMoney(context.Source.Currency));
 
             // Shipping
             Field<NonNullGraphType<MoneyType>>("shippingPrice",
                 "Shipping price",
-                resolve: context => context.Source.Cart.ShippingTotal.ToMoney(context.Source.Currency));
+                resolve: context => context.Source.Cart.ShippingSubTotal.ToMoney(context.Source.Currency));
             Field<NonNullGraphType<MoneyType>>("shippingPriceWithTax",
                 "Shipping price with tax",
-                resolve: context => context.Source.Cart.ShippingTotalWithTax.ToMoney(context.Source.Currency));
+                resolve: context => context.Source.Cart.ShippingSubTotalWithTax.ToMoney(context.Source.Currency));
             Field<NonNullGraphType<MoneyType>>("shippingTotal",
                 "Total shipping",
                 resolve: context => context.Source.Cart.ShippingTotal.ToMoney(context.Source.Currency));
@@ -104,10 +116,10 @@ namespace VirtoCommerce.XPurchase.Schemas
             // Payment
             Field<NonNullGraphType<MoneyType>>("paymentPrice",
                 "Payment price",
-                resolve: context => context.Source.Cart.PaymentTotal.ToMoney(context.Source.Currency));
+                resolve: context => context.Source.Cart.PaymentSubTotal.ToMoney(context.Source.Currency));
             Field<NonNullGraphType<MoneyType>>("paymentPriceWithTax",
                 "Payment price with tax",
-                resolve: context => context.Source.Cart.PaymentTotalWithTax.ToMoney(context.Source.Currency));
+                resolve: context => context.Source.Cart.PaymentSubTotalWithTax.ToMoney(context.Source.Currency));
             Field<NonNullGraphType<MoneyType>>("paymentTotal",
                 "Total payment",
                 resolve: context => context.Source.Cart.PaymentTotal.ToMoney(context.Source.Currency));
