@@ -127,7 +127,7 @@ namespace VirtoCommerce.XPurchase
 
         public IList<ValidationFailure> ValidationWarnings { get; protected set; } = new List<ValidationFailure>();
 
-        public string Scope
+        public virtual string Scope
         {
             get
             {
