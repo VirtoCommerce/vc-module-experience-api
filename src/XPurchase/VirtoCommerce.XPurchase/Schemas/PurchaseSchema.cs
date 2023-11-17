@@ -1480,7 +1480,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                                      .ResolveAsync(async context =>
                                      {
                                          var command = context.GetArgument<AddWishlistItemsCommand>(_commandName);
-                                         await CheckAuthAsyncByCartId(context, command.ListId);
+                                         await AuthorizeByListIdAsync(context, command.ListId);
                                          var result = await _mediator.Send(command);
                                          context.SetExpandedObjectGraph(result.Cart);
                                          return result;
