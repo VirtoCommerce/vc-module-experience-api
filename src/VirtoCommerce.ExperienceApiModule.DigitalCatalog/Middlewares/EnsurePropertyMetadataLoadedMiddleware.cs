@@ -38,6 +38,7 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
             if (responseGroup.HasFlag(ExpProductResponseGroup.LoadPropertyMetadata))
             {
                 var productProperties = parameter.Results
+                    .Where(x => x.IndexedProduct is not null && x.IndexedProduct.Properties is not null)
                     .SelectMany(x => x.IndexedProduct.Properties)
                     .Where(property => property?.Id is not null)
                     .ToArray();
