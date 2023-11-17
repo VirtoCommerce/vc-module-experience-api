@@ -113,6 +113,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
         protected virtual IndexSearchRequestBuilder GetIndexedSearchRequestBuilder(SearchProductQuery request, Store store, CoreModule.Core.Currency.Currency currency)
         {
             var builder = new IndexSearchRequestBuilder()
+                                            .WithStoreId(request.StoreId)
                                             .WithUserId(request.UserId)
                                             .WithCurrency(currency.Code)
                                             .WithFuzzy(request.Fuzzy, request.FuzzyLevel)

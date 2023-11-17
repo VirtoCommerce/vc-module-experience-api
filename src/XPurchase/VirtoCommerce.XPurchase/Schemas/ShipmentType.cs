@@ -44,6 +44,12 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field<NonNullGraphType<MoneyType>>("priceWithTax",
                 "Price with tax",
                 resolve: context => context.Source.PriceWithTax.ToMoney(context.GetCart().Currency));
+            Field<NonNullGraphType<MoneyType>>("fee",
+                "Fee",
+                resolve: context => context.Source.Fee.ToMoney(context.GetCart().Currency));
+            Field<NonNullGraphType<MoneyType>>("feeWithTax",
+                "Fee with tax",
+                resolve: context => context.Source.FeeWithTax.ToMoney(context.GetCart().Currency));
             Field<NonNullGraphType<MoneyType>>("total",
                 "Total",
                 resolve: context => context.Source.Total.ToMoney(context.GetCart().Currency));
