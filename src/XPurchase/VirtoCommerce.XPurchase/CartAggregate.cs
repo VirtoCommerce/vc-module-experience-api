@@ -405,6 +405,13 @@ namespace VirtoCommerce.XPurchase
         {
             EnsureCartExists();
 
+            Cart.Comment = string.Empty;
+            Cart.PurchaseOrderNumber = string.Empty;
+            Cart.Shipments.Clear();
+            Cart.Payments.Clear();
+            Cart.Addresses.Clear();
+
+            Cart.Coupons.Clear();
             Cart.Items.Clear();
 
             return Task.FromResult(this);
