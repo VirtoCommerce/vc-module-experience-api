@@ -691,7 +691,7 @@ namespace VirtoCommerce.XPurchase
 
         public virtual Task<CartAggregate> UpdateOrganization(ShoppingCart cart, Member member)
         {
-            if (member is Contact contact)
+            if (member is Contact contact && cart.Type != XPurchaseConstants.ListTypeName)
             {
                 cart.OrganizationId = contact.Organizations?.FirstOrDefault();
             }
