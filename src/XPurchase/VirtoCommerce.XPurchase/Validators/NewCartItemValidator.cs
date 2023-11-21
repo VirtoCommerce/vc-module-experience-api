@@ -32,20 +32,20 @@ namespace VirtoCommerce.XPurchase.Validators
             {
                 var cartProduct = newCartItem.CartProduct;
 
-                OnValidateProductIsBuyable(context, cartProduct);
+                ValidateProductIsBuyable(context, cartProduct);
 
-                OnValidateProductInventory(context, cartProduct, newCartItem);
+                ValidateProductInventory(context, cartProduct, newCartItem);
 
-                OnValidateMinMaxQuantity(context, cartProduct, newCartItem);
+                ValidateMinMaxQuantity(context, cartProduct, newCartItem);
             }
 
             if (newCartItem.Price != null)
             {
-                OnValidateTierPrice(context, newCartItem);
+                ValidateTierPrice(context, newCartItem);
             }
         }
 
-        protected virtual void OnValidateProductIsBuyable(ValidationContext<NewCartItem> context, CartProduct cartProduct)
+        protected virtual void ValidateProductIsBuyable(ValidationContext<NewCartItem> context, CartProduct cartProduct)
         {
             if (!AbstractTypeFactory<ProductIsBuyableSpecification>.TryCreateInstance().IsSatisfiedBy(cartProduct))
             {
@@ -74,7 +74,7 @@ namespace VirtoCommerce.XPurchase.Validators
         /// </summary>
         /// <param name="context"></param>
         /// <param name="newCartItem"></param>
-        protected virtual void OnValidateTierPrice(ValidationContext<NewCartItem> context, NewCartItem newCartItem)
+        protected virtual void ValidateTierPrice(ValidationContext<NewCartItem> context, NewCartItem newCartItem)
         {
             var productSalePrice = newCartItem.CartProduct.Price.GetTierPrice(newCartItem.Quantity).Price;
 
@@ -90,7 +90,7 @@ namespace VirtoCommerce.XPurchase.Validators
         /// <param name="context"></param>
         /// <param name="cartProduct"></param>
         /// <param name="newCartItem"></param>
-        protected virtual void OnValidateMinMaxQuantity(ValidationContext<NewCartItem> context, CartProduct cartProduct, NewCartItem newCartItem)
+        protected virtual void ValidateMinMaxQuantity(ValidationContext<NewCartItem> context, CartProduct cartProduct, NewCartItem newCartItem)
         {
             // PRODUCT_MIN_QTY
             var minQuantity = cartProduct?.Product?.MinQuantity;
@@ -114,7 +114,7 @@ namespace VirtoCommerce.XPurchase.Validators
         /// <param name="context"></param>
         /// <param name="cartProduct"></param>
         /// <param name="newCartItem"></param>
-        protected virtual void OnValidateProductInventory(ValidationContext<NewCartItem> context, CartProduct cartProduct, NewCartItem newCartItem)
+        protected virtual void ValidateProductInventory(ValidationContext<NewCartItem> context, CartProduct cartProduct, NewCartItem newCartItem)
         {
             if (!AbstractTypeFactory<ProductIsAvailableSpecification>.TryCreateInstance().IsSatisfiedBy(cartProduct, newCartItem.Quantity))
             {

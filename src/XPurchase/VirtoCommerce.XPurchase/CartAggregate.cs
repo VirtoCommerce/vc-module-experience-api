@@ -848,7 +848,7 @@ namespace VirtoCommerce.XPurchase
             }
         }
 
-        protected async Task<TaxProvider> GetActiveTaxProviderAsync()
+        protected virtual async Task<TaxProvider> GetActiveTaxProviderAsync()
         {
             if (Store?.Settings?.GetValue<bool>(StoreSetting.TaxCalculationEnabled) != true)
             {
@@ -866,7 +866,7 @@ namespace VirtoCommerce.XPurchase
         /// <summary>
         /// Sets ListPrice and SalePrice for line item by Product price
         /// </summary>
-        public void SetLineItemTierPrice(ProductPrice productPrice, int quantity, LineItem lineItem)
+        public virtual void SetLineItemTierPrice(ProductPrice productPrice, int quantity, LineItem lineItem)
         {
             if (productPrice == null)
             {
