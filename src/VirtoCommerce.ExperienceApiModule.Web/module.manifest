@@ -6,7 +6,7 @@
   
   <platformVersion>3.444.0</platformVersion>
   <dependencies>
-    <dependency id="VirtoCommerce.Cart" version="3.406.0" />
+    <dependency id="VirtoCommerce.Cart" version="3.407.0" />
     <dependency id="VirtoCommerce.Catalog" version="3.401.0" />
     <dependency id="VirtoCommerce.Content" version="3.414.0" />
     <dependency id="VirtoCommerce.Core" version="3.400.0" />
