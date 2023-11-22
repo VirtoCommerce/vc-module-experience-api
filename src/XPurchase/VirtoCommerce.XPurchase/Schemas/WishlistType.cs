@@ -8,7 +8,7 @@ namespace VirtoCommerce.XPurchase.Schemas
     {
         public WishlistType()
         {
-            Field(x => x.Cart.Id, nullable: true).Description("Shopping cart ID");
+            Field(x => x.Cart.Id, nullable: false).Description("Shopping cart ID");
             Field(x => x.Cart.Name, nullable: false).Description("Shopping cart name");
             Field(x => x.Cart.StoreId, nullable: true).Description("Shopping cart store ID");
             Field(x => x.Cart.CustomerId, nullable: true).Description("Shopping cart user ID");
