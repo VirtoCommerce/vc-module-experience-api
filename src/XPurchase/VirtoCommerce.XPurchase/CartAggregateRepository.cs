@@ -108,6 +108,28 @@ namespace VirtoCommerce.XPurchase
             return null;
         }
 
+        public async Task<CartAggregate> GetCartAsync(ShoppingCartSearchCriteria criteria, string cultureName)
+        {
+            if (CartAggregateBuilder.IsBuilding(out var cartAggregate))
+            {
+                return cartAggregate;
+            }
+
+            criteria = criteria.CloneTyped();
+            criteria.CustomerId ??= AnonymousUser.UserName;
+
+            var cartSearchResult = await _shoppingCartSearchService.SearchAsync(criteria);
+            //The null value for the Type parameter should be interpreted as a valuable parameter, and we must return a cart object with Type property that has null exactly set.
+            //otherwise, for the case where the system contains carts with different Types, the resulting cart may be a random result.
+            var cart = cartSearchResult.Results.FirstOrDefault(x => (criteria.Type != null) || x.Type == null);
+            if (cart != null)
+            {
+                return await InnerGetCartAggregateFromCartAsync(cart.Clone() as ShoppingCart, cultureName ?? Language.InvariantLanguage.CultureName);
+            }
+
+            return null;
+        }
+
         public async Task<SearchCartResponse> SearchCartAsync(ShoppingCartSearchCriteria criteria)
         {
             if (criteria == null)
