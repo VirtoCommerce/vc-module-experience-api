@@ -11,6 +11,8 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field<StringGraphType>("listName", description: "List name");
             Field<StringGraphType>("cultureName", description: "Culture name");
             Field<StringGraphType>("currencyCode", description: "Currency code");
+            Field<StringGraphType>("scope", description: "List scope (private or organization)");
+            Field<StringGraphType>("description", description: "List description");
         }
     }
 }

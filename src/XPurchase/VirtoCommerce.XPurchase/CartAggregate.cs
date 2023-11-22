@@ -127,6 +127,14 @@ namespace VirtoCommerce.XPurchase
 
         public IList<ValidationFailure> ValidationWarnings { get; protected set; } = new List<ValidationFailure>();
 
+        public virtual string Scope
+        {
+            get
+            {
+                return string.IsNullOrEmpty(Cart.OrganizationId) ? XPurchaseConstants.PrivateScope : XPurchaseConstants.OrganizationScope;
+            }
+        }
+
         public virtual CartAggregate GrabCart(ShoppingCart cart, Store store, Member member, Currency currency)
         {
             Id = cart.Id;
@@ -683,7 +691,7 @@ namespace VirtoCommerce.XPurchase
 
         public virtual Task<CartAggregate> UpdateOrganization(ShoppingCart cart, Member member)
         {
-            if (member is Contact contact)
+            if (member is Contact contact && cart.Type != XPurchaseConstants.ListTypeName)
             {
                 cart.OrganizationId = contact.Organizations?.FirstOrDefault();
             }
