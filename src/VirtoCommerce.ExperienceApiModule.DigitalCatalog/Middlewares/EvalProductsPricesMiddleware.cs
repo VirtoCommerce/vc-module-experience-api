@@ -54,16 +54,7 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
             {
                 // find Store by Id to get Catalog Id
                 var store = await _storeService.GetByIdAsync(query.StoreId, StoreResponseGroup.StoreInfo.ToString());
-
-                var evalContext = AbstractTypeFactory<PricingModule.Core.Model.PriceEvaluationContext>.TryCreateInstance();
-                evalContext.Currency = query.CurrencyCode;
-                evalContext.StoreId = query.StoreId;
-                evalContext.CatalogId = store?.Catalog;
-                evalContext.CustomerId = query.UserId;
-                evalContext.Language = query.CultureName;
-                evalContext.CertainDate = DateTime.UtcNow;
-
-                await _pipeline.Execute(evalContext);
+                var evalContext = await GetPriceEvaluationContext(query, store);
 
                 evalContext.ProductIds = parameter.Results.Select(x => x.Id).ToArray();
                 var prices = await _pricingEvaluatorService.EvaluateProductPricesAsync(evalContext);
@@ -80,6 +71,21 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
                 }
             }
             await next(parameter);
+        }
+
+        protected virtual async Task<PricingModule.Core.Model.PriceEvaluationContext> GetPriceEvaluationContext(SearchProductQuery query, Store store)
+        {
+            var evalContext = AbstractTypeFactory<PricingModule.Core.Model.PriceEvaluationContext>.TryCreateInstance();
+            evalContext.Currency = query.CurrencyCode;
+            evalContext.StoreId = query.StoreId;
+            evalContext.CatalogId = store?.Catalog;
+            evalContext.CustomerId = query.UserId;
+            evalContext.Language = query.CultureName;
+            evalContext.CertainDate = DateTime.UtcNow;
+
+            await _pipeline.Execute(evalContext);
+
+            return evalContext;
         }
     }
 }

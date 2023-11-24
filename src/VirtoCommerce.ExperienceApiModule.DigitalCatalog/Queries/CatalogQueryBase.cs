@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using GraphQL;
 using GraphQL.Types;
 using VirtoCommerce.ExperienceApiModule.Core.BaseQueries;
+using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.StoreModule.Core.Model;
 
 namespace VirtoCommerce.XDigitalCatalog.Queries
@@ -19,16 +20,16 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
 
         public override IEnumerable<QueryArgument> GetArguments()
         {
-            yield return Argument<StringGraphType>(nameof(StoreId));
-            yield return Argument<StringGraphType>(nameof(UserId));
-            yield return Argument<StringGraphType>(nameof(CultureName));
-            yield return Argument<StringGraphType>(nameof(CurrencyCode));
+            yield return Argument<NonNullGraphType<StringGraphType>>(nameof(StoreId), description: "Store Id");
+            yield return Argument<StringGraphType>(nameof(UserId), description: "User Id");
+            yield return Argument<StringGraphType>(nameof(CultureName), description: "Currency code (\"USD\")");
+            yield return Argument<StringGraphType>(nameof(CurrencyCode), description: "Culture name (\"en-US\")");
         }
 
         public override void Map(IResolveFieldContext context)
         {
             StoreId = context.GetArgument<string>(nameof(StoreId));
-            UserId = context.GetArgument<string>(nameof(UserId));
+            UserId = context.GetArgument<string>(nameof(UserId)) ?? context.GetCurrentUserId();
             CultureName = context.GetArgument<string>(nameof(CultureName));
             CurrencyCode = context.GetArgument<string>(nameof(CurrencyCode));
         }
