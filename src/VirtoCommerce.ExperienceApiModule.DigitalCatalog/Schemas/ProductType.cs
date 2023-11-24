@@ -215,21 +215,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             FieldAsync<NonNullGraphType<ListGraphType<NonNullGraphType<VariationType>>>>(
                 "variations",
-                resolve: async context =>
-                {
-                    if (context.Source.IndexedVariationIds.IsNullOrEmpty())
-                    {
-                        return new List<ExpVariation>();
-                    }
-
-                    var query = context.GetCatalogQuery<LoadProductsQuery>();
-                    query.ObjectIds = context.Source.IndexedVariationIds;
-                    query.IncludeFields = context.SubFields.Values.GetAllNodesPaths(context).ToArray();
-
-                    var response = await mediator.Send(query);
-
-                    return response.Products.Where(x => x.IndexedProduct?.IsActive == true).Select(expProduct => new ExpVariation(expProduct));
-                });
+                resolve: async context => await ResolveVariationsFieldAsync(mediator, context));
 
             Field<NonNullGraphType<BooleanGraphType>>(
                 "hasVariations",
@@ -350,6 +336,22 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
               .Name("videos")
               .PageSize(20)
               .ResolveAsync(async context => await ResolveVideosConnectionAsync(mediator, context));
+        }
+
+        protected virtual async Task<object> ResolveVariationsFieldAsync(IMediator mediator, IResolveFieldContext<ExpProduct> context)
+        {
+            if (context.Source.IndexedVariationIds.IsNullOrEmpty())
+            {
+                return new List<ExpVariation>();
+            }
+
+            var query = context.GetCatalogQuery<LoadProductsQuery>();
+            query.ObjectIds = context.Source.IndexedVariationIds;
+            query.IncludeFields = context.SubFields.Values.GetAllNodesPaths(context).ToArray();
+
+            var response = await mediator.Send(query);
+
+            return response.Products.Where(x => x.IndexedProduct?.IsActive == true).Select(expProduct => new ExpVariation(expProduct));
         }
 
         private static async Task<object> ResolveAssociationConnectionAsync(IMediator mediator, IResolveConnectionContext<ExpProduct> context)

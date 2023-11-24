@@ -1,13 +1,20 @@
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using VirtoCommerce.CustomerModule.Core.Model;
+using VirtoCommerce.CustomerModule.Core.Services;
+using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.XPurchase.Commands
 {
     public class CreateWishlistCommandHandler : CartCommandHandler<CreateWishlistCommand>
     {
-        public CreateWishlistCommandHandler(ICartAggregateRepository cartAggrRepository)
+        private readonly IMemberResolver _memberResolver;
+
+        public CreateWishlistCommandHandler(ICartAggregateRepository cartAggrRepository, IMemberResolver memberResolver)
             : base(cartAggrRepository)
         {
+            _memberResolver = memberResolver;
         }
 
         public override async Task<CartAggregate> Handle(CreateWishlistCommand request, CancellationToken cancellationToken)
@@ -15,6 +22,16 @@ namespace VirtoCommerce.XPurchase.Commands
             request.CartType = XPurchaseConstants.ListTypeName;
 
             var cartAggregate = await CreateNewCartAggregateAsync(request);
+
+            cartAggregate.Cart.Description = request.Description;
+
+            if (request.Scope?.EqualsInvariant(XPurchaseConstants.OrganizationScope) == true)
+            {
+                var contact = await _memberResolver.ResolveMemberByIdAsync(request.UserId) as Contact;
+                var organizationId = contact?.Organizations?.FirstOrDefault();
+
+                cartAggregate.Cart.OrganizationId = organizationId;
+            }
 
             return await SaveCartAsync(cartAggregate);
         }
