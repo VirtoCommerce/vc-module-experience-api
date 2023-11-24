@@ -9,6 +9,7 @@ using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.Platform.Core;
 using VirtoCommerce.Platform.Core.Security;
 using VirtoCommerce.Platform.Security.Authorization;
+using VirtoCommerce.XPurchase.Commands;
 using VirtoCommerce.XPurchase.Queries;
 
 namespace VirtoCommerce.XPurchase.Authorization
@@ -67,6 +68,16 @@ namespace VirtoCommerce.XPurchase.Authorization
                         {
                             searchQuery.UserId = currentUserId;
                             result = searchQuery.UserId != null;
+                        }
+                        break;
+                    case WishlistUserContext wishlistUserContext:
+                        if (wishlistUserContext.Cart.OrganizationId != null)
+                        {
+                            result = wishlistUserContext.Cart.OrganizationId == wishlistUserContext.CurrentContact?.Organizations?.FirstOrDefault();
+                        }
+                        else
+                        {
+                            result = wishlistUserContext.Cart.CustomerId == wishlistUserContext.CurrentUserId;
                         }
                         break;
                 }
