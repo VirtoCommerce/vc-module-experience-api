@@ -89,7 +89,7 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
             await next(parameter);
         }
 
-        private async Task<PricingModule.Core.Model.PriceEvaluationContext> GetPriceEvaluationContext(SearchProductQuery query, Store store)
+        protected virtual async Task<PricingModule.Core.Model.PriceEvaluationContext> GetPriceEvaluationContext(SearchProductQuery query, Store store)
         {
             var evalContext = AbstractTypeFactory<PricingModule.Core.Model.PriceEvaluationContext>.TryCreateInstance();
             evalContext.Currency = query.CurrencyCode;
