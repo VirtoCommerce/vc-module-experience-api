@@ -39,6 +39,8 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             yield return Argument<StringGraphType>(nameof(Sort), "The sort expression");
 
             yield return Argument<ListGraphType<StringGraphType>>("productIds", "Product Ids");
+
+            yield return Argument<StringGraphType>("custom", "Can be used for custom query parameters");
         }
 
         public override void Map(IResolveFieldContext context)

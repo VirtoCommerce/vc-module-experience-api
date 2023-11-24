@@ -54,7 +54,8 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "storeId", Description = "Store Id" },
                     new QueryArgument<StringGraphType> { Name = "userId", Description = "User Id" },
                     new QueryArgument<StringGraphType> { Name = "currencyCode", Description = "Currency code (\"USD\")" },
-                    new QueryArgument<StringGraphType> { Name = "cultureName", Description = "Culture name (\"en-US\")" }
+                    new QueryArgument<StringGraphType> { Name = "cultureName", Description = "Culture name (\"en-US\")" },
+                    new QueryArgument<StringGraphType> { Name = "custom", Description = "Can be used for custom query parameters" }
                 ),
                 Type = GraphTypeExtenstionHelper.GetActualType<ProductType>(),
                 Resolver = new AsyncFieldResolver<object, IDataLoaderResult<ExpProduct>>(async context =>

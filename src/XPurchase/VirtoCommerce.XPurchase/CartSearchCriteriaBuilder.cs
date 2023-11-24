@@ -71,6 +71,13 @@ namespace VirtoCommerce.XPurchase
             return this;
         }
 
+        public CartSearchCriteriaBuilder WithOrganizationId(string organizationId)
+        {
+            _searchCriteria.CustomerOrOrganization = true;
+            _searchCriteria.OrganizationId = organizationId ?? _searchCriteria.OrganizationId;
+            return this;
+        }
+
         public CartSearchCriteriaBuilder WithCustomerId(string customerId)
         {
             _searchCriteria.CustomerId = customerId ?? _searchCriteria.CustomerId;
