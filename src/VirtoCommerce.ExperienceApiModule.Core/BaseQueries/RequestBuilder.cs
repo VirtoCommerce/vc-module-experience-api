@@ -64,7 +64,7 @@ public abstract class RequestBuilder<TRequest, TResponse, TResponseGraphType> : 
         var request = GetRequest(context);
 
         await BeforeMediatorSend(context, request);
-        var response = await _mediator.Send(request);
+        var response = await GetResponseAsync(context, request);
         await AfterMediatorSend(context, request, response);
 
         return (request, response);
@@ -80,6 +80,11 @@ public abstract class RequestBuilder<TRequest, TResponse, TResponseGraphType> : 
     protected virtual Task AfterMediatorSend(IResolveFieldContext<object> context, TRequest request, TResponse response)
     {
         return Task.CompletedTask;
+    }
+
+    protected virtual async Task<TResponse> GetResponseAsync(IResolveFieldContext<object> context, TRequest request)
+    {
+        return await _mediator.Send(request);
     }
 
     protected virtual async Task Authorize(IResolveFieldContext context, object resource, IAuthorizationRequirement requirement)

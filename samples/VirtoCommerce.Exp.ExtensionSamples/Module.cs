@@ -1,4 +1,3 @@
-using AutoMapper;
 using GraphQL.Server;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -37,10 +36,10 @@ namespace VirtoCommerce.Exp.ExtensionSamples
             services.OverrideQueryType<GetCartQuery, GetCartQueryExtended>().WithQueryHandler<CustomGetCartQueryHandler>();
             services.OverrideQueryType<SearchCustomerOrderQuery, ExtendedSearchCustomerOrderQuery>().WithQueryHandler<ExtendedSearchCustomerOrderQueryHandler>();
             services.OverrideArgumentType<OrderQueryConnectionArguments, ExtendedOrderQueryConnectionArguments>();
-            services.AddGraphQL(_ =>
+            services.AddGraphQL(options =>
             {
                 //It is important to pass the GraphQLOptions configure action, because the default parameters used in xAPI module won't be used after this call
-                _.EnableMetrics = false;
+                options.EnableMetrics = false;
 
             })
                 .AddGraphTypes(typeof(XExtensionAnchor))
@@ -60,6 +59,9 @@ namespace VirtoCommerce.Exp.ExtensionSamples
 
             //Domain types overrides
             AbstractTypeFactory<ExpProduct>.OverrideType<ExpProduct, ExpProduct2>();
+
+            // Override products query
+            services.OverrideQueryType<SearchProductQuery, SearchProductQueryExtended>().WithQueryHandler<ProductsQueryHandlerExtended>();
 
             services.AddAutoMapper(typeof(XExtensionAnchor));
             services.AddMediatR(typeof(XExtensionAnchor));
@@ -91,7 +93,7 @@ namespace VirtoCommerce.Exp.ExtensionSamples
             #region Extension scenarios
             #region UseCase Validators: Extend validation logic / replace validators by custom ones
             // Example: replace cart validator
-            AbstractTypeFactory<CartValidator>.OverrideType<CartValidator, CartValidator2>(); 
+            AbstractTypeFactory<CartValidator>.OverrideType<CartValidator, CartValidator2>();
             #endregion
             #endregion
         }
