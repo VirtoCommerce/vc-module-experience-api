@@ -4,5 +4,5 @@ namespace VirtoCommerce.XDigitalCatalog.Queries;
 
 public class ChildCategoriesQueryResponse
 {
-    public IList<ExpCategory> ChildCategories { get; set; }
+    public IList<ExpCategory> ChildCategories { get; set; } = new List<ExpCategory>();
 }
