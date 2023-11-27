@@ -58,21 +58,21 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
                 return builder;
             }
 
-            // construct generic request handler interfacae type
-            var extendedHanderType = typeof(TExtendedCommandHandler);
-            var requsetInterfaceType = extendedHanderType.GetInterfaces().FirstOrDefault(x => x.Name.Contains("IRequestHandler"));
-            if (requsetInterfaceType == null)
+            // construct generic request handler interface type
+            var extendedHandlerType = typeof(TExtendedCommandHandler);
+            var requestInterfaceTypes = extendedHandlerType.GetInterfaces().Where(x => x.Name.Contains("IRequestHandler") && x.IsGenericType && x.GenericTypeArguments.Length == 2);
+            foreach (var requestInterfaceType in requestInterfaceTypes)
             {
-                return builder;
-            }
+                var requestType = requestInterfaceType.GenericTypeArguments.First();
 
-            if (requsetInterfaceType.IsGenericType && requsetInterfaceType.GenericTypeArguments.Length > 0)
-            {
-                var resultType = requsetInterfaceType.GenericTypeArguments.Last();
+                if (builder.CommandType.IsAssignableTo(requestType))
+                {
+                    var resultType = requestInterfaceType.GenericTypeArguments.Last();
 
-                var serviceType = typeof(IRequestHandler<,>).MakeGenericType(new[] { builder.CommandType, resultType });
+                    var serviceType = typeof(IRequestHandler<,>).MakeGenericType(builder.CommandType, resultType);
 
-                builder.Services.AddTransient(serviceType, extendedHanderType);
+                    builder.Services.AddTransient(serviceType, extendedHandlerType);
+                }
             }
 
             return builder;

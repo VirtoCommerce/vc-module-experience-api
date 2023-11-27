@@ -38,10 +38,10 @@ namespace VirtoCommerce.Exp.ExtensionSamples
             services.OverrideQueryType<GetCartQuery, GetCartQueryExtended>().WithQueryHandler<CustomGetCartQueryHandler>();
             services.OverrideQueryType<SearchCustomerOrderQuery, ExtendedSearchCustomerOrderQuery>().WithQueryHandler<ExtendedSearchCustomerOrderQueryHandler>();
             services.OverrideArgumentType<OrderQueryConnectionArguments, ExtendedOrderQueryConnectionArguments>();
-            services.AddGraphQL(_ =>
+            services.AddGraphQL(options =>
             {
                 //It is important to pass the GraphQLOptions configure action, because the default parameters used in xAPI module won't be used after this call
-                _.EnableMetrics = false;
+                options.EnableMetrics = false;
 
             })
                 .AddGraphTypes(typeof(XExtensionAnchor))
@@ -62,6 +62,9 @@ namespace VirtoCommerce.Exp.ExtensionSamples
             //Domain types overrides
             AbstractTypeFactory<ExpProduct>.OverrideType<ExpProduct, ExpProduct2>();
             AbstractTypeFactory<ShoppingCartSearchCriteria>.OverrideType<ShoppingCartSearchCriteria, ShoppingCartSearchCriteriaExtended>();
+
+            // Override products query
+            services.OverrideQueryType<SearchProductQuery, SearchProductQueryExtended>().WithQueryHandler<ProductsQueryHandlerExtended>();
 
             services.AddAutoMapper(typeof(XExtensionAnchor));
             services.AddMediatR(typeof(XExtensionAnchor));
