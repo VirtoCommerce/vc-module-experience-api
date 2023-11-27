@@ -3,6 +3,7 @@ using GraphQL;
 using GraphQL.DataLoader;
 using GraphQL.Resolvers;
 using GraphQL.Types;
+using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.CustomerModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.Core;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
@@ -11,7 +12,6 @@ using VirtoCommerce.ExperienceApiModule.Core.Schemas;
 using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.XOrder.Extensions;
 using VirtoCommerce.OrdersModule.Core.Model;
-using Money = VirtoCommerce.CoreModule.Core.Currency.Money;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 {
@@ -61,6 +61,10 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                 resolve: context => new Money(context.Source.Price, context.GetOrderCurrency()));
             Field<NonNullGraphType<MoneyType>>(nameof(Shipment.PriceWithTax).ToCamelCase(),
                 resolve: context => new Money(context.Source.PriceWithTax, context.GetOrderCurrency()));
+            Field<NonNullGraphType<MoneyType>>(nameof(Shipment.Fee).ToCamelCase(),
+                resolve: context => new Money(context.Source.Fee, context.GetOrderCurrency()));
+            Field<NonNullGraphType<MoneyType>>(nameof(Shipment.FeeWithTax).ToCamelCase(),
+                resolve: context => new Money(context.Source.FeeWithTax, context.GetOrderCurrency()));
             Field<NonNullGraphType<MoneyType>>(nameof(Shipment.Total).ToCamelCase(),
                 resolve: context => new Money(context.Source.Total, context.GetOrderCurrency()));
             Field<NonNullGraphType<MoneyType>>(nameof(Shipment.TotalWithTax).ToCamelCase(),
