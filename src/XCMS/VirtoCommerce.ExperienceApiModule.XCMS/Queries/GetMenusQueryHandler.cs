@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using VirtoCommerce.ContentModule.Core.Model;
 using VirtoCommerce.ContentModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.Platform.Core.Common;
@@ -11,25 +12,28 @@ namespace VirtoCommerce.ExperienceApiModule.XCMS.Queries
 {
     public class GetMenusQueryHandler : IQueryHandler<GetMenusQuery, GetMenusResponse>
     {
-        private readonly IMenuService _menuService;
+        private readonly IMenuLinkListSearchService _menuLinkListSearchService;
 
-        public GetMenusQueryHandler(IMenuService menuService)
+        public GetMenusQueryHandler(IMenuLinkListSearchService menuLinkListSearchService)
         {
-            _menuService = menuService;
+            _menuLinkListSearchService = menuLinkListSearchService;
         }
 
         public async Task<GetMenusResponse> Handle(GetMenusQuery request, CancellationToken cancellationToken)
         {
-            var result = await _menuService.GetListsByStoreIdAsync(request.StoreId);
+            var criteria = AbstractTypeFactory<MenuLinkListSearchCriteria>.TryCreateInstance();
+            criteria.StoreId = request.StoreId;
+
+            var result = (await _menuLinkListSearchService.SearchAllAsync(criteria)).AsEnumerable();
 
             if (!string.IsNullOrEmpty(request.CultureName))
             {
-                result = result.Where(x => x.Language?.EqualsInvariant(request.CultureName) == true).ToList();
+                result = result.Where(x => x.Language?.EqualsInvariant(request.CultureName) == true);
             }
 
             if (!string.IsNullOrEmpty(request.Keyword))
             {
-                result = result.Where(x => x.Name.Contains(request.Keyword, StringComparison.OrdinalIgnoreCase)).ToList();
+                result = result.Where(x => x.Name.Contains(request.Keyword, StringComparison.OrdinalIgnoreCase));
             }
 
             return new GetMenusResponse

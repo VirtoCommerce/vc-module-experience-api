@@ -26,6 +26,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field(x => x.RegionName, nullable: true).Description("Region");
             Field(x => x.Zip, nullable: true).Description("Zip");
             Field(x => x.OuterId, nullable: true).Description("Outer ID");
+            Field(x => x.Description, nullable: true).Description("Description");
             Field<IntGraphType>(nameof(Address.AddressType));
         }
     }
