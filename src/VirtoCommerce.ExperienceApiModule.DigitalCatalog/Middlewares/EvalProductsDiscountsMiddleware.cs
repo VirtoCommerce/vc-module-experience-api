@@ -45,14 +45,7 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
             // If promotion evaluation requested
             if (responseGroup.HasFlag(ExpProductResponseGroup.LoadPrices))
             {
-                var promoEvalContext = new PromotionEvaluationContext
-                {
-                    Currency = query.CurrencyCode,
-                    StoreId = query.StoreId,
-                    Language = query.CultureName,
-                    CustomerId = query.UserId
-                };
-                await _pipeline.Execute(promoEvalContext);
+                var promoEvalContext = await GetPromotionEvaluationContext(query);
 
                 if (query.EvaluatePromotions)
                 {
@@ -74,6 +67,17 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
             await next(parameter);
         }
 
+        protected virtual async Task<PromotionEvaluationContext> GetPromotionEvaluationContext(SearchProductQuery query)
+        {
+            var promoEvalContext = AbstractTypeFactory<PromotionEvaluationContext>.TryCreateInstance();
+            promoEvalContext.Currency = query.CurrencyCode;
+            promoEvalContext.StoreId = query.StoreId;
+            promoEvalContext.Language = query.CultureName;
+            promoEvalContext.CustomerId = query.UserId;
 
+            await _pipeline.Execute(promoEvalContext);
+
+            return promoEvalContext;
+        }
     }
 }

@@ -7,7 +7,6 @@ using GraphQL.Builders;
 using GraphQL.DataLoader;
 using GraphQL.Resolvers;
 using GraphQL.Types;
-using GraphQL.Types.Relay;
 using MediatR;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CoreModule.Core.Currency;
@@ -78,42 +77,6 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                 })
             };
             schema.Query.AddField(productField);
-
-            var productsConnectionBuilder = GraphTypeExtenstionHelper.CreateConnection<ProductType, EdgeType<ProductType>, ProductsConnectonType<ProductType>, object>()
-                .Name("products")
-                .Argument<NonNullGraphType<StringGraphType>>("storeId", "The store id where products are searched")
-                .Argument<StringGraphType>("userId", "The customer id for search result impersonation")
-                .Argument<StringGraphType>("currencyCode", "The currency for which all prices data will be returned")
-                .Argument<StringGraphType>("cultureName", "The culture name for cart context product")
-                .Argument<StringGraphType>("query", "The query parameter performs the full-text search")
-                .Argument<StringGraphType>("filter", "This parameter applies a filter to the query results")
-                .Argument<BooleanGraphType>("fuzzy", "When the fuzzy query parameter is set to true the search endpoint will also return products that contain slight differences to the search text.")
-                .Argument<IntGraphType>("fuzzyLevel", "The fuzziness level is quantified in terms of the Damerau-Levenshtein distance, this distance being the number of operations needed to transform one word into another.")
-                .Argument<StringGraphType>("facet", "Facets calculate statistical counts to aid in faceted navigation.")
-                .Argument<StringGraphType>("sort", "The sort expression")
-                .Argument<ListGraphType<StringGraphType>>("productIds", "Product Ids")
-                .Argument<StringGraphType>("custom", "Can be used for custom query parameters")
-                .PageSize(20);
-
-            productsConnectionBuilder.ResolveAsync(async context =>
-            {
-                //PT-1606:  Need to check that there is no any alternative way to access to the original request arguments in sub selection
-                context.CopyArgumentsToUserContext();
-
-                var cultureName = context.GetArgument<string>("cultureName");
-                var store = await _storeService.GetByIdAsync(context.GetArgument<string>("storeId"));
-                context.UserContext["store"] = store;
-                context.UserContext["catalog"] = store.Catalog;
-
-                var allCurrencies = await _currencyService.GetAllCurrenciesAsync();
-                //Store all currencies in the user context for future resolve in the schema types
-                context.SetCurrencies(allCurrencies, cultureName);
-
-                return await ResolveProductsConnectionAsync(_mediator, context);
-            });
-
-            schema.Query.AddField(productsConnectionBuilder.FieldType);
-
             var categoryField = new FieldType
             {
                 Name = "category",
@@ -232,47 +195,6 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             var result = await mediator.Send(new LoadPropertiesQuery { Ids = ids });
 
             return result.Properties;
-        }
-
-        private static async Task<object> ResolveProductsConnectionAsync(IMediator mediator, IResolveConnectionContext<object> context)
-        {
-            var first = context.First;
-            var skip = Convert.ToInt32(context.After ?? 0.ToString());
-            var includeFields = context.SubFields.Values.GetAllNodesPaths(context).ToArray();
-
-            //PT-5371: Need to be able get entire query from context and read all arguments to the query properties
-            var query = context.GetCatalogQuery<SearchProductQuery>();
-            query.IncludeFields = includeFields;
-
-            var productIds = context.GetArgument<List<string>>("productIds");
-            if (productIds.IsNullOrEmpty())
-            {
-                query.Skip = skip;
-                query.Take = first ?? context.PageSize ?? 10;
-                query.Query = context.GetArgument<string>("query");
-                query.Filter = context.GetArgument<string>("filter");
-                query.Facet = context.GetArgument<string>("facet");
-                query.Fuzzy = context.GetArgument<bool>("fuzzy");
-                query.FuzzyLevel = context.GetArgument<int?>("fuzzyLevel");
-                query.Sort = context.GetArgument<string>("sort");
-            }
-            else
-            {
-                query.ObjectIds = productIds.ToArray();
-                query.Take = productIds.Count;
-            }
-
-            var response = await mediator.Send(query);
-            var currencyCode = context.GetArgumentOrValue<string>("currencyCode");
-            if (string.IsNullOrWhiteSpace(currencyCode))
-            {
-                context.SetCurrency(response.Currency);
-            }
-
-            return new ProductsConnection<ExpProduct>(response.Results, query.Skip, query.Take, response.TotalCount)
-            {
-                Facets = response.Facets
-            };
         }
 
         private static async Task<object> ResolveCategoriesConnectionAsync(IMediator mediator, IResolveConnectionContext<object> context)
