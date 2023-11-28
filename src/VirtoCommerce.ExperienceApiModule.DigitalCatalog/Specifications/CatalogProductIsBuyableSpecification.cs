@@ -5,6 +5,12 @@ namespace VirtoCommerce.XDigitalCatalog.Specifications
 {
     public class CatalogProductIsBuyableSpecification
     {
+        /// <summary>
+        /// Evaluates a product is buyable specification.
+        /// </summary>
+        /// <param name="product"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
         public virtual bool IsSatisfiedBy(ExpProduct product)
         {
             if (product == null)
@@ -12,7 +18,17 @@ namespace VirtoCommerce.XDigitalCatalog.Specifications
 
             return product.IndexedProduct.IsActive.GetValueOrDefault(false)
                 && product.IndexedProduct.IsBuyable.GetValueOrDefault(false)
-                && (product.AllPrices.FirstOrDefault()?.ListPrice.Amount ?? 0) > 0;
+                && CheckPricePolicy(product);
+        }
+
+        /// <summary>
+        /// Represents a price policy for a product. By default, product price should be greater than zero.
+        /// </summary>
+        /// <param name="product"></param>
+        /// <returns></returns>
+        protected virtual bool CheckPricePolicy(ExpProduct product)
+        {
+            return (product.AllPrices.FirstOrDefault()?.ListPrice.Amount ?? 0) > 0;
         }
     }
 }

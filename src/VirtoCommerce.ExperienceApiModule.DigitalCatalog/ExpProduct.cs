@@ -40,7 +40,7 @@ namespace VirtoCommerce.XDigitalCatalog
         {
             get
             {
-                return new CatalogProductIsBuyableSpecification().IsSatisfiedBy(this);
+                return AbstractTypeFactory<CatalogProductIsBuyableSpecification>.TryCreateInstance().IsSatisfiedBy(this);
             }
         }
 
@@ -48,7 +48,7 @@ namespace VirtoCommerce.XDigitalCatalog
         {
             get
             {
-                return new CatalogProductIsAvailableSpecification().IsSatisfiedBy(this);
+                return AbstractTypeFactory<CatalogProductIsAvailableSpecification>.TryCreateInstance().IsSatisfiedBy(this);
             }
         }
 
@@ -56,7 +56,7 @@ namespace VirtoCommerce.XDigitalCatalog
         {
             get
             {
-                return new CatalogProductIsInStockSpecification().IsSatisfiedBy(this);
+                return AbstractTypeFactory<CatalogProductIsInStockSpecification>.TryCreateInstance().IsSatisfiedBy(this);
             }
         }
 
