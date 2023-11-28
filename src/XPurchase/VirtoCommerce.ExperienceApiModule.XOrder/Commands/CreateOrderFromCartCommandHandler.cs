@@ -47,9 +47,14 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Commands
             var selectedLineItemIds = cartAggregate.SelectedLineItems.Select(x => x.Id).ToArray();
             await cartAggregate.RemoveItemsAsync(selectedLineItemIds);
 
-            // clear payments and shipments
+            // clear cart
             cartAggregate.Cart.Shipments?.Clear();
             cartAggregate.Cart.Payments?.Clear();
+            cartAggregate.Cart.Coupons?.Clear();
+
+            cartAggregate.Cart.PurchaseOrderNumber = string.Empty;
+            cartAggregate.Cart.Description = string.Empty;
+            cartAggregate.Cart.Coupon = string.Empty;
 
             await _cartRepository.SaveAsync(cartAggregate);
 
