@@ -1,9 +1,9 @@
 using System.Linq;
 using GraphQL;
 using GraphQL.Types;
-using VirtoCommerce.ExperienceApiModule.Core.Models;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
 using VirtoCommerce.ExperienceApiModule.XOrder.Models;
+using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 {
@@ -22,7 +22,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field(x => x.ActionRedirectUrl, nullable: true);
             Field(x => x.ActionHtmlForm, nullable: true);
             Field<ListGraphType<KeyValueType>>(nameof(InitializePaymentResult.PublicParameters).ToCamelCase(), resolve: context =>
-                context.Source.PublicParameters?.Select(x => new KeyValuePair { Key = x.Key, Value = x.Value }));
+                context.Source.PublicParameters?.Select(x => new KeyValue { Key = x.Key, Value = x.Value }));
         }
     }
 }

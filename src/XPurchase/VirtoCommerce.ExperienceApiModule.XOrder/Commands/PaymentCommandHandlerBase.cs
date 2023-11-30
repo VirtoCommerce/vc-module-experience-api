@@ -2,7 +2,6 @@ using System;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Threading.Tasks;
-using VirtoCommerce.ExperienceApiModule.Core.Models;
 using VirtoCommerce.ExperienceApiModule.XOrder.Models;
 using VirtoCommerce.OrdersModule.Core.Model;
 using VirtoCommerce.OrdersModule.Core.Services;
@@ -54,7 +53,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Commands
         protected static NameValueCollection GetParameters(AuthorizePaymentCommand request)
         {
             var parameters = new NameValueCollection();
-            foreach (var param in request?.Parameters ?? Array.Empty<KeyValuePair>())
+            foreach (var param in request?.Parameters ?? Array.Empty<KeyValue>())
             {
                 parameters.Add(param.Key, param.Value);
             }
