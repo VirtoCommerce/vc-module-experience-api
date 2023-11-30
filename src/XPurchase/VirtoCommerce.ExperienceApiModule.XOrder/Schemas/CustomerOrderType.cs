@@ -11,6 +11,8 @@ using VirtoCommerce.OrdersModule.Core.Model;
 using VirtoCommerce.PaymentModule.Core.Model.Search;
 using VirtoCommerce.PaymentModule.Core.Services;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.Settings;
+using OrderSettings = VirtoCommerce.OrdersModule.Core.ModuleConstants.Settings.General;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 {
@@ -18,14 +20,15 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
     {
         public CustomerOrderType(
             IDynamicPropertyResolverService dynamicPropertyResolverService,
-            IPaymentMethodsSearchService paymentMethodsSearchService)
+            IPaymentMethodsSearchService paymentMethodsSearchService,
+            ILocalizableSettingService localizableSettingService)
         {
             Field(x => x.Order.Id, nullable: false);
             Field(x => x.Order.OperationType, nullable: false);
             Field(x => x.Order.ParentOperationId, nullable: true);
             Field(x => x.Order.Number, nullable: false);
             Field(x => x.Order.IsApproved, nullable: false);
-            Field(x => x.Order.Status, nullable: true);
+            LocalizedField(x => x.Order.Status, OrderSettings.OrderStatus, localizableSettingService, nullable: true);
             Field(x => x.Order.Comment, nullable: true);
             Field(x => x.Order.OuterId, nullable: true);
             Field(x => x.Order.IsCancelled, nullable: false);
@@ -152,7 +155,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                 "dynamicProperties",
                 "Customer order dynamic property values",
                 QueryArgumentPresets.GetArgumentForDynamicProperties(),
-                context => dynamicPropertyResolverService.LoadDynamicPropertyValues(context.Source.Order, context.GetArgumentOrValue<string>("cultureName")));
+                context => dynamicPropertyResolverService.LoadDynamicPropertyValues(context.Source.Order, context.GetCultureName()));
 
             ExtendableField<NonNullGraphType<ListGraphType<NonNullGraphType<StringGraphType>>>>("coupons", resolve: x => x.Source.GetCustomerOrderCoupons());
 
