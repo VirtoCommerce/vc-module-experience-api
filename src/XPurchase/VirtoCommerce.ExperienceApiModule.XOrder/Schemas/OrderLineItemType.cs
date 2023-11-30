@@ -13,16 +13,24 @@ using VirtoCommerce.ExperienceApiModule.Core.Schemas;
 using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.XOrder.Extensions;
 using VirtoCommerce.OrdersModule.Core.Model;
+using VirtoCommerce.Platform.Core.Settings;
 using VirtoCommerce.XDigitalCatalog;
 using VirtoCommerce.XDigitalCatalog.Queries;
 using VirtoCommerce.XDigitalCatalog.Schemas;
 using Money = VirtoCommerce.CoreModule.Core.Currency.Money;
+using OrderSettings = VirtoCommerce.OrdersModule.Core.ModuleConstants.Settings.General;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 {
     public class OrderLineItemType : ExtendableGraphType<LineItem>
     {
-        public OrderLineItemType(IMediator mediator, IDataLoaderContextAccessor dataLoader, IDynamicPropertyResolverService dynamicPropertyResolverService, IMapper mapper, IMemberService memberService)
+        public OrderLineItemType(
+            IMediator mediator,
+            IDataLoaderContextAccessor dataLoader,
+            IDynamicPropertyResolverService dynamicPropertyResolverService,
+            IMapper mapper,
+            IMemberService memberService,
+            ILocalizableSettingService localizableSettingService)
         {
             Field(x => x.Id, nullable: false);
             Field(x => x.ProductType, nullable: true);
@@ -46,7 +54,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field(x => x.CancelledDate, nullable: true);
             Field(x => x.CancelReason, nullable: true);
             Field(x => x.ObjectType, nullable: false);
-            Field(x => x.Status, nullable: true);
+            LocalizedField(x => x.Status, OrderSettings.OrderLineItemStatuses, localizableSettingService, nullable: true);
 
             Field(x => x.CategoryId, nullable: true);
             Field(x => x.CatalogId, nullable: false);
@@ -138,7 +146,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                 "dynamicProperties",
                 "Customer order Line item dynamic property values",
                 QueryArgumentPresets.GetArgumentForDynamicProperties(),
-                context => dynamicPropertyResolverService.LoadDynamicPropertyValues(context.Source, context.GetArgumentOrValue<string>("cultureName")));
+                context => dynamicPropertyResolverService.LoadDynamicPropertyValues(context.Source, context.GetCultureName()));
         }
     }
 }
