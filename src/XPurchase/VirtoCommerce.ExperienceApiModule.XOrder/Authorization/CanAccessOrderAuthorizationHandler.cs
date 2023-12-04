@@ -35,7 +35,10 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Authorization
             {
                 if (context.Resource is CustomerOrder order)
                 {
-                    result = order.CustomerId == GetUserId(context) || await IsCustomerOrganization(context, order.OrganizationId);
+                    var currentUserId = GetUserId(context);
+                    result = (currentUserId == null && order.IsAnonymous) ||
+                        order.CustomerId == currentUserId ||
+                        await IsCustomerOrganization(context, order.OrganizationId);
                 }
                 else if (context.Resource is SearchCustomerOrderQuery query)
                 {
