@@ -11,13 +11,21 @@ using VirtoCommerce.ExperienceApiModule.Core.Schemas;
 using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.XOrder.Extensions;
 using VirtoCommerce.OrdersModule.Core.Model;
+using VirtoCommerce.Platform.Core.Settings;
 using Money = VirtoCommerce.CoreModule.Core.Currency.Money;
+using OrderSettings = VirtoCommerce.OrdersModule.Core.ModuleConstants.Settings.General;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 {
     public class PaymentInType : ExtendableGraphType<PaymentIn>
     {
-        public PaymentInType(IMapper mapper, IMemberService memberService, IDataLoaderContextAccessor dataLoader, IDynamicPropertyResolverService dynamicPropertyResolverService, ICustomerOrderAggregateRepository customerOrderAggregateRepository)
+        public PaymentInType(
+            IMapper mapper,
+            IMemberService memberService,
+            IDataLoaderContextAccessor dataLoader,
+            IDynamicPropertyResolverService dynamicPropertyResolverService,
+            ICustomerOrderAggregateRepository customerOrderAggregateRepository,
+            ILocalizableSettingService localizableSettingService)
         {
             Field(x => x.Id, nullable: false);
             Field(x => x.OrganizationId, nullable: true);
@@ -31,7 +39,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field(x => x.OperationType, nullable: false);
             Field(x => x.Number, nullable: false);
             Field(x => x.IsApproved, nullable: false);
-            Field(x => x.Status, nullable: true);
+            LocalizedField(x => x.Status, OrderSettings.PaymentInStatus, localizableSettingService, nullable: true);
             Field(x => x.Comment, nullable: true);
             Field(x => x.IsCancelled, nullable: false);
             Field(x => x.CancelledDate, nullable: true);
@@ -91,7 +99,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                 "dynamicProperties",
                 "Customer order Payment dynamic property values",
                 QueryArgumentPresets.GetArgumentForDynamicProperties(),
-                context => dynamicPropertyResolverService.LoadDynamicPropertyValues(context.Source, context.GetArgumentOrValue<string>("cultureName")));
+                context => dynamicPropertyResolverService.LoadDynamicPropertyValues(context.Source, context.GetCultureName()));
         }
     }
 }

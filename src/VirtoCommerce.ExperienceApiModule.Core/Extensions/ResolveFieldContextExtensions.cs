@@ -5,6 +5,7 @@ using System.Security.Claims;
 using GraphQL;
 using GraphQL.Execution;
 using VirtoCommerce.CoreModule.Core.Currency;
+using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.Core.Queries;
 using VirtoCommerce.Platform.Core.Common;
@@ -159,8 +160,13 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
         public static T GetDynamicPropertiesQuery<T>(this IResolveFieldContext context) where T : IDynamicPropertiesQuery
         {
             var result = AbstractTypeFactory<T>.TryCreateInstance();
-            result.CultureName = context.GetArgumentOrValue<string>("cultureName");
+            result.CultureName = context.GetCultureName();
             return result;
+        }
+
+        public static string GetCultureName(this IResolveFieldContext context)
+        {
+            return context.GetArgumentOrValue<string>(Constants.CultureName);
         }
     }
 }
