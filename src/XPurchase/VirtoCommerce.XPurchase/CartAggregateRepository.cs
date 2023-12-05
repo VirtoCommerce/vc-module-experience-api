@@ -50,6 +50,8 @@ namespace VirtoCommerce.XPurchase
         public async Task SaveAsync(CartAggregate cartAggregate)
         {
             await cartAggregate.RecalculateAsync();
+            cartAggregate.Cart.ModifiedDate = DateTime.UtcNow;
+
             await _shoppingCartService.SaveChangesAsync(new List<ShoppingCart> { cartAggregate.Cart });
         }
 
