@@ -18,6 +18,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field<IntGraphType>("itemsCount", "Item count", resolve: context => context.Source.LineItems.Count());
             ExtendableField<WishlistScopeType>(nameof(CartAggregate.Scope), "Wishlist scope", resolve: context => context.Source.Scope);
             Field(x => x.Cart.Description, nullable: true).Description("Wishlist description");
+            Field(x => x.Cart.ModifiedDate, nullable: true).Description("Wishlist modified date");
         }
     }
 }
