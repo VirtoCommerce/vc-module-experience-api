@@ -21,6 +21,7 @@ namespace VirtoCommerce.XPurchase.Middlewares
             _mapper = mapper;
             _cartAggregateRepository = cartAggregateRepository;
         }
+
         public async Task Run(PromotionEvaluationContext parameter, Func<PromotionEvaluationContext, Task> next)
         {
             var criteria = GetCartSearchCriteria(parameter);
@@ -32,18 +33,6 @@ namespace VirtoCommerce.XPurchase.Middlewares
             }
 
             await next(parameter);
-        }
-
-        protected virtual ShoppingCartSearchCriteria GetCartSearchCriteria(PromotionEvaluationContext context)
-        {
-            var cartSearchCriteria = AbstractTypeFactory<ShoppingCartSearchCriteria>.TryCreateInstance();
-
-            cartSearchCriteria.Name = "default";
-            cartSearchCriteria.StoreId = context.StoreId;
-            cartSearchCriteria.CustomerId = context.CustomerId;
-            cartSearchCriteria.Currency = context.Currency;
-
-            return cartSearchCriteria;
         }
 
         public async Task Run(PriceEvaluationContext parameter, Func<PriceEvaluationContext, Task> next)
@@ -59,18 +48,6 @@ namespace VirtoCommerce.XPurchase.Middlewares
             await next(parameter);
         }
 
-        protected virtual ShoppingCartSearchCriteria GetCartSearchCriteria(PriceEvaluationContext context)
-        {
-            var cartSearchCriteria = AbstractTypeFactory<ShoppingCartSearchCriteria>.TryCreateInstance();
-
-            cartSearchCriteria.Name = "default";
-            cartSearchCriteria.StoreId = context.StoreId;
-            cartSearchCriteria.CustomerId = context.CustomerId;
-            cartSearchCriteria.Currency = context.Currency;
-
-            return cartSearchCriteria;
-        }
-
         public async Task Run(TaxEvaluationContext parameter, Func<TaxEvaluationContext, Task> next)
         {
             var criteria = GetCartSearchCriteria(parameter);
@@ -82,6 +59,31 @@ namespace VirtoCommerce.XPurchase.Middlewares
             }
 
             await next(parameter);
+        }
+
+
+        protected virtual ShoppingCartSearchCriteria GetCartSearchCriteria(PromotionEvaluationContext context)
+        {
+            var cartSearchCriteria = AbstractTypeFactory<ShoppingCartSearchCriteria>.TryCreateInstance();
+
+            cartSearchCriteria.Name = "default";
+            cartSearchCriteria.StoreId = context.StoreId;
+            cartSearchCriteria.CustomerId = context.CustomerId;
+            cartSearchCriteria.Currency = context.Currency;
+
+            return cartSearchCriteria;
+        }
+
+        protected virtual ShoppingCartSearchCriteria GetCartSearchCriteria(PriceEvaluationContext context)
+        {
+            var cartSearchCriteria = AbstractTypeFactory<ShoppingCartSearchCriteria>.TryCreateInstance();
+
+            cartSearchCriteria.Name = "default";
+            cartSearchCriteria.StoreId = context.StoreId;
+            cartSearchCriteria.CustomerId = context.CustomerId;
+            cartSearchCriteria.Currency = context.Currency;
+
+            return cartSearchCriteria;
         }
 
         protected virtual ShoppingCartSearchCriteria GetCartSearchCriteria(TaxEvaluationContext context)

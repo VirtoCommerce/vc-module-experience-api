@@ -26,6 +26,12 @@ namespace VirtoCommerce.XPurchase.Queries
             return _cartAggrRepository.GetCartAsync(cartSearchCriteria, request.CultureName);
         }
 
+        public virtual Task<CartAggregate> Handle(GetCartByIdQuery request, CancellationToken cancellationToken)
+        {
+            return _cartAggrRepository.GetCartByIdAsync(request.CartId);
+        }
+
+
         protected virtual ShoppingCartSearchCriteria GetCartSearchCriteria(GetCartQuery request)
         {
             var cartSearchCriteria = AbstractTypeFactory<ShoppingCartSearchCriteria>.TryCreateInstance();
@@ -38,11 +44,6 @@ namespace VirtoCommerce.XPurchase.Queries
             cartSearchCriteria.ResponseGroup = EnumUtility.SafeParseFlags(_cartResponseGroupParser.GetResponseGroup(request.IncludeFields), CartResponseGroup.Full).ToString();
 
             return cartSearchCriteria;
-        }
-
-        public virtual Task<CartAggregate> Handle(GetCartByIdQuery request, CancellationToken cancellationToken)
-        {
-            return _cartAggrRepository.GetCartByIdAsync(request.CartId);
         }
     }
 }

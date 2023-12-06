@@ -32,7 +32,6 @@ namespace VirtoCommerce.XPurchase.Schemas
     {
         private readonly IMediator _mediator;
         private readonly IAuthorizationService _authorizationService;
-        private readonly ICurrencyService _currencyService;
         private readonly IShoppingCartService _cartService;
         private readonly IShoppingCartSearchService _shoppingCartSearchService;
         private readonly IDistributedLockService _distributedLockService;
@@ -54,7 +53,6 @@ namespace VirtoCommerce.XPurchase.Schemas
         {
             _mediator = mediator;
             _authorizationService = authorizationService;
-            _currencyService = currencyService;
             _cartService = cartService;
             _shoppingCartSearchService = shoppingCartSearchService;
             _distributedLockService = distributedLockService;
