@@ -1276,6 +1276,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                 .Argument<StringGraphType>("userId", "User Id")
                 .Argument<StringGraphType>("currencyCode", "Currency Code")
                 .Argument<StringGraphType>("cultureName", "Culture Name")
+                .Argument<StringGraphType>("scope", "List scope")
                 .Argument<StringGraphType>("sort", "The sort expression")
                 .PageSize(20);
 
@@ -1469,6 +1470,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             var skip = Convert.ToInt32(context.After ?? 0.ToString());
 
             var query = context.GetCartQuery<SearchWishlistQuery>();
+            query.Scope = context.GetArgument<string>("scope");
             query.Skip = skip;
             query.Take = first ?? context.PageSize ?? 10;
             query.Sort = context.GetArgument<string>("sort");

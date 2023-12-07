@@ -84,6 +84,19 @@ namespace VirtoCommerce.XPurchase
             return this;
         }
 
+        public CartSearchCriteriaBuilder WithScope(string scope)
+        {
+            if (string.IsNullOrEmpty(scope))
+            {
+                return this;
+            }
+
+            _searchCriteria.CustomerOrOrganization = false;
+            _searchCriteria.CustomerId = scope.EqualsInvariant(XPurchaseConstants.OrganizationScope) ? null : _searchCriteria.CustomerId;
+            _searchCriteria.NoOrganization = scope.EqualsInvariant(XPurchaseConstants.PrivateScope);
+            return this;
+        }
+
         public CartSearchCriteriaBuilder WithPaging(int skip, int take)
         {
             _searchCriteria.Skip = skip;
