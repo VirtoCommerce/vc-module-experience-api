@@ -2,7 +2,9 @@ using GraphQL.Server;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using VirtoCommerce.CartModule.Core.Model.Search;
 using VirtoCommerce.Exp.ExtensionSamples.Commands;
+using VirtoCommerce.Exp.ExtensionSamples.UseCases.TypeExtension;
 using VirtoCommerce.Exp.ExtensionSamples.UseCases.TypeExtension.Queries;
 using VirtoCommerce.Exp.ExtensionSamples.UseCases.TypeExtension.Schemas;
 using VirtoCommerce.Exp.ExtensionSamples.UseCases.TypeExtension.Validators;
@@ -59,6 +61,7 @@ namespace VirtoCommerce.Exp.ExtensionSamples
 
             //Domain types overrides
             AbstractTypeFactory<ExpProduct>.OverrideType<ExpProduct, ExpProduct2>();
+            AbstractTypeFactory<ShoppingCartSearchCriteria>.OverrideType<ShoppingCartSearchCriteria, ShoppingCartSearchCriteriaExtended>();
 
             // Override products query
             services.OverrideQueryType<SearchProductQuery, SearchProductQueryExtended>().WithQueryHandler<ProductsQueryHandlerExtended>();

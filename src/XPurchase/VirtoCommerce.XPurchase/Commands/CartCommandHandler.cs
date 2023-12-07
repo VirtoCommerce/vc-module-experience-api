@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using VirtoCommerce.CartModule.Core.Model;
+using VirtoCommerce.CartModule.Core.Model.Search;
 using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.CoreModule.Core.Tax;
 using VirtoCommerce.Platform.Core.Common;
@@ -30,13 +31,27 @@ namespace VirtoCommerce.XPurchase.Commands
             }
             else
             {
-                result = await CartRepository.GetCartAsync(request.CartName, request.StoreId, request.UserId, request.CultureName, request.CurrencyCode, request.CartType);
+                var cartSearchCriteria = GetCartSearchCriteria(request);
+                result = await CartRepository.GetCartAsync(cartSearchCriteria, request.CultureName);
                 if (result == null)
                 {
                     result = await CreateNewCartAggregateAsync(request);
                 }
             }
             return result;
+        }
+
+        protected virtual ShoppingCartSearchCriteria GetCartSearchCriteria(TCartCommand request)
+        {
+            var cartSearchCriteria = AbstractTypeFactory<ShoppingCartSearchCriteria>.TryCreateInstance();
+
+            cartSearchCriteria.Name = request.CartName;
+            cartSearchCriteria.StoreId = request.StoreId;
+            cartSearchCriteria.CustomerId = request.UserId;
+            cartSearchCriteria.Currency = request.CurrencyCode;
+            cartSearchCriteria.Type = request.CartType;
+
+            return cartSearchCriteria;
         }
 
         protected virtual async Task<CartAggregate> GetCartById(string cartId, string language) => await CartRepository.GetCartByIdAsync(cartId, language);

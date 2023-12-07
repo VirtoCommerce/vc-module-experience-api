@@ -32,7 +32,6 @@ namespace VirtoCommerce.XPurchase.Schemas
     {
         private readonly IMediator _mediator;
         private readonly IAuthorizationService _authorizationService;
-        private readonly ICurrencyService _currencyService;
         private readonly IShoppingCartService _cartService;
         private readonly IShoppingCartSearchService _shoppingCartSearchService;
         private readonly IDistributedLockService _distributedLockService;
@@ -54,7 +53,6 @@ namespace VirtoCommerce.XPurchase.Schemas
         {
             _mediator = mediator;
             _authorizationService = authorizationService;
-            _currencyService = currencyService;
             _cartService = cartService;
             _shoppingCartSearchService = shoppingCartSearchService;
             _distributedLockService = distributedLockService;
@@ -65,67 +63,6 @@ namespace VirtoCommerce.XPurchase.Schemas
         public void Build(ISchema schema)
         {
             ValueConverter.Register<ExpCartAddress, Optional<ExpCartAddress>>(x => new Optional<ExpCartAddress>(x));
-
-            //Queries
-            //We can't use the fluent syntax for new types registration provided by dotnet graphql here, because we have the strict requirement for underlying types extensions
-            //and must use GraphTypeExtenstionHelper to resolve the effective type on execution time
-            var cartField = new FieldType
-            {
-                Name = "cart",
-                Arguments = new QueryArguments(
-                        new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "storeId", Description = "Store Id" },
-                        new QueryArgument<StringGraphType> { Name = "userId", Description = "User Id" },
-                        new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "currencyCode", Description = "Currency code (\"USD\")" },
-                        new QueryArgument<StringGraphType> { Name = "cultureName", Description = "Culture name (\"en-Us\")" },
-                        new QueryArgument<StringGraphType> { Name = "cartName", Description = "Cart name" },
-                        new QueryArgument<StringGraphType> { Name = "cartType", Description = "Cart type" }),
-                Type = GraphTypeExtenstionHelper.GetActualType<CartType>(),
-                Resolver = new AsyncFieldResolver<object>(async context =>
-                {
-                    var getCartQuery = context.GetCartQuery<GetCartQuery>();
-                    getCartQuery.IncludeFields = context.SubFields.Values.GetAllNodesPaths(context).ToArray();
-                    context.CopyArgumentsToUserContext();
-
-                    var allCurrencies = await _currencyService.GetAllCurrenciesAsync();
-
-                    //Store all currencies in the user context for future resolve in the schema types
-                    //this is required to resolve Currency in DiscountType
-                    context.SetCurrencies(allCurrencies, getCartQuery.CultureName);
-
-                    var cartAggregate = await _mediator.Send(getCartQuery);
-
-                    if (cartAggregate == null)
-                    {
-                        await AuthorizeAsync(context, getCartQuery.UserId);
-
-                        var createCartCommand = new CreateCartCommand(getCartQuery.StoreId, getCartQuery.CartType, getCartQuery.CartName, getCartQuery.UserId, getCartQuery.CurrencyCode, getCartQuery.CultureName);
-                        cartAggregate = await _mediator.Send(createCartCommand);
-                    }
-                    else
-                    {
-                        await AuthorizeAsync(context, cartAggregate.Cart);
-                    }
-
-                    context.SetExpandedObjectGraph(cartAggregate);
-
-                    return cartAggregate;
-                })
-            };
-            schema.Query.AddField(cartField);
-
-            var cartConnectionBuilder = GraphTypeExtenstionHelper.CreateConnection<CartType, object>()
-                .Name("carts")
-                .Argument<StringGraphType>("storeId", "")
-                .Argument<StringGraphType>("userId", "")
-                .Argument<StringGraphType>("currencyCode", "")
-                .Argument<StringGraphType>("cultureName", "")
-                .Argument<StringGraphType>("cartType", "")
-                .Argument<StringGraphType>("filter", "This parameter applies a filter to the query results")
-                .Argument<StringGraphType>("sort", "The sort expression")
-                .PageSize(20);
-
-            cartConnectionBuilder.ResolveAsync(async context => await ResolveCartsConnectionAsync(_mediator, context));
-            schema.Query.AddField(cartConnectionBuilder.FieldType);
 
             //Mutations
             /// <example>
@@ -1524,37 +1461,6 @@ namespace VirtoCommerce.XPurchase.Schemas
             schema.Mutation.AddField(moveListItemField);
 
             #endregion Wishlists
-        }
-
-        private async Task<object> ResolveCartsConnectionAsync(IMediator mediator, IResolveConnectionContext<object> context)
-        {
-            var first = context.First;
-            var skip = Convert.ToInt32(context.After ?? 0.ToString());
-
-            var query = context.GetCartQuery<SearchCartQuery>();
-            query.Skip = skip;
-            query.Take = first ?? context.PageSize ?? 10;
-            query.Sort = context.GetArgument<string>("sort");
-            query.Filter = context.GetArgument<string>("filter");
-            query.IncludeFields = context.SubFields.Values.GetAllNodesPaths(context).ToArray();
-
-            context.CopyArgumentsToUserContext();
-
-            var allCurrencies = await _currencyService.GetAllCurrenciesAsync();
-
-            //Store all currencies in the user context for future resolve in the schema types
-            //this is required to resolve Currency in DiscountType
-            context.SetCurrencies(allCurrencies, query.CultureName);
-
-            await AuthorizeAsync(context, query);
-
-            var response = await mediator.Send(query);
-            foreach (var cartAggregate in response.Results)
-            {
-                context.SetExpandedObjectGraph(cartAggregate);
-            }
-
-            return new PagedConnection<CartAggregate>(response.Results, query.Skip, query.Take, response.TotalCount);
         }
 
         private async Task<object> ResolveListConnectionAsync(IMediator mediator, IResolveConnectionContext<object> context)

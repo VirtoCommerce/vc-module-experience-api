@@ -102,6 +102,35 @@ namespace VirtoCommerce.XPurchase.Tests.Repositories
         }
 
         [Fact]
+        public async Task GetCartByCriteriaAsync_ShoppingCartNotFound_ReturnNull()
+        {
+            // Arrange
+            _shoppingCartSearchService
+                .Setup(x => x.SearchAsync(It.IsAny<ShoppingCartSearchCriteria>(), It.IsAny<bool>()))
+                .ReturnsAsync(new ShoppingCartSearchResult
+                {
+                    Results = new List<ShoppingCart>()
+                });
+
+            var searchCartCriteria = new ShoppingCartSearchCriteria
+            {
+                Name = It.IsAny<string>(),
+                StoreId = It.IsAny<string>(),
+                CustomerId = It.IsAny<string>(),
+                Currency = It.IsAny<string>(),
+                Type = It.IsAny<string>(),
+                ResponseGroup = It.IsAny<string>(),
+            };
+
+            // Act
+            var result = await repository.GetCartAsync(searchCartCriteria, null);
+
+            // Assert
+            result.Should().BeNull();
+            _shoppingCartSearchService.Verify(x => x.SearchAsync(It.IsAny<ShoppingCartSearchCriteria>(), It.IsAny<bool>()), Times.Once);
+        }
+
+        [Fact]
         public async Task GetCartForShoppingCartAsync_CartFound_AggregateReturnedCorrectly()
         {
             // Arrange
