@@ -44,9 +44,7 @@ namespace VirtoCommerce.XPurchase.Commands
 
             if (request.Scope?.EqualsInvariant(XPurchaseConstants.OrganizationScope) == true)
             {
-                var organizationId = contact?.Organizations?.FirstOrDefault();
-
-                cartAggregate.Cart.OrganizationId = organizationId;
+                cartAggregate.Cart.OrganizationId = contact?.Organizations?.FirstOrDefault();
             }
             else if (request.Scope?.EqualsInvariant(XPurchaseConstants.PrivateScope) == true)
             {
