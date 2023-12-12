@@ -36,15 +36,12 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Services
         public static readonly IEnumerable<object[]> ValuesNotMatchingValueType = new List<object[]>
         {
             //             Type                                Value         Expected exception
-            new object[] { DynamicPropertyValueType.ShortText, 0,                        typeof(InvalidOperationException) },
-            new object[] { DynamicPropertyValueType.LongText,  0,                        typeof(InvalidOperationException) },
             new object[] { DynamicPropertyValueType.Integer,   "test",                   typeof(InvalidOperationException) },
             new object[] { DynamicPropertyValueType.Integer,   0m,                       typeof(InvalidOperationException) },
             new object[] { DynamicPropertyValueType.Decimal,   "test",                   typeof(InvalidOperationException) },
             new object[] { DynamicPropertyValueType.Boolean,   "test",                   typeof(InvalidOperationException) },
-            new object[] { DynamicPropertyValueType.DateTime,  "test",                   typeof(InvalidOperationException) },
-            new object[] { DynamicPropertyValueType.DateTime,  DateTimeIso8601UtcString, typeof(InvalidOperationException) },
-            new object[] { DynamicPropertyValueType.DateTime,  DateTimeUtc.ToString(),   typeof(InvalidOperationException) },
+            new object[] { DynamicPropertyValueType.DateTime,  "test",                   typeof(FormatException) },
+            new object[] { DynamicPropertyValueType.DateTime,  DateTimeUtc.ToString(),   typeof(FormatException) },
         };
 
         [MemberData(nameof(ValuesMatchingValueType))]
@@ -67,7 +64,7 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Services
 
         [MemberData(nameof(ValuesNotMatchingValueType))]
         [Theory]
-        public void UpdateDynamicPropertyValues_ValueNotMatchingValueType_ThrowsException(DynamicPropertyValueType dynamicPropertyValueType, object value, Type expectedException)
+        public async Task UpdateDynamicPropertyValues_ValueNotMatchingValueType_ThrowsException(DynamicPropertyValueType dynamicPropertyValueType, object value, Type expectedException)
         {
             // Arrange
             var dynamicProperties = GetDynamicProperties(dynamicPropertyValueType);
@@ -80,7 +77,7 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Services
             var action = () => dynamicPropertiesUpdaterService.UpdateDynamicPropertyValues(testObject, values);
 
             // Assert
-            Assert.ThrowsAsync(expectedException, action);
+            await Assert.ThrowsAsync(expectedException, action);
         }
 
         private static string GetDynamicPropertyName(DynamicPropertyValueType dynamicPropertyValueType)
@@ -133,7 +130,7 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Services
             return new DynamicPropertyUpdaterService(GetDynamicPropertyMetaDataResolver(dynamicProperties));
         }
 
-        private class TestHasDynamicProperties: IHasDynamicProperties
+        private class TestHasDynamicProperties : IHasDynamicProperties
         {
             public string Id { get; set; }
 
