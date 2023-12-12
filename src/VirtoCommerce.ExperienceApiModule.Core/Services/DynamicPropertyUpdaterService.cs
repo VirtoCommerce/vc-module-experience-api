@@ -16,7 +16,6 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Services
         private readonly DecimalGraphType _decimalGraphType = new();
         private readonly DateTimeGraphType _dateTimeGraphType = new();
         private readonly BooleanGraphType _booleanGraphType = new();
-        private readonly StringGraphType _stringGraphType = new();
 
         public DynamicPropertyUpdaterService(IDynamicPropertyMetaDataResolver metadataResolver)
         {

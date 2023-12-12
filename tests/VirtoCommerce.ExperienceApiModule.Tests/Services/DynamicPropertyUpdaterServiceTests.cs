@@ -46,7 +46,7 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Services
 
         [MemberData(nameof(ValuesMatchingValueType))]
         [Theory]
-        public void UpdateDynamicPropertyValues_ValueMatchingValueType_Parsed(DynamicPropertyValueType dynamicPropertyValueType, object value, object expectedValue)
+        public async Task UpdateDynamicPropertyValues_ValueMatchingValueType_Parsed(DynamicPropertyValueType dynamicPropertyValueType, object value, object expectedValue)
         {
             // Arrange
             var dynamicProperties = GetDynamicProperties(dynamicPropertyValueType);
@@ -56,7 +56,7 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Services
             var dynamicPropertiesUpdaterService = GetDynamicPropertyUpdaterService(dynamicProperties);
 
             // Act
-            dynamicPropertiesUpdaterService.UpdateDynamicPropertyValues(testObject, values);
+            await dynamicPropertiesUpdaterService.UpdateDynamicPropertyValues(testObject, values);
 
             // Assert
             Assert.Equal(expectedValue, testObject.DynamicProperties.First().Values.First().Value);
@@ -85,7 +85,7 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Services
             return dynamicPropertyValueType.ToString();
         }
 
-        private static ICollection<DynamicObjectProperty> GetDynamicProperties(DynamicPropertyValueType dynamicPropertyValueType)
+        private static List<DynamicObjectProperty> GetDynamicProperties(DynamicPropertyValueType dynamicPropertyValueType)
         {
             var dynamicPropertyName = GetDynamicPropertyName(dynamicPropertyValueType);
 
@@ -97,12 +97,12 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Services
             return dynamicProperties;
         }
 
-        private static IHasDynamicProperties GetTestObject(ICollection<DynamicObjectProperty> dynamicProperties)
+        private static TestHasDynamicProperties GetTestObject(ICollection<DynamicObjectProperty> dynamicProperties)
         {
             return new TestHasDynamicProperties { DynamicProperties = dynamicProperties };
         }
 
-        private static IList<DynamicPropertyValue> GetDynamicPropertyValues(DynamicPropertyValueType dynamicPropertyValueType, object value)
+        private static List<DynamicPropertyValue> GetDynamicPropertyValues(DynamicPropertyValueType dynamicPropertyValueType, object value)
         {
             var dynamicPropertyName = GetDynamicPropertyName(dynamicPropertyValueType);
 
@@ -125,7 +125,7 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Services
             return mock.Object;
         }
 
-        private static IDynamicPropertyUpdaterService GetDynamicPropertyUpdaterService(IEnumerable<DynamicObjectProperty> dynamicProperties)
+        private static DynamicPropertyUpdaterService GetDynamicPropertyUpdaterService(IEnumerable<DynamicObjectProperty> dynamicProperties)
         {
             return new DynamicPropertyUpdaterService(GetDynamicPropertyMetaDataResolver(dynamicProperties));
         }
