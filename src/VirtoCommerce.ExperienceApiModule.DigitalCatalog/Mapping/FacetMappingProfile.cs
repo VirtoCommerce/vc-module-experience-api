@@ -43,7 +43,7 @@ namespace VirtoCommerce.XDigitalCatalog.Mapping
                             ToStr = x.RequestedUpperBound,
                             IsSelected = x.IsApplied,
                             Label = x.Value?.ToString(),
-                        })?
+                        })
                             .ToArray() ?? [],
                         Name = request.Field,
                     },
