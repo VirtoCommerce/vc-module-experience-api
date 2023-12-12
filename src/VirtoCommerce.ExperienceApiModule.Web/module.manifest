@@ -1,32 +1,34 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <module>
   <id>VirtoCommerce.ExperienceApi</id>
-  <version>3.800.0</version>
+  <version>3.444.0</version>
   <version-tag />
-  <platformVersion>3.800.0-alpha.12831-net8</platformVersion>
+
+  <platformVersion>3.447.0</platformVersion>
   <dependencies>
-    <dependency id="VirtoCommerce.Cart" version="3.800.0-alpha.653-pt-14740-net8" />
-    <dependency id="VirtoCommerce.Catalog" version="3.800.0-alpha.2182-pt-14740-net8" />
-    <dependency id="VirtoCommerce.Content" version="3.800.0-alpha.927-pt-14740-net8" />
-    <dependency id="VirtoCommerce.Core" version="3.800.0-alpha.1593-pt-14740-net8" />
-    <dependency id="VirtoCommerce.Customer" version="3.800.0-alpha.802-pt-14740-net8" />
-    <dependency id="VirtoCommerce.Inventory" version="3.800.0-alpha.442-pt-14740-net8" />
-    <dependency id="VirtoCommerce.Marketing" version="3.800.0-alpha.821-pt-14740-net8" />
-    <dependency id="VirtoCommerce.Orders" version="3.800.0-alpha.1200-pt-14740-net8" />
-    <dependency id="VirtoCommerce.Payment" version="3.800.0-alpha.212-pt-14740-net8" />
-    <dependency id="VirtoCommerce.Pricing" version="3.800.0-alpha.712-pt-14740-net8" />
-    <dependency id="VirtoCommerce.Search" version="3.800.0-alpha.726-pt-14740-net8" />
-    <dependency id="VirtoCommerce.Shipping" version="3.800.0-alpha.177-pt-14740-net8" />
-    <dependency id="VirtoCommerce.Store" version="3.800.0-alpha.676-pt-14740-net8" />
-    <dependency id="VirtoCommerce.Tax" version="3.800.0-alpha.170-pt-14740-net8" />
+    <dependency id="VirtoCommerce.Cart" version="3.408.0" />
+    <dependency id="VirtoCommerce.Catalog" version="3.401.0" />
+    <dependency id="VirtoCommerce.Content" version="3.414.0" />
+    <dependency id="VirtoCommerce.Core" version="3.400.0" />
+    <dependency id="VirtoCommerce.Customer" version="3.400.0" />
+    <dependency id="VirtoCommerce.Inventory" version="3.402.0" />
+    <dependency id="VirtoCommerce.Marketing" version="3.400.0" />
+    <dependency id="VirtoCommerce.Orders" version="3.422.0" />
+    <dependency id="VirtoCommerce.Payment" version="3.400.0" />
+    <dependency id="VirtoCommerce.Pricing" version="3.400.0" />
+    <dependency id="VirtoCommerce.Search" version="3.401.0" />
+    <dependency id="VirtoCommerce.Shipping" version="3.401.0" />
+    <dependency id="VirtoCommerce.Store" version="3.400.0" />
+    <dependency id="VirtoCommerce.Tax" version="3.400.0" />
   </dependencies>
+
   <title>Commerce Experience API</title>
   <description>An intermediated layer between clients and enterprise services powered by GraphQL protocol</description>
   <authors>
     <author>Eugeny Tatarincev</author>
     <author>Yan Brovkin</author>
     <author>Fillip Kuksov</author>
-    <author>Egidijus MaÅ¾eika</author>
+    <author>Egidijus Mažeika</author>
     <author>Andrei Kostyrin</author>
     <author>Dmitri Pushnitsa</author>
     <author>Alexandr Andreev</author>
@@ -42,7 +44,7 @@
   <iconUrl>Modules/$(VirtoCommerce.ExperienceApi)/Content/logoVC.png</iconUrl>
   <requireLicenseAcceptance>false</requireLicenseAcceptance>
   <releaseNotes />
-  <copyright>Copyright © 2011-2024 Virto Commerce. All rights reserved</copyright>
+  <copyright>Copyright © 2011–2023 Virto Commerce. All rights reserved</copyright>
   <tags>security core</tags>
   <assemblyFile>VirtoCommerce.ExperienceApiModule.Web.dll</assemblyFile>
   <moduleType>VirtoCommerce.ExperienceApiModule.Web.Module, VirtoCommerce.ExperienceApiModule.Web</moduleType>
