@@ -26,8 +26,8 @@ namespace VirtoCommerce.XDigitalCatalog.Mapping
                             Term = x.Value?.ToString(),
 
                             Label = x.Labels?.FirstBestMatchForLanguage(x => x.Language, cultureName)?.Label ?? x.Value.ToString(),
-                        })?
-                            .ToArray(),
+                        })
+                            .ToArray() ?? [],
                         Name = request.Field
                     },
                     "pricerange" => new RangeFacetResult
@@ -44,7 +44,7 @@ namespace VirtoCommerce.XDigitalCatalog.Mapping
                             IsSelected = x.IsApplied,
                             Label = x.Value?.ToString(),
                         })?
-                            .ToArray(),
+                            .ToArray() ?? [],
                         Name = request.Field,
                     },
                     _ => null

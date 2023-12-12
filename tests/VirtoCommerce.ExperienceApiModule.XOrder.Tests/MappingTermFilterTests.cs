@@ -27,7 +27,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Tests
             {
                 new TermFilter { FieldName = "CustomerId", Values = new[] { Guid.NewGuid().ToString() } },
                 new TermFilter { FieldName = "CustomerIds", Values = new[] { Guid.NewGuid().ToString() } },
-                new TermFilter { FieldName = "SubscriptionIds", Values = new string [] { } },
+                new TermFilter { FieldName = "SubscriptionIds", Values = Array.Empty<string>() },
                 new TermFilter { FieldName = "SubscriptionIds", Values = null }
             };
 
