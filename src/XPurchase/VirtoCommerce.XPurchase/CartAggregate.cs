@@ -421,6 +421,7 @@ namespace VirtoCommerce.XPurchase
 
             Cart.Coupons.Clear();
             Cart.Items.Clear();
+            Cart.DynamicProperties.Clear();
 
             return Task.FromResult(this);
         }
