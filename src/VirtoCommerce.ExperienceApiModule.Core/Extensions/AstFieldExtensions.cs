@@ -45,13 +45,18 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
             }
         }
 
-        private static List<INode> GetCombinedChildrenNodes(INode node, IResolveFieldContext context)
+        private static IEnumerable<INode> GetCombinedChildrenNodes(INode node, IResolveFieldContext context)
         {
             var combinedNodes = new List<INode>();
 
             if (node.Children.IsNullOrEmpty())
             {
                 return combinedNodes;
+            }
+
+            if (context?.Document?.Fragments.IsNullOrEmpty() == true)
+            {
+                return node.Children ?? combinedNodes;
             }
 
             foreach (var child in node.Children)
