@@ -33,7 +33,8 @@ namespace VirtoCommerce.XPurchase.Tests.Aggregates
                 _cartProductServiceMock.Object,
                 _dynamicPropertyUpdaterService.Object,
                 _mapperMock.Object,
-                _memberOrdersServiceMock.Object);
+                _memberOrdersServiceMock.Object,
+                _memberService.Object);
 
             var cart = GetCart();
             var member = GetMember();
