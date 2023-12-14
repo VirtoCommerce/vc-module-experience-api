@@ -55,7 +55,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
             }
 
             var fragments = context?.Document?.Fragments;
-            if (fragments.IsNullOrEmpty() == true)
+            if (fragments.IsNullOrEmpty())
             {
                 return node.Children ?? combinedNodes;
             }
