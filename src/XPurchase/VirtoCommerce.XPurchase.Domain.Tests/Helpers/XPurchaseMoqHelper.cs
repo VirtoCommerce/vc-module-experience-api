@@ -177,6 +177,9 @@ namespace VirtoCommerce.XPurchase.Tests.Helpers
                 .Returns(true);
 
             _memberService = new Mock<IMemberService>();
+            _memberService
+                .Setup(x => x.GetByIdAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+                .ReturnsAsync(_fixture.Create<Organization>());
         }
 
         protected ShoppingCart GetCart() => _fixture.Create<ShoppingCart>();
