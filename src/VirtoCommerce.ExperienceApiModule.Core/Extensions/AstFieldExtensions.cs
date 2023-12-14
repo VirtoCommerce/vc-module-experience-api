@@ -54,7 +54,8 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
                 return combinedNodes;
             }
 
-            if (context?.Document?.Fragments.IsNullOrEmpty() == true)
+            var fragments = context?.Document?.Fragments;
+            if (fragments.IsNullOrEmpty() == true)
             {
                 return node.Children ?? combinedNodes;
             }
@@ -63,7 +64,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
             {
                 if (child is FragmentSpread fragment)
                 {
-                    var fragmentDefenition = context?.Document?.Fragments?.FirstOrDefault(x => x.Name == fragment.Name);
+                    var fragmentDefenition = fragments.FirstOrDefault(x => x.Name == fragment.Name);
                     if (fragmentDefenition?.Children != null)
                     {
                         combinedNodes.AddRange(fragmentDefenition.Children.Where(x => x is not NamedType));
