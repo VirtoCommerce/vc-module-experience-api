@@ -55,6 +55,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Commands
             cartAggregate.Cart.PurchaseOrderNumber = string.Empty;
             cartAggregate.Cart.Comment = string.Empty;
             cartAggregate.Cart.Coupon = string.Empty;
+            cartAggregate.Cart.DynamicProperties?.Clear();
 
             await _cartRepository.SaveAsync(cartAggregate);
 
