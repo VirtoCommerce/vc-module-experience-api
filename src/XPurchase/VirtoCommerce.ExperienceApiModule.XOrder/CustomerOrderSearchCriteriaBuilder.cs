@@ -44,7 +44,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder
 
         public CustomerOrderSearchCriteriaBuilder WithCustomerId(string customerId)
         {
-            _searchCriteria.Keyword = $"{_searchCriteria.Keyword} customerId:\"{customerId}\"";
+            _searchCriteria.Keyword += !string.IsNullOrEmpty(customerId) ? $" customerId:\"{customerId}\"" : string.Empty;
             return this;
         }
 

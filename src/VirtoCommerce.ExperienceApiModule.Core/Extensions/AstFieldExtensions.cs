@@ -4,6 +4,7 @@ using System.Linq;
 using GraphQL;
 using GraphQL.Execution;
 using GraphQL.Language.AST;
+using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
 {
@@ -26,9 +27,12 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
             {
                 path = path != null ? string.Join(".", path, field.Name) : field.Name;
             }
-            if (node.Children != null)
+
+            // combine fragment nodes and other children nodes
+            var combinedNodes = GetCombinedChildrenNodes(node, context);
+            if (combinedNodes.Any())
             {
-                var childrenPaths = node.Children.Where(n => context != null && ShouldIncludeNode(context, n))
+                var childrenPaths = combinedNodes.Where(n => context != null && ShouldIncludeNode(context, n))
                     .SelectMany(n => n.GetAllTreeNodesPaths(context, path));
                 foreach (var childPath in childrenPaths.DefaultIfEmpty(path))
                 {
@@ -39,6 +43,40 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
             {
                 yield return path;
             }
+        }
+
+        private static IEnumerable<INode> GetCombinedChildrenNodes(INode node, IResolveFieldContext context)
+        {
+            var combinedNodes = new List<INode>();
+
+            if (node.Children.IsNullOrEmpty())
+            {
+                return combinedNodes;
+            }
+
+            var fragments = context?.Document?.Fragments;
+            if (fragments.IsNullOrEmpty())
+            {
+                return node.Children ?? combinedNodes;
+            }
+
+            foreach (var child in node.Children)
+            {
+                if (child is FragmentSpread fragment)
+                {
+                    var fragmentDefenition = fragments.FirstOrDefault(x => x.Name == fragment.Name);
+                    if (fragmentDefenition?.Children != null)
+                    {
+                        combinedNodes.AddRange(fragmentDefenition.Children.Where(x => x is not NamedType));
+                    }
+                }
+                else
+                {
+                    combinedNodes.Add(child);
+                }
+            }
+
+            return combinedNodes;
         }
 
         private static bool ShouldIncludeNode(IResolveFieldContext context, INode node)
