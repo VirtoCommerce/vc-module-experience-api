@@ -9,6 +9,7 @@ using Moq;
 using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.CartModule.Core.Services;
 using VirtoCommerce.CustomerModule.Core.Model;
+using VirtoCommerce.CustomerModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.XOrder.Commands;
 using VirtoCommerce.ExperienceApiModule.XOrder.Tests.Helpers;
@@ -26,7 +27,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Tests.Handlers
     public class CreateOrderFromCartCommandHandlerTests : CustomerOrderMockHelper
     {
         [Fact]
-        public async Task Handle_CartHasValidationErrors_ExceptionThrown()
+        public Task Handle_CartHasValidationErrors_ExceptionThrown()
         {
             // Arrange
             var cart = _fixture.Create<ShoppingCart>();
@@ -65,7 +66,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Tests.Handlers
                 validationContextMock.Object);
 
             // Assert
-            await Assert.ThrowsAsync<ExecutionError>(() => handler.Handle(request, CancellationToken.None));
+            return Assert.ThrowsAsync<ExecutionError>(() => handler.Handle(request, CancellationToken.None));
         }
 
         private static CartAggregate GetCartAggregateMock(ShoppingCart cart)
@@ -77,7 +78,8 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Tests.Handlers
                 Mock.Of<ICartProductService>(),
                 Mock.Of<IDynamicPropertyUpdaterService>(),
                 Mock.Of<IMapper>(),
-                Mock.Of<IMemberOrdersService>());
+                Mock.Of<IMemberOrdersService>(),
+                Mock.Of<IMemberService>());
 
             var contact = new Contact()
             {

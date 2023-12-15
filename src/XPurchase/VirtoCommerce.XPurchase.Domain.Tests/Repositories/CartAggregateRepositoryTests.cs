@@ -163,8 +163,7 @@ namespace VirtoCommerce.XPurchase.Tests.Repositories
                  _currencyService.Object,
                  _memberResolver.Object,
                  _storeService.Object,
-                 _cartProductServiceMock.Object
-                 );
+                 _cartProductServiceMock.Object);
 
             var storeId = "Store";
             var store = _fixture.Create<Store>();

@@ -164,6 +164,8 @@ namespace VirtoCommerce.XPurchase
             {
                 aggregate.GrabCart(cart, store, member, currency);
 
+                // Update Cart's Organization Id and Name from member.
+                await aggregate.UpdateOrganization(cart, member);
 
                 //Load cart products explicitly if no validation is requested
                 var cartProducts = await _cartProductsService.GetCartProductsByIdsAsync(aggregate, aggregate.Cart.Items.Select(x => x.ProductId).ToArray());
@@ -174,7 +176,6 @@ namespace VirtoCommerce.XPurchase
                 }
 
                 var validator = AbstractTypeFactory<CartLineItemPriceChangedValidator>.TryCreateInstance();
-
                 foreach (var lineItem in aggregate.LineItems)
                 {
                     var cartProduct = aggregate.CartProducts[lineItem.ProductId];
@@ -185,7 +186,6 @@ namespace VirtoCommerce.XPurchase
 
                     await aggregate.SetItemFulfillmentCenterAsync(lineItem, cartProduct);
                     await aggregate.UpdateVendor(lineItem, cartProduct);
-                    await aggregate.UpdateOrganization(cart, member);
 
                     // validate price change
                     var lineItemContext = new CartLineItemPriceChangedValidationContext
