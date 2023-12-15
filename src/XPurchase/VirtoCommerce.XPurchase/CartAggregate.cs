@@ -706,6 +706,7 @@ namespace VirtoCommerce.XPurchase
             if (member is Contact contact && cart.Type != XPurchaseConstants.ListTypeName)
             {
                 cart.OrganizationId = contact.Organizations?.FirstOrDefault();
+
                 if (!string.IsNullOrEmpty(cart.OrganizationId))
                 {
                     var org = await _memberService.GetByIdAsync(cart.OrganizationId);
