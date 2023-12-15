@@ -11,6 +11,7 @@ using VirtoCommerce.CartModule.Core.Services;
 using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.CustomerModule.Core.Model;
+using VirtoCommerce.CustomerModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.Core.Models;
 using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.MarketingModule.Core.Model.Promotions;
@@ -41,6 +42,7 @@ namespace VirtoCommerce.XPurchase
         private readonly ICartProductService _cartProductService;
         private readonly IDynamicPropertyUpdaterService _dynamicPropertyUpdaterService;
         private readonly IMemberOrdersService _memberOrdersService;
+        private readonly IMemberService _memberService;
         private readonly IMapper _mapper;
 
         private bool? _isFirstTimeBuyer;
@@ -52,7 +54,8 @@ namespace VirtoCommerce.XPurchase
             ICartProductService cartProductService,
             IDynamicPropertyUpdaterService dynamicPropertyUpdaterService,
             IMapper mapper,
-            IMemberOrdersService memberOrdersService)
+            IMemberOrdersService memberOrdersService,
+            IMemberService memberService)
         {
             _cartTotalsCalculator = cartTotalsCalculator;
             _marketingEvaluator = marketingEvaluator;
@@ -61,6 +64,7 @@ namespace VirtoCommerce.XPurchase
             _dynamicPropertyUpdaterService = dynamicPropertyUpdaterService;
             _mapper = mapper;
             _memberOrdersService = memberOrdersService;
+            _memberService = memberService;
         }
 
         public Store Store { get; protected set; }
@@ -697,14 +701,20 @@ namespace VirtoCommerce.XPurchase
             return Task.FromResult(this);
         }
 
-        public virtual Task<CartAggregate> UpdateOrganization(ShoppingCart cart, Member member)
+        public virtual async Task<CartAggregate> UpdateOrganization(ShoppingCart cart, Member member)
         {
             if (member is Contact contact && cart.Type != XPurchaseConstants.ListTypeName)
             {
                 cart.OrganizationId = contact.Organizations?.FirstOrDefault();
+
+                if (!string.IsNullOrEmpty(cart.OrganizationId))
+                {
+                    var org = await _memberService.GetByIdAsync(cart.OrganizationId);
+                    cart.OrganizationName = org.Name;
+                }
             }
 
-            return Task.FromResult(this);
+            return this;
         }
 
         public virtual async Task<CartAggregate> UpdateCartDynamicProperties(IList<DynamicPropertyValue> dynamicProperties)
