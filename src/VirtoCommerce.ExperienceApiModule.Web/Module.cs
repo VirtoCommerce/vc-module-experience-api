@@ -69,17 +69,24 @@ namespace VirtoCommerce.ExperienceApiModule.Web
 
             if (!IsSchemaIntrospectionEnabled)
             {
-                var rulesTypesToReplace = new List<Type> { typeof(KnownTypeNames), typeof(FieldsOnCorrectType), typeof(KnownArgumentNames) };
+                var rulesMap = new Dictionary<Type, Type>()
+                {
+                    { typeof(KnownTypeNames), typeof(CustomKnownTypeNames) },
+                    { typeof(FieldsOnCorrectType), typeof(CustomFieldsOnCorrectType) },
+                    { typeof(KnownArgumentNames), typeof(CustomKnownArgumentNames) }
+                };
 
                 var coreRules = DocumentValidator.CoreRules as List<IValidationRule>;
-                foreach (var rule in DocumentValidator.CoreRules.Where(x => rulesTypesToReplace.Contains(x.GetType())).ToArray())
-                {
-                    coreRules.Remove(rule);
-                }
 
-                graphQlBuilder.AddCustomValidationRule<CustomKnownArgumentNames>()
-                    .AddCustomValidationRule<CustomKnownTypeNames>()
-                    .AddCustomValidationRule<CustomFieldsOnCorrectType>();
+                foreach (var rule in rulesMap)
+                {
+                    var ruleToReplace = coreRules?.FirstOrDefault(x => x.GetType() == rule.Key);
+                    if (ruleToReplace != null)
+                    {
+                        coreRules.Remove(ruleToReplace);
+                        graphQlBuilder.AddCustomValidationRule(rule.Value);
+                    }
+                }
             }
 
             //Register custom GraphQL dependencies
