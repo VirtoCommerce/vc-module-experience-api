@@ -55,7 +55,7 @@ namespace VirtoCommerce.XPurchase.Tests.Handlers
             customerAggrRep.Setup(x => x.CreateOrderFromCart(It.IsAny<ShoppingCart>()))
                 .ReturnsAsync(new CustomerOrderAggregate(null, null));
 
-            var cartAggr = new CartAggregate(null, null, null, null, null, null, null);
+            var cartAggr = new CartAggregate(null, null, null, null, null, null, null, null);
             cartAggr.GrabCart(cart, new Store(), new Contact(), new Currency());
             var cartAggrRep = new Mock<ICartAggregateRepository>();
             cartAggrRep.Setup(x => x.GetCartForShoppingCartAsync(It.IsAny<ShoppingCart>(), null))

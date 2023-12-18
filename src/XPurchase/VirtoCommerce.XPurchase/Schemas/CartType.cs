@@ -34,6 +34,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field(x => x.Cart.CustomerId, nullable: false).Description("Shopping cart user ID");
             Field(x => x.Cart.CustomerName, nullable: true).Description("Shopping cart user name");
             Field(x => x.Cart.OrganizationId, nullable: true).Description("Shopping cart organization ID");
+            Field(x => x.Cart.OrganizationName, nullable: true).Description("Shopping cart organization name");
             Field(x => x.Cart.IsRecuring, nullable: true).Description("Displays whether the shopping cart is recurring");
             Field(x => x.Cart.Comment, nullable: true).Description("Shopping cart text comment");
             Field(x => x.Cart.PurchaseOrderNumber, nullable: true).Description("Purchase order number");
