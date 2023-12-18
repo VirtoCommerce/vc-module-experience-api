@@ -18,9 +18,11 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Services
         {
             // Arrange
             var dynamicPropertySearchServiceMock = new Mock<IDynamicPropertySearchService>();
+#pragma warning disable VC0005 // Type or member is obsolete
             dynamicPropertySearchServiceMock
-                .Setup(x => x.SearchAsync(It.Is<DynamicPropertySearchCriteria>(x => x.ObjectType == entity.ObjectType), It.IsAny<bool>()))
+                .Setup(x => x.SearchDynamicPropertiesAsync(It.Is<DynamicPropertySearchCriteria>(x => x.ObjectType == entity.ObjectType)))
                 .Returns(Task.FromResult(new DynamicPropertySearchResult { Results = Properties }));
+#pragma warning restore VC0005 // Type or member is obsolete
 
             // Act
             var target = new DynamicPropertyResolverService(dynamicPropertySearchServiceMock.Object);
