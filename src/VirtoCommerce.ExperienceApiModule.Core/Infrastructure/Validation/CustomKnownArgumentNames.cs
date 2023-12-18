@@ -31,7 +31,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Infrastructure.Validation
                                 var fieldArgument = field.Arguments?.Find(node.Name);
                                 if (fieldArgument == null)
                                 {
-                                    var fieldClone = new FieldType { Name = fieldArgument.Name };
+                                    var fieldClone = new FieldType { Name = field.Name };
                                     var parentType = context.TypeInfo.GetParentType() ?? throw new InvalidOperationException("Parent type must not be null.");
                                     context.ReportError(new KnownArgumentNamesError(context, node, fieldClone, parentType));
                                 }
