@@ -7,11 +7,16 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Infrastructure.Validation
 {
     public class CustomKnownTypeNames : IValidationRule
     {
-        public virtual async Task<INodeVisitor> ValidateAsync(ValidationContext context)
-        {
-            var visitor = new NodeVisitors(new MatchingNodeVisitor<NamedType>((node, context) => Validate(node, context)));
+        private readonly INodeVisitor _nodeVisitor;
 
-            return await Task.FromResult(visitor);
+        public CustomKnownTypeNames()
+        {
+            _nodeVisitor = new NodeVisitors(new MatchingNodeVisitor<NamedType>(Validate));
+        }
+
+        public virtual Task<INodeVisitor> ValidateAsync(ValidationContext context)
+        {
+            return Task.FromResult(_nodeVisitor);
         }
 
         protected virtual void Validate(NamedType node, ValidationContext context)
