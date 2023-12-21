@@ -8,11 +8,16 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Infrastructure.Validation
 {
     public class CustomFieldsOnCorrectType : IValidationRule
     {
-        public virtual async Task<INodeVisitor> ValidateAsync(ValidationContext context)
-        {
-            var visitor = new NodeVisitors(new MatchingNodeVisitor<Field>((node, context) => Validate(node, context)));
+        private readonly INodeVisitor _nodeVisitor;
 
-            return await Task.FromResult(visitor);
+        public CustomFieldsOnCorrectType()
+        {
+            _nodeVisitor = new NodeVisitors(new MatchingNodeVisitor<Field>(Validate));
+        }
+
+        public virtual Task<INodeVisitor> ValidateAsync(ValidationContext context)
+        {
+            return Task.FromResult(_nodeVisitor);
         }
 
         protected virtual void Validate(Field node, ValidationContext context)
