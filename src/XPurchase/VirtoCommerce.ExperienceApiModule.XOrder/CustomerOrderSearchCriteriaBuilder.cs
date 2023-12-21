@@ -44,7 +44,23 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder
 
         public CustomerOrderSearchCriteriaBuilder WithCustomerId(string customerId)
         {
-            _searchCriteria.Keyword = $"{_searchCriteria.Keyword} customerId:\"{customerId}\"";
+            if (!string.IsNullOrEmpty(customerId))
+            {
+                // customerId should be added before custom Keyword to prevent overriding
+                _searchCriteria.Keyword = $"customerId:\"{customerId}\" {_searchCriteria.Keyword}";
+            }
+
+            return this;
+        }
+
+        public CustomerOrderSearchCriteriaBuilder WithOrganizationId(string organizationId)
+        {
+            if (!string.IsNullOrEmpty(organizationId))
+            {
+                // organizationId should be added before custom Keyword to prevent overriding
+                _searchCriteria.Keyword = $"organizationId:\"{organizationId}\" {_searchCriteria.Keyword}";
+            }
+
             return this;
         }
 
