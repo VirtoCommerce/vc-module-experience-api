@@ -251,6 +251,13 @@ namespace VirtoCommerce.XPurchase
                         giftItem = _mapper.Map<LineItem>(availableGift);
                         giftItem.Id = null;
                         giftItem.IsGift = true;
+                        giftItem.Discounts ??= new List<Discount>();
+                        giftItem.Discounts.Add(new Discount
+                        {
+                            Coupon = availableGift.Coupon,
+                            PromotionId = availableGift.Promotion.Id,
+                            Currency = Cart.Currency,
+                        });
                         giftItem.CatalogId ??= "";
                         giftItem.ProductId ??= "";
                         giftItem.Sku ??= "";
