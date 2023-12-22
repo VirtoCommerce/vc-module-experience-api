@@ -1,12 +1,13 @@
 using GraphQL.Introspection;
 using GraphQL.Server;
 using GraphQL.Types;
+using GraphQL.Validation.Rules;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
+using VirtoCommerce.ExperienceApiModule.Core.Infrastructure.Validation;
 using VirtoCommerce.ExperienceApiModule.Core.Models;
 using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
 using VirtoCommerce.ExperienceApiModule.Core.Services;
@@ -30,6 +31,15 @@ namespace VirtoCommerce.ExperienceApiModule.Web
         public ManifestModuleInfo ModuleInfo { get; set; }
         public IConfiguration Configuration { get; set; }
 
+        private const string GraphQLPlaygroundConfigKey = "VirtoCommerce:GraphQLPlayground";
+        private bool IsSchemaIntrospectionEnabled
+        {
+            get
+            {
+                return Configuration.GetValue<bool>($"{GraphQLPlaygroundConfigKey}:{nameof(GraphQLPlaygroundOptions.Enable)}");
+            }
+        }
+
         public void Initialize(IServiceCollection services)
         {
             services.AddApplicationInsightsTelemetryProcessor<IgnorePlainGraphQLTelemetryProcessor>();
@@ -49,7 +59,15 @@ namespace VirtoCommerce.ExperienceApiModule.Web
             })
             .AddUserContextBuilder(context => context.BuildGraphQLUserContext())
             .AddRelayGraphTypes()
-            .AddDataLoader();
+            .AddDataLoader()
+            .AddCustomValidationRule<ContentTypeValidationRule>();
+
+            if (!IsSchemaIntrospectionEnabled)
+            {
+                graphQlBuilder.ReplaceValidationRule<KnownTypeNames, CustomKnownTypeNames>();
+                graphQlBuilder.ReplaceValidationRule<FieldsOnCorrectType, CustomFieldsOnCorrectType>();
+                graphQlBuilder.ReplaceValidationRule<KnownArgumentNames, CustomKnownArgumentNames>();
+            }
 
             //Register custom GraphQL dependencies
             services.AddPermissionAuthorization();
@@ -83,7 +101,7 @@ namespace VirtoCommerce.ExperienceApiModule.Web
                 builder.AddMiddleware(typeof(LoadCartToEvalContextMiddleware));
             });
 
-            services.Configure<GraphQLPlaygroundOptions>(Configuration.GetSection("VirtoCommerce:GraphQLPlayground"));
+            services.Configure<GraphQLPlaygroundOptions>(Configuration.GetSection(GraphQLPlaygroundConfigKey));
         }
 
         public void PostInitialize(IApplicationBuilder appBuilder)
@@ -93,8 +111,7 @@ namespace VirtoCommerce.ExperienceApiModule.Web
             // add http for Schema at default url /graphql
             appBuilder.UseGraphQL<ISchema>();
 
-            var playgroundOptions = serviceProvider.GetRequiredService<IOptions<GraphQLPlaygroundOptions>>().Value;
-            if (playgroundOptions.Enable)
+            if (IsSchemaIntrospectionEnabled)
             {
                 // Use GraphQL Playground at default URL /ui/playground
                 appBuilder.UseGraphQLPlayground();
