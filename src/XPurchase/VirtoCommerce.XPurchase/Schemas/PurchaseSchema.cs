@@ -1435,14 +1435,31 @@ namespace VirtoCommerce.XPurchase.Schemas
                          {
                              var commandType = GenericTypeHelper.GetActualType<RemoveWishlistItemCommand>();
                              var command = (RemoveWishlistItemCommand)context.GetArgument(commandType, _commandName);
-                             var cartAggregate = await _mediator.Send(command);
                              await AuthorizeByListIdAsync(context, command.ListId);
+                             var cartAggregate = await _mediator.Send(command);
                              context.SetExpandedObjectGraph(cartAggregate);
                              return cartAggregate;
                          })
                          .FieldType;
 
             schema.Mutation.AddField(removeListItemField);
+
+            // Remove products from list
+            var removeListItemsField = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<WishlistType>())
+                         .Name("removeWishlistItems")
+                         .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputRemoveWishlistItemsType>>(), _commandName)
+                         .ResolveAsync(async context =>
+                         {
+                             var commandType = GenericTypeHelper.GetActualType<RemoveWishlistItemsCommand>();
+                             var command = (RemoveWishlistItemsCommand)context.GetArgument(commandType, _commandName);
+                             await AuthorizeByListIdAsync(context, command.ListId);
+                             var cartAggregate = await _mediator.Send(command);
+                             context.SetExpandedObjectGraph(cartAggregate);
+                             return cartAggregate;
+                         })
+                         .FieldType;
+
+            schema.Mutation.AddField(removeListItemsField);
 
             // Move product to another list
             var moveListItemField = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<WishlistType>())
