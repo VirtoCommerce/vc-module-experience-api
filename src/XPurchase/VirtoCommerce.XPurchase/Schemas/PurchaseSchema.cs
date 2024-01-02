@@ -980,7 +980,9 @@ namespace VirtoCommerce.XPurchase.Schemas
 
                                                   await CheckAuthByCartCommandAsync(context, cartCommand);
 
-                                                  return await _mediator.Send(cartCommand);
+                                                  var cartAggregate = await _mediator.Send(cartCommand);
+                                                  context.SetExpandedObjectGraph(cartAggregate);
+                                                  return cartAggregate;
                                               })
                                               .FieldType;
 
@@ -1110,7 +1112,9 @@ namespace VirtoCommerce.XPurchase.Schemas
 
                                                      await CheckAuthByCartCommandAsync(context, cartCommand);
 
-                                                     return await _mediator.Send(cartCommand);
+                                                     var cartAggregate = await _mediator.Send(cartCommand);
+                                                     context.SetExpandedObjectGraph(cartAggregate);
+                                                     return cartAggregate;
                                                  })
                                                  .FieldType;
 
@@ -1125,7 +1129,9 @@ namespace VirtoCommerce.XPurchase.Schemas
 
                                                          await CheckAuthByCartCommandAsync(context, cartCommand);
 
-                                                         return await _mediator.Send(cartCommand);
+                                                         var cartAggregate = await _mediator.Send(cartCommand);
+                                                         context.SetExpandedObjectGraph(cartAggregate);
+                                                         return cartAggregate;
                                                      })
                                                      .FieldType;
 
@@ -1140,7 +1146,9 @@ namespace VirtoCommerce.XPurchase.Schemas
 
                                                             await CheckAuthByCartCommandAsync(context, cartCommand);
 
-                                                            return await _mediator.Send(cartCommand);
+                                                            var cartAggregate = await _mediator.Send(cartCommand);
+                                                            context.SetExpandedObjectGraph(cartAggregate);
+                                                            return cartAggregate;
                                                         })
                                                         .FieldType;
 
@@ -1155,7 +1163,9 @@ namespace VirtoCommerce.XPurchase.Schemas
 
                                                                 await CheckAuthByCartCommandAsync(context, cartCommand);
 
-                                                                return await _mediator.Send(cartCommand);
+                                                                var cartAggregate = await _mediator.Send(cartCommand);
+                                                                context.SetExpandedObjectGraph(cartAggregate);
+                                                                return cartAggregate;
                                                             })
                                                             .FieldType;
 
@@ -1170,7 +1180,9 @@ namespace VirtoCommerce.XPurchase.Schemas
 
                                                                    await CheckAuthByCartCommandAsync(context, cartCommand);
 
-                                                                   return await _mediator.Send(cartCommand);
+                                                                   var cartAggregate = await _mediator.Send(cartCommand);
+                                                                   context.SetExpandedObjectGraph(cartAggregate);
+                                                                   return cartAggregate;
                                                                })
                                                                .FieldType;
 
