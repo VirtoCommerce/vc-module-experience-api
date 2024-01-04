@@ -38,6 +38,10 @@ namespace VirtoCommerce.XPurchase.Validators
 
                 ValidateMinMaxQuantity(context, cartProduct, newCartItem);
             }
+            else
+            {
+                context.AddFailure(CartErrorDescriber.ProductUnavailableError(nameof(CatalogProduct), newCartItem.ProductId));
+            }
 
             if (newCartItem.Price != null)
             {
