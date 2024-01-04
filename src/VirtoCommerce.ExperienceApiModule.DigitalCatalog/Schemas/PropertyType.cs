@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using GraphQL.Builders;
@@ -21,7 +20,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             Name = "Property";
             Description = "Products attributes.";
 
-            Field("id", x => x.Id ?? Guid.NewGuid().ToString(), nullable: false).Description("The unique ID of the property.");
+            Field("id", x => x.Id ?? x.Name, nullable: false).Description("The unique ID of the property.");
 
             Field(x => x.Name, nullable: false).Description("The name of the property.");
 
