@@ -1,12 +1,13 @@
 using GraphQL.Types;
 using VirtoCommerce.CoreModule.Core.Common;
 
-namespace VirtoCommerce.XPurchase.Schemas
+namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
 {
     public class LanguageType : ObjectGraphType<Language>
     {
         public LanguageType()
         {
+            Field(x => x.IsInvariant, nullable: false).Description("Is invariant");
             Field(x => x.CultureName, nullable: true).Description("Culture name format (e.g. en-US)");
             Field(x => x.NativeName, nullable: true).Description("Native name");
             Field(x => x.ThreeLeterLanguageName, nullable: true).Description("ISO 639-2 three-letter code for the language.");

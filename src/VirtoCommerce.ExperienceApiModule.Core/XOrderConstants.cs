@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using VirtoCommerce.Platform.Core.Settings;
 
-namespace VirtoCommerce.ExperienceApiModule.XOrder
+namespace VirtoCommerce.ExperienceApiModule.Core
 {
-    public class XOrderConstants
+    public class ModuleConstants
     {
         public static class Settings
         {

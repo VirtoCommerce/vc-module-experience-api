@@ -11,6 +11,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
             Field(x => x.Symbol, nullable: true).Description("Symbol");
             Field(x => x.ExchangeRate, nullable: false).Description("Exchange rate");
             Field(x => x.CustomFormatting, nullable: true).Description("Currency custom formatting");
+            Field(x => x.EnglishName, nullable: true).Description("Currency English name");
         }
     }
 }
