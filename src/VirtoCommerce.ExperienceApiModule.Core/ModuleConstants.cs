@@ -3,7 +3,7 @@ using VirtoCommerce.Platform.Core.Settings;
 
 namespace VirtoCommerce.ExperienceApiModule.Core
 {
-    public class ModuleConstants
+    public static class ModuleConstants
     {
         public static class Settings
         {
