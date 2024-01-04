@@ -8,6 +8,7 @@ using FluentValidation;
 using FluentValidation.Results;
 using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.CartModule.Core.Services;
+using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.CustomerModule.Core.Model;
@@ -224,6 +225,11 @@ namespace VirtoCommerce.XPurchase
                         IsWishlist = item.IsWishlist,
                         CartProduct = product,
                     });
+                }
+                else
+                {
+                    var error = CartErrorDescriber.ProductUnavailableError(nameof(CatalogProduct), item.ProductId);
+                    ValidationErrors.Add(error);
                 }
             }
 

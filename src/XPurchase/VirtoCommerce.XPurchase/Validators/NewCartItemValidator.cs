@@ -68,6 +68,11 @@ namespace VirtoCommerce.XPurchase.Validators
                             context.AddFailure(CartErrorDescriber.ProductMaxQuantityError(nameof(CatalogProduct), cartProduct?.Product?.Id, newCartItem.Quantity, maxQuantity.Value));
                         }
                     }
+                    else
+                    {
+                        context.AddFailure(CartErrorDescriber.ProductUnavailableError(nameof(CatalogProduct), newCartItem.ProductId));
+                    }
+
                     if (newCartItem.Price != null)
                     {
                         var productSalePrice = newCartItem.CartProduct.Price.GetTierPrice(newCartItem.Quantity).Price;
