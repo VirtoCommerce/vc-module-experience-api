@@ -332,14 +332,16 @@ namespace VirtoCommerce.XPurchase
             {
                 ValidationErrors.AddRange(validationResult.Errors);
             }
-
-            var lineItem = Cart.Items.FirstOrDefault(i => i.Id == qtyAdjustment.LineItemId);
-
-            if (lineItem != null)
+            else
             {
-                SetLineItemTierPrice(qtyAdjustment.CartProduct.Price, qtyAdjustment.NewQuantity, lineItem);
+                var lineItem = Cart.Items.FirstOrDefault(i => i.Id == qtyAdjustment.LineItemId);
 
-                lineItem.Quantity = qtyAdjustment.NewQuantity;
+                if (lineItem != null)
+                {
+                    SetLineItemTierPrice(qtyAdjustment.CartProduct.Price, qtyAdjustment.NewQuantity, lineItem);
+
+                    lineItem.Quantity = qtyAdjustment.NewQuantity;
+                }
             }
 
             return this;
