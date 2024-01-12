@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Generic;
 using AutoMapper;
+using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.ExperienceApiModule.XOrder.Mapping;
 using VirtoCommerce.OrdersModule.Core.Model.Search;
 using VirtoCommerce.SearchModule.Core.Model;
+using VirtoCommerce.XDigitalCatalog.Facets;
+using VirtoCommerce.XDigitalCatalog.Mapping;
 using Xunit;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Tests
@@ -11,7 +14,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Tests
     public class MappingTermFilterTests
     {
         [Fact]
-        public void Map_TermFilter()
+        public void OrderMappingProfileTest()
         {
             // Arrange
             var mapperCfg = new MapperConfiguration(cfg =>
@@ -24,7 +27,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Tests
             {
                 new TermFilter { FieldName = "CustomerId", Values = new[] { Guid.NewGuid().ToString() } },
                 new TermFilter { FieldName = "CustomerIds", Values = new[] { Guid.NewGuid().ToString() } },
-                new TermFilter { FieldName = "SubscriptionIds", Values = new string [] { } },
+                new TermFilter { FieldName = "SubscriptionIds", Values = Array.Empty<string>() },
                 new TermFilter { FieldName = "SubscriptionIds", Values = null }
             };
 
@@ -40,49 +43,35 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Tests
             Assert.Null(criteria.SubscriptionIds);
         }
 
-        public class BaseClass
-        {
-            public string Prop1 { get; set; }
-        }
-        public class DerivedClassA : BaseClass
-        {
-            public string Prop2 { get; set; }
-        }
-        public class DerivedClassB : BaseClass
-        {
-            public string Prop3 { get; set; }
-        }
-
-        public class ClassAggregate
-        {
-            public string Prop1 { get; set; }
-            public string Prop2 { get; set; }
-            public string Prop3 { get; set; }
-        }
-
         [Fact]
-        public void AAAA()
+        public void FacetMappingProfileTest()
         {
-            // Arrange
-            var config = new AutoMapper.MapperConfiguration(cfg =>
+            var mapperCfg = new MapperConfiguration(cfg =>
             {
-                cfg.CreateMap<BaseClass, ClassAggregate>().IncludeAllDerived();
-                cfg.CreateMap<DerivedClassA, ClassAggregate>().IncludeAllDerived();
-                cfg.CreateMap<DerivedClassB, ClassAggregate>().IncludeAllDerived();
+                cfg.AddProfile(new FacetMappingProfile());
             });
 
-            var obj = new DerivedClassB
+            var mapper = mapperCfg.CreateMapper();
+
+            var source = new Aggregation
             {
-                Prop1 = "aa",
-                Prop3 = "333"            
+                AggregationType = "attr",
+                Items =
+                [
+                    new AggregationItem
+                    {
+                        Count = 1,
+                        Value = "value",
+                        IsApplied = true,
+                    }
+                ]
             };
 
-            
+            var destination = mapper.Map<FacetResult>(source, options => { options.Items["cultureName"] = "en-US"; });
 
-            var mapper = new AutoMapper.Mapper(config);
-           // var result = mapper.Map<ClassAggregate>(obj, opts => opts.CreateMissingTypeMaps = true);
+            var result = destination as TermFacetResult;
 
-
+            Assert.NotEmpty(result.Terms);
         }
 
     }
