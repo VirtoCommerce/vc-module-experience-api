@@ -599,7 +599,8 @@ namespace VirtoCommerce.XPurchase
             validationContext.CartAggregate = this;
 
             EnsureCartExists();
-            var result = await AbstractTypeFactory<CartValidator>.TryCreateInstance().ValidateAsync(validationContext, options => options.IncludeRuleSets(ruleSet));
+            var rules = ruleSet?.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            var result = await AbstractTypeFactory<CartValidator>.TryCreateInstance().ValidateAsync(validationContext, options => options.IncludeRuleSets(rules));
             if (!result.IsValid)
             {
                 ValidationErrors.AddRange(result.Errors);
