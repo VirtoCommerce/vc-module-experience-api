@@ -20,7 +20,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             Name = "Property";
             Description = "Products attributes.";
 
-            Field(x => x.Id, nullable: false).Description("The unique ID of the property.");
+            Field("id", x => x.Id ?? x.Name, nullable: false).Description("The unique ID of the property.");
 
             Field(x => x.Name, nullable: false).Description("The name of the property.");
 
