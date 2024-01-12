@@ -1,36 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
-using FluentValidation;
-using FluentValidation.Results;
-using VirtoCommerce.CartModule.Core.Model;
-using VirtoCommerce.CartModule.Core.Services;
-using VirtoCommerce.CatalogModule.Core.Model;
-using VirtoCommerce.CoreModule.Core.Common;
-using VirtoCommerce.CoreModule.Core.Currency;
-using VirtoCommerce.CustomerModule.Core.Model;
-using VirtoCommerce.CustomerModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.Core.Models;
 using VirtoCommerce.ExperienceApiModule.Core.Services;
-using VirtoCommerce.MarketingModule.Core.Model.Promotions;
-using VirtoCommerce.MarketingModule.Core.Services;
-using VirtoCommerce.OrdersModule.Core.Services;
-using VirtoCommerce.PaymentModule.Core.Model;
-using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.Platform.Core.Domain;
-using VirtoCommerce.Platform.Core.Settings;
-using VirtoCommerce.ShippingModule.Core.Model;
-using VirtoCommerce.TaxModule.Core.Model;
-using VirtoCommerce.TaxModule.Core.Model.Search;
-using VirtoCommerce.TaxModule.Core.Services;
 using VirtoCommerce.XPurchase.Extensions;
 using VirtoCommerce.XPurchase.Services;
 using VirtoCommerce.XPurchase.Validators;
 using Store = VirtoCommerce.StoreModule.Core.Model.Store;
-using StoreSetting = VirtoCommerce.StoreModule.Core.ModuleConstants.Settings.General;
 
 namespace VirtoCommerce.XPurchase
 {
@@ -332,14 +305,16 @@ namespace VirtoCommerce.XPurchase
             {
                 ValidationErrors.AddRange(validationResult.Errors);
             }
-
-            var lineItem = Cart.Items.FirstOrDefault(i => i.Id == qtyAdjustment.LineItemId);
-
-            if (lineItem != null)
+            else
             {
-                SetLineItemTierPrice(qtyAdjustment.CartProduct.Price, qtyAdjustment.NewQuantity, lineItem);
+                var lineItem = Cart.Items.FirstOrDefault(i => i.Id == qtyAdjustment.LineItemId);
 
-                lineItem.Quantity = qtyAdjustment.NewQuantity;
+                if (lineItem != null)
+                {
+                    SetLineItemTierPrice(qtyAdjustment.CartProduct.Price, qtyAdjustment.NewQuantity, lineItem);
+
+                    lineItem.Quantity = qtyAdjustment.NewQuantity;
+                }
             }
 
             return this;
