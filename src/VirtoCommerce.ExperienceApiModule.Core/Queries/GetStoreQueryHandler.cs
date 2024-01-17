@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using VirtoCommerce.CoreModule.Core.Common;
-using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Security;
@@ -19,13 +18,13 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Queries
     public class GetStoreQueryHandler : IQueryHandler<GetStoreQuery, StoreResponse>
     {
         private readonly IStoreService _storeService;
-        private readonly ICurrencyService _currencyService;
+        private readonly IStoreCurrencyResolver _storeCurrencyResolver;
         private readonly Func<UserManager<ApplicationUser>> _userManagerFactory;
 
-        public GetStoreQueryHandler(IStoreService storeService, ICurrencyService currencyService, Func<UserManager<ApplicationUser>> userManagerFactory)
+        public GetStoreQueryHandler(IStoreService storeService, IStoreCurrencyResolver storeCurrencyResolver, Func<UserManager<ApplicationUser>> userManagerFactory)
         {
             _storeService = storeService;
-            _currencyService = currencyService;
+            _storeCurrencyResolver = storeCurrencyResolver;
             _userManagerFactory = userManagerFactory;
         }
 
@@ -38,10 +37,11 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Queries
                 return null;
             }
 
-            var allCurrencies = await _currencyService.GetAllCurrenciesAsync();
+            var cultureName = request.CultureName ?? store.DefaultLanguage;
 
-            var defaultCurrency = allCurrencies.FirstOrDefault(x => x.Code == store.DefaultCurrency);
-            var availableCurrencies = store.Currencies.IsNullOrEmpty() ? new List<Currency>() : allCurrencies.Where(x => store.Currencies.Contains(x.Code)).ToList();
+            var allCurrencies = await _storeCurrencyResolver.GetAllStoreCurrenciesAsync(store.Id, cultureName);
+            var availableCurrencies = allCurrencies.Where(x => store.Currencies.Contains(x.Code)).ToList();
+            var defaultCurrency = await _storeCurrencyResolver.GetStoreCurrencyAsync(store.DefaultCurrency, store.Id, cultureName);
 
             var defaultLanguage = store.DefaultLanguage != null ? new Language(store.DefaultLanguage) : Language.InvariantLanguage;
             var availableLanguages = !store.Languages.IsNullOrEmpty() ? store.Languages.Select(x => new Language(x)).ToList() : new List<Language>();

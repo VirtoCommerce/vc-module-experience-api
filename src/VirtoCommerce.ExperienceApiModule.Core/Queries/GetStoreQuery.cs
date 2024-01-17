@@ -10,16 +10,20 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Queries
     {
         public string StoreId { get; set; }
 
+        public string CultureName { get; set; }
+
         public string UserId { get; set; }
 
         public override IEnumerable<QueryArgument> GetArguments()
         {
             yield return Argument<NonNullGraphType<StringGraphType>>(nameof(StoreId));
+            yield return Argument<StringGraphType>(nameof(CultureName));
         }
 
         public override void Map(IResolveFieldContext context)
         {
             StoreId = context.GetArgument<string>(nameof(StoreId));
+            CultureName = context.GetArgument<string>(nameof(CultureName));
             UserId = context.GetCurrentUserId();
         }
     }
