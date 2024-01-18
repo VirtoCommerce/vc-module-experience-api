@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using GraphQL;
 using GraphQL.Types;
 using VirtoCommerce.ExperienceApiModule.Core.BaseQueries;
-using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 
 namespace VirtoCommerce.ExperienceApiModule.Core.Queries
 {
@@ -11,8 +10,6 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Queries
         public string StoreId { get; set; }
 
         public string CultureName { get; set; }
-
-        public string UserId { get; set; }
 
         public override IEnumerable<QueryArgument> GetArguments()
         {
@@ -24,7 +21,6 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Queries
         {
             StoreId = context.GetArgument<string>(nameof(StoreId));
             CultureName = context.GetArgument<string>(nameof(CultureName));
-            UserId = context.GetCurrentUserId();
         }
     }
 }

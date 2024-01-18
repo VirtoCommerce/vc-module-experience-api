@@ -1,13 +1,10 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
 using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.Platform.Core.Security;
 using VirtoCommerce.Platform.Core.Settings;
 using VirtoCommerce.StoreModule.Core.Services;
 using StoreSettingGeneral = VirtoCommerce.StoreModule.Core.ModuleConstants.Settings.General;
@@ -19,13 +16,11 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Queries
     {
         private readonly IStoreService _storeService;
         private readonly IStoreCurrencyResolver _storeCurrencyResolver;
-        private readonly Func<UserManager<ApplicationUser>> _userManagerFactory;
 
-        public GetStoreQueryHandler(IStoreService storeService, IStoreCurrencyResolver storeCurrencyResolver, Func<UserManager<ApplicationUser>> userManagerFactory)
+        public GetStoreQueryHandler(IStoreService storeService, IStoreCurrencyResolver storeCurrencyResolver)
         {
             _storeService = storeService;
             _storeCurrencyResolver = storeCurrencyResolver;
-            _userManagerFactory = userManagerFactory;
         }
 
         public async Task<StoreResponse> Handle(GetStoreQuery request, CancellationToken cancellationToken)
@@ -56,15 +51,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Queries
                 AvailableCurrencies = availableCurrencies,
                 DefaultLanguage = defaultLanguage,
                 AvailableLanguages = availableLanguages,
-                UserId = request.UserId,
             };
-
-            if (response.UserId != AnonymousUser.UserName)
-            {
-                using var userManager = _userManagerFactory();
-                var user = await userManager.FindByIdAsync(response.UserId);
-                response.UserName = user?.UserName;
-            }
 
             if (!store.Settings.IsNullOrEmpty())
             {

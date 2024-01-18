@@ -12,9 +12,6 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
             Field(x => x.CatalogId, nullable: false).Description("Store catalog ID");
             Field(x => x.StoreUrl, nullable: true).Description("Store URL");
 
-            Field(x => x.UserId, nullable: false).Description("User ID");
-            Field(x => x.UserName, nullable: true).Description("Username");
-
             Field<NonNullGraphType<LanguageType>>(nameof(StoreResponse.DefaultLanguage), "Language", resolve: context => context.Source.DefaultLanguage);
             Field<NonNullGraphType<ListGraphType<NonNullGraphType<LanguageType>>>>(nameof(StoreResponse.AvailableLanguages), "Available languages", resolve: context => context.Source.AvailableLanguages);
 
