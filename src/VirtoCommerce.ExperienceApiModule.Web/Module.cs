@@ -1,6 +1,11 @@
+using GraphQL;
+using GraphQL.Caching;
+using GraphQL.Execution;
 using GraphQL.Introspection;
 using GraphQL.Server;
 using GraphQL.Types;
+using GraphQL.Validation;
+using GraphQL.Validation.Complexity;
 using GraphQL.Validation.Rules;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
@@ -61,6 +66,11 @@ namespace VirtoCommerce.ExperienceApiModule.Web
             .AddRelayGraphTypes()
             .AddDataLoader()
             .AddCustomValidationRule<ContentTypeValidationRule>();
+
+            // Enable document (query body string) caching
+            services.AddSingleton<IDocumentCache>(_ => new MemoryDocumentCache(new MemoryDocumentCacheOptions { SizeLimit = 10 * 1024 * 1024, SlidingExpiration = null, }));
+            services.AddSingleton<IDocumentExecuter>(serviceProvider =>
+                new DocumentExecuter(new GraphQLDocumentBuilder(), new DocumentValidator(), new ComplexityAnalyzer(), serviceProvider.GetRequiredService<IDocumentCache>()));
 
             if (!IsSchemaIntrospectionEnabled)
             {
