@@ -8,7 +8,7 @@ public class ChildCategoriesQueryResponseType : ExtendableGraphType<ChildCategor
 {
     public ChildCategoriesQueryResponseType()
     {
-        Field<ListGraphType<CategoryType>>(
+        Field<NonNullGraphType<ListGraphType<NonNullGraphType<CategoryType>>>>(
             nameof(ChildCategoriesQueryResponse.ChildCategories),
             resolve: context => context.Source.ChildCategories);
     }

@@ -54,7 +54,7 @@ public class ChildCategoriesQueryHandler : IQueryHandler<ChildCategoriesQuery, C
             level--;
         }
 
-        result.ChildCategories = root.ChildCategories ?? new List<ExpCategory>();
+        result.ChildCategories = root.ChildCategories;
 
         // try resolve products via facets
         if (!string.IsNullOrEmpty(request.ProductFilter))

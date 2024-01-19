@@ -777,7 +777,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             ///   }
             /// }
             /// </example>
-            var validateCouponField = FieldBuilder.Create<CartAggregate, bool>(typeof(BooleanGraphType))
+            var validateCouponField = FieldBuilder.Create<CartAggregate, bool>(typeof(NonNullGraphType<BooleanGraphType>))
                                                   .Name("validateCoupon")
                                                   .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputValidateCouponType>>(), _commandName)
                                                   .ResolveSynchronizedAsync(CartPrefix, "userId", _distributedLockService, async context =>

@@ -7,7 +7,7 @@ public class ProductSuggestionsQueryResponseType : ExtendableGraphType<ProductSu
 {
     public ProductSuggestionsQueryResponseType()
     {
-        Field<ListGraphType<StringGraphType>>(
+        Field<NonNullGraphType<ListGraphType<NonNullGraphType<StringGraphType>>>>(
             nameof(ProductSuggestionsQueryResponse.Suggestions),
             resolve: context => context.Source.Suggestions);
     }
