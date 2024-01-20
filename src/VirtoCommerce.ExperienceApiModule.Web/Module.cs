@@ -1,11 +1,6 @@
-using GraphQL;
-using GraphQL.Caching;
-using GraphQL.Execution;
 using GraphQL.Introspection;
 using GraphQL.Server;
 using GraphQL.Types;
-using GraphQL.Validation;
-using GraphQL.Validation.Complexity;
 using GraphQL.Validation.Rules;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
@@ -37,6 +32,7 @@ namespace VirtoCommerce.ExperienceApiModule.Web
         public IConfiguration Configuration { get; set; }
 
         private const string GraphQLPlaygroundConfigKey = "VirtoCommerce:GraphQLPlayground";
+
         private bool IsSchemaIntrospectionEnabled
         {
             get
@@ -50,6 +46,8 @@ namespace VirtoCommerce.ExperienceApiModule.Web
             services.AddApplicationInsightsTelemetryProcessor<IgnorePlainGraphQLTelemetryProcessor>();
             // register custom executor with app insight wrapper
             services.AddTransient(typeof(IGraphQLExecuter<>), typeof(CustomGraphQLExecuter<>));
+
+            services.AddDocumentCache(Configuration);
 
             //Register .NET GraphQL server
             var graphQlBuilder = services.AddGraphQL(options =>
@@ -66,11 +64,6 @@ namespace VirtoCommerce.ExperienceApiModule.Web
             .AddRelayGraphTypes()
             .AddDataLoader()
             .AddCustomValidationRule<ContentTypeValidationRule>();
-
-            // Enable document (query body string) caching
-            services.AddSingleton<IDocumentCache>(_ => new MemoryDocumentCache(new MemoryDocumentCacheOptions { SizeLimit = 10 * 1024 * 1024, SlidingExpiration = null, }));
-            services.AddSingleton<IDocumentExecuter>(serviceProvider =>
-                new DocumentExecuter(new GraphQLDocumentBuilder(), new DocumentValidator(), new ComplexityAnalyzer(), serviceProvider.GetRequiredService<IDocumentCache>()));
 
             if (!IsSchemaIntrospectionEnabled)
             {
