@@ -11,7 +11,7 @@ namespace VirtoCommerce.ExperienceApiModule.Web.Extensions
     public static class ServiceCollectionExtensions
     {
         /// <summary>
-        /// Enable document (query body string) caching
+        /// Enable document (query string) caching
         /// https://web.archive.org/web/20210927012540/https://graphql-dotnet.github.io/docs/guides/document-caching/
         /// </summary>
         /// <param name="services"></param>
