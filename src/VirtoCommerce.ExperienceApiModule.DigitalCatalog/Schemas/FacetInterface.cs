@@ -1,17 +1,19 @@
+using System;
 using GraphQL.Types;
 using VirtoCommerce.XDigitalCatalog.Facets;
 
 namespace VirtoCommerce.XDigitalCatalog.Schemas
 {
-    public class FacetInterface : InterfaceGraphType<FacetResult>
+    [Obsolete("Use the same class from XCore.")]
+    public class FacetInterface_Old : InterfaceGraphType<FacetResult_Old>
     {
-        public FacetInterface()
+        public FacetInterface_Old()
         {
             Name = "Facet";
 
             Field(d => d.Name, nullable: false).Description("The key/name  of the facet.");
             Field(d => d.Label, nullable: false).Description("Localized name of the facet.");
-            Field<NonNullGraphType<FacetTypeEnum>>("FacetType",
+            Field<NonNullGraphType<FacetTypeEnum_Old>>("FacetType",
                 "Three facet types: Terms, Range, and Filter");
         }
     }

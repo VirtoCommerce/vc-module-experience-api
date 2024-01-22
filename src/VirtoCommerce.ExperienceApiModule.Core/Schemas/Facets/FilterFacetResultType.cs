@@ -1,24 +1,22 @@
-using System;
 using GraphQL.Types;
-using VirtoCommerce.XDigitalCatalog.Facets;
+using VirtoCommerce.ExperienceApiModule.Core.Models.Facets;
 
-namespace VirtoCommerce.XDigitalCatalog.Schemas
+namespace VirtoCommerce.ExperienceApiModule.Core.Schemas.Facets
 {
-    [Obsolete("Use the same class from XCore.")]
-    public class FilterFacetResultType_Old : ObjectGraphType<FilterFacetResult_Old>
+    public class FilterFacetResultType : ObjectGraphType<FilterFacetResult>
     {
-        public FilterFacetResultType_Old()
+        public FilterFacetResultType()
         {
             Name = "FilterFacet";
 
             Field(d => d.Name, nullable: false).Description("The key/name  of the facet.");
             Field(d => d.Label, nullable: false).Description("Localized name of the facet.");
-            Field<NonNullGraphType<FacetTypeEnum_Old>>("FacetType",
+            Field<NonNullGraphType<FacetTypeEnum>>("FacetType",
                 "The three types of facets. Terms, Range, Filter");
             Field(d => d.Count, nullable: false).Description("The number of products matching the value specified in the filter facet expression");
 
-            IsTypeOf = obj => obj is FilterFacetResult_Old;
-            Interface<FacetInterface_Old>();
+            IsTypeOf = obj => obj is FilterFacetResult;
+            Interface<FacetInterface>();
         }
     }
 }

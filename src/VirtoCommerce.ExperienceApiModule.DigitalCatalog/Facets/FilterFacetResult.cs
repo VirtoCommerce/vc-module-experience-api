@@ -1,9 +1,12 @@
+using System;
+
 namespace VirtoCommerce.XDigitalCatalog.Facets
 {
-    public sealed class FilterFacetResult : FacetResult
+    [Obsolete("Use the same class from XCore.")]
+    public sealed class FilterFacetResult_Old : FacetResult_Old
     {
-        public FilterFacetResult()
-            : base(FacetTypes.Filter)
+        public FilterFacetResult_Old()
+            : base(FacetTypes_Old.Filter)
         {
         }
 

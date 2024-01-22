@@ -1,14 +1,16 @@
+using System;
 using System.Collections.Generic;
 
 namespace VirtoCommerce.XDigitalCatalog.Facets
 {
-    public sealed class RangeFacetResult : FacetResult
+    [Obsolete("Use the same class from XCore.")]
+    public sealed class RangeFacetResult_Old : FacetResult_Old
     {
-        public RangeFacetResult()
-            : base(FacetTypes.Range)
+        public RangeFacetResult_Old()
+            : base(FacetTypes_Old.Range)
         {
         }
 
-        public IList<FacetRange> Ranges { get; set; } = new List<FacetRange>();
+        public IList<FacetRange_Old> Ranges { get; set; } = new List<FacetRange_Old>();
     }
 }

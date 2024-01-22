@@ -3,6 +3,7 @@ using System.Linq;
 using AutoMapper;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
+using VirtoCommerce.ExperienceApiModule.Core.Models.Facets;
 using VirtoCommerce.XDigitalCatalog.Facets;
 
 namespace VirtoCommerce.XDigitalCatalog.Mapping

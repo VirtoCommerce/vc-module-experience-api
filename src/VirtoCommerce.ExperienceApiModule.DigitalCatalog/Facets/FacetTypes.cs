@@ -1,6 +1,9 @@
+using System;
+
 namespace VirtoCommerce.XDigitalCatalog.Facets
 {
-    public enum FacetTypes
+    [Obsolete("Use the same class from XCore.")]
+    public enum FacetTypes_Old
     {
         Terms,
         Range,

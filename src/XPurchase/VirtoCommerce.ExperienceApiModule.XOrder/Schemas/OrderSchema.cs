@@ -93,7 +93,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                 .OrderArguments();
 
             orderConnectionBuilder.ResolveAsync(async context => await ResolveOrdersConnectionAsync<SearchCustomerOrderQuery>(_mediator, context));
-            schema.Query.AddField(orderConnectionBuilder.FieldType);
+            //schema.Query.AddField(orderConnectionBuilder.FieldType);
 
             var organizationOrdersConnectionBuilder = GraphTypeExtenstionHelper
                 .CreateConnection<CustomerOrderType, object>()
@@ -102,8 +102,8 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                 .OrganizationOrderArguments();
 
             organizationOrdersConnectionBuilder.ResolveAsync(async context => await ResolveOrdersConnectionAsync<SearchOrganizationOrderQuery>(_mediator, context));
-            schema.Query.AddField(organizationOrdersConnectionBuilder.FieldType);
-
+            //schema.Query.AddField(organizationOrdersConnectionBuilder.FieldType);
+            #region 123
             var paymentsConnectionBuilder = GraphTypeExtenstionHelper
                 .CreateConnection<PaymentInType, object>()
                 .Name("payments")
@@ -256,6 +256,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                                 return response;
                             })
                             .FieldType);
+            #endregion
         }
 
         private async Task<object> ResolveOrdersConnectionAsync<T>(IMediator mediator, IResolveConnectionContext<object> context) where T : SearchOrderQuery

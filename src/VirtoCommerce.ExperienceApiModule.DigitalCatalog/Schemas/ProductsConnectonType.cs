@@ -3,7 +3,8 @@ using System.Linq;
 using GraphQL.Types;
 using GraphQL.Types.Relay;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
-using VirtoCommerce.XDigitalCatalog.Facets;
+using VirtoCommerce.ExperienceApiModule.Core.Models.Facets;
+using VirtoCommerce.ExperienceApiModule.Core.Schemas.Facets;
 
 namespace VirtoCommerce.XDigitalCatalog.Schemas
 {

@@ -1,13 +1,11 @@
-using System;
 using GraphQL.Types;
-using VirtoCommerce.XDigitalCatalog.Facets;
+using VirtoCommerce.ExperienceApiModule.Core.Models.Facets;
 
-namespace VirtoCommerce.XDigitalCatalog.Schemas
+namespace VirtoCommerce.ExperienceApiModule.Core.Schemas.Facets
 {
-    [Obsolete("Use the same class from XCore.")]
-    public class FacetRangeType_Old : ObjectGraphType<FacetRange_Old>
+    public class FacetRangeType : ObjectGraphType<FacetRange>
     {
-        public FacetRangeType_Old()
+        public FacetRangeType()
         {
             Field(d => d.Count, nullable: false).Description("Amount of products for which the values in a field fall into the specified range");
             Field(d => d.From, nullable: false).Description("The range’s lower endpoint in number format, 0 represents infinity");
