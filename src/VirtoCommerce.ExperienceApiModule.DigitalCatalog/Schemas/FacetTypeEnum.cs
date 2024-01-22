@@ -5,7 +5,7 @@ using VirtoCommerce.XDigitalCatalog.Facets;
 namespace VirtoCommerce.XDigitalCatalog.Schemas
 {
     [Obsolete("Use the same class from XCore.")]
-    public class FacetTypeEnum_Old : EnumerationGraphType<FacetTypes_Old>
+    public class FacetTypeEnum : EnumerationGraphType<FacetTypes>
     {
     }
 }

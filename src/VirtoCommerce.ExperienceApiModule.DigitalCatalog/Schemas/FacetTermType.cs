@@ -5,9 +5,9 @@ using VirtoCommerce.XDigitalCatalog.Facets;
 namespace VirtoCommerce.XDigitalCatalog.Schemas
 {
     [Obsolete("Use the same class from XCore.")]
-    public class FacetTermType_Old : ObjectGraphType<FacetTerm_Old>
+    public class FacetTermType : ObjectGraphType<FacetTerm>
     {
-        public FacetTermType_Old()
+        public FacetTermType()
         {
             Field(d => d.Term, nullable: false).Description("term");
             Field(d => d.Count, nullable: false).Description("count");

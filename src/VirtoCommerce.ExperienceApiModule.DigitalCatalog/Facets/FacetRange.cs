@@ -3,7 +3,7 @@ using System;
 namespace VirtoCommerce.XDigitalCatalog.Facets
 {
     [Obsolete("Use the same class from XCore.")]
-    public sealed class FacetRange_Old
+    public sealed class FacetRange
     {
         public long From { get; set; }
         public bool IncludeFrom { get; set; }
