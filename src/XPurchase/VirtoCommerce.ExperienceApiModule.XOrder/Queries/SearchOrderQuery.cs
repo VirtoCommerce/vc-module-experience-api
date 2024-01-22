@@ -56,6 +56,16 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Queries
         }
     }
 
+    public class SearchOrganizationOrderQueryBuilder : SearchOrderQueryBuilder<SearchOrganizationOrderQuery>
+    {
+        protected override string Name => "organizationOrders";
+
+        public SearchOrganizationOrderQueryBuilder(IMediator mediator, IAuthorizationService authorizationService, ICurrencyService currencyService)
+            : base(mediator, authorizationService, currencyService)
+        {
+        }
+    }
+
     public abstract class SearchOrderQueryBuilder<TQuery> : QueryBuilder<TQuery, SearchOrderResponse, CustomerOrderType>
         where TQuery : SearchOrderQuery
     {
