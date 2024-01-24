@@ -13,7 +13,7 @@
     <dependency id="VirtoCommerce.Customer" version="3.400.0" />
     <dependency id="VirtoCommerce.Inventory" version="3.402.0" />
     <dependency id="VirtoCommerce.Marketing" version="3.400.0" />
-    <dependency id="VirtoCommerce.Orders" version="3.424.0" />
+    <dependency id="VirtoCommerce.Orders" version="3.426.3" />
     <dependency id="VirtoCommerce.Payment" version="3.400.0" />
     <dependency id="VirtoCommerce.Pricing" version="3.400.0" />
     <dependency id="VirtoCommerce.Search" version="3.401.0" />
