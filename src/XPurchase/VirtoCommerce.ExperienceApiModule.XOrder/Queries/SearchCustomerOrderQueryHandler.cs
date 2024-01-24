@@ -1,7 +1,7 @@
-using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using AutoMapper;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.Core.Models.Facets;
 using VirtoCommerce.OrdersModule.Core.Search.Indexed;
@@ -14,14 +14,17 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Queries
         private readonly ICustomerOrderAggregateRepository _customerOrderAggregateRepository;
         private readonly ISearchPhraseParser _searchPhraseParser;
         private readonly IIndexedCustomerOrderSearchService _customerOrderSearchService;
+        private readonly IMapper _mapper;
 
         public SearchCustomerOrderQueryHandler(ISearchPhraseParser searchPhraseParser,
             ICustomerOrderAggregateRepository customerOrderAggregateRepository,
-            IIndexedCustomerOrderSearchService customerOrderSearchService)
+            IIndexedCustomerOrderSearchService customerOrderSearchService,
+            IMapper mapper)
         {
             _searchPhraseParser = searchPhraseParser;
             _customerOrderAggregateRepository = customerOrderAggregateRepository;
             _customerOrderSearchService = customerOrderSearchService;
+            _mapper = mapper;
         }
 
         public virtual async Task<SearchOrderResponse> Handle(SearchCustomerOrderQuery request, CancellationToken cancellationToken)
@@ -38,50 +41,10 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Queries
             var searchResult = await _customerOrderSearchService.SearchCustomerOrdersAsync(searchCriteria);
             var aggregates = await _customerOrderAggregateRepository.GetAggregatesFromOrdersAsync(searchResult.Results, request.CultureName);
 
-            var facets = searchResult.Aggregations?.Select(request =>
-            {
-                FacetResult result = null;
-
-                switch (request.AggregationType)
+            var facets = searchResult.Aggregations?.Select(x => _mapper.Map<FacetResult>(x, options =>
                 {
-                    case "attr":
-                        result = new TermFacetResult
-                        {
-                            Name = request.Field,
-                            Label = request.Field,
-                            Terms = request.Items?.Select(x => new FacetTerm
-                            {
-                                Count = x.Count,
-                                IsSelected = x.IsApplied,
-                                Term = x.Value?.ToString(),
-                                Label = x.Value.ToString(),
-                            }).ToArray() ?? [],
-                        };
-                        break;
-                    case "range":
-                        result = new RangeFacetResult
-                        {
-                            Name = request.Field,
-                            Label = request.Field,
-                            Ranges = request.Items?.Select(x => new FacetRange
-                            {
-                                Count = x.Count,
-                                IsSelected = x.IsApplied,
-                                Label = x.Value.ToString(),
-                                From = Convert.ToInt64(x.RequestedLowerBound),
-                                IncludeFrom = x.IncludeLower,
-                                FromStr = x.RequestedLowerBound,
-                                To = Convert.ToInt64(x.RequestedUpperBound),
-                                IncludeTo = x.IncludeUpper,
-                                ToStr = x.RequestedUpperBound,
-
-                            }).ToArray() ?? [],
-                        };
-                        break;
-                }
-
-                return result;
-            }).Where(x => x != null).Cast<FacetResult>().ToList();
+                    options.Items["cultureName"] = request.CultureName;
+                })).ToList() ?? [];
 
             return new SearchOrderResponse
             {

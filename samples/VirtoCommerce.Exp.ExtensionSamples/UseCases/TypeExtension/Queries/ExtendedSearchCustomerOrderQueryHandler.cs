@@ -1,3 +1,4 @@
+using AutoMapper;
 using VirtoCommerce.ExperienceApiModule.XOrder;
 using VirtoCommerce.ExperienceApiModule.XOrder.Queries;
 using VirtoCommerce.OrdersModule.Core.Search.Indexed;
@@ -9,8 +10,9 @@ namespace VirtoCommerce.Exp.ExtensionSamples.UseCases.TypeExtension.Queries
     {
         public ExtendedSearchCustomerOrderQueryHandler(ISearchPhraseParser searchPhraseParser,
             ICustomerOrderAggregateRepository customerOrderAggregateRepository,
-            IIndexedCustomerOrderSearchService customerOrderSearchService)
-            : base(searchPhraseParser, customerOrderAggregateRepository, customerOrderSearchService)
+            IIndexedCustomerOrderSearchService customerOrderSearchService,
+            IMapper mapper)
+            : base(searchPhraseParser, customerOrderAggregateRepository, customerOrderSearchService, mapper)
         {
         }
     }
