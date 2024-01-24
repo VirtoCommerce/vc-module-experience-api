@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -37,18 +38,50 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Queries
             var searchResult = await _customerOrderSearchService.SearchCustomerOrdersAsync(searchCriteria);
             var aggregates = await _customerOrderAggregateRepository.GetAggregatesFromOrdersAsync(searchResult.Results, request.CultureName);
 
-            var facets = searchResult.Aggregations?.Select(request => new TermFacetResult
+            var facets = searchResult.Aggregations?.Select(request =>
             {
-                Name = request.Field,
-                Label = request.Field,
-                Terms = request.Items?.Select(x => new FacetTerm
+                FacetResult result = null;
+
+                switch (request.AggregationType)
                 {
-                    Count = x.Count,
-                    IsSelected = x.IsApplied,
-                    Term = x.Value?.ToString(),
-                    Label = x.Value.ToString(),
-                }).ToArray() ?? [],
-            }).Cast<FacetResult>().ToList();
+                    case "attr":
+                        result = new TermFacetResult
+                        {
+                            Name = request.Field,
+                            Label = request.Field,
+                            Terms = request.Items?.Select(x => new FacetTerm
+                            {
+                                Count = x.Count,
+                                IsSelected = x.IsApplied,
+                                Term = x.Value?.ToString(),
+                                Label = x.Value.ToString(),
+                            }).ToArray() ?? [],
+                        };
+                        break;
+                    case "range":
+                        result = new RangeFacetResult
+                        {
+                            Name = request.Field,
+                            Label = request.Field,
+                            Ranges = request.Items?.Select(x => new FacetRange
+                            {
+                                Count = x.Count,
+                                IsSelected = x.IsApplied,
+                                Label = x.Value.ToString(),
+                                From = Convert.ToInt64(x.RequestedLowerBound),
+                                IncludeFrom = x.IncludeLower,
+                                FromStr = x.RequestedLowerBound,
+                                To = Convert.ToInt64(x.RequestedUpperBound),
+                                IncludeTo = x.IncludeUpper,
+                                ToStr = x.RequestedUpperBound,
+
+                            }).ToArray() ?? [],
+                        };
+                        break;
+                }
+
+                return result;
+            }).Where(x => x != null).Cast<FacetResult>().ToList();
 
             return new SearchOrderResponse
             {

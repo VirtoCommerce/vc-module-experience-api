@@ -4,8 +4,6 @@ using GraphQL.Types;
 using GraphQL.Types.Relay;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.Core.Models.Facets;
-using VirtoCommerce.XDigitalCatalog;
-using VirtoCommerce.XDigitalCatalog.Schemas;
 using CoreFacets = VirtoCommerce.ExperienceApiModule.Core.Schemas.Facets;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
@@ -19,10 +17,10 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                 resolve: context => ((CustomerOrderConnection<CustomerOrderAggregate>)context.Source).Facets.OfType<TermFacetResult>());
 
             Field<NonNullGraphType<ListGraphType<NonNullGraphType<CoreFacets.RangeFacetResultType>>>>("range_facets", description: "Range facets",
-                resolve: context => ((ProductsConnection<ExpProduct>)context.Source).Facets.OfType<RangeFacetResult>());
+                resolve: context => ((CustomerOrderConnection<CustomerOrderAggregate>)context.Source).Facets.OfType<RangeFacetResult>());
 
             Field<NonNullGraphType<ListGraphType<NonNullGraphType<CoreFacets.FilterFacetResultType>>>>("filter_facets", description: "Filter facets",
-                resolve: context => ((ProductsConnection<ExpProduct>)context.Source).Facets.OfType<FilterFacetResult>());
+                resolve: context => ((CustomerOrderConnection<CustomerOrderAggregate>)context.Source).Facets.OfType<FilterFacetResult>());
         }
     }
 
