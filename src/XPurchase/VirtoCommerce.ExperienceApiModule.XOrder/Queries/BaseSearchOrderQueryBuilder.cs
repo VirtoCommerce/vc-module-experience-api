@@ -8,6 +8,8 @@ using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.ExperienceApiModule.Core.BaseQueries;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
+using VirtoCommerce.ExperienceApiModule.Core.Services;
+using VirtoCommerce.ExperienceApiModule.XOrder.Authorization;
 using VirtoCommerce.ExperienceApiModule.XOrder.Schemas;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Queries
@@ -16,11 +18,17 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Queries
         where TQuery : SearchOrderQuery
     {
         private readonly ICurrencyService _currencyService;
+        private readonly IUserManagerCore _userManagerCore;
 
-        protected BaseSearchOrderQueryBuilder(IMediator mediator, IAuthorizationService authorizationService, ICurrencyService currencyService)
+        protected BaseSearchOrderQueryBuilder(
+            IMediator mediator,
+            IAuthorizationService authorizationService,
+            ICurrencyService currencyService,
+            IUserManagerCore userManagerCore)
             : base(mediator, authorizationService)
         {
             _currencyService = currencyService;
+            _userManagerCore = userManagerCore;
         }
 
         protected override FieldType GetFieldType()
@@ -45,6 +53,8 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Queries
 
         protected override async Task BeforeMediatorSend(IResolveFieldContext<object> context, TQuery request)
         {
+            await Authorize(context, request, new CanAccessOrderAuthorizationRequirement());
+
             context.CopyArgumentsToUserContext();
             var allCurrencies = await _currencyService.GetAllCurrenciesAsync();
             context.SetCurrencies(allCurrencies, request.CultureName);
@@ -60,6 +70,13 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Queries
             }
 
             return Task.CompletedTask;
+        }
+
+        protected override async Task Authorize(IResolveFieldContext context, object resource, IAuthorizationRequirement requirement)
+        {
+            await _userManagerCore.CheckUserState(context.GetCurrentUserId(), allowAnonymous: false);
+
+            await base.Authorize(context, resource, requirement);
         }
     }
 }

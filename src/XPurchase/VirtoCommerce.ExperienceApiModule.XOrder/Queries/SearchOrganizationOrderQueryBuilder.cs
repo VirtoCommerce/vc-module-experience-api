@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using VirtoCommerce.CoreModule.Core.Currency;
+using VirtoCommerce.ExperienceApiModule.Core.Services;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Queries
 {
@@ -8,8 +9,8 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Queries
     {
         protected override string Name => "organizationOrders";
 
-        public SearchOrganizationOrderQueryBuilder(IMediator mediator, IAuthorizationService authorizationService, ICurrencyService currencyService)
-            : base(mediator, authorizationService, currencyService)
+        public SearchOrganizationOrderQueryBuilder(IMediator mediator, IAuthorizationService authorizationService, ICurrencyService currencyService, IUserManagerCore userManagerCore)
+            : base(mediator, authorizationService, currencyService, userManagerCore)
         {
         }
     }
