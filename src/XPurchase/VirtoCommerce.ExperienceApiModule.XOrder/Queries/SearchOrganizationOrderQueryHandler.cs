@@ -30,7 +30,9 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Queries
         public virtual async Task<SearchOrderResponse> Handle(SearchOrganizationOrderQuery request, CancellationToken cancellationToken)
         {
             var searchCriteria = new CustomerOrderSearchCriteriaBuilder(_searchPhraseParser)
+                                        .WithCultureName(request.CultureName)
                                         .ParseFilters(request.Filter)
+                                        .ParseFacets(request.Facet)
                                         .WithOrganizationId(request.OrganizationId)
                                         .WithPaging(request.Skip, request.Take)
                                         .WithSorting(request.Sort)

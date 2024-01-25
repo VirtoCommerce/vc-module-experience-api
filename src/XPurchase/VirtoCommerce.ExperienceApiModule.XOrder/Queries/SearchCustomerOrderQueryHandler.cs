@@ -42,9 +42,9 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Queries
             var aggregates = await _customerOrderAggregateRepository.GetAggregatesFromOrdersAsync(searchResult.Results, request.CultureName);
 
             var facets = searchResult.Aggregations?.Select(x => _mapper.Map<FacetResult>(x, options =>
-                {
-                    options.Items["cultureName"] = request.CultureName;
-                })).ToList() ?? [];
+            {
+                options.Items["cultureName"] = request.CultureName;
+            })).ToList() ?? [];
 
             return new SearchOrderResponse
             {
