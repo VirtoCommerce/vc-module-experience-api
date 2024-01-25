@@ -23,6 +23,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Mapping
                     }
                     return criteria;
                 });
+
             CreateMap<IList<IFilter>, PaymentSearchCriteria>()
                .ConvertUsing((terms, criteria, context) =>
                {
@@ -33,6 +34,11 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Mapping
                    return criteria;
                });
 
+            CreateAggregationFacetMap();
+        }
+
+        private void CreateAggregationFacetMap()
+        {
             CreateMap<OrderAggregation, CoreFacets.FacetResult>().IncludeAllDerived().ConvertUsing((request, facet, context) =>
             {
                 context.Items.TryGetValue("cultureName", out var cultureNameObj);
