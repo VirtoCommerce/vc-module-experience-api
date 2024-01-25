@@ -9,14 +9,14 @@ using VirtoCommerce.SearchModule.Core.Services;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Queries
 {
-    public class SearchCustomerOrderQueryHandler : IQueryHandler<SearchCustomerOrderQuery, SearchOrderResponse>
+    public class SearchOrderQueryHandler : IQueryHandler<SearchCustomerOrderQuery, SearchOrderResponse>, IQueryHandler<SearchOrganizationOrderQuery, SearchOrderResponse>
     {
         private readonly ICustomerOrderAggregateRepository _customerOrderAggregateRepository;
         private readonly ISearchPhraseParser _searchPhraseParser;
         private readonly IIndexedCustomerOrderSearchService _customerOrderSearchService;
         private readonly IMapper _mapper;
 
-        public SearchCustomerOrderQueryHandler(ISearchPhraseParser searchPhraseParser,
+        public SearchOrderQueryHandler(ISearchPhraseParser searchPhraseParser,
             ICustomerOrderAggregateRepository customerOrderAggregateRepository,
             IIndexedCustomerOrderSearchService customerOrderSearchService,
             IMapper mapper)
@@ -29,14 +29,34 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Queries
 
         public virtual async Task<SearchOrderResponse> Handle(SearchCustomerOrderQuery request, CancellationToken cancellationToken)
         {
-            var searchCriteria = new CustomerOrderSearchCriteriaBuilder(_searchPhraseParser)
+            return await SearchOrderQueryHandle(request);
+        }
+
+        public virtual async Task<SearchOrderResponse> Handle(SearchOrganizationOrderQuery request, CancellationToken cancellationToken)
+        {
+            return await SearchOrderQueryHandle(request);
+        }
+
+        protected virtual async Task<SearchOrderResponse> SearchOrderQueryHandle(SearchOrderQuery request)
+        {
+            var searchCriteriaBuilder = new CustomerOrderSearchCriteriaBuilder(_searchPhraseParser)
                                         .WithCultureName(request.CultureName)
                                         .ParseFilters(request.Filter)
                                         .ParseFacets(request.Facet)
-                                        .WithCustomerId(request.CustomerId)
                                         .WithPaging(request.Skip, request.Take)
-                                        .WithSorting(request.Sort)
-                                        .Build();
+                                        .WithSorting(request.Sort);
+
+            switch (request)
+            {
+                case SearchCustomerOrderQuery customerOrderQuery:
+                    searchCriteriaBuilder = searchCriteriaBuilder.WithCustomerId(customerOrderQuery.CustomerId);
+                    break;
+                case SearchOrganizationOrderQuery organizationOrderQuery:
+                    searchCriteriaBuilder = searchCriteriaBuilder.WithOrganizationId(organizationOrderQuery.OrganizationId);
+                    break;
+            }
+
+            var searchCriteria = searchCriteriaBuilder.Build();
 
             var searchResult = await _customerOrderSearchService.SearchCustomerOrdersAsync(searchCriteria);
             var aggregates = await _customerOrderAggregateRepository.GetAggregatesFromOrdersAsync(searchResult.Results, request.CultureName);

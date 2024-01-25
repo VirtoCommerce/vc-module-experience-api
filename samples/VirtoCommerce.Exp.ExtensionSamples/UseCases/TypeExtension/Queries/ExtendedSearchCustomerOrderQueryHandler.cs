@@ -6,7 +6,7 @@ using VirtoCommerce.SearchModule.Core.Services;
 
 namespace VirtoCommerce.Exp.ExtensionSamples.UseCases.TypeExtension.Queries
 {
-    public class ExtendedSearchCustomerOrderQueryHandler : SearchCustomerOrderQueryHandler
+    public class ExtendedSearchCustomerOrderQueryHandler : SearchOrderQueryHandler
     {
         public ExtendedSearchCustomerOrderQueryHandler(ISearchPhraseParser searchPhraseParser,
             ICustomerOrderAggregateRepository customerOrderAggregateRepository,
