@@ -9,7 +9,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder
     public class CustomerOrderSearchCriteriaBuilder
     {
         private readonly ISearchPhraseParser _phraseParser;
-        private readonly CustomerOrderSearchCriteria _searchCriteria;
+        private readonly CustomerOrderIndexedSearchCriteria _searchCriteria;
 
         public CustomerOrderSearchCriteriaBuilder(ISearchPhraseParser phraseParser) : this()
         {
@@ -18,12 +18,12 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder
 
         public CustomerOrderSearchCriteriaBuilder()
         {
-            _searchCriteria = AbstractTypeFactory<CustomerOrderSearchCriteria>.TryCreateInstance();
+            _searchCriteria = AbstractTypeFactory<CustomerOrderIndexedSearchCriteria>.TryCreateInstance();
         }
 
-        public virtual CustomerOrderSearchCriteria Build()
+        public virtual CustomerOrderIndexedSearchCriteria Build()
         {
-            return _searchCriteria.Clone() as CustomerOrderSearchCriteria;
+            return _searchCriteria.Clone() as CustomerOrderIndexedSearchCriteria;
         }
 
         public CustomerOrderSearchCriteriaBuilder ParseFilters(string filterPhrase)
