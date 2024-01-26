@@ -777,7 +777,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             ///   }
             /// }
             /// </example>
-            var validateCouponField = FieldBuilder.Create<CartAggregate, bool>(typeof(BooleanGraphType))
+            var validateCouponMutationField = FieldBuilder.Create<CartAggregate, bool>(typeof(BooleanGraphType))
                                                   .Name("validateCoupon")
                                                   .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputValidateCouponType>>(), _commandName)
                                                   .ResolveSynchronizedAsync(CartPrefix, "userId", _distributedLockService, async context =>
@@ -788,9 +788,33 @@ namespace VirtoCommerce.XPurchase.Schemas
 
                                                       return await _mediator.Send(command);
                                                   })
+                                                  .DeprecationReason("Deprecated. Use 'validateCoupon' query instead.")
                                                   .FieldType;
 
-            schema.Mutation.AddField(validateCouponField);
+            schema.Mutation.AddField(validateCouponMutationField);
+
+            var validateCouponQueryField = new FieldType
+            {
+                Name = "validateCoupon",
+                Arguments = new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "storeId", Description = "Store Id" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "currencyCode", Description = "Currency code (\"USD\")" },
+                    new QueryArgument<StringGraphType> { Name = "userId", Description = "User Id" },
+                    new QueryArgument<StringGraphType> { Name = "cultureName", Description = "Culture name (\"en-Us\")" },
+                    new QueryArgument<StringGraphType> { Name = "cartName", Description = "Cart name" },
+                    new QueryArgument<StringGraphType> { Name = "cartType", Description = "Cart type" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "coupon", Description = "Cart promo coupon code" }),
+                Type = typeof(BooleanGraphType),
+                Resolver = new AsyncFieldResolver<object>(async context =>
+                {
+                    var query = context.GetCartQuery<ValidateCouponQuery>();
+
+                    await CheckAuthByCartParamsAsync(context, query.StoreId, query.CartType, query.CartName, query.UserId, query.CurrencyCode, query.CultureName);
+
+                    return await _mediator.Send(query);
+                })
+            };
+            schema.Query.AddField(validateCouponQueryField);
 
             /// <example>
             /// This is an example JSON request for a mutation
