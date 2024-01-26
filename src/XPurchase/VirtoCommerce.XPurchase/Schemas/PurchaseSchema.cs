@@ -788,7 +788,7 @@ namespace VirtoCommerce.XPurchase.Schemas
 
                                                       return await _mediator.Send(command);
                                                   })
-                                                  .DeprecationReason("Deprecated. Use 'validateCoupon' query instead.")
+                                                  .DeprecationReason("Use 'validateCoupon' query instead.")
                                                   .FieldType;
 
             schema.Mutation.AddField(validateCouponMutationField);
