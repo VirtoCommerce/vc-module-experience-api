@@ -17,7 +17,7 @@ namespace VirtoCommerce.XPurchase.Queries
         public async Task<bool> Handle(ValidateCouponQuery request, CancellationToken cancellationToken)
         {
             var getCartQuery = new GetCartQuery(request);
-            var cartAggregate = await _mediator.Send(getCartQuery);
+            var cartAggregate = await _mediator.Send(getCartQuery, cancellationToken);
 
             if (cartAggregate != null)
             {
