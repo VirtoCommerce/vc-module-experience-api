@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using RecommendationsGatewayModule.Core;
 using Scriban;
@@ -19,7 +17,8 @@ namespace RecommendationsGatewayModule.Data
                 NewLine = Environment.NewLine,
                 TemplateLoaderLexerOptions = new LexerOptions
                 {
-                    Mode = ScriptMode.Liquid
+                    Mode = ScriptMode.Default,
+                    Lang = ScriptLang.Liquid,
                 }
             };
             var scriptObject = new ScriptObject();
