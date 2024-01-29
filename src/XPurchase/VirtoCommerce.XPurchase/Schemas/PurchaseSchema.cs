@@ -808,6 +808,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                 Resolver = new AsyncFieldResolver<object>(async context =>
                 {
                     var query = context.GetCartQuery<ValidateCouponQuery>();
+                    query.Coupon = context.GetArgumentOrValue<string>("coupon");
 
                     await CheckAuthByCartParamsAsync(context, query.StoreId, query.CartType, query.CartName, query.UserId, query.CurrencyCode, query.CultureName);
 
