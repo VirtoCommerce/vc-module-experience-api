@@ -30,7 +30,14 @@ namespace VirtoCommerce.XPurchase.Queries
 
         protected virtual Task<CartAggregate> GetCartAggregateAsync(ValidateCouponQuery request)
         {
-            return _cartAggregateRepository.GetCartAsync(request.CartName, request.StoreId, request.UserId, request.CultureName, request.CurrencyCode, request.CartType);
+            if (!string.IsNullOrEmpty(request.CartId))
+            {
+                return _cartAggregateRepository.GetCartByIdAsync(request.CartId, request.CultureName);
+            }
+            else
+            {
+                return _cartAggregateRepository.GetCartAsync(request.CartName, request.StoreId, request.UserId, request.CultureName, request.CurrencyCode, request.CartType);
+            }
         }
     }
 }

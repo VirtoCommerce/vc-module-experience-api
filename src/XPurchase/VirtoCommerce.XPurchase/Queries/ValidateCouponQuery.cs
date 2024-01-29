@@ -13,5 +13,6 @@ namespace VirtoCommerce.XPurchase.Queries
         public string CurrencyCode { get; set; }
         public string CultureName { get; set; }
         public string Coupon { get; set; }
+        public string CartId { get; set; }
     }
 }

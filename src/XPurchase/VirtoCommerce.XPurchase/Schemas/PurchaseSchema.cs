@@ -797,9 +797,10 @@ namespace VirtoCommerce.XPurchase.Schemas
             {
                 Name = "validateCoupon",
                 Arguments = new QueryArguments(
+                    new QueryArgument<StringGraphType> { Name = "cartId", Description = "Cart Id" },
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "storeId", Description = "Store Id" },
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "currencyCode", Description = "Currency code (\"USD\")" },
-                    new QueryArgument<StringGraphType> { Name = "userId", Description = "User Id" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "userId", Description = "User Id" },
                     new QueryArgument<StringGraphType> { Name = "cultureName", Description = "Culture name (\"en-Us\")" },
                     new QueryArgument<StringGraphType> { Name = "cartName", Description = "Cart name" },
                     new QueryArgument<StringGraphType> { Name = "cartType", Description = "Cart type" },
@@ -808,6 +809,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                 Resolver = new AsyncFieldResolver<object>(async context =>
                 {
                     var query = context.GetCartQuery<ValidateCouponQuery>();
+                    query.CartId = context.GetArgumentOrValue<string>("cartId");
                     query.Coupon = context.GetArgumentOrValue<string>("coupon");
 
                     await CheckAuthByCartParamsAsync(context, query.StoreId, query.CartType, query.CartName, query.UserId, query.CurrencyCode, query.CultureName);
