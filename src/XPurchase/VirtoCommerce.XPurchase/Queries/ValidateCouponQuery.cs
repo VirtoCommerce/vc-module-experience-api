@@ -5,7 +5,7 @@ namespace VirtoCommerce.XPurchase.Queries
 {
     public class ValidateCouponQuery : IQuery<bool>, ICartQuery
     {
-        public IList<string> IncludeFields { get; set; }
+        public IList<string> IncludeFields { get; set; } = new List<string>();
         public string StoreId { get; set; }
         public string CartType { get; set; }
         public string CartName { get; set; }
