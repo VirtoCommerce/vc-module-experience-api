@@ -5,6 +5,7 @@ using GraphQL.Validation.Rules;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using VirtoCommerce.ExperienceApiModule.Core;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure.Validation;
@@ -13,7 +14,6 @@ using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
 using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.Web.Extensions;
 using VirtoCommerce.ExperienceApiModule.XCMS.Extensions;
-using VirtoCommerce.ExperienceApiModule.XOrder;
 using VirtoCommerce.ExperienceApiModule.XOrder.Extensions;
 using VirtoCommerce.MarketingModule.Core.Model.Promotions;
 using VirtoCommerce.Platform.Core.Modularity;
@@ -119,8 +119,8 @@ namespace VirtoCommerce.ExperienceApiModule.Web
 
             // settings
             var settingsRegistrar = serviceProvider.GetRequiredService<ISettingsRegistrar>();
-            settingsRegistrar.RegisterSettings(XOrderConstants.Settings.General.AllSettings, ModuleInfo.Id);
-            settingsRegistrar.RegisterSettingsForType(XOrderConstants.Settings.StoreLevelSettings, nameof(Store));
+            settingsRegistrar.RegisterSettings(ModuleConstants.Settings.General.AllSettings, ModuleInfo.Id);
+            settingsRegistrar.RegisterSettingsForType(ModuleConstants.Settings.StoreLevelSettings, nameof(Store));
         }
 
         public void Uninstall()

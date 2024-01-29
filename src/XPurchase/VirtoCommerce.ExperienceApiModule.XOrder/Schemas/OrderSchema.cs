@@ -24,7 +24,7 @@ using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Settings;
 using VirtoCommerce.XPurchase;
 using VirtoCommerce.XPurchase.Queries;
-using XOrderSettings = VirtoCommerce.ExperienceApiModule.XOrder.XOrderConstants.Settings.General;
+using XOrderSettings = VirtoCommerce.ExperienceApiModule.Core.ModuleConstants.Settings.General;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 {
