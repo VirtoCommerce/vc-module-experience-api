@@ -17,21 +17,6 @@ namespace VirtoCommerce.XPurchase.Queries
         public string CurrencyCode { get; set; }
         public string CultureName { get; set; }
 
-        public GetCartQuery()
-        {
-        }
-
-        public GetCartQuery(ICartQuery cartQuery)
-        {
-            StoreId = cartQuery.StoreId;
-            CartType = cartQuery.CartType;
-            CartName = cartQuery.CartName;
-            UserId = cartQuery.UserId;
-            CurrencyCode = cartQuery.CurrencyCode;
-            CultureName = cartQuery.CultureName;
-            IncludeFields = cartQuery.IncludeFields;
-        }
-
         public IList<string> IncludeFields { get; set; } = Array.Empty<string>();
 
         public override IEnumerable<QueryArgument> GetArguments()

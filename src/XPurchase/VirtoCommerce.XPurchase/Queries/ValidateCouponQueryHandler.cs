@@ -1,23 +1,21 @@
 using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 
 namespace VirtoCommerce.XPurchase.Queries
 {
     public class ValidateCouponQueryHandler : IQueryHandler<ValidateCouponQuery, bool>
     {
-        private readonly IMediator _mediator;
+        private readonly ICartAggregateRepository _cartAggregateRepository;
 
-        public ValidateCouponQueryHandler(IMediator mediator)
+        public ValidateCouponQueryHandler(ICartAggregateRepository cartAggregateRepository)
         {
-            _mediator = mediator;
+            _cartAggregateRepository = cartAggregateRepository;
         }
 
         public async Task<bool> Handle(ValidateCouponQuery request, CancellationToken cancellationToken)
         {
-            var getCartQuery = new GetCartQuery(request);
-            var cartAggregate = await _mediator.Send(getCartQuery, cancellationToken);
+            var cartAggregate = await GetCartAggregateAsync(request);
 
             if (cartAggregate != null)
             {
@@ -28,6 +26,11 @@ namespace VirtoCommerce.XPurchase.Queries
             }
 
             return false;
+        }
+
+        protected virtual Task<CartAggregate> GetCartAggregateAsync(ValidateCouponQuery request)
+        {
+            return _cartAggregateRepository.GetCartAsync(request.CartName, request.StoreId, request.UserId, request.CultureName, request.CurrencyCode, request.CartType);
         }
     }
 }
