@@ -116,7 +116,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Services.Security
             return detailedErrors ? response : SecurityErrorDescriber.LoginFailed();
         }
 
-        private bool EmailVerificationRequired(Store store)
+        private static bool EmailVerificationRequired(Store store)
         {
             return store.Settings.GetValue<bool>(StoreSettings.General.EmailVerificationEnabled) &&
                 store.Settings.GetValue<bool>(StoreSettings.General.EmailVerificationRequired);
