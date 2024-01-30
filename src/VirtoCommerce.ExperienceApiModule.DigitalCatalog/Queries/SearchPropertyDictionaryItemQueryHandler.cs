@@ -20,7 +20,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
 
         public virtual async Task<SearchPropertyDictionaryItemResponse> Handle(SearchPropertyDictionaryItemQuery request, CancellationToken cancellationToken)
         {
-            var result = await _propertyDictionaryItemSearchService.SearchAsync(_mapper.Map<PropertyDictionaryItemSearchCriteria>(request));
+            var result = await _propertyDictionaryItemSearchService.SearchAsync(_mapper.Map<PropertyDictionaryItemSearchCriteria>(request), clone: false);
 
             return new SearchPropertyDictionaryItemResponse
             {

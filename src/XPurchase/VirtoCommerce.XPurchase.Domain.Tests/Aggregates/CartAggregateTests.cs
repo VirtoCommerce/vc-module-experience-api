@@ -67,22 +67,22 @@ namespace VirtoCommerce.XPurchase.Tests.Aggregates
         #region AddItemAsync
 
         [Fact]
-        public void AddItemAsync_ShouldThrowArgumentNullException_IfNewCartItemIsNull()
+        public async Task AddItemAsync_ShouldThrowArgumentNullException_IfNewCartItemIsNull()
         {
             // Arrange
             NewCartItem newCartItem = null;
 
             // Act
-            Action action = () => aggregate.AddItemAsync(newCartItem).GetAwaiter().GetResult();
+            var action = async () => await aggregate.AddItemAsync(newCartItem);
 
             // Assert
-            action.Should().ThrowExactly<ArgumentNullException>("NewCartItem is null");
+            await action.Should().ThrowExactlyAsync<ArgumentNullException>("NewCartItem is null");
         }
 
         [Theory]
         [InlineData(-1)]
         [InlineData(0)]
-        public void AddItemAsync_ShouldThrow_IfQuantityLessOrEqualZero(int quantity)
+        public async Task AddItemAsync_ShouldThrow_IfQuantityLessOrEqualZero(int quantity)
         {
             // Arrange
             var productId = _fixture.Create<string>();
@@ -96,7 +96,7 @@ namespace VirtoCommerce.XPurchase.Tests.Aggregates
                 .ReturnsAsync(new List<CartProduct>() { new CartProduct(new CatalogProduct()) });
 
             // Act
-            var aggregateAfterAddItem = aggregate.AddItemAsync(newCartItem).GetAwaiter().GetResult();
+            var aggregateAfterAddItem = await aggregate.AddItemAsync(newCartItem);
 
             // Assert
             aggregateAfterAddItem.ValidationErrors.Should().NotBeEmpty();
@@ -205,7 +205,7 @@ namespace VirtoCommerce.XPurchase.Tests.Aggregates
         #region ChangeItemQuantityAsync
 
         [Fact]
-        public void ChangeItemQuantityAsync_LineItemNotFound_ShouldThrowValidationException()
+        public async Task ChangeItemQuantityAsync_LineItemNotFound_ShouldThrowValidationException()
         {
             // Arrange
             var cartAggregate = GetValidCartAggregate();
@@ -213,12 +213,12 @@ namespace VirtoCommerce.XPurchase.Tests.Aggregates
             cartAggregate.Cart.Items = new List<LineItem> { lineItem };
 
             // Act
-            var cartAggregateAfterChangeItemQty = cartAggregate.ChangeItemQuantityAsync(new ItemQtyAdjustment
+            var cartAggregateAfterChangeItemQty = await cartAggregate.ChangeItemQuantityAsync(new ItemQtyAdjustment
             {
                 LineItemId = _fixture.Create<string>(),
                 NewQuantity = 5,
                 CartProduct = _fixture.Create<CartProduct>()
-            }).GetAwaiter().GetResult();
+            });
 
             // Assert
             cartAggregateAfterChangeItemQty.ValidationErrors.Should().NotBeEmpty();
