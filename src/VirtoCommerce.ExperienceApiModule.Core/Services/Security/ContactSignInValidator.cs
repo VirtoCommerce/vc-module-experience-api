@@ -52,7 +52,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Services.Security
             var store = await GetStore(context);
             if (store == null)
             {
-                var error = detailedErrors ? ContactSecurityErrorDescriber.UserCannotLoginInStore() : SecurityErrorDescriber.LoginFailed();
+                var error = GetError(detailedErrors, ContactSecurityErrorDescriber.UserCannotLoginInStore());
                 result.Add(error);
                 return result;
             }
@@ -60,10 +60,9 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Services.Security
             if (signInResult.IsLockedOut &&
                 contact.Status == "Locked" &&
                 !user.EmailConfirmed &&
-                store.Settings.GetValue<bool>(StoreSettings.General.EmailVerificationEnabled) &&
-                store.Settings.GetValue<bool>(StoreSettings.General.EmailVerificationRequired))
+                EmailVerificationRequired(store))
             {
-                var error = detailedErrors ? ContactSecurityErrorDescriber.EmailVerificationIsRequired() : SecurityErrorDescriber.LoginFailed();
+                var error = GetError(detailedErrors, ContactSecurityErrorDescriber.EmailVerificationIsRequired());
                 result.Add(error);
             }
 
@@ -79,7 +78,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Services.Security
 
                 if (!canLoginToStore)
                 {
-                    var error = detailedErrors ? ContactSecurityErrorDescriber.UserCannotLoginInStore() : SecurityErrorDescriber.LoginFailed();
+                    var error = GetError(detailedErrors, ContactSecurityErrorDescriber.UserCannotLoginInStore());
                     result.Add(error);
                 }
             }
@@ -110,6 +109,17 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Services.Security
         private async Task<Contact> GetContactAsync(ApplicationUser user)
         {
             return await _memberService.GetByIdAsync(user.MemberId) as Contact;
+        }
+
+        private static TokenLoginResponse GetError(bool detailedErrors, TokenLoginResponse response)
+        {
+            return detailedErrors ? response : SecurityErrorDescriber.LoginFailed();
+        }
+
+        private bool EmailVerificationRequired(Store store)
+        {
+            return store.Settings.GetValue<bool>(StoreSettings.General.EmailVerificationEnabled) &&
+                store.Settings.GetValue<bool>(StoreSettings.General.EmailVerificationRequired);
         }
     }
 }
