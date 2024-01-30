@@ -75,7 +75,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Services
                 result.Values = newValuesGroup.ToArray();
 
                 sourceProperties.Add(result);
-            };
+            }
 
             var comparer = AnonymousComparer.Create((DynamicObjectProperty x) => x.Name);
 
