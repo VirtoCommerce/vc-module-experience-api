@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using PipelineNet.Middleware;
+using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
 using VirtoCommerce.InventoryModule.Core.Model;
 using VirtoCommerce.InventoryModule.Core.Model.Search;
 using VirtoCommerce.InventoryModule.Core.Services;
@@ -14,10 +15,12 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
     public class EvalProductsInventoryMiddleware : IAsyncMiddleware<SearchProductResponse>
     {
         private readonly IInventorySearchService _inventorySearchService;
+        private readonly IGenericPipelineLauncher _pipeline;
 
-        public EvalProductsInventoryMiddleware(IInventorySearchService inventorySearchService)
+        public EvalProductsInventoryMiddleware(IInventorySearchService inventorySearchService, IGenericPipelineLauncher pipeline)
         {
             _inventorySearchService = inventorySearchService;
+            _pipeline = pipeline;
         }
 
         public virtual async Task Run(SearchProductResponse parameter, Func<SearchProductResponse, Task> next)
@@ -48,12 +51,8 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
 
                 do
                 {
-                    searchResult = await _inventorySearchService.SearchInventoriesAsync(new InventorySearchCriteria
-                    {
-                        ProductIds = productIds,
-                        Skip = skip,
-                        Take = pageSize,
-                    });
+                    var searchCriteria = await GetInventorySearchCriteria(productIds, pageSize, skip);
+                    searchResult = await _inventorySearchService.SearchInventoriesAsync(searchCriteria);
 
                     inventories.AddRange(searchResult.Results);
                     skip += pageSize;
@@ -67,6 +66,19 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
             }
 
             await next(parameter);
+        }
+
+        protected virtual async Task<InventorySearchCriteria> GetInventorySearchCriteria(string[] productIds, int pageSize, int skip)
+        {
+            var searchCreteria = AbstractTypeFactory<InventorySearchCriteria>.TryCreateInstance();
+
+            searchCreteria.ProductIds = productIds;
+            searchCreteria.Skip = skip;
+            searchCreteria.Take = pageSize;
+
+            await _pipeline.Execute(searchCreteria);
+
+            return searchCreteria;
         }
     }
 }
