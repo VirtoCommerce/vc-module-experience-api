@@ -8,6 +8,7 @@ using AutoMapper;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
+using VirtoCommerce.ExperienceApiModule.Core.Models.Facets;
 using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
 using VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index;
 using VirtoCommerce.Platform.Core.Common;
@@ -16,7 +17,6 @@ using VirtoCommerce.SearchModule.Core.Services;
 using VirtoCommerce.StoreModule.Core.Model;
 using VirtoCommerce.StoreModule.Core.Services;
 using VirtoCommerce.XDigitalCatalog.Extensions;
-using VirtoCommerce.XDigitalCatalog.Facets;
 namespace VirtoCommerce.XDigitalCatalog.Queries
 {
     public class SearchProductQueryHandler : IQueryHandler<SearchProductQuery, SearchProductResponse>, IQueryHandler<LoadProductsQuery, LoadProductResponse>
