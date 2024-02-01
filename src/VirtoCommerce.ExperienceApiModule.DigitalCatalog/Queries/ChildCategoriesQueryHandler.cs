@@ -6,8 +6,8 @@ using MediatR;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.Core;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
+using VirtoCommerce.ExperienceApiModule.Core.Models.Facets;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.XDigitalCatalog.Facets;
 
 namespace VirtoCommerce.XDigitalCatalog.Queries;
 
