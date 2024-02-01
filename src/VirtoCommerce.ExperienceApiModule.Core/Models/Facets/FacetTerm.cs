@@ -1,9 +1,7 @@
-using System;
 using VirtoCommerce.Platform.Core.Common;
 
-namespace VirtoCommerce.XDigitalCatalog.Facets
+namespace VirtoCommerce.ExperienceApiModule.Core.Models.Facets
 {
-    [Obsolete("Use the same class from XCore.")]
     public sealed class FacetTerm : ValueObject
     {
         public string Term { get; set; }
