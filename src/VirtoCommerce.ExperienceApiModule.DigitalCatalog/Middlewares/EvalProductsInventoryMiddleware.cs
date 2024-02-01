@@ -51,7 +51,11 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
 
                 do
                 {
-                    var searchCriteria = await GetInventorySearchCriteria(productIds, skip, take);
+                    var searchCriteria = await GetInventorySearchCriteria(productIds);
+
+                    searchCriteria.Take = take;
+                    searchCriteria.Skip = skip;
+
                     searchResult = await _inventorySearchService.SearchInventoriesAsync(searchCriteria);
 
                     inventories.AddRange(searchResult.Results);
@@ -68,13 +72,11 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
             await next(parameter);
         }
 
-        protected virtual async Task<InventorySearchCriteria> GetInventorySearchCriteria(IList<string> productIds, int skip, int take)
+        protected virtual async Task<InventorySearchCriteria> GetInventorySearchCriteria(IList<string> productIds)
         {
             var searchCreteria = AbstractTypeFactory<InventorySearchCriteria>.TryCreateInstance();
 
             searchCreteria.ProductIds = productIds;
-            searchCreteria.Skip = skip;
-            searchCreteria.Take = take;
 
             await _pipeline.Execute(searchCreteria);
 
