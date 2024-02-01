@@ -68,7 +68,7 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
             await next(parameter);
         }
 
-        protected virtual async Task<InventorySearchCriteria> GetInventorySearchCriteria(string[] productIds, int pageSize, int skip)
+        protected virtual async Task<InventorySearchCriteria> GetInventorySearchCriteria(IList<string> productIds, int pageSize, int skip)
         {
             var searchCreteria = AbstractTypeFactory<InventorySearchCriteria>.TryCreateInstance();
 
