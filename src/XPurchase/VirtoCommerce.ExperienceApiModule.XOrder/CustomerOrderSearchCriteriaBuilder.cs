@@ -9,7 +9,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder
     public class CustomerOrderSearchCriteriaBuilder
     {
         private readonly ISearchPhraseParser _phraseParser;
-        private readonly CustomerOrderSearchCriteria _searchCriteria;
+        private readonly CustomerOrderIndexedSearchCriteria _searchCriteria;
 
         public CustomerOrderSearchCriteriaBuilder(ISearchPhraseParser phraseParser) : this()
         {
@@ -18,12 +18,12 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder
 
         public CustomerOrderSearchCriteriaBuilder()
         {
-            _searchCriteria = AbstractTypeFactory<CustomerOrderSearchCriteria>.TryCreateInstance();
+            _searchCriteria = AbstractTypeFactory<CustomerOrderIndexedSearchCriteria>.TryCreateInstance();
         }
 
-        public virtual CustomerOrderSearchCriteria Build()
+        public virtual CustomerOrderIndexedSearchCriteria Build()
         {
-            return _searchCriteria.Clone() as CustomerOrderSearchCriteria;
+            return _searchCriteria.Clone() as CustomerOrderIndexedSearchCriteria;
         }
 
         public CustomerOrderSearchCriteriaBuilder ParseFilters(string filterPhrase)
@@ -32,12 +32,30 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder
             {
                 return this;
             }
+
             if (_phraseParser == null)
             {
                 throw new OperationCanceledException("phrase parser must be set");
             }
 
             _searchCriteria.Keyword = filterPhrase;
+
+            return this;
+        }
+
+        public CustomerOrderSearchCriteriaBuilder ParseFacets(string facetPhrase)
+        {
+            if (facetPhrase == null)
+            {
+                return this;
+            }
+
+            if (_phraseParser == null)
+            {
+                throw new OperationCanceledException("phrase parser must be set");
+            }
+
+            _searchCriteria.Facet = facetPhrase;
 
             return this;
         }
@@ -82,6 +100,12 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder
         {
             _searchCriteria.ResponseGroup = responseGroup.ToString();
 
+            return this;
+        }
+
+        public CustomerOrderSearchCriteriaBuilder WithCultureName(string cultureName)
+        {
+            _searchCriteria.LanguageCode = cultureName;
             return this;
         }
     }

@@ -3,7 +3,8 @@ using System.Linq;
 using GraphQL.Types;
 using GraphQL.Types.Relay;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
-using VirtoCommerce.XDigitalCatalog.Facets;
+using VirtoCommerce.ExperienceApiModule.Core.Models.Facets;
+using CoreFacets = VirtoCommerce.ExperienceApiModule.Core.Schemas.Facets;
 
 namespace VirtoCommerce.XDigitalCatalog.Schemas
 {
@@ -12,13 +13,13 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
     {
         public ProductsConnectonType()
         {
-            Field<NonNullGraphType<ListGraphType<NonNullGraphType<FilterFacetResultType>>>>("filter_facets",
+            Field<NonNullGraphType<ListGraphType<NonNullGraphType<CoreFacets.FilterFacetResultType>>>>("filter_facets",
                 "Filter facets",
                 resolve: context => ((ProductsConnection<ExpProduct>)context.Source).Facets.OfType<FilterFacetResult>());
-            Field<NonNullGraphType<ListGraphType<NonNullGraphType<RangeFacetResultType>>>>("range_facets",
+            Field<NonNullGraphType<ListGraphType<NonNullGraphType<CoreFacets.RangeFacetResultType>>>>("range_facets",
                 "Range facets",
                 resolve: context => ((ProductsConnection<ExpProduct>)context.Source).Facets.OfType<RangeFacetResult>());
-            Field<NonNullGraphType<ListGraphType<NonNullGraphType<TermFacetResultType>>>>("term_facets",
+            Field<NonNullGraphType<ListGraphType<NonNullGraphType<CoreFacets.TermFacetResultType>>>>("term_facets",
                 "Term facets",
                 resolve: context => ((ProductsConnection<ExpProduct>)context.Source).Facets.OfType<TermFacetResult>());
         }

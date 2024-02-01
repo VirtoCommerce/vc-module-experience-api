@@ -3,7 +3,7 @@ using System.Linq;
 using AutoMapper;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
-using VirtoCommerce.XDigitalCatalog.Facets;
+using CoreFacets = VirtoCommerce.ExperienceApiModule.Core.Models.Facets;
 
 namespace VirtoCommerce.XDigitalCatalog.Mapping
 {
@@ -11,15 +11,15 @@ namespace VirtoCommerce.XDigitalCatalog.Mapping
     {
         public FacetMappingProfile()
         {
-            CreateMap<Aggregation, FacetResult>().IncludeAllDerived().ConvertUsing((request, facet, context) =>
+            CreateMap<Aggregation, CoreFacets.FacetResult>().IncludeAllDerived().ConvertUsing((request, facet, context) =>
             {
                 context.Items.TryGetValue("cultureName", out var cultureNameObj);
                 var cultureName = cultureNameObj as string;
-                FacetResult result = request.AggregationType switch
+                CoreFacets.FacetResult result = request.AggregationType switch
                 {
-                    "attr" => new TermFacetResult
+                    "attr" => new CoreFacets.TermFacetResult
                     {
-                        Terms = request.Items?.Select(x => new FacetTerm
+                        Terms = request.Items?.Select(x => new CoreFacets.FacetTerm
                         {
                             Count = x.Count,
                             IsSelected = x.IsApplied,
@@ -30,9 +30,9 @@ namespace VirtoCommerce.XDigitalCatalog.Mapping
                             .ToArray() ?? [],
                         Name = request.Field
                     },
-                    "pricerange" => new RangeFacetResult
+                    "pricerange" => new CoreFacets.RangeFacetResult
                     {
-                        Ranges = request.Items?.Select(x => new FacetRange
+                        Ranges = request.Items?.Select(x => new CoreFacets.FacetRange
                         {
                             Count = x.Count,
                             From = Convert.ToInt64(x.RequestedLowerBound),
