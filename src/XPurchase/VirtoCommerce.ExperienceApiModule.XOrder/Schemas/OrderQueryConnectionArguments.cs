@@ -7,6 +7,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
     {
         public OrderQueryConnectionArguments()
         {
+            Argument<StringGraphType>("facet", "This parameter applies a facet to the query results");
             Argument<StringGraphType>("filter", "This parameter applies a filter to the query results");
             Argument<StringGraphType>("sort", "The sort expression");
             Argument<StringGraphType>("cultureName", "Culture name (\"en-US\")");
@@ -16,7 +17,10 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
         public virtual OrderQueryConnectionArguments AddArguments(QueryArguments arguments)
         {
             foreach (var argument in arguments)
+            {
                 Add(argument);
+            }
+
             return this;
         }
     }

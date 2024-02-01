@@ -1,8 +1,5 @@
-using System;
-
-namespace VirtoCommerce.XDigitalCatalog.Facets
+namespace VirtoCommerce.ExperienceApiModule.Core.Models.Facets
 {
-    [Obsolete("Use the same class from XCore.")]
     public abstract class FacetResult
     {
         protected FacetResult(FacetTypes facetType)
