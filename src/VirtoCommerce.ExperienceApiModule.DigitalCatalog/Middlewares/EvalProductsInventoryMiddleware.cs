@@ -53,7 +53,6 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
 
                 do
                 {
-
                     searchCriteria.Take = take;
                     searchCriteria.Skip = skip;
 
