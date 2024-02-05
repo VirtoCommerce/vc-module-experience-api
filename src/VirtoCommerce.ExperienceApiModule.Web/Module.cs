@@ -15,6 +15,7 @@ using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.Web.Extensions;
 using VirtoCommerce.ExperienceApiModule.XCMS.Extensions;
 using VirtoCommerce.ExperienceApiModule.XOrder.Extensions;
+using VirtoCommerce.InventoryModule.Core.Model.Search;
 using VirtoCommerce.MarketingModule.Core.Model.Promotions;
 using VirtoCommerce.Platform.Core.Modularity;
 using VirtoCommerce.Platform.Core.Settings;
@@ -100,6 +101,7 @@ namespace VirtoCommerce.ExperienceApiModule.Web
             {
                 builder.AddMiddleware(typeof(LoadCartToEvalContextMiddleware));
             });
+            services.AddPipeline<InventorySearchCriteria>();
 
             services.Configure<GraphQLPlaygroundOptions>(Configuration.GetSection(GraphQLPlaygroundConfigKey));
         }
