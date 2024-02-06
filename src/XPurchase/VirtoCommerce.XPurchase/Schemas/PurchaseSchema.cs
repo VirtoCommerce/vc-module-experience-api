@@ -8,6 +8,7 @@ using GraphQL.Resolvers;
 using GraphQL.Types;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using Opus.MainModule.ExperienceApi.Schemas;
 using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.CartModule.Core.Model.Search;
 using VirtoCommerce.CartModule.Core.Services;
@@ -20,6 +21,7 @@ using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure.Authorization;
 using VirtoCommerce.ExperienceApiModule.Core.Services;
+using VirtoCommerce.Platform.Core.Commands;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.XPurchase.Authorization;
 using VirtoCommerce.XPurchase.Commands;
@@ -1339,7 +1341,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                                                  .FieldType;
 
             schema.Mutation.AddField(addListField);
-
+            
             // Change list
             var changeListField = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<WishlistType>())
                                                  .Name("changeWishlist")
@@ -1516,6 +1518,28 @@ namespace VirtoCommerce.XPurchase.Schemas
                      .FieldType;
 
             schema.Mutation.AddField(moveListItemField);
+
+            // Clone list
+            var cloneListField = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<WishlistType>())
+                .Name("cloneWishlist")
+                .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputCloneWishlistType>>(), _commandName)
+                .ResolveAsync(async context =>
+                {
+                    var commandType = GenericTypeHelper.GetActualType<CloneWishlistCommand>();
+                    var command = (CloneWishlistCommand)context.GetArgument(commandType, _commandName);
+
+                    var listId = context.GetArgument<string>("listId");
+
+                    var wishlistUserContext = await InitializeWishlistUserContext(context, listId);
+                    await AuthorizeAsync(context, wishlistUserContext);
+
+                    var result = await _mediator.Send(command);
+                    context.SetExpandedObjectGraph(result);
+                    return result;
+                })
+                .FieldType;
+
+            schema.Mutation.AddField(cloneListField);
 
             #endregion Wishlists
         }
