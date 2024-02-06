@@ -1,7 +1,7 @@
 using GraphQL.Types;
-using VirtoCommerce.XDigitalCatalog.Facets;
+using VirtoCommerce.ExperienceApiModule.Core.Models.Facets;
 
-namespace VirtoCommerce.XDigitalCatalog.Schemas
+namespace VirtoCommerce.ExperienceApiModule.Core.Schemas.Facets
 {
     public class RangeFacetResultType : ObjectGraphType<RangeFacetResult>
     {

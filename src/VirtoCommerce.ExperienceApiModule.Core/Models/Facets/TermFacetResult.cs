@@ -1,9 +1,7 @@
-using System;
 using System.Collections.Generic;
 
-namespace VirtoCommerce.XDigitalCatalog.Facets
+namespace VirtoCommerce.ExperienceApiModule.Core.Models.Facets
 {
-    [Obsolete("Use the same class from XCore.")]
     public sealed class TermFacetResult : FacetResult
     {
         public TermFacetResult()
