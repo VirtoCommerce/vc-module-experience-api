@@ -8,7 +8,7 @@ public class InputCloneWishlistType : InputObjectGraphType
     {
         Field<NonNullGraphType<StringGraphType>>("storeId", description: "Store ID");
         Field<NonNullGraphType<StringGraphType>>("userId", description: "Owner ID");
-        Field<NonNullGraphType<StringGraphType>>("listId", description: "ID of the cloned sheet");
+        Field<NonNullGraphType<StringGraphType>>("listId", description: "Source List ID");
         Field<StringGraphType>("listName", description: "List name");
         Field<StringGraphType>("cultureName", description: "Culture name");
         Field<StringGraphType>("currencyCode", description: "Currency code");
