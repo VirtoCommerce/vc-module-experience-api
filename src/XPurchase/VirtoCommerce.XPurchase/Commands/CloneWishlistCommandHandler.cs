@@ -34,7 +34,9 @@ public class CloneWishlistCommandHandler : CartCommandHandler<CloneWishlistComma
             cloneCartAggregate.Cart.OrganizationId = organizationId;
         }
 
-        var cartAggregate = await GetCartById(request.ListId, request.CultureName);
+        var cartAggregate = request.WishlistUserContext.Cart == null
+            ? await CartRepository.GetCartByIdAsync(request.ListId)
+            : await CartRepository.GetCartForShoppingCartAsync(request.WishlistUserContext.Cart);
 
         if (cartAggregate != null)
         {
