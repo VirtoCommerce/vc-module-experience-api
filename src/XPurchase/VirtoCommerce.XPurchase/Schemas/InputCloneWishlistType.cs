@@ -1,6 +1,6 @@
 using GraphQL.Types;
 
-namespace Opus.MainModule.ExperienceApi.Schemas;
+namespace VirtoCommerce.XPurchase.Schemas;
 
 public class InputCloneWishlistType : InputObjectGraphType
 {
