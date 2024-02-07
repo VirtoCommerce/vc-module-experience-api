@@ -3,7 +3,7 @@
   <id>VirtoCommerce.ExperienceApi</id>
   <version>3.804.0</version>
   <version-tag />
-  <platformVersion>3.805.0</platformVersion>
+  <platformVersion>3.807.0</platformVersion>
   <dependencies>
     <dependency id="VirtoCommerce.Cart" version="3.800.0" />
     <dependency id="VirtoCommerce.Catalog" version="3.800.0" />

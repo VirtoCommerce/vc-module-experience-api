@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
 using VirtoCommerce.CustomerModule.Core.Model;
 using VirtoCommerce.CustomerModule.Core.Services;
 using VirtoCommerce.Platform.Core.Common;
@@ -30,80 +29,58 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Services.Security
             _memberService = memberService;
         }
 
-        public virtual async Task<IList<TokenLoginResponse>> ValidateUserAsync(ApplicationUser user, SignInResult signInResult, IDictionary<string, object> context)
+        public virtual async Task<IList<TokenLoginResponse>> ValidateUserAsync(SignInValidatorContext context)
         {
             var result = new List<TokenLoginResponse>();
 
             // skip all check if member is admin
-            if (user.IsAdministrator)
+            if (context.User.IsAdministrator)
             {
                 return result;
             }
 
             // skip all check if member is not contact
-            var contact = await GetContactAsync(user);
+            var contact = await GetContactAsync(context.User);
             if (contact == null)
             {
                 return result;
             }
 
-            var detailedErrors = GetDetailedErrors(context);
-
-            var store = await GetStore(context);
+            var store = await _storeService.GetNoCloneAsync(context.StoreId);
             if (store == null)
             {
-                var error = GetError(detailedErrors, ContactSecurityErrorDescriber.UserCannotLoginInStore());
+                var error = GetError(context.DetailedErrors, ContactSecurityErrorDescriber.UserCannotLoginInStore());
                 result.Add(error);
                 return result;
             }
 
-            if (signInResult.IsLockedOut &&
+            if (context.IsLockedOut &&
                 contact.Status == "Locked" &&
-                !user.EmailConfirmed &&
+                !context.User.EmailConfirmed &&
                 EmailVerificationRequired(store))
             {
-                var error = GetError(detailedErrors, ContactSecurityErrorDescriber.EmailVerificationIsRequired());
+                var error = GetError(context.DetailedErrors, ContactSecurityErrorDescriber.EmailVerificationIsRequired());
                 result.Add(error);
             }
 
-            if (signInResult.Succeeded)
+            if (context.IsSucceeded)
             {
                 //Allow to login to store or users not assigned to store
-                var canLoginToStore = !user.StoreId.IsNullOrEmpty();
+                var canLoginToStore = !context.User.StoreId.IsNullOrEmpty();
 
                 if (canLoginToStore)
                 {
-                    canLoginToStore = store.TrustedGroups.Concat(new[] { store.Id }).Contains(user.StoreId);
+                    canLoginToStore = store.TrustedGroups.Concat(new[] { store.Id }).Contains(context.User.StoreId);
                 }
 
                 if (!canLoginToStore)
                 {
-                    var error = GetError(detailedErrors, ContactSecurityErrorDescriber.UserCannotLoginInStore());
+                    var error = GetError(context.DetailedErrors, ContactSecurityErrorDescriber.UserCannotLoginInStore());
                     result.Add(error);
                 }
             }
 
             return result;
-        }
-
-        private async Task<Store> GetStore(IDictionary<string, object> context)
-        {
-            var store = default(Store);
-            if (context.TryGetValue("storeId", out var storeIdValue) && storeIdValue is string storeId)
-            {
-                store = await _storeService.GetNoCloneAsync(storeId);
-            }
-            return store;
-        }
-
-        private static bool GetDetailedErrors(IDictionary<string, object> context)
-        {
-            var detailedErrors = false;
-            if (context.TryGetValue("detailedErrors", out var detailedErrorsValue))
-            {
-                detailedErrors = (bool)detailedErrorsValue;
-            }
-            return detailedErrors;
         }
 
         private async Task<Contact> GetContactAsync(ApplicationUser user)
