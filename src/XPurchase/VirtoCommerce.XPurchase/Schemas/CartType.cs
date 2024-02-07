@@ -8,6 +8,7 @@ using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
 using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.XPurchase.Extensions;
 using VirtoCommerce.XPurchase.Services;
 using VirtoCommerce.XPurchase.Validators;
 
@@ -52,13 +53,13 @@ namespace VirtoCommerce.XPurchase.Schemas
             // Money
             Field<NonNullGraphType<MoneyType>>("total",
                 "Shopping cart total",
-                resolve: context => context.Source.Cart.Total.ToMoney(context.Source.Currency));
+                resolve: context => context.GetTotal(context.Source.Cart.Total));
             Field<NonNullGraphType<MoneyType>>("subTotal",
                 "Shopping cart subtotal",
-                resolve: context => context.Source.Cart.SubTotal.ToMoney(context.Source.Currency));
+                resolve: context => context.GetTotal(context.Source.Cart.SubTotal));
             Field<NonNullGraphType<MoneyType>>("subTotalWithTax",
                 "Subtotal with tax",
-                resolve: context => context.Source.Cart.SubTotalWithTax.ToMoney(context.Source.Currency));
+                resolve: context => context.GetTotal(context.Source.Cart.SubTotalWithTax));
             Field<NonNullGraphType<MoneyType>>("extendedPriceTotal",
                 "Total extended price",
                 resolve: context => context.Source.SelectedLineItems.Sum(i => i.ExtendedPrice).ToMoney(context.Source.Currency));
@@ -70,7 +71,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                 resolve: context => context.Source.Currency);
             Field<NonNullGraphType<MoneyType>>("taxTotal",
                 "Total tax",
-                resolve: context => context.Source.Cart.TaxTotal.ToMoney(context.Source.Currency));
+                resolve: context => context.GetTotal(context.Source.Cart.TaxTotal));
             Field(x => x.Cart.TaxPercentRate, nullable: false).Description("Tax percentage");
             Field(x => x.Cart.TaxType, nullable: false).Description("Shipping tax type");
             Field<NonNullGraphType<ListGraphType<NonNullGraphType<TaxDetailType>>>>("taxDetails",
@@ -79,30 +80,30 @@ namespace VirtoCommerce.XPurchase.Schemas
 
             Field<NonNullGraphType<MoneyType>>(nameof(ShoppingCart.Fee).ToCamelCase(),
                 "Shopping cart fee",
-                resolve: context => context.Source.Cart.Fee.ToMoney(context.Source.Currency));
+                resolve: context => context.GetTotal(context.Source.Cart.Fee));
             Field<NonNullGraphType<MoneyType>>(nameof(ShoppingCart.FeeWithTax).ToCamelCase(),
                 "Shopping cart fee with tax",
-                resolve: context => context.Source.Cart.FeeWithTax.ToMoney(context.Source.Currency));
+                resolve: context => context.GetTotal(context.Source.Cart.FeeWithTax));
             Field<NonNullGraphType<MoneyType>>(nameof(ShoppingCart.FeeTotal).ToCamelCase(),
                 "Total fee",
-                resolve: context => context.Source.Cart.FeeTotal.ToMoney(context.Source.Currency));
+                resolve: context => context.GetTotal(context.Source.Cart.FeeTotal));
             Field<NonNullGraphType<MoneyType>>(nameof(ShoppingCart.FeeTotalWithTax).ToCamelCase(),
                 "Total fee with tax",
-                resolve: context => context.Source.Cart.FeeTotalWithTax.ToMoney(context.Source.Currency));
+                resolve: context => context.GetTotal(context.Source.Cart.FeeTotalWithTax));
 
             // Shipping
             Field<NonNullGraphType<MoneyType>>("shippingPrice",
                 "Shipping price",
-                resolve: context => context.Source.Cart.ShippingSubTotal.ToMoney(context.Source.Currency));
+                resolve: context => context.GetTotal(context.Source.Cart.ShippingSubTotal));
             Field<NonNullGraphType<MoneyType>>("shippingPriceWithTax",
                 "Shipping price with tax",
-                resolve: context => context.Source.Cart.ShippingSubTotalWithTax.ToMoney(context.Source.Currency));
+                resolve: context => context.GetTotal(context.Source.Cart.ShippingSubTotalWithTax));
             Field<NonNullGraphType<MoneyType>>("shippingTotal",
                 "Total shipping",
-                resolve: context => context.Source.Cart.ShippingTotal.ToMoney(context.Source.Currency));
+                resolve: context => context.GetTotal(context.Source.Cart.ShippingTotal));
             Field<NonNullGraphType<MoneyType>>("shippingTotalWithTax",
                 "Total shipping with tax",
-                resolve: context => context.Source.Cart.ShippingTotalWithTax.ToMoney(context.Source.Currency));
+                resolve: context => context.GetTotal(context.Source.Cart.ShippingTotalWithTax));
             ExtendableField<NonNullGraphType<ListGraphType<NonNullGraphType<ShipmentType>>>>("shipments",
                 "Shipments",
                 resolve: context => context.Source.Cart.Shipments);
@@ -117,31 +118,31 @@ namespace VirtoCommerce.XPurchase.Schemas
             // Payment
             Field<NonNullGraphType<MoneyType>>("paymentPrice",
                 "Payment price",
-                resolve: context => context.Source.Cart.PaymentSubTotal.ToMoney(context.Source.Currency));
+                resolve: context => context.GetTotal(context.Source.Cart.PaymentSubTotal));
             Field<NonNullGraphType<MoneyType>>("paymentPriceWithTax",
                 "Payment price with tax",
-                resolve: context => context.Source.Cart.PaymentSubTotalWithTax.ToMoney(context.Source.Currency));
+                resolve: context => context.GetTotal(context.Source.Cart.PaymentSubTotalWithTax));
             Field<NonNullGraphType<MoneyType>>("paymentTotal",
                 "Total payment",
-                resolve: context => context.Source.Cart.PaymentTotal.ToMoney(context.Source.Currency));
+                resolve: context => context.GetTotal(context.Source.Cart.PaymentTotal));
             Field<NonNullGraphType<MoneyType>>("paymentTotalWithTax",
                 "Total payment with tax",
-                resolve: context => context.Source.Cart.PaymentTotalWithTax.ToMoney(context.Source.Currency));
+                resolve: context => context.GetTotal(context.Source.Cart.PaymentTotalWithTax));
             ExtendableField<NonNullGraphType<ListGraphType<NonNullGraphType<PaymentType>>>>("payments",
                 "Payments",
                 resolve: context => context.Source.Cart.Payments);
             ExtendableFieldAsync<NonNullGraphType<ListGraphType<NonNullGraphType<PaymentMethodType>>>>("availablePaymentMethods",
                 "Available payment methods",
                 resolve: async context =>
-            {
-                var methods = await cartAvailMethods.GetAvailablePaymentMethodsAsync(context.Source);
-                //store the pair ShippingMethodType and cart aggregate in the user context for future usage in the ShippingMethodType fields resolvers
-                if (methods != null)
                 {
-                    methods.Apply(x => context.UserContext[x.Id] = context.Source);
-                }
-                return methods;
-            });
+                    var methods = await cartAvailMethods.GetAvailablePaymentMethodsAsync(context.Source);
+                    //store the pair ShippingMethodType and cart aggregate in the user context for future usage in the ShippingMethodType fields resolvers
+                    if (methods != null)
+                    {
+                        methods.Apply(x => context.UserContext[x.Id] = context.Source);
+                    }
+                    return methods;
+                });
             //PT-5425: Add fields
             //Field<ListGraphType<PaymentPlanType>>("paymentPlan", resolve: context => context.Source.PaymentPlan);
 
@@ -152,27 +153,27 @@ namespace VirtoCommerce.XPurchase.Schemas
             // Handling totals
             Field<NonNullGraphType<MoneyType>>("handlingTotal",
                 "Total handling",
-                resolve: context => context.Source.Cart.HandlingTotal.ToMoney(context.Source.Currency));
+                resolve: context => context.GetTotal(context.Source.Cart.HandlingTotal));
             Field<NonNullGraphType<MoneyType>>("handlingTotalWithTax",
                 "Total handling with tax",
-                resolve: context => context.Source.Cart.HandlingTotalWithTax.ToMoney(context.Source.Currency));
+                resolve: context => context.GetTotal(context.Source.Cart.HandlingTotalWithTax));
 
             // Discounts
             Field<NonNullGraphType<MoneyType>>("discountTotal",
                 "Total discount",
-                resolve: context => context.Source.Cart.DiscountTotal.ToMoney(context.Source.Currency));
+                resolve: context => context.GetTotal(context.Source.Cart.DiscountTotal));
 
             Field<NonNullGraphType<MoneyType>>("discountTotalWithTax",
                 "Total discount with tax",
-                resolve: context => context.Source.Cart.DiscountTotalWithTax.ToMoney(context.Source.Currency));
+                resolve: context => context.GetTotal(context.Source.Cart.DiscountTotalWithTax));
 
             Field<NonNullGraphType<MoneyType>>("subTotalDiscount",
                 "Subtotal discount",
-                resolve: context => context.Source.Cart.SubTotalDiscount.ToMoney(context.Source.Currency));
+                resolve: context => context.GetTotal(context.Source.Cart.SubTotalDiscount));
 
             Field<NonNullGraphType<MoneyType>>("subTotalDiscountWithTax",
                 "Subtotal discount with tax",
-                resolve: context => context.Source.Cart.SubTotalDiscountWithTax.ToMoney(context.Source.Currency));
+                resolve: context => context.GetTotal(context.Source.Cart.SubTotalDiscountWithTax));
 
             Field<NonNullGraphType<ListGraphType<NonNullGraphType<DiscountType>>>>("discounts",
                 "Discounts",
