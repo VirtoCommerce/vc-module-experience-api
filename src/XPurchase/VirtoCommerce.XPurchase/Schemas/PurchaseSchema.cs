@@ -1602,7 +1602,7 @@ namespace VirtoCommerce.XPurchase.Schemas
 
         private async Task CheckAuthAsyncByCartId(IResolveFieldContext context, string cartId)
         {
-            var cart = await _cartService.GetByIdAsync(cartId);
+            var cart = await _cartService.GetByIdAsync(cartId, CartResponseGroup.Default.ToString());
 
             if (cart == null)
             {

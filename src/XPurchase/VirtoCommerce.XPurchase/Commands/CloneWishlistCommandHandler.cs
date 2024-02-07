@@ -44,7 +44,7 @@ public class CloneWishlistCommandHandler : CartCommandHandler<CloneWishlistComma
         }
 
         var cart = request.WishlistUserContext.Cart
-                   ?? await _shoppingCartService.GetByIdAsync(request.ListId, nameof(CartResponseGroup.Default));
+                   ?? await _shoppingCartService.GetByIdAsync(request.ListId);
 
         if (cart != null)
         {
