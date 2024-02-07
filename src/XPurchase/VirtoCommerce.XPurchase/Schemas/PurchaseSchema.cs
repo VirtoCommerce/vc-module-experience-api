@@ -1530,8 +1530,7 @@ namespace VirtoCommerce.XPurchase.Schemas
 
                     var listId = context.GetArgument<string>("listId");
 
-                    var wishlistUserContext = await InitializeWishlistUserContext(context, listId);
-                    await AuthorizeAsync(context, wishlistUserContext);
+                    await AuthorizeByListIdAsync(context, listId, command);
 
                     var result = await _mediator.Send(command);
                     context.SetExpandedObjectGraph(result);
@@ -1636,14 +1635,14 @@ namespace VirtoCommerce.XPurchase.Schemas
             }
         }
 
-        private async Task<WishlistUserContext> AuthorizeByListIdAsync(IResolveFieldContext context, string listId)
+        private async Task<WishlistUserContext> AuthorizeByListIdAsync(IResolveFieldContext context, string listId, object command = null)
         {
-            var wishlistUserContext = await InitializeWishlistUserContext(context, listId);
+            var wishlistUserContext = await InitializeWishlistUserContext(context, listId, null, command);
             await AuthorizeAsync(context, wishlistUserContext);
             return wishlistUserContext;
         }
 
-        private async Task<WishlistUserContext> InitializeWishlistUserContext(IResolveFieldContext context, string listId = null, ShoppingCart cart = null)
+        private async Task<WishlistUserContext> InitializeWishlistUserContext(IResolveFieldContext context, string listId = null, ShoppingCart cart = null, object command = null)
         {
             var currentUserId = context.GetCurrentUserId();
             cart ??= await _cartService.GetByIdAsync(listId);
@@ -1653,6 +1652,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                 CurrentUserId = currentUserId,
                 CurrentContact = await _memberResolver.ResolveMemberByIdAsync(currentUserId) as Contact,
                 Cart = cart,
+                Command = command
             };
 
             return wishlistUserContext;

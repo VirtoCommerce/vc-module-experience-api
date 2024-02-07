@@ -1,4 +1,4 @@
-﻿using VirtoCommerce.CartModule.Core.Model;
+using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.CustomerModule.Core.Model;
 
 namespace VirtoCommerce.XPurchase.Commands
@@ -10,5 +10,7 @@ namespace VirtoCommerce.XPurchase.Commands
         public Contact CurrentContact { get; set; }
 
         public ShoppingCart Cart { get; set; }
+
+        public object Command { get; set; }
     }
 }
