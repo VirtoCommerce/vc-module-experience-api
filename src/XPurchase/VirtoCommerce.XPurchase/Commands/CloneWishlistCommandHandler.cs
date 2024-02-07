@@ -30,7 +30,8 @@ public class CloneWishlistCommandHandler : CartCommandHandler<CloneWishlistComma
         request.CartType = XPurchaseConstants.ListTypeName;
         var cloneCartAggregate = await CreateNewCartAggregateAsync(request);
 
-        var contact = await _memberResolver.ResolveMemberByIdAsync(request.UserId) as Contact;
+        var contact = request.WishlistUserContext.CurrentContact
+                      ?? await _memberResolver.ResolveMemberByIdAsync(request.UserId) as Contact;
 
         cloneCartAggregate.Cart.Description = request.Description;
         cloneCartAggregate.Cart.CustomerName = contact?.Name;
@@ -42,7 +43,8 @@ public class CloneWishlistCommandHandler : CartCommandHandler<CloneWishlistComma
             cloneCartAggregate.Cart.OrganizationId = organizationId;
         }
 
-        var cart = request.WishlistUserContext.Cart ?? await _shoppingCartService.GetByIdAsync(request.ListId, nameof(CartResponseGroup.Default));
+        var cart = request.WishlistUserContext.Cart
+                   ?? await _shoppingCartService.GetByIdAsync(request.ListId, nameof(CartResponseGroup.Default));
 
         if (cart != null)
         {
