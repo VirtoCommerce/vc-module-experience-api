@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,6 +24,8 @@ public class CloneWishlistCommandHandler : CartCommandHandler<CloneWishlistComma
     {
         request.CartType = XPurchaseConstants.ListTypeName;
         var cloneCartAggregate = await CreateNewCartAggregateAsync(request);
+
+        cloneCartAggregate.Cart.Name = request.ListName;
         cloneCartAggregate.Cart.Description = request.Description;
 
         if (request.Scope?.EqualsInvariant(XPurchaseConstants.OrganizationScope) == true)
@@ -40,8 +43,14 @@ public class CloneWishlistCommandHandler : CartCommandHandler<CloneWishlistComma
 
         if (cartAggregate != null)
         {
-            await cloneCartAggregate.AddItemsAsync(cartAggregate.Cart?.Items?.Select(x =>
-                new NewCartItem(x.ProductId, x.Quantity) { IsWishlist = true }).ToArray());
+            cloneCartAggregate.ValidationRuleSet = new[] { "default" };
+
+            var items = cartAggregate.Cart?.Items?
+                            .Select(x => new NewCartItem(x.ProductId, x.Quantity) { IsWishlist = true })
+                            .ToArray()
+                        ?? Array.Empty<NewCartItem>();
+
+            await cloneCartAggregate.AddItemsAsync(items);
         }
 
         return await SaveCartAsync(cloneCartAggregate);

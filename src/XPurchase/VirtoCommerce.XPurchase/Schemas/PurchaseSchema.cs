@@ -1527,10 +1527,9 @@ namespace VirtoCommerce.XPurchase.Schemas
                 {
                     var commandType = GenericTypeHelper.GetActualType<CloneWishlistCommand>();
                     var command = (CloneWishlistCommand)context.GetArgument(commandType, _commandName);
-                    
-                    var wishlistUserContext = await AuthorizeByListIdAsync(context, command.ListId);
-                    command.WishlistUserContext = wishlistUserContext;
 
+                    command.WishlistUserContext = await AuthorizeByListIdAsync(context, command.ListId);
+                    
                     var result = await _mediator.Send(command);
                     context.SetExpandedObjectGraph(result);
                     return result;
