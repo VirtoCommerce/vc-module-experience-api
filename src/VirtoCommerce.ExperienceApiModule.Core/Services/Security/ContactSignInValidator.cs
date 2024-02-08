@@ -54,7 +54,8 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Services.Security
                 return result;
             }
 
-            if (context.IsLockedOut &&
+            if (!context.IsSucceeded &&
+                context.IsLockedOut &&
                 contact.Status == "Locked" &&
                 !context.User.EmailConfirmed &&
                 EmailVerificationRequired(store))
