@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using AutoMapper;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
+using VirtoCommerce.ExperienceApiModule.Core.Models.Facets;
 using VirtoCommerce.ExperienceApiModule.XOrder.Mapping;
 using VirtoCommerce.OrdersModule.Core.Model.Search;
 using VirtoCommerce.SearchModule.Core.Model;
-using VirtoCommerce.XDigitalCatalog.Facets;
 using VirtoCommerce.XDigitalCatalog.Mapping;
 using Xunit;
 

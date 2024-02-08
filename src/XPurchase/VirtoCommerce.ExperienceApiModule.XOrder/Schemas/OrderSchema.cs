@@ -24,7 +24,7 @@ using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Settings;
 using VirtoCommerce.XPurchase;
 using VirtoCommerce.XPurchase.Queries;
-using XOrderSettings = VirtoCommerce.ExperienceApiModule.XOrder.XOrderConstants.Settings.General;
+using XOrderSettings = VirtoCommerce.ExperienceApiModule.Core.ModuleConstants.Settings.General;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
 {
@@ -85,24 +85,6 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                     return orderAggregate;
                 })
             });
-
-            var orderConnectionBuilder = GraphTypeExtenstionHelper
-                .CreateConnection<CustomerOrderType, object>()
-                .Name("orders")
-                .PageSize(20)
-                .OrderArguments();
-
-            orderConnectionBuilder.ResolveAsync(async context => await ResolveOrdersConnectionAsync<SearchCustomerOrderQuery>(_mediator, context));
-            schema.Query.AddField(orderConnectionBuilder.FieldType);
-
-            var organizationOrdersConnectionBuilder = GraphTypeExtenstionHelper
-                .CreateConnection<CustomerOrderType, object>()
-                .Name("organizationOrders")
-                .PageSize(20)
-                .OrganizationOrderArguments();
-
-            organizationOrdersConnectionBuilder.ResolveAsync(async context => await ResolveOrdersConnectionAsync<SearchOrganizationOrderQuery>(_mediator, context));
-            schema.Query.AddField(organizationOrdersConnectionBuilder.FieldType);
 
             var paymentsConnectionBuilder = GraphTypeExtenstionHelper
                 .CreateConnection<PaymentInType, object>()
@@ -256,26 +238,6 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
                                 return response;
                             })
                             .FieldType);
-        }
-
-        private async Task<object> ResolveOrdersConnectionAsync<T>(IMediator mediator, IResolveConnectionContext<object> context) where T : SearchOrderQuery
-        {
-            var query = context.ExtractQuery<T>();
-            await AuthorizeAsync(context, query, allowAnonymous: false);
-
-            context.CopyArgumentsToUserContext();
-            var allCurrencies = await _currencyService.GetAllCurrenciesAsync();
-            //Store all currencies in the user context for future resolve in the schema types
-            context.SetCurrencies(allCurrencies, query.CultureName);
-
-            var response = await mediator.Send(query);
-
-            foreach (var customerOrderAggregate in response.Results)
-            {
-                context.SetExpandedObjectGraph(customerOrderAggregate);
-            }
-
-            return new PagedConnection<CustomerOrderAggregate>(response.Results, query.Skip, query.Take, response.TotalCount);
         }
 
         private async Task<object> ResolvePaymentsConnectionAsync(IMediator mediator, IResolveConnectionContext<object> context)

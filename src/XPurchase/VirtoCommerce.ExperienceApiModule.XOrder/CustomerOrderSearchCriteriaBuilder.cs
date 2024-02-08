@@ -32,12 +32,30 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder
             {
                 return this;
             }
+
             if (_phraseParser == null)
             {
                 throw new OperationCanceledException("phrase parser must be set");
             }
 
             _searchCriteria.Keyword = filterPhrase;
+
+            return this;
+        }
+
+        public CustomerOrderSearchCriteriaBuilder ParseFacets(string facetPhrase)
+        {
+            if (facetPhrase == null)
+            {
+                return this;
+            }
+
+            if (_phraseParser == null)
+            {
+                throw new OperationCanceledException("phrase parser must be set");
+            }
+
+            _searchCriteria.Facet = facetPhrase;
 
             return this;
         }
@@ -82,6 +100,12 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder
         {
             _searchCriteria.ResponseGroup = responseGroup.ToString();
 
+            return this;
+        }
+
+        public CustomerOrderSearchCriteriaBuilder WithCultureName(string cultureName)
+        {
+            _searchCriteria.LanguageCode = cultureName;
             return this;
         }
     }

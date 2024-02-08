@@ -18,6 +18,13 @@ namespace VirtoCommerce.XPurchase.Extensions
             return userContext.GetValueForSource<CartAggregate>().Currency;
         }
 
+        public static Money GetTotal(this IResolveFieldContext<CartAggregate> context, decimal number)
+        {
+            return context.Source.HasSelectedLineItems
+                ? number.ToMoney(context.Source.Currency)
+                : new Money(0.0m, context.Source.Currency);
+        }
+
         public static T GetCartQuery<T>(this IResolveFieldContext context) where T : ICartQuery
         {
             var result = AbstractTypeFactory<T>.TryCreateInstance();
