@@ -1332,6 +1332,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                                                       var commandType = GenericTypeHelper.GetActualType<CreateWishlistCommand>();
                                                       var command = (CreateWishlistCommand)context.GetArgument(commandType, _commandName);
                                                       var wishlistUserContext = await InitializeWishlistUserContext(context, userId: command.UserId);
+                                                      wishlistUserContext.Scope = command.Scope;
                                                       await AuthorizeAsync(context, wishlistUserContext);
                                                       var cartAggregate = await _mediator.Send(command);
                                                       context.SetExpandedObjectGraph(cartAggregate);
@@ -1350,7 +1351,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                                                      var commandType = GenericTypeHelper.GetActualType<ChangeWishlistCommand>();
                                                      var command = (ChangeWishlistCommand)context.GetArgument(commandType, _commandName);
 
-                                                     var wishlistUserContext = await AuthorizeByListIdAsync(context, command.ListId);
+                                                     var wishlistUserContext = await AuthorizeByListIdAsync(context, command.ListId, command.Scope);
                                                      command.WishlistUserContext = wishlistUserContext;
 
                                                      var cartAggregate = await _mediator.Send(command);
@@ -1527,7 +1528,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                     var commandType = GenericTypeHelper.GetActualType<CloneWishlistCommand>();
                     var command = (CloneWishlistCommand)context.GetArgument(commandType, _commandName);
 
-                    command.WishlistUserContext = await AuthorizeByListIdAsync(context, command.ListId);
+                    command.WishlistUserContext = await AuthorizeByListIdAsync(context, command.ListId, command.Scope);
                     
                     var result = await _mediator.Send(command);
                     context.SetExpandedObjectGraph(result);
@@ -1632,9 +1633,10 @@ namespace VirtoCommerce.XPurchase.Schemas
             }
         }
 
-        private async Task<WishlistUserContext> AuthorizeByListIdAsync(IResolveFieldContext context, string listId)
+        private async Task<WishlistUserContext> AuthorizeByListIdAsync(IResolveFieldContext context, string listId, string scope = null)
         {
             var wishlistUserContext = await InitializeWishlistUserContext(context, listId);
+            wishlistUserContext.Scope = scope;
             await AuthorizeAsync(context, wishlistUserContext);
             return wishlistUserContext;
         }
