@@ -1341,7 +1341,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                                                  .FieldType;
 
             schema.Mutation.AddField(addListField);
-
+            
             // Change list
             var changeListField = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<WishlistType>())
                                                  .Name("changeWishlist")
@@ -1518,6 +1518,25 @@ namespace VirtoCommerce.XPurchase.Schemas
                      .FieldType;
 
             schema.Mutation.AddField(moveListItemField);
+
+            // Clone list
+            var cloneListField = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<WishlistType>())
+                .Name("cloneWishlist")
+                .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputCloneWishlistType>>(), _commandName)
+                .ResolveAsync(async context =>
+                {
+                    var commandType = GenericTypeHelper.GetActualType<CloneWishlistCommand>();
+                    var command = (CloneWishlistCommand)context.GetArgument(commandType, _commandName);
+
+                    command.WishlistUserContext = await AuthorizeByListIdAsync(context, command.ListId);
+                    
+                    var result = await _mediator.Send(command);
+                    context.SetExpandedObjectGraph(result);
+                    return result;
+                })
+                .FieldType;
+
+            schema.Mutation.AddField(cloneListField);
 
             #endregion Wishlists
         }

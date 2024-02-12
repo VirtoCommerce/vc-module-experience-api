@@ -1,4 +1,4 @@
-﻿using VirtoCommerce.CartModule.Core.Model;
+using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.CustomerModule.Core.Model;
 
 namespace VirtoCommerce.XPurchase.Commands
