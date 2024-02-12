@@ -23,11 +23,13 @@ namespace VirtoCommerce.XPurchase.Commands
 
             var cartAggregate = await CreateNewCartAggregateAsync(request);
 
+            var contact = await _memberResolver.ResolveMemberByIdAsync(request.UserId) as Contact;
+
             cartAggregate.Cart.Description = request.Description;
+            cartAggregate.Cart.CustomerName = contact?.Name;
 
             if (request.Scope?.EqualsInvariant(XPurchaseConstants.OrganizationScope) == true)
             {
-                var contact = await _memberResolver.ResolveMemberByIdAsync(request.UserId) as Contact;
                 var organizationId = contact?.Organizations?.FirstOrDefault();
 
                 cartAggregate.Cart.OrganizationId = organizationId;
