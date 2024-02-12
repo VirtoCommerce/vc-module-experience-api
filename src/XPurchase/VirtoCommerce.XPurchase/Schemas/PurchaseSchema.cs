@@ -1331,7 +1331,9 @@ namespace VirtoCommerce.XPurchase.Schemas
                                                   {
                                                       var commandType = GenericTypeHelper.GetActualType<CreateWishlistCommand>();
                                                       var command = (CreateWishlistCommand)context.GetArgument(commandType, _commandName);
-                                                      await AuthorizeAsync(context, command.UserId);
+                                                      var wishlistUserContext =
+                                                          InitializeWishlistUserContext(context, userId: command.UserId);
+                                                      await AuthorizeAsync(context, wishlistUserContext);
                                                       var cartAggregate = await _mediator.Send(command);
                                                       context.SetExpandedObjectGraph(cartAggregate);
                                                       return cartAggregate;
@@ -1619,16 +1621,21 @@ namespace VirtoCommerce.XPurchase.Schemas
             return wishlistUserContext;
         }
 
-        private async Task<WishlistUserContext> InitializeWishlistUserContext(IResolveFieldContext context, string listId = null, ShoppingCart cart = null)
+        private async Task<WishlistUserContext> InitializeWishlistUserContext(IResolveFieldContext context, string listId = null, ShoppingCart cart = null, string userId = null)
         {
-            var currentUserId = context.GetCurrentUserId();
+            var currentUserId = string.IsNullOrEmpty(userId)
+                ? context.GetCurrentUserId()
+                : userId;
+
             cart ??= await _cartService.GetByIdAsync(listId);
+            var scope = context.GetArgument<string>("scope");
 
             var wishlistUserContext = new WishlistUserContext
             {
                 CurrentUserId = currentUserId,
                 CurrentContact = await _memberResolver.ResolveMemberByIdAsync(currentUserId) as Contact,
                 Cart = cart,
+                Scope = scope,
             };
 
             return wishlistUserContext;

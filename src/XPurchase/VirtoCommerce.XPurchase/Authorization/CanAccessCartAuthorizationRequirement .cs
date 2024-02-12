@@ -71,6 +71,12 @@ namespace VirtoCommerce.XPurchase.Authorization
                         }
                         break;
                     case WishlistUserContext wishlistUserContext:
+                        if (wishlistUserContext.Cart == null)
+                        {
+                            result = wishlistUserContext.CurrentUserId == GetUserId(context);
+                                 
+                            break;
+                        }
                         if (wishlistUserContext.Cart.OrganizationId != null)
                         {
                             result = wishlistUserContext.Cart.OrganizationId == wishlistUserContext.CurrentContact?.Organizations?.FirstOrDefault();
