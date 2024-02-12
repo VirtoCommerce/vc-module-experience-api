@@ -1331,8 +1331,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                                                   {
                                                       var commandType = GenericTypeHelper.GetActualType<CreateWishlistCommand>();
                                                       var command = (CreateWishlistCommand)context.GetArgument(commandType, _commandName);
-                                                      var wishlistUserContext =
-                                                          InitializeWishlistUserContext(context, userId: command.UserId);
+                                                      var wishlistUserContext = await InitializeWishlistUserContext(context, userId: command.UserId);
                                                       await AuthorizeAsync(context, wishlistUserContext);
                                                       var cartAggregate = await _mediator.Send(command);
                                                       context.SetExpandedObjectGraph(cartAggregate);
@@ -1642,19 +1641,17 @@ namespace VirtoCommerce.XPurchase.Schemas
 
         private async Task<WishlistUserContext> InitializeWishlistUserContext(IResolveFieldContext context, string listId = null, ShoppingCart cart = null, string userId = null)
         {
-            var currentUserId = string.IsNullOrEmpty(userId)
-                ? context.GetCurrentUserId()
-                : userId;
+            var currentUserId = !string.IsNullOrEmpty(userId)
+                ? userId
+                : context.GetCurrentUserId();
 
             cart ??= await _cartService.GetByIdAsync(listId);
-            var scope = context.GetArgument<string>("scope");
 
             var wishlistUserContext = new WishlistUserContext
             {
                 CurrentUserId = currentUserId,
                 CurrentContact = await _memberResolver.ResolveMemberByIdAsync(currentUserId) as Contact,
                 Cart = cart,
-                Scope = scope,
             };
 
             return wishlistUserContext;
