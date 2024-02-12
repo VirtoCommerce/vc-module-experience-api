@@ -23,8 +23,17 @@ namespace VirtoCommerce.ExperienceApiModule.Web.Extensions
             {
                 if (userNameFromHeader == "Anonymous")
                 {
-                    // create principal for anon user
-                    principal = new ClaimsPrincipal(new ClaimsIdentity());
+                    if (context.Request.Headers.TryGetValue("VirtoCommerce-AnonymousUser-Id", out var anonymousUserId))
+                    {
+                        var userIdClaim = new Claim(ClaimTypes.NameIdentifier, anonymousUserId);
+                        var identity = new ClaimsIdentity(new[] { userIdClaim }, null);
+                        principal = new ClaimsPrincipal(identity);
+                    }
+                    else
+                    {
+                        // create principal for anonymous user identity
+                        principal = new ClaimsPrincipal(new ClaimsIdentity());
+                    }
                 }
                 else
                 {
