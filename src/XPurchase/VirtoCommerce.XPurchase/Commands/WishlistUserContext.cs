@@ -11,6 +11,8 @@ namespace VirtoCommerce.XPurchase.Commands
 
         public ShoppingCart Cart { get; set; }
 
+        public string UserId { get; set; }
+
         public string Scope { get; set; }
     }
 }

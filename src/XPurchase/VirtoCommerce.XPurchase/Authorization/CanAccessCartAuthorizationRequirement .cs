@@ -71,19 +71,24 @@ namespace VirtoCommerce.XPurchase.Authorization
                         }
                         break;
                     case WishlistUserContext wishlistUserContext:
-                        if (wishlistUserContext.Cart == null)
+                        if (wishlistUserContext.Cart != null)
                         {
-                            result = wishlistUserContext.CurrentUserId == GetUserId(context);
-                                 
-                            break;
-                        }
-                        if (wishlistUserContext.Cart.OrganizationId != null)
-                        {
-                            result = wishlistUserContext.Cart.OrganizationId == wishlistUserContext.CurrentContact?.Organizations?.FirstOrDefault();
+                            if (wishlistUserContext.Cart.OrganizationId != null)
+                            {
+                                result = wishlistUserContext.Cart.OrganizationId == wishlistUserContext.CurrentContact?.Organizations?.FirstOrDefault();
+                            }
+                            else
+                            {
+                                result = wishlistUserContext.Cart.CustomerId == wishlistUserContext.CurrentUserId;
+                            }
                         }
                         else
                         {
-                            result = wishlistUserContext.Cart.CustomerId == wishlistUserContext.CurrentUserId;
+                            result = true;
+                        }
+                        if (result && !string.IsNullOrEmpty(wishlistUserContext.UserId))
+                        {
+                            result = wishlistUserContext.UserId == wishlistUserContext.CurrentUserId;
                         }
                         break;
                 }

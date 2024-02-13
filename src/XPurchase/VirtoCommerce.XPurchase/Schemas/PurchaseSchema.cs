@@ -1331,9 +1331,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                                                   {
                                                       var commandType = GenericTypeHelper.GetActualType<CreateWishlistCommand>();
                                                       var command = (CreateWishlistCommand)context.GetArgument(commandType, _commandName);
-                                                      var wishlistUserContext = await InitializeWishlistUserContext(context, userId: command.UserId);
-                                                      wishlistUserContext.Scope = command.Scope;
-                                                      await AuthorizeAsync(context, wishlistUserContext);
+                                                      await AuthorizeByListUserIdAsync(context, command.UserId, command.Scope);
                                                       var cartAggregate = await _mediator.Send(command);
                                                       context.SetExpandedObjectGraph(cartAggregate);
                                                       return cartAggregate;
@@ -1341,7 +1339,26 @@ namespace VirtoCommerce.XPurchase.Schemas
                                                  .FieldType;
 
             schema.Mutation.AddField(addListField);
-            
+
+            // Clone list
+            var cloneListField = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<WishlistType>())
+                                                .Name("cloneWishlist")
+                                                .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputCloneWishlistType>>(), _commandName)
+                                                .ResolveAsync(async context =>
+                                                {
+                                                    var commandType = GenericTypeHelper.GetActualType<CloneWishlistCommand>();
+                                                    var command = (CloneWishlistCommand)context.GetArgument(commandType, _commandName);
+
+                                                    command.WishlistUserContext = await AuthorizeByListIdAsync(context, command.ListId, command.Scope);
+
+                                                    var result = await _mediator.Send(command);
+                                                    context.SetExpandedObjectGraph(result);
+                                                    return result;
+                                                })
+                                                .FieldType;
+
+            schema.Mutation.AddField(cloneListField);
+
             // Change list
             var changeListField = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<WishlistType>())
                                                  .Name("changeWishlist")
@@ -1519,25 +1536,6 @@ namespace VirtoCommerce.XPurchase.Schemas
 
             schema.Mutation.AddField(moveListItemField);
 
-            // Clone list
-            var cloneListField = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<WishlistType>())
-                .Name("cloneWishlist")
-                .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputCloneWishlistType>>(), _commandName)
-                .ResolveAsync(async context =>
-                {
-                    var commandType = GenericTypeHelper.GetActualType<CloneWishlistCommand>();
-                    var command = (CloneWishlistCommand)context.GetArgument(commandType, _commandName);
-
-                    command.WishlistUserContext = await AuthorizeByListIdAsync(context, command.ListId, command.Scope);
-                    
-                    var result = await _mediator.Send(command);
-                    context.SetExpandedObjectGraph(result);
-                    return result;
-                })
-                .FieldType;
-
-            schema.Mutation.AddField(cloneListField);
-
             #endregion Wishlists
         }
 
@@ -1635,25 +1633,36 @@ namespace VirtoCommerce.XPurchase.Schemas
 
         private async Task<WishlistUserContext> AuthorizeByListIdAsync(IResolveFieldContext context, string listId, string scope = null)
         {
-            var wishlistUserContext = await InitializeWishlistUserContext(context, listId);
-            wishlistUserContext.Scope = scope;
+            var wishlistUserContext = await InitializeWishlistUserContext(context, listId, scope: scope);
             await AuthorizeAsync(context, wishlistUserContext);
+
             return wishlistUserContext;
         }
 
-        private async Task<WishlistUserContext> InitializeWishlistUserContext(IResolveFieldContext context, string listId = null, ShoppingCart cart = null, string userId = null)
+        private async Task<WishlistUserContext> AuthorizeByListUserIdAsync(IResolveFieldContext context, string userId, string scope = null)
         {
-            var currentUserId = !string.IsNullOrEmpty(userId)
-                ? userId
-                : context.GetCurrentUserId();
+            var wishlistUserContext = await InitializeWishlistUserContext(context, userId: userId, scope: scope);
+            await AuthorizeAsync(context, wishlistUserContext);
 
-            cart ??= await _cartService.GetByIdAsync(listId);
+            return wishlistUserContext;
+        }
+
+        private async Task<WishlistUserContext> InitializeWishlistUserContext(IResolveFieldContext context, string listId = null, ShoppingCart cart = null, string userId = null, string scope = null)
+        {
+            var currentUserId = context.GetCurrentUserId();
+
+            if (cart is null && !string.IsNullOrEmpty(listId))
+            {
+                cart = await _cartService.GetByIdAsync(listId);
+            }
 
             var wishlistUserContext = new WishlistUserContext
             {
                 CurrentUserId = currentUserId,
                 CurrentContact = await _memberResolver.ResolveMemberByIdAsync(currentUserId) as Contact,
                 Cart = cart,
+                UserId = userId,
+                Scope = scope,
             };
 
             return wishlistUserContext;
