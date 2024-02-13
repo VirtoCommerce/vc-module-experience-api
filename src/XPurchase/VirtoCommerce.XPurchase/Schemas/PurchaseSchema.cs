@@ -1299,8 +1299,7 @@ namespace VirtoCommerce.XPurchase.Schemas
 
                     context.UserContext["storeId"] = cartAggregate.Cart.StoreId;
 
-                    var wishlistUserContext = await InitializeWishlistUserContext(context, cart: cartAggregate.Cart);
-                    await AuthorizeAsync(context, wishlistUserContext);
+                    await AuthorizeAsync(context, cartAggregate.Cart);
 
                     context.SetExpandedObjectGraph(cartAggregate);
 

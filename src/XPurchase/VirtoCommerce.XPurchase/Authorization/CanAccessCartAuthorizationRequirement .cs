@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using VirtoCommerce.CartModule.Core.Model;
+using VirtoCommerce.CustomerModule.Core.Model;
+using VirtoCommerce.CustomerModule.Core.Services;
 using VirtoCommerce.Platform.Core;
 using VirtoCommerce.Platform.Core.Security;
 using VirtoCommerce.Platform.Security.Authorization;
@@ -24,10 +26,12 @@ namespace VirtoCommerce.XPurchase.Authorization
     public class CanAccessCartAuthorizationHandler : PermissionAuthorizationHandlerBase<CanAccessCartAuthorizationRequirement>
     {
         private readonly Func<UserManager<ApplicationUser>> _userManagerFactory;
+        private readonly IMemberResolver _memberResolver;
 
-        public CanAccessCartAuthorizationHandler(Func<UserManager<ApplicationUser>> userManagerFactory)
+        public CanAccessCartAuthorizationHandler(Func<UserManager<ApplicationUser>> userManagerFactory, IMemberResolver memberResolver)
         {
             _userManagerFactory = userManagerFactory;
+            _memberResolver = memberResolver;
         }
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, CanAccessCartAuthorizationRequirement requirement)
@@ -49,7 +53,12 @@ namespace VirtoCommerce.XPurchase.Authorization
                         }
                         break;
                     case ShoppingCart cart when context.User.Identity.IsAuthenticated:
-                        result = cart.CustomerId == GetUserId(context);
+                        var currentUserById = GetUserId(context);
+                        result = cart.CustomerId == currentUserById;
+                        if (cart.Type == XPurchaseConstants.ListTypeName)
+                        {
+                            result = await CheckAuthWithlistByCartAsync(cart, currentUserById);
+                        }
                         break;
                     case ShoppingCart cart when !context.User.Identity.IsAuthenticated:
                         result = cart.IsAnonymous;
@@ -73,14 +82,8 @@ namespace VirtoCommerce.XPurchase.Authorization
                     case WishlistUserContext wishlistUserContext:
                         if (wishlistUserContext.Cart != null)
                         {
-                            if (wishlistUserContext.Cart.OrganizationId != null)
-                            {
-                                result = wishlistUserContext.Cart.OrganizationId == wishlistUserContext.CurrentContact?.Organizations?.FirstOrDefault();
-                            }
-                            else
-                            {
-                                result = wishlistUserContext.Cart.CustomerId == wishlistUserContext.CurrentUserId;
-                            }
+                            result = await CheckAuthWithlistByCartAsync(wishlistUserContext.Cart,
+                                wishlistUserContext.CurrentUserId, wishlistUserContext.CurrentContact);
                         }
                         else
                         {
@@ -102,6 +105,24 @@ namespace VirtoCommerce.XPurchase.Authorization
             {
                 context.Fail();
             }
+        }
+
+        private async Task<bool> CheckAuthWithlistByCartAsync(ShoppingCart cart, string userId, Contact contact = null)
+        {
+            bool result;
+
+            contact ??= await _memberResolver.ResolveMemberByIdAsync(userId) as Contact;
+
+            if (cart?.OrganizationId != null)
+            {
+                result = cart.OrganizationId == contact?.Organizations?.FirstOrDefault();
+            }
+            else
+            {
+                result = cart?.CustomerId == userId;
+            }
+
+            return result;
         }
 
         private static string GetUserId(AuthorizationHandlerContext context)
