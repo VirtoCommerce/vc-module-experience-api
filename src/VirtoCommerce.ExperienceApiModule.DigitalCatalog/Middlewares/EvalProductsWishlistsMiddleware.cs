@@ -3,6 +3,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using PipelineNet.Middleware;
 using VirtoCommerce.CartModule.Core.Services;
+using VirtoCommerce.CustomerModule.Core.Model;
+using VirtoCommerce.CustomerModule.Core.Services;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.XDigitalCatalog.Queries;
 
@@ -11,10 +13,12 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
     public class EvalProductsWishlistsMiddleware : IAsyncMiddleware<SearchProductResponse>
     {
         private readonly IWishlistService _wishlistService;
+        private readonly IMemberResolver _memberResolver;
 
-        public EvalProductsWishlistsMiddleware(IWishlistService wishlistService)
+        public EvalProductsWishlistsMiddleware(IWishlistService wishlistService, IMemberResolver memberResolver)
         {
             _wishlistService = wishlistService;
+            _memberResolver = memberResolver;
         }
 
         public async Task Run(SearchProductResponse parameter, Func<SearchProductResponse, Task> next)
@@ -34,9 +38,12 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
             var responseGroup = EnumUtility.SafeParse(query.GetResponseGroup(), ExpProductResponseGroup.None);
             // If products availabilities requested
             if (responseGroup.HasFlag(ExpProductResponseGroup.LoadWishlists) &&
-                productIds.Any())
+            productIds.Any())
             {
-                var productIdsInWishLists = await _wishlistService.FindProductsInWishlistsAsync(query.UserId, query.StoreId, productIds);
+                var contact = await _memberResolver.ResolveMemberByIdAsync(query.UserId) as Contact;
+                var organizationId = contact?.Organizations?.FirstOrDefault();
+
+                var productIdsInWishLists = await _wishlistService.FindProductsInWishlistsAsync(query.UserId, organizationId, query.StoreId, productIds);
 
                 if (productIdsInWishLists.Any())
                 {
