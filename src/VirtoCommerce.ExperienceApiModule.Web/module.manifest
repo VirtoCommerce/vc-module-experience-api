@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <module>
   <id>VirtoCommerce.ExperienceApi</id>
-  <version>3.804.0</version>
+  <version>3.805.0</version>
   <version-tag />
   <platformVersion>3.800.0</platformVersion>
   <dependencies>
-    <dependency id="VirtoCommerce.Cart" version="3.800.0" />
+    <dependency id="VirtoCommerce.Cart" version="3.801.0" />
     <dependency id="VirtoCommerce.Catalog" version="3.800.0" />
     <dependency id="VirtoCommerce.Content" version="3.800.0" />
     <dependency id="VirtoCommerce.Core" version="3.800.0" />
