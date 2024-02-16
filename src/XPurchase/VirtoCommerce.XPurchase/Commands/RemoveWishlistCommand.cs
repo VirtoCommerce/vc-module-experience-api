@@ -1,11 +1,7 @@
-using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
-
 namespace VirtoCommerce.XPurchase.Commands
 {
-    public class RemoveWishlistCommand : ICommand<bool>
+    public class RemoveWishlistCommand : WishlistCommand
     {
-        public string ListId { get; set; }
-
         public RemoveWishlistCommand(string listId)
         {
             ListId = listId;

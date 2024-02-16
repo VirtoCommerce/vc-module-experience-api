@@ -1,6 +1,6 @@
 namespace VirtoCommerce.XPurchase.Commands
 {
-    public class CreateWishlistCommand : CartCommand
+    public class CreateWishlistCommand : WishlistCommand
     {
         public string ListName { get => CartName; set => CartName = value; }
 
