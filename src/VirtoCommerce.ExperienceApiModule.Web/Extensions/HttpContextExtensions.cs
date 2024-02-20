@@ -3,6 +3,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
+using OpenIddict.Abstractions;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.Platform.Core;
 using VirtoCommerce.Platform.Core.Security;
@@ -23,8 +24,14 @@ namespace VirtoCommerce.ExperienceApiModule.Web.Extensions
             {
                 if (userNameFromHeader == "Anonymous")
                 {
-                    // create principal for anon user
-                    principal = new ClaimsPrincipal(new ClaimsIdentity());
+                    var identity = new ClaimsIdentity();
+
+                    if (context.Request.Headers.TryGetValue("VirtoCommerce-Anonymous-User-Id", out var anonymousUserId))
+                    {
+                        identity.AddClaim(ClaimTypes.NameIdentifier, anonymousUserId);
+                    }
+
+                    principal = new ClaimsPrincipal(identity);
                 }
                 else
                 {
