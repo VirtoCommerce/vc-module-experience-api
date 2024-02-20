@@ -73,7 +73,7 @@ namespace VirtoCommerce.XPurchase.Services
                 return new List<CartProduct>();
             }
 
-            var cartProducts = await GetCartProductsAsync(ids, aggregate.Store.Id, aggregate.Cart.Currency, aggregate.Cart.CustomerId);
+            var cartProducts = await GetCartProductsAsync(ids, aggregate.Store.Id, aggregate.Cart.Currency, aggregate.Cart.CustomerId, aggregate.IncludeFields ?? IncludeFields);
 
             var productsToLoadDependencies = cartProducts.Where(x => x.LoadDependencies).ToList();
             if (productsToLoadDependencies.Any())
@@ -94,6 +94,26 @@ namespace VirtoCommerce.XPurchase.Services
         }
 
 
+        /// <summary>
+        /// Map all <see cref="CatalogProduct"/> to <see cref="CartProduct"/>
+        /// </summary>
+        /// <returns>List of <see cref="CartProduct"/>s</returns>
+        protected virtual async Task<List<CartProduct>> GetCartProductsAsync(IList<string> ids, string storeId, string currencyCode, string userId, IList<string> includeFields)
+        {
+            var productsQuery = new LoadProductsQuery
+            {
+                UserId = userId,
+                StoreId = storeId,
+                CurrencyCode = currencyCode,
+                ObjectIds = ids,
+                IncludeFields = includeFields,
+                EvaluatePromotions = false, // Promotions will be applied on the line item level
+            };
+
+            var response = await _mediator.Send(productsQuery);
+            var result = response.Products.Select(x => new CartProduct(x)).ToList();
+            return result;
+        }
 
         /// <summary>
         /// Map all <see cref="CatalogProduct"/> to <see cref="CartProduct"/>

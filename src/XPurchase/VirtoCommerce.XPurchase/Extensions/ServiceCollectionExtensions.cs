@@ -22,6 +22,7 @@ namespace VirtoCommerce.XPurchase.Extensions
 
             services.AddSingleton<IAuthorizationHandler, CanAccessCartAuthorizationHandler>();
             services.AddTransient<ICartAggregateRepository, CartAggregateRepository>();
+            services.AddTransient<ICartAggregateRepositoryExtended, CartAggregateRepository>();
             services.AddTransient<ICartValidationContextFactory, CartValidationContextFactory>();
             services.AddTransient<ICartAvailMethodsService, CartAvailMethodsService>();
             services.AddTransient<ICartProductService, CartProductService>();

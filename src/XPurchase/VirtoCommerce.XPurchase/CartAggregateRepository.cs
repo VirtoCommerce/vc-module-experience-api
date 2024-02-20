@@ -19,7 +19,7 @@ using CartAggregateBuilder = VirtoCommerce.XPurchase.AsyncObjectBuilder<VirtoCom
 
 namespace VirtoCommerce.XPurchase
 {
-    public class CartAggregateRepository : ICartAggregateRepository
+    public class CartAggregateRepository : ICartAggregateRepository, ICartAggregateRepositoryExtended
     {
         private readonly Func<CartAggregate> _cartAggregateFactory;
         private readonly ICartProductService _cartProductsService;
@@ -57,6 +57,11 @@ namespace VirtoCommerce.XPurchase
 
         public async Task<CartAggregate> GetCartByIdAsync(string cartId, string language = null)
         {
+            return await GetCartByIdAsync(cartId, null, language);
+        }
+
+        public async Task<CartAggregate> GetCartByIdAsync(string cartId, IList<string> includeFields, string language = null)
+        {
             if (CartAggregateBuilder.IsBuilding(out var cartAggregate))
             {
                 return cartAggregate;
@@ -65,7 +70,7 @@ namespace VirtoCommerce.XPurchase
             var cart = await _shoppingCartService.GetByIdAsync(cartId);
             if (cart != null)
             {
-                return await InnerGetCartAggregateFromCartAsync(cart, language ?? Language.InvariantLanguage.CultureName);
+                return await InnerGetCartAggregateFromCartAsync(cart, language ?? Language.InvariantLanguage.CultureName, includeFields);
             }
             return null;
         }
@@ -149,10 +154,12 @@ namespace VirtoCommerce.XPurchase
 
         protected virtual async Task<CartAggregate> InnerGetCartAggregateFromCartAsync(ShoppingCart cart, string language, CartAggregateResponseGroup responseGroup = CartAggregateResponseGroup.Full)
         {
-            if (cart == null)
-            {
-                throw new ArgumentNullException(nameof(cart));
-            }
+            return await InnerGetCartAggregateFromCartAsync(cart, language, null, responseGroup);
+        }
+
+        protected virtual async Task<CartAggregate> InnerGetCartAggregateFromCartAsync(ShoppingCart cart, string language, IList<string> includeFields, CartAggregateResponseGroup responseGroup = CartAggregateResponseGroup.Full)
+        {
+            ArgumentNullException.ThrowIfNull(cart);
 
             var storeLoadTask = _storeService.GetByIdAsync(cart.StoreId);
             var allCurrenciesLoadTask = _currencyService.GetAllCurrenciesAsync();
@@ -192,6 +199,7 @@ namespace VirtoCommerce.XPurchase
                 await aggregate.UpdateOrganization(cart, member);
 
                 //Load cart products explicitly if no validation is requested
+                aggregate.IncludeFields = includeFields;
                 var cartProducts = await _cartProductsService.GetCartProductsByIdsAsync(aggregate, aggregate.Cart.Items.Select(x => x.ProductId).ToArray());
                 //Populate aggregate.CartProducts with the  products data for all cart  line items
                 foreach (var cartProduct in cartProducts)

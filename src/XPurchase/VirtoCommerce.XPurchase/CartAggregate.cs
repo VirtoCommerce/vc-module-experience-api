@@ -142,6 +142,8 @@ namespace VirtoCommerce.XPurchase
             }
         }
 
+        public IList<string> IncludeFields { get; set; }
+
         public virtual CartAggregate GrabCart(ShoppingCart cart, Store store, Member member, Currency currency)
         {
             Id = cart.Id;

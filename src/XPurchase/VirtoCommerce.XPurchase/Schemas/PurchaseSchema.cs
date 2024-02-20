@@ -1288,6 +1288,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                 {
                     var getListQuery = AbstractTypeFactory<GetWishlistQuery>.TryCreateInstance();
                     getListQuery.ListId = context.GetArgument<string>("listId");
+                    getListQuery.IncludeFields = context.SubFields.Values.GetAllNodesPaths(context).ToArray();
                     context.CopyArgumentsToUserContext();
 
                     var cartAggregate = await _mediator.Send(getListQuery);
@@ -1339,7 +1340,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                                                  .FieldType;
 
             schema.Mutation.AddField(addListField);
-            
+
             // Change list
             var changeListField = FieldBuilder.Create<CartAggregate, CartAggregate>(GraphTypeExtenstionHelper.GetActualType<WishlistType>())
                                                  .Name("changeWishlist")
@@ -1527,7 +1528,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                     var command = (CloneWishlistCommand)context.GetArgument(commandType, _commandName);
 
                     command.WishlistUserContext = await AuthorizeByListIdAsync(context, command.ListId);
-                    
+
                     var result = await _mediator.Send(command);
                     context.SetExpandedObjectGraph(result);
                     return result;
