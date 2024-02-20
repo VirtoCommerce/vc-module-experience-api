@@ -21,10 +21,9 @@ namespace VirtoCommerce.XPurchase
         Task<CartAggregate> GetCartForShoppingCartAsync(ShoppingCart cart, string cultureName = null);
 
         Task<SearchCartResponse> SearchCartAsync(ShoppingCartSearchCriteria criteria);
-    }
 
-    public interface ICartAggregateRepositoryExtended
-    {
-        Task<CartAggregate> GetCartByIdAsync(string cartId, IList<string> includeFields, string language = null);
+        Task<CartAggregate> GetCartByIdAsync(string cartId, IList<string> productsIncludeFields, string language = null);
+
+        Task<SearchCartResponse> SearchCartAsync(ShoppingCartSearchCriteria criteria, IList<string> productsIncludeFields);
     }
 }

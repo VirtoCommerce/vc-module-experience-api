@@ -7,9 +7,9 @@ namespace VirtoCommerce.XPurchase.Queries
 {
     public class GetWishlistQueryHandler : IQueryHandler<GetWishlistQuery, CartAggregate>
     {
-        private readonly ICartAggregateRepositoryExtended _cartAggrRepository;
+        private readonly ICartAggregateRepository _cartAggrRepository;
 
-        public GetWishlistQueryHandler(ICartAggregateRepositoryExtended cartAggrRepository)
+        public GetWishlistQueryHandler(ICartAggregateRepository cartAggrRepository)
         {
             _cartAggrRepository = cartAggrRepository;
         }

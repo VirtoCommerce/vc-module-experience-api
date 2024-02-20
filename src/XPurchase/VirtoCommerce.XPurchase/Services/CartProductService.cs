@@ -73,7 +73,7 @@ namespace VirtoCommerce.XPurchase.Services
                 return new List<CartProduct>();
             }
 
-            var cartProducts = await GetCartProductsAsync(ids, aggregate.Store.Id, aggregate.Cart.Currency, aggregate.Cart.CustomerId, aggregate.IncludeFields ?? IncludeFields);
+            var cartProducts = await GetCartProductsAsync(ids, aggregate.Store.Id, aggregate.Cart.Currency, aggregate.Cart.CustomerId, aggregate.ProductsIncludeFields ?? IncludeFields);
 
             var productsToLoadDependencies = cartProducts.Where(x => x.LoadDependencies).ToList();
             if (productsToLoadDependencies.Any())

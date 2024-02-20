@@ -142,7 +142,7 @@ namespace VirtoCommerce.XPurchase
             }
         }
 
-        public IList<string> IncludeFields { get; set; }
+        public IList<string> ProductsIncludeFields { get; set; }
 
         public virtual CartAggregate GrabCart(ShoppingCart cart, Store store, Member member, Currency currency)
         {

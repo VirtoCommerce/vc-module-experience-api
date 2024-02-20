@@ -19,7 +19,7 @@ using CartAggregateBuilder = VirtoCommerce.XPurchase.AsyncObjectBuilder<VirtoCom
 
 namespace VirtoCommerce.XPurchase
 {
-    public class CartAggregateRepository : ICartAggregateRepository, ICartAggregateRepositoryExtended
+    public class CartAggregateRepository : ICartAggregateRepository
     {
         private readonly Func<CartAggregate> _cartAggregateFactory;
         private readonly ICartProductService _cartProductsService;
@@ -60,7 +60,7 @@ namespace VirtoCommerce.XPurchase
             return await GetCartByIdAsync(cartId, null, language);
         }
 
-        public async Task<CartAggregate> GetCartByIdAsync(string cartId, IList<string> includeFields, string language = null)
+        public async Task<CartAggregate> GetCartByIdAsync(string cartId, IList<string> productsIncludeFields, string language = null)
         {
             if (CartAggregateBuilder.IsBuilding(out var cartAggregate))
             {
@@ -70,7 +70,7 @@ namespace VirtoCommerce.XPurchase
             var cart = await _shoppingCartService.GetByIdAsync(cartId);
             if (cart != null)
             {
-                return await InnerGetCartAggregateFromCartAsync(cart, language ?? Language.InvariantLanguage.CultureName, includeFields);
+                return await InnerGetCartAggregateFromCartAsync(cart, language ?? Language.InvariantLanguage.CultureName, productsIncludeFields);
             }
             return null;
         }
@@ -139,13 +139,15 @@ namespace VirtoCommerce.XPurchase
 
         public async Task<SearchCartResponse> SearchCartAsync(ShoppingCartSearchCriteria criteria)
         {
-            if (criteria == null)
-            {
-                throw new ArgumentNullException(nameof(criteria));
-            }
+            return await SearchCartAsync(criteria, null);
+        }
+
+        public async Task<SearchCartResponse> SearchCartAsync(ShoppingCartSearchCriteria criteria, IList<string> productsIncludeFields)
+        {
+            ArgumentNullException.ThrowIfNull(criteria);
 
             var searchResult = await _shoppingCartSearchService.SearchAsync(criteria);
-            var cartAggregates = await GetCartsForShoppingCartsAsync(searchResult.Results);
+            var cartAggregates = await GetCartsForShoppingCartsAsync(searchResult.Results, productsIncludeFields);
 
             return new SearchCartResponse { Results = cartAggregates, TotalCount = searchResult.TotalCount };
         }
@@ -157,7 +159,7 @@ namespace VirtoCommerce.XPurchase
             return await InnerGetCartAggregateFromCartAsync(cart, language, null, responseGroup);
         }
 
-        protected virtual async Task<CartAggregate> InnerGetCartAggregateFromCartAsync(ShoppingCart cart, string language, IList<string> includeFields, CartAggregateResponseGroup responseGroup = CartAggregateResponseGroup.Full)
+        protected virtual async Task<CartAggregate> InnerGetCartAggregateFromCartAsync(ShoppingCart cart, string language, IList<string> productsIncludeFields, CartAggregateResponseGroup responseGroup = CartAggregateResponseGroup.Full)
         {
             ArgumentNullException.ThrowIfNull(cart);
 
@@ -199,7 +201,7 @@ namespace VirtoCommerce.XPurchase
                 await aggregate.UpdateOrganization(cart, member);
 
                 //Load cart products explicitly if no validation is requested
-                aggregate.IncludeFields = includeFields;
+                aggregate.ProductsIncludeFields = productsIncludeFields;
                 var cartProducts = await _cartProductsService.GetCartProductsByIdsAsync(aggregate, aggregate.Cart.Items.Select(x => x.ProductId).ToArray());
                 //Populate aggregate.CartProducts with the  products data for all cart  line items
                 foreach (var cartProduct in cartProducts)
@@ -242,13 +244,13 @@ namespace VirtoCommerce.XPurchase
             }
         }
 
-        protected virtual async Task<IList<CartAggregate>> GetCartsForShoppingCartsAsync(IList<ShoppingCart> carts, string cultureName = null)
+        protected virtual async Task<IList<CartAggregate>> GetCartsForShoppingCartsAsync(IList<ShoppingCart> carts, IList<string> productsIncludeFields, string cultureName = null)
         {
             var result = new List<CartAggregate>();
 
             foreach (var shoppingCart in carts)
             {
-                result.Add(await InnerGetCartAggregateFromCartAsync(shoppingCart, cultureName ?? Language.InvariantLanguage.CultureName));
+                result.Add(await InnerGetCartAggregateFromCartAsync(shoppingCart, cultureName ?? Language.InvariantLanguage.CultureName, productsIncludeFields));
             }
 
             return result;
