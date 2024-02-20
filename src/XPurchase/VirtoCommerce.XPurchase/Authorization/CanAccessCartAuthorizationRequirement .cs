@@ -97,7 +97,7 @@ namespace VirtoCommerce.XPurchase.Authorization
 
         private static bool CheckWishlistUserContext(WishlistUserContext context)
         {
-            bool result;
+            var result = true;
             if (context.Cart != null)
             {
                 if (context.Cart.OrganizationId != null)
@@ -109,10 +109,7 @@ namespace VirtoCommerce.XPurchase.Authorization
                     result = context.Cart.CustomerId == context.CurrentUserId;
                 }
             }
-            else
-            {
-                result = true;
-            }
+            
             if (result && !string.IsNullOrEmpty(context.UserId))
             {
                 result = context.UserId == context.CurrentUserId;
