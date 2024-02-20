@@ -1550,6 +1550,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             query.Skip = skip;
             query.Take = first ?? context.PageSize ?? 10;
             query.Sort = context.GetArgument<string>("sort");
+            query.IncludeFields = context.SubFields.Values.GetAllNodesPaths(context).ToArray();
 
             context.CopyArgumentsToUserContext();
 
