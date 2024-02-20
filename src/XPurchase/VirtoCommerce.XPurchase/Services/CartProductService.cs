@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -119,6 +120,7 @@ namespace VirtoCommerce.XPurchase.Services
         /// Map all <see cref="CatalogProduct"/> to <see cref="CartProduct"/>
         /// </summary>
         /// <returns>List of <see cref="CartProduct"/>s</returns>
+        [Obsolete("Not being called. Use `GetCartProductsAsync` with `includeFields` argument.", DiagnosticId = "VC0008", UrlFormat = "https://docs.virtocommerce.org/products/products-virto3-versions/")]
         protected virtual async Task<List<CartProduct>> GetCartProductsAsync(IList<string> ids, string storeId, string currencyCode, string userId)
         {
             var productsQuery = new LoadProductsQuery

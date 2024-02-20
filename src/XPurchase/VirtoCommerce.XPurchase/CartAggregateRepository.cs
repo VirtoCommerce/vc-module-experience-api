@@ -244,6 +244,19 @@ namespace VirtoCommerce.XPurchase
             }
         }
 
+        [Obsolete("Not being called. Use `GetCartsForShoppingCartsAsync` with `productsIncludeFields` argument.", DiagnosticId = "VC0008", UrlFormat = "https://docs.virtocommerce.org/products/products-virto3-versions/")]
+        protected virtual async Task<IList<CartAggregate>> GetCartsForShoppingCartsAsync(IList<ShoppingCart> carts, string cultureName = null)
+        {
+            var result = new List<CartAggregate>();
+
+            foreach (var shoppingCart in carts)
+            {
+                result.Add(await InnerGetCartAggregateFromCartAsync(shoppingCart, cultureName ?? Language.InvariantLanguage.CultureName));
+            }
+
+            return result;
+        }
+
         protected virtual async Task<IList<CartAggregate>> GetCartsForShoppingCartsAsync(IList<ShoppingCart> carts, IList<string> productsIncludeFields, string cultureName = null)
         {
             var result = new List<CartAggregate>();
