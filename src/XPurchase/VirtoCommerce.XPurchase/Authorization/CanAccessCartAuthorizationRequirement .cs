@@ -71,14 +71,10 @@ namespace VirtoCommerce.XPurchase.Authorization
                         }
                         break;
                     case WishlistUserContext wishlistUserContext:
-                        if (wishlistUserContext.Cart.OrganizationId != null)
-                        {
-                            result = wishlistUserContext.Cart.OrganizationId == wishlistUserContext.CurrentContact?.Organizations?.FirstOrDefault();
-                        }
-                        else
-                        {
-                            result = wishlistUserContext.Cart.CustomerId == wishlistUserContext.CurrentUserId;
-                        }
+                        result = CheckWishlistUserContext(wishlistUserContext);
+                        break;
+                    case WishlistCommand { WishlistUserContext: not null } wishlistCommand:
+                        result = CheckWishlistUserContext(wishlistCommand.WishlistUserContext);
                         break;
                 }
             }
@@ -97,6 +93,29 @@ namespace VirtoCommerce.XPurchase.Authorization
         {
             //PT-5375 use ClaimTypes instead of "name"
             return context.User.FindFirstValue("name");
+        }
+
+        private static bool CheckWishlistUserContext(WishlistUserContext context)
+        {
+            var result = true;
+            if (context.Cart != null)
+            {
+                if (context.Cart.OrganizationId != null)
+                {
+                    result = context.Cart.OrganizationId == context.CurrentContact?.Organizations?.FirstOrDefault();
+                }
+                else
+                {
+                    result = context.Cart.CustomerId == context.CurrentUserId;
+                }
+            }
+            
+            if (result && !string.IsNullOrEmpty(context.UserId))
+            {
+                result = context.UserId == context.CurrentUserId;
+            }
+
+            return result;
         }
     }
 }

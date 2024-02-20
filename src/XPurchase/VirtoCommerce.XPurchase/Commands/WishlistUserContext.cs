@@ -10,5 +10,9 @@ namespace VirtoCommerce.XPurchase.Commands
         public Contact CurrentContact { get; set; }
 
         public ShoppingCart Cart { get; set; }
+
+        public string UserId { get; set; }
+
+        public string Scope { get; set; }
     }
 }
