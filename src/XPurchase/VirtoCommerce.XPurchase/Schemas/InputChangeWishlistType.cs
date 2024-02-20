@@ -10,6 +10,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field<StringGraphType>("listName", description: "New List name");
             Field<StringGraphType>("scope", description: "List scope (private or organization)");
             Field<StringGraphType>("description", description: "List description");
+            Field<StringGraphType>("cultureName", description: "Culture name");
         }
     }
 }
