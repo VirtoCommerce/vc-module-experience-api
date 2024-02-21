@@ -1,4 +1,4 @@
-﻿using VirtoCommerce.ExperienceApiModule.Core.Queries;
+using VirtoCommerce.ExperienceApiModule.Core.Queries;
 
 namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
 {
@@ -15,6 +15,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
             Field(x => x.EmailVerificationRequired).Description("Email address verification required");
             Field(x => x.CreateAnonymousOrderEnabled).Description("Allow anonymous users to create orders (XAPI)");
             Field(x => x.SeoLinkType).Description("SEO links");
+            Field<PasswordOptionsType>("passwordRequirements", "Password requirements");
         }
     }
 }
