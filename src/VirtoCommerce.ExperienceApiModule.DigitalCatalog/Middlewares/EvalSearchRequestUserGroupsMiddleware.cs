@@ -25,7 +25,7 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
             _moduleCatalog = moduleCatalog;
         }
 
-        public async Task Run(IndexSearchRequestBuilder parameter, Func<IndexSearchRequestBuilder, Task> next)
+        public virtual async Task Run(IndexSearchRequestBuilder parameter, Func<IndexSearchRequestBuilder, Task> next)
         {
             /// Please note that this solution is temporary. In the upcoming release, we are actively working on resolving this issue by introducing optional dependencies.
             /// With optional dependencies, the XAPI will seamlessly integrate with the Catalog Personalization Module if it is installed, and gracefully handle scenarios where the module is not present.
