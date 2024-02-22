@@ -9,14 +9,14 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Services.Security
         public static TokenLoginResponse UserCannotLoginInStore() => new()
         {
             Error = Errors.InvalidGrant,
-            Code = nameof(UserCannotLoginInStore).PascalToKebabCase(),
+            Code = nameof(UserCannotLoginInStore).ToSnakeCase(),
             ErrorDescription = "Access denied. You cannot sign in to the current store"
         };
 
         public static TokenLoginResponse EmailVerificationIsRequired() => new()
         {
             Error = Errors.InvalidGrant,
-            Code = nameof(EmailVerificationIsRequired).PascalToKebabCase(),
+            Code = nameof(EmailVerificationIsRequired).ToSnakeCase(),
             ErrorDescription = "Email verification required. Please verify your email address."
         };
     }
