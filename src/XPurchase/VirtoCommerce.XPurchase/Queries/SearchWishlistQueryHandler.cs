@@ -7,6 +7,7 @@ using VirtoCommerce.CustomerModule.Core.Model;
 using VirtoCommerce.CustomerModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.SearchModule.Core.Services;
+using VirtoCommerce.XPurchase.Extensions;
 
 namespace VirtoCommerce.XPurchase.Queries
 {
@@ -47,7 +48,7 @@ namespace VirtoCommerce.XPurchase.Queries
                                      .WithResponseGroup(CartResponseGroup.WithLineItems)
                                      .Build();
 
-            return await _cartAggregateRepository.SearchCartAsync(searchCriteria);
+            return await _cartAggregateRepository.SearchCartAsync(searchCriteria, request.IncludeFields.ItemsToProductIncludeField());
         }
     }
 }

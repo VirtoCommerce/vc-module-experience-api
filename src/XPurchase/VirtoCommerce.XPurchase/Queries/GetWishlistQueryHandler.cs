@@ -1,6 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
+using VirtoCommerce.XPurchase.Extensions;
 
 namespace VirtoCommerce.XPurchase.Queries
 {
@@ -15,7 +16,7 @@ namespace VirtoCommerce.XPurchase.Queries
 
         public Task<CartAggregate> Handle(GetWishlistQuery request, CancellationToken cancellationToken)
         {
-            return _cartAggrRepository.GetCartByIdAsync(request.ListId, request.CultureName);
+            return _cartAggrRepository.GetCartByIdAsync(request.ListId, request.IncludeFields.ItemsToProductIncludeField(), language: request.CultureName);
         }
     }
 }
