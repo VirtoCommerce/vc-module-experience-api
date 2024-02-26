@@ -74,11 +74,29 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
         private static string GetResourceKey<TSourceType>(IResolveFieldContext<TSourceType> context, string resourceKeyPrefix, string resourceKeyProperty)
         {
             var command = context.GetArgument<IDictionary<string, object>>("command");
+            if (command == null)
+            {
+                return null;
+            }
 
-            if (command == null ||
-                !command.TryGetValue(resourceKeyProperty, out var value) ||
-                value is not string resourceKey ||
-                string.IsNullOrEmpty(resourceKey))
+            var resourceKeyPath = resourceKeyProperty.Split(':', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            object resourceKeyValue = command;
+
+            foreach (var key in resourceKeyPath)
+            {
+                if (resourceKeyValue is IDictionary<string, object> dictionary &&
+                    dictionary.TryGetValue(key, out var value))
+                {
+                    resourceKeyValue = value;
+                }
+                else
+                {
+                    // invalid key or incorrect context structure
+                    return null;
+                }
+            }
+
+            if (resourceKeyValue is not string resourceKey || string.IsNullOrEmpty(resourceKey))
             {
                 return null;
             }
