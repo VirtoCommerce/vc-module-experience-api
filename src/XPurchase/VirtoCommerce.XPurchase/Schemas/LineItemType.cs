@@ -52,6 +52,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                         context.SetCurrencies(allCurrencies, cultureName);
                         context.UserContext.TryAdd("currencyCode", cart.Currency);
                         context.UserContext.TryAdd("storeId", cart.StoreId);
+                        context.UserContext.TryAdd("cultureName", cultureName);
 
                         var response = await mediator.Send(request);
 
