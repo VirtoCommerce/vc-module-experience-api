@@ -13,7 +13,9 @@ using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure.Authorization;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure.Internal;
 using VirtoCommerce.ExperienceApiModule.Core.Services;
+using VirtoCommerce.ExperienceApiModule.Core.Services.Security;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Security.Services;
 
 namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
 {
@@ -117,6 +119,8 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
             services.AddTransient<IDynamicPropertyResolverService, DynamicPropertyResolverService>();
             services.AddTransient<IDynamicPropertyUpdaterService, DynamicPropertyUpdaterService>();
             services.AddTransient<IUserManagerCore, UserManagerCore>();
+
+            services.AddTransient<IUserSignInValidator, ContactSignInValidator>();
 
             return services;
         }
