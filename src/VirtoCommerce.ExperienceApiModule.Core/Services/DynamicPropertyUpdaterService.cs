@@ -34,7 +34,8 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Services
         /// <returns></returns>
         public virtual async Task UpdateDynamicPropertyValues(IHasDynamicProperties entity, IList<DynamicPropertyValue> values)
         {
-            var tasks = values.GroupBy(x => x.Name).Select(async newValuesGroup =>
+            var sourceProperties = new List<DynamicObjectProperty>();
+            foreach (var newValuesGroup in values.GroupBy(x => x.Name))
             {
                 var result = AbstractTypeFactory<DynamicObjectProperty>.TryCreateInstance();
                 result.Name = newValuesGroup.Key;
@@ -72,10 +73,9 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Services
                 }
 
                 result.Values = newValuesGroup.ToArray();
-                return result;
-            });
 
-            var sourceProperties = await Task.WhenAll(tasks);
+                sourceProperties.Add(result);
+            }
 
             var comparer = AnonymousComparer.Create((DynamicObjectProperty x) => x.Name);
 
@@ -85,7 +85,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Services
             }
 
             // fill missing values with the original ones. (That enables single value updates)
-            sourceProperties = sourceProperties.Union(entity.DynamicProperties, comparer).ToArray();
+            sourceProperties = sourceProperties.Union(entity.DynamicProperties, comparer).ToList();
 
             entity.DynamicProperties = entity.DynamicProperties.ToList();
             sourceProperties.Patch(entity.DynamicProperties, comparer, Patch);

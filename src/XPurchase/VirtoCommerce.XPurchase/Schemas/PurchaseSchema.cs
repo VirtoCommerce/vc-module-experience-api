@@ -1288,6 +1288,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                 {
                     var getListQuery = AbstractTypeFactory<GetWishlistQuery>.TryCreateInstance();
                     getListQuery.ListId = context.GetArgument<string>("listId");
+                    getListQuery.IncludeFields = context.SubFields.Values.GetAllNodesPaths(context).ToArray();
                     context.CopyArgumentsToUserContext();
 
                     var cartAggregate = await _mediator.Send(getListQuery);
@@ -1547,6 +1548,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             query.Skip = skip;
             query.Take = first ?? context.PageSize ?? 10;
             query.Sort = context.GetArgument<string>("sort");
+            query.IncludeFields = context.SubFields.Values.GetAllNodesPaths(context).ToArray();
 
             context.CopyArgumentsToUserContext();
 

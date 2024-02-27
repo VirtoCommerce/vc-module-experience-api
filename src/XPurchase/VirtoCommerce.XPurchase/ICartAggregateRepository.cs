@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.CartModule.Core.Model.Search;
@@ -17,8 +18,12 @@ namespace VirtoCommerce.XPurchase
 
         Task<CartAggregate> GetCartByIdAsync(string cartId, string language = null);
 
+        Task<CartAggregate> GetCartByIdAsync(string cartId, IList<string> productsIncludeFields, string language = null);
+
         Task<CartAggregate> GetCartForShoppingCartAsync(ShoppingCart cart, string cultureName = null);
 
         Task<SearchCartResponse> SearchCartAsync(ShoppingCartSearchCriteria criteria);
+
+        Task<SearchCartResponse> SearchCartAsync(ShoppingCartSearchCriteria criteria, IList<string> productsIncludeFields);
     }
 }
