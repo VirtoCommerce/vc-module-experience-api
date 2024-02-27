@@ -1,4 +1,6 @@
-﻿namespace VirtoCommerce.ExperienceApiModule.Core.Queries
+using Microsoft.AspNetCore.Identity;
+
+namespace VirtoCommerce.ExperienceApiModule.Core.Queries
 {
     public class StoreSettings
     {
@@ -19,5 +21,7 @@
         public bool CreateAnonymousOrderEnabled { get; set; }
 
         public string SeoLinkType { get; set; }
+
+        public PasswordOptions PasswordRequirements { get; set; }
     }
 }

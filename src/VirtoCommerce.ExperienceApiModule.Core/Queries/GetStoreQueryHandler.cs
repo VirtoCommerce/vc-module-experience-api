@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.Platform.Core.Common;
@@ -16,11 +18,13 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Queries
     {
         private readonly IStoreService _storeService;
         private readonly IStoreCurrencyResolver _storeCurrencyResolver;
+        private readonly IdentityOptions _identityOptions;
 
-        public GetStoreQueryHandler(IStoreService storeService, IStoreCurrencyResolver storeCurrencyResolver)
+        public GetStoreQueryHandler(IStoreService storeService, IStoreCurrencyResolver storeCurrencyResolver, IOptions<IdentityOptions> identityOptions)
         {
             _storeService = storeService;
             _storeCurrencyResolver = storeCurrencyResolver;
+            _identityOptions = identityOptions.Value;
         }
 
         public async Task<StoreResponse> Handle(GetStoreQuery request, CancellationToken cancellationToken)
@@ -67,6 +71,8 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Queries
 
                     QuotesEnabled = store.Settings.GetValue<bool>(new SettingDescriptor { Name = "Quotes.EnableQuotes" }),
                     SubscriptionEnabled = store.Settings.GetValue<bool>(new SettingDescriptor { Name = "Subscription.EnableSubscriptions" }),
+
+                    PasswordRequirements = _identityOptions.Password,
                 };
             }
 
