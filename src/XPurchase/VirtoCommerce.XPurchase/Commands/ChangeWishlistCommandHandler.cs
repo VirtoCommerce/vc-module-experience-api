@@ -20,8 +20,8 @@ namespace VirtoCommerce.XPurchase.Commands
         public override async Task<CartAggregate> Handle(ChangeWishlistCommand request, CancellationToken cancellationToken)
         {
             var cartAggregate = request.WishlistUserContext.Cart == null
-                ? await CartRepository.GetCartByIdAsync(request.ListId)
-                : await CartRepository.GetCartForShoppingCartAsync(request.WishlistUserContext.Cart);
+                ? await CartRepository.GetCartByIdAsync(request.ListId, request.CultureName)
+                : await CartRepository.GetCartForShoppingCartAsync(request.WishlistUserContext.Cart, request.CultureName);
 
             if (request.ListName != null)
             {
