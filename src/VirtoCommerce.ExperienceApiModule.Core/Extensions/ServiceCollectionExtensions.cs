@@ -14,6 +14,7 @@ using VirtoCommerce.ExperienceApiModule.Core.Infrastructure.Authorization;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure.Internal;
 using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.Core.Services.Security;
+using VirtoCommerce.ExperienceApiModule.Core.Subscriptions;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Security.Services;
 
@@ -121,6 +122,8 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
             services.AddTransient<IUserManagerCore, UserManagerCore>();
 
             services.AddTransient<IUserSignInValidator, ContactSignInValidator>();
+
+            services.AddSingleton<EventBroker>();
 
             return services;
         }

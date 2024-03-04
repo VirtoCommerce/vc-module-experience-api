@@ -1,7 +1,11 @@
+using GraphQL;
 using GraphQL.Introspection;
 using GraphQL.Server;
+using GraphQL.Server.Transports.Subscriptions.Abstractions;
+using GraphQL.Server.Ui.Playground;
 using GraphQL.Types;
 using GraphQL.Validation.Rules;
+using Hangfire;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,6 +16,7 @@ using VirtoCommerce.ExperienceApiModule.Core.Infrastructure.Validation;
 using VirtoCommerce.ExperienceApiModule.Core.Models;
 using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
 using VirtoCommerce.ExperienceApiModule.Core.Services;
+using VirtoCommerce.ExperienceApiModule.Core.Subscriptions;
 using VirtoCommerce.ExperienceApiModule.Web.Extensions;
 using VirtoCommerce.ExperienceApiModule.XCMS.Extensions;
 using VirtoCommerce.ExperienceApiModule.XOrder.Extensions;
@@ -19,6 +24,8 @@ using VirtoCommerce.InventoryModule.Core.Model.Search;
 using VirtoCommerce.MarketingModule.Core.Model.Promotions;
 using VirtoCommerce.Platform.Core.Modularity;
 using VirtoCommerce.Platform.Core.Settings;
+using VirtoCommerce.Platform.Hangfire;
+using VirtoCommerce.Platform.Hangfire.Extensions;
 using VirtoCommerce.PricingModule.Core.Model;
 using VirtoCommerce.TaxModule.Core.Model;
 using VirtoCommerce.XDigitalCatalog.Extensions;
@@ -46,6 +53,7 @@ namespace VirtoCommerce.ExperienceApiModule.Web
             services.AddApplicationInsightsTelemetryProcessor<IgnorePlainGraphQLTelemetryProcessor>();
             // register custom executor with app insight wrapper
             services.AddTransient(typeof(IGraphQLExecuter<>), typeof(CustomGraphQLExecuter<>));
+            services.AddSingleton<IDocumentExecuter, SubscriptionDocumentExecuter>();
 
             //Register .NET GraphQL server
             var graphQlBuilder = services.AddGraphQL(options =>
@@ -60,6 +68,7 @@ namespace VirtoCommerce.ExperienceApiModule.Web
             })
             .AddUserContextBuilder(context => context.BuildGraphQLUserContext())
             .AddRelayGraphTypes()
+            .AddWebSockets()
             .AddDataLoader()
             .AddCustomValidationRule<ContentTypeValidationRule>();
 
@@ -69,6 +78,8 @@ namespace VirtoCommerce.ExperienceApiModule.Web
                 graphQlBuilder.ReplaceValidationRule<FieldsOnCorrectType, CustomFieldsOnCorrectType>();
                 graphQlBuilder.ReplaceValidationRule<KnownArgumentNames, CustomKnownArgumentNames>();
             }
+
+            services.AddTransient<IOperationMessageListener, SubscriptionsUserContextResolver>();
 
             //Register custom GraphQL dependencies
             services.AddPermissionAuthorization();
@@ -110,19 +121,40 @@ namespace VirtoCommerce.ExperienceApiModule.Web
         {
             var serviceProvider = appBuilder.ApplicationServices;
 
+            // this is required for websockets support
+            appBuilder.UseWebSockets();
+
+            // use websocket middleware for ISchema at default path /graphql
+            appBuilder.UseGraphQLWebSockets<ISchema>();
+
             // add http for Schema at default url /graphql
             appBuilder.UseGraphQL<ISchema>();
 
             if (IsSchemaIntrospectionEnabled)
             {
+                var playgroundOptions = new PlaygroundOptions();
+                playgroundOptions.PlaygroundSettings.TryAdd("schema.polling.enable", false);
+
                 // Use GraphQL Playground at default URL /ui/playground
-                appBuilder.UseGraphQLPlayground();
+                appBuilder.UseGraphQLPlayground(playgroundOptions);
             }
 
             // settings
             var settingsRegistrar = serviceProvider.GetRequiredService<ISettingsRegistrar>();
             settingsRegistrar.RegisterSettings(ModuleConstants.Settings.General.AllSettings, ModuleInfo.Id);
             settingsRegistrar.RegisterSettingsForType(ModuleConstants.Settings.StoreLevelSettings, nameof(Store));
+
+            // FOR TESTING PURPOSES ONLY
+            var recurringJobManager = serviceProvider.GetService<IRecurringJobManager>();
+            var settingsManager = serviceProvider.GetService<ISettingsManager>();
+
+            recurringJobManager.WatchJobSetting(
+                   settingsManager,
+                   new SettingCronJobBuilder()
+                       .SetEnablerSetting(ModuleConstants.Settings.General.EnableScheduledNotifications)
+                       .SetCronSetting(ModuleConstants.Settings.General.ScheduledNotificationsCron)
+                       .ToJob<PushNotificationJob>(x => x.Process())
+                       .Build());
         }
 
         public void Uninstall()
