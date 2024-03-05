@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Builders;
 using GraphQL.Resolvers;
-using GraphQL.Server.Transports.Subscriptions.Abstractions;
 using GraphQL.Subscription;
 using GraphQL.Types;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
@@ -41,28 +40,40 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
                             .FieldType;
             schema.Mutation.AddField(addMessageFieldType);
 
-            var messageEventStreamFieldType = new EventStreamFieldType
+            var messageAddedEventStreamFieldType = new EventStreamFieldType
             {
                 Name = "messageAdded",
                 Type = typeof(PushNotificationType),
                 Resolver = new FuncFieldResolver<PushNotification>(ResolveMessage),
                 AsyncSubscriber = new AsyncEventStreamResolver<PushNotification>(Subscribe)
             };
-            schema.Subscription.AddField(messageEventStreamFieldType);
+            schema.Subscription.AddField(messageAddedEventStreamFieldType);
+
+            var messageAddedToUserEventStreamFieldType = new EventStreamFieldType
+            {
+                Name = "messageAddedToUser",
+                Type = typeof(PushNotificationType),
+                Resolver = new FuncFieldResolver<PushNotification>(ResolveMessage),
+                AsyncSubscriber = new AsyncEventStreamResolver<PushNotification>(SubscribeToUser)
+            };
+            schema.Subscription.AddField(messageAddedToUserEventStreamFieldType);
         }
 
         private PushNotification ResolveMessage(IResolveFieldContext context)
         {
-            var message = context.Source as PushNotification;
-
-            return message;
+            return context.Source as PushNotification;
         }
 
         private Task<IObservable<PushNotification>> Subscribe(IResolveEventStreamContext context)
         {
-            var messageContext = (MessageHandlingContext)context.UserContext;
+            return _eventBroker.MessagesAsync();
+        }
 
-            var result = _eventBroker.MessagesAsync();
+        private Task<IObservable<PushNotification>> SubscribeToUser(IResolveEventStreamContext context)
+        {
+            var currentUserId = context.GetCurrentUserId();
+
+            var result = _eventBroker.MessagesByUserIdAsync(currentUserId);
 
             return result;
         }

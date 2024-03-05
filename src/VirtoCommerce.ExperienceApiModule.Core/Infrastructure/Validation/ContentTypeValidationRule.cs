@@ -20,7 +20,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Infrastructure.Validation
 
             if (contentType == MediaType.JSON ||
                 contentType == MediaType.GRAPH_QL ||
-                (contentType == null && _httpContextAccessor.HttpContext.WebSockets?.IsWebSocketRequest == true))
+                (contentType == null && _httpContextAccessor?.HttpContext?.WebSockets?.IsWebSocketRequest == true))
             {
                 return default;
             }

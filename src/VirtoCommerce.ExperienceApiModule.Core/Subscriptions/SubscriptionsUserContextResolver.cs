@@ -27,21 +27,27 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Subscriptions
 
         public async Task BeforeHandleAsync(MessageHandlingContext context)
         {
-            if (context.Message.Type != MessageType.GQL_CONNECTION_INIT)
+            switch (context.Message.Type)
             {
-                return;
+                case MessageType.GQL_CONNECTION_INIT:
+                    {
+                        if (context.Message.Payload is JObject payload && payload.ContainsKey(AuthorizationHeader))
+                        {
+                            var authorization = payload.Value<string>(AuthorizationHeader);
+
+                            // set the ClaimsPrincipal for the HttpContext; authentication will take place against this object
+                            var principal = await BuildClaimsPrincipal(authorization);
+                            _httpContextAccessor.HttpContext.User = principal;
+                            context.TryAdd(ContextKey, _httpContextAccessor.HttpContext.User);
+                        }
+
+                        break;
+                    }
+
+                default:
+                    context.TryAdd(ContextKey, _httpContextAccessor.HttpContext.User);
+                    break;
             }
-
-            if (context.Message.Payload is JObject payload && payload.ContainsKey(AuthorizationHeader))
-            {
-                var authorization = payload.Value<string>(AuthorizationHeader);
-
-                // set the ClaimsPrincipal for the HttpContext; authentication will take place against this object
-                //_httpContextAccessor.HttpContext.User = BuildClaimsPrincipal(authorization);
-                var principal = await BuildClaimsPrincipal(authorization);
-            }
-
-            //context.Properties[ContextKey] = _httpContextAccessor.HttpContext.User;
 
             return;
         }
@@ -64,7 +70,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Subscriptions
                 if (jsonWebTokenHandler != null)
                 {
                     var result = await jsonWebTokenHandler.ValidateTokenAsync(token, tokenOptions.TokenValidationParameters);
-                    var claimsPrincipal = new ClaimsPrincipal(result.ClaimsIdentity);
+                    principal = new ClaimsPrincipal(result.ClaimsIdentity);
                 }
             }
             catch

@@ -2,6 +2,7 @@ using GraphQL;
 using GraphQL.Introspection;
 using GraphQL.Server;
 using GraphQL.Server.Transports.Subscriptions.Abstractions;
+using GraphQL.Server.Ui.Playground;
 using GraphQL.Types;
 using GraphQL.Validation.Rules;
 using Hangfire;
@@ -131,8 +132,11 @@ namespace VirtoCommerce.ExperienceApiModule.Web
 
             if (IsSchemaIntrospectionEnabled)
             {
+                var playgroundOptions = new PlaygroundOptions();
+                playgroundOptions.PlaygroundSettings.TryAdd("schema.polling.enable", false);
+
                 // Use GraphQL Playground at default URL /ui/playground
-                appBuilder.UseGraphQLPlayground();
+                appBuilder.UseGraphQLPlayground(playgroundOptions);
             }
 
             // settings
