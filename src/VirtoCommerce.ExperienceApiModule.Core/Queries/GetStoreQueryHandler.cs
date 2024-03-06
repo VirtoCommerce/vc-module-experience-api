@@ -73,10 +73,53 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Queries
                     SubscriptionEnabled = store.Settings.GetValue<bool>(new SettingDescriptor { Name = "Subscription.EnableSubscriptions" }),
 
                     PasswordRequirements = _identityOptions.Password,
+
+                    Modules = ToModulesSettings(store.Settings)
                 };
             }
 
             return response;
+        }
+
+        protected virtual ModuleSettings[] ToModulesSettings(ICollection<ObjectSettingEntry> settings)
+        {
+            var retVal = new List<ModuleSettings>();
+
+            foreach (var settingByModule in settings.GroupBy(s => s.ModuleId))
+            {
+                var moduleSettings = new ModuleSettings
+                {
+                    ModuleId = settingByModule.Key,
+                    Settings = settingByModule.Select(s => new ModuleSetting
+                    {
+                        Name = s.Name,
+                        Value = ToSettingValue(s)
+                    }).ToArray(),
+                };
+
+                if (moduleSettings.Settings.Length > 0)
+                {
+                    retVal.Add(moduleSettings);
+                }
+            }
+
+            return retVal.ToArray();
+        }
+
+        protected virtual string ToSettingValue(ObjectSettingEntry s)
+        {
+            var retVal = s.Value?.ToString() ?? s.DefaultValue?.ToString();
+
+            if (string.IsNullOrEmpty(retVal))
+            {
+                switch (s.ValueType)
+                {
+                    case SettingValueType.Boolean:
+                        return false.ToString();
+                }
+            }
+
+            return retVal;
         }
     }
 }
