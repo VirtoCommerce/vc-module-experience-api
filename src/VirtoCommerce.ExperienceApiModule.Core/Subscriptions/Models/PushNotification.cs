@@ -1,6 +1,6 @@
 using System;
 
-namespace VirtoCommerce.ExperienceApiModule.Core.Subscriptions
+namespace VirtoCommerce.ExperienceApiModule.Core.Subscriptions.Models
 {
     public class PushNotification
     {

@@ -2,6 +2,7 @@ using System;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading.Tasks;
+using VirtoCommerce.ExperienceApiModule.Core.Subscriptions.Models;
 
 namespace VirtoCommerce.ExperienceApiModule.Core.Subscriptions
 {
