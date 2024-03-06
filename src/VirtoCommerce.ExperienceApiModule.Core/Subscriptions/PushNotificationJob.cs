@@ -13,8 +13,8 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Subscriptions
             var message = new PushNotification
             {
                 Id = Guid.NewGuid().ToString(),
-                Content = "Scheduled event",
-                SentDate = DateTime.UtcNow,
+                ShortMessage = "Scheduled event",
+                CreatedDate = DateTime.UtcNow,
                 UserId = "Hangfire",
             };
 

@@ -6,11 +6,9 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Subscriptions
     {
         public PushNotificationType()
         {
-            Field(x => x.Id, nullable: true);
-            Field(x => x.OrganizationId, nullable: true);
-            Field(x => x.UserId, nullable: true);
-            Field(x => x.Content, nullable: true);
-            Field(x => x.SentDate, nullable: true);
+            Field(x => x.Id, nullable: false);
+            Field(x => x.Status, nullable: true);
+            Field(x => x.ShortMessage, nullable: true);
         }
     }
 }

@@ -8,10 +8,12 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Subscriptions
 
         public string UserId { get; set; }
 
+        public string Status { get; set; } = "Unread";
+
         public string OrganizationId { get; set; }
 
-        public string Content { get; set; }
+        public string ShortMessage { get; set; }
 
-        public DateTime SentDate { get; set; }
+        public DateTime CreatedDate { get; set; }
     }
 }

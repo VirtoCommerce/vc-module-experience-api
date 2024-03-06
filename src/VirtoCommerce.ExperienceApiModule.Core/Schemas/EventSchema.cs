@@ -28,8 +28,8 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
                                 var message = new PushNotification
                                 {
                                     Id = Guid.NewGuid().ToString(),
-                                    Content = command.Content,
-                                    SentDate = DateTime.UtcNow,
+                                    ShortMessage = command.Content,
+                                    CreatedDate = DateTime.UtcNow,
                                     UserId = context.GetCurrentUserId(),
                                 };
 
@@ -42,7 +42,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
 
             var messageAddedEventStreamFieldType = new EventStreamFieldType
             {
-                Name = "messageAdded",
+                Name = "pushNotificationCreated",
                 Type = typeof(PushNotificationType),
                 Resolver = new FuncFieldResolver<PushNotification>(ResolveMessage),
                 AsyncSubscriber = new AsyncEventStreamResolver<PushNotification>(Subscribe)
@@ -51,12 +51,12 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
 
             var messageAddedToUserEventStreamFieldType = new EventStreamFieldType
             {
-                Name = "messageAddedToUser",
+                Name = "pushNotificationCreatedForUser",
                 Type = typeof(PushNotificationType),
                 Resolver = new FuncFieldResolver<PushNotification>(ResolveMessage),
                 AsyncSubscriber = new AsyncEventStreamResolver<PushNotification>(SubscribeToUser)
             };
-            schema.Subscription.AddField(messageAddedToUserEventStreamFieldType);
+            //schema.Subscription.AddField(messageAddedToUserEventStreamFieldType);
         }
 
         private PushNotification ResolveMessage(IResolveFieldContext context)
