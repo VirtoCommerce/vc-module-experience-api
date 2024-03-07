@@ -20,7 +20,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Subscriptions.Infrastructure
             {
                 while (true)
                 {
-                    await Task.Delay(TimeSpan.FromSeconds(45), CancellationToken.None);
+                    await Task.Delay(TimeSpan.FromSeconds(31), CancellationToken.None);
                     await context.Writer.SendAsync(_keepAliveMessage);
                 }
             }
