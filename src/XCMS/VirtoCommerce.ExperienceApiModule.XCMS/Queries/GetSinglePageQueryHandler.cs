@@ -21,7 +21,6 @@ public class GetSinglePageQueryHandler : IQueryHandler<GetSinglePageQuery, PageI
         var criteria = new ContentSearchCriteria
         {
             StoreId = request.StoreId,
-            LanguageCode = request.CultureName,
             ObjectIds = [request.Id],
             Take = 1,
             Skip = 0,
