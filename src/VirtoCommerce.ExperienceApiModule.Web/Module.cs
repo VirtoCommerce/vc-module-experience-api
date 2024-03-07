@@ -16,6 +16,7 @@ using VirtoCommerce.ExperienceApiModule.Core.Models;
 using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
 using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.Core.Subscriptions;
+using VirtoCommerce.ExperienceApiModule.Core.Subscriptions.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.Web.Extensions;
 using VirtoCommerce.ExperienceApiModule.XCMS.Extensions;
 using VirtoCommerce.ExperienceApiModule.XOrder.Extensions;
@@ -78,6 +79,7 @@ namespace VirtoCommerce.ExperienceApiModule.Web
                 graphQlBuilder.ReplaceValidationRule<KnownArgumentNames, CustomKnownArgumentNames>();
             }
 
+            services.AddTransient<IOperationMessageListener, KeepAliveResolver>();
             services.AddTransient<IOperationMessageListener, SubscriptionsUserContextResolver>();
 
             //Register custom GraphQL dependencies
