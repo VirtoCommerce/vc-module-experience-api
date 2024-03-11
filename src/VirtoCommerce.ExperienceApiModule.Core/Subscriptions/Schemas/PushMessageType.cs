@@ -3,9 +3,9 @@ using VirtoCommerce.ExperienceApiModule.Core.Subscriptions.Models;
 
 namespace VirtoCommerce.ExperienceApiModule.Core.Subscriptions.Schemas
 {
-    public class PushNotificationType : ObjectGraphType<PushNotification>
+    public class PushMessageType : ObjectGraphType<PushMessage>
     {
-        public PushNotificationType()
+        public PushMessageType()
         {
             Field(x => x.Id, nullable: false);
             Field(x => x.Status, nullable: true);

@@ -2,9 +2,9 @@ using GraphQL.Types;
 
 namespace VirtoCommerce.ExperienceApiModule.Core.Subscriptions.Schemas
 {
-    public class InputMarkPushNotificationUnreadType : InputObjectGraphType
+    public class InputMarkPushMessageReadType : InputObjectGraphType
     {
-        public InputMarkPushNotificationUnreadType()
+        public InputMarkPushMessageReadType()
         {
             Field<NonNullGraphType<StringGraphType>>("notificationId");
         }

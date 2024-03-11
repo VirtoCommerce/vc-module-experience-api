@@ -1,6 +1,6 @@
 namespace VirtoCommerce.ExperienceApiModule.Core.Subscriptions.Commands
 {
-    public class MarkPushNotificationReadCommand : PushNotificationsCommand
+    public class MarkPushMessageUnreadCommand : PushMessagesCommand
     {
         public string NotificationId { get; set; }
     }

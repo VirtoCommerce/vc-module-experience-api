@@ -1,6 +1,6 @@
 namespace VirtoCommerce.ExperienceApiModule.Core.Subscriptions.Commands
 {
-    public class ClearAllPushNotificationsCommand : PushNotificationsCommand
+    public class MarkAllPushMessagesUnreadCommand : PushMessagesCommand
     {
     }
 }

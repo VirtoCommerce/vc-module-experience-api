@@ -9,7 +9,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Newtonsoft.Json.Linq;
 
-namespace VirtoCommerce.ExperienceApiModule.Core.Subscriptions
+namespace VirtoCommerce.ExperienceApiModule.Core.Subscriptions.Infrastructure
 {
     /// <summary>
     /// Try to resolver user context for subscriptions by validating JWT token in the request's Authorization header

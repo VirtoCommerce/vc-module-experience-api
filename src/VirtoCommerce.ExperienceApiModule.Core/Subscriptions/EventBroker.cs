@@ -8,15 +8,15 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Subscriptions
 {
     public class EventBroker
     {
-        private readonly ISubject<PushNotification> _messageStream = new ReplaySubject<PushNotification>(1);
+        private readonly ISubject<PushMessage> _messageStream = new ReplaySubject<PushMessage>(1);
 
-        public Task<IObservable<PushNotification>> MessagesAsync()
+        public Task<IObservable<PushMessage>> MessagesAsync()
         {
             var observable = _messageStream.AsObservable();
             return Task.FromResult(observable);
         }
 
-        public Task<IObservable<PushNotification>> MessagesByUserIdAsync(string userId)
+        public Task<IObservable<PushMessage>> MessagesByUserIdAsync(string userId)
         {
             var observable = _messageStream.AsObservable();
 
@@ -28,7 +28,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Subscriptions
             return Task.FromResult(observable);
         }
 
-        public Task<PushNotification> AddMessageAsync(PushNotification message)
+        public Task<PushMessage> AddMessageAsync(PushMessage message)
         {
             _messageStream.OnNext(message);
 
