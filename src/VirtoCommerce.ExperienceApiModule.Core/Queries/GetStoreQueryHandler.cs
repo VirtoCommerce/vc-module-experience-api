@@ -85,7 +85,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Queries
         {
             var retVal = new List<ModuleSettings>();
 
-            foreach (var settingByModule in settings.GroupBy(s => s.ModuleId))
+            foreach (var settingByModule in settings.Where(s => s.IsPublic).GroupBy(s => s.ModuleId))
             {
                 var moduleSettings = new ModuleSettings
                 {
