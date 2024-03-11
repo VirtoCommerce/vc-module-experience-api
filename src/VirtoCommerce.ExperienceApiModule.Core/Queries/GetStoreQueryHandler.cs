@@ -106,16 +106,17 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Queries
             return retVal.ToArray();
         }
 
-        protected virtual string ToSettingValue(ObjectSettingEntry s)
+        protected virtual object ToSettingValue(ObjectSettingEntry s)
         {
-            var retVal = s.Value?.ToString() ?? s.DefaultValue?.ToString();
+            var retVal = s.Value ?? s.DefaultValue;
 
-            if (string.IsNullOrEmpty(retVal))
+            if (retVal == null)
             {
                 switch (s.ValueType)
                 {
                     case SettingValueType.Boolean:
-                        return false.ToString();
+                        retVal = false;
+                        break;
                 }
             }
 
