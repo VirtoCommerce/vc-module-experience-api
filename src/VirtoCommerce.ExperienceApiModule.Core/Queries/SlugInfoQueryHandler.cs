@@ -46,12 +46,20 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Queries
             return result;
         }
 
-        private async Task<SeoInfo> GetBestMatchingSeoInfo(Store store, string slug, string currentCulture)
+        protected virtual async Task<SeoInfo> GetBestMatchingSeoInfo(Store store, string slug, string currentCulture)
         {
-            var seoInfos = (await _seoBySlugResolver.FindSeoBySlugAsync(slug))
-                .Where(x => x.StoreId == store.Id)
-                .ToArray();
-            var bestMatchSeoInfo = seoInfos.GetBestMatchingSeoInfo(store.Id, currentCulture, slug);
+            var itemsToMatch = await _seoBySlugResolver.FindSeoBySlugAsync(slug);
+
+            var seoInfosForStore = itemsToMatch.Where(x => x.StoreId == store.Id).ToArray();
+
+            var bestMatchSeoInfo = seoInfosForStore.GetBestMatchingSeoInfo(store.Id, currentCulture, slug);
+
+            if (bestMatchSeoInfo == null)
+            {
+                var seoInfosWithoutStore = itemsToMatch.Where(x => string.IsNullOrEmpty(x.StoreId)).ToArray();
+                bestMatchSeoInfo = seoInfosWithoutStore.GetBestMatchingSeoInfo(store.Id, currentCulture, slug);
+            }
+
             return bestMatchSeoInfo;
         }
     }
