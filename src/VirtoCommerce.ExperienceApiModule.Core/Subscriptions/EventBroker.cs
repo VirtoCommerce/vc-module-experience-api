@@ -10,13 +10,13 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Subscriptions
 {
     public interface IEventBroker
     {
-        Task<PushMessage> AddMessageAsync(PushMessage message);
-        Task<IObservable<PushMessage>> MessagesAsync();
+        Task<ExpPushMessage> AddMessageAsync(ExpPushMessage message);
+        Task<IObservable<ExpPushMessage>> MessagesAsync();
     }
 
     public class RedisPushMessage
     {
-        public PushMessage Message { get; set; }
+        public ExpPushMessage Message { get; set; }
     }
 
     public class RedisEventBroker : IEventBroker
@@ -41,7 +41,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Subscriptions
             _eventBroker = eventBroker;
         }
 
-        public async Task<PushMessage> AddMessageAsync(PushMessage message)
+        public async Task<ExpPushMessage> AddMessageAsync(ExpPushMessage message)
         {
             EnsureRedisServerConnection();
 
@@ -55,7 +55,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Subscriptions
             return message;
         }
 
-        public Task<IObservable<PushMessage>> MessagesAsync()
+        public Task<IObservable<ExpPushMessage>> MessagesAsync()
         {
             return _eventBroker.MessagesAsync();
         }
@@ -91,15 +91,15 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Subscriptions
 
     public class EventBroker : IEventBroker
     {
-        private readonly ISubject<PushMessage> _messageStream = new ReplaySubject<PushMessage>(0);
+        private readonly ISubject<ExpPushMessage> _messageStream = new ReplaySubject<ExpPushMessage>(0);
 
-        public Task<IObservable<PushMessage>> MessagesAsync()
+        public Task<IObservable<ExpPushMessage>> MessagesAsync()
         {
             var observable = _messageStream.AsObservable();
             return Task.FromResult(observable);
         }
 
-        public Task<IObservable<PushMessage>> MessagesByUserIdAsync(string userId)
+        public Task<IObservable<ExpPushMessage>> MessagesByUserIdAsync(string userId)
         {
             var observable = _messageStream.AsObservable();
 
@@ -111,7 +111,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Subscriptions
             return Task.FromResult(observable);
         }
 
-        public Task<PushMessage> AddMessageAsync(PushMessage message)
+        public Task<ExpPushMessage> AddMessageAsync(ExpPushMessage message)
         {
             _messageStream.OnNext(message);
 

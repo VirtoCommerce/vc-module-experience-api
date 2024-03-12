@@ -11,7 +11,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Subscriptions
 
         public async Task Process()
         {
-            var message = new PushMessage
+            var message = new ExpPushMessage
             {
                 Id = Guid.NewGuid().ToString(),
                 ShortMessage = "Scheduled event",

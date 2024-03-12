@@ -2,7 +2,7 @@ using System;
 
 namespace VirtoCommerce.ExperienceApiModule.Core.Subscriptions.Models
 {
-    public class PushMessage
+    public class ExpPushMessage
     {
         public string Id { get; set; }
 

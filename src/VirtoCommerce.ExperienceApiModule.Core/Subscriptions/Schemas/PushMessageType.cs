@@ -3,7 +3,7 @@ using VirtoCommerce.ExperienceApiModule.Core.Subscriptions.Models;
 
 namespace VirtoCommerce.ExperienceApiModule.Core.Subscriptions.Schemas
 {
-    public class PushMessageType : ObjectGraphType<PushMessage>
+    public class PushMessageType : ObjectGraphType<ExpPushMessage>
     {
         public PushMessageType()
         {

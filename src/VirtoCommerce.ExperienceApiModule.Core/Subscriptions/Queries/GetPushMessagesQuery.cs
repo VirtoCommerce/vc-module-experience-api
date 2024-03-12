@@ -6,7 +6,7 @@ using VirtoCommerce.ExperienceApiModule.Core.Subscriptions.Models;
 
 namespace VirtoCommerce.ExperienceApiModule.Core.Subscriptions.Queries
 {
-    public class GetPushMessagesQuery : Query<PushMessagesResponse>
+    public class GetPushMessagesQuery : Query<ExpPushMessagesResponse>
     {
         public bool UnreadOnly { get; set; }
 

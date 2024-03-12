@@ -7,15 +7,15 @@ using VirtoCommerce.ExperienceApiModule.Core.Subscriptions.Models;
 
 namespace VirtoCommerce.ExperienceApiModule.Core.Subscriptions.Queries
 {
-    public class GetPushMessagesQueryHandler : IQueryHandler<GetPushMessagesQuery, PushMessagesResponse>
+    public class GetPushMessagesQueryHandler : IQueryHandler<GetPushMessagesQuery, ExpPushMessagesResponse>
     {
-        public Task<PushMessagesResponse> Handle(GetPushMessagesQuery request, CancellationToken cancellationToken)
+        public Task<ExpPushMessagesResponse> Handle(GetPushMessagesQuery request, CancellationToken cancellationToken)
         {
-            var result = new PushMessagesResponse();
+            var result = new ExpPushMessagesResponse();
 
             for (var i = 1; i <= 10; i++)
             {
-                var message = new PushMessage
+                var message = new ExpPushMessage
                 {
                     Id = Guid.NewGuid().ToString(),
                     ShortMessage = "Test message " + i,

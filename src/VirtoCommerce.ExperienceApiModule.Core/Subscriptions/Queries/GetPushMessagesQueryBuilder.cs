@@ -9,7 +9,7 @@ using VirtoCommerce.ExperienceApiModule.Core.Subscriptions.Schemas;
 
 namespace VirtoCommerce.ExperienceApiModule.Core.Subscriptions.Queries
 {
-    public class GetPushMessagesQueryBuilder : QueryBuilder<GetPushMessagesQuery, PushMessagesResponse, PushMessagesResponseType>
+    public class GetPushMessagesQueryBuilder : QueryBuilder<GetPushMessagesQuery, ExpPushMessagesResponse, PushMessagesResponseType>
     {
         protected override string Name => "pushMessages";
 

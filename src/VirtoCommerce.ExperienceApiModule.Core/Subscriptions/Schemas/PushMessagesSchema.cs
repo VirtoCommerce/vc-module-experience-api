@@ -18,14 +18,14 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Subscriptions.Schemas
 
         public void Build(ISchema schema)
         {
-            var addMessageFieldType = FieldBuilder.Create<object, PushMessage>(GraphTypeExtenstionHelper.GetActualType<PushMessageType>())
+            var addMessageFieldType = FieldBuilder.Create<object, ExpPushMessage>(GraphTypeExtenstionHelper.GetActualType<PushMessageType>())
                             .Name("addMessage")
                             .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<PushNotificationInputType>>(), "command")
                             .ResolveAsync(async context =>
                             {
                                 var command = context.GetArgument<AddMessageCommand>("command");
 
-                                var message = new PushMessage
+                                var message = new ExpPushMessage
                                 {
                                     Id = Guid.NewGuid().ToString(),
                                     ShortMessage = command.Content,
@@ -44,8 +44,8 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Subscriptions.Schemas
             {
                 Name = "pushMessageCreated",
                 Type = typeof(PushMessageType),
-                Resolver = new FuncFieldResolver<PushMessage>(ResolveMessage),
-                AsyncSubscriber = new AsyncEventStreamResolver<PushMessage>(Subscribe)
+                Resolver = new FuncFieldResolver<ExpPushMessage>(ResolveMessage),
+                AsyncSubscriber = new AsyncEventStreamResolver<ExpPushMessage>(Subscribe)
             };
             schema.Subscription.AddField(messageAddedEventStreamFieldType);
 
@@ -59,12 +59,12 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Subscriptions.Schemas
             //schema.Subscription.AddField(messageAddedToUserEventStreamFieldType);
         }
 
-        private PushMessage ResolveMessage(IResolveFieldContext context)
+        private ExpPushMessage ResolveMessage(IResolveFieldContext context)
         {
-            return context.Source as PushMessage;
+            return context.Source as ExpPushMessage;
         }
 
-        private Task<IObservable<PushMessage>> Subscribe(IResolveEventStreamContext context)
+        private Task<IObservable<ExpPushMessage>> Subscribe(IResolveEventStreamContext context)
         {
             return _eventBroker.MessagesAsync();
         }
