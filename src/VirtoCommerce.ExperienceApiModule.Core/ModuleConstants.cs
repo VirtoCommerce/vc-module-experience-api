@@ -17,31 +17,11 @@ namespace VirtoCommerce.ExperienceApiModule.Core
                     DefaultValue = true
                 };
 
-                // FOR TESTING PURPOSES ONLY
-                public static readonly SettingDescriptor EnableScheduledNotifications = new SettingDescriptor
-                {
-                    Name = "XNotification.EnableScheduledNotifications",
-                    GroupName = "Notifications|General",
-                    ValueType = SettingValueType.Boolean,
-                    DefaultValue = false
-                };
-
-                public static readonly SettingDescriptor ScheduledNotificationsCron = new SettingDescriptor
-                {
-                    Name = "XNotification.ScheduledNotificationscron",
-                    GroupName = "Notifications|General",
-                    ValueType = SettingValueType.ShortText,
-                    DefaultValue = "*/10 * * * * *"
-                };
-
                 public static IEnumerable<SettingDescriptor> AllSettings
                 {
                     get
                     {
                         yield return CreateAnonymousOrder;
-
-                        yield return EnableScheduledNotifications;
-                        yield return ScheduledNotificationsCron;
                     }
                 }
             }

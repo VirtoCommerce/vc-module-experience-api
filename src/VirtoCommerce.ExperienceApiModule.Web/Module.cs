@@ -4,7 +4,6 @@ using GraphQL.Server;
 using GraphQL.Server.Transports.Subscriptions.Abstractions;
 using GraphQL.Types;
 using GraphQL.Validation.Rules;
-using Hangfire;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,7 +14,6 @@ using VirtoCommerce.ExperienceApiModule.Core.Infrastructure.Validation;
 using VirtoCommerce.ExperienceApiModule.Core.Models;
 using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
 using VirtoCommerce.ExperienceApiModule.Core.Services;
-using VirtoCommerce.ExperienceApiModule.Core.Subscriptions;
 using VirtoCommerce.ExperienceApiModule.Core.Subscriptions.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.Web.Extensions;
 using VirtoCommerce.ExperienceApiModule.XCMS.Extensions;
@@ -24,8 +22,6 @@ using VirtoCommerce.InventoryModule.Core.Model.Search;
 using VirtoCommerce.MarketingModule.Core.Model.Promotions;
 using VirtoCommerce.Platform.Core.Modularity;
 using VirtoCommerce.Platform.Core.Settings;
-using VirtoCommerce.Platform.Hangfire;
-using VirtoCommerce.Platform.Hangfire.Extensions;
 using VirtoCommerce.PricingModule.Core.Model;
 using VirtoCommerce.TaxModule.Core.Model;
 using VirtoCommerce.XDigitalCatalog.Extensions;
@@ -99,7 +95,7 @@ namespace VirtoCommerce.ExperienceApiModule.Web
 
             services.AddTransient<LoadUserToEvalContextService>();
 
-            services.AddDistributedServices(Configuration);
+            services.AddDistributedLockService(Configuration);
 
             services.AddPipeline<PromotionEvaluationContext>(builder =>
             {
@@ -141,18 +137,6 @@ namespace VirtoCommerce.ExperienceApiModule.Web
             var settingsRegistrar = serviceProvider.GetRequiredService<ISettingsRegistrar>();
             settingsRegistrar.RegisterSettings(ModuleConstants.Settings.General.AllSettings, ModuleInfo.Id);
             settingsRegistrar.RegisterSettingsForType(ModuleConstants.Settings.StoreLevelSettings, nameof(Store));
-
-            // FOR TESTING PURPOSES ONLY
-            var recurringJobManager = serviceProvider.GetService<IRecurringJobManager>();
-            var settingsManager = serviceProvider.GetService<ISettingsManager>();
-
-            recurringJobManager.WatchJobSetting(
-                   settingsManager,
-                   new SettingCronJobBuilder()
-                       .SetEnablerSetting(ModuleConstants.Settings.General.EnableScheduledNotifications)
-                       .SetCronSetting(ModuleConstants.Settings.General.ScheduledNotificationsCron)
-                       .ToJob<PushNotificationJob>(x => x.Process())
-                       .Build());
         }
 
         public void Uninstall()

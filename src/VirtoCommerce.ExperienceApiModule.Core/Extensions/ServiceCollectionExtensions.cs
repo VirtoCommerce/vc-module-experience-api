@@ -14,7 +14,6 @@ using VirtoCommerce.ExperienceApiModule.Core.Infrastructure.Authorization;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure.Internal;
 using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.Core.Services.Security;
-using VirtoCommerce.ExperienceApiModule.Core.Subscriptions;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Security.Services;
 
@@ -126,21 +125,16 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
             return services;
         }
 
-        public static IServiceCollection AddDistributedServices(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddDistributedLockService(this IServiceCollection services, IConfiguration configuration)
         {
             var redisConnectionString = configuration.GetConnectionString("RedisConnectionString");
             if (!string.IsNullOrEmpty(redisConnectionString))
             {
                 services.AddSingleton<IDistributedLockService, DistributedLockService>();
-
-                services.AddSingleton<EventBroker>();
-                services.AddSingleton<IEventBroker, RedisEventBroker>();
             }
             else
             {
                 services.AddSingleton<IDistributedLockService, NoLockService>();
-
-                services.AddSingleton<IEventBroker, EventBroker>();
             }
 
             return services;
