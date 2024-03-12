@@ -99,7 +99,7 @@ namespace VirtoCommerce.ExperienceApiModule.Web
 
             services.AddTransient<LoadUserToEvalContextService>();
 
-            services.AddDistributedLockService(Configuration);
+            services.AddDistributedServices(Configuration);
 
             services.AddPipeline<PromotionEvaluationContext>(builder =>
             {

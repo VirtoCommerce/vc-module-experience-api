@@ -12,7 +12,6 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Subscriptions.Infrastructure
         public Task BeforeHandleAsync(MessageHandlingContext context) => Task.CompletedTask;
 
         private static readonly OperationMessage _keepAliveMessage = new() { Type = MessageType.GQL_CONNECTION_KEEP_ALIVE };
-        /// <inheritdoc/>
 
         public Task HandleAsync(MessageHandlingContext context)
         {

@@ -12,9 +12,9 @@ using VirtoCommerce.ExperienceApiModule.Core.Subscriptions.Models;
 
 namespace VirtoCommerce.ExperienceApiModule.Core.Subscriptions.Schemas
 {
-    public class PushMessagesSchema(EventBroker eventBroker) : ISchemaBuilder
+    public class PushMessagesSchema(IEventBroker eventBroker) : ISchemaBuilder
     {
-        private readonly EventBroker _eventBroker = eventBroker;
+        private readonly IEventBroker _eventBroker = eventBroker;
 
         public void Build(ISchema schema)
         {
@@ -42,20 +42,20 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Subscriptions.Schemas
 
             var messageAddedEventStreamFieldType = new EventStreamFieldType
             {
-                Name = "pushNotificationCreated",
+                Name = "pushMessageCreated",
                 Type = typeof(PushMessageType),
                 Resolver = new FuncFieldResolver<PushMessage>(ResolveMessage),
                 AsyncSubscriber = new AsyncEventStreamResolver<PushMessage>(Subscribe)
             };
             schema.Subscription.AddField(messageAddedEventStreamFieldType);
 
-            var messageAddedToUserEventStreamFieldType = new EventStreamFieldType
-            {
-                Name = "pushNotificationCreatedForUser",
-                Type = typeof(PushMessageType),
-                Resolver = new FuncFieldResolver<PushMessage>(ResolveMessage),
-                AsyncSubscriber = new AsyncEventStreamResolver<PushMessage>(SubscribeToUser)
-            };
+            //var messageAddedToUserEventStreamFieldType = new EventStreamFieldType
+            //{
+            //    Name = "pushNotificationCreatedForUser",
+            //    Type = typeof(PushMessageType),
+            //    Resolver = new FuncFieldResolver<PushMessage>(ResolveMessage),
+            //    AsyncSubscriber = new AsyncEventStreamResolver<PushMessage>(SubscribeToUser)
+            //};
             //schema.Subscription.AddField(messageAddedToUserEventStreamFieldType);
         }
 
@@ -69,13 +69,13 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Subscriptions.Schemas
             return _eventBroker.MessagesAsync();
         }
 
-        private Task<IObservable<PushMessage>> SubscribeToUser(IResolveEventStreamContext context)
-        {
-            var currentUserId = context.GetCurrentUserId();
+        //private Task<IObservable<PushMessage>> SubscribeToUser(IResolveEventStreamContext context)
+        //{
+        //    var currentUserId = context.GetCurrentUserId();
 
-            var result = _eventBroker.MessagesByUserIdAsync(currentUserId);
+        //    var result = _eventBroker.MessagesByUserIdAsync(currentUserId);
 
-            return result;
-        }
+        //    return result;
+        //}
     }
 }

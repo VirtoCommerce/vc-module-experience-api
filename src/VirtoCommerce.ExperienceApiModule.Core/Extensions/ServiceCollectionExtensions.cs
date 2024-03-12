@@ -123,21 +123,24 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
 
             services.AddTransient<IUserSignInValidator, ContactSignInValidator>();
 
-            services.AddSingleton<EventBroker>();
-
             return services;
         }
 
-        public static IServiceCollection AddDistributedLockService(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddDistributedServices(this IServiceCollection services, IConfiguration configuration)
         {
             var redisConnectionString = configuration.GetConnectionString("RedisConnectionString");
             if (!string.IsNullOrEmpty(redisConnectionString))
             {
                 services.AddSingleton<IDistributedLockService, DistributedLockService>();
+
+                services.AddSingleton<EventBroker>();
+                services.AddSingleton<IEventBroker, RedisEventBroker>();
             }
             else
             {
                 services.AddSingleton<IDistributedLockService, NoLockService>();
+
+                services.AddSingleton<IEventBroker, EventBroker>();
             }
 
             return services;
