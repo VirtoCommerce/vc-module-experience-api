@@ -3,6 +3,7 @@ using GraphQL;
 using GraphQL.Resolvers;
 using GraphQL.Types;
 using MediatR;
+using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.XCMS.Queries;
@@ -73,6 +74,8 @@ namespace VirtoCommerce.ExperienceApiModule.XCMS.Schemas
 
             pagesConnectionBuilder.ResolveAsync(async context =>
             {
+                context.CopyArgumentsToUserContext();
+
                 var first = context.First;
                 var skip = Convert.ToInt32(context.After ?? 0.ToString());
 
@@ -92,6 +95,30 @@ namespace VirtoCommerce.ExperienceApiModule.XCMS.Schemas
             });
 
             schema.Query.AddField(pagesConnectionBuilder.FieldType);
+
+            _ = schema.Query.AddField(new FieldType
+            {
+                Name = "page",
+                Arguments = new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "storeId" },
+                    new QueryArgument<StringGraphType> { Name = "cultureName" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id" }
+                ),
+                Type = GraphTypeExtenstionHelper.GetActualType<PageType>(),
+                Resolver = new AsyncFieldResolver<object>(async context =>
+                {
+                    context.CopyArgumentsToUserContext();
+
+                    var result = await _mediator.Send(new GetSinglePageQuery
+                    {
+                        StoreId = context.GetArgument<string>("storeId"),
+                        CultureName = context.GetArgument<string>("cultureName"),
+                        Id = context.GetArgument<string>("id"),
+                    });
+
+                    return result;
+                })
+            });
         }
     }
 }

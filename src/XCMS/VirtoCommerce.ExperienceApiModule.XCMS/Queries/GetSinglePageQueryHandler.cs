@@ -7,33 +7,34 @@ using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 
 namespace VirtoCommerce.ExperienceApiModule.XCMS.Queries;
 
-public class GetPageQueryHandler : IQueryHandler<GetPageQuery, GetPageResponse>
+public class GetSinglePageQueryHandler : IQueryHandler<GetSinglePageQuery, PageItem>
 {
     private readonly IFullTextContentSearchService _searchContentService;
 
-    public GetPageQueryHandler(IFullTextContentSearchService searchContentService)
+    public GetSinglePageQueryHandler(IFullTextContentSearchService searchContentService)
     {
         _searchContentService = searchContentService;
     }
 
-    public async Task<GetPageResponse> Handle(GetPageQuery request, CancellationToken cancellationToken)
+    public async Task<PageItem> Handle(GetSinglePageQuery request, CancellationToken cancellationToken)
     {
         var criteria = new ContentSearchCriteria
         {
             StoreId = request.StoreId,
-            Keyword = request.Keyword,
-            LanguageCode = request.CultureName,
-            Take = request.Take,
-            Skip = request.Skip,
+            ObjectIds = [request.Id],
+            Take = 1,
+            Skip = 0,
         };
         var result = await _searchContentService.SearchContentAsync(criteria);
-        var pages = result.Results.Select(x => new PageItem
+
+        var page = result.Results.Select(x => new PageItem
         {
             Id = x.Id,
             Name = string.IsNullOrEmpty(x.DisplayName) ? x.Name : x.DisplayName,
             RelativeUrl = x.RelativeUrl,
             Permalink = x.Permalink
-        });
-        return new GetPageResponse { Pages = pages, TotalCount = result.TotalCount };
+        }).First();
+
+        return page;
     }
 }
