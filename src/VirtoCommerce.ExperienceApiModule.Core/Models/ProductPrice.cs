@@ -92,13 +92,13 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Models
         /// <returns></returns>
         public TierPrice GetTierPrice(int quantity)
         {
-            var retVal = TierPrices.OrderBy(x => x.Quantity).LastOrDefault(x => x.Quantity <= quantity);
-            if (retVal == null)
+            var result = TierPrices.OrderBy(x => x.Quantity).LastOrDefault(x => x.Quantity <= quantity);
+            if (result == null)
             {
-                retVal = new TierPrice(ListPrice, SalePrice, 1);
+                result = new TierPrice(ListPrice, SalePrice, 1);
             }
 
-            return retVal;
+            return result;
         }
 
         #region ITaxable Members

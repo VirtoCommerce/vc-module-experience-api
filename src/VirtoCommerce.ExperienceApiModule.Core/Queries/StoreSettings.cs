@@ -23,5 +23,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Queries
         public string SeoLinkType { get; set; }
 
         public PasswordOptions PasswordRequirements { get; set; }
+
+        public ModuleSettings[] Modules { get; set; }
     }
 }
