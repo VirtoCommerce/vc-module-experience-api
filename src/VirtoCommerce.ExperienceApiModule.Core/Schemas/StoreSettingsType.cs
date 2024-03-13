@@ -1,12 +1,11 @@
 using GraphQL.Types;
-using MediatR;
 using VirtoCommerce.ExperienceApiModule.Core.Queries;
 
 namespace VirtoCommerce.ExperienceApiModule.Core.Schemas;
 
 public class StoreSettingsType : ExtendableGraphType<StoreSettings>
 {
-    public StoreSettingsType(IMediator mediator)
+    public StoreSettingsType()
     {
         Field(x => x.QuotesEnabled).Description("Store ID");
         Field(x => x.SubscriptionEnabled).Description("Store ID");
@@ -18,6 +17,6 @@ public class StoreSettingsType : ExtendableGraphType<StoreSettings>
         Field(x => x.CreateAnonymousOrderEnabled).Description("Allow anonymous users to create orders (XAPI)");
         Field(x => x.SeoLinkType).Description("SEO links");
         Field<PasswordOptionsType>("passwordRequirements", "Password requirements");
-        Field<ListGraphType<ModuleSettingsType>>("modules");
+        Field<NonNullGraphType<ListGraphType<NonNullGraphType<ModuleSettingsType>>>>("modules");
     }
 }

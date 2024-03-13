@@ -83,7 +83,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Queries
 
         protected virtual ModuleSettings[] ToModulesSettings(ICollection<ObjectSettingEntry> settings)
         {
-            var retVal = new List<ModuleSettings>();
+            var result = new List<ModuleSettings>();
 
             foreach (var settingByModule in settings.Where(s => s.IsPublic).GroupBy(s => s.ModuleId))
             {
@@ -99,28 +99,28 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Queries
 
                 if (moduleSettings.Settings.Length > 0)
                 {
-                    retVal.Add(moduleSettings);
+                    result.Add(moduleSettings);
                 }
             }
 
-            return retVal.ToArray();
+            return result.ToArray();
         }
 
         protected virtual object ToSettingValue(ObjectSettingEntry s)
         {
-            var retVal = s.Value ?? s.DefaultValue;
+            var result = s.Value ?? s.DefaultValue;
 
-            if (retVal == null)
+            if (result == null)
             {
                 switch (s.ValueType)
                 {
                     case SettingValueType.Boolean:
-                        retVal = false;
+                        result = false;
                         break;
                 }
             }
 
-            return retVal;
+            return result;
         }
     }
 }

@@ -8,6 +8,6 @@ public class ModuleSettingsType : ObjectGraphType<ModuleSettings>
     public ModuleSettingsType()
     {
         Field(x => x.ModuleId, nullable: false);
-        Field<ListGraphType<ModuleSettingType>>("settings");
+        Field<NonNullGraphType<ListGraphType<NonNullGraphType<ModuleSettingType>>>>("settings");
     }
 }
