@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using VirtoCommerce.ContentModule.Core.Model;
 using VirtoCommerce.ContentModule.Core.Search;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
+using static VirtoCommerce.ContentModule.Core.ContentConstants;
 
 namespace VirtoCommerce.ExperienceApiModule.XCMS.Queries;
 
@@ -21,8 +22,9 @@ public class GetPageQueryHandler : IQueryHandler<GetPageQuery, GetPageResponse>
         var criteria = new ContentSearchCriteria
         {
             StoreId = request.StoreId,
-            Keyword = request.Keyword,
+            ContentType = ContentTypes.Pages,
             LanguageCode = request.CultureName,
+            Keyword = request.Keyword,
             Take = request.Take,
             Skip = request.Skip,
         };
