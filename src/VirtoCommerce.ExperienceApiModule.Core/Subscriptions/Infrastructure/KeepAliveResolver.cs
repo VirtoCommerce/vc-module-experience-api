@@ -7,14 +7,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Subscriptions.Infrastructure
 {
     public class KeepAliveResolver : IOperationMessageListener
     {
-        private readonly CancellationTokenSource _cancellationTokenSource;
-
         private static readonly OperationMessage _keepAliveMessage = new() { Type = MessageType.GQL_CONNECTION_KEEP_ALIVE };
-
-        public KeepAliveResolver()
-        {
-            _cancellationTokenSource = new CancellationTokenSource();
-        }
 
         public Task AfterHandleAsync(MessageHandlingContext context) => Task.CompletedTask;
 
@@ -35,12 +28,14 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Subscriptions.Infrastructure
             {
                 case MessageType.GQL_START:
                     {
+                        var cancellationToken = CancellationToken.None;
                         if (context.Subscriptions is CustomSubscriptionManager subscriptions)
                         {
-                            subscriptions.RegisterSubscriptionCancellationSource(context.Message.Id, _cancellationTokenSource);
+                            var cancellationTokenSource = subscriptions.GetSubscriptionCancellationSource(context.Message.Id);
+                            cancellationToken = cancellationTokenSource.Token;
                         }
 
-                        _ = StartKeepAliveLoopAsync(context, _cancellationTokenSource.Token);
+                        _ = StartKeepAliveLoopAsync(context, cancellationToken);
                         return Task.CompletedTask;
                     }
 
