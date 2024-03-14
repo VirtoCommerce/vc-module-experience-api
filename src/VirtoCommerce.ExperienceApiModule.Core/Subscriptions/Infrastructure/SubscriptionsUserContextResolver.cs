@@ -48,8 +48,6 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Subscriptions.Infrastructure
                     context.TryAdd(ContextKey, _httpContextAccessor.HttpContext.User);
                     break;
             }
-
-            return;
         }
 
         private async Task<ClaimsPrincipal> BuildClaimsPrincipal(string authorization)

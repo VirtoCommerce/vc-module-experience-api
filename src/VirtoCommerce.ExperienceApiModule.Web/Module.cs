@@ -1,7 +1,6 @@
 using GraphQL;
 using GraphQL.Introspection;
 using GraphQL.Server;
-using GraphQL.Server.Transports.Subscriptions.Abstractions;
 using GraphQL.Types;
 using GraphQL.Validation.Rules;
 using Microsoft.AspNetCore.Builder;
@@ -64,7 +63,7 @@ namespace VirtoCommerce.ExperienceApiModule.Web
             })
             .AddUserContextBuilder(context => context.BuildGraphQLUserContext())
             .AddRelayGraphTypes()
-            .AddWebSockets()
+            .AddCustomWebSockets()
             .AddDataLoader()
             .AddCustomValidationRule<ContentTypeValidationRule>();
 
@@ -74,9 +73,6 @@ namespace VirtoCommerce.ExperienceApiModule.Web
                 graphQlBuilder.ReplaceValidationRule<FieldsOnCorrectType, CustomFieldsOnCorrectType>();
                 graphQlBuilder.ReplaceValidationRule<KnownArgumentNames, CustomKnownArgumentNames>();
             }
-
-            services.AddTransient<IOperationMessageListener, KeepAliveResolver>();
-            services.AddTransient<IOperationMessageListener, SubscriptionsUserContextResolver>();
 
             //Register custom GraphQL dependencies
             services.AddPermissionAuthorization();
