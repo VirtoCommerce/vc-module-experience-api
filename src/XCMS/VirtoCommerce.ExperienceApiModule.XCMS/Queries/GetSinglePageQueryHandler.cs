@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using VirtoCommerce.ContentModule.Core.Model;
 using VirtoCommerce.ContentModule.Core.Search;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
+using static VirtoCommerce.ContentModule.Core.ContentConstants;
 
 namespace VirtoCommerce.ExperienceApiModule.XCMS.Queries;
 
@@ -21,6 +22,7 @@ public class GetSinglePageQueryHandler : IQueryHandler<GetSinglePageQuery, PageI
         var criteria = new ContentSearchCriteria
         {
             StoreId = request.StoreId,
+            ContentType = ContentTypes.Pages,
             ObjectIds = [request.Id],
             Take = 1,
             Skip = 0,
