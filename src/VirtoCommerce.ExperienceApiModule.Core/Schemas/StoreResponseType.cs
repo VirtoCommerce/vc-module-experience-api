@@ -19,6 +19,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
             Field<NonNullGraphType<ListGraphType<NonNullGraphType<CurrencyType>>>>(nameof(StoreResponse.AvailableCurrencies), "Available currencies", resolve: context => context.Source.AvailableCurrencies);
 
             Field<NonNullGraphType<StoreSettingsType>>(nameof(StoreResponse.Settings), "Store settings", resolve: context => context.Source.Settings);
+            Field<NonNullGraphType<GraphQLSettingsType>>(nameof(StoreResponse.GraphQLSettings), "GraphQL settings", resolve: context => context.Source.GraphQLSettings);
         }
     }
 }

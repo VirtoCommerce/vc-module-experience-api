@@ -1,12 +1,19 @@
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 using GraphQL.Server.Transports.Subscriptions.Abstractions;
+using Microsoft.Extensions.Options;
 
 namespace VirtoCommerce.ExperienceApiModule.Core.Subscriptions.Infrastructure
 {
     public class KeepAliveResolver : IOperationMessageListener
     {
+        private readonly GraphQLWebSocketOptions _webSocketOptions;
+
+        public KeepAliveResolver(IOptions<GraphQLWebSocketOptions> webSoketOptions)
+        {
+            _webSocketOptions = webSoketOptions.Value;
+        }
+
         private static readonly OperationMessage _keepAliveMessage = new() { Type = MessageType.GQL_CONNECTION_KEEP_ALIVE };
 
         public Task AfterHandleAsync(MessageHandlingContext context) => Task.CompletedTask;
@@ -19,7 +26,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Subscriptions.Infrastructure
             {
                 while (!cancellationToken.IsCancellationRequested)
                 {
-                    await Task.Delay(TimeSpan.FromSeconds(10), cancellationToken);
+                    await Task.Delay(_webSocketOptions.KeepAliveInterval, cancellationToken);
                     await context.Writer.SendAsync(_keepAliveMessage);
                 }
             }
