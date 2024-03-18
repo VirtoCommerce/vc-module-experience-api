@@ -18,8 +18,11 @@ namespace VirtoCommerce.XPurchase.Commands
             {
                 cartAggr = await cartAggr.MergeWithCartAsync(secondCart);
                 await CartRepository.SaveAsync(cartAggr);
+                if (request.DeleteAfterMerge)
+                {
+                    await CartRepository.RemoveCartAsync(secondCart.Id);
+                }
             }
-
             return cartAggr;
         }
     }
