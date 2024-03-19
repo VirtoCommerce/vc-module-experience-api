@@ -15,6 +15,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field(x => x.Cart.CustomerName, nullable: true).Description("Shopping cart user name");
             Field<CurrencyType>("currency", "Currency", resolve: context => context.Source.Currency);
             ExtendableField<ListGraphType<LineItemType>>("items", "Items", resolve: context => context.Source.LineItems);
+            Field(x => x.Cart.LineItemsCount, nullable: false).Description("Wishlist items count");
             Field<IntGraphType>("itemsCount", "Item count", resolve: context => context.Source.LineItems.Count());
             ExtendableField<WishlistScopeType>(nameof(CartAggregate.Scope), "Wishlist scope", resolve: context => context.Source.Scope);
             Field(x => x.Cart.Description, nullable: true).Description("Wishlist description");
