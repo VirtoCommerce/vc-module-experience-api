@@ -13,5 +13,7 @@ namespace VirtoCommerce.XPurchase.Commands
         }
 
         public string SecondCartId { get; set; }
+
+        public bool DeleteAfterMerge { get; set; } = true;
     }
 }
