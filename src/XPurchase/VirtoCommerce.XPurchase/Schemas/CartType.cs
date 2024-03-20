@@ -201,7 +201,7 @@ namespace VirtoCommerce.XPurchase.Schemas
 
             Field<NonNullGraphType<IntGraphType>>("itemsCount",
                 "Item count",
-                resolve: context => context.Source.LineItems.Count());
+                resolve: context => context.Source.Cart.LineItemsCount);
             Field<NonNullGraphType<IntGraphType>>("itemsQuantity",
                 "Quantity of items",
                 resolve: context => context.Source.LineItems.Sum(x => x.Quantity));
