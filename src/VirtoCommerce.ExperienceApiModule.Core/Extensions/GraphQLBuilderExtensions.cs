@@ -2,8 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using GraphQL.Server;
+using GraphQL.Server.Transports.Subscriptions.Abstractions;
+using GraphQL.Server.Transports.WebSockets;
 using GraphQL.Validation;
 using Microsoft.Extensions.DependencyInjection;
+using VirtoCommerce.ExperienceApiModule.Core.Subscriptions.Infrastructure;
 
 namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
 {
@@ -37,6 +40,21 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
         public static IGraphQLBuilder AddCustomValidationRule(this IGraphQLBuilder builder, Type ruleType)
         {
             builder.Services.AddSingleton(typeof(IValidationRule), ruleType);
+
+            return builder;
+        }
+
+        /// <summary>
+        /// Add required services for GraphQL web sockets with custom IWebSocketConnectionFactory implementation
+        /// </summary>
+        public static IGraphQLBuilder AddCustomWebSockets(this IGraphQLBuilder builder)
+        {
+            builder.Services
+                .AddTransient(typeof(IWebSocketConnectionFactory<>), typeof(CustomWebSocketConnectionFactory<>))
+                .AddTransient<IOperationMessageListener, LogMessagesListener>()
+                .AddTransient<IOperationMessageListener, ProtocolMessageListener>()
+                .AddTransient<IOperationMessageListener, KeepAliveResolver>()
+                .AddTransient<IOperationMessageListener, SubscriptionsUserContextResolver>();
 
             return builder;
         }
