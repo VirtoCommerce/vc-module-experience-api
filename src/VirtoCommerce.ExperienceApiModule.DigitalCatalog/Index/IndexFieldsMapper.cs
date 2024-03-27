@@ -60,7 +60,7 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
 
                         new RegexpNameMapper(@"__object.availabilityData.isActive", "__object.isActive"),
                         new RegexpNameMapper(@"__object.availabilityData.isBuyable", "__object.isBuyable"),
-                        new RegexpNameMapper(@"__object.availabilityData.trackInventory", "__object.trackInventory"),
+                        new RegexpNameMapper(@"__object.availabilityData.isTrackInventory", "__object.trackInventory"),
 
                         new RegexpNameMapper(@"__object.parent.*",  "__object.parentId"),
                         new RegexpNameMapper(@"__object.hasParent.*", "__object.parentId"),
