@@ -23,5 +23,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Queries
         public IList<Language> AvailableLanguages { get; set; } = new List<Language>();
 
         public StoreSettings Settings { get; set; }
+
+        public GraphQLSettings GraphQLSettings { get; set; }
     }
 }

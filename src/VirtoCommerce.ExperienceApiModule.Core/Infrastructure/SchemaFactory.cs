@@ -66,6 +66,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Infrastructure
             {
                 Query = new ObjectGraphType { Name = "Query" },
                 Mutation = new ObjectGraphType { Name = "Mutations" },
+                Subscription = new ObjectGraphType { Name = "Subscriptions" },
                 Filter = _schemaFilter,
             };
 

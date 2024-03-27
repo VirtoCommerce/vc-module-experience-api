@@ -1,3 +1,4 @@
+using GraphQL;
 using GraphQL.Introspection;
 using GraphQL.Server;
 using GraphQL.Types;
@@ -12,6 +13,7 @@ using VirtoCommerce.ExperienceApiModule.Core.Infrastructure.Validation;
 using VirtoCommerce.ExperienceApiModule.Core.Models;
 using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
 using VirtoCommerce.ExperienceApiModule.Core.Services;
+using VirtoCommerce.ExperienceApiModule.Core.Subscriptions;
 using VirtoCommerce.ExperienceApiModule.Web.Extensions;
 using VirtoCommerce.ExperienceApiModule.XCMS.Extensions;
 using VirtoCommerce.ExperienceApiModule.XOrder.Extensions;
@@ -33,6 +35,8 @@ namespace VirtoCommerce.ExperienceApiModule.Web
         public IConfiguration Configuration { get; set; }
 
         private const string GraphQLPlaygroundConfigKey = "VirtoCommerce:GraphQLPlayground";
+        private const string GraphQLWebSocketConfigKey = "VirtoCommerce:GraphQLWebSocket";
+
         private bool IsSchemaIntrospectionEnabled
         {
             get
@@ -46,6 +50,7 @@ namespace VirtoCommerce.ExperienceApiModule.Web
             services.AddApplicationInsightsTelemetryProcessor<IgnorePlainGraphQLTelemetryProcessor>();
             // register custom executor with app insight wrapper
             services.AddTransient(typeof(IGraphQLExecuter<>), typeof(CustomGraphQLExecuter<>));
+            services.AddSingleton<IDocumentExecuter, SubscriptionDocumentExecuter>();
 
             //Register .NET GraphQL server
             var graphQlBuilder = services.AddGraphQL(options =>
@@ -60,6 +65,7 @@ namespace VirtoCommerce.ExperienceApiModule.Web
             })
             .AddUserContextBuilder(context => context.BuildGraphQLUserContext())
             .AddRelayGraphTypes()
+            .AddCustomWebSockets()
             .AddDataLoader()
             .AddCustomValidationRule<ContentTypeValidationRule>();
 
@@ -104,11 +110,18 @@ namespace VirtoCommerce.ExperienceApiModule.Web
             services.AddPipeline<InventorySearchCriteria>();
 
             services.Configure<GraphQLPlaygroundOptions>(Configuration.GetSection(GraphQLPlaygroundConfigKey));
+            services.Configure<GraphQLWebSocketOptions>(Configuration.GetSection(GraphQLWebSocketConfigKey));
         }
 
         public void PostInitialize(IApplicationBuilder appBuilder)
         {
             var serviceProvider = appBuilder.ApplicationServices;
+
+            // this is required for websockets support
+            appBuilder.UseWebSockets();
+
+            // use websocket middleware for ISchema at default path /graphql
+            appBuilder.UseGraphQLWebSockets<ISchema>();
 
             // add http for Schema at default url /graphql
             appBuilder.UseGraphQL<ISchema>();

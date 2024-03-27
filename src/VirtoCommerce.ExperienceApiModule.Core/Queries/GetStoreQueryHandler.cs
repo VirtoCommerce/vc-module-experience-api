@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
+using VirtoCommerce.ExperienceApiModule.Core.Subscriptions;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Settings;
 using VirtoCommerce.StoreModule.Core.Services;
@@ -19,12 +20,18 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Queries
         private readonly IStoreService _storeService;
         private readonly IStoreCurrencyResolver _storeCurrencyResolver;
         private readonly IdentityOptions _identityOptions;
+        private readonly GraphQLWebSocketOptions _webSocketOptions;
 
-        public GetStoreQueryHandler(IStoreService storeService, IStoreCurrencyResolver storeCurrencyResolver, IOptions<IdentityOptions> identityOptions)
+        public GetStoreQueryHandler(
+            IStoreService storeService,
+            IStoreCurrencyResolver storeCurrencyResolver,
+            IOptions<IdentityOptions> identityOptions,
+            IOptions<GraphQLWebSocketOptions> webSocketOptions)
         {
             _storeService = storeService;
             _storeCurrencyResolver = storeCurrencyResolver;
             _identityOptions = identityOptions.Value;
+            _webSocketOptions = webSocketOptions.Value;
         }
 
         public async Task<StoreResponse> Handle(GetStoreQuery request, CancellationToken cancellationToken)
@@ -55,6 +62,10 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Queries
                 AvailableCurrencies = availableCurrencies,
                 DefaultLanguage = defaultLanguage,
                 AvailableLanguages = availableLanguages,
+                GraphQLSettings = new GraphQLSettings
+                {
+                    KeepAliveInterval = _webSocketOptions.KeepAliveInterval,
+                }
             };
 
             if (!store.Settings.IsNullOrEmpty())

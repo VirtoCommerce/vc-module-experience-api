@@ -17,11 +17,15 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Infrastructure.Validation
         public virtual Task<INodeVisitor> ValidateAsync(ValidationContext context)
         {
             var contentType = _httpContextAccessor?.HttpContext?.Request?.ContentType;
-            if (contentType != MediaType.JSON && contentType != MediaType.GRAPH_QL)
+
+            if (contentType == MediaType.JSON ||
+                contentType == MediaType.GRAPH_QL ||
+                (contentType == null && _httpContextAccessor?.HttpContext?.WebSockets?.IsWebSocketRequest == true))
             {
-                context.ReportError(new ValidationError(string.Empty, string.Empty, "Non-supported media type."));
+                return default;
             }
 
+            context.ReportError(new ValidationError(string.Empty, string.Empty, "Non-supported media type."));
             return default;
         }
     }
