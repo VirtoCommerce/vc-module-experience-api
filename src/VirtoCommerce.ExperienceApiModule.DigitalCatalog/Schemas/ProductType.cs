@@ -324,6 +324,8 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             Field(x => x.InWishlist, nullable: false).Description("Product added at least in one wishlist");
 
+            Field(x => x.WishlistIds, nullable: false).Description("List of wishlist ID with this product");
+
             Connection<ProductAssociationType>()
               .Name("associations")
               .Argument<StringGraphType>("query", "the search phrase")

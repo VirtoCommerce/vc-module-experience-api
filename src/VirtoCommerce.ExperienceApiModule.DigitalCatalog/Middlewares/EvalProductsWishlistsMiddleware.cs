@@ -38,18 +38,22 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
             var responseGroup = EnumUtility.SafeParse(query.GetResponseGroup(), ExpProductResponseGroup.None);
             // If products availabilities requested
             if (responseGroup.HasFlag(ExpProductResponseGroup.LoadWishlists) &&
-            productIds.Any())
+                productIds.Any())
             {
                 var contact = await _memberResolver.ResolveMemberByIdAsync(query.UserId) as Contact;
                 var organizationId = contact?.Organizations?.FirstOrDefault();
 
-                var productIdsInWishLists = await _wishlistService.FindProductsInWishlistsAsync(query.UserId, organizationId, query.StoreId, productIds);
+                var wishlistsByProducts = await _wishlistService.FindWishlistsByProductsAsync(query.UserId, organizationId, query.StoreId, productIds);
 
-                if (productIdsInWishLists.Any())
+                if (wishlistsByProducts.Any())
                 {
                     parameter.Results.Apply((item) =>
                     {
-                        item.InWishlist = productIdsInWishLists.Contains(item.Id);
+                        if (wishlistsByProducts.TryGetValue(item.Id, out var wishlistIds))
+                        {
+                            item.WishlistIds = wishlistIds;
+                        }
+                        item.InWishlist = item.WishlistIds.Any();
                     });
                 }
             }

@@ -1,4 +1,4 @@
-﻿using GraphQL.Types;
+using GraphQL.Types;
 
 namespace VirtoCommerce.XPurchase.Schemas
 {
@@ -7,7 +7,8 @@ namespace VirtoCommerce.XPurchase.Schemas
         public InputRemoveWishlistItemType()
         {
             Field<NonNullGraphType<StringGraphType>>("listId", description: "List ID");
-            Field<NonNullGraphType<StringGraphType>>("lineItemId", "Line item ID to remove");
+            Field<StringGraphType>("lineItemId", "Line item ID to remove");
+            Field<StringGraphType>("productId", "Line item product ID to remove");
         }
     }
 }

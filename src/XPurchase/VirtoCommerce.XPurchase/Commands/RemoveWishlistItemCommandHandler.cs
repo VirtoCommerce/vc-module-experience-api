@@ -14,7 +14,15 @@ namespace VirtoCommerce.XPurchase.Commands
         {
             var cartAggregate = await CartRepository.GetCartByIdAsync(request.ListId);
 
-            await cartAggregate.RemoveItemAsync(request.LineItemId);
+            if (!string.IsNullOrEmpty(request.LineItemId))
+            {
+                await cartAggregate.RemoveItemAsync(request.LineItemId);
+            }
+
+            if (!string.IsNullOrEmpty(request.ProductId))
+            {
+                await cartAggregate.RemoveItemsByProductIdAsync(request.ProductId);
+            }
 
             return await SaveCartAsync(cartAggregate);
         }
