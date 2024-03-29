@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -146,41 +145,8 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
 
         protected virtual Task<Aggregation[]> ConvertAggregations(SearchResponse searchResponse, SearchRequest searchRequest, ProductIndexedSearchCriteria criteria)
         {
-            // Preconvert resulting aggregations to be properly understandable by catalog module
-            var preconvertedAggregations = new List<AggregationResponse>();
-
-            // Remember term facet ids to distinguish the resulting aggregations are range or term
-            var termsInRequest = new List<string>(searchRequest.Aggregations.Where(x => x is TermAggregationRequest).Select(x => x.Id ?? x.FieldName));
-
-            foreach (var aggregation in searchResponse.Aggregations)
-            {
-                if (!termsInRequest.Contains(aggregation.Id, StringComparer.OrdinalIgnoreCase))
-                {
-                    // There we'll go converting range facet result
-                    var fieldName = new Regex(@"^(?<fieldName>[A-Za-z0-9]+)(-.+)*$", RegexOptions.IgnoreCase).Match(aggregation.Id).Groups["fieldName"].Value;
-                    if (!string.IsNullOrEmpty(fieldName))
-                    {
-                        preconvertedAggregations.AddRange(aggregation.Values.Select(x =>
-                        {
-                            var matchId = new Regex(@"^(?<left>[0-9*]+)-(?<right>[0-9*]+)$", RegexOptions.IgnoreCase).Match(x.Id);
-                            var left = matchId.Groups["left"].Value;
-                            var right = matchId.Groups["right"].Value;
-                            x.Id = left == "*" ? $@"under-{right}" : x.Id;
-                            x.Id = right == "*" ? $@"over-{left}" : x.Id;
-                            return new AggregationResponse { Id = $@"{fieldName}-{x.Id}", Values = new List<AggregationResponseValue> { x } };
-                        }
-                        ));
-                    }
-                }
-                else
-                {
-                    // This is term aggregation, should skip converting and put resulting aggregation as is
-                    preconvertedAggregations.Add(aggregation);
-                }
-            }
-
             // Call the catalog aggregation converter service to convert AggregationResponse to proper Aggregation type (term, range, filter)
-            return _aggregationConverter.ConvertAggregationsAsync(preconvertedAggregations, criteria);
+            return _aggregationConverter.ConvertAggregationsAsync(searchResponse.Aggregations, criteria);
         }
 
         protected virtual IList<ExpProduct> ConvertProducts(SearchResponse searchResponse)
