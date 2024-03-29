@@ -1,4 +1,3 @@
-using System.Linq;
 using GraphQL.Types;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
 
@@ -15,7 +14,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             Field(x => x.Cart.CustomerName, nullable: true).Description("Shopping cart user name");
             Field<CurrencyType>("currency", "Currency", resolve: context => context.Source.Currency);
             ExtendableField<ListGraphType<LineItemType>>("items", "Items", resolve: context => context.Source.LineItems);
-            Field<IntGraphType>("itemsCount", "Item count", resolve: context => context.Source.LineItems.Count());
+            Field<IntGraphType>("itemsCount", "Item count", resolve: context => context.Source.Cart.LineItemsCount);
             ExtendableField<WishlistScopeType>(nameof(CartAggregate.Scope), "Wishlist scope", resolve: context => context.Source.Scope);
             Field(x => x.Cart.Description, nullable: true).Description("Wishlist description");
             Field(x => x.Cart.ModifiedDate, nullable: true).Description("Wishlist modified date");
