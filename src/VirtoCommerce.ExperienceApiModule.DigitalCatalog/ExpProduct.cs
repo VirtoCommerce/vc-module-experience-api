@@ -80,6 +80,8 @@ namespace VirtoCommerce.XDigitalCatalog
 
         public bool InWishlist { get; set; }
 
+        public IList<string> WishlistIds { get; set; } = [];
+
         public virtual long AvailableQuantity
         {
             get
