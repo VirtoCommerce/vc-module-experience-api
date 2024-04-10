@@ -53,6 +53,13 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
             return resolveContext.GetValue(key, default(T));
         }
 
+        public static T GetArgument<T>(this IResolveFieldContext context, string name) where T : class
+        {
+            var type = GenericTypeHelper.GetActualType<T>();
+            var command = context.GetArgument(type, name) as T;
+            return command;
+        }
+
         public static bool IsAuthenticated(this IResolveFieldContext resolveContext)
         {
             return resolveContext.GetCurrentPrincipal().Identity?.IsAuthenticated == true;
