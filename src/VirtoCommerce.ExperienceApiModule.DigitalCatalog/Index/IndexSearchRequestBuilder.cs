@@ -94,31 +94,31 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
 
         public IndexSearchRequestBuilder AddCertainDateFilter(DateTime certainDate)
         {
-            //var startDateFilter = new RangeFilter
-            //{
-            //    FieldName = "startdate",
-            //    Values = [new RangeFilterValue
-            //        {
-            //            Lower = null,
-            //            Upper = certainDate.ToString("O"),
-            //            IncludeLower = false,
-            //            IncludeUpper = true,
-            //        }]
-            //};
+            var startDateFilter = new RangeFilter
+            {
+                FieldName = "startdate",
+                Values = [new RangeFilterValue
+                    {
+                        Lower = null,
+                        Upper = certainDate.ToString("O"),
+                        IncludeLower = false,
+                        IncludeUpper = true,
+                    }]
+            };
 
-            //var endDateFilter = new RangeFilter
-            //{
-            //    FieldName = "enddate",
-            //    Values = [new RangeFilterValue
-            //        {
-            //            Lower = certainDate.ToString("O"),
-            //            Upper = null,
-            //            IncludeLower = false,
-            //            IncludeUpper = true,
-            //        }]
-            //};
+            var endDateFilter = new RangeFilter
+            {
+                FieldName = "enddate",
+                Values = [new RangeFilterValue
+                    {
+                        Lower = certainDate.ToString("O"),
+                        Upper = null,
+                        IncludeLower = false,
+                        IncludeUpper = true,
+                    }]
+            };
 
-            //AddFiltersToSearchRequest([startDateFilter, endDateFilter]);
+            AddFiltersToSearchRequest([startDateFilter, endDateFilter]);
 
             return this;
         }

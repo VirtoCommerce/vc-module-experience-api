@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -116,7 +115,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                                             .WithUserId(request.UserId)
                                             .WithCurrency(currency.Code)
                                             .WithFuzzy(request.Fuzzy, request.FuzzyLevel)
-                                            .AddCertainDateFilter(DateTime.UtcNow)
+                                            //.AddCertainDateFilter(DateTime.UtcNow)
                                             .ParseFilters(_phraseParser, request.Filter)
                                             .WithSearchPhrase(request.Query)
                                             .WithPaging(request.Skip, request.Take)
