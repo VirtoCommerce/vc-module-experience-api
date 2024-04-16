@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using OpenIddict.Abstractions;
-using VirtoCommerce.ExperienceApiModule.Core;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.Platform.Core;
 using VirtoCommerce.Platform.Core.Security;
@@ -37,12 +36,6 @@ namespace VirtoCommerce.ExperienceApiModule.Web.Extensions
             }
 
             return userContext;
-        }
-
-        private static string GetCurrentUserId(ClaimsPrincipal claimsPrincipal)
-        {
-            return claimsPrincipal?.FindFirstValue(ClaimTypes.NameIdentifier)
-                ?? claimsPrincipal?.FindFirstValue("name") ?? AnonymousUser.UserName;
         }
 
         private static bool TryResolveTokenLoginOnBehalf(HttpContext context, ref ClaimsPrincipal principal, ref string operatorUserName)
