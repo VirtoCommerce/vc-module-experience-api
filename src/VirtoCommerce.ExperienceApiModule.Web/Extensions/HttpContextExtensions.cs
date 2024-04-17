@@ -12,7 +12,7 @@ namespace VirtoCommerce.ExperienceApiModule.Web.Extensions
 {
     public static class HttpContextExtensions
     {
-        public const string ImpersonatedCustomerIdClaimType = "vc_xapi_impersonated_customerid";
+        private const string ImpersonatedUserNameClaimType = "vc_impersonated_user_name";
 
         public static GraphQLUserContext BuildGraphQLUserContext(this HttpContext context)
         {
@@ -40,13 +40,13 @@ namespace VirtoCommerce.ExperienceApiModule.Web.Extensions
 
         private static bool TryResolveTokenLoginOnBehalf(HttpContext context, ref ClaimsPrincipal principal, ref string operatorUserName)
         {
-            var impersonatedCustomerId = principal.FindFirstValue(ImpersonatedCustomerIdClaimType);
+            var impersonatedUserName = principal.FindFirstValue(ImpersonatedUserNameClaimType);
 
-            if (!string.IsNullOrEmpty(impersonatedCustomerId))
+            if (!string.IsNullOrEmpty(impersonatedUserName))
             {
                 var factory = context.RequestServices.GetService<Func<SignInManager<ApplicationUser>>>();
                 var signInManager = factory();
-                var user = signInManager.UserManager.FindByIdAsync(impersonatedCustomerId).GetAwaiter().GetResult();
+                var user = signInManager.UserManager.FindByNameAsync(impersonatedUserName).GetAwaiter().GetResult();
                 if (user != null)
                 {
                     operatorUserName = context.User.Identity.Name;
