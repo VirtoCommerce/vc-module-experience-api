@@ -12,7 +12,8 @@ namespace VirtoCommerce.ExperienceApiModule.Web.Extensions
 {
     public static class HttpContextExtensions
     {
-        private const string ImpersonatedUserNameClaimType = "vc_impersonated_user_name";
+        // TODO: Replace with PlatformConstants.Security.Claims.OperatorUserName
+        private const string OperatorUserNameClaimType = "vc_operator_name";
 
         public static GraphQLUserContext BuildGraphQLUserContext(this HttpContext context)
         {
@@ -22,9 +23,9 @@ namespace VirtoCommerce.ExperienceApiModule.Web.Extensions
             // Impersonate a user based on their VC account object id by passing that value along with the header VirtoCommerce-User-Name.
             if (principal != null)
             {
-                if (!TryResolveLegacyLoginOnBehalf(context, ref principal, ref operatorUserName))
+                if (!TryResolveTokenLoginOnBehalf(principal, ref operatorUserName))
                 {
-                    TryResolveTokenLoginOnBehalf(context, ref principal, ref operatorUserName);
+                    TryResolveLegacyLoginOnBehalf(context, ref principal, ref operatorUserName);
                 }
             }
 
@@ -38,24 +39,11 @@ namespace VirtoCommerce.ExperienceApiModule.Web.Extensions
             return userContext;
         }
 
-        private static bool TryResolveTokenLoginOnBehalf(HttpContext context, ref ClaimsPrincipal principal, ref string operatorUserName)
+        private static bool TryResolveTokenLoginOnBehalf(ClaimsPrincipal principal, ref string operatorUserName)
         {
-            var impersonatedUserName = principal.FindFirstValue(ImpersonatedUserNameClaimType);
+            operatorUserName = principal.FindFirstValue(OperatorUserNameClaimType);
 
-            if (!string.IsNullOrEmpty(impersonatedUserName))
-            {
-                var factory = context.RequestServices.GetService<Func<SignInManager<ApplicationUser>>>();
-                var signInManager = factory();
-                var user = signInManager.UserManager.FindByNameAsync(impersonatedUserName).GetAwaiter().GetResult();
-                if (user != null)
-                {
-                    operatorUserName = context.User.Identity.Name;
-                    principal = signInManager.CreateUserPrincipalAsync(user).GetAwaiter().GetResult();
-                    return true;
-                }
-            }
-
-            return false;
+            return !string.IsNullOrEmpty(operatorUserName);
         }
 
         private static bool TryResolveLegacyLoginOnBehalf(HttpContext context, ref ClaimsPrincipal principal, ref string operatorUserName)
