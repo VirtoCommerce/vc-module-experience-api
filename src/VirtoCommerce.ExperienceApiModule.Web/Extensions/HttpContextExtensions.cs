@@ -18,9 +18,35 @@ namespace VirtoCommerce.ExperienceApiModule.Web.Extensions
             var operatorUserName = default(string);
 
             // Impersonate a user based on their VC account object id by passing that value along with the header VirtoCommerce-User-Name.
-            if (principal != null
-                && context.Request.Headers.TryGetValue("VirtoCommerce-User-Name", out var userNameFromHeader)
-                && principal.IsInRole(PlatformConstants.Security.SystemRoles.Administrator))
+            if (principal != null)
+            {
+                if (!TryResolveTokenLoginOnBehalf(principal, ref operatorUserName))
+                {
+                    TryResolveLegacyLoginOnBehalf(context, ref principal, ref operatorUserName);
+                }
+            }
+
+            var userContext = new GraphQLUserContext(principal);
+
+            if (!string.IsNullOrEmpty(operatorUserName))
+            {
+                userContext.TryAdd("OperatorUserName", operatorUserName);
+            }
+
+            return userContext;
+        }
+
+        private static bool TryResolveTokenLoginOnBehalf(ClaimsPrincipal principal, ref string operatorUserName)
+        {
+            operatorUserName = principal.FindFirstValue(PlatformConstants.Security.Claims.OperatorUserName);
+
+            return !string.IsNullOrEmpty(operatorUserName);
+        }
+
+        private static bool TryResolveLegacyLoginOnBehalf(HttpContext context, ref ClaimsPrincipal principal, ref string operatorUserName)
+        {
+            if (context.Request.Headers.TryGetValue("VirtoCommerce-User-Name", out var userNameFromHeader)
+                            && principal.IsInRole(PlatformConstants.Security.SystemRoles.Administrator))
             {
                 if (userNameFromHeader == "Anonymous")
                 {
@@ -49,16 +75,11 @@ namespace VirtoCommerce.ExperienceApiModule.Web.Extensions
                         operatorUserName = operatorUserNameHeader;
                     }
                 }
+
+                return true;
             }
 
-            var userContext = new GraphQLUserContext(principal);
-
-            if (!string.IsNullOrEmpty(operatorUserName))
-            {
-                userContext.TryAdd("OperatorUserName", operatorUserName);
-            }
-
-            return userContext;
+            return false;
         }
     }
 }
