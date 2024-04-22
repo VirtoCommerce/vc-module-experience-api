@@ -12,9 +12,6 @@ namespace VirtoCommerce.ExperienceApiModule.Web.Extensions
 {
     public static class HttpContextExtensions
     {
-        // TODO: Replace with PlatformConstants.Security.Claims.OperatorUserName
-        private const string OperatorUserNameClaimType = "vc_operator_name";
-
         public static GraphQLUserContext BuildGraphQLUserContext(this HttpContext context)
         {
             var principal = context.User;
@@ -41,7 +38,7 @@ namespace VirtoCommerce.ExperienceApiModule.Web.Extensions
 
         private static bool TryResolveTokenLoginOnBehalf(ClaimsPrincipal principal, ref string operatorUserName)
         {
-            operatorUserName = principal.FindFirstValue(OperatorUserNameClaimType);
+            operatorUserName = principal.FindFirstValue(PlatformConstants.Security.Claims.OperatorUserName);
 
             return !string.IsNullOrEmpty(operatorUserName);
         }
