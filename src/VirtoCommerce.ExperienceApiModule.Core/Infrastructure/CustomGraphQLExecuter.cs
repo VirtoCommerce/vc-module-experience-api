@@ -55,6 +55,8 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Infrastructure
 
             var requestTelemetry = new RequestTelemetry
             {
+                //Replace   W3C Trace Context id generation  https://www.w3.org/TR/trace-context/ to unique value
+                Id = Guid.NewGuid().ToString(),
                 Name = appInsightsOperationName,
                 Url = new Uri(_httpContextAccessor.HttpContext.Request.GetEncodedUrl()),
             };
@@ -62,7 +64,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Infrastructure
             requestTelemetry.Context.Operation.Name = appInsightsOperationName;
             requestTelemetry.Properties["Type"] = "GraphQL";
 
-            using var operation = _telemetryClient.StartOperation<RequestTelemetry>(Guid.NewGuid().ToString());
+            using var operation = _telemetryClient.StartOperation(requestTelemetry);
 
             // execute GraphQL query
             var result = await base.ExecuteAsync(operationName, query, variables, context, requestServices, cancellationToken);
