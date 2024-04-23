@@ -89,16 +89,6 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Infrastructure
                 _telemetryClient.TrackException(exeptionTelemetry);
             }
 
-            //try
-            //{
-            //    // sends AppInsights telemerty 
-            //    _telemetryClient.StopOperation(operation);
-            //}
-            //catch
-            //{
-            //    // do nothing if telemerty sending fails for any reason
-            //}
-
             return result;
         }
     }
