@@ -62,7 +62,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Infrastructure
             requestTelemetry.Context.Operation.Name = appInsightsOperationName;
             requestTelemetry.Properties["Type"] = "GraphQL";
 
-            var operation = _telemetryClient.StartOperation(requestTelemetry);
+            using var operation = _telemetryClient.StartOperation<RequestTelemetry>(Guid.NewGuid().ToString());
 
             // execute GraphQL query
             var result = await base.ExecuteAsync(operationName, query, variables, context, requestServices, cancellationToken);
@@ -87,15 +87,15 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Infrastructure
                 _telemetryClient.TrackException(exeptionTelemetry);
             }
 
-            try
-            {
-                // sends AppInsights telemerty 
-                _telemetryClient.StopOperation(operation);
-            }
-            catch
-            {
-                // do nothing if telemerty sending fails for any reason
-            }
+            //try
+            //{
+            //    // sends AppInsights telemerty 
+            //    _telemetryClient.StopOperation(operation);
+            //}
+            //catch
+            //{
+            //    // do nothing if telemerty sending fails for any reason
+            //}
 
             return result;
         }
