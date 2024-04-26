@@ -59,7 +59,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Infrastructure
                 Url = new Uri(_httpContextAccessor.HttpContext.Request.GetEncodedUrl()),
             };
             //Replace   W3C Trace Context id generation  https://www.w3.org/TR/trace-context/ to unique value
-            requestTelemetry.Context.Operation.Id = Guid.NewGuid().ToString();
+            requestTelemetry.Context.Operation.Id = Guid.NewGuid().ToString("N");
             requestTelemetry.Context.Operation.Name = appInsightsOperationName;
             requestTelemetry.Properties["Type"] = "GraphQL";
 
