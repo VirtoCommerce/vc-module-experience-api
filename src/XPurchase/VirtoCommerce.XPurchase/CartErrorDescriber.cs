@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using FluentValidation.Results;
 using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.XPurchase
@@ -51,11 +52,13 @@ namespace VirtoCommerce.XPurchase
 
         public static CartValidationError ProductQtyInsufficientError(IEntity entity, long newQty, long availQty)
         {
-            var result = new CartValidationError(entity, $"The product available quantity {availQty} is insufficient for requested {newQty}", "PRODUCT_QTY_INSUFFICIENT");
-            result.FormattedMessagePlaceholderValues = new Dictionary<string, object>
+            var result = new CartValidationError(entity, $"The product available quantity {availQty} is insufficient for requested {newQty}", "PRODUCT_QTY_INSUFFICIENT")
             {
-                ["new_qty"] = newQty,
-                ["availQty"] = availQty
+                FormattedMessagePlaceholderValues = new Dictionary<string, object>
+                {
+                    ["new_qty"] = newQty,
+                    ["availQty"] = availQty
+                }
             };
             return result;
         }
@@ -119,11 +122,28 @@ namespace VirtoCommerce.XPurchase
 
         public static CartValidationError ProductAvailableQuantityError(string type, string id, int qty, long availableQty)
         {
-            var result = new CartValidationError(type, id, $"Product with Id {id} was not added to cart. Maximum available quantity is {availableQty}.", "PRODUCT_FFC_QTY");
-            result.FormattedMessagePlaceholderValues = new Dictionary<string, object>
+            var result = new CartValidationError(type, id, $"Product with Id {id} was not added to cart. Maximum available quantity is {availableQty}.", "PRODUCT_FFC_QTY")
             {
-                ["qty"] = qty,
-                ["availableQty"] = availableQty
+                FormattedMessagePlaceholderValues = new Dictionary<string, object>
+                {
+                    ["qty"] = qty,
+                    ["availableQty"] = availableQty
+                }
+            };
+
+            return result;
+        }
+
+        public static CartValidationError ProductMinMaxQuantityError(IEntity entity, int qty, int minQty, int maxQty)
+        {
+            var result = new CartValidationError(entity, $"You can order from {minQty} to {maxQty} items", "PRODUCT_MIN_MAX_QTY")
+            {
+                FormattedMessagePlaceholderValues = new Dictionary<string, object>
+                {
+                    ["qty"] = qty,
+                    ["minQty"] = minQty,
+                    ["maxQty"] = maxQty
+                }
             };
 
             return result;
@@ -131,23 +151,13 @@ namespace VirtoCommerce.XPurchase
 
         public static CartValidationError ProductMinQuantityError(IEntity entity, int qty, int minQty)
         {
-            var result = new CartValidationError(entity, $"Product quantity {qty} is less than minumum {minQty}", "PRODUCT_MIN_QTY");
-            result.FormattedMessagePlaceholderValues = new Dictionary<string, object>
+            var result = new CartValidationError(entity, $"Product quantity {qty} is less than minumum {minQty}", "PRODUCT_MIN_QTY")
             {
-                ["qty"] = qty,
-                ["minQty"] = minQty
-            };
-
-            return result;
-        }
-
-        public static CartValidationError ProductMaxQuantityError(IEntity entity, int qty, int maxQty)
-        {
-            var result = new CartValidationError(entity, $"Product quantity {qty} is greater than maximum {maxQty}", "PRODUCT_MAX_QTY");
-            result.FormattedMessagePlaceholderValues = new Dictionary<string, object>
-            {
-                ["qty"] = qty,
-                ["maxQty"] = maxQty
+                FormattedMessagePlaceholderValues = new Dictionary<string, object>
+                {
+                    ["qty"] = qty,
+                    ["minQty"] = minQty
+                }
             };
 
             return result;
@@ -155,11 +165,27 @@ namespace VirtoCommerce.XPurchase
 
         public static CartValidationError ProductMinQuantityError(string type, string id, int qty, int minQty)
         {
-            var result = new CartValidationError(type, id, $"Product {id} quantity {qty} is less than minumum {minQty}", "PRODUCT_MIN_QTY");
-            result.FormattedMessagePlaceholderValues = new Dictionary<string, object>
+            var result = new CartValidationError(type, id, $"Product {id} quantity {qty} is less than minumum {minQty}", "PRODUCT_MIN_QTY")
             {
-                ["qty"] = qty,
-                ["minQty"] = minQty
+                FormattedMessagePlaceholderValues = new Dictionary<string, object>
+                {
+                    ["qty"] = qty,
+                    ["minQty"] = minQty
+                }
+            };
+
+            return result;
+        }
+
+        public static CartValidationError ProductMaxQuantityError(IEntity entity, int qty, int maxQty)
+        {
+            var result = new CartValidationError(entity, $"Product quantity {qty} is greater than maximum {maxQty}", "PRODUCT_MAX_QTY")
+            {
+                FormattedMessagePlaceholderValues = new Dictionary<string, object>
+                {
+                    ["qty"] = qty,
+                    ["maxQty"] = maxQty
+                }
             };
 
             return result;
@@ -167,11 +193,13 @@ namespace VirtoCommerce.XPurchase
 
         public static CartValidationError ProductMaxQuantityError(string type, string id, int qty, int maxQty)
         {
-            var result = new CartValidationError(type, id, $"Product {id} quantity {qty} is greater than maximum {maxQty}", "PRODUCT_MAX_QTY");
-            result.FormattedMessagePlaceholderValues = new Dictionary<string, object>
+            var result = new CartValidationError(type, id, $"Product {id} quantity {qty} is greater than maximum {maxQty}", "PRODUCT_MAX_QTY")
             {
-                ["qty"] = qty,
-                ["maxQty"] = maxQty
+                FormattedMessagePlaceholderValues = new Dictionary<string, object>
+                {
+                    ["qty"] = qty,
+                    ["maxQty"] = maxQty
+                }
             };
 
             return result;
@@ -180,6 +208,32 @@ namespace VirtoCommerce.XPurchase
         public static CartValidationError AllLineItemsUnselected(IEntity entity)
         {
             var result = new CartValidationError(entity, $"All line items unselected. Please select at least one line item.", "ALL_LINE_ITEMS_UNSELECTED");
+            return result;
+        }
+
+        public static ValidationFailure ProductQuantityLimitError(IEntity entity, int limit)
+        {
+            var result = new CartValidationError(entity, $"You can order maximum {limit} items.", "LINE_ITEM_LIMIT")
+            {
+                FormattedMessagePlaceholderValues = new Dictionary<string, object>
+                {
+                    ["limit"] = limit,
+                }
+            };
+
+            return result;
+        }
+
+        public static ValidationFailure ProductMinQuantityNotAvailableError(IEntity entity, int minQty)
+        {
+            var result = new CartValidationError(entity, $"Min order {minQty} items is not available in stock", "PRODUCT_MIN_QTY_NOT_AVAILABLE")
+            {
+                FormattedMessagePlaceholderValues = new Dictionary<string, object>
+                {
+                    ["maxQty"] = minQty
+                }
+            };
+
             return result;
         }
     }
