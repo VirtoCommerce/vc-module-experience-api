@@ -17,7 +17,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Queries
         {
             yield return Argument<StringGraphType>(nameof(StoreId));
             yield return Argument<StringGraphType>(nameof(CultureName));
-            yield return Argument<StringGraphType>(nameof(Domain), "Allows to query a store by domain name");
+            yield return Argument<StringGraphType>(nameof(Domain), "The domain name of the web host");
         }
 
         public override void Map(IResolveFieldContext context)
