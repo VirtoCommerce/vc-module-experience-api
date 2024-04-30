@@ -19,20 +19,17 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Queries
     public class GetStoreQueryHandler : IQueryHandler<GetStoreQuery, StoreResponse>
     {
         private readonly IStoreService _storeService;
-        private readonly IStoreSearchService _storeSearchService;
         private readonly IStoreCurrencyResolver _storeCurrencyResolver;
         private readonly IdentityOptions _identityOptions;
         private readonly GraphQLWebSocketOptions _webSocketOptions;
 
         public GetStoreQueryHandler(
             IStoreService storeService,
-            IStoreSearchService storeSearchService,
             IStoreCurrencyResolver storeCurrencyResolver,
             IOptions<IdentityOptions> identityOptions,
             IOptions<GraphQLWebSocketOptions> webSocketOptions)
         {
             _storeService = storeService;
-            _storeSearchService = storeSearchService;
             _storeCurrencyResolver = storeCurrencyResolver;
             _identityOptions = identityOptions.Value;
             _webSocketOptions = webSocketOptions.Value;
