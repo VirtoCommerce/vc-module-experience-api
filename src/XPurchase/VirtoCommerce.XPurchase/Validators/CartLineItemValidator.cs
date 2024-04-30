@@ -38,7 +38,7 @@ namespace VirtoCommerce.XPurchase.Validators
                     // PRODUCT_MIN_QTY_NOT_AVAILABLE
                     if (IsProductMinQunatityNotAvailable(cartProduct, minQuantity))
                     {
-                        context.AddFailure(CartErrorDescriber.ProductMinQuantityNotAvailableError(lineItem, minQuantity.Value));
+                        context.AddFailure(CartErrorDescriber.ProductMinQuantityNotAvailableError(lineItem, minQuantity ?? 0));
                     }
 
                     if (minQuantity.HasValue && minQuantity.Value > 0 && maxQuantity.HasValue && maxQuantity.Value > 0)
