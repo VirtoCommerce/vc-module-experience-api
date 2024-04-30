@@ -9,6 +9,7 @@ using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.Core.Subscriptions;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Settings;
+using VirtoCommerce.StoreModule.Core.Model;
 using VirtoCommerce.StoreModule.Core.Services;
 using StoreSettingGeneral = VirtoCommerce.StoreModule.Core.ModuleConstants.Settings.General;
 using StoreSettingSeo = VirtoCommerce.StoreModule.Core.ModuleConstants.Settings.SEO;
@@ -18,17 +19,20 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Queries
     public class GetStoreQueryHandler : IQueryHandler<GetStoreQuery, StoreResponse>
     {
         private readonly IStoreService _storeService;
+        private readonly IStoreSearchService _storeSearchService;
         private readonly IStoreCurrencyResolver _storeCurrencyResolver;
         private readonly IdentityOptions _identityOptions;
         private readonly GraphQLWebSocketOptions _webSocketOptions;
 
         public GetStoreQueryHandler(
             IStoreService storeService,
+            IStoreSearchService storeSearchService,
             IStoreCurrencyResolver storeCurrencyResolver,
             IOptions<IdentityOptions> identityOptions,
             IOptions<GraphQLWebSocketOptions> webSocketOptions)
         {
             _storeService = storeService;
+            _storeSearchService = storeSearchService;
             _storeCurrencyResolver = storeCurrencyResolver;
             _identityOptions = identityOptions.Value;
             _webSocketOptions = webSocketOptions.Value;
@@ -36,7 +40,16 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Queries
 
         public async Task<StoreResponse> Handle(GetStoreQuery request, CancellationToken cancellationToken)
         {
-            var store = await _storeService.GetByIdAsync(request.StoreId, clone: false);
+            Store store = null;
+
+            if (!string.IsNullOrEmpty(request.StoreId))
+            {
+                store = await _storeService.GetByIdAsync(request.StoreId, clone: false);
+            }
+            else if (!string.IsNullOrEmpty(request.Domain))
+            {
+                store = await _storeService.GetByDomainAsync(request.Domain, clone: false);
+            }
 
             if (store == null)
             {

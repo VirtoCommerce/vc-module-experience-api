@@ -11,16 +11,20 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Queries
 
         public string CultureName { get; set; }
 
+        public string Domain { get; set; }
+
         public override IEnumerable<QueryArgument> GetArguments()
         {
-            yield return Argument<NonNullGraphType<StringGraphType>>(nameof(StoreId));
+            yield return Argument<StringGraphType>(nameof(StoreId));
             yield return Argument<StringGraphType>(nameof(CultureName));
+            yield return Argument<StringGraphType>(nameof(Domain), "Allows to query a store by domain name");
         }
 
         public override void Map(IResolveFieldContext context)
         {
             StoreId = context.GetArgument<string>(nameof(StoreId));
             CultureName = context.GetArgument<string>(nameof(CultureName));
+            Domain = context.GetArgument<string>(nameof(Domain));
         }
     }
 }
