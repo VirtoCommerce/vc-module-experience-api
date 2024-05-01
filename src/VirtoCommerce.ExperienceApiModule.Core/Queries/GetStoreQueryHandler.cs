@@ -10,6 +10,7 @@ using VirtoCommerce.ExperienceApiModule.Core.Subscriptions;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Settings;
 using VirtoCommerce.StoreModule.Core.Model;
+using VirtoCommerce.StoreModule.Core.Model.Search;
 using VirtoCommerce.StoreModule.Core.Services;
 using StoreSettingGeneral = VirtoCommerce.StoreModule.Core.ModuleConstants.Settings.General;
 using StoreSettingSeo = VirtoCommerce.StoreModule.Core.ModuleConstants.Settings.SEO;
@@ -19,17 +20,20 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Queries
     public class GetStoreQueryHandler : IQueryHandler<GetStoreQuery, StoreResponse>
     {
         private readonly IStoreService _storeService;
+        private readonly IStoreSearchService _storeSearcService;
         private readonly IStoreCurrencyResolver _storeCurrencyResolver;
         private readonly IdentityOptions _identityOptions;
         private readonly GraphQLWebSocketOptions _webSocketOptions;
 
         public GetStoreQueryHandler(
             IStoreService storeService,
+            IStoreSearchService storeSearcService,
             IStoreCurrencyResolver storeCurrencyResolver,
             IOptions<IdentityOptions> identityOptions,
             IOptions<GraphQLWebSocketOptions> webSocketOptions)
         {
             _storeService = storeService;
+            _storeSearcService = storeSearcService;
             _storeCurrencyResolver = storeCurrencyResolver;
             _identityOptions = identityOptions.Value;
             _webSocketOptions = webSocketOptions.Value;
@@ -45,7 +49,9 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Queries
             }
             else if (!string.IsNullOrEmpty(request.Domain))
             {
-                store = await _storeService.GetByDomainAsync(request.Domain, clone: false);
+                var searchStoreCriteria = new StoreSearchCriteria { Domain = request.Domain, Take = 1 };
+                var result = await _storeSearcService.SearchAsync(searchStoreCriteria, clone: false);
+                store = result.Stores.FirstOrDefault();
             }
 
             if (store == null)
