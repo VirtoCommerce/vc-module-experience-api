@@ -49,7 +49,10 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Queries
             }
             else if (!string.IsNullOrEmpty(request.Domain))
             {
-                var searchStoreCriteria = new StoreSearchCriteria { Domain = request.Domain, Take = 1 };
+                var searchStoreCriteria = AbstractTypeFactory<StoreSearchCriteria>.TryCreateInstance();
+                searchStoreCriteria.Domain = request.Domain;
+                searchStoreCriteria.Take = 1;
+
                 var result = await _storeSearcService.SearchAsync(searchStoreCriteria, clone: false);
                 store = result.Stores.FirstOrDefault();
             }
