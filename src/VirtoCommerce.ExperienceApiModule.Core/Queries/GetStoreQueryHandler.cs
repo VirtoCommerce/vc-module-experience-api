@@ -54,7 +54,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Queries
                 searchStoreCriteria.Take = 1;
 
                 var result = await _storeSearcService.SearchAsync(searchStoreCriteria, clone: false);
-                store = result.Stores.FirstOrDefault();
+                store = result.Results.FirstOrDefault();
             }
 
             if (store == null)
