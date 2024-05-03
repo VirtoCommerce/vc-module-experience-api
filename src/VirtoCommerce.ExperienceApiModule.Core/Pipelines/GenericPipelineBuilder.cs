@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace VirtoCommerce.ExperienceApiModule.Core.Pipelines
@@ -61,6 +62,23 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Pipelines
                 }
                 options.Middlewares[oldTypeIndex] = newType;
             });
+        }
+
+        public GenericPipelineBuilder<TResult> RemoveMiddleware(Type type)
+        {
+            if (type == null)
+            {
+                throw new ArgumentNullException(nameof(type));
+            }
+
+            var descriptor = Services.FirstOrDefault(service =>
+                service.ServiceType == type);
+
+            if (descriptor != null)
+            {
+                Services.Remove(descriptor);
+            }
+            return Configure(options => options.Middlewares.Remove(type));
         }
     }
 }
