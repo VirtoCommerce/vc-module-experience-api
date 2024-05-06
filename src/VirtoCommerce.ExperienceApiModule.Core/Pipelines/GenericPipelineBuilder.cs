@@ -78,7 +78,15 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Pipelines
             {
                 Services.Remove(descriptor);
             }
-            return Configure(options => options.Middlewares.Remove(type));
+
+            return Configure(options =>
+            {
+                var index = options.Middlewares.IndexOf(type);
+                if (index < 0)
+                {
+                    options.Middlewares.RemoveAt(index);
+                }
+            });
         }
     }
 }
