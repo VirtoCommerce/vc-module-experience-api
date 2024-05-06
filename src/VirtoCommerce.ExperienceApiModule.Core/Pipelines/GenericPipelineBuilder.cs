@@ -82,7 +82,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Pipelines
             return Configure(options =>
             {
                 var index = options.Middlewares.IndexOf(type);
-                if (index < 0)
+                if (index >= 0)
                 {
                     options.Middlewares.RemoveAt(index);
                 }
