@@ -7,7 +7,7 @@ namespace VirtoCommerce.XPurchase.Schemas
         public CouponType()
         {
             Field(x => x.Code, nullable: true).Description("Coupon code");
-            Field(x => x.IsAppliedSuccessfully, nullable: true).Description("Is coupon was applied successfully");
+            Field(x => x.IsAppliedSuccessfully, nullable: false).Description("Is coupon was applied successfully");
         }
     }
 }

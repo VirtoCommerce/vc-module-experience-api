@@ -2,7 +2,8 @@ using System;
 using System.Linq;
 using AutoMapper;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
-using VirtoCommerce.XDigitalCatalog.Facets;
+using VirtoCommerce.ExperienceApiModule.Core.Extensions;
+using CoreFacets = VirtoCommerce.ExperienceApiModule.Core.Models.Facets;
 
 namespace VirtoCommerce.XDigitalCatalog.Mapping
 {
@@ -10,43 +11,49 @@ namespace VirtoCommerce.XDigitalCatalog.Mapping
     {
         public FacetMappingProfile()
         {
-            CreateMap<Aggregation, FacetResult>().IncludeAllDerived();
-
-            CreateMap<Aggregation, FacetResult>().ConvertUsing((request, facet, context) =>
+            CreateMap<Aggregation, CoreFacets.FacetResult>().IncludeAllDerived().ConvertUsing((request, facet, context) =>
             {
-                FacetResult result = request.AggregationType switch
+                context.Items.TryGetValue("cultureName", out var cultureNameObj);
+                var cultureName = cultureNameObj as string;
+                CoreFacets.FacetResult result = request.AggregationType switch
                 {
-                    "attr" => new TermFacetResult
+                    "attr" => new CoreFacets.TermFacetResult
                     {
-                        Terms = request.Items.Select(x => new FacetTerm
-                            {
-                                Count = x.Count,
-                                IsSelected = x.IsApplied,
-                                Term = x.Value.ToString(),
-                                Label = x.Value.ToString(),
-                            })
-                            .ToArray(),
+                        Terms = request.Items?.Select(x => new CoreFacets.FacetTerm
+                        {
+                            Count = x.Count,
+                            IsSelected = x.IsApplied,
+                            Term = x.Value?.ToString(),
+
+                            Label = x.Labels?.FirstBestMatchForLanguage(x => x.Language, cultureName)?.Label ?? x.Value.ToString(),
+                        })
+                            .ToArray() ?? [],
                         Name = request.Field
                     },
-                    "pricerange" => new RangeFacetResult
+                    "pricerange" => new CoreFacets.RangeFacetResult
                     {
-                        Ranges = request.Items.Select(x => new FacetRange
-                            {
-                                Count = x.Count,
-                                From = Convert.ToInt64(x.RequestedLowerBound),
-                                IncludeFrom = !string.IsNullOrEmpty(x.RequestedLowerBound),
-                                FromStr = x.RequestedLowerBound,
-                                To = Convert.ToInt64(x.RequestedUpperBound),
-                                IncludeTo = !string.IsNullOrEmpty(x.RequestedUpperBound),
-                                ToStr = x.RequestedUpperBound,
-                                IsSelected = x.IsApplied,
-                                Label = x.Value.ToString(),
-                            })
-                            .ToArray(),
+                        Ranges = request.Items?.Select(x => new CoreFacets.FacetRange
+                        {
+                            Count = x.Count,
+                            From = Convert.ToInt64(x.RequestedLowerBound),
+                            IncludeFrom = x.IncludeLower,
+                            FromStr = x.RequestedLowerBound,
+                            To = Convert.ToInt64(x.RequestedUpperBound),
+                            IncludeTo = x.IncludeUpper,
+                            ToStr = x.RequestedUpperBound,
+                            IsSelected = x.IsApplied,
+                            Label = x.Value?.ToString(),
+                        })
+                            .ToArray() ?? [],
                         Name = request.Field,
                     },
                     _ => null
                 };
+
+                if (result != null)
+                {
+                    result.Label = request.Labels?.FirstBestMatchForLanguage(x => x.Language, cultureName)?.Label ?? result.Name;
+                }
 
                 return result;
             });

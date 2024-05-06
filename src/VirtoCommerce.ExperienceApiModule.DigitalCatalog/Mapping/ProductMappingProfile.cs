@@ -22,8 +22,11 @@ namespace VirtoCommerce.XDigitalCatalog.Mapping
         {
             CreateMap<LoadProductsQuery, SearchProductQuery>();
             CreateMap<LoadCategoryQuery, SearchCategoryQuery>();
+            CreateMap<SearchCategoryQuery, SearchCategoryQuery>();
+            CreateMap<SearchCategoryQuery, ChildCategoriesQuery>();
 
             CreateMap<SearchProductAssociationsQuery, ProductAssociationSearchCriteria>();
+
 
             CreateMap<SearchDocument, ExpProduct>().ConvertUsing(src => new GenericModelBinder<ExpProduct>().BindModel(src) as ExpProduct);
 
@@ -107,6 +110,8 @@ namespace VirtoCommerce.XDigitalCatalog.Mapping
                                 ProductId = price.ProductId,
                                 PricelistId = price.PricelistId,
                                 Currency = currency,
+                                StartDate = price.StartDate,
+                                EndDate = price.EndDate,
                                 ListPrice = new Money(price.List, currency)
                             };
                             productPrice.SalePrice = price.Sale == null ? productPrice.ListPrice : new Money(price.Sale ?? 0m, currency);
@@ -121,21 +126,15 @@ namespace VirtoCommerce.XDigitalCatalog.Mapping
                 foreach (var currencyGroup in groupByCurrencyPrices)
                 {
                     //For each currency need get nominal price (with min qty)
-                    var orderedPrices = currencyGroup.OrderBy(x => x.MinQuantity ?? 0).ThenBy(x => x.ListPrice);
-                    var nominalPrice = orderedPrices.FirstOrDefault();
+                    var orderedPrices = currencyGroup.OrderBy(x => x.MinQuantity ?? 0).ThenBy(x => x.ListPrice).ToList();
+                    var nominalPrice = orderedPrices.First();
                     //and add to nominal price other prices as tier prices
-                    nominalPrice.TierPrices.AddRange(orderedPrices.Select(x => new TierPrice(x.SalePrice, x.MinQuantity ?? 1)));
+                    nominalPrice.TierPrices.AddRange(orderedPrices.Select(x => new TierPrice(nominalPrice.ListPrice, x.SalePrice, x.MinQuantity ?? 1)));
                     //Add nominal price to product prices list
                     result.Add(nominalPrice);
                 }
 
-                if (!context.Items.TryGetValue("currency", out var currentCurrency) && !(currentCurrency is string))
-                {
-                    return result;
-                }
-
-                // Filter by current currency
-                return result.Where(x => (x.Currency == null) || x.Currency.Equals(currentCurrency)).ToList();
+                return result;
             });
         }
     }

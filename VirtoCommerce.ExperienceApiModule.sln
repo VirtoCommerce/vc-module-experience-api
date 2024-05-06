@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29123.88
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32630.192
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{FAE6CCF7-298C-4AF3-8044-60DAA0C099F0}"
 EndProject
@@ -41,17 +41,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtoCommerce.XPurchase.Tes
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "XDigitalCatalog", "XDigitalCatalog", "{0AEAD417-D794-4905-AA0C-8CDB875AFEB3}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "XProfile", "XProfile", "{C2496FE6-B6AB-4AD4-859E-BE18F39801F5}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtoCommerce.ExperienceApiModule.XProfile", "src\XProfile\VirtoCommerce.XProfile\VirtoCommerce.ExperienceApiModule.XProfile.csproj", "{0152C235-94A7-4B57-87FA-492D4899A648}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtoCommerce.ExperienceApiModule.XProfile.Tests", "src\XProfile\VirtoCommerce.ExperienceApiModule.XProfile.Tests\VirtoCommerce.ExperienceApiModule.XProfile.Tests.csproj", "{E1BC06FE-8225-43BC-827E-7DA1FFFD390E}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtoCommerce.ExperienceApiModule.XOrder", "src\XPurchase\VirtoCommerce.ExperienceApiModule.XOrder\VirtoCommerce.ExperienceApiModule.XOrder.csproj", "{55587F1C-B83C-46CB-A89E-E7D062144F9B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtoCommerce.ExperienceApiModule.XOrder.Tests", "tests\VirtoCommerce.ExperienceApiModule.XOrder.Tests\VirtoCommerce.ExperienceApiModule.XOrder.Tests.csproj", "{E2E45B13-D240-4300-8333-94C6C616CD00}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtoCommerce.XDigitalCatalog.Tests", "tests\VirtoCommerce.XDigitalCatalog.Tests\VirtoCommerce.XDigitalCatalog.Tests.csproj", "{C07338AA-A581-4DF1-823C-B1A25B8778D4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "XCMS", "XCMS", "{BD8B6647-4CEC-4332-AEC4-E66B25A9C8C1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtoCommerce.ExperienceApiModule.XCMS", "src\XCMS\VirtoCommerce.ExperienceApiModule.XCMS\VirtoCommerce.ExperienceApiModule.XCMS.csproj", "{666D6EA5-DF6D-4C04-99E3-F43CABC4D950}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtoCommerce.ExperienceApiModule.XCMS.Tests", "src\XCMS\VirtoCommerce.ExperienceApiModule.XCMS.Tests\VirtoCommerce.ExperienceApiModule.XCMS.Tests.csproj", "{0B0E1843-64FB-489F-B482-9278E38C7D29}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -107,14 +107,6 @@ Global
 		{06F46E24-0C8F-49B1-8C56-7201BFB18355}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{06F46E24-0C8F-49B1-8C56-7201BFB18355}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{06F46E24-0C8F-49B1-8C56-7201BFB18355}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0152C235-94A7-4B57-87FA-492D4899A648}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0152C235-94A7-4B57-87FA-492D4899A648}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0152C235-94A7-4B57-87FA-492D4899A648}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0152C235-94A7-4B57-87FA-492D4899A648}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E1BC06FE-8225-43BC-827E-7DA1FFFD390E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E1BC06FE-8225-43BC-827E-7DA1FFFD390E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E1BC06FE-8225-43BC-827E-7DA1FFFD390E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E1BC06FE-8225-43BC-827E-7DA1FFFD390E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{55587F1C-B83C-46CB-A89E-E7D062144F9B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{55587F1C-B83C-46CB-A89E-E7D062144F9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{55587F1C-B83C-46CB-A89E-E7D062144F9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -127,6 +119,14 @@ Global
 		{C07338AA-A581-4DF1-823C-B1A25B8778D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C07338AA-A581-4DF1-823C-B1A25B8778D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C07338AA-A581-4DF1-823C-B1A25B8778D4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{666D6EA5-DF6D-4C04-99E3-F43CABC4D950}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{666D6EA5-DF6D-4C04-99E3-F43CABC4D950}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{666D6EA5-DF6D-4C04-99E3-F43CABC4D950}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{666D6EA5-DF6D-4C04-99E3-F43CABC4D950}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0B0E1843-64FB-489F-B482-9278E38C7D29}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B0E1843-64FB-489F-B482-9278E38C7D29}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B0E1843-64FB-489F-B482-9278E38C7D29}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B0E1843-64FB-489F-B482-9278E38C7D29}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -148,12 +148,12 @@ Global
 		{E2012C08-74B0-4888-BC5F-4582ACDBC631} = {C2FC6659-3B97-4513-A22C-CCF81A4E4395}
 		{06F46E24-0C8F-49B1-8C56-7201BFB18355} = {E3929EC9-690B-492A-BF16-6F8FDBBD0D97}
 		{0AEAD417-D794-4905-AA0C-8CDB875AFEB3} = {FAE6CCF7-298C-4AF3-8044-60DAA0C099F0}
-		{C2496FE6-B6AB-4AD4-859E-BE18F39801F5} = {FAE6CCF7-298C-4AF3-8044-60DAA0C099F0}
-		{0152C235-94A7-4B57-87FA-492D4899A648} = {C2496FE6-B6AB-4AD4-859E-BE18F39801F5}
-		{E1BC06FE-8225-43BC-827E-7DA1FFFD390E} = {E3929EC9-690B-492A-BF16-6F8FDBBD0D97}
 		{55587F1C-B83C-46CB-A89E-E7D062144F9B} = {C2FC6659-3B97-4513-A22C-CCF81A4E4395}
 		{E2E45B13-D240-4300-8333-94C6C616CD00} = {E3929EC9-690B-492A-BF16-6F8FDBBD0D97}
 		{C07338AA-A581-4DF1-823C-B1A25B8778D4} = {E3929EC9-690B-492A-BF16-6F8FDBBD0D97}
+		{BD8B6647-4CEC-4332-AEC4-E66B25A9C8C1} = {FAE6CCF7-298C-4AF3-8044-60DAA0C099F0}
+		{666D6EA5-DF6D-4C04-99E3-F43CABC4D950} = {BD8B6647-4CEC-4332-AEC4-E66B25A9C8C1}
+		{0B0E1843-64FB-489F-B482-9278E38C7D29} = {E3929EC9-690B-492A-BF16-6F8FDBBD0D97}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E56E5C53-D55A-451B-96FA-654D86F96658}

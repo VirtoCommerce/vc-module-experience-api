@@ -10,14 +10,13 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Pipelines
         {
             _serviceProvider = serviceProvider;
         }
-        public async Task Execute<TParameter>(TParameter parameter) where TParameter : class
+        public Task Execute<TParameter>(TParameter parameter) where TParameter : class
         {
-            var pipeline = _serviceProvider.GetService(typeof(GenericPipeline<TParameter>)) as GenericPipeline<TParameter>;
-            if (pipeline == null)
+            if (_serviceProvider.GetService(typeof(GenericPipeline<TParameter>)) is not GenericPipeline<TParameter> pipeline)
             {
                 throw new OperationCanceledException($"pipeline {typeof(GenericPipeline<TParameter>)} is not registered");
             }
-            await pipeline.Execute(parameter);
+            return pipeline.Execute(parameter);
         }
     }
 }

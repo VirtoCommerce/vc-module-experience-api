@@ -8,7 +8,9 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
         public MoneyType()
         {
             Field(x => x.Amount, nullable: false).Description("A decimal with the amount rounded to the significant number of decimal digits.");
-            Field<CurrencyType>("currency", resolve: context => context.Source.Currency);
+            Field<NonNullGraphType<CurrencyType>>("currency",
+                "Currency type",
+                resolve: context => context.Source.Currency);
             Field(x => x.DecimalDigits, nullable: false).Description("Number of decimal digits for the associated currency.");
             Field(x => x.FormattedAmount, nullable: false).Description("Formatted amount.");
             Field(x => x.FormattedAmountWithoutCurrency, nullable: false).Description("Formatted amount without currency.");

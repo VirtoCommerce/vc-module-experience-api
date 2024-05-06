@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GraphQL;
 using GraphQL.DataLoader;
 using GraphQL.Resolvers;
 using GraphQL.Types;
@@ -20,24 +21,21 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             Name = "ProductAssociation";
             Description = "product association.";
 
-            Field(d => d.Type, nullable: true);
-            Field(d => d.Priority, nullable: true);
+            Field(d => d.Type, nullable: false);
+            Field(d => d.Priority, nullable: false);
             Field("Quantity", x => x.Quantity, nullable: true, type: typeof(IntGraphType));
             Field(d => d.AssociatedObjectId, nullable: true);
             Field(d => d.AssociatedObjectType, nullable: true);
-            Field<ListGraphType<StringGraphType>>("tags", resolve: context => context.Source.Tags?.ToList() ?? new List<string>());
+            Field<NonNullGraphType<ListGraphType<NonNullGraphType<StringGraphType>>>>("tags", resolve: context => context.Source.Tags?.ToList() ?? new List<string>());
 
             var productField = new FieldType
             {
                 Name = "product",
                 Type = GraphTypeExtenstionHelper.GetActualType<ProductType>(),
-                Resolver = new AsyncFieldResolver<ProductAssociation, object>(async context =>
+                Resolver = new FuncFieldResolver<ProductAssociation, IDataLoaderResult<ExpProduct>>(context =>
                 {
                     var loader = dataLoader.Context.GetOrAddBatchLoader<string, ExpProduct>("associatedProductLoader", (ids) => LoadProductsAsync(mediator, ids, context));
-
-                    // IMPORTANT: In order to avoid deadlocking on the loader we use the following construct (next 2 lines):
-                    var loadHandle = loader.LoadAsync(context.Source.AssociatedObjectId);
-                    return await loadHandle;
+                    return loader.LoadAsync(context.Source.AssociatedObjectId);
                 })
             };
             AddField(productField);
@@ -47,7 +45,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
         {
             var query = context.GetCatalogQuery<LoadProductsQuery>();
             query.ObjectIds = ids.ToArray();
-            query.IncludeFields = context.SubFields.Values.GetAllNodesPaths();
+            query.IncludeFields = context.SubFields.Values.GetAllNodesPaths(context).Select(x=> x.Replace("associations.items.product", string.Empty)).ToArray();
 
             var response = await mediator.Send(query);
             return response.Products.ToDictionary(x => x.Id);

@@ -1,5 +1,4 @@
 using VirtoCommerce.CatalogModule.Core.Model;
-using VirtoCommerce.ExperienceApiModule.Core.Index;
 using VirtoCommerce.XDigitalCatalog.Extensions;
 
 namespace VirtoCommerce.XDigitalCatalog.Queries
@@ -40,12 +39,27 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                 result |= CategoryResponseGroup.WithLinks;
             }
 
-            if (IncludeFields.ContainsAny("outline", "outlines", "slug", "level"))
+            if (IncludeFields.ContainsAny("outline", "outlines", "slug", "level", "hasParent", "parent"))
             {
                 result |= CategoryResponseGroup.WithOutlines;
             }
 
+            if (IncludeFields.ContainsAny("breadcrumbs"))
+            {
+                result |= CategoryResponseGroup.WithParents | CategoryResponseGroup.WithOutlines;
+            }
+
+            if (IncludeFields.ContainsAny("description", "descriptions"))
+            {
+                result |= CategoryResponseGroup.Full;
+            }
+
             return result.ToString();
+        }
+
+        public bool GetLoadChildCategories()
+        {
+            return IncludeFields.ContainsAny("childCategories");
         }
     }
 }

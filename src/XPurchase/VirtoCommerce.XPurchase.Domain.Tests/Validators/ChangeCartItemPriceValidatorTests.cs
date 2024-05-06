@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
 using FluentValidation;
-using FluentValidation.Validators;
 using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.XPurchase.Tests.Helpers;
 using VirtoCommerce.XPurchase.Validators;
@@ -17,12 +16,16 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
         public async Task ValidateChangePriceItem_RuleSetDefault_Valid()
         {
             // Arrange
-            var aggregate = GetValidCartAggregate();
-            var newItemPrice = new PriceAdjustment(_fixture.Create<string>(), _fixture.Create<decimal>());
-            var validator = new ChangeCartItemPriceValidator(aggregate);
+
+            var newItemPriceAdjustment = new PriceAdjustment
+            {
+                LineItemId = _fixture.Create<string>(),
+                NewPrice = _fixture.Create<decimal>()
+            };
+            var validator = new ChangeCartItemPriceValidator();
 
             // Act
-            var result = await validator.ValidateAsync(newItemPrice, ruleSet: "default");
+            var result = await validator.ValidateAsync(newItemPriceAdjustment, options => options.IncludeRuleSets("default"));
 
             // Assert
             result.IsValid.Should().BeTrue();
@@ -32,22 +35,22 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
         [Fact]
         public async Task ValidateChangePriceItem_RuleSetDefault_Invalid()
         {
-            // Arrange
-            var aggregate = GetValidCartAggregate();
-
-            var newItemPrice = new PriceAdjustment(null, -1);
+            var newItemPrice = new PriceAdjustment()
+            {
+                NewPrice = -1
+            };
 
             // Act
-            var validator = new ChangeCartItemPriceValidator(aggregate);
-            var result = await validator.ValidateAsync(newItemPrice, ruleSet: "default");
+            var validator = new ChangeCartItemPriceValidator();
+            var result = await validator.ValidateAsync(newItemPrice, options => options.IncludeRuleSets("default"));
 
             // Assert
             result.IsValid.Should().BeFalse();
             result.Errors.Should().NotBeEmpty();
             result.Errors.Should().HaveCount(3);
-            result.Errors.Should().Contain(x => x.PropertyName == "NewPrice" && x.ErrorCode == nameof(GreaterThanOrEqualValidator));
-            result.Errors.Should().Contain(x => x.PropertyName == "LineItemId" && x.ErrorCode == nameof(NotEmptyValidator));
-            result.Errors.Should().Contain(x => x.PropertyName == "LineItemId" && x.ErrorCode == nameof(NotNullValidator));
+            result.Errors.Should().Contain(x => x.PropertyName == "NewPrice" && x.ErrorCode.Contains("GreaterThanOrEqualValidator"));
+            result.Errors.Should().Contain(x => x.PropertyName == "LineItemId" && x.ErrorCode.Contains("NotEmptyValidator"));
+            result.Errors.Should().Contain(x => x.PropertyName == "LineItemId" && x.ErrorCode.Contains("NotNullValidator"));
         }
 
         [Fact]
@@ -56,13 +59,18 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             // Arrange
             var aggregate = GetValidCartAggregate();
             var item = _fixture.Create<LineItem>();
+            item.IsGift = false;
             aggregate.Cart.Items = new List<LineItem> { item };
 
-            var newItemPrice = new PriceAdjustment(item.Id, item.ListPrice + _fixture.Create<decimal>());
-            var validator = new ChangeCartItemPriceValidator(aggregate);
+            var newItemPrice = new PriceAdjustment
+            {
+                LineItemId = item.Id,
+                NewPrice = item.ListPrice + _fixture.Create<decimal>()
+            };
+            var validator = new ChangeCartItemPriceValidator();
 
             // Act
-            var result = await validator.ValidateAsync(newItemPrice, ruleSet: "strict");
+            var result = await validator.ValidateAsync(newItemPrice, options => options.IncludeRuleSets("strict"));
 
             // Assert
             result.IsValid.Should().BeTrue();
@@ -75,13 +83,19 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             // Arrange
             var aggregate = GetValidCartAggregate();
             var item = _fixture.Create<LineItem>();
+            item.IsGift = false;
             aggregate.Cart.Items = new List<LineItem> { item };
 
-            var newItemPrice = new PriceAdjustment(item.Id, item.ListPrice - _fixture.Create<decimal>());
-            var validator = new ChangeCartItemPriceValidator(aggregate);
+            var newItemPrice = new PriceAdjustment
+            {
+                LineItemId = item.Id,
+                LineItem = item,
+                NewPrice = item.ListPrice - _fixture.Create<decimal>()
+            };
+            var validator = new ChangeCartItemPriceValidator();
 
             // Act
-            var result = await validator.ValidateAsync(newItemPrice, ruleSet: "strict");
+            var result = await validator.ValidateAsync(newItemPrice, options => options.IncludeRuleSets("strict"));
 
             // Assert
             result.IsValid.Should().BeFalse();

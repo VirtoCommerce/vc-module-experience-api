@@ -1,6 +1,7 @@
-﻿using System.Threading;
+using System.Threading;
 using System.Threading.Tasks;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
+using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.StoreModule.Core.Services;
 using VirtoCommerce.XDigitalCatalog.Extensions;
 
@@ -15,10 +16,13 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             _storeService = storeService;
         }
 
-        public async Task<LoadRelatedSlugPathResponse> Handle(LoadRelatedSlugPathQuery request, CancellationToken cancellationToken)
+        public virtual async Task<LoadRelatedSlugPathResponse> Handle(LoadRelatedSlugPathQuery request, CancellationToken cancellationToken)
         {
             var store = await _storeService.GetByIdAsync(request.StoreId);
-            if (store is null) return null;
+            if (store is null)
+            {
+                return new LoadRelatedSlugPathResponse();
+            }
 
             var language = request.CultureName ?? store.DefaultLanguage;
             var slug = request.Outlines.GetSeoPath(store, language, null);

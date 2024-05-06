@@ -8,14 +8,14 @@ namespace VirtoCommerce.XPurchase.Commands
         {
         }
 
-        protected CartCommand(string storeId, string type, string cartName, string userId, string currency, string language)
+        protected CartCommand(string storeId, string type, string cartName, string userId, string currencyCode, string cultureName)
         {
             StoreId = storeId;
             CartType = type;
             CartName = cartName;
             UserId = userId;
-            Currency = currency;
-            Language = language;
+            CurrencyCode = currencyCode;
+            CultureName = cultureName;
         }
 
         public string CartId { get; set; }
@@ -23,7 +23,7 @@ namespace VirtoCommerce.XPurchase.Commands
         public string CartType { get; set; }
         public string CartName { get; set; } = "default";
         public string UserId { get; set; }
-        public string Currency { get; set; }
-        public string Language { get; set; }
+        public string CurrencyCode { get; set; }
+        public string CultureName { get; set; }
     }
 }

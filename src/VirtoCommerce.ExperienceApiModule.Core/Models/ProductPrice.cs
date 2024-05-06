@@ -92,13 +92,13 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Models
         /// <returns></returns>
         public TierPrice GetTierPrice(int quantity)
         {
-            var retVal = TierPrices.OrderBy(x => x.Quantity).LastOrDefault(x => x.Quantity <= quantity);
-            if (retVal == null)
+            var result = TierPrices.OrderBy(x => x.Quantity).LastOrDefault(x => x.Quantity <= quantity);
+            if (result == null)
             {
-                retVal = new TierPrice(SalePrice, 1);
+                result = new TierPrice(ListPrice, SalePrice, 1);
             }
 
-            return retVal;
+            return result;
         }
 
         #region ITaxable Members
@@ -156,8 +156,8 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Models
         #endregion ITaxable Members
 
         public ICollection<Discount> Discounts { get; set; }
-        public DateTime ValidFrom { get; set; }
-        public DateTime ValidUntil { get; set; }
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
 
         protected override IEnumerable<object> GetEqualityComponents()
         {
@@ -178,5 +178,23 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Models
                 }
             }
         }
+
+        #region ICloneable
+
+        public override object Clone()
+        {
+            var result = MemberwiseClone() as ProductPrice;
+
+            result.Currency = Currency?.Clone() as Currency;
+            result.DiscountAmount = DiscountAmount?.Clone() as Money;
+            result.ListPrice = ListPrice?.Clone() as Money;
+            result.SalePrice = SalePrice?.Clone() as Money;
+            result.TierPrices = TierPrices?.Select(x => x.Clone() as TierPrice).ToList();
+            result.Discounts = Discounts?.Select(x => x.Clone() as Discount).ToList();
+
+            return result;
+        }
+
+        #endregion ICloneable
     }
 }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using VirtoCommerce.ExperienceApiModule.Core.Models;
 
 namespace VirtoCommerce.XPurchase
 {
@@ -29,6 +30,8 @@ namespace VirtoCommerce.XPurchase
         /// <summary>
         /// Dynamic properties
         /// </summary>
-        public Dictionary<string, string> DynamicProperties { get; set; }
+        public IList<DynamicPropertyValue> DynamicProperties { get; set; }
+
+        public bool IsWishlist { get; set; }
     }
 }

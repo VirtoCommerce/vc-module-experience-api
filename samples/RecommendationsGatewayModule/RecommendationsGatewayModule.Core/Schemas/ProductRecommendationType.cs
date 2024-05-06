@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GraphQL;
 using GraphQL.DataLoader;
 using GraphQL.Resolvers;
 using GraphQL.Types;
@@ -30,24 +31,23 @@ namespace RecommendationsGatewayModule.Core.Schemas
             {
                 Name = "product",
                 Type = GraphTypeExtenstionHelper.GetActualType<ProductType>(),
-                Resolver = new AsyncFieldResolver<ProductRecommendation, object>(async context =>
+                Resolver = new FuncFieldResolver<ProductRecommendation, IDataLoaderResult<ExpProduct>>(context =>
                 {
-                    var includeFields = context.SubFields.Values.GetAllNodesPaths().ToArray();
-                    var loader = dataLoader.Context.GetOrAddBatchLoader<string, ExpProduct>($"recommendedProducts", (ids) => LoadProductsAsync(mediator, ids, includeFields));
+                    var includeFields = context.SubFields.Values.GetAllNodesPaths(context).ToArray();
+                    var loader = dataLoader.Context.GetOrAddBatchLoader<string, ExpProduct>($"recommendedProducts", (ids) => LoadProductsAsync(mediator, context, ids, includeFields));
 
-                    // IMPORTANT: In order to avoid deadlocking on the loader we use the following construct (next 2 lines):
-                    var loadHandle = loader.LoadAsync(context.Source.ProductId);
-                    return await loadHandle;
+                    return loader.LoadAsync(context.Source.ProductId);
                 })
             };
             AddField(productField);
         }
 
-        public static async Task<IDictionary<string, ExpProduct>> LoadProductsAsync(IMediator mediator, IEnumerable<string> ids, string[] includeFields)
+        public static async Task<IDictionary<string, ExpProduct>> LoadProductsAsync(IMediator mediator, IResolveFieldContext context, IEnumerable<string> ids, string[] includeFields)
         {
             var request = new LoadProductsQuery
             {
                 ObjectIds = ids.ToArray(),
+                StoreId = context.GetValue<string>("storeId"),
                 IncludeFields = includeFields.ToArray()
             };
 

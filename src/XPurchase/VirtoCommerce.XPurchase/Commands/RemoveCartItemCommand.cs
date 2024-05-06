@@ -6,8 +6,8 @@ namespace VirtoCommerce.XPurchase.Commands
         {
         }
 
-        public RemoveCartItemCommand(string storeId, string cartType, string cartName, string userId, string currency, string lang, string lineItemId)
-            : base(storeId, cartType, cartName, userId, currency, lang)
+        public RemoveCartItemCommand(string storeId, string cartType, string cartName, string userId, string currencyCode, string cultureName, string lineItemId)
+            : base(storeId, cartType, cartName, userId, currencyCode, cultureName)
         {
             LineItemId = lineItemId;
         }

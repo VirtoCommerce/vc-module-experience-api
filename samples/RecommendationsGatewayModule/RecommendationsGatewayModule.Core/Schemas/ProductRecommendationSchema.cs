@@ -7,6 +7,7 @@ using GraphQL.Types;
 using GraphQL.Types.Relay.DataObjects;
 using MediatR;
 using RecommendationsGatewayModule.Core.Requests;
+using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 
@@ -15,23 +16,26 @@ namespace RecommendationsGatewayModule.Core.Schemas
     public class ProductRecommendationSchema : ISchemaBuilder
     {
         private readonly IMediator _mediator;
+
         public ProductRecommendationSchema(IMediator mediator)
         {
             _mediator = mediator;
         }
+
         public void Build(ISchema schema)
         {
-
             var connectionBuilder = GraphTypeExtenstionHelper.CreateConnection<ProductRecommendationType, object>()
                 .Name("recommendations")
                 .Argument<StringGraphType>("scenario", "The recommendation scenario")
                 .Argument<StringGraphType>("itemId", "The context product id")
                 .Argument<StringGraphType>("userId", "The context user id")
-                .Unidirectional()
+                .Argument<StringGraphType>("storeId", "the store id")
                 .PageSize(20);
 
             connectionBuilder.ResolveAsync(async context =>
             {
+                //PT-1606:  Need to check what there is no any alternative way to access to the original request arguments in sub selection
+                context.CopyArgumentsToUserContext();
                 return await ResolveConnectionAsync(context);
             });
             schema.Query.AddField(connectionBuilder.FieldType);
@@ -51,7 +55,7 @@ namespace RecommendationsGatewayModule.Core.Schemas
                 UserId = context.GetArgument<string>("userId")
             });
 
-            var result =  new Connection<ProductRecommendation>()
+            var result = new Connection<ProductRecommendation>()
             {
                 Edges = response.Products.Select((x, index) =>
                         new Edge<ProductRecommendation>()

@@ -26,35 +26,24 @@ namespace VirtoCommerce.XPurchase.Extensions
                 .Where(r => r.ShippingMethod.IsNullOrEmpty() || (shippingRate.ShippingMethod != null && r.ShippingMethod.EqualsInvariant(shippingRate.ShippingMethod.Code)))
                 .Sum(reward => reward.GetRewardAmount(shippingRate.Rate, 1));
 
-        public static void ApplyRewards(this ShoppingCart shoppingCart, ICollection<PromotionReward> rewards)
+        public static void ApplyRewards(this CartAggregate aggregate, ICollection<PromotionReward> rewards)
         {
+            var shoppingCart = aggregate.Cart;
+
             shoppingCart.Discounts?.Clear();
             shoppingCart.DiscountAmount = 0M;
 
-            var cartRewards = rewards.OfType<CartSubtotalReward>();
-            foreach (var reward in cartRewards.Where(reward => reward.IsValid))
+            // remove the (added) gifts, if corresponding valid reward is missing
+            foreach (var lineItem in aggregate.GiftItems?.ToList() ?? Enumerable.Empty<LineItem>())
             {
-                //When a discount is applied to the cart subtotal, the tax calculation has already been applied, and is reflected in the tax subtotal.
-                //Therefore, a discount applying to the cart subtotal will occur after tax.
-                //For instance, if the cart subtotal is $100, and $15 is the tax subtotal, a cart - wide discount of 10 % will yield a total of $105($100 subtotal – $10 discount + $15 tax on the original $100).
-                var discount = new Discount
+                if (!rewards.OfType<GiftReward>().Any(re => re.IsValid && lineItem.EqualsReward(re)))
                 {
-                    Coupon = reward.Coupon,
-                    Currency = shoppingCart.Currency,
-                    Description = reward.Promotion?.Description,
-                    DiscountAmount = reward.GetRewardAmount(shoppingCart.SubTotal, 1),
-                    PromotionId = reward.PromotionId,
-                };
-                if (shoppingCart.Discounts == null)
-                {
-                    shoppingCart.Discounts = new List<Discount>();
+                    shoppingCart.Items.Remove(lineItem);
                 }
-                shoppingCart.Discounts.Add(discount);
-                shoppingCart.DiscountAmount += discount.DiscountAmount;
             }
 
             var lineItemRewards = rewards.OfType<CatalogItemAmountReward>();
-            foreach (var lineItem in shoppingCart.Items ?? Enumerable.Empty<LineItem>())
+            foreach (var lineItem in aggregate.LineItems ?? Enumerable.Empty<LineItem>())
             {
                 lineItem.ApplyRewards(shoppingCart.Currency, lineItemRewards);
             }
@@ -70,6 +59,31 @@ namespace VirtoCommerce.XPurchase.Extensions
             {
                 payment.ApplyRewards(shoppingCart.Currency, paymentRewards);
             }
+
+            var subTotalExcludeDiscount = shoppingCart.Items.Where(li => li.SelectedForCheckout).Sum(li => (li.ListPrice - li.DiscountAmount) * li.Quantity);
+
+            var cartRewards = rewards.OfType<CartSubtotalReward>();
+            foreach (var reward in cartRewards.Where(reward => reward.IsValid))
+            {
+                //When a discount is applied to the cart subtotal, the tax calculation has already been applied, and is reflected in the tax subtotal.
+                //Therefore, a discount applying to the cart subtotal will occur after tax.
+                //For instance, if the cart subtotal is $100, and $15 is the tax subtotal, a cart - wide discount of 10 % will yield a total of $105($100 subtotal – $10 discount + $15 tax on the original $100).
+                var discount = new Discount
+                {
+                    Coupon = reward.Coupon,
+                    Currency = shoppingCart.Currency,
+                    Description = reward.Promotion?.Description,
+                    DiscountAmount = reward.GetRewardAmount(subTotalExcludeDiscount, 1),
+                    PromotionId = reward.PromotionId ?? reward.Promotion?.Id,
+                };
+                if (shoppingCart.Discounts == null)
+                {
+                    shoppingCart.Discounts = new List<Discount>();
+                }
+                shoppingCart.Discounts.Add(discount);
+                shoppingCart.DiscountAmount += discount.DiscountAmount;
+            }
+
         }
 
         public static void ApplyRewards(this LineItem lineItem, string currency, IEnumerable<CatalogItemAmountReward> rewards)
@@ -178,6 +192,19 @@ namespace VirtoCommerce.XPurchase.Extensions
                 payment.Discounts.Add(discount);
                 payment.DiscountAmount += discount.DiscountAmount;
             }
+        }
+
+        /// <summary>
+        /// Return whether cart LineItem is equal to promotion Reward
+        /// </summary>
+        public static bool EqualsReward(this LineItem li, GiftReward reward)
+        {
+            return li.Quantity == reward.Quantity &&
+                  (li.ProductId == reward.ProductId || li.ProductId.IsNullOrEmpty() && reward.ProductId.IsNullOrEmpty() &&
+                  (li.Name == reward.Name || reward.Name.IsNullOrEmpty()) &&
+                  (li.MeasureUnit == reward.MeasureUnit || reward.MeasureUnit.IsNullOrEmpty()) &&
+                  (li.ImageUrl == reward.ImageUrl || reward.ImageUrl.IsNullOrEmpty())
+                );
         }
     }
 }

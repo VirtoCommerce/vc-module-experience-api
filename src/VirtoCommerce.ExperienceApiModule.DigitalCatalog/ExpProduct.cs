@@ -5,6 +5,7 @@ using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.CoreModule.Core.Seo;
+using VirtoCommerce.ExperienceApiModule.Core;
 using VirtoCommerce.ExperienceApiModule.Core.Binding;
 using VirtoCommerce.InventoryModule.Core.Model;
 using VirtoCommerce.MarketingModule.Core.Model.Promotions;
@@ -27,8 +28,8 @@ namespace VirtoCommerce.XDigitalCatalog
         [BindIndexField(FieldName = "__variations", BinderType = typeof(VariationsBinder))]
         public virtual IList<string> IndexedVariationIds { get; set; } = new List<string>();
 
-        [BindIndexField(FieldName = "__prices", BinderType = typeof(PriceBinder))]
-        public virtual IList<Price> IndexedPrices { get; set; } = new List<Price>();
+        [BindIndexField(FieldName = "__minvariationprice", BinderType = typeof(MinVariationPriceBinder))]
+        public IList<Price> IndexedMinVariationPrices { get; set; } = new List<Price>();
 
         [BindIndexField(BinderType = typeof(KeyBinder))]
         public virtual string Key { get; set; }
@@ -39,7 +40,7 @@ namespace VirtoCommerce.XDigitalCatalog
         {
             get
             {
-                return new CatalogProductIsBuyableSpecification().IsSatisfiedBy(this);
+                return AbstractTypeFactory<CatalogProductIsBuyableSpecification>.TryCreateInstance().IsSatisfiedBy(this);
             }
         }
 
@@ -47,7 +48,7 @@ namespace VirtoCommerce.XDigitalCatalog
         {
             get
             {
-                return new CatalogProductIsAvailableSpecification().IsSatisfiedBy(this);
+                return AbstractTypeFactory<CatalogProductIsAvailableSpecification>.TryCreateInstance().IsSatisfiedBy(this);
             }
         }
 
@@ -55,9 +56,11 @@ namespace VirtoCommerce.XDigitalCatalog
         {
             get
             {
-                return new CatalogProductIsInStockSpecification().IsSatisfiedBy(this);
+                return AbstractTypeFactory<CatalogProductIsInStockSpecification>.TryCreateInstance().IsSatisfiedBy(this);
             }
         }
+
+        public ProductPrice MinVariationPrice { get; set; }
 
         public IList<ProductPrice> AllPrices { get; set; } = new List<ProductPrice>();
 
@@ -73,6 +76,12 @@ namespace VirtoCommerce.XDigitalCatalog
 
         public EditorialReview Description { get; set; }
 
+        public ExpVendor Vendor { get; set; }
+
+        public bool InWishlist { get; set; }
+
+        public IList<string> WishlistIds { get; set; } = [];
+
         public virtual long AvailableQuantity
         {
             get
@@ -87,6 +96,14 @@ namespace VirtoCommerce.XDigitalCatalog
                     }
                 }
                 return result;
+            }
+        }
+
+        public virtual void ApplyStaticDiscounts()
+        {
+            foreach (var productPrice in AllPrices)
+            {
+                productPrice.DiscountAmount = new Money(Math.Max(0, (productPrice.ListPrice - productPrice.SalePrice).Amount), productPrice.Currency);
             }
         }
 
@@ -163,7 +180,7 @@ namespace VirtoCommerce.XDigitalCatalog
             Inventory = null;
             AllInventories = inventories.Where(x => x.ProductId == Id && availFullfilmentCentersIds.Contains(x.FulfillmentCenterId)).ToList();
 
-            Inventory = inventories.OrderByDescending(x => Math.Max(0, x.InStockQuantity - x.ReservedQuantity)).FirstOrDefault();
+            Inventory = AllInventories.OrderByDescending(x => Math.Max(0, x.InStockQuantity - x.ReservedQuantity)).FirstOrDefault();
 
             if (store.MainFulfillmentCenterId != null)
             {

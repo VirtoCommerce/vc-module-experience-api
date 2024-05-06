@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -5,16 +6,16 @@ using System.Threading.Tasks;
 using AutoMapper;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
-using VirtoCommerce.ExperienceApiModule.Core;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
+using VirtoCommerce.ExperienceApiModule.Core.Models.Facets;
 using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
 using VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.SearchModule.Core.Model;
 using VirtoCommerce.SearchModule.Core.Services;
+using VirtoCommerce.StoreModule.Core.Model;
 using VirtoCommerce.StoreModule.Core.Services;
-using VirtoCommerce.XDigitalCatalog.Facets;
-
+using VirtoCommerce.XDigitalCatalog.Extensions;
 namespace VirtoCommerce.XDigitalCatalog.Queries
 {
     public class SearchProductQueryHandler : IQueryHandler<SearchProductQuery, SearchProductResponse>, IQueryHandler<LoadProductsQuery, LoadProductResponse>
@@ -28,13 +29,13 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
         private readonly ISearchPhraseParser _phraseParser;
 
         public SearchProductQueryHandler(
-            ISearchProvider searchProvider
-            , IMapper mapper
-            , IStoreCurrencyResolver storeCurrencyResolver
-            , IStoreService storeService
-            , IGenericPipelineLauncher pipeline
-            , IAggregationConverter aggregationConverter
-            , ISearchPhraseParser phraseParser)
+            ISearchProvider searchProvider,
+            IMapper mapper,
+            IStoreCurrencyResolver storeCurrencyResolver,
+            IStoreService storeService,
+            IGenericPipelineLauncher pipeline,
+            IAggregationConverter aggregationConverter,
+            ISearchPhraseParser phraseParser)
         {
             _searchProvider = searchProvider;
             _mapper = mapper;
@@ -45,6 +46,12 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             _phraseParser = phraseParser;
         }
 
+        /// <summary>
+        /// Handle search products query and return search result with facets
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         public virtual async Task<SearchProductResponse> Handle(SearchProductQuery request, CancellationToken cancellationToken)
         {
             var allStoreCurrencies = await _storeCurrencyResolver.GetAllStoreCurrenciesAsync(request.StoreId, request.CultureName);
@@ -52,8 +59,64 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             var store = await _storeService.GetByIdAsync(request.StoreId);
             var responseGroup = EnumUtility.SafeParse(request.GetResponseGroup(), ExpProductResponseGroup.None);
 
+            var builder = GetIndexedSearchRequestBuilder(request, store, currency);
+
+            var criteria = new ProductIndexedSearchCriteria
+            {
+                StoreId = request.StoreId,
+                Currency = request.CurrencyCode ?? store.DefaultCurrency,
+                LanguageCode = store.Languages.Contains(request.CultureName) ? request.CultureName : store.DefaultLanguage,
+                CatalogId = store.Catalog,
+            };
+
+            //Use predefined  facets for store  if the facet filter expression is not set
+            if (responseGroup.HasFlag(ExpProductResponseGroup.LoadFacets))
+            {
+                var predefinedAggregations = await _aggregationConverter.GetAggregationRequestsAsync(criteria, new FiltersContainer());
+
+                builder.WithCultureName(criteria.LanguageCode);
+                builder.ParseFacets(_phraseParser, request.Facet, predefinedAggregations)
+                   .ApplyMultiSelectFacetSearch();
+            }
+
+            await _pipeline.Execute(builder);
+
+            var searchRequest = builder.Build();
+
+            // Enrich criteria with outlines to filter outline aggregation items and return only child elements
+            ApplyOutlineCriteria(criteria, searchRequest);
+
+            var searchResult = await _searchProvider.SearchAsync(KnownDocumentTypes.Product, searchRequest);
+
+            var resultAggregations = await ConvertAggregations(searchResult, searchRequest, criteria);
+
+            // Mark applied aggregation items
+            searchRequest.SetAppliedAggregations(resultAggregations);
+
+            var result = new SearchProductResponse
+            {
+                Query = request,
+                AllStoreCurrencies = allStoreCurrencies,
+                Currency = currency,
+                Store = store,
+                Results = ConvertProducts(searchResult),
+                Facets = ApplyFacetLocalization(resultAggregations, criteria.LanguageCode),
+                TotalCount = (int)searchResult.TotalCount
+            };
+
+            await _pipeline.Execute(result);
+
+            return result;
+        }
+
+        protected virtual IndexSearchRequestBuilder GetIndexedSearchRequestBuilder(SearchProductQuery request, Store store, CoreModule.Core.Currency.Currency currency)
+        {
             var builder = new IndexSearchRequestBuilder()
+                                            .WithStoreId(request.StoreId)
+                                            .WithUserId(request.UserId)
+                                            .WithCurrency(currency.Code)
                                             .WithFuzzy(request.Fuzzy, request.FuzzyLevel)
+                                            .AddCertainDateFilter(DateTime.UtcNow)
                                             .ParseFilters(_phraseParser, request.Filter)
                                             .WithSearchPhrase(request.Query)
                                             .WithPaging(request.Skip, request.Take)
@@ -63,52 +126,42 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
 
             if (request.ObjectIds.IsNullOrEmpty())
             {
-                //filter products only the store catalog and visibility status when search
-                builder.AddTerms(new[] { "status:visible" });//Only visible, exclude variations from search result
-                builder.AddTerms(new[] { $"__outline:{store.Catalog}" });
+                AddDefaultTerms(builder, store.Catalog);
             }
 
-            //Use predefined  facets for store  if the facet filter expression is not set
-            if (responseGroup.HasFlag(ExpProductResponseGroup.LoadFacets))
-            {
-                var predefinedAggregations = await _aggregationConverter.GetAggregationRequestsAsync(new ProductIndexedSearchCriteria
+            return builder;
+        }
+
+        protected virtual void ApplyOutlineCriteria(ProductIndexedSearchCriteria criteria, SearchRequest searchRequest)
+        {
+            criteria.Outlines = searchRequest.GetChildFilters()
+                .Where(f => f is TermFilter && f.GetFieldName() == "__outline")
+                .SelectMany(f => ((TermFilter)f).Values)
+                .Where(o => !string.IsNullOrEmpty(o))
+                .ToArray();
+
+            criteria.Outline = criteria.Outlines.MaxBy(x => x.Length);
+        }
+
+        protected virtual Task<Aggregation[]> ConvertAggregations(SearchResponse searchResponse, SearchRequest searchRequest, ProductIndexedSearchCriteria criteria)
+        {
+            // Call the catalog aggregation converter service to convert AggregationResponse to proper Aggregation type (term, range, filter)
+            return _aggregationConverter.ConvertAggregationsAsync(searchResponse.Aggregations, criteria);
+        }
+
+        protected virtual IList<ExpProduct> ConvertProducts(SearchResponse searchResponse)
+        {
+            return searchResponse.Documents?.Select(x => _mapper.Map<ExpProduct>(x)).ToList() ?? new List<ExpProduct>();
+        }
+
+        protected virtual IList<FacetResult> ApplyFacetLocalization(Aggregation[] resultAggregations, string languageCode)
+        {
+            return resultAggregations.ApplyLanguageSpecificFacetResult(languageCode)
+                .Select(x => _mapper.Map<FacetResult>(x, options =>
                 {
-                    StoreId = request.StoreId,
-                    Currency = request.CurrencyCode,
-                }, new FiltersContainer());
-
-                builder.ParseFacets(_phraseParser, request.Facet, predefinedAggregations)
-                       .ApplyMultiSelectFacetSearch();
-            }
-
-            var searchRequest = builder.Build();
-            var searchResult = await _searchProvider.SearchAsync(KnownDocumentTypes.Product, searchRequest);
-
-            var criteria = new ProductIndexedSearchCriteria
-            {
-                StoreId = request.StoreId,
-                Currency = request.CurrencyCode,
-            };
-            //TODO: move later to own implementation
-            //Call the catalog aggregation converter service to convert AggregationResponse to proper Aggregation type (term, range, filter)
-            var aggregations = await _aggregationConverter.ConvertAggregationsAsync(searchResult.Aggregations, criteria);
-
-            var products = searchResult.Documents?.Select(x => _mapper.Map<ExpProduct>(x)).ToList() ?? new List<ExpProduct>();
-
-            var result = new SearchProductResponse
-            {
-                Query = request,
-                AllStoreCurrencies = allStoreCurrencies,
-                Currency = currency,
-                Store = store,
-                Results = products,
-                Facets = aggregations?.Select(x => _mapper.Map<FacetResult>(x)).ToList(),
-                TotalCount = (int)searchResult.TotalCount
-            };
-
-            await _pipeline.Execute(result);
-
-            return result;
+                    options.Items["cultureName"] = languageCode;
+                }))
+                .ToList();
         }
 
         public virtual async Task<LoadProductResponse> Handle(LoadProductsQuery request, CancellationToken cancellationToken)
@@ -118,6 +171,18 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
             var result = await Handle(searchRequest, cancellationToken);
 
             return new LoadProductResponse(result.Results);
+        }
+
+        /// <summary>
+        /// By default limit  resulting products, return only visible products and belongs to store catalog,
+        /// but user can override this behaviour by passing "status:hidden" in a filter expression
+        /// </summary>
+        /// <param name="builder">Instance of the request builder</param>
+        /// <param name="catalog">Name of the current catalog</param>
+        protected virtual void AddDefaultTerms(IndexSearchRequestBuilder builder, string catalog)
+        {
+            builder.AddTerms(new[] { "status:visible" }, skipIfExists: true);
+            builder.AddTerms(new[] { $"__outline:{catalog}" });
         }
     }
 }

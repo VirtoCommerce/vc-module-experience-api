@@ -6,8 +6,8 @@ namespace VirtoCommerce.XPurchase.Commands
         {
         }
 
-        public ClearPaymentsCommand(string storeId, string cartType, string cartName, string userId, string currency, string lang)
-            : base(storeId, cartType, cartName, userId, currency, lang)
+        public ClearPaymentsCommand(string storeId, string cartType, string cartName, string userId, string currencyCode, string cultureName)
+            : base(storeId, cartType, cartName, userId, currencyCode, cultureName)
         {
         }
     }

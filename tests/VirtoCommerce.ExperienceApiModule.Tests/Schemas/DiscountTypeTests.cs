@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
+using GraphQL;
 using GraphQL.Types;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
 using VirtoCommerce.ExperienceApiModule.Tests.Helpers;
@@ -15,13 +16,7 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Schemas
 
         public DiscountTypeTests() => _discountType = new DiscountType();
 
-        [Fact]
-        public void DiscountType_ShouldHavePropperFieldAmount()
-        {
-            // Assert
-            _discountType.Fields.Should().HaveCount(5);
-        }
-
+     
         [Fact]
         public void DiscountType_Coupon_ShouldResolve()
         {

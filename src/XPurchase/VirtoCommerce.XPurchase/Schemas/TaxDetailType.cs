@@ -10,10 +10,18 @@ namespace VirtoCommerce.XPurchase.Schemas
     {
         public TaxDetailType()
         {
-            Field<MoneyType>("amount", resolve: context => context.Source.Amount.ToMoney(context.GetCart().Currency));
-            Field<MoneyType>("price", resolve: context => context.Source.Rate.ToMoney(context.GetCart().Currency));
-            Field<MoneyType>("rate", resolve: context => context.Source.Rate.ToMoney(context.GetCart().Currency));
-            Field<StringGraphType>("name", resolve: context => context.Source.Name);
+            Field<NonNullGraphType<MoneyType>>("amount",
+                "Amount",
+                resolve: context => context.Source.Amount.ToMoney(context.GetCart().Currency));
+            Field<NonNullGraphType<MoneyType>>("price",
+                "Price",
+                resolve: context => context.Source.Rate.ToMoney(context.GetCart().Currency));
+            Field<NonNullGraphType<MoneyType>>("rate",
+                "Rate",
+                resolve: context => context.Source.Rate.ToMoney(context.GetCart().Currency));
+            Field<StringGraphType>("name",
+                "Name",
+                resolve: context => context.Source.Name);
         }
     }
 }

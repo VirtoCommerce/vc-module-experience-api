@@ -1,0 +1,9 @@
+arrange:
+  - index.md
+  - getting-started.md
+  - x-catalog-reference.md
+  - x-purchase-cart-reference.md
+  - x-purchase-order-reference.md
+  - filter-syntax.md
+  - x-api-extensions.md
+  - ...

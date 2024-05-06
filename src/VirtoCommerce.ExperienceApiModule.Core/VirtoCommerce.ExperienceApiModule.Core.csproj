@@ -1,40 +1,44 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
-    <PropertyGroup>
-        <Description>Experiene API functionality</Description>
-        <TargetFramework>netcoreapp3.1</TargetFramework>
-        <GenerateDocumentationFile>true</GenerateDocumentationFile>     
-        <noWarn>1591</noWarn>
-        <IsPackable>True</IsPackable>
-    </PropertyGroup>
-
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-        <NoWarn>1701;1702;1705;1591</NoWarn>
-    </PropertyGroup>
-
-    <ItemGroup>
-      <Compile Remove="Commands\**" />
-      <Compile Remove="Constants\**" />
-      <EmbeddedResource Remove="Commands\**" />
-      <EmbeddedResource Remove="Constants\**" />
-      <None Remove="Commands\**" />
-      <None Remove="Constants\**" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <PackageReference Include="PipelineNet" Version="0.9.0" />     
-        <PackageReference Include="VirtoCommerce.CoreModule.Core" Version="3.2.0" />
-        <PackageReference Include="VirtoCommerce.TaxModule.Core" Version="3.2.0" />
-        <PackageReference Include="VirtoCommerce.SearchModule.Core" Version="3.2.0" />
-        <PackageReference Include="VirtoCommerce.Platform.Core" Version="3.11.0" />
-        <PackageReference Include="VirtoCommerce.Platform.Security" Version="3.11.0" />
-        <PackageReference Include="MediatR" Version="8.0.1" />
-        <PackageReference Include="GraphQL" Version="3.0.0-preview-1490" />
-        <PackageReference Include="GraphQL.Authorization" Version="3.0.39-preview-39" />
-        <PackageReference Include="GraphQL.Relay" Version="0.5.0" />
-        <PackageReference Include="GraphQL.Server.Transports.AspNetCore" Version="3.5.0-alpha0046" />
-        <PackageReference Include="GraphQL.Server.Transports.AspNetCore.NewtonsoftJson" Version="3.5.0-alpha0046" />
-        
-    </ItemGroup>
-
+  <PropertyGroup>
+    <Description>Experiene API functionality</Description>
+    <TargetFramework>net8.0</TargetFramework>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <noWarn>1591</noWarn>
+    <IsPackable>True</IsPackable>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="Constants\**" />
+    <EmbeddedResource Remove="Constants\**" />
+    <None Remove="Constants\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="12.0.1" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
+    <PackageReference Include="GraphQL.Server.Transports.Subscriptions.Abstractions" Version="5.0.2" />
+    <PackageReference Include="GraphQL.Server.Transports.Subscriptions.WebSockets" Version="5.0.2" />
+    <PackageReference Include="GraphQL.SystemReactive" Version="4.6.0" />
+    <PackageReference Include="MediatR" Version="9.0.0" />
+    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="9.0.0" />
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.22.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.0" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
+    <PackageReference Include="GraphQL" Version="4.6.0" />
+    <PackageReference Include="GraphQL.Authorization" Version="4.0.0" />
+    <PackageReference Include="GraphQL.Relay" Version="0.6.2" />
+    <PackageReference Include="GraphQL.Server.Transports.AspNetCore" Version="5.0.2" />
+    <PackageReference Include="GraphQL.Server.Transports.AspNetCore.NewtonsoftJson" Version="5.0.2" />
+    <PackageReference Include="PipelineNet" Version="0.9.0" />
+    <PackageReference Include="RedLock.net" Version="2.3.2" />
+    <PackageReference Include="VirtoCommerce.CoreModule.Core" Version="3.800.0" />
+    <PackageReference Include="VirtoCommerce.CustomerModule.Core" Version="3.800.0" />
+    <PackageReference Include="VirtoCommerce.Platform.Security" Version="3.819.0" />
+    <PackageReference Include="VirtoCommerce.SearchModule.Core" Version="3.800.0" />
+    <PackageReference Include="VirtoCommerce.StoreModule.Core" Version="3.800.0" />
+    <PackageReference Include="VirtoCommerce.TaxModule.Core" Version="3.800.0" />
+    <PackageReference Include="VirtoCommerce.Tools" Version="3.800.0" />
+  </ItemGroup>
 </Project>

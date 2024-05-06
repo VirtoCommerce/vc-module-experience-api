@@ -1,22 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
-    <PropertyGroup>
-        <Description>Experiene API functionality</Description>
-        <TargetFramework>netcoreapp3.1</TargetFramework>
-        <GenerateDocumentationFile>true</GenerateDocumentationFile>
-        <noWarn>1591</noWarn>
-        <IsPackable>True</IsPackable>
-    </PropertyGroup>
-
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-        <NoWarn>1701;1702;1705;1591</NoWarn>
-    </PropertyGroup>
-
-    <ItemGroup>
-        <PackageReference Include="VirtoCommerce.CatalogModule.Core" Version="3.4.0" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <ProjectReference Include="..\..\..\src\VirtoCommerce.ExperienceApiModule.DigitalCatalog\VirtoCommerce.XDigitalCatalog.csproj" />
-    </ItemGroup>
+  <PropertyGroup>
+    <Description>Experiene API functionality</Description>
+    <TargetFramework>net8.0</TargetFramework>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <noWarn>1591</noWarn>
+    <IsPackable>True</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\VirtoCommerce.ExperienceApiModule.DigitalCatalog\VirtoCommerce.XDigitalCatalog.csproj" />
+  </ItemGroup>
 </Project>

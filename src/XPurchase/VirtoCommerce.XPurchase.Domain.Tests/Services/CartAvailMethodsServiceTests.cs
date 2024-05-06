@@ -1,9 +1,5 @@
 using System.Threading.Tasks;
 using FluentAssertions;
-using Moq;
-using VirtoCommerce.PaymentModule.Core.Services;
-using VirtoCommerce.ShippingModule.Core.Services;
-using VirtoCommerce.TaxModule.Core.Services;
 using VirtoCommerce.XPurchase.Services;
 using VirtoCommerce.XPurchase.Tests.Helpers;
 using Xunit;
@@ -12,22 +8,15 @@ namespace VirtoCommerce.XPurchase.Tests.Services
 {
     public class CartAvailMethodsServiceTests : XPurchaseMoqHelper
     {
-        private readonly Mock<IPaymentMethodsSearchService> _paymentMethodsSearchServiceMock;
-        private readonly Mock<ITaxProviderSearchService> _taxProviderSearchServiceMock;
-        private readonly Mock<IShippingMethodsSearchService> _shippingMethodsSearchServiceMock;
-
         private readonly CartAvailMethodsService service;
 
         public CartAvailMethodsServiceTests()
         {
-            _paymentMethodsSearchServiceMock = new Mock<IPaymentMethodsSearchService>();
-            _taxProviderSearchServiceMock = new Mock<ITaxProviderSearchService>();
-            _shippingMethodsSearchServiceMock = new Mock<IShippingMethodsSearchService>();
-
             service = new CartAvailMethodsService(
                 _paymentMethodsSearchServiceMock.Object,
                 _shippingMethodsSearchServiceMock.Object,
                 _taxProviderSearchServiceMock.Object,
+                _cartProductServiceMock.Object,
                 _mapperMock.Object);
         }
 

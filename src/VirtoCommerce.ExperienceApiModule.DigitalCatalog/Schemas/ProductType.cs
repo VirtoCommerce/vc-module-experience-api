@@ -8,17 +8,21 @@ using GraphQL.DataLoader;
 using GraphQL.Types;
 using MediatR;
 using VirtoCommerce.CatalogModule.Core.Model;
+using VirtoCommerce.CoreModule.Core.Outlines;
 using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
+using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
+using VirtoCommerce.ExperienceApiModule.Core.Models;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.StoreModule.Core.Model;
 using VirtoCommerce.XDigitalCatalog.Extensions;
 using VirtoCommerce.XDigitalCatalog.Queries;
 
 namespace VirtoCommerce.XDigitalCatalog.Schemas
 {
-    public class ProductType : ObjectGraphType<ExpProduct>
+    public class ProductType : ExtendableGraphType<ExpProduct>
     {
         /// <example>
         ///{
@@ -61,15 +65,22 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             Name = "Product";
             Description = "Products are the sellable goods in an e-commerce project.";
 
-            Field(d => d.IndexedProduct.Id).Description("The unique ID of the product.");
+            Field(d => d.IndexedProduct.Id, nullable: false).Description("The unique ID of the product.");
             Field(d => d.IndexedProduct.Code, nullable: false).Description("The product SKU.");
-            Field<StringGraphType>("catalogId", resolve: context => context.Source.IndexedProduct.CatalogId);
+            Field<StringGraphType>("catalogId",
+                "The unique ID of the catalog",
+                resolve: context => context.Source.IndexedProduct.CatalogId);
             Field(d => d.IndexedProduct.ProductType, nullable: true).Description("The type of product");
+            Field(d => d.IndexedProduct.MinQuantity, nullable: true).Description("Min. quantity");
+            Field(d => d.IndexedProduct.MaxQuantity, nullable: true).Description("Max. quantity");
 
             FieldAsync<StringGraphType>("outline", resolve: async context =>
             {
                 var outlines = context.Source.IndexedProduct.Outlines;
-                if (outlines.IsNullOrEmpty()) return null;
+                if (outlines.IsNullOrEmpty())
+                {
+                    return null;
+                }
 
                 var loadRelatedCatalogOutlineQuery = context.GetCatalogQuery<LoadRelatedCatalogOutlineQuery>();
                 loadRelatedCatalogOutlineQuery.Outlines = outlines;
@@ -81,7 +92,10 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
             FieldAsync<StringGraphType>("slug", resolve: async context =>
             {
                 var outlines = context.Source.IndexedProduct.Outlines;
-                if (outlines.IsNullOrEmpty()) return null;
+                if (outlines.IsNullOrEmpty())
+                {
+                    return null;
+                }
 
                 var loadRelatedSlugPathQuery = context.GetCatalogQuery<LoadRelatedSlugPathQuery>();
                 loadRelatedSlugPathQuery.Outlines = outlines;
@@ -92,7 +106,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             Field(d => d.IndexedProduct.Name, nullable: false).Description("The name of the product.");
 
-            Field<SeoInfoType>("seoInfo", resolve: context =>
+            Field<NonNullGraphType<SeoInfoType>>("seoInfo", resolve: context =>
             {
                 var source = context.Source;
                 var storeId = context.GetArgumentOrValue<string>("storeId");
@@ -105,24 +119,38 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                     seoInfo = source.IndexedProduct.SeoInfos.GetBestMatchingSeoInfo(storeId, cultureName);
                 }
 
-                return seoInfo ?? new SeoInfo
-                {
-                    SemanticUrl = source.Id,
-                    LanguageCode = cultureName,
-                    Name = source.IndexedProduct.Name
-                };
+                return seoInfo ?? SeoInfosExtensions.GetFallbackSeoInfo(source.Id, source.IndexedProduct.Name, cultureName);
             }, description: "Request related SEO info");
 
-            Field<ListGraphType<DescriptionType>>("descriptions", resolve: context => context.Source.IndexedProduct.Reviews);
+            Field<NonNullGraphType<ListGraphType<NonNullGraphType<DescriptionType>>>>("descriptions",
+                  arguments: new QueryArguments(new QueryArgument<StringGraphType> { Name = "type" }),
+                  resolve: context =>
+                {
+                    var reviews = context.Source.IndexedProduct.Reviews;
+                    var cultureName = context.GetArgumentOrValue<string>("cultureName");
+                    var type = context.GetArgumentOrValue<string>("type");
+                    if (cultureName != null)
+                    {
+                        reviews = reviews.Where(x => string.IsNullOrEmpty(x.LanguageCode) || x.LanguageCode.EqualsInvariant(cultureName)).ToList();
+                    }
+                    if (type != null)
+                    {
+                        reviews = reviews.Where(x => x.ReviewType?.EqualsInvariant(type) ?? true).ToList();
+                    }
+                    return reviews;
+                });
 
-            Field<DescriptionType>("description", resolve: context =>
+            Field<DescriptionType>("description",
+                arguments: new QueryArguments(new QueryArgument<StringGraphType> { Name = "type" }),
+                resolve: context =>
             {
                 var reviews = context.Source.IndexedProduct.Reviews;
+                var type = context.GetArgumentOrValue<string>("type");
                 var cultureName = context.GetArgumentOrValue<string>("cultureName");
 
                 if (!reviews.IsNullOrEmpty())
                 {
-                    return reviews.Where(x => x.ReviewType.EqualsInvariant("FullReview")).FirstBestMatchForLanguage(cultureName) as EditorialReview
+                    return reviews.Where(x => x.ReviewType.EqualsInvariant(type ?? "FullReview")).FirstBestMatchForLanguage(cultureName) as EditorialReview
                         ?? reviews.FirstBestMatchForLanguage(cultureName) as EditorialReview;
                 }
 
@@ -137,11 +165,11 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
                     var loadCategoryQuery = context.GetCatalogQuery<LoadCategoryQuery>();
                     loadCategoryQuery.ObjectIds = new[] { categoryId };
-                    loadCategoryQuery.IncludeFields = context.SubFields.Values.GetAllNodesPaths();
+                    loadCategoryQuery.IncludeFields = context.SubFields.Values.GetAllNodesPaths(context).ToArray();
 
-                    var responce = await mediator.Send(loadCategoryQuery);
+                    var response = await mediator.Send(loadCategoryQuery);
 
-                    return responce.Categories.FirstOrDefault();
+                    return response.Categories.FirstOrDefault();
                 });
 
             Field<StringGraphType>(
@@ -151,87 +179,184 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             Field(d => d.IndexedProduct.OuterId, nullable: true).Description("The outer identifier");
 
+            Field(d => d.IndexedProduct.Gtin, nullable: true).Description("Global Trade Item Number");
+
             Field<StringGraphType>(
                 "brandName",
                 description: "Get brandName for product.",
                 resolve: context =>
                 {
                     var brandName = context.Source.IndexedProduct.Properties
-                        ?.FirstOrDefault(x => x.Name == "Brand")
+                        ?.FirstOrDefault(x => x.Name.EqualsInvariant("Brand"))
                         ?.Values
                         ?.FirstOrDefault(x => x.Value != null)
                         ?.Value;
 
-                    return brandName;
+                    return brandName?.ToString();
                 });
 
-            FieldAsync<ListGraphType<VariationType>>(
-                "variations",
+            FieldAsync<VariationType>(
+                "masterVariation",
                 resolve: async context =>
                 {
-                    var productIds = context.Source.IndexedVariationIds.ToArray();
-                    if (productIds.IsNullOrEmpty())
+                    if (string.IsNullOrEmpty(context.Source.IndexedProduct.MainProductId))
                     {
-                        return new List<ExpVariation>();
+                        return null;
                     }
 
                     var query = context.GetCatalogQuery<LoadProductsQuery>();
-                    query.ObjectIds = context.Source.IndexedVariationIds.ToArray();
-                    query.IncludeFields = context.SubFields.Values.GetAllNodesPaths();
+                    query.ObjectIds = new[] { context.Source.IndexedProduct.MainProductId };
+                    query.IncludeFields = context.SubFields.Values.GetAllNodesPaths(context).ToArray();
 
                     var response = await mediator.Send(query);
 
-                    return response.Products.Select(expProduct => new ExpVariation(expProduct));
+                    return response.Products.Select(expProduct => new ExpVariation(expProduct)).FirstOrDefault();
                 });
 
-            Field<AvailabilityDataType>(
-                "availabilityData",
-                resolve: context => new ExpAvailabilityData
+            FieldAsync<NonNullGraphType<ListGraphType<NonNullGraphType<VariationType>>>>(
+                "variations",
+                resolve: async context => await ResolveVariationsFieldAsync(mediator, context));
+
+            Field<NonNullGraphType<BooleanGraphType>>(
+                "hasVariations",
+                resolve: context =>
                 {
-                    AvailableQuantity = context.Source.AvailableQuantity,
-                    InventoryAll = context.Source.AllInventories,
-                    IsBuyable = context.Source.IsBuyable,
-                    IsAvailable = context.Source.IsAvailable,
-                    IsInStock = context.Source.IsInStock,
-                    IsActive = context.Source.IndexedProduct.IsActive ?? false,
-                    IsTrackInventory = context.Source.IndexedProduct.TrackInventory ?? false,
+                    var result = context.Source.IndexedVariationIds?.Any() ?? false;
+                    return result;
                 });
 
-            Field<ListGraphType<ImageType>>("images", resolve: context => context.Source.IndexedProduct.Images);
+            Field(
+                GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<AvailabilityDataType>>(),
+                "availabilityData",
+                "Product availability data",
+                resolve: context => AbstractTypeFactory<ExpAvailabilityData>.TryCreateInstance().FromProduct(context.Source));
 
-            Field<PriceType>(
+            Field<NonNullGraphType<ListGraphType<NonNullGraphType<ImageType>>>>(
+                "images",
+                "Product images",
+                resolve: context =>
+                {
+                    var images = context.Source.IndexedProduct.Images ?? Array.Empty<Image>();
+
+                    return context.GetValue<string>("cultureName") switch
+                    {
+                        // Get images with null or current cultureName value if cultureName is passed
+                        string languageCode => images.Where(x => string.IsNullOrEmpty(x.LanguageCode) || x.LanguageCode.EqualsInvariant(languageCode)).ToList(),
+
+                        // CultureName is null
+                        _ => images
+                    };
+                });
+
+            Field<NonNullGraphType<PriceType>>(
                 "price",
-                resolve: context => context.Source.AllPrices.FirstOrDefault());
+                "Product price",
+                resolve: context => context.Source.AllPrices.FirstOrDefault() ?? new ProductPrice(context.GetCurrencyByCode(context.GetValue<string>("currencyCode"))));
 
-            Field<ListGraphType<PriceType>>(
+            Field<NonNullGraphType<ListGraphType<NonNullGraphType<PriceType>>>>(
                 "prices",
+                "Product prices",
                 resolve: context => context.Source.AllPrices);
 
-            Field<ListGraphType<PropertyType>>("properties", resolve: context =>
+            Field<PriceType>(
+                "minVariationPrice",
+                "Minimim product variation price",
+                resolve: context => context.Source.MinVariationPrice);
+
+            ExtendableField<NonNullGraphType<ListGraphType<NonNullGraphType<PropertyType>>>>("properties",
+                arguments: new QueryArguments(new QueryArgument<ListGraphType<StringGraphType>> { Name = "names" }),
+                resolve: context =>
             {
+                var names = context.GetArgument<string[]>("names");
                 var cultureName = context.GetValue<string>("cultureName");
-                return context.Source.IndexedProduct.Properties.ExpandByValues(cultureName);
+                var result = context.Source.IndexedProduct.Properties.ExpandOrderedByValues(cultureName);
+                if (!names.IsNullOrEmpty())
+                {
+                    result = result.Where(x => names.Contains(x.Name, StringComparer.InvariantCultureIgnoreCase)).ToList();
+                }
+                return result;
             });
 
-            Field<ListGraphType<AssetType>>("assets", resolve: context => context.Source.IndexedProduct.Assets);
+            ExtendableField<NonNullGraphType<ListGraphType<NonNullGraphType<PropertyType>>>>("keyProperties",
+                arguments: new QueryArguments(new QueryArgument<IntGraphType> { Name = "take" }),
+                resolve: context =>
+                {
+                    var take = context.GetArgument<int>("take");
+                    var cultureName = context.GetValue<string>("cultureName");
 
-            Field<ListGraphType<OutlineType>>("outlines", resolve: context => context.Source.IndexedProduct.Outlines);//.RootAlias("__object.outlines");
+                    var result = context.Source.IndexedProduct.Properties.ExpandKeyPropertiesByValues(cultureName, take);
 
-            Field<TaxCategoryType>("tax", resolve: context => null); // TODO: We need this?
+                    return result;
+                });
+
+            Field<NonNullGraphType<ListGraphType<NonNullGraphType<AssetType>>>>(
+                "assets",
+                "Assets",
+                resolve: context =>
+                {
+                    var assets = context.Source.IndexedProduct.Assets ?? Array.Empty<Asset>();
+
+                    return context.GetValue<string>("cultureName") switch
+                    {
+                        // Get assets with null or current cultureName value if cultureName is passed
+                        string languageCode => assets.Where(x => string.IsNullOrEmpty(x.LanguageCode) || x.LanguageCode.EqualsInvariant(languageCode)).ToList(),
+
+                        // CultureName is null
+                        _ => assets
+                    };
+                });
+
+            Field<NonNullGraphType<ListGraphType<NonNullGraphType<OutlineType>>>>("outlines", "Outlines", resolve: context => context.Source.IndexedProduct.Outlines ?? Array.Empty<Outline>());//.RootAlias("__object.outlines");
+
+            Field<NonNullGraphType<ListGraphType<NonNullGraphType<BreadcrumbType>>>>("breadcrumbs", "Breadcrumbs", resolve: context =>
+            {
+                var store = context.GetArgumentOrValue<Store>("store");
+                var cultureName = context.GetValue<string>("cultureName");
+
+                return context.Source.IndexedProduct.Outlines.GetBreadcrumbsFromOutLine(store, cultureName);
+            });
+
+            Field(
+                GraphTypeExtenstionHelper.GetActualType<VendorType>(),
+                "vendor",
+                "Product vendor",
+                resolve: context => context.Source.Vendor);
+
+            Field(x => x.InWishlist, nullable: false).Description("Product added at least in one wishlist");
+
+            Field(x => x.WishlistIds, nullable: false).Description("List of wishlist ID with this product");
 
             Connection<ProductAssociationType>()
               .Name("associations")
               .Argument<StringGraphType>("query", "the search phrase")
               .Argument<StringGraphType>("group", "association group (Accessories, RelatedItem)")
-              .Unidirectional()
               .PageSize(20)
-              .ResolveAsync(async context =>
-              {
-                  return await ResolveConnectionAsync(mediator, context);
-              });
+              .ResolveAsync(async context => await ResolveAssociationConnectionAsync(mediator, context));
+
+
+            Connection<VideoType>()
+              .Name("videos")
+              .PageSize(20)
+              .ResolveAsync(async context => await ResolveVideosConnectionAsync(mediator, context));
         }
 
-        private static async Task<object> ResolveConnectionAsync(IMediator mediator, IResolveConnectionContext<ExpProduct> context)
+        protected virtual async Task<object> ResolveVariationsFieldAsync(IMediator mediator, IResolveFieldContext<ExpProduct> context)
+        {
+            if (context.Source.IndexedVariationIds.IsNullOrEmpty())
+            {
+                return new List<ExpVariation>();
+            }
+
+            var query = context.GetCatalogQuery<LoadProductsQuery>();
+            query.ObjectIds = context.Source.IndexedVariationIds;
+            query.IncludeFields = context.SubFields.Values.GetAllNodesPaths(context).ToArray();
+
+            var response = await mediator.Send(query);
+
+            return response.Products.Where(x => x.IndexedProduct?.IsActive == true).Select(expProduct => new ExpVariation(expProduct));
+        }
+
+        private static async Task<object> ResolveAssociationConnectionAsync(IMediator mediator, IResolveConnectionContext<ExpProduct> context)
         {
             var first = context.First;
 
@@ -249,7 +374,27 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             var response = await mediator.Send(query);
 
-            return new PagedConnection<ProductAssociation>(response.Result.Results, skip, Convert.ToInt32(context.After ?? 0.ToString()), response.Result.TotalCount);
+            return new PagedConnection<ProductAssociation>(response.Result.Results, query.Skip, query.Take, response.Result.TotalCount);
+        }
+
+        private static async Task<object> ResolveVideosConnectionAsync(IMediator mediator, IResolveConnectionContext<ExpProduct> context)
+        {
+            var first = context.First;
+
+            int.TryParse(context.After, out var skip);
+
+            var query = new SearchVideoQuery
+            {
+                Skip = skip,
+                Take = first ?? context.PageSize ?? 10,
+                OwnerType = "Product",
+                OwnerId = context.Source.Id,
+                CultureName = context.GetArgumentOrValue<string>("cultureName")
+            };
+
+            var response = await mediator.Send(query);
+
+            return new PagedConnection<Video>(response.Result.Results, query.Skip, query.Take, response.Result.TotalCount);
         }
     }
 }

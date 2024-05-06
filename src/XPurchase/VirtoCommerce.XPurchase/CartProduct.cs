@@ -10,7 +10,7 @@ using VirtoCommerce.StoreModule.Core.Model;
 
 namespace VirtoCommerce.XPurchase
 {
-    public class CartProduct : Entity
+    public class CartProduct : Entity, ICloneable
     {
         public CartProduct(CatalogProduct product)
         {
@@ -18,9 +18,23 @@ namespace VirtoCommerce.XPurchase
             Id = product.Id;
         }
 
+        public CartProduct(XDigitalCatalog.ExpProduct expProduct)
+        {
+            //TODO: rework this 
+            Product = expProduct.IndexedProduct;
+            Id = expProduct.Id;
+            AllPrices = expProduct.AllPrices;
+            AllInventories = expProduct.AllInventories;
+            Inventory = expProduct.Inventory;
+            Price = expProduct.AllPrices?.FirstOrDefault();
+            LoadDependencies = false;
+        }
+
+        public bool LoadDependencies { get; set; } = true;
+
         public CatalogProduct Product { get; private set; }
 
-        public ProductPrice Price { get; private set; }
+        public ProductPrice Price { get; set; }
 
         public IList<ProductPrice> AllPrices { get; private set; } = new List<ProductPrice>();
 
@@ -83,10 +97,14 @@ namespace VirtoCommerce.XPurchase
                 //For each currency need get nominal price (with min qty)
                 var orderedPrices = currencyGroup.OrderBy(x => x.MinQuantity ?? 0).ThenBy(x => x.ListPrice);
                 var nominalPrice = orderedPrices.FirstOrDefault();
-                //and add to nominal price other prices as tier prices
-                nominalPrice.TierPrices.AddRange(orderedPrices.Select(x => new TierPrice(x.SalePrice, x.MinQuantity ?? 1)));
-                //Add nominal price to product prices list
-                AllPrices.Add(nominalPrice);
+
+                if (nominalPrice != null)
+                {
+                    //and add to nominal price other prices as tier prices
+                    nominalPrice.TierPrices.AddRange(orderedPrices.Select(x => new TierPrice(x.ListPrice, x.SalePrice, x.MinQuantity ?? 1)));
+                    //Add nominal price to product prices list
+                    AllPrices.Add(nominalPrice);
+                }
             }
             //Set current product price for current currency
             Price = AllPrices.FirstOrDefault(x => x.Currency.Equals(currency));
@@ -109,12 +127,27 @@ namespace VirtoCommerce.XPurchase
             Inventory = null;
             AllInventories = inventories.Where(x => x.ProductId == Id && availFullfilmentCentersIds.Contains(x.FulfillmentCenterId)).ToList();
 
-            Inventory = inventories.OrderByDescending(x => Math.Max(0, x.InStockQuantity - x.ReservedQuantity)).FirstOrDefault();
+            Inventory = AllInventories.OrderByDescending(x => Math.Max(0, x.InStockQuantity - x.ReservedQuantity)).FirstOrDefault();
 
             if (store.MainFulfillmentCenterId != null)
             {
-                Inventory = AllInventories.FirstOrDefault(x => x.FulfillmentCenterId == store.MainFulfillmentCenterId) ?? Inventory;
+                Inventory = AllInventories.FirstOrDefault(x => x.FulfillmentCenterId == store.MainFulfillmentCenterId && x.InStockQuantity - x.ReservedQuantity > 0) ?? Inventory;
             }
         }
+
+        #region ICloneable
+
+        public virtual object Clone()
+        {
+            var result = MemberwiseClone() as CartProduct;
+
+            result.Inventory = Inventory?.Clone() as InventoryInfo;
+            result.Price = Price?.Clone() as ProductPrice;
+            result.Product = Product.Clone() as CatalogProduct;
+
+            return result;
+        }
+
+        #endregion ICloneable
     }
 }

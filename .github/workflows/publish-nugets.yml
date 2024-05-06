@@ -1,0 +1,38 @@
+# v3.800.6
+# https://virtocommerce.atlassian.net/browse/VCST-915
+name: Publish nuget
+
+on:
+  workflow_dispatch:
+    inputs:
+      publishAlpha:
+        description: 'Publish nuget as alpha version.'
+        required: true
+        default: true
+        type: boolean
+
+jobs:
+  test:
+    uses: VirtoCommerce/.github/.github/workflows/test-and-sonar.yml@v3.800.6    
+    secrets:
+      sonarToken: ${{ secrets.SONAR_TOKEN }}
+
+  build:
+    uses: VirtoCommerce/.github/.github/workflows/build.yml@v3.800.6    
+    with:
+      uploadPackage: 'true'
+      uploadDocker: 'false'
+      forceVersionSuffix: ${{ github.event.inputs.publishAlpha }}
+    secrets:
+      envPAT: ${{ secrets.REPO_TOKEN }}
+
+  publish-nuget:
+    needs:
+      [build, test]
+    uses: VirtoCommerce/.github/.github/workflows/publish-github.yml@v3.800.6    
+    with:
+      fullKey: ${{ needs.build.outputs.packageFullKey }}
+      forceGithub: false
+    secrets:
+      envPAT: ${{ secrets.GITHUB_TOKEN }}
+      nugetKey: ${{ secrets.NUGET_KEY }}

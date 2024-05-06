@@ -9,9 +9,11 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
         public OutlineItemType()
         {
             Field(x => x.Id, nullable: false);
-            Field(x => x.Name, nullable: true);
-            Field(x => x.SeoObjectType, nullable: true);
-            Field<ListGraphType<SeoInfoType>>("seoInfos", resolve: context => context.Source.SeoInfos);
+            Field(x => x.Name, nullable: false);
+            Field(x => x.SeoObjectType, nullable: false);
+            Field<ListGraphType<NonNullGraphType<SeoInfoType>>>("seoInfos",
+                "SEO info",
+                resolve: context => context.Source.SeoInfos);
         }
     }
 }

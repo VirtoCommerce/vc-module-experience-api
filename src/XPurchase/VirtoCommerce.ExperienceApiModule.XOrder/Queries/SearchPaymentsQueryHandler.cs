@@ -23,7 +23,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Queries
             _paymentsSearchService = paymentsSearchService;
         }
 
-        public async Task<PaymentSearchResult> Handle(SearchPaymentsQuery request, CancellationToken cancellationToken)
+        public virtual async Task<PaymentSearchResult> Handle(SearchPaymentsQuery request, CancellationToken cancellationToken)
         {
             var searchCriteria = new PaymentsSearchCriteriaBuilder(_searchPhraseParser, _mapper)
                                         .ParseFilters(request.Filter)
@@ -31,7 +31,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Queries
                                         .WithPaging(request.Skip, request.Take)
                                         .WithSorting(request.Sort)
                                         .Build();
-            var searchResult = await _paymentsSearchService.SearchPaymentsAsync(searchCriteria);
+            var searchResult = await _paymentsSearchService.SearchAsync(searchCriteria);
             return searchResult;
         }
     }

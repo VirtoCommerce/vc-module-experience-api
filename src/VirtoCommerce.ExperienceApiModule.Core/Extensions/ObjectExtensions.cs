@@ -1,3 +1,4 @@
+using System;
 using Newtonsoft.Json.Linq;
 
 namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
@@ -16,6 +17,11 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
             var jObject = JObject.FromObject(source);
             var result = jObject.ToObject<T>();
             return result;
+        }
+
+        public static TResult Convert<TSource, TResult>(this TSource source, Func<TSource, TResult> convert)
+        {
+            return convert(source);
         }
     }
 }

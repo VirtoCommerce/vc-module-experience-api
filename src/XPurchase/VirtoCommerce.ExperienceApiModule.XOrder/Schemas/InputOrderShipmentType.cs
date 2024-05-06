@@ -29,7 +29,8 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field(x => x.EmployeeName, true);
             Field(x => x.ShipmentMethodCode, true);
             Field(x => x.ShipmentMethodOption, true);
-            Field<InputOrderShippingMethodType>(nameof(Shipment.ShippingMethod));
+            Field<InputOrderShippingMethodType>(nameof(Shipment.ShippingMethod),
+                "Shipping method");
             Field(x => x.CustomerOrderId);
             Field(x => x.WeightUnit, true);
             Field(x => x.Weight, true);
@@ -37,7 +38,8 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field(x => x.Height, true);
             Field(x => x.Length, true);
             Field(x => x.Width, true);
-            Field<InputOrderAddressType>(nameof(Shipment.DeliveryAddress));
+            Field<InputOrderAddressType>(nameof(Shipment.DeliveryAddress),
+                "Delivery address");
 
             Field(x => x.TaxType, true);
             Field(x => x.TaxPercentRate);
@@ -50,11 +52,18 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field(x => x.DiscountAmountWithTax);
             Field(x => x.TaxTotal);
 
-            Field<NonNullGraphType<ListGraphType<InputOrderTaxDetailType>>>(nameof(Shipment.TaxDetails));
-            Field<NonNullGraphType<ListGraphType<InputOrderShipmentItemType>>>(nameof(Shipment.Items));
+            Field(x => x.TrackingNumber, true);
+            Field(x => x.TrackingUrl, true);
+            Field(x => x.DeliveryDate, true);
+
+            Field<NonNullGraphType<ListGraphType<InputOrderTaxDetailType>>>(nameof(Shipment.TaxDetails),
+                "Tax details");
+            Field<NonNullGraphType<ListGraphType<InputOrderShipmentItemType>>>(nameof(Shipment.Items),
+                "Shipment items");
             Field<NonNullGraphType<ListGraphType<InputOrderShipmentPackageType>>>(nameof(Shipment.Packages));
-            Field<NonNullGraphType<ListGraphType<InputPaymentInType>>>(nameof(Shipment.InPayments));
-            Field<NonNullGraphType<ListGraphType<InputOrderDiscountType>>>(nameof(Shipment.Discounts));
+            Field<NonNullGraphType<ListGraphType<InputOrderPaymentType>>>(nameof(Shipment.InPayments));
+            Field<NonNullGraphType<ListGraphType<InputOrderDiscountType>>>(nameof(Shipment.Discounts),
+                "Discounts");
         }
     }
 }

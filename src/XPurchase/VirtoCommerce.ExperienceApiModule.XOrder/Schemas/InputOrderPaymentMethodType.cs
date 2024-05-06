@@ -8,7 +8,8 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
         public InputOrderPaymentMethodType()
         {
             Field(x => x.Id);
-            Field<ListGraphType<InputOrderTaxDetailType>>(nameof(PaymentMethod.TaxDetails));
+            Field<ListGraphType<InputOrderTaxDetailType>>(nameof(PaymentMethod.TaxDetails),
+                "Tax details");
             Field(x => x.TaxTotal);
             Field(x => x.TypeName, true);
             Field(x => x.StoreId, true);
@@ -25,10 +26,12 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Schemas
             Field(x => x.LogoUrl, true);
             Field(x => x.Name, true);
             Field(x => x.Code);
-            Field<IntGraphType>(nameof(PaymentMethod.PaymentMethodType));
-            Field<IntGraphType>(nameof(PaymentMethod.PaymentMethodGroupType));
+            Field<IntGraphType>(nameof(PaymentMethod.PaymentMethodType),
+                "Payment method type");
+            Field<IntGraphType>(nameof(PaymentMethod.PaymentMethodGroupType),
+                "Payment method group type");
 
-            //TODO
+            //PT-5383: Add additional properties to XOrder types:
             //public ICollection<ObjectSettingEntry> Settings);
         }
     }

@@ -1,4 +1,4 @@
-using GraphQL.Types;
+using GraphQL;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.Platform.Core.Common;
@@ -16,6 +16,13 @@ namespace VirtoCommerce.XPurchase.Extensions
         public static Currency CartCurrency(this IResolveFieldContext userContext)
         {
             return userContext.GetValueForSource<CartAggregate>().Currency;
+        }
+
+        public static Money GetTotal(this IResolveFieldContext<CartAggregate> context, decimal number)
+        {
+            return context.Source.HasSelectedLineItems
+                ? number.ToMoney(context.Source.Currency)
+                : new Money(0.0m, context.Source.Currency);
         }
 
         public static T GetCartQuery<T>(this IResolveFieldContext context) where T : ICartQuery

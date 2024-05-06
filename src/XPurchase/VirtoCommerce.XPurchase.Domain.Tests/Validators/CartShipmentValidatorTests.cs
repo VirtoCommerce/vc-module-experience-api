@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
 using FluentValidation;
-using FluentValidation.Validators;
 using VirtoCommerce.ShippingModule.Core.Model;
 using VirtoCommerce.XPurchase.Tests.Helpers;
+using VirtoCommerce.XPurchase.Tests.Helpers.Stubs;
 using VirtoCommerce.XPurchase.Validators;
 using Xunit;
 
@@ -13,7 +13,6 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
 {
     public class CartShipmentValidatorTests : XPurchaseMoqHelper
     {
-        private readonly CartValidationContext _context = new CartValidationContext();
         private readonly ShippingRate _shippingRate;
 
         public CartShipmentValidatorTests()
@@ -21,7 +20,7 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             _shippingRate = new ShippingRate
             {
                 OptionName = ":)",
-                ShippingMethod = new MockedShippingMethod("shippingMethodCode"),
+                ShippingMethod = new StubShippingMethod("shippingMethodCode"),
                 Rate = 777,
             };
 
@@ -30,19 +29,24 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
                 _shippingRate
             };
         }
+               
 
         [Fact]
-        public async Task ValidateShipment_RuleSetDefault_Valid()
+        public async Task ValidateShipment_RuleSetDefault_ShipmentMethodCodeIsNull_Valid()
         {
             // Arrange
-            var shipment = new VirtoCommerce.CartModule.Core.Model.Shipment
+            var shipment = new CartModule.Core.Model.Shipment
             {
-                ShipmentMethodCode = _fixture.Create<string>()
+                ShipmentMethodCode = null
             };
 
             // Act
-            var validator = new CartShipmentValidator(_context.AvailShippingRates);
-            var result = await validator.ValidateAsync(shipment, ruleSet: "default");
+            var validator = new CartShipmentValidator();
+            var result = await validator.ValidateAsync(new ShipmentValidationContext
+            {
+                Shipment = shipment,
+                AvailShippingRates = _context.AvailShippingRates
+            });
 
             // Assert
             result.IsValid.Should().BeTrue();
@@ -50,55 +54,43 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
         }
 
         [Fact]
-        public async Task ValidateShipment_RuleSetDefault_ShipmentMethodCodeIsNull_Invalid()
+        public async Task ValidateShipment_RuleSetDefault_ShipmentMethodCodeIsEmpty_Valid()
         {
             // Arrange
-            var shipment = new VirtoCommerce.CartModule.Core.Model.Shipment
-            {
-                ShipmentMethodCode = null
-            };
-
-            // Act
-            var validator = new CartShipmentValidator(_context.AvailShippingRates);
-            var result = await validator.ValidateAsync(shipment, ruleSet: "default");
-
-            // Assert
-            result.IsValid.Should().BeFalse();
-            result.Errors.Should().NotBeEmpty();
-            result.Errors.Should().Contain(x => x.PropertyName == "ShipmentMethodCode" && x.ErrorCode == nameof(NotNullValidator));
-        }
-
-        [Fact]
-        public async Task ValidateShipment_RuleSetDefault_ShipmentMethodCodeIsEmpty_Invalid()
-        {
-            // Arrange
-            var shipment = new VirtoCommerce.CartModule.Core.Model.Shipment
+            var shipment = new CartModule.Core.Model.Shipment
             {
                 ShipmentMethodCode = string.Empty
             };
 
             // Act
-            var validator = new CartShipmentValidator(_context.AvailShippingRates);
-            var result = await validator.ValidateAsync(shipment, ruleSet: "default");
+            var validator = new CartShipmentValidator();
+            var result = await validator.ValidateAsync(new ShipmentValidationContext
+            {
+                Shipment = shipment,
+                AvailShippingRates = _context.AvailShippingRates
+            });
 
             // Assert
-            result.IsValid.Should().BeFalse();
-            result.Errors.Should().NotBeEmpty();
-            result.Errors.Should().Contain(x => x.PropertyName == "ShipmentMethodCode" && x.ErrorCode == nameof(NotEmptyValidator));
+            result.IsValid.Should().BeTrue();
+            result.Errors.Should().BeEmpty();
         }
 
         [Fact]
-        public async Task ValidateShipment_RuleSetStrict_UnavailableMethodError()
+        public async Task ValidateShipment_RuleSetDefault_UnavailableMethodError()
         {
             // Arrange
-            var shipment = new VirtoCommerce.CartModule.Core.Model.Shipment
+            var shipment = new CartModule.Core.Model.Shipment
             {
                 ShipmentMethodCode = "UnavailableShipmentMethod"
             };
 
             // Act
-            var validator = new CartShipmentValidator(_context.AvailShippingRates);
-            var result = await validator.ValidateAsync(shipment, ruleSet: "strict");
+            var validator = new CartShipmentValidator();
+            var result = await validator.ValidateAsync(new ShipmentValidationContext
+            {
+                Shipment = shipment,
+                AvailShippingRates = _context.AvailShippingRates
+            });
 
             // Assert
             result.IsValid.Should().BeFalse();
@@ -108,10 +100,10 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
         }
 
         [Fact]
-        public async Task ValidateShipment_RuleSetStrict_PriceError()
+        public async Task ValidateShipment_RuleSetDefault_PriceError()
         {
             // Arrange
-            var shipment = new VirtoCommerce.CartModule.Core.Model.Shipment
+            var shipment = new CartModule.Core.Model.Shipment
             {
                 ShipmentMethodCode = "shippingMethodCode",
                 ShipmentMethodOption = ":)",
@@ -120,8 +112,12 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             shipment.Price = _shippingRate.Rate + 1;
 
             // Act
-            var validator = new CartShipmentValidator(_context.AvailShippingRates);
-            var result = await validator.ValidateAsync(shipment, ruleSet: "strict");
+            var validator = new CartShipmentValidator();
+            var result = await validator.ValidateAsync(new ShipmentValidationContext
+            {
+                Shipment = shipment,
+                AvailShippingRates = _context.AvailShippingRates
+            });
 
             // Assert
             result.IsValid.Should().BeFalse();

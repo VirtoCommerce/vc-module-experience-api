@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,8 +14,6 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
 {
     public class CartLineItemValidatorTests : XPurchaseMoqHelper
     {
-        private readonly CartValidationContext _context = new CartValidationContext();
-
         public CartLineItemValidatorTests()
         {
             _context.AllCartProducts = new List<CartProduct>()
@@ -32,8 +31,12 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             item.ProductId = lineItem.Id;
 
             // Act
-            var validator = new CartLineItemValidator(_context.AllCartProducts);
-            var result = await validator.ValidateAsync(item, ruleSet: "strict");
+            var validator = new CartLineItemValidator();
+            var result = await validator.ValidateAsync(new LineItemValidationContext
+            {
+                AllCartProducts = _context.AllCartProducts,
+                LineItem = item
+            }, options => options.IncludeRuleSets("strict"));
 
             // Assert
             result.Errors.Should().BeEmpty();
@@ -44,6 +47,7 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
         [InlineData("Product_null")]
         [InlineData("Product_IsActive_false")]
         [InlineData("Product_IsBuyable_false")]
+        [InlineData("Product_ZeroPrice")]
         public async Task ValidateCartLineItem_RuleSetStrict_UnavailableError(string scenario)
         {
             // Arrange
@@ -64,11 +68,20 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
                 case "Product_IsBuyable_false":
                     cartProduct.Product.IsBuyable = false;
                     break;
+
+                case "Product_ZeroPrice":
+                    cartProduct.ApplyPrices(Array.Empty<PricingModule.Core.Model.Price>(), null);
+                    break;
+
             }
 
             // Act
-            var validator = new CartLineItemValidator(_context.AllCartProducts);
-            var result = await validator.ValidateAsync(item, ruleSet: "strict");
+            var validator = new CartLineItemValidator();
+            var result = await validator.ValidateAsync(new LineItemValidationContext
+            {
+                LineItem = item,
+                AllCartProducts = _context.AllCartProducts
+            });
 
             // Assert
             result.IsValid.Should().BeFalse();
@@ -87,8 +100,12 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             item.Quantity = InStockQuantity * 2;
 
             // Act
-            var validator = new CartLineItemValidator(_context.AllCartProducts);
-            var result = await validator.ValidateAsync(item, ruleSet: "strict");
+            var validator = new CartLineItemValidator();
+            var result = await validator.ValidateAsync(new LineItemValidationContext
+            {
+                LineItem = item,
+                AllCartProducts = _context.AllCartProducts
+            });
 
             // Assert
             result.IsValid.Should().BeFalse();
@@ -96,7 +113,7 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
         }
 
         [Fact]
-        public async Task ValidateCartLineItem_RuleSetStrict_PriceError()
+        public async Task ValidateCartLineItem_PriceChanged_PriceError()
         {
             // Arrange
             var item = _fixture.Create<LineItem>();
@@ -106,14 +123,67 @@ namespace VirtoCommerce.XPurchase.Tests.Validators
             item.SalePrice /= 2m;
 
             // Act
-            var validator = new CartLineItemValidator(_context.AllCartProducts);
-            var result = await validator.ValidateAsync(item, ruleSet: "strict");
+            var validator = new CartLineItemPriceChangedValidator();
+            var result = await validator.ValidateAsync(new CartLineItemPriceChangedValidationContext
+            {
+                LineItem = item,
+                CartProducts = _context.AllCartProducts.ToDictionary(x => x.Id)
+            });
 
             // Assert
             result.IsValid.Should().BeFalse();
             result.Errors.Should().NotBeEmpty();
             result.Errors.Should().HaveCount(1);
             result.Errors.Should().Contain(x => x.ErrorCode == "PRODUCT_PRICE_CHANGED");
+        }
+
+        [Fact]
+        public async Task ValidateCartLineItem_RuleSetStrict_ProductMinQuantityError()
+        {
+            // Arrange
+            var item = _fixture.Create<LineItem>();
+            var lineItem = _context.AllCartProducts.FirstOrDefault();
+            item.ProductId = lineItem.Id;
+
+            item.Quantity = 1;
+            lineItem.Product.MinQuantity = 5;
+
+            // Act
+            var validator = new CartLineItemValidator();
+            var result = await validator.ValidateAsync(new LineItemValidationContext
+            {
+                LineItem = item,
+                AllCartProducts = _context.AllCartProducts
+            });
+
+            // Assert
+            result.IsValid.Should().BeFalse();
+            result.Errors.Should().Contain(x => x.ErrorCode == "PRODUCT_MIN_QTY");
+        }
+
+        [Fact]
+        public async Task ValidateCartLineItem_RuleSetStrict_ProductMaxQuantityError()
+        {
+            // Arrange
+            var item = _fixture.Create<LineItem>();
+            var lineItem = _context.AllCartProducts.FirstOrDefault();
+            item.ProductId = lineItem.Id;
+
+            item.Quantity = 10;
+            lineItem.Product.MaxQuantity = 5;
+
+
+            // Act
+            var validator = new CartLineItemValidator();
+            var result = await validator.ValidateAsync(new LineItemValidationContext
+            {
+                LineItem = item,
+                AllCartProducts = _context.AllCartProducts
+            });
+
+            // Assert
+            result.IsValid.Should().BeFalse();
+            result.Errors.Should().Contain(x => x.ErrorCode == "PRODUCT_MAX_QTY");
         }
     }
 }

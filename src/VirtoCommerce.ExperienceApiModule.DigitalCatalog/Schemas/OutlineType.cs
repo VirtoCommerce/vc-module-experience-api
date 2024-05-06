@@ -1,4 +1,4 @@
-﻿using GraphQL.Types;
+using GraphQL.Types;
 using VirtoCommerce.CoreModule.Core.Outlines;
 
 namespace VirtoCommerce.XDigitalCatalog.Schemas
@@ -7,7 +7,9 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
     {
         public OutlineType()
         {
-            Field<ListGraphType<OutlineItemType>>("items", resolve: context => context.Source.Items);
+            Field<ListGraphType<NonNullGraphType<OutlineItemType>>>("items",
+                "Outline items",
+                resolve: context => context.Source.Items);
         }
     }
 }

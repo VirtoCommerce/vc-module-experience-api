@@ -6,7 +6,8 @@ namespace VirtoCommerce.XPurchase.Schemas
     {
         public InputRemoveItemType()
         {
-            Field<NonNullGraphType<StringGraphType>>("lineItemId");
+            Field<NonNullGraphType<StringGraphType>>("lineItemId",
+                "Line item Id");
         }
     }
 }

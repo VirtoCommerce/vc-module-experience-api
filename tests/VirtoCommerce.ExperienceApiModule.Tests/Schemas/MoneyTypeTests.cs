@@ -1,5 +1,6 @@
 using System.Linq;
 using FluentAssertions;
+using GraphQL;
 using GraphQL.Types;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
 using VirtoCommerce.ExperienceApiModule.Tests.Helpers;

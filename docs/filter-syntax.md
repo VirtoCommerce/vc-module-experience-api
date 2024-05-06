@@ -44,11 +44,13 @@ This will find products whose prices have values between 100 and 200, inclusive.
 Inclusive range queries are denoted by square brackets. Exclusive range queries are denoted by round brackets.
 
 `price:(100 TO 200]`
+
 This will find products whose prices have values between 100 exclusive and 200 inclusive.
 
 You can skip one of the values to ignore either the lower or the upper bound
 
 `price:(TO 100]`
+
 where the price is less than or equal to 100
 
 ## Boolean Operators
@@ -56,6 +58,7 @@ where the price is less than or equal to 100
 Passing multiple field terms in the one filter expression separated by space delimiter will combine them with an AND operator.
 
 The following example search request filters products of a certain brand "Onkyo" AND of the color “Black”.
+
 `color:Black brand:Onkyo`
 
 > [!CAUTION]
@@ -67,12 +70,15 @@ To perform a single character wildcard search use the `?` symbol.
 To perform a multiple character wildcard search use the `*` symbol.
 
 `te?t`
+
 Multiple character wildcard searches looks for 0 or more characters.
 
 For example, to search for test, tests or tester, you can use the search:
+
 `test*`
 
 You can also use the wildcard searches in the middle of a term.
+
 `te*t`
 
 ## Escaping Special Characters
@@ -80,28 +86,50 @@ Inside the double quotes block you might use any unsafe characters, to escape do
 
 `\"my cool property\":\"&~!'\"`
 
+When term value contains `"` or `\`, these characters are escaped twice.
+
+Field name: `my property`
+
+Field value: `value with \ and " in the middle`
+
+1. Building the term filter:
+
+`"my property":"value with \\ and \" in the middle"`
+
+2. Putting this term filter into the GraphQL filter:
+
+`filter:"\"my property\":\"value with \\\\ and \\\" in the middle\""`
+
 ## More examples
 `color:Black,White`
+
 where the color is 'Black' OR 'White'
 
 `color:Black color:White`
+
 where the color is 'Black' AND 'White'
 
 `price_usd:[100 TO 200]`
+
 where the price is in USD and between values including bounds
 
 `price:(100 TO 200)`
+
 where the price is in any currency and between values excluding bounds
 
 `price:(0 TO)`
+
 where the price is greater than zero
 
 `price:(TO 100]`
+
 where the price is less than or equal to 100
 
 `Da?? Red*`
+
 use ? to replace a single character, and * to replace zero or more characters
 
 `color:Black price:[100 TO 200)`
+
 combine keywords and filters
 

@@ -1,10 +1,8 @@
-using System.Collections.Generic;
+using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.XPurchase.Queries
 {
-    public class SearchCartResponse
+    public class SearchCartResponse : GenericSearchResult<CartAggregate>
     {
-        public int TotalCount { get; set; }
-        public IList<CartAggregate> Results { get; set; }
     }
 }

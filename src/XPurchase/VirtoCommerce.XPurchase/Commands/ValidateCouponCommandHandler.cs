@@ -13,16 +13,24 @@ namespace VirtoCommerce.XPurchase.Commands
 
         private ICartAggregateRepository CartAggrRepository { get; set; }
 
-        public async Task<bool> Handle(ValidateCouponCommand request, CancellationToken cancellationToken)
+        public virtual async Task<bool> Handle(ValidateCouponCommand request, CancellationToken cancellationToken)
         {
-            var cartAggr = await GetCartAggregateFromCommandAsync(request);
-            var isValid = await cartAggr.ValidateCouponAsync(request.Coupon);
-            return isValid;
+            var cartAggregate = await GetCartAggregateFromCommandAsync(request);
+
+            if (cartAggregate != null)
+            {
+                var clonedCartAggrerate = cartAggregate.Clone() as CartAggregate;
+                clonedCartAggrerate.Cart.Coupons = new[] { request.Coupon };
+
+                return await clonedCartAggrerate.ValidateCouponAsync(request.Coupon);
+            }
+
+            return false;
         }
 
-        protected Task<CartAggregate> GetCartAggregateFromCommandAsync(ValidateCouponCommand request)
+        protected virtual Task<CartAggregate> GetCartAggregateFromCommandAsync(ValidateCouponCommand request)
         {
-            return CartAggrRepository.GetCartAsync(request.CartName, request.StoreId, request.UserId, request.Language, request.Currency, request.CartType);
+            return CartAggrRepository.GetCartAsync(request.CartName, request.StoreId, request.UserId, request.CultureName, request.CurrencyCode, request.CartType);
         }
     }
 }

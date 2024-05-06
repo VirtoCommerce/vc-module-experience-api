@@ -1,5 +1,6 @@
 using System;
 using AutoMapper;
+using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.CartModule.Core.Model.Search;
 using VirtoCommerce.OrdersModule.Core.Model;
 using VirtoCommerce.Platform.Core.Common;
@@ -70,9 +71,29 @@ namespace VirtoCommerce.XPurchase
             return this;
         }
 
+        public CartSearchCriteriaBuilder WithOrganizationId(string organizationId)
+        {
+            _searchCriteria.CustomerOrOrganization = true;
+            _searchCriteria.OrganizationId = organizationId ?? _searchCriteria.OrganizationId;
+            return this;
+        }
+
         public CartSearchCriteriaBuilder WithCustomerId(string customerId)
         {
             _searchCriteria.CustomerId = customerId ?? _searchCriteria.CustomerId;
+            return this;
+        }
+
+        public CartSearchCriteriaBuilder WithScope(string scope)
+        {
+            if (string.IsNullOrEmpty(scope))
+            {
+                return this;
+            }
+
+            _searchCriteria.CustomerOrOrganization = false;
+            _searchCriteria.CustomerId = scope.EqualsInvariant(XPurchaseConstants.OrganizationScope) ? null : _searchCriteria.CustomerId;
+            _searchCriteria.NoOrganization = scope.EqualsInvariant(XPurchaseConstants.PrivateScope);
             return this;
         }
 
@@ -90,6 +111,14 @@ namespace VirtoCommerce.XPurchase
             return this;
         }
 
+        public CartSearchCriteriaBuilder WithResponseGroup(CartResponseGroup responseGroup)
+        {
+            _searchCriteria.ResponseGroup = responseGroup.ToString();
+
+            return this;
+        }
+
+        [Obsolete("Use WithResponseGroup")]
         public CartSearchCriteriaBuilder AddResponseGroup(CustomerOrderResponseGroup responseGroup)
         {
             _searchCriteria.ResponseGroup = responseGroup.ToString();

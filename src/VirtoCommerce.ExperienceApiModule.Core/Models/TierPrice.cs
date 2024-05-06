@@ -16,11 +16,16 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Models
         }
 
         public TierPrice(Money price, long quantity)
+            : this(price, price, quantity)
         {
-            Currency = price.Currency;
+        }
+
+        public TierPrice(Money listPrice, Money salePrice, long quantity)
+        {
+            Currency = salePrice.Currency;
             TaxDetails = new List<TaxDetail>();
-            Price = price;
-            DiscountAmount = new Money(price.Currency);
+            Price = listPrice;
+            DiscountAmount = listPrice - salePrice;
 
             Quantity = quantity;
         }
@@ -128,5 +133,21 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Models
             yield return TaxPercentRate;
             yield return Quantity;
         }
+
+        #region ICloneable
+
+        public override object Clone()
+        {
+            var result = MemberwiseClone() as TierPrice;
+
+            result.Currency = Currency?.Clone() as Currency;
+            result.DiscountAmount = DiscountAmount?.Clone() as Money;
+            result.Price = Price?.Clone() as Money;
+            result.TaxDetails = TaxDetails?.Select(x => x.Clone() as TaxDetail).ToList();
+
+            return result;
+        }
+
+        #endregion ICloneable
     }
 }

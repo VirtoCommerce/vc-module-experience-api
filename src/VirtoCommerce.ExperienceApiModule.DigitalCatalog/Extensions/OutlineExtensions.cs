@@ -2,11 +2,14 @@ using System.Collections.Generic;
 using System.Linq;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CoreModule.Core.Outlines;
+using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Settings;
 using VirtoCommerce.StoreModule.Core.Model;
 using VirtoCommerce.Tools;
+using VirtoCommerce.XDigitalCatalog.Breadcrumbs;
+using SeoStoreSetting = VirtoCommerce.StoreModule.Core.ModuleConstants.Settings.SEO;
 using toolsDto = VirtoCommerce.Tools.Models;
 
 namespace VirtoCommerce.XDigitalCatalog.Extensions
@@ -26,7 +29,6 @@ namespace VirtoCommerce.XDigitalCatalog.Extensions
         public static string GetSeoPath(this IEnumerable<Outline> outlines, Store store, string language, string defaultValue)
         {
             string result = null;
-            EnumUtility.SafeParse(store.Settings.GetSettingValue("Stores.SeoLinksType", ""), toolsDto.SeoLinksType.Collapsed);
 
             var toolsStore = new toolsDto.Store
             {
@@ -35,7 +37,7 @@ namespace VirtoCommerce.XDigitalCatalog.Extensions
                 SecureUrl = store.SecureUrl,
                 Catalog = store.Catalog,
                 DefaultLanguage = store.DefaultLanguage,
-                SeoLinksType = EnumUtility.SafeParse(store.Settings.GetSettingValue("Stores.SeoLinksType", ""), toolsDto.SeoLinksType.Collapsed),
+                SeoLinksType = EnumUtility.SafeParse(store.Settings.GetValue<string>(SeoStoreSetting.SeoLinksType), toolsDto.SeoLinksType.Collapsed),
                 Languages = store.Languages?.ToList(),
             };
             var toolsOutlines = outlines?.Select(o => o.JsonConvert<toolsDto.Outline>()).ToArray();
@@ -110,6 +112,55 @@ namespace VirtoCommerce.XDigitalCatalog.Extensions
                     .Where(x => x != null && x.SeoObjectType != "Catalog")
                     .Select(x => x.Id)
                 );
+        }
+
+        public static IEnumerable<Breadcrumb> GetBreadcrumbsFromOutLine(this IEnumerable<Outline> outlines, Store store, string cultureName)
+        {
+            var outlineItems = outlines
+                ?.FirstOrDefault(outline => outline.Items != null && outline.Items.Any(item => item.Id == store.Catalog && item.SeoObjectType == "Catalog"))
+                ?.Items
+                .ToList();
+
+            if (outlineItems.IsNullOrEmpty())
+            {
+                return Enumerable.Empty<Breadcrumb>();
+            }
+
+            var breadcrumbs = new List<Breadcrumb>();
+
+#pragma warning disable S2259 // False positive by IsNullOrEmpty
+            for (var i = outlineItems.Count - 1; i > 0; i--)
+            {
+                var item = outlineItems[i];
+
+                var innerOutline = new List<Outline> { new Outline { Items = outlineItems } };
+                var seoPath = innerOutline.GetSeoPath(store, cultureName, null);
+
+                outlineItems.Remove(item);
+                if (string.IsNullOrWhiteSpace(seoPath))
+                {
+                    continue;
+                }
+
+                var seoInfoForStoreAndLanguage = SeoInfoForStoreAndLanguage(item, store.Id, cultureName);
+
+                var breadcrumb = new Breadcrumb(item.SeoObjectType)
+                {
+                    ItemId = item.Id,
+                    Title = seoInfoForStoreAndLanguage?.PageTitle?.EmptyToNull() ?? item.Name,
+                    SemanticUrl = seoInfoForStoreAndLanguage?.SemanticUrl,
+                    SeoPath = seoPath
+                };
+                breadcrumbs.Insert(0, breadcrumb);
+            }
+#pragma warning restore S2259 // Null pointers should not be dereferenced
+
+            return breadcrumbs;
+        }
+
+        public static SeoInfo SeoInfoForStoreAndLanguage(OutlineItem item, string storeId, string cultureName)
+        {
+            return item.SeoInfos?.FirstOrDefault(x => (x.StoreId == storeId) && (x.LanguageCode == cultureName));
         }
     }
 }

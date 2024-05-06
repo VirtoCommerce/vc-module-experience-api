@@ -1,4 +1,5 @@
 using GraphQL.Types;
+using VirtoCommerce.ExperienceApiModule.Core.Schemas;
 
 namespace VirtoCommerce.XPurchase.Schemas
 {
@@ -6,10 +7,16 @@ namespace VirtoCommerce.XPurchase.Schemas
     {
         public InputAddItemType()
         {
-            Field<NonNullGraphType<StringGraphType>>("productId");
-            Field<NonNullGraphType<IntGraphType>>("quantity");
-            Field<DecimalGraphType>("price");
-            Field<StringGraphType>("comment");
+            Field<NonNullGraphType<StringGraphType>>("productId",
+                "Product ID");
+            Field<NonNullGraphType<IntGraphType>>("quantity",
+                "Quantity");
+            Field<DecimalGraphType>("price",
+                "Price");
+            Field<StringGraphType>("comment",
+                "Comment");
+
+            Field<ListGraphType<InputDynamicPropertyValueType>>("dynamicProperties");
         }
     }
 }

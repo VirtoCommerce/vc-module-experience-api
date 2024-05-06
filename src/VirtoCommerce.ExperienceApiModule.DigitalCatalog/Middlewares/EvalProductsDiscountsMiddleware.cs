@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using PipelineNet.Middleware;
-using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
 using VirtoCommerce.MarketingModule.Core.Model.Promotions;
 using VirtoCommerce.MarketingModule.Core.Services;
@@ -20,7 +19,7 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
 
 
         public EvalProductsDiscountsMiddleware(
-            IMapper mapper           
+            IMapper mapper
             , IMarketingPromoEvaluator marketingEvaluator
             , IGenericPipelineLauncher pipeline)
         {
@@ -45,33 +44,40 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
             var responseGroup = EnumUtility.SafeParse(query.GetResponseGroup(), ExpProductResponseGroup.None);
             // If promotion evaluation requested
             if (responseGroup.HasFlag(ExpProductResponseGroup.LoadPrices))
-            {                
-                var promoEvalContext = new PromotionEvaluationContext
-                {
-                    Currency = query.CurrencyCode,
-                    StoreId = query.StoreId,
-                    Language = query.CultureName,
-                    CustomerId = query.UserId
-                };
-                await _pipeline.Execute(promoEvalContext);
+            {
+                var promoEvalContext = await GetPromotionEvaluationContext(query);
 
-                //Evaluate promotions
-                promoEvalContext.PromoEntries = parameter.Results.Select(x => _mapper.Map<ProductPromoEntry>(x, options =>
+                if (query.EvaluatePromotions)
                 {
-                    options.Items["all_currencies"] = parameter.AllStoreCurrencies;
-                    options.Items["currency"] = parameter.Currency;
-                })).ToList();
+                    //Evaluate promotions
+                    promoEvalContext.PromoEntries = parameter.Results.Select(x => _mapper.Map<ProductPromoEntry>(x, options =>
+                    {
+                        options.Items["all_currencies"] = parameter.AllStoreCurrencies;
+                        options.Items["currency"] = parameter.Currency;
+                    })).ToList();
 
-                var promotionResults = await _marketingEvaluator.EvaluatePromotionAsync(promoEvalContext);
-                var promoRewards = promotionResults.Rewards.OfType<CatalogItemAmountReward>().ToArray();
-                if (promoRewards.Any())
-                {
-                    parameter.Results.Apply(x => x.ApplyRewards(promoRewards));
-                }          
+                    var promotionResults = await _marketingEvaluator.EvaluatePromotionAsync(promoEvalContext);
+                    var promoRewards = promotionResults.Rewards.OfType<CatalogItemAmountReward>().ToArray();
+                    if (promoRewards.Any())
+                    {
+                        parameter.Results.Apply(x => x.ApplyRewards(promoRewards));
+                    }
+                }
             }
             await next(parameter);
         }
 
+        protected virtual async Task<PromotionEvaluationContext> GetPromotionEvaluationContext(SearchProductQuery query)
+        {
+            var promoEvalContext = AbstractTypeFactory<PromotionEvaluationContext>.TryCreateInstance();
+            promoEvalContext.Currency = query.CurrencyCode;
+            promoEvalContext.StoreId = query.StoreId;
+            promoEvalContext.Language = query.CultureName;
+            promoEvalContext.CustomerId = query.UserId;
 
+            await _pipeline.Execute(promoEvalContext);
+
+            return promoEvalContext;
+        }
     }
 }

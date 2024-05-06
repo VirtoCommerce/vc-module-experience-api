@@ -9,6 +9,7 @@ using VirtoCommerce.SearchModule.Core.Model;
 
 namespace VirtoCommerce.XDigitalCatalog.Binding
 {
+    [Obsolete("Not used anymore to incorrect logic")]
     public class PriceBinder : IIndexModelBinder
     {
         private static readonly Regex _priceFieldRegExp = new Regex(@"^price_([A-Za-z]{3})_?([a-z0-9]+)?$", RegexOptions.Compiled);
@@ -32,18 +33,21 @@ namespace VirtoCommerce.XDigitalCatalog.Binding
                 foreach (var pair in searchDocument)
                 {
                     var match = _priceFieldRegExp.Match(pair.Key);
-                    if (match.Success)
+                    if (!match.Success) continue;
+
+                    foreach (var listPrice in pair.Value is Array ? (object[])pair.Value : new[] { pair.Value })
                     {
-                        foreach (var listPrice in pair.Value is Array ? (object[])pair.Value : new[] { pair.Value })
+                        // If schema field required without filled values
+                        if (listPrice is null) continue;
+
+                        var price = new Price
                         {
-                            var price = new Price
-                            {
-                                Currency = match.Groups[1].Value,
-                                PricelistId = match.Groups[2].Value,
-                                List = Convert.ToDecimal(listPrice)
-                            };
-                            result.Add(price);
-                        }
+                            Currency = match.Groups[1].Value.ToUpperInvariant(),
+                            PricelistId = match.Groups[2].Value,
+                            List = Convert.ToDecimal(listPrice)
+                        };
+
+                        result.Add(price);
                     }
                 }
             }

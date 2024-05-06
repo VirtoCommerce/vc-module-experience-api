@@ -1,3 +1,5 @@
+using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -13,7 +15,22 @@ namespace VirtoCommerce.XPurchase.Commands
         public override async Task<CartAggregate> Handle(ChangeCartItemPriceCommand request, CancellationToken cancellationToken)
         {
             var cartAggregate = await GetOrCreateCartFromCommandAsync(request);
-            await cartAggregate.ChangeItemPriceAsync(new PriceAdjustment(request.ProductId, request.Price));
+            if (cartAggregate == null)
+            {
+                var tcs = new TaskCompletionSource<CartAggregate>();
+                tcs.SetException(new OperationCanceledException("Cart not found!"));
+                return await tcs.Task;
+            }
+
+            var lineItem = cartAggregate.Cart.Items.FirstOrDefault(x => x.Id.Equals(request.LineItemId));
+            var priceAdjustment = new PriceAdjustment
+            {
+                LineItem = lineItem,
+                LineItemId = request.LineItemId,
+                NewPrice = request.Price
+            };
+
+            await cartAggregate.ChangeItemPriceAsync(priceAdjustment);
 
             return await SaveCartAsync(cartAggregate);
         }

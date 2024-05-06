@@ -6,7 +6,8 @@ namespace VirtoCommerce.XPurchase.Schemas
     {
         public InputRemoveCouponType()
         {
-            Field<StringGraphType>("couponCode");
+            Field<StringGraphType>("couponCode",
+                "Coupon code");
         }
     }
 }
