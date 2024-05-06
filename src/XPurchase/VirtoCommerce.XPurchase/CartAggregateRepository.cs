@@ -47,7 +47,7 @@ namespace VirtoCommerce.XPurchase
             _cartProductsService = cartProductsService;
         }
 
-        public async Task SaveAsync(CartAggregate cartAggregate)
+        public virtual async Task SaveAsync(CartAggregate cartAggregate)
         {
             await cartAggregate.RecalculateAsync();
             cartAggregate.Cart.ModifiedDate = DateTime.UtcNow;
@@ -176,7 +176,7 @@ namespace VirtoCommerce.XPurchase
                 throw new OperationCanceledException($"store with id {cart.StoreId} not found");
             }
 
-            // Set Default Currency 
+            // Set Default Currency
             if (string.IsNullOrEmpty(cart.Currency))
             {
                 cart.Currency = store.DefaultCurrency;
