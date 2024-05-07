@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace VirtoCommerce.ExperienceApiModule.Core.Pipelines
@@ -8,10 +7,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Pipelines
     {
         public GenericPipelineBuilder(IServiceCollection services)
         {
-            if (services == null)
-            {
-                throw new ArgumentNullException(nameof(services));
-            }
+            ArgumentNullException.ThrowIfNull(services);
 
             Services = services;
         }
@@ -20,10 +16,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Pipelines
 
         public GenericPipelineBuilder<TResult> Configure(Action<GenericPipelineOptions<TResult>> configuration)
         {
-            if (configuration == null)
-            {
-                throw new ArgumentNullException(nameof(configuration));
-            }
+            ArgumentNullException.ThrowIfNull(configuration);
 
             Services.Configure(configuration);
 
@@ -32,10 +25,8 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Pipelines
 
         public GenericPipelineBuilder<TResult> AddMiddleware(Type type)
         {
-            if (type == null)
-            {
-                throw new ArgumentNullException(nameof(type));
-            }
+            ArgumentNullException.ThrowIfNull(type);
+
             Services.AddTransient(type);
 
             return Configure(options => options.Middlewares.Add(type));
@@ -43,14 +34,9 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Pipelines
 
         public GenericPipelineBuilder<TResult> ReplaceMiddleware(Type oldType, Type newType)
         {
-            if (oldType == null)
-            {
-                throw new ArgumentNullException(nameof(oldType));
-            }
-            if (newType == null)
-            {
-                throw new ArgumentNullException(nameof(newType));
-            }
+            ArgumentNullException.ThrowIfNull(oldType);
+            ArgumentNullException.ThrowIfNull(newType);
+
             Services.AddTransient(newType);
 
             return Configure(options =>
@@ -64,28 +50,18 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Pipelines
             });
         }
 
-        public GenericPipelineBuilder<TResult> RemoveMiddleware(Type type)
+        public GenericPipelineBuilder<TResult> RemoveMiddleware(Type oldType)
         {
-            if (type == null)
-            {
-                throw new ArgumentNullException(nameof(type));
-            }
-
-            var descriptor = Services.FirstOrDefault(service =>
-                service.ServiceType == type);
-
-            if (descriptor != null)
-            {
-                Services.Remove(descriptor);
-            }
+            ArgumentNullException.ThrowIfNull(oldType);
 
             return Configure(options =>
             {
-                var index = options.Middlewares.IndexOf(type);
-                if (index >= 0)
+                var oldTypeIndex = options.Middlewares.IndexOf(oldType);
+                if (oldTypeIndex < 0)
                 {
-                    options.Middlewares.RemoveAt(index);
+                    throw new OperationCanceledException($"{oldType} is not registered");
                 }
+                options.Middlewares.RemoveAt(oldTypeIndex);
             });
         }
     }
