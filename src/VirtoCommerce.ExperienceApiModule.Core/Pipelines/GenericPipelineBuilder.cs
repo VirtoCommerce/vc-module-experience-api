@@ -7,10 +7,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Pipelines
     {
         public GenericPipelineBuilder(IServiceCollection services)
         {
-            if (services == null)
-            {
-                throw new ArgumentNullException(nameof(services));
-            }
+            ArgumentNullException.ThrowIfNull(services);
 
             Services = services;
         }
@@ -19,10 +16,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Pipelines
 
         public GenericPipelineBuilder<TResult> Configure(Action<GenericPipelineOptions<TResult>> configuration)
         {
-            if (configuration == null)
-            {
-                throw new ArgumentNullException(nameof(configuration));
-            }
+            ArgumentNullException.ThrowIfNull(configuration);
 
             Services.Configure(configuration);
 
@@ -31,10 +25,8 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Pipelines
 
         public GenericPipelineBuilder<TResult> AddMiddleware(Type type)
         {
-            if (type == null)
-            {
-                throw new ArgumentNullException(nameof(type));
-            }
+            ArgumentNullException.ThrowIfNull(type);
+
             Services.AddTransient(type);
 
             return Configure(options => options.Middlewares.Add(type));
@@ -42,14 +34,9 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Pipelines
 
         public GenericPipelineBuilder<TResult> ReplaceMiddleware(Type oldType, Type newType)
         {
-            if (oldType == null)
-            {
-                throw new ArgumentNullException(nameof(oldType));
-            }
-            if (newType == null)
-            {
-                throw new ArgumentNullException(nameof(newType));
-            }
+            ArgumentNullException.ThrowIfNull(oldType);
+            ArgumentNullException.ThrowIfNull(newType);
+
             Services.AddTransient(newType);
 
             return Configure(options =>
@@ -60,6 +47,21 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Pipelines
                     throw new OperationCanceledException($"{oldType} is not registered");
                 }
                 options.Middlewares[oldTypeIndex] = newType;
+            });
+        }
+
+        public GenericPipelineBuilder<TResult> RemoveMiddleware(Type oldType)
+        {
+            ArgumentNullException.ThrowIfNull(oldType);
+
+            return Configure(options =>
+            {
+                var oldTypeIndex = options.Middlewares.IndexOf(oldType);
+                if (oldTypeIndex < 0)
+                {
+                    throw new OperationCanceledException($"{oldType} is not registered");
+                }
+                options.Middlewares.RemoveAt(oldTypeIndex);
             });
         }
     }
