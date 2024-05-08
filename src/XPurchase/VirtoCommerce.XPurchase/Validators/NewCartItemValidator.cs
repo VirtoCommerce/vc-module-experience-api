@@ -68,19 +68,19 @@ namespace VirtoCommerce.XPurchase.Validators
                 // CART_PRODUCT_UNAVAILABLE
                 if (!cartProduct.Product.IsBuyable.GetValueOrDefault(false))
                 {
-                    context.AddFailure(CartErrorDescriber.ProductUnavailableError(nameof(CatalogProduct), cartProduct?.Product?.Id));
+                    context.AddFailure(CartErrorDescriber.ProductUnavailableError(nameof(CatalogProduct), cartProduct.Product.Id));
                 }
 
                 // CART_PRODUCT_INACTIVE
                 if (!cartProduct.Product.IsActive.GetValueOrDefault(false))
                 {
-                    context.AddFailure(CartErrorDescriber.ProductInactiveError(nameof(CatalogProduct), cartProduct?.Product?.Id));
+                    context.AddFailure(CartErrorDescriber.ProductInactiveError(nameof(CatalogProduct), cartProduct.Product.Id));
                 }
 
                 // PRODUCT_PRICE_INVALID
                 if (cartProduct.Price == null || cartProduct.Price.ListPrice == 0.0)
                 {
-                    context.AddFailure(CartErrorDescriber.ProductNoPriceError(nameof(CatalogProduct), cartProduct?.Product?.Id));
+                    context.AddFailure(CartErrorDescriber.ProductNoPriceError(nameof(CatalogProduct), cartProduct.Product.Id));
                 }
 
                 return false;
