@@ -14,19 +14,4 @@ namespace VirtoCommerce.XPurchase
             return result;
         }
     }
-
-    public class ProductMaxQunatityAvailableSpecification
-    {
-        public virtual bool IsSatisfiedBy(CartProduct product, int? maxQuantity)
-        {
-            var result = true;
-
-            if (maxQuantity.HasValue && maxQuantity.Value > 0 && product.Product.TrackInventory.GetValueOrDefault(false) && product.Inventory != null)
-            {
-                result = product.Inventory.AllowPreorder || product.Inventory.AllowBackorder || product.AvailableQuantity >= maxQuantity.Value;
-            }
-
-            return result;
-        }
-    }
 }

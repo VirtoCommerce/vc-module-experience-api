@@ -15,10 +15,17 @@ namespace VirtoCommerce.XPurchase.Validators
                 var allCartProducts = lineItemContext.AllCartProducts;
                 var cartProduct = allCartProducts.FirstOrDefault(x => x.Id.EqualsInvariant(lineItem.ProductId));
 
+                var minQuantity = cartProduct.GetMinQuantity();
+
                 if (lineItemContext.LineItem.Quantity > XPurchaseConstants.LineItemQualityLimit)
                 {
                     // LINE_ITEM_LIMIT
                     context.AddFailure(CartErrorDescriber.ProductQuantityLimitError(lineItemContext.LineItem, XPurchaseConstants.LineItemQualityLimit));
+                }
+                else if (IsProductMinQunatityNotAvailable(cartProduct, minQuantity))
+                {
+                    // PRODUCT_MIN_QTY_NOT_AVAILABLE
+                    context.AddFailure(CartErrorDescriber.ProductMinQuantityNotAvailableError(lineItem, minQuantity ?? 0));
                 }
                 else if (IsProductNotBuyable(cartProduct))
                 {
@@ -27,7 +34,6 @@ namespace VirtoCommerce.XPurchase.Validators
                 }
                 else
                 {
-                    var minQuantity = cartProduct.GetMinQuantity();
                     var maxQuantity = cartProduct.GetMaxQuantity();
 
                     if (minQuantity.HasValue && maxQuantity.HasValue)

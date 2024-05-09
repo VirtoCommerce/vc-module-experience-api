@@ -33,7 +33,9 @@ namespace VirtoCommerce.XPurchase.Validators
             {
                 var cartProduct = newCartItem.CartProduct;
 
-                if (ValidateLineItemLimit(context, newCartItem, cartProduct) && ValidateProductIsBuyable(context, cartProduct))
+                if (ValidateLineItemLimit(context, newCartItem, cartProduct)
+                    && ValidateMinQuantity(context, cartProduct)
+                    && ValidateProductIsBuyable(context, cartProduct))
                 {
                     ValidateMinMaxQuantity(context, cartProduct, newCartItem);
                 }
@@ -55,6 +57,20 @@ namespace VirtoCommerce.XPurchase.Validators
             if (newCartItem.Quantity > XPurchaseConstants.LineItemQualityLimit)
             {
                 context.AddFailure(CartErrorDescriber.ProductQuantityLimitError(cartProduct.Product, XPurchaseConstants.LineItemQualityLimit));
+                return false;
+            }
+
+            return true;
+        }
+
+        private bool ValidateMinQuantity(ValidationContext<NewCartItem> context, CartProduct cartProduct)
+        {
+            var minQuantity = cartProduct.GetMinQuantity();
+
+            if (IsProductMinQunatityNotAvailable(cartProduct, minQuantity))
+            {
+                // PRODUCT_MIN_QTY_NOT_AVAILABLE
+                context.AddFailure(CartErrorDescriber.ProductMinQuantityNotAvailableError(cartProduct.Product, minQuantity ?? 0));
                 return false;
             }
 
