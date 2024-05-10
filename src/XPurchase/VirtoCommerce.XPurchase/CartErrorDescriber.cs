@@ -244,7 +244,7 @@ namespace VirtoCommerce.XPurchase
             {
                 FormattedMessagePlaceholderValues = new Dictionary<string, object>
                 {
-                    ["maxQty"] = minQty
+                    ["minQty"] = minQty
                 }
             };
 
