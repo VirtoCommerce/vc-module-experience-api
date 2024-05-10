@@ -34,9 +34,9 @@ namespace VirtoCommerce.XPurchase.Validators
                 var cartProduct = newCartItem.CartProduct;
 
                 if (ValidateLineItemLimit(context, newCartItem, cartProduct)
-                    && ValidateMinQuantity(context, cartProduct)
                     && ValidateProductIsBuyable(context, cartProduct)
-                    && ValidateProductInventory(context, cartProduct, newCartItem))
+                    && ValidateProductInventory(context, cartProduct, newCartItem)
+                    && ValidateMinQuantity(context, cartProduct))
                 {
                     ValidateMinMaxQuantity(context, cartProduct, newCartItem);
                 }
@@ -149,10 +149,6 @@ namespace VirtoCommerce.XPurchase.Validators
             {
                 // PRODUCT_MAX_QTY
                 context.AddFailure(CartErrorDescriber.ProductMaxQuantityError(nameof(CatalogProduct), cartProduct?.Product?.Id, newCartItem.Quantity, maxQuantity ?? 0));
-            }
-            else
-            {
-                ValidateProductInventory(context, cartProduct, newCartItem);
             }
         }
 
