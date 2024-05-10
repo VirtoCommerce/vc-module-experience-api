@@ -55,12 +55,9 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Queries
             {
                 store = await ResolveStoreByDomain(request.Domain);
 
-                if (store == null)
+                if (store == null && !string.IsNullOrEmpty(_storeOptions.DefaultStore))
                 {
-                    if (!string.IsNullOrEmpty(_storeOptions.DefaultStore))
-                    {
-                        store = await _storeService.GetByIdAsync(_storeOptions.DefaultStore, clone: false);
-                    }
+                    store = await _storeService.GetByIdAsync(_storeOptions.DefaultStore, clone: false);
                 }
             }
 
@@ -120,6 +117,11 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Queries
 
         protected virtual async Task<Store> ResolveStoreByDomain(string domain)
         {
+            if (_storeOptions.Domains.TryGetValue(domain, out string storeId))
+            {
+                return await _storeService.GetByIdAsync(storeId, clone: false);
+            }
+
             var criteria = AbstractTypeFactory<StoreSearchCriteria>.TryCreateInstance();
             criteria.Domain = domain;
             criteria.Take = 1;
