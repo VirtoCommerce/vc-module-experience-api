@@ -24,19 +24,23 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Queries
         private readonly IStoreCurrencyResolver _storeCurrencyResolver;
         private readonly IdentityOptions _identityOptions;
         private readonly GraphQLWebSocketOptions _webSocketOptions;
+        private readonly StoresOptions _storeOptions;
 
         public GetStoreQueryHandler(
             IStoreService storeService,
             IStoreSearchService storeSearcService,
             IStoreCurrencyResolver storeCurrencyResolver,
             IOptions<IdentityOptions> identityOptions,
-            IOptions<GraphQLWebSocketOptions> webSocketOptions)
+            IOptions<GraphQLWebSocketOptions> webSocketOptions,
+            IOptions<StoresOptions> storeOptions)
+
         {
             _storeService = storeService;
             _storeSearcService = storeSearcService;
             _storeCurrencyResolver = storeCurrencyResolver;
             _identityOptions = identityOptions.Value;
             _webSocketOptions = webSocketOptions.Value;
+            _storeOptions = storeOptions.Value;
         }
 
         public async Task<StoreResponse> Handle(GetStoreQuery request, CancellationToken cancellationToken)
@@ -49,12 +53,15 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Queries
             }
             else if (!string.IsNullOrEmpty(request.Domain))
             {
-                var criteria = AbstractTypeFactory<StoreSearchCriteria>.TryCreateInstance();
-                criteria.Domain = request.Domain;
-                criteria.Take = 1;
+                store = await ResolveStoreByDomain(request.Domain);
 
-                var result = await _storeSearcService.SearchAsync(criteria, clone: false);
-                store = result.Results.FirstOrDefault();
+                if (store == null)
+                {
+                    if (!string.IsNullOrEmpty(_storeOptions.DefaultStore))
+                    {
+                        store = await _storeService.GetByIdAsync(_storeOptions.DefaultStore, clone: false);
+                    }
+                }
             }
 
             if (store == null)
@@ -109,6 +116,16 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Queries
             }
 
             return response;
+        }
+
+        protected virtual async Task<Store> ResolveStoreByDomain(string domain)
+        {
+            var criteria = AbstractTypeFactory<StoreSearchCriteria>.TryCreateInstance();
+            criteria.Domain = domain;
+            criteria.Take = 1;
+
+            var result = await _storeSearcService.SearchAsync(criteria, clone: false);
+            return result.Results.FirstOrDefault();
         }
 
         protected virtual ModuleSettings[] ToModulesSettings(ICollection<ObjectSettingEntry> settings)
