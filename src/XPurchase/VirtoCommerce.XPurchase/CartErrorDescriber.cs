@@ -250,5 +250,19 @@ namespace VirtoCommerce.XPurchase
 
             return result;
         }
+
+        public static ValidationFailure ProductExactQuantityError(IEntity entity, int qty, int minQty)
+        {
+            var result = new CartValidationError(entity, $"You can order {minQty} items", "PRODUCT_EXACT_QTY")
+            {
+                FormattedMessagePlaceholderValues = new Dictionary<string, object>
+                {
+                    ["qty"] = qty,
+                    ["minQty"] = minQty
+                }
+            };
+
+            return result;
+        }
     }
 }

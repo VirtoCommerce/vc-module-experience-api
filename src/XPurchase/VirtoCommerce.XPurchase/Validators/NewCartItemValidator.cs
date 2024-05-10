@@ -137,8 +137,16 @@ namespace VirtoCommerce.XPurchase.Validators
             {
                 if (ValidationExtensions.IsOutsideMinMaxQuantity(newCartItem.Quantity, minQuantity.Value, maxQuantity.Value))
                 {
-                    // PRODUCT_MIN_MAX_QTY
-                    context.AddFailure(CartErrorDescriber.ProductMinMaxQuantityError(cartProduct.Product, newCartItem.Quantity, minQuantity.Value, maxQuantity.Value));
+                    if (minQuantity.Value == maxQuantity.Value)
+                    {
+                        // PRODUCT_EXACT_QTY
+                        context.AddFailure(CartErrorDescriber.ProductExactQuantityError(cartProduct.Product, newCartItem.Quantity, minQuantity.Value));
+                    }
+                    else
+                    {
+                        // PRODUCT_MIN_MAX_QTY
+                        context.AddFailure(CartErrorDescriber.ProductMinMaxQuantityError(cartProduct.Product, newCartItem.Quantity, minQuantity.Value, maxQuantity.Value));
+                    }
                 }
             }
             else if (ValidationExtensions.IsBelowMinQuantity(newCartItem.Quantity, minQuantity))
