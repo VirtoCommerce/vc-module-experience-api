@@ -31,7 +31,7 @@ namespace VirtoCommerce.XPurchase.Validators
                 else if (IsProductNotAvailable(cartProduct, lineItem.Quantity))
                 {
                     // PRODUCT_FFC_QTY
-                    context.AddFailure(CartErrorDescriber.ProductAvailableQuantityError(lineItem, lineItem.Quantity, cartProduct.AvailableQuantity));
+                    context.AddFailure(CartErrorDescriber.ProductAvailableQuantityError(lineItem, lineItem.Quantity, cartProduct?.AvailableQuantity ?? 0));
                 }
                 else if (IsProductMinQunatityNotAvailable(cartProduct, minQuantity))
                 {
