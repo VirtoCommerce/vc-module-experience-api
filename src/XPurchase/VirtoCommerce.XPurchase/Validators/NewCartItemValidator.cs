@@ -35,7 +35,8 @@ namespace VirtoCommerce.XPurchase.Validators
 
                 if (ValidateLineItemLimit(context, newCartItem, cartProduct)
                     && ValidateMinQuantity(context, cartProduct)
-                    && ValidateProductIsBuyable(context, cartProduct))
+                    && ValidateProductIsBuyable(context, cartProduct)
+                    && ValidateProductInventory(context, cartProduct, newCartItem))
                 {
                     ValidateMinMaxQuantity(context, cartProduct, newCartItem);
                 }
@@ -161,12 +162,16 @@ namespace VirtoCommerce.XPurchase.Validators
         /// <param name="context"></param>
         /// <param name="cartProduct"></param>
         /// <param name="newCartItem"></param>
-        protected virtual void ValidateProductInventory(ValidationContext<NewCartItem> context, CartProduct cartProduct, NewCartItem newCartItem)
+        protected virtual bool ValidateProductInventory(ValidationContext<NewCartItem> context, CartProduct cartProduct, NewCartItem newCartItem)
         {
             if (!AbstractTypeFactory<ProductIsAvailableSpecification>.TryCreateInstance().IsSatisfiedBy(cartProduct, newCartItem.Quantity))
             {
+                // PRODUCT_FFC_QTY
                 context.AddFailure(CartErrorDescriber.ProductAvailableQuantityError(nameof(CatalogProduct), cartProduct?.Product?.Id, newCartItem.Quantity, cartProduct.AvailableQuantity));
+                return false;
             }
+
+            return true;
         }
 
         protected virtual bool IsProductMinQunatityNotAvailable(CartProduct cartProduct, int? minQuantity)

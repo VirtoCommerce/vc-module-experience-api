@@ -32,6 +32,11 @@ namespace VirtoCommerce.XPurchase.Validators
                     // CART_PRODUCT_UNAVAILABLE
                     context.AddFailure(CartErrorDescriber.ProductUnavailableError(lineItem));
                 }
+                else if (IsProductNotAvailable(cartProduct, lineItem.Quantity))
+                {
+                    // PRODUCT_FFC_QTY
+                    context.AddFailure(CartErrorDescriber.ProductAvailableQuantityError(lineItem, lineItem.Quantity, cartProduct.AvailableQuantity));
+                }
                 else
                 {
                     var maxQuantity = cartProduct.GetMaxQuantity();
@@ -51,10 +56,6 @@ namespace VirtoCommerce.XPurchase.Validators
                     else if (IsAboveMaxQuantity(lineItem.Quantity, maxQuantity))
                     {
                         context.AddFailure(CartErrorDescriber.ProductMaxQuantityError(lineItem, lineItem.Quantity, maxQuantity ?? 0));
-                    }
-                    else if (IsProductNotAvailable(cartProduct, lineItem.Quantity))
-                    {
-                        context.AddFailure(CartErrorDescriber.ProductQtyChangedError(lineItem, cartProduct.AvailableQuantity));
                     }
                 }
             });

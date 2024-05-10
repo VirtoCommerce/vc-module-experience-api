@@ -122,7 +122,21 @@ namespace VirtoCommerce.XPurchase
 
         public static CartValidationError ProductAvailableQuantityError(string type, string id, int qty, long availableQty)
         {
-            var result = new CartValidationError(type, id, $"Product with Id {id} was not added to cart. Maximum available quantity is {availableQty}.", "PRODUCT_FFC_QTY")
+            var result = new CartValidationError(type, id, $"Product with Id {id} was not added to cart. Available quantity is {availableQty}.", "PRODUCT_FFC_QTY")
+            {
+                FormattedMessagePlaceholderValues = new Dictionary<string, object>
+                {
+                    ["qty"] = qty,
+                    ["availableQty"] = availableQty
+                }
+            };
+
+            return result;
+        }
+
+        public static CartValidationError ProductAvailableQuantityError(IEntity entity, int qty, long availableQty)
+        {
+            var result = new CartValidationError(entity, $"Changed quantiy is unavailable. Available quantity is {availableQty}.", "PRODUCT_FFC_QTY")
             {
                 FormattedMessagePlaceholderValues = new Dictionary<string, object>
                 {
