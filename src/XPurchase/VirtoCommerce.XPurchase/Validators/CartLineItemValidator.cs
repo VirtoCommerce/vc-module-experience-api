@@ -2,6 +2,7 @@ using System.Linq;
 using FluentValidation;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.XPurchase.Extensions;
+using VirtoCommerce.XPurchase.Specifications;
 
 namespace VirtoCommerce.XPurchase.Validators
 {
@@ -28,10 +29,10 @@ namespace VirtoCommerce.XPurchase.Validators
                     // CART_PRODUCT_UNAVAILABLE
                     context.AddFailure(CartErrorDescriber.ProductUnavailableError(lineItem));
                 }
-                else if (IsProductNotAvailable(cartProduct, lineItem.Quantity))
+                else if (IsProductNotInStock(cartProduct))
                 {
                     // PRODUCT_FFC_QTY
-                    context.AddFailure(CartErrorDescriber.ProductAvailableQuantityError(lineItem, lineItem.Quantity, cartProduct?.AvailableQuantity ?? 0));
+                    context.AddFailure(CartErrorDescriber.ProductAvailableQuantityError(lineItem, lineItem.Quantity, 0));
                 }
                 else if (IsProductMinQunatityNotAvailable(cartProduct, minQuantity))
                 {
@@ -56,6 +57,10 @@ namespace VirtoCommerce.XPurchase.Validators
                     {
                         context.AddFailure(CartErrorDescriber.ProductMaxQuantityError(lineItem, lineItem.Quantity, maxQuantity ?? 0));
                     }
+                    else if (IsProductNotAvailable(cartProduct, lineItem.Quantity))
+                    {
+                        context.AddFailure(CartErrorDescriber.ProductQtyChangedError(lineItem, cartProduct.AvailableQuantity));
+                    }
                 }
             });
         }
@@ -68,6 +73,11 @@ namespace VirtoCommerce.XPurchase.Validators
         protected virtual bool IsProductNotAvailable(CartProduct cartProduct, int quantity)
         {
             return !AbstractTypeFactory<ProductIsAvailableSpecification>.TryCreateInstance().IsSatisfiedBy(cartProduct, quantity);
+        }
+
+        protected virtual bool IsProductNotInStock(CartProduct cartProduct)
+        {
+            return !AbstractTypeFactory<ProductIsInStockSpecification>.TryCreateInstance().IsSatisfiedBy(cartProduct);
         }
 
         protected virtual bool IsProductMinQunatityNotAvailable(CartProduct cartProduct, int? minQuantity)

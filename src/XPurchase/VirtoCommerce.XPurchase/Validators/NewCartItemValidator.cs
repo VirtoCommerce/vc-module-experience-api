@@ -2,6 +2,7 @@ using FluentValidation;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.XPurchase.Extensions;
+using VirtoCommerce.XPurchase.Specifications;
 
 namespace VirtoCommerce.XPurchase.Validators
 {
@@ -35,7 +36,7 @@ namespace VirtoCommerce.XPurchase.Validators
 
                 if (ValidateLineItemLimit(context, newCartItem, cartProduct)
                     && ValidateProductIsBuyable(context, cartProduct)
-                    && ValidateProductInventory(context, cartProduct, newCartItem)
+                    && ValidateProductInStock(context, cartProduct, newCartItem)
                     && ValidateMinQuantity(context, cartProduct))
                 {
                     ValidateMinMaxQuantity(context, cartProduct, newCartItem);
@@ -134,9 +135,9 @@ namespace VirtoCommerce.XPurchase.Validators
 
             if (minQuantity.HasValue && maxQuantity.HasValue)
             {
-                // PRODUCT_MIN_MAX_QTY
                 if (ValidationExtensions.IsOutsideMinMaxQuantity(newCartItem.Quantity, minQuantity.Value, maxQuantity.Value))
                 {
+                    // PRODUCT_MIN_MAX_QTY
                     context.AddFailure(CartErrorDescriber.ProductMinMaxQuantityError(cartProduct.Product, newCartItem.Quantity, minQuantity.Value, maxQuantity.Value));
                 }
             }
@@ -150,6 +151,10 @@ namespace VirtoCommerce.XPurchase.Validators
                 // PRODUCT_MAX_QTY
                 context.AddFailure(CartErrorDescriber.ProductMaxQuantityError(nameof(CatalogProduct), cartProduct?.Product?.Id, newCartItem.Quantity, maxQuantity ?? 0));
             }
+            else
+            {
+                ValidateProductInventory(context, cartProduct, newCartItem);
+            }
         }
 
         /// <summary>
@@ -161,6 +166,18 @@ namespace VirtoCommerce.XPurchase.Validators
         protected virtual bool ValidateProductInventory(ValidationContext<NewCartItem> context, CartProduct cartProduct, NewCartItem newCartItem)
         {
             if (!AbstractTypeFactory<ProductIsAvailableSpecification>.TryCreateInstance().IsSatisfiedBy(cartProduct, newCartItem.Quantity))
+            {
+                // PRODUCT_FFC_QTY
+                context.AddFailure(CartErrorDescriber.ProductAvailableQuantityError(nameof(CatalogProduct), cartProduct?.Product?.Id, newCartItem.Quantity, cartProduct.AvailableQuantity));
+                return false;
+            }
+
+            return true;
+        }
+
+        protected virtual bool ValidateProductInStock(ValidationContext<NewCartItem> context, CartProduct cartProduct, NewCartItem newCartItem)
+        {
+            if (!AbstractTypeFactory<ProductIsInStockSpecification>.TryCreateInstance().IsSatisfiedBy(cartProduct))
             {
                 // PRODUCT_FFC_QTY
                 context.AddFailure(CartErrorDescriber.ProductAvailableQuantityError(nameof(CatalogProduct), cartProduct?.Product?.Id, newCartItem.Quantity, cartProduct.AvailableQuantity));
