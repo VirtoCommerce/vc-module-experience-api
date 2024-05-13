@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <module>
   <id>VirtoCommerce.ExperienceApi</id>
-  <version>3.827.0</version>
+  <version>3.828.0</version>
   <version-tag />
   <platformVersion>3.819.0</platformVersion>
   <dependencies>
