@@ -12,6 +12,7 @@ using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure.Validation;
 using VirtoCommerce.ExperienceApiModule.Core.Models;
 using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
+using VirtoCommerce.ExperienceApiModule.Core.Queries;
 using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.Core.Subscriptions;
 using VirtoCommerce.ExperienceApiModule.Web.Extensions;
@@ -36,6 +37,7 @@ namespace VirtoCommerce.ExperienceApiModule.Web
 
         private const string GraphQLPlaygroundConfigKey = "VirtoCommerce:GraphQLPlayground";
         private const string GraphQLWebSocketConfigKey = "VirtoCommerce:GraphQLWebSocket";
+        private const string StoresConfigKey = "VirtoCommerce:Stores";
 
         private bool IsSchemaIntrospectionEnabled
         {
@@ -111,6 +113,7 @@ namespace VirtoCommerce.ExperienceApiModule.Web
 
             services.Configure<GraphQLPlaygroundOptions>(Configuration.GetSection(GraphQLPlaygroundConfigKey));
             services.Configure<GraphQLWebSocketOptions>(Configuration.GetSection(GraphQLWebSocketConfigKey));
+            services.Configure<StoresOptions>(Configuration.GetSection(StoresConfigKey));
         }
 
         public void PostInitialize(IApplicationBuilder appBuilder)

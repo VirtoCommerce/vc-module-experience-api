@@ -9,6 +9,8 @@ using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.Core.Subscriptions;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Settings;
+using VirtoCommerce.StoreModule.Core.Model;
+using VirtoCommerce.StoreModule.Core.Model.Search;
 using VirtoCommerce.StoreModule.Core.Services;
 using StoreSettingGeneral = VirtoCommerce.StoreModule.Core.ModuleConstants.Settings.General;
 using StoreSettingSeo = VirtoCommerce.StoreModule.Core.ModuleConstants.Settings.SEO;
@@ -18,25 +20,46 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Queries
     public class GetStoreQueryHandler : IQueryHandler<GetStoreQuery, StoreResponse>
     {
         private readonly IStoreService _storeService;
+        private readonly IStoreSearchService _storeSearcService;
         private readonly IStoreCurrencyResolver _storeCurrencyResolver;
         private readonly IdentityOptions _identityOptions;
         private readonly GraphQLWebSocketOptions _webSocketOptions;
+        private readonly StoresOptions _storeOptions;
 
         public GetStoreQueryHandler(
             IStoreService storeService,
+            IStoreSearchService storeSearcService,
             IStoreCurrencyResolver storeCurrencyResolver,
             IOptions<IdentityOptions> identityOptions,
-            IOptions<GraphQLWebSocketOptions> webSocketOptions)
+            IOptions<GraphQLWebSocketOptions> webSocketOptions,
+            IOptions<StoresOptions> storeOptions)
+
         {
             _storeService = storeService;
+            _storeSearcService = storeSearcService;
             _storeCurrencyResolver = storeCurrencyResolver;
             _identityOptions = identityOptions.Value;
             _webSocketOptions = webSocketOptions.Value;
+            _storeOptions = storeOptions.Value;
         }
 
         public async Task<StoreResponse> Handle(GetStoreQuery request, CancellationToken cancellationToken)
         {
-            var store = await _storeService.GetByIdAsync(request.StoreId, clone: false);
+            Store store = null;
+
+            if (!string.IsNullOrEmpty(request.StoreId))
+            {
+                store = await _storeService.GetByIdAsync(request.StoreId, clone: false);
+            }
+            else if (!string.IsNullOrEmpty(request.Domain))
+            {
+                store = await ResolveStoreByDomain(request.Domain);
+
+                if (store == null && !string.IsNullOrEmpty(_storeOptions.DefaultStore))
+                {
+                    store = await _storeService.GetByIdAsync(_storeOptions.DefaultStore, clone: false);
+                }
+            }
 
             if (store == null)
             {
@@ -90,6 +113,21 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Queries
             }
 
             return response;
+        }
+
+        protected virtual async Task<Store> ResolveStoreByDomain(string domain)
+        {
+            if (_storeOptions.Domains.TryGetValue(domain, out string storeId))
+            {
+                return await _storeService.GetByIdAsync(storeId, clone: false);
+            }
+
+            var criteria = AbstractTypeFactory<StoreSearchCriteria>.TryCreateInstance();
+            criteria.Domain = domain;
+            criteria.Take = 1;
+
+            var result = await _storeSearcService.SearchAsync(criteria, clone: false);
+            return result.Results.FirstOrDefault();
         }
 
         protected virtual ModuleSettings[] ToModulesSettings(ICollection<ObjectSettingEntry> settings)
