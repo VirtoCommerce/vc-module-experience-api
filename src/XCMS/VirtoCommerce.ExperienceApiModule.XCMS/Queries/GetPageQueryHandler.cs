@@ -23,13 +23,12 @@ public class GetPageQueryHandler : IQueryHandler<GetPageQuery, GetPageResponse>
         {
             StoreId = request.StoreId,
             ContentType = ContentTypes.Pages,
-            LanguageCode = request.CultureName,
             Keyword = request.Keyword,
             Take = request.Take,
             Skip = request.Skip,
         };
         var result = await _searchContentService.SearchContentAsync(criteria);
-        var pages = result.Results.Select(x => new PageItem
+        var pages = result.Results.Where(x => x.Language == request.CultureName || x.Language == null).Select(x => new PageItem
         {
             Id = x.Id,
             Name = string.IsNullOrEmpty(x.DisplayName) ? x.Name : x.DisplayName,
