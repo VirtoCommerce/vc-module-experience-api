@@ -41,8 +41,8 @@ public class GetPageQueryHandler : IQueryHandler<GetPageQuery, GetPageResponse>
             .GroupBy(x => x.Permalink)
             .Select(x => x.Count() == 1
                 ? x.First()
-                : x.FirstOrDefault(_ => _.Language == defaultLanguage)
-                  ?? x.First(_ => _.Language == request.CultureName))
+                : x.FirstOrDefault(_ => _.Language == request.CultureName)
+                  ?? x.First(_ => _.Language == defaultLanguage))
             .Select(x => new PageItem
             {
                 Id = x.Id,
