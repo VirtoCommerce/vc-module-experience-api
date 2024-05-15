@@ -28,13 +28,18 @@ public class GetPageQueryHandler : IQueryHandler<GetPageQuery, GetPageResponse>
             Skip = request.Skip,
         };
         var result = await _searchContentService.SearchContentAsync(criteria);
-        var pages = result.Results.Where(x => x.Language == request.CultureName || x.Language == null).Select(x => new PageItem
-        {
-            Id = x.Id,
-            Name = string.IsNullOrEmpty(x.DisplayName) ? x.Name : x.DisplayName,
-            RelativeUrl = x.RelativeUrl,
-            Permalink = x.Permalink
-        });
+        var pages = result.Results.Where(x => x.Language == request.CultureName || x.Language == null)
+            .GroupBy(x => x.Permalink)
+            .Select(x => x.Count() == 1
+                ? x.First()
+                : x.First(_ => _.Language == request.CultureName))
+            .Select(x => new PageItem
+            {
+                Id = x.Id,
+                Name = string.IsNullOrEmpty(x.DisplayName) ? x.Name : x.DisplayName,
+                RelativeUrl = x.RelativeUrl,
+                Permalink = x.Permalink
+            });
         return new GetPageResponse { Pages = pages, TotalCount = result.TotalCount };
     }
 }
