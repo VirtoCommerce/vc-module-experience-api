@@ -31,6 +31,7 @@ using VirtoCommerce.XPurchase.Services;
 using VirtoCommerce.XPurchase.Validators;
 using Store = VirtoCommerce.StoreModule.Core.Model.Store;
 using StoreSetting = VirtoCommerce.StoreModule.Core.ModuleConstants.Settings.General;
+using XapiSetting = VirtoCommerce.ExperienceApiModule.Core.ModuleConstants.Settings.General;
 
 namespace VirtoCommerce.XPurchase
 {
@@ -190,6 +191,7 @@ namespace VirtoCommerce.XPurchase
 
                 var lineItem = _mapper.Map<LineItem>(newCartItem.CartProduct);
 
+                lineItem.SelectedForCheckout = Store.Settings.GetValue<bool>(XapiSetting.IsSelectedForCheckout);
                 lineItem.Quantity = newCartItem.Quantity;
 
                 if (newCartItem.Price != null)
@@ -270,6 +272,7 @@ namespace VirtoCommerce.XPurchase
                         giftItem = _mapper.Map<LineItem>(availableGift);
                         giftItem.Id = null;
                         giftItem.IsGift = true;
+                        giftItem.SelectedForCheckout = Store.Settings.GetValue<bool>(XapiSetting.IsSelectedForCheckout);
                         giftItem.Discounts ??= new List<Discount>();
                         giftItem.Discounts.Add(new Discount
                         {
