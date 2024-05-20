@@ -145,6 +145,8 @@ namespace VirtoCommerce.XPurchase
 
         public IList<string> ProductsIncludeFields { get; set; }
 
+        public bool IsSelectedForCheckout => Store.Settings?.GetValue<bool>(XapiSetting.IsSelectedForCheckout) ?? true;
+
         public virtual CartAggregate GrabCart(ShoppingCart cart, Store store, Member member, Currency currency)
         {
             Id = cart.Id;
@@ -191,7 +193,7 @@ namespace VirtoCommerce.XPurchase
 
                 var lineItem = _mapper.Map<LineItem>(newCartItem.CartProduct);
 
-                lineItem.SelectedForCheckout = Store.Settings.GetValue<bool>(XapiSetting.IsSelectedForCheckout);
+                lineItem.SelectedForCheckout = IsSelectedForCheckout;
                 lineItem.Quantity = newCartItem.Quantity;
 
                 if (newCartItem.Price != null)
@@ -272,7 +274,7 @@ namespace VirtoCommerce.XPurchase
                         giftItem = _mapper.Map<LineItem>(availableGift);
                         giftItem.Id = null;
                         giftItem.IsGift = true;
-                        giftItem.SelectedForCheckout = Store.Settings.GetValue<bool>(XapiSetting.IsSelectedForCheckout);
+                        giftItem.SelectedForCheckout = IsSelectedForCheckout;
                         giftItem.Discounts ??= new List<Discount>();
                         giftItem.Discounts.Add(new Discount
                         {
