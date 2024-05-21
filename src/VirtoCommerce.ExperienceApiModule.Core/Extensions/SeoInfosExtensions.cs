@@ -67,7 +67,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
 
         private static int CalculateScore(SeoInfo seoInfo, string slug, string storeId, string defaultStoreLang, string language)
         {
-            var values = new[]
+            var score = new[]
             {
                 seoInfo.IsActive,
                 !string.IsNullOrEmpty(slug) && slug.EqualsInvariant(seoInfo.SemanticUrl),
@@ -75,11 +75,10 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
                 language.Equals(seoInfo.LanguageCode),
                 defaultStoreLang.EqualsInvariant(seoInfo.LanguageCode),
                 seoInfo.LanguageCode.IsNullOrEmpty()
-            };
-
-            var score = values
-                .Select((valid, index) => valid ? 1 << (values.Length - 1 - index) : 0)
-                .Sum();
+            }
+            .Reverse()
+            .Select((valid, index) => valid ? 1 << index : 0)
+            .Sum();
 
             return score;
         }
