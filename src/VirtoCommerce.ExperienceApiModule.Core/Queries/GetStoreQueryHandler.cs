@@ -102,6 +102,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Queries
                     EmailVerificationRequired = store.Settings.GetValue<bool>(StoreSettingGeneral.EmailVerificationRequired),
                     SeoLinkType = store.Settings.GetValue<string>(StoreSettingSeo.SeoLinksType),
                     CreateAnonymousOrderEnabled = store.Settings.GetValue<bool>(ModuleConstants.Settings.General.CreateAnonymousOrder),
+                    DefaultSelectedForCheckout = store.Settings.GetValue<bool>(ModuleConstants.Settings.General.IsSelectedForCheckout),
 
                     QuotesEnabled = store.Settings.GetValue<bool>(new SettingDescriptor { Name = "Quotes.EnableQuotes" }),
                     SubscriptionEnabled = store.Settings.GetValue<bool>(new SettingDescriptor { Name = "Subscription.EnableSubscriptions" }),
