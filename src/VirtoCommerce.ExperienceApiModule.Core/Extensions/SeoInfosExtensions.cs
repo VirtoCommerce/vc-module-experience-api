@@ -1,10 +1,7 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json.Linq;
 using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.Tools;
 
 namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
 {
@@ -33,16 +30,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
         private static SeoInfo GetBestMatchingSeoInfoInternal(IList<SeoInfo> seoInfos, string storeId, string cultureName, string slug)
         {
             return seoInfos
-                ?.Select(x => JObject.FromObject(x).ToObject<Tools.Models.SeoInfo>())
-                .GetBestMatchingSeoInfos(storeId, cultureName, cultureName, slug)
-                .Select(x =>
-                {
-                    x.CreatedDate ??= DateTime.MinValue;
-                    x.ModifiedDate ??= DateTime.Now;
-                    return x;
-                })
-                .Select(x => JObject.FromObject(x).ToObject<SeoInfo>())
-                .FirstOrDefault();
+                .GetBestMatchingSeoInfos(storeId, cultureName, cultureName, slug);
         }
 
         public static SeoInfo GetFallbackSeoInfo(string id, string name, string cultureName)
@@ -52,6 +40,34 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
             result.LanguageCode = cultureName;
             result.Name = name;
             return result;
+        }
+
+        private static SeoInfo GetBestMatchingSeoInfos(this IEnumerable<SeoInfo> seoRecords, string storeId, string storeDefaultLanguage, string language, string slug)
+        {
+            if (seoRecords != null)
+            {
+                var items = seoRecords
+                    .Select(s =>
+                    {
+                        var score = 0;
+
+                        score += s.IsActive != false ? 32 : 0;
+                        score += !string.IsNullOrEmpty(slug) && slug.EqualsInvariant(s.SemanticUrl) ? 16 : 0;
+                        score += storeId.EqualsInvariant(s.StoreId) ? 8 : 0;
+                        score += language.Equals(s.LanguageCode) ? 4 : 0;
+                        score += storeDefaultLanguage.EqualsInvariant(s.LanguageCode) ? 2 : 0;
+                        score += s.LanguageCode.IsNullOrEmpty() ? 1 : 0;
+
+                        return new { SeoRecord = s, Score = score };
+                    })
+                    .OrderByDescending(x => x.Score)
+                    .ToList();
+
+                var first = items.FirstOrDefault();
+                return first?.SeoRecord;
+            }
+
+            return null;
         }
     }
 }

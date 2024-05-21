@@ -4,8 +4,6 @@ using System.Threading.Tasks;
 using VirtoCommerce.ContentModule.Core.Model;
 using VirtoCommerce.ContentModule.Core.Search;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
-using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.StoreModule.Core.Services;
 using static VirtoCommerce.ContentModule.Core.ContentConstants;
 
 namespace VirtoCommerce.ExperienceApiModule.XCMS.Queries;
@@ -13,15 +11,10 @@ namespace VirtoCommerce.ExperienceApiModule.XCMS.Queries;
 public class GetPageQueryHandler : IQueryHandler<GetPageQuery, GetPageResponse>
 {
     private readonly IFullTextContentSearchService _searchContentService;
-    private readonly IStoreService _storeService;
 
-    public GetPageQueryHandler(
-        IFullTextContentSearchService searchContentService,
-        IStoreService storeService
-    )
+    public GetPageQueryHandler(IFullTextContentSearchService searchContentService)
     {
         _searchContentService = searchContentService;
-        _storeService = storeService;
     }
 
     public async Task<GetPageResponse> Handle(GetPageQuery request, CancellationToken cancellationToken)
@@ -30,19 +23,14 @@ public class GetPageQueryHandler : IQueryHandler<GetPageQuery, GetPageResponse>
         {
             StoreId = request.StoreId,
             ContentType = ContentTypes.Pages,
+            LanguageCode = request.CultureName,
             Keyword = request.Keyword,
             Take = request.Take,
             Skip = request.Skip,
         };
-        var store = await _storeService.GetByIdAsync(request.StoreId);
-        var defaultLanguage = store.DefaultLanguage;
+
         var result = await _searchContentService.SearchContentAsync(criteria);
-        var pages = result.Results.Where(x => x.Language == request.CultureName || x.Language == defaultLanguage || x.Language == null)
-            .GroupBy(x => x.Permalink)
-            .Select(x => x.Count() == 1
-                ? x.First()
-                : x.FirstOrDefault(_ => _.Language == request.CultureName)
-                  ?? x.First(_ => _.Language == defaultLanguage))
+        var pages = result.Results
             .Select(x => new PageItem
             {
                 Id = x.Id,
