@@ -1,5 +1,9 @@
 {
   "settings": {
+    "VirtoCommerce.Platform.EnvironmentName": {
+      "title": "Environment name",
+      "description": ""
+    },
     "XOrder.CreateAnonymousOrderEnabled": {
       "title": "Allow anonymous users to create orders (XAPI)",
       "description": "This setting is store level."

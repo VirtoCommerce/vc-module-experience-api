@@ -20,24 +20,27 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Queries
     public class GetStoreQueryHandler : IQueryHandler<GetStoreQuery, StoreResponse>
     {
         private readonly IStoreService _storeService;
-        private readonly IStoreSearchService _storeSearcService;
+        private readonly IStoreSearchService _storeSearchService;
         private readonly IStoreCurrencyResolver _storeCurrencyResolver;
+        private readonly ISettingsManager _settingsManager;
         private readonly IdentityOptions _identityOptions;
         private readonly GraphQLWebSocketOptions _webSocketOptions;
         private readonly StoresOptions _storeOptions;
 
         public GetStoreQueryHandler(
             IStoreService storeService,
-            IStoreSearchService storeSearcService,
+            IStoreSearchService storeSearchService,
             IStoreCurrencyResolver storeCurrencyResolver,
+            ISettingsManager settingsManager,
             IOptions<IdentityOptions> identityOptions,
             IOptions<GraphQLWebSocketOptions> webSocketOptions,
             IOptions<StoresOptions> storeOptions)
 
         {
             _storeService = storeService;
-            _storeSearcService = storeSearcService;
+            _storeSearchService = storeSearchService;
             _storeCurrencyResolver = storeCurrencyResolver;
+            _settingsManager = settingsManager;
             _identityOptions = identityOptions.Value;
             _webSocketOptions = webSocketOptions.Value;
             _storeOptions = storeOptions.Value;
@@ -106,6 +109,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Queries
                     QuotesEnabled = store.Settings.GetValue<bool>(new SettingDescriptor { Name = "Quotes.EnableQuotes" }),
                     SubscriptionEnabled = store.Settings.GetValue<bool>(new SettingDescriptor { Name = "Subscription.EnableSubscriptions" }),
 
+                    EnvironmentName = _settingsManager.GetValue<string>(ModuleConstants.Settings.General.EnvironmentName),
                     PasswordRequirements = _identityOptions.Password,
 
                     Modules = ToModulesSettings(store.Settings)
@@ -117,7 +121,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Queries
 
         protected virtual async Task<Store> ResolveStoreByDomain(string domain)
         {
-            if (_storeOptions.Domains.TryGetValue(domain, out string storeId))
+            if (_storeOptions.Domains.TryGetValue(domain, out var storeId))
             {
                 return await _storeService.GetByIdAsync(storeId, clone: false);
             }
@@ -126,7 +130,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Queries
             criteria.Domain = domain;
             criteria.Take = 1;
 
-            var result = await _storeSearcService.SearchAsync(criteria, clone: false);
+            var result = await _storeSearchService.SearchAsync(criteria, clone: false);
             return result.Results.FirstOrDefault();
         }
 
