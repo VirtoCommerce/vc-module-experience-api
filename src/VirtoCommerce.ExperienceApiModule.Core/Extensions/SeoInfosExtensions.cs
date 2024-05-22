@@ -1,10 +1,7 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json.Linq;
 using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.Tools;
 
 namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
 {
@@ -17,7 +14,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
                 return null;
             }
 
-            return GetBestMatchingSeoInfoInternal(seoInfos, storeId, cultureName, null);
+            return GetBestMatchingSeoInfoInternal(seoInfos, storeId, cultureName, cultureName, null);
         }
 
         public static SeoInfo GetBestMatchingSeoInfo(this IList<SeoInfo> seoInfos, string storeId, string cultureName, string slug)
@@ -27,22 +24,22 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
                 return null;
             }
 
-            return GetBestMatchingSeoInfoInternal(seoInfos, storeId, cultureName, slug);
+            return GetBestMatchingSeoInfoInternal(seoInfos, storeId, cultureName, cultureName, slug);
         }
 
-        private static SeoInfo GetBestMatchingSeoInfoInternal(IList<SeoInfo> seoInfos, string storeId, string cultureName, string slug)
+        public static SeoInfo GetBestMatchingSeoInfo(this IList<SeoInfo> seoInfos, string storeId, string defaultStoreLang, string cultureName, string slug)
         {
-            return seoInfos
-                ?.Select(x => JObject.FromObject(x).ToObject<Tools.Models.SeoInfo>())
-                .GetBestMatchingSeoInfos(storeId, cultureName, cultureName, slug)
-                .Select(x =>
-                {
-                    x.CreatedDate ??= DateTime.MinValue;
-                    x.ModifiedDate ??= DateTime.Now;
-                    return x;
-                })
-                .Select(x => JObject.FromObject(x).ToObject<SeoInfo>())
-                .FirstOrDefault();
+            if (storeId == null || cultureName == null || slug == null)
+            {
+                return null;
+            }
+
+            return GetBestMatchingSeoInfoInternal(seoInfos, storeId, defaultStoreLang, cultureName, slug);
+        }
+
+        private static SeoInfo GetBestMatchingSeoInfoInternal(IList<SeoInfo> seoInfos, string storeId, string defaultStoreLang, string cultureName, string slug)
+        {
+            return seoInfos.GetBestMatchingSeoInfos(storeId, defaultStoreLang, cultureName, slug);
         }
 
         public static SeoInfo GetFallbackSeoInfo(string id, string name, string cultureName)
@@ -52,6 +49,38 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
             result.LanguageCode = cultureName;
             result.Name = name;
             return result;
+        }
+
+        private static SeoInfo GetBestMatchingSeoInfos(this IEnumerable<SeoInfo> seoRecords, string storeId, string defaultStoreLang, string language, string slug)
+        {
+            var result = seoRecords?.Select(s => new
+            {
+                SeoRecord = s,
+                Score = CalculateScore(s, slug, storeId, defaultStoreLang, language)
+            })
+            .OrderByDescending(x => x.Score)
+            .Select(x => x.SeoRecord)
+            .FirstOrDefault();
+
+            return result;
+        }
+
+        private static int CalculateScore(SeoInfo seoInfo, string slug, string storeId, string defaultStoreLang, string language)
+        {
+            var score = new[]
+            {
+                seoInfo.IsActive,
+                !string.IsNullOrEmpty(slug) && slug.EqualsInvariant(seoInfo.SemanticUrl),
+                storeId.EqualsInvariant(seoInfo.StoreId),
+                language.Equals(seoInfo.LanguageCode),
+                defaultStoreLang.EqualsInvariant(seoInfo.LanguageCode),
+                seoInfo.LanguageCode.IsNullOrEmpty()
+            }
+            .Reverse()
+            .Select((valid, index) => valid ? 1 << index : 0)
+            .Sum();
+
+            return score;
         }
     }
 }
