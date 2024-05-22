@@ -151,53 +151,7 @@ namespace VirtoCommerce.XPurchase.Services
         {
             var promotionEvalResult = await cartAggr.EvaluatePromotionsAsync();
 
-            var giftRewards = promotionEvalResult.Rewards
-                .OfType<GiftReward>()
-                .Where(reward => reward.IsValid)
-                // .Distinct() is needed as multiplied gifts would be returned otherwise.
-                .Distinct()
-                .ToArray();
-
-            var productIds = giftRewards.Select(x => x.ProductId).Distinct().Where(x => !x.IsNullOrEmpty()).ToArray();
-
-            var productsByIds = (await _cartProductService.GetCartProductsByIdsAsync(cartAggr, productIds)).ToDictionary(x => x.Id);
-
-            var availableProductsIds = productsByIds.Values
-                .Where(x => (x.Product.IsActive ?? false) &&
-                            (x.Product.IsBuyable ?? false) &&
-                            x.Price != null &&
-                            (!(x.Product.TrackInventory ?? false) || x.AvailableQuantity >= giftRewards
-                                .FirstOrDefault(y => y.ProductId == x.Product.Id)?.Quantity))
-                .Select(x => x.Product.Id)
-                .ToHashSet();
-
-            return giftRewards
-                .Where(x => x.ProductId.IsNullOrEmpty() || availableProductsIds.Contains(x.ProductId))
-                .Select(reward =>
-            {
-                var result = _mapper.Map<GiftItem>(reward);
-
-                // if reward has assigned product, add data from product
-                if (!reward.ProductId.IsNullOrEmpty() && productsByIds.ContainsKey(reward.ProductId))
-                {
-                    var product = productsByIds[reward.ProductId];
-                    result.CatalogId = product.Product.CatalogId;
-                    result.CategoryId ??= product.Product.CategoryId;
-                    result.ProductId = product.Product.Id;
-                    result.Sku = product.Product.Code;
-                    result.ImageUrl ??= product.Product.ImgSrc;
-                    result.MeasureUnit ??= product.Product.MeasureUnit;
-                    result.Name ??= product.Product.Name;
-                }
-
-                var giftInCart = cartAggr.GiftItems.FirstOrDefault(x => x.EqualsReward(result));
-                // non-null LineItemId indicates that this GiftItem was added to the cart
-                result.LineItemId = giftInCart?.Id;
-
-                // CacheKey as Id
-                result.Id = result.GetCacheKey();
-                return result;
-            }).ToList();
+            return await cartAggr.GetAvailableGiftsAsync(promotionEvalResult.Rewards);
         }
 
         protected async Task<TaxProvider> GetActiveTaxProviderAsync(string storeId)

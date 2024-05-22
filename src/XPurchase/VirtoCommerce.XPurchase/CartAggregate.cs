@@ -253,44 +253,118 @@ namespace VirtoCommerce.XPurchase
             return this;
         }
 
+        public async Task<IEnumerable<GiftItem>> GetAvailableGiftsAsync(ICollection<PromotionReward> promotionRewards)
+        {
+            var giftRewards = promotionRewards
+                            .OfType<GiftReward>()
+                            .Where(reward => reward.IsValid)
+                            // .Distinct() is needed as multiplied gifts would be returned otherwise.
+                            .Distinct()
+                            .ToArray();
+
+            var productIds = giftRewards.Select(x => x.ProductId).Distinct().Where(x => !x.IsNullOrEmpty()).ToArray();
+
+            var productsByIds = (await _cartProductService.GetCartProductsByIdsAsync(this, productIds)).ToDictionary(x => x.Id);
+
+            var availableProductsIds = productsByIds.Values
+                .Where(x => (x.Product.IsActive ?? false) &&
+                            (x.Product.IsBuyable ?? false) &&
+                            x.Price != null &&
+                            (!(x.Product.TrackInventory ?? false) || x.AvailableQuantity >= giftRewards
+                                .FirstOrDefault(y => y.ProductId == x.Product.Id)?.Quantity))
+                .Select(x => x.Product.Id)
+                .ToHashSet();
+
+            var giftItems = giftRewards
+                .Where(x => x.ProductId.IsNullOrEmpty() || availableProductsIds.Contains(x.ProductId))
+                .Select(reward =>
+                {
+                    var result = _mapper.Map<GiftItem>(reward);
+
+                    // if reward has assigned product, add data from product
+                    if (!reward.ProductId.IsNullOrEmpty() && productsByIds.ContainsKey(reward.ProductId))
+                    {
+                        var product = productsByIds[reward.ProductId];
+                        result.CatalogId = product.Product.CatalogId;
+                        result.CategoryId ??= product.Product.CategoryId;
+                        result.ProductId = product.Product.Id;
+                        result.Sku = product.Product.Code;
+                        result.ImageUrl ??= product.Product.ImgSrc;
+                        result.MeasureUnit ??= product.Product.MeasureUnit;
+                        result.Name ??= product.Product.Name;
+                    }
+
+                    var giftInCart = GiftItems.FirstOrDefault(x => x.EqualsReward(result));
+                    // non-null LineItemId indicates that this GiftItem was added to the cart
+                    if (giftInCart != null)
+                    {
+                        result.HasLineItem = true;
+
+                        result.LineItemId = giftInCart.Id;
+                        if (result.LineItemId == null && giftInCart is GiftLineItem giftLineItem)
+                        {
+                            result.LineItemId = giftLineItem.GiftItemId;
+                        }
+
+                        result.LineItemSelectedForCheckout = giftInCart.SelectedForCheckout;
+                    }
+
+                    // CacheKey as Id
+                    result.Id = result.GetCacheKey();
+                    return result;
+                }).ToList();
+
+            return giftItems;
+        }
+
         public virtual Task<CartAggregate> AddGiftItemsAsync(IReadOnlyCollection<string> giftIds, IReadOnlyCollection<GiftItem> availableGifts)
         {
             EnsureCartExists();
 
-            if (!giftIds.IsNullOrEmpty())
+            if (giftIds.IsNullOrEmpty())
             {
-                foreach (var giftId in giftIds)
+                return Task.FromResult(this);
+            }
+
+            foreach (var giftId in giftIds)
+            {
+                var availableGift = availableGifts.FirstOrDefault(x => x.Id == giftId);
+                if (availableGift == null)
                 {
-                    var availableGift = availableGifts.FirstOrDefault(x => x.Id == giftId);
-                    if (availableGift == null)
-                    {
-                        // ignore the gift, if it's not in available gifts list
-                        continue;
-                    }
-
-                    var giftItem = GiftItems.FirstOrDefault(x => x.EqualsReward(availableGift));
-                    if (giftItem == null)
-                    {
-                        giftItem = _mapper.Map<LineItem>(availableGift);
-                        giftItem.Id = null;
-                        giftItem.IsGift = true;
-                        giftItem.SelectedForCheckout = IsSelectedForCheckout;
-                        giftItem.Discounts ??= new List<Discount>();
-                        giftItem.Discounts.Add(new Discount
-                        {
-                            Coupon = availableGift.Coupon,
-                            PromotionId = availableGift.Promotion.Id,
-                            Currency = Cart.Currency,
-                        });
-                        giftItem.CatalogId ??= "";
-                        giftItem.ProductId ??= "";
-                        giftItem.Sku ??= "";
-                        giftItem.Currency = Currency.Code;
-                        Cart.Items.Add(giftItem);
-                    }
-
-                    giftItem.IsRejected = false;
+                    // ignore the gift, if it's not in available gifts list
+                    continue;
                 }
+
+                var giftItem = GiftItems.FirstOrDefault(x => x.EqualsReward(availableGift));
+                if (giftItem == null)
+                {
+                    giftItem = _mapper.Map<GiftLineItem>(availableGift);
+
+                    // todo: add to mapping
+                    if (giftItem is GiftLineItem giftLineItem)
+                    {
+                        giftLineItem.GiftItemId = availableGift.Id;
+                    }
+
+                    giftItem.Id = null;
+                    giftItem.IsGift = true;
+                    giftItem.Discounts ??= new List<Discount>();
+                    giftItem.Discounts.Add(new Discount
+                    {
+                        Coupon = availableGift.Coupon,
+                        PromotionId = availableGift.Promotion.Id,
+                        Currency = Cart.Currency,
+                    });
+                    giftItem.CatalogId ??= "";
+                    giftItem.ProductId ??= "";
+                    giftItem.Sku ??= "";
+                    giftItem.Currency = Currency.Code;
+                    Cart.Items.Add(giftItem);
+                }
+
+                // always add gift items to the cart as selected for checkout
+                giftItem.SelectedForCheckout = true;
+                giftItem.IsRejected = false;
             }
 
             return Task.FromResult(this);
@@ -307,10 +381,14 @@ namespace VirtoCommerce.XPurchase
 
             foreach (var cartItemId in cartItemIds)
             {
-                var giftItem = GiftItems.FirstOrDefault(x => x.Id == cartItemId);
+                // cartItem If can be an unsaved gift as well
+                var giftItem = GiftItems.FirstOrDefault(x => x.Id == cartItemId) ??
+                               GiftItems.OfType<GiftLineItem>().FirstOrDefault(x => x.GiftItemId == cartItemId);
+
                 if (giftItem != null)
                 {
-                    RemoveItemAsync(giftItem.Id);
+                    giftItem.SelectedForCheckout = false;
+                    giftItem.IsRejected = true;
                 }
             }
 
@@ -713,7 +791,7 @@ namespace VirtoCommerce.XPurchase
             EnsureCartExists();
 
             var promotionEvalResult = await EvaluatePromotionsAsync();
-            this.ApplyRewards(promotionEvalResult.Rewards);
+            await this.ApplyRewardsAsync(promotionEvalResult.Rewards);
 
             var taxRates = await EvaluateTaxesAsync();
             Cart.ApplyTaxRates(taxRates);

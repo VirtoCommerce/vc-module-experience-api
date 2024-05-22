@@ -39,6 +39,13 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Commands
             var cart = await _cartService.GetByIdAsync(request.CartId);
             var cartAggregate = await _cartRepository.GetCartForShoppingCartAsync(cart);
 
+            // remove unselected gifts before order create
+            var unselectedGifts = cartAggregate.GiftItems.Where(x => !x.SelectedForCheckout).ToList();
+            if (unselectedGifts.Any())
+            {
+                unselectedGifts.ForEach(x => cartAggregate.Cart.Items.Remove(x));
+            }
+
             await ValidateCart(cartAggregate);
 
             var result = await _customerOrderAggregateRepository.CreateOrderFromCart(cart);
