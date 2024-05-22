@@ -263,6 +263,10 @@ namespace VirtoCommerce.XPurchase
                             .ToArray();
 
             var productIds = giftRewards.Select(x => x.ProductId).Distinct().Where(x => !x.IsNullOrEmpty()).ToArray();
+            if (productIds.Length == 0)
+            {
+                return new List<GiftItem>();
+            }
 
             var productsByIds = (await _cartProductService.GetCartProductsByIdsAsync(this, productIds)).ToDictionary(x => x.Id);
 
