@@ -279,16 +279,15 @@ namespace VirtoCommerce.XPurchase
                 .Select(x => x.Product.Id)
                 .ToHashSet();
 
-            var giftItems = giftRewards
+            return giftRewards
                 .Where(x => x.ProductId.IsNullOrEmpty() || availableProductsIds.Contains(x.ProductId))
                 .Select(reward =>
                 {
                     var result = _mapper.Map<GiftItem>(reward);
 
                     // if reward has assigned product, add data from product
-                    if (!reward.ProductId.IsNullOrEmpty() && productsByIds.ContainsKey(reward.ProductId))
+                    if (!reward.ProductId.IsNullOrEmpty() && productsByIds.TryGetValue(reward.ProductId, out var product))
                     {
-                        var product = productsByIds[reward.ProductId];
                         result.CatalogId = product.Product.CatalogId;
                         result.CategoryId ??= product.Product.CategoryId;
                         result.ProductId = product.Product.Id;
@@ -317,8 +316,6 @@ namespace VirtoCommerce.XPurchase
                     result.Id = result.GetCacheKey();
                     return result;
                 }).ToList();
-
-            return giftItems;
         }
 
         public virtual Task<CartAggregate> AddGiftItemsAsync(IReadOnlyCollection<string> giftIds, IReadOnlyCollection<GiftItem> availableGifts)
@@ -344,7 +341,6 @@ namespace VirtoCommerce.XPurchase
                 {
                     giftItem = _mapper.Map<GiftLineItem>(availableGift);
 
-                    // todo: add to mapping
                     if (giftItem is GiftLineItem giftLineItem)
                     {
                         giftLineItem.GiftItemId = availableGift.Id;

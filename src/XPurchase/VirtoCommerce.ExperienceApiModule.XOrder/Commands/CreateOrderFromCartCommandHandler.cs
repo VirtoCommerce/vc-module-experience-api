@@ -41,7 +41,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Commands
 
             // remove unselected gifts before order create
             var unselectedGifts = cartAggregate.GiftItems.Where(x => !x.SelectedForCheckout).ToList();
-            if (unselectedGifts.Any())
+            if (unselectedGifts.Count != 0)
             {
                 unselectedGifts.ForEach(x => cartAggregate.Cart.Items.Remove(x));
             }

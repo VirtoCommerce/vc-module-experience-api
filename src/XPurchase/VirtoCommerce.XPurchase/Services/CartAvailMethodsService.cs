@@ -25,7 +25,6 @@ namespace VirtoCommerce.XPurchase.Services
         private readonly IPaymentMethodsSearchService _paymentMethodsSearchService;
         private readonly ITaxProviderSearchService _taxProviderSearchService;
         private readonly IShippingMethodsSearchService _shippingMethodsSearchService;
-        private readonly ICartProductService _cartProductService;
 
         private readonly IMapper _mapper;
 

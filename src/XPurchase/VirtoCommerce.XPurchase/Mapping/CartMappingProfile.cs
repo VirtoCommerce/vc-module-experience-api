@@ -27,11 +27,6 @@ namespace VirtoCommerce.XPurchase.Mapping
             CreateMap<GiftReward, GiftItem>();
             CreateMap<GiftItem, LineItem>();
             CreateMap<GiftItem, GiftLineItem>();
-            //CreateMap<GiftItem, GiftLineItem>().IncludeBase<GiftItem, LineItem>().AfterMap((scr, dest) =>
-            //{
-            //    dest.GiftItemId = scr.Id;
-            //});
-
 
             CreateMap<CartProduct, LineItem>().ConvertUsing((cartProduct, lineItem, context) =>
             {
