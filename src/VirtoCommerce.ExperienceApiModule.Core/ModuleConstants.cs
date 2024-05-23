@@ -25,12 +25,21 @@ namespace VirtoCommerce.ExperienceApiModule.Core
                     DefaultValue = true
                 };
 
+                public static SettingDescriptor IsSelectedForCheckout { get; } = new SettingDescriptor
+                {
+                    Name = "XPurchase.IsSelectedForCheckout",
+                    ValueType = SettingValueType.Boolean,
+                    GroupName = "Cart|General",
+                    DefaultValue = true
+                };
+
                 public static IEnumerable<SettingDescriptor> AllSettings
                 {
                     get
                     {
                         yield return EnvironmentName;
                         yield return CreateAnonymousOrder;
+                        yield return IsSelectedForCheckout;
                     }
                 }
             }
@@ -40,6 +49,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core
                 get
                 {
                     yield return General.CreateAnonymousOrder;
+                    yield return General.IsSelectedForCheckout;
                 }
             }
         }

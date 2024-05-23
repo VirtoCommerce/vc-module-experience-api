@@ -23,8 +23,10 @@ namespace VirtoCommerce.XPurchase.Mapping
         public CartMappingProfile()
         {
             CreateMap<CartModule.Core.Model.Address, TaxModule.Core.Model.Address>();
+
             CreateMap<GiftReward, GiftItem>();
             CreateMap<GiftItem, LineItem>();
+            CreateMap<GiftItem, GiftLineItem>();
 
             CreateMap<CartProduct, LineItem>().ConvertUsing((cartProduct, lineItem, context) =>
             {

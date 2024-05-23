@@ -39,7 +39,21 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Commands
             var cart = await _cartService.GetByIdAsync(request.CartId);
             var cartAggregate = await _cartRepository.GetCartForShoppingCartAsync(cart);
 
+            // remove unselected gifts before order create
+            var unselectedGifts = cartAggregate.GiftItems.Where(x => !x.SelectedForCheckout).ToList();
+            if (unselectedGifts.Count != 0)
+            {
+                unselectedGifts.ForEach(x => cartAggregate.Cart.Items.Remove(x));
+            }
+
             await ValidateCart(cartAggregate);
+
+            // need to check for unsaved gift items before createing an order and resave the cart, otherwise an exception will be thrown on order create
+            var hasUnsavedGifts = cartAggregate.GiftItems.Any(x => x.Id == null);
+            if (hasUnsavedGifts)
+            {
+                await _cartRepository.SaveAsync(cartAggregate);
+            }
 
             var result = await _customerOrderAggregateRepository.CreateOrderFromCart(cart);
 

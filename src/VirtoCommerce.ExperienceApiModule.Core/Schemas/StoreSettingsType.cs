@@ -16,6 +16,7 @@ public class StoreSettingsType : ExtendableGraphType<StoreSettings>
         Field(x => x.EmailVerificationRequired).Description("Email address verification required");
         Field(x => x.CreateAnonymousOrderEnabled).Description("Allow anonymous users to create orders (XAPI)");
         Field(x => x.SeoLinkType).Description("SEO links");
+        Field(x => x.DefaultSelectedForCheckout).Description("Default \"Selected for checkout\" state for new line items and gifts");
         Field(x => x.EnvironmentName).Description("Environment name");
         Field<PasswordOptionsType>("passwordRequirements", "Password requirements");
         Field<NonNullGraphType<ListGraphType<NonNullGraphType<ModuleSettingsType>>>>("modules");
