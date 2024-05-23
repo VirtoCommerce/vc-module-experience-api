@@ -48,6 +48,13 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder.Commands
 
             await ValidateCart(cartAggregate);
 
+            // need to check for unsaved gift items before createing an order and resave the cart, otherwise an exception will be thrown on order create
+            var hasUnsavedGifts = cartAggregate.GiftItems.Any(x => x.Id == null);
+            if (hasUnsavedGifts)
+            {
+                await _cartRepository.SaveAsync(cartAggregate);
+            }
+
             var result = await _customerOrderAggregateRepository.CreateOrderFromCart(cart);
 
             // remove selected items after order create
