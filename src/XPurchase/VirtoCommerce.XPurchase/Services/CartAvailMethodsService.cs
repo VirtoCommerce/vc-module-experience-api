@@ -40,7 +40,6 @@ namespace VirtoCommerce.XPurchase.Services
             _paymentMethodsSearchService = paymentMethodsSearchService;
             _shippingMethodsSearchService = shippingMethodsSearchService;
             _taxProviderSearchService = taxProviderSearchService;
-            _cartProductService = cartProductService;
             _mapper = mapper;
         }
 
