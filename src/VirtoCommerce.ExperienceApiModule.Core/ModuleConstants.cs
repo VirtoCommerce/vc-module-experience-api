@@ -9,6 +9,14 @@ namespace VirtoCommerce.ExperienceApiModule.Core
         {
             public static class General
             {
+                public static SettingDescriptor EnvironmentName { get; } = new()
+                {
+                    Name = "VirtoCommerce.Platform.EnvironmentName",
+                    ValueType = SettingValueType.ShortText,
+                    GroupName = "Platform|General",
+                    DefaultValue = string.Empty,
+                };
+
                 public static SettingDescriptor CreateAnonymousOrder { get; } = new SettingDescriptor
                 {
                     Name = "XOrder.CreateAnonymousOrderEnabled",
@@ -21,6 +29,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core
                 {
                     get
                     {
+                        yield return EnvironmentName;
                         yield return CreateAnonymousOrder;
                     }
                 }
