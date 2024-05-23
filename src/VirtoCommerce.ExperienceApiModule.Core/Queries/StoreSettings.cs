@@ -24,6 +24,8 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Queries
 
         public bool DefaultSelectedForCheckout { get; set; }
 
+        public string EnvironmentName { get; set; }
+
         public PasswordOptions PasswordRequirements { get; set; }
 
         public ModuleSettings[] Modules { get; set; }

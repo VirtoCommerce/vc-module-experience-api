@@ -51,8 +51,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Queries
             var itemsToMatch = await _seoBySlugResolver.FindSeoBySlugAsync(slug);
 
             var seoInfosForStore = itemsToMatch.Where(x => x.StoreId == store.Id).ToArray();
-
-            var bestMatchSeoInfo = seoInfosForStore.GetBestMatchingSeoInfo(store.Id, currentCulture, slug);
+            var bestMatchSeoInfo = seoInfosForStore.GetBestMatchingSeoInfo(store.Id, store.DefaultLanguage, currentCulture, slug);
 
             if (bestMatchSeoInfo == null)
             {
