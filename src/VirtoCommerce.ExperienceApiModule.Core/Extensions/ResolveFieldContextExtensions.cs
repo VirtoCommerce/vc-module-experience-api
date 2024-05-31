@@ -78,11 +78,13 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
         public static void CopyArgumentsToUserContext(this IResolveFieldContext resolveContext)
         {
             if (resolveContext.Arguments.IsNullOrEmpty())
+            {
                 return;
+            }
 
             foreach (var pair in resolveContext.Arguments)
             {
-                resolveContext.UserContext[pair.Key] = pair.Value;
+                resolveContext.UserContext.TryAdd(pair.Key, pair.Value);
             }
         }
 
