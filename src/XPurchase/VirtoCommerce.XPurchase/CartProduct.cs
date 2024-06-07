@@ -18,7 +18,7 @@ namespace VirtoCommerce.XPurchase
             Id = product.Id;
         }
 
-        public CartProduct(XDigitalCatalog.ExpProduct expProduct)
+        public CartProduct(XDigitalCatalog.Core.Models.ExpProduct expProduct)
         {
             //TODO: rework this 
             Product = expProduct.IndexedProduct;

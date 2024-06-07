@@ -24,7 +24,7 @@ using VirtoCommerce.XDigitalCatalog.Data.Extensions;
 //using VirtoCommerce.ExperienceApiModule.XCMS.Extensions;
 //using VirtoCommerce.ExperienceApiModule.XOrder.Extensions;
 //using VirtoCommerce.InventoryModule.Core.Model.Search;
-//using VirtoCommerce.XPurchase.Extensions;
+using VirtoCommerce.XPurchase.Extensions;
 
 namespace VirtoCommerce.ExperienceApiModule.Web
 {
@@ -89,7 +89,7 @@ namespace VirtoCommerce.ExperienceApiModule.Web
             services.AddXCore(graphQlBuilder);
 
             services.AddXCatalog(graphQlBuilder);
-            //services.AddXPurchase(graphQlBuilder);
+            services.AddXPurchase(graphQlBuilder);
             //services.AddXOrder(graphQlBuilder);
             //services.AddXCMS(graphQlBuilder);
 

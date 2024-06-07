@@ -8,9 +8,9 @@ using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
 using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.XDigitalCatalog;
-using VirtoCommerce.XDigitalCatalog.Queries;
-using VirtoCommerce.XDigitalCatalog.Schemas;
+using VirtoCommerce.XDigitalCatalog.Core.Models;
+using VirtoCommerce.XDigitalCatalog.Core.Queries;
+using VirtoCommerce.XDigitalCatalog.Core.Types;
 
 namespace VirtoCommerce.XPurchase.Schemas
 {

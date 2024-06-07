@@ -1,10 +1,7 @@
 using AutoMapper;
 using VirtoCommerce.CatalogModule.Core.Search;
-using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
-using VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index;
 using VirtoCommerce.SearchModule.Core.Services;
-using VirtoCommerce.StoreModule.Core.Model;
 using VirtoCommerce.StoreModule.Core.Services;
 using VirtoCommerce.XDigitalCatalog.Queries;
 
@@ -17,17 +14,19 @@ namespace VirtoCommerce.Exp.ExtensionSamples.UseCases.TypeExtension.Queries
         {
         }
 
-        protected override IndexSearchRequestBuilder GetIndexedSearchRequestBuilder(SearchProductQuery request, Store store, Currency currency)
-        {
-            var builder = base.GetIndexedSearchRequestBuilder(request, store, currency);
+        // TODO: fix
 
-            if (request is SearchProductQueryExtended)
-            {
-                // extract search criteria by calling builder.Build() and modify it
-            }
+        //protected override IndexSearchRequestBuilder GetIndexedSearchRequestBuilder(SearchProductQuery request, Store store, Currency currency)
+        //{
+        //    var builder = base.GetIndexedSearchRequestBuilder(request, store, currency);
 
-            return builder;
-        }
+        //    if (request is SearchProductQueryExtended)
+        //    {
+        //        // extract search criteria by calling builder.Build() and modify it
+        //    }
+
+        //    return builder;
+        //}
     }
 }
 

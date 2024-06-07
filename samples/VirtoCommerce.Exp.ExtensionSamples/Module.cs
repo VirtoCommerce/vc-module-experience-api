@@ -64,7 +64,8 @@ namespace VirtoCommerce.Exp.ExtensionSamples
             AbstractTypeFactory<ShoppingCartSearchCriteria>.OverrideType<ShoppingCartSearchCriteria, ShoppingCartSearchCriteriaExtended>();
 
             // Override products query
-            services.OverrideQueryType<SearchProductQuery, SearchProductQueryExtended>().WithQueryHandler<ProductsQueryHandlerExtended>();
+            // TODO: fix
+            //services.OverrideQueryType<SearchProductQuery, SearchProductQueryExtended>().WithQueryHandler<ProductsQueryHandlerExtended>();
 
             services.AddAutoMapper(typeof(XExtensionAnchor));
             services.AddMediatR(typeof(XExtensionAnchor));

@@ -12,7 +12,7 @@ using VirtoCommerce.InventoryModule.Core.Services;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.PricingModule.Core.Model;
 using VirtoCommerce.PricingModule.Core.Services;
-using VirtoCommerce.XDigitalCatalog.Queries;
+using VirtoCommerce.XDigitalCatalog.Core.Queries;
 
 namespace VirtoCommerce.XPurchase.Services
 {

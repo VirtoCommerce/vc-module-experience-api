@@ -13,7 +13,8 @@
     <PackageReference Include="GraphQL.DataLoader" Version="4.6.0" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
     <PackageReference Include="PipelineNet" Version="0.9.0" />
-    
+
+    <PackageReference Include="VirtoCommerce.CartModule.Core" Version="3.808.0" />
     <PackageReference Include="VirtoCommerce.OrdersModule.Core" Version="3.803.0" />
     <PackageReference Include="VirtoCommerce.PaymentModule.Core" Version="3.800.0" />
     <PackageReference Include="VirtoCommerce.ShippingModule.Core" Version="3.800.0" />
@@ -25,7 +26,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\VirtoCommerce.ExperienceApiModule.Core\VirtoCommerce.ExperienceApiModule.Core.csproj" />
-    <ProjectReference Include="..\..\VirtoCommerce.ExperienceApiModule.DigitalCatalog\VirtoCommerce.XDigitalCatalog.csproj" />
+    <ProjectReference Include="..\..\XDigitalCatalog\VirtoCommerce.XDigitalCatalog.Core\VirtoCommerce.XDigitalCatalog.Core.csproj" />
 
   </ItemGroup>
 </Project>
