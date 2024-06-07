@@ -12,19 +12,19 @@ using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure.Validation;
 using VirtoCommerce.ExperienceApiModule.Core.Models;
 using VirtoCommerce.ExperienceApiModule.Core.Modularity;
-using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
 using VirtoCommerce.ExperienceApiModule.Core.Queries;
 using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.Core.Subscriptions;
 using VirtoCommerce.ExperienceApiModule.Web.Extensions;
-using VirtoCommerce.ExperienceApiModule.XCMS.Extensions;
-using VirtoCommerce.ExperienceApiModule.XOrder.Extensions;
-using VirtoCommerce.InventoryModule.Core.Model.Search;
 using VirtoCommerce.Platform.Core.Modularity;
 using VirtoCommerce.Platform.Core.Settings;
 using VirtoCommerce.TaxModule.Core.Model;
-using VirtoCommerce.XDigitalCatalog.Extensions;
-using VirtoCommerce.XPurchase.Extensions;
+using VirtoCommerce.XDigitalCatalog.Data.Extensions;
+//using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
+//using VirtoCommerce.ExperienceApiModule.XCMS.Extensions;
+//using VirtoCommerce.ExperienceApiModule.XOrder.Extensions;
+//using VirtoCommerce.InventoryModule.Core.Model.Search;
+//using VirtoCommerce.XPurchase.Extensions;
 
 namespace VirtoCommerce.ExperienceApiModule.Web
 {
@@ -86,20 +86,18 @@ namespace VirtoCommerce.ExperienceApiModule.Web
             services.AddSingleton<ISchema, SchemaFactory>();
 
             //Register all xApi boundaries
-            services.AddXCatalog(graphQlBuilder);
             services.AddXCore(graphQlBuilder);
-            services.AddXPurchase(graphQlBuilder);
-            services.AddXOrder(graphQlBuilder);
-            services.AddXCMS(graphQlBuilder);
+
+            services.AddXCatalog(graphQlBuilder);
+            //services.AddXPurchase(graphQlBuilder);
+            //services.AddXOrder(graphQlBuilder);
+            //services.AddXCMS(graphQlBuilder);
 
             services.AddAutoMapper(ModuleInfo.Assembly);
 
             services.AddTransient<LoadUserToEvalContextService>();
 
             services.AddDistributedLockService(Configuration);
-
-            // ????
-            services.AddPipeline<InventorySearchCriteria>();
 
             services.Configure<GraphQLPlaygroundOptions>(Configuration.GetSection(GraphQLPlaygroundConfigKey));
             services.Configure<GraphQLWebSocketOptions>(Configuration.GetSection(GraphQLWebSocketConfigKey));
