@@ -22,7 +22,12 @@ namespace VirtoCommerce.XPurchase.Schemas
 {
     public class LineItemType : ExtendableGraphType<LineItem>
     {
-        public LineItemType(IMediator mediator, IDataLoaderContextAccessor dataLoader, IDynamicPropertyResolverService dynamicPropertyResolverService, IMapper mapper, IMemberService memberService, ICurrencyService currencyService)
+        public LineItemType(
+            IMediator mediator,
+            IDataLoaderContextAccessor dataLoader,
+            IDynamicPropertyResolverService dynamicPropertyResolverService,
+            IMapper mapper, IMemberService memberService,
+            ICurrencyService currencyService)
         {
             var productField = new FieldType
             {

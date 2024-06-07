@@ -10,6 +10,7 @@ using VirtoCommerce.XDigitalCatalog.Queries;
 
 namespace VirtoCommerce.XDigitalCatalog.Middlewares
 {
+    // TODO: move to XPurchase
     public class EvalProductsWishlistsMiddleware : IAsyncMiddleware<SearchProductResponse>
     {
         private readonly IWishlistService _wishlistService;
