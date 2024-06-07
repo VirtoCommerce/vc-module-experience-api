@@ -4,8 +4,9 @@ using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.SearchModule.Core.Services;
 
-namespace VirtoCommerce.XDigitalCatalog.Core
+namespace VirtoCommerce.XDigitalCatalog.Data
 {
+    // TODO: to data project
     public class PropertySearchCriteriaBuilder
     {
         private readonly ISearchPhraseParser _phraseParser;

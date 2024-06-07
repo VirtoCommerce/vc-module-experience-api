@@ -20,14 +20,11 @@ using VirtoCommerce.ExperienceApiModule.Web.Extensions;
 using VirtoCommerce.ExperienceApiModule.XCMS.Extensions;
 using VirtoCommerce.ExperienceApiModule.XOrder.Extensions;
 using VirtoCommerce.InventoryModule.Core.Model.Search;
-using VirtoCommerce.MarketingModule.Core.Model.Promotions;
 using VirtoCommerce.Platform.Core.Modularity;
 using VirtoCommerce.Platform.Core.Settings;
-using VirtoCommerce.PricingModule.Core.Model;
 using VirtoCommerce.TaxModule.Core.Model;
 using VirtoCommerce.XDigitalCatalog.Extensions;
 using VirtoCommerce.XPurchase.Extensions;
-using VirtoCommerce.XPurchase.Middlewares;
 
 namespace VirtoCommerce.ExperienceApiModule.Web
 {
@@ -101,18 +98,7 @@ namespace VirtoCommerce.ExperienceApiModule.Web
 
             services.AddDistributedLockService(Configuration);
 
-            services.AddPipeline<PromotionEvaluationContext>(builder =>
-            {
-                builder.AddMiddleware(typeof(LoadCartToEvalContextMiddleware));
-            });
-            services.AddPipeline<TaxEvaluationContext>(builder =>
-            {
-                builder.AddMiddleware(typeof(LoadCartToEvalContextMiddleware));
-            });
-            services.AddPipeline<PriceEvaluationContext>(builder =>
-            {
-                builder.AddMiddleware(typeof(LoadCartToEvalContextMiddleware));
-            });
+            // ????
             services.AddPipeline<InventorySearchCriteria>();
 
             services.Configure<GraphQLPlaygroundOptions>(Configuration.GetSection(GraphQLPlaygroundConfigKey));

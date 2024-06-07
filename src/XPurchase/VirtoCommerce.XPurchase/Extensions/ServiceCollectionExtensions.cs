@@ -4,7 +4,12 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
+using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
+using VirtoCommerce.MarketingModule.Core.Model.Promotions;
+using VirtoCommerce.PricingModule.Core.Model;
+using VirtoCommerce.TaxModule.Core.Model;
 using VirtoCommerce.XPurchase.Authorization;
+using VirtoCommerce.XPurchase.Middlewares;
 using VirtoCommerce.XPurchase.Services;
 using VirtoCommerce.XPurchase.Validators;
 
@@ -28,6 +33,19 @@ namespace VirtoCommerce.XPurchase.Extensions
             services.AddTransient<CartAggregate>();
             services.AddTransient<Func<CartAggregate>>(provider => () => provider.CreateScope().ServiceProvider.GetRequiredService<CartAggregate>());
             services.AddSingleton<ICartResponseGroupParser, CartResponseGroupParser>();
+
+            services.AddPipeline<PromotionEvaluationContext>(builder =>
+            {
+                builder.AddMiddleware(typeof(LoadCartToEvalContextMiddleware));
+            });
+            services.AddPipeline<TaxEvaluationContext>(builder =>
+            {
+                builder.AddMiddleware(typeof(LoadCartToEvalContextMiddleware));
+            });
+            services.AddPipeline<PriceEvaluationContext>(builder =>
+            {
+                builder.AddMiddleware(typeof(LoadCartToEvalContextMiddleware));
+            });
 
             return services;
         }
