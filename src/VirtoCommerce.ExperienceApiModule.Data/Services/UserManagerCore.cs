@@ -2,11 +2,11 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure.Authorization;
+using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.Platform.Core.Security;
 
-namespace VirtoCommerce.ExperienceApiModule.Core.Services
+namespace VirtoCommerce.ExperienceApiModule.Data.Services
 {
-    [XKill]
     public class UserManagerCore : IUserManagerCore
     {
         private readonly Func<UserManager<ApplicationUser>> _userManagerFactory;

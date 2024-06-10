@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.DynamicProperties;
 
-namespace VirtoCommerce.ExperienceApiModule.Core.Services
+namespace VirtoCommerce.ExperienceApiModule.Data.Services
 {
-    [XKill]
     public class DynamicPropertyResolverService : IDynamicPropertyResolverService
     {
         private readonly IDynamicPropertySearchService _dynamicPropertySearchService;

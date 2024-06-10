@@ -1,6 +1,6 @@
 namespace VirtoCommerce.XDigitalCatalog.Core
 {
-    public class XDigitalCatalogConstants
+    public class ModuleConstants
     {
         public const string KeyProperty = "KeyProperty";
     }

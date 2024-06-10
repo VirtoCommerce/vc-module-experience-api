@@ -10,7 +10,8 @@ using VirtoCommerce.Platform.Core.DynamicProperties;
 
 namespace VirtoCommerce.ExperienceApiModule.Core.Services
 {
-    public class LoadUserToEvalContextService
+    [XKill]
+    public class LoadUserToEvalContextService : ILoadUserToEvalContextService
     {
         protected readonly IMemberResolver _memberIdResolver;
         protected readonly IMemberService _memberService;
@@ -23,7 +24,10 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Services
 
         public virtual async Task SetShopperDataFromMember(EvaluationContextBase evalContextBase, string customerId)
         {
-            if (customerId.IsNullOrEmpty()) return;
+            if (customerId.IsNullOrEmpty())
+            {
+                return;
+            }
 
             var member = await _memberIdResolver.ResolveMemberByIdAsync(customerId);
             if (member is Contact contact)

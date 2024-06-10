@@ -71,10 +71,10 @@ namespace VirtoCommerce.XDigitalCatalog.Core.Extensions
             }
 
             properties = properties
-                .Where(x => !x.Attributes.IsNullOrEmpty() && x.Attributes.Any(a => a.Name.EqualsInvariant(XDigitalCatalogConstants.KeyProperty)))
+                .Where(x => !x.Attributes.IsNullOrEmpty() && x.Attributes.Any(a => a.Name.EqualsInvariant(ModuleConstants.KeyProperty)))
                 .OrderBy(x =>
                 {
-                    var keyPropertyAttr = x.Attributes?.FirstOrDefault(x => x.Name.EqualsInvariant(XDigitalCatalogConstants.KeyProperty));
+                    var keyPropertyAttr = x.Attributes?.FirstOrDefault(x => x.Name.EqualsInvariant(ModuleConstants.KeyProperty));
                     return keyPropertyAttr?.Value.TryParse(int.MaxValue);
                 });
 

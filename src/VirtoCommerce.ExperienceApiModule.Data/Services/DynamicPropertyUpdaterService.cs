@@ -4,12 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using GraphQL.Types;
 using VirtoCommerce.ExperienceApiModule.Core.Models;
+using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.DynamicProperties;
 
-namespace VirtoCommerce.ExperienceApiModule.Core.Services
+namespace VirtoCommerce.ExperienceApiModule.Data.Services
 {
-    [XKill]
     public class DynamicPropertyUpdaterService : IDynamicPropertyUpdaterService
     {
         private readonly IDynamicPropertyMetaDataResolver _metadataResolver;
