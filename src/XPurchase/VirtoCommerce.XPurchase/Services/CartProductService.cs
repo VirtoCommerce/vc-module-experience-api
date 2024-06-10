@@ -22,7 +22,7 @@ namespace VirtoCommerce.XPurchase.Services
         private readonly IInventorySearchService _inventorySearchService;
         private readonly IPricingEvaluatorService _pricingEvaluatorService;
         private readonly IMapper _mapper;
-        private readonly LoadUserToEvalContextService _loadUserToEvalContextService;
+        private readonly ILoadUserToEvalContextService _loadUserToEvalContextService;
         private readonly IMediator _mediator;
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace VirtoCommerce.XPurchase.Services
             IInventorySearchService inventoryService,
             IPricingEvaluatorService pricingEvaluatorService,
             IMapper mapper,
-            LoadUserToEvalContextService loadUserToEvalContextService,
+            ILoadUserToEvalContextService loadUserToEvalContextService,
             IMediator mediator)
         {
             _productService = productService;

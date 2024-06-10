@@ -1,4 +1,4 @@
-using VirtoCommerce.ExperienceApiModule.Core.Queries;
+using VirtoCommerce.ExperienceApiModule.Core.Models;
 
 namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
 {

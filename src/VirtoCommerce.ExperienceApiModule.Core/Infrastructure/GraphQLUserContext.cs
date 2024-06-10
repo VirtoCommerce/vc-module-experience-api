@@ -10,6 +10,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Infrastructure
         {
             User = user;
         }
+
         public ClaimsPrincipal User { get; private set; }
     }
 }

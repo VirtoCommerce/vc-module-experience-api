@@ -17,7 +17,7 @@ namespace VirtoCommerce.XPurchase.Tests.Services
             IInventorySearchService inventoryService,
             IPricingEvaluatorService pricingEvaluatorService,
             IMapper mapper,
-            LoadUserToEvalContextService loadUserToEvalContextService,
+            ILoadUserToEvalContextService loadUserToEvalContextService,
             IMediator mediator)
             : base(productService, inventoryService, pricingEvaluatorService, mapper, loadUserToEvalContextService, mediator)
         {

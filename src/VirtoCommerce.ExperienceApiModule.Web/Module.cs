@@ -1,5 +1,4 @@
 using GraphQL;
-using GraphQL.Introspection;
 using GraphQL.Server;
 using GraphQL.Types;
 using GraphQL.Validation.Rules;
@@ -11,10 +10,8 @@ using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure.Validation;
 using VirtoCommerce.ExperienceApiModule.Core.Models;
-using VirtoCommerce.ExperienceApiModule.Core.Modularity;
-using VirtoCommerce.ExperienceApiModule.Core.Queries;
-using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.Core.Subscriptions;
+using VirtoCommerce.ExperienceApiModule.Data.Extensions;
 using VirtoCommerce.ExperienceApiModule.Web.Extensions;
 using VirtoCommerce.Platform.Core.Modularity;
 using VirtoCommerce.Platform.Core.Settings;
@@ -47,9 +44,6 @@ namespace VirtoCommerce.ExperienceApiModule.Web
 
         public void Initialize(IServiceCollection services)
         {
-            // provider for external fields
-            services.AddSingleton<IExternalFieldProvider, ExternalFieldProvider>();
-
             services.AddApplicationInsightsTelemetryProcessor<IgnorePlainGraphQLTelemetryProcessor>();
             // register custom executor with app insight wrapper
             services.AddTransient(typeof(IGraphQLExecuter<>), typeof(CustomGraphQLExecuter<>));
@@ -79,25 +73,15 @@ namespace VirtoCommerce.ExperienceApiModule.Web
                 graphQlBuilder.ReplaceValidationRule<KnownArgumentNames, CustomKnownArgumentNames>();
             }
 
-            //Register custom GraphQL dependencies
-            services.AddPermissionAuthorization();
-
-            services.AddSingleton<ISchemaFilter, CustomSchemaFilter>();
-            services.AddSingleton<ISchema, SchemaFactory>();
-
             //Register all xApi boundaries
-            services.AddXCore(graphQlBuilder);
-
+            services.AddXCore(graphQlBuilder, Configuration);
             services.AddXCatalog(graphQlBuilder);
             services.AddXPurchase(graphQlBuilder);
+
             //services.AddXOrder(graphQlBuilder);
             //services.AddXCMS(graphQlBuilder);
 
             services.AddAutoMapper(ModuleInfo.Assembly);
-
-            services.AddTransient<LoadUserToEvalContextService>();
-
-            services.AddDistributedLockService(Configuration);
 
             services.Configure<GraphQLPlaygroundOptions>(Configuration.GetSection(GraphQLPlaygroundConfigKey));
             services.Configure<GraphQLWebSocketOptions>(Configuration.GetSection(GraphQLWebSocketConfigKey));

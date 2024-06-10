@@ -7,7 +7,7 @@ using MediatR;
 using Moq;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Services;
-using VirtoCommerce.ExperienceApiModule.Core.Services;
+using VirtoCommerce.ExperienceApiModule.Data.Services;
 using VirtoCommerce.InventoryModule.Core.Services;
 using VirtoCommerce.PricingModule.Core.Services;
 using Xunit;

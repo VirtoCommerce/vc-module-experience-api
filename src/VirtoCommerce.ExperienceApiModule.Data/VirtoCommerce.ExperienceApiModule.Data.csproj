@@ -10,9 +10,7 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <Folder Include="Types\" />
-    <Folder Include="Queries\" />
-    <Folder Include="Schemas\" />
+    <Folder Include="Infrastructure\" />
   </ItemGroup>
 
   <ItemGroup>

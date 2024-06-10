@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Moq;
 using VirtoCommerce.ExperienceApiModule.Core.Models;
 using VirtoCommerce.ExperienceApiModule.Core.Services;
+using VirtoCommerce.ExperienceApiModule.Data.Services;
 using VirtoCommerce.Platform.Core.DynamicProperties;
 using Xunit;
 
@@ -125,7 +126,7 @@ namespace VirtoCommerce.ExperienceApiModule.Tests.Services
             return mock.Object;
         }
 
-        private static DynamicPropertyUpdaterService GetDynamicPropertyUpdaterService(IEnumerable<DynamicObjectProperty> dynamicProperties)
+        private static IDynamicPropertyUpdaterService GetDynamicPropertyUpdaterService(IEnumerable<DynamicObjectProperty> dynamicProperties)
         {
             return new DynamicPropertyUpdaterService(GetDynamicPropertyMetaDataResolver(dynamicProperties));
         }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
-using VirtoCommerce.ExperienceApiModule.Core.Services;
+using VirtoCommerce.ExperienceApiModule.Data.Services;
 using VirtoCommerce.ExperienceApiModule.Tests.Helpers.Stubs;
 using VirtoCommerce.Platform.Core.DynamicProperties;
 using Xunit;

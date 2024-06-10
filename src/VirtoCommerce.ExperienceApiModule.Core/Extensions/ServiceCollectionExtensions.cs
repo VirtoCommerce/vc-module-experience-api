@@ -2,20 +2,14 @@ using System;
 using System.Linq;
 using System.Reflection;
 using GraphQL.Authorization;
-using GraphQL.Server;
 using GraphQL.Types;
 using GraphQL.Validation;
-using MediatR;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure.Authorization;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure.Internal;
-using VirtoCommerce.ExperienceApiModule.Core.Services;
-using VirtoCommerce.ExperienceApiModule.Core.Services.Security;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.Platform.Security.Services;
 
 namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
 {
@@ -38,31 +32,6 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
         public static void AddSchemaBuilder<TSchemaBuilder>(this IServiceCollection services) where TSchemaBuilder : class, ISchemaBuilder
         {
             services.AddSingleton<ISchemaBuilder, TSchemaBuilder>();
-        }
-
-        // TODO: Remove after one year (2023-09-21)
-        [Obsolete("Use AddSchemaBuilders()")]
-        public static void AddGraphShemaBuilders(this IServiceCollection services, ServiceLifetime serviceLifetime = ServiceLifetime.Singleton)
-            => services.AddGraphShemaBuilders(Assembly.GetCallingAssembly(), serviceLifetime);
-
-        // TODO: Remove after one year (2023-09-21)
-        [Obsolete("Use AddSchemaBuilders()")]
-        public static void AddGraphShemaBuilders(this IServiceCollection services, Type typeFromAssembly, ServiceLifetime serviceLifetime = ServiceLifetime.Singleton)
-           => services.AddGraphShemaBuilders(typeFromAssembly.Assembly, serviceLifetime);
-
-        // TODO: Remove after one year (2023-09-21)
-        [Obsolete("Use AddSchemaBuilders()")]
-        public static void AddGraphShemaBuilders(this IServiceCollection services, Assembly assembly, ServiceLifetime serviceLifetime = ServiceLifetime.Singleton)
-        {
-            //Dynamic schema building
-            services.AddSingleton<ISchema, SchemaFactory>();
-
-            // Register all GraphQL types
-            foreach (var type in assembly.GetTypes()
-                .Where(x => !x.IsAbstract && typeof(ISchemaBuilder).IsAssignableFrom(x)))
-            {
-                services.TryAdd(new ServiceDescriptor(typeof(ISchemaBuilder), type, serviceLifetime));
-            }
         }
 
         public static void AddSchemaBuilders(this IServiceCollection services)
@@ -106,38 +75,6 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
         {
             services.AddSingleton<TNew>();
             AbstractTypeFactory<IGraphType>.OverrideType<TOld, TNew>();
-        }
-
-        public static IServiceCollection AddXCore(this IServiceCollection services, IGraphQLBuilder graphQlbuilder)
-        {
-            var assemblyMarker = typeof(XCoreAnchor);
-            graphQlbuilder.AddGraphTypes(assemblyMarker);
-            services.AddMediatR(assemblyMarker);
-            services.AddAutoMapper(assemblyMarker);
-            services.AddSchemaBuilders(assemblyMarker);
-
-            services.AddTransient<IDynamicPropertyResolverService, DynamicPropertyResolverService>();
-            services.AddTransient<IDynamicPropertyUpdaterService, DynamicPropertyUpdaterService>();
-            services.AddTransient<IUserManagerCore, UserManagerCore>();
-
-            services.AddTransient<IUserSignInValidator, ContactSignInValidator>();
-
-            return services;
-        }
-
-        public static IServiceCollection AddDistributedLockService(this IServiceCollection services, IConfiguration configuration)
-        {
-            var redisConnectionString = configuration.GetConnectionString("RedisConnectionString");
-            if (!string.IsNullOrEmpty(redisConnectionString))
-            {
-                services.AddSingleton<IDistributedLockService, DistributedLockService>();
-            }
-            else
-            {
-                services.AddSingleton<IDistributedLockService, NoLockService>();
-            }
-
-            return services;
         }
     }
 }
