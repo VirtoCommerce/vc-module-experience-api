@@ -13,12 +13,12 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Queries
 {
     public class SlugInfoQueryHandler : IQueryHandler<SlugInfoQuery, SlugInfoResponse>
     {
-        private readonly CompositeSeoBySlugResolver _seoBySlugResolver;
+        private readonly CompositeSeoResolver _seoResolver;
         private readonly IStoreService _storeService;
 
-        public SlugInfoQueryHandler(CompositeSeoBySlugResolver seoBySlugResolver, IStoreService storeService)
+        public SlugInfoQueryHandler(CompositeSeoResolver seoResolver, IStoreService storeService)
         {
-            _seoBySlugResolver = seoBySlugResolver;
+            _seoResolver = seoResolver;
             _storeService = storeService;
         }
 
@@ -26,7 +26,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Queries
         {
             var result = new SlugInfoResponse();
 
-            if (string.IsNullOrEmpty(request.Slug))
+            if (string.IsNullOrEmpty(request.Permalink))
             {
                 return result;
             }
@@ -39,24 +39,31 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Queries
 
             var currentCulture = request.CultureName ?? store.DefaultLanguage;
 
-            var segments = request.Slug.Split("/", StringSplitOptions.RemoveEmptyEntries);
+            var segments = request.Permalink.Split("/", StringSplitOptions.RemoveEmptyEntries);
             var lastSegment = segments.Last();
-            result.EntityInfo = await GetBestMatchingSeoInfo(store, lastSegment, currentCulture);
+
+            var criteria = AbstractTypeFactory<SeoSearchCriteria>.TryCreateInstance();
+            criteria.StoreId = store.Id;
+            criteria.LanguageCode = currentCulture;
+            criteria.Permalink = request.Permalink;
+            criteria.Slug = lastSegment;
+
+            result.EntityInfo = await GetBestMatchingSeoInfo(criteria, store);
 
             return result;
         }
 
-        protected virtual async Task<SeoInfo> GetBestMatchingSeoInfo(Store store, string slug, string currentCulture)
+        protected virtual async Task<SeoInfo> GetBestMatchingSeoInfo(SeoSearchCriteria criteria, Store store)
         {
-            var itemsToMatch = await _seoBySlugResolver.FindSeoBySlugAsync(slug);
+            var itemsToMatch = await _seoResolver.FindSeoAsync(criteria);
 
             var seoInfosForStore = itemsToMatch.Where(x => x.StoreId == store.Id).ToArray();
-            var bestMatchSeoInfo = seoInfosForStore.GetBestMatchingSeoInfo(store.Id, store.DefaultLanguage, currentCulture, slug);
+            var bestMatchSeoInfo = seoInfosForStore.GetBestMatchingSeoInfo(store.Id, store.DefaultLanguage, criteria.LanguageCode, criteria.Slug, criteria.Permalink);
 
             if (bestMatchSeoInfo == null)
             {
                 var seoInfosWithoutStore = itemsToMatch.Where(x => string.IsNullOrEmpty(x.StoreId)).ToArray();
-                bestMatchSeoInfo = seoInfosWithoutStore.GetBestMatchingSeoInfo(store.Id, currentCulture, slug);
+                bestMatchSeoInfo = seoInfosWithoutStore.GetBestMatchingSeoInfo(store.Id, criteria);
             }
 
             return bestMatchSeoInfo;
