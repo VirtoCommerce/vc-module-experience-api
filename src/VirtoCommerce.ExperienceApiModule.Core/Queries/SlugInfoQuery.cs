@@ -8,13 +8,14 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Queries
 {
     public class SlugInfoQuery : Query<SlugInfoResponse>
     {
-        private string _slug;
         private string _permalink;
 
         [Obsolete("Use Permalink property", DiagnosticId = "VC0008", UrlFormat = "https://docs.virtocommerce.org/products/products-virto3-versions/")]
-        public string Slug { get => _slug; set => _slug = value; }
+        public string Slug { get; set; }
 
-        public string Permalink { get => _slug ?? _permalink; set => _permalink = value; }
+#pragma warning disable VC0008
+        public string Permalink { get => Slug ?? _permalink; set => _permalink = value; }
+#pragma warning restore VC0008
         public string StoreId { get; set; }
         public string UserId { get; set; }
         public string CultureName { get; set; }
