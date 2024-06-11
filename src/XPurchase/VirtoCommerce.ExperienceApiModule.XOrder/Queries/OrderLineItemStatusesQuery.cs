@@ -1,4 +1,4 @@
-using VirtoCommerce.ExperienceApiModule.Core.Queries;
+using VirtoCommerce.ExperienceApiModule.Core.Queries.BaseQueries;
 
 namespace VirtoCommerce.ExperienceApiModule.XOrder.Queries;
 

@@ -4,7 +4,7 @@ using GraphQL.Types;
 using VirtoCommerce.ExperienceApiModule.Core.BaseQueries;
 using VirtoCommerce.ExperienceApiModule.Core.Models;
 
-namespace VirtoCommerce.ExperienceApiModule.Core.Queries;
+namespace VirtoCommerce.ExperienceApiModule.Core.Queries.BaseQueries;
 
 public abstract class LocalizedSettingQuery : Query<LocalizedSettingResponse>
 {
