@@ -17,10 +17,6 @@ using VirtoCommerce.Platform.Core.Modularity;
 using VirtoCommerce.Platform.Core.Settings;
 using VirtoCommerce.TaxModule.Core.Model;
 using VirtoCommerce.XDigitalCatalog.Data.Extensions;
-//using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
-//using VirtoCommerce.ExperienceApiModule.XCMS.Extensions;
-//using VirtoCommerce.ExperienceApiModule.XOrder.Extensions;
-//using VirtoCommerce.InventoryModule.Core.Model.Search;
 using VirtoCommerce.XPurchase.Extensions;
 
 namespace VirtoCommerce.ExperienceApiModule.Web

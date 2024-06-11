@@ -6,11 +6,10 @@ using VirtoCommerce.CartModule.Core.Services;
 using VirtoCommerce.CustomerModule.Core.Model;
 using VirtoCommerce.CustomerModule.Core.Services;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.XDigitalCatalog.Queries;
+using VirtoCommerce.XDigitalCatalog.Core.Models;
 
-namespace VirtoCommerce.XDigitalCatalog.Middlewares
+namespace VirtoCommerce.XPurchase.Data.Middlewares
 {
-    // TODO: move to XPurchase
     public class EvalProductsWishlistsMiddleware : IAsyncMiddleware<SearchProductResponse>
     {
         private readonly IWishlistService _wishlistService;
