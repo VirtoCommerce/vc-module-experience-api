@@ -13,8 +13,8 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Queries
         [Obsolete("Use Permalink property", DiagnosticId = "VC0008", UrlFormat = "https://docs.virtocommerce.org/products/products-virto3-versions/")]
         public string Slug { get; set; }
 
-#pragma warning disable VC0008
-        public string Permalink { get => Slug ?? _permalink; set => _permalink = value; }
+#pragma warning disable VC0008 // Type or member is obsolete
+        public string Permalink { get => _permalink ?? Slug; set => _permalink = value; }
 #pragma warning restore VC0008
         public string StoreId { get; set; }
         public string UserId { get; set; }
@@ -22,7 +22,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Queries
 
         public override IEnumerable<QueryArgument> GetArguments()
         {
-#pragma warning disable VC0008
+#pragma warning disable VC0008 // Type or member is obsolete
             yield return Argument<StringGraphType>(nameof(Slug));
 #pragma warning restore VC0008
             yield return Argument<StringGraphType>(nameof(Permalink));
@@ -33,7 +33,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Queries
 
         public override void Map(IResolveFieldContext context)
         {
-#pragma warning disable VC0008
+#pragma warning disable VC0008 // Type or member is obsolete
             Slug = context.GetArgument<string>(nameof(Slug));
 #pragma warning restore VC0008
             Permalink = context.GetArgument<string>(nameof(Permalink));
