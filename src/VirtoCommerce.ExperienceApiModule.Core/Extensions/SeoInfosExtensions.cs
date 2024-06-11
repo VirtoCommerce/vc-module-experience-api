@@ -9,17 +9,17 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
     {
         public static SeoInfo GetBestMatchingSeoInfo(this IList<SeoInfo> seoInfos, string storeId, string cultureName)
         {
-            return GetBestMatchingSeoInfoInternal(seoInfos, storeId, cultureName, cultureName, null, null);
+            return GetBestMatchingSeoInfoInternal(seoInfos, storeId, cultureName, cultureName, slug: null, permalink: null);
         }
 
         public static SeoInfo GetBestMatchingSeoInfo(this IList<SeoInfo> seoInfos, string storeId, string cultureName, string slug)
         {
-            return GetBestMatchingSeoInfoInternal(seoInfos, storeId, cultureName, cultureName, slug, null);
+            return GetBestMatchingSeoInfoInternal(seoInfos, storeId, cultureName, cultureName, slug, permalink: null);
         }
 
         public static SeoInfo GetBestMatchingSeoInfo(this IList<SeoInfo> seoInfos, string storeId, string defaultStoreLang, string cultureName, string slug)
         {
-            return GetBestMatchingSeoInfoInternal(seoInfos, storeId, defaultStoreLang, cultureName, slug, null);
+            return GetBestMatchingSeoInfoInternal(seoInfos, storeId, defaultStoreLang, cultureName, slug, permalink: null);
         }
 
         public static SeoInfo GetBestMatchingSeoInfo(this IList<SeoInfo> seoInfos, string storeId, string defaultStoreLang, string cultureName, string slug, string permalink)
@@ -34,7 +34,8 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
                 criteria.Slug, criteria.Permalink);
         }
 
-        private static SeoInfo GetBestMatchingSeoInfoInternal(IList<SeoInfo> seoInfos, string storeId, string defaultStoreLang, string cultureName, string slug, string permalink)
+        private static SeoInfo GetBestMatchingSeoInfoInternal(IList<SeoInfo> seoInfos, string storeId,
+            string defaultStoreLang, string cultureName, string slug, string permalink)
         {
             if (storeId.IsNullOrEmpty() || cultureName.IsNullOrEmpty() || slug.IsNullOrEmpty())
             {
