@@ -12,7 +12,7 @@ using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.InventoryModule.Core.Model;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.XDigitalCatalog.Core.Queries;
-using VirtoCommerce.XDigitalCatalog.Core.Types;
+using VirtoCommerce.XDigitalCatalog.Core.Schemas;
 
 namespace VirtoCommerce.XDigitalCatalog.Data.Schemas;
 

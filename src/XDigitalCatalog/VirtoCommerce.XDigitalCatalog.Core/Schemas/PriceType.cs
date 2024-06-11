@@ -2,7 +2,7 @@ using GraphQL.Types;
 using VirtoCommerce.ExperienceApiModule.Core.Models;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas;
 
-namespace VirtoCommerce.XDigitalCatalog.Core.Types
+namespace VirtoCommerce.XDigitalCatalog.Core.Schemas
 {
     public class PriceType : ObjectGraphType<ProductPrice>
     {

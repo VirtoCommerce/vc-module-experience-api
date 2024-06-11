@@ -18,8 +18,8 @@ using VirtoCommerce.StoreModule.Core.Services;
 using VirtoCommerce.XDigitalCatalog.Core.Extensions;
 using VirtoCommerce.XDigitalCatalog.Core.Models;
 using VirtoCommerce.XDigitalCatalog.Core.Queries;
-using VirtoCommerce.XDigitalCatalog.Core.Types;
-using PropertyType = VirtoCommerce.XDigitalCatalog.Core.Types.PropertyType;
+using VirtoCommerce.XDigitalCatalog.Core.Schemas;
+using PropertyType = VirtoCommerce.XDigitalCatalog.Core.Schemas.PropertyType;
 
 namespace VirtoCommerce.XDigitalCatalog.Data.Schemas
 {

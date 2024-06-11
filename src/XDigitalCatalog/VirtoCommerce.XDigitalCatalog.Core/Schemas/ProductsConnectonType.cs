@@ -7,7 +7,7 @@ using VirtoCommerce.ExperienceApiModule.Core.Models.Facets;
 using VirtoCommerce.XDigitalCatalog.Core.Models;
 using CoreFacets = VirtoCommerce.ExperienceApiModule.Core.Schemas.Facets;
 
-namespace VirtoCommerce.XDigitalCatalog.Core.Types
+namespace VirtoCommerce.XDigitalCatalog.Core.Schemas
 {
     public class ProductsConnectonType<TNodeType> : ConnectionType<TNodeType, EdgeType<TNodeType>>
         where TNodeType : IGraphType

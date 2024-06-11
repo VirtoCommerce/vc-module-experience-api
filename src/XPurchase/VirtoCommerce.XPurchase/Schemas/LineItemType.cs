@@ -15,7 +15,7 @@ using VirtoCommerce.ExperienceApiModule.Core.Schemas;
 using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.XDigitalCatalog.Core.Models;
 using VirtoCommerce.XDigitalCatalog.Core.Queries;
-using VirtoCommerce.XDigitalCatalog.Core.Types;
+using VirtoCommerce.XDigitalCatalog.Core.Schemas;
 using VirtoCommerce.XPurchase.Extensions;
 
 namespace VirtoCommerce.XPurchase.Schemas

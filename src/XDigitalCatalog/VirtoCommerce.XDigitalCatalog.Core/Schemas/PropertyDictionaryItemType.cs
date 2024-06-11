@@ -3,7 +3,7 @@ using GraphQL.Types;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 
-namespace VirtoCommerce.XDigitalCatalog.Core.Types
+namespace VirtoCommerce.XDigitalCatalog.Core.Schemas
 {
     public class PropertyDictionaryItemType : ObjectGraphType<PropertyDictionaryItem>
     {

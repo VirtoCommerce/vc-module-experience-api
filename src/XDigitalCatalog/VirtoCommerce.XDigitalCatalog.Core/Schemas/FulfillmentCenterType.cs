@@ -3,7 +3,7 @@ using GraphQL.Types;
 using VirtoCommerce.InventoryModule.Core.Model;
 using VirtoCommerce.InventoryModule.Core.Services;
 
-namespace VirtoCommerce.XDigitalCatalog.Core.Types
+namespace VirtoCommerce.XDigitalCatalog.Core.Schemas
 {
     public class FulfillmentCenterType : ObjectGraphType<FulfillmentCenter>
     {

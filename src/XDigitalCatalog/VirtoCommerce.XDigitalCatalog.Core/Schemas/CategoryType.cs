@@ -17,7 +17,7 @@ using VirtoCommerce.XDigitalCatalog.Core.Extensions;
 using VirtoCommerce.XDigitalCatalog.Core.Models;
 using VirtoCommerce.XDigitalCatalog.Core.Queries;
 
-namespace VirtoCommerce.XDigitalCatalog.Core.Types
+namespace VirtoCommerce.XDigitalCatalog.Core.Schemas
 {
     public class CategoryType : ExtendableGraphType<ExpCategory>
     {

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using VirtoCommerce.ExperienceApiModule.Core.BaseQueries;
 using VirtoCommerce.XDigitalCatalog.Core.Models;
 using VirtoCommerce.XDigitalCatalog.Core.Queries;
-using VirtoCommerce.XDigitalCatalog.Core.Types;
+using VirtoCommerce.XDigitalCatalog.Core.Schemas;
 
 namespace VirtoCommerce.XDigitalCatalog.Data.Queries;
 

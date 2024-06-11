@@ -1,7 +1,7 @@
 using GraphQL.Types;
 using VirtoCommerce.MarketingModule.Core.Model.Promotions;
 
-namespace VirtoCommerce.XDigitalCatalog.Core.Types
+namespace VirtoCommerce.XDigitalCatalog.Core.Schemas
 {
     public class PromotionType : ObjectGraphType<Promotion>
     {

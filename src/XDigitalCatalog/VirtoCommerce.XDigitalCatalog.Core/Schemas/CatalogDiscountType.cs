@@ -10,7 +10,7 @@ using VirtoCommerce.ExperienceApiModule.Core.Schemas;
 using VirtoCommerce.MarketingModule.Core.Model.Promotions;
 using VirtoCommerce.XDigitalCatalog.Core.Queries;
 
-namespace VirtoCommerce.XDigitalCatalog.Core.Types
+namespace VirtoCommerce.XDigitalCatalog.Core.Schemas
 {
     public class CatalogDiscountType : DiscountType
     {

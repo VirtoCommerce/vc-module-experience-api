@@ -2,7 +2,7 @@ using GraphQL.Language.AST;
 using VirtoCommerce.ExperienceApiModule.Core.Schemas.ScalarTypes;
 using VirtoCommerce.SearchModule.Core.Model;
 
-namespace VirtoCommerce.XDigitalCatalog.Core.Types.ScalarTypes
+namespace VirtoCommerce.XDigitalCatalog.Core.Schemas.ScalarTypes
 {
     public class PropertyValueGraphType : AnyValueGraphType
     {

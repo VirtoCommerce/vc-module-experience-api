@@ -1,7 +1,7 @@
 using GraphQL.Types;
 using VirtoCommerce.XDigitalCatalog.Core.Models;
 
-namespace VirtoCommerce.XDigitalCatalog.Core.Types
+namespace VirtoCommerce.XDigitalCatalog.Core.Schemas
 {
     public class BreadcrumbType : ObjectGraphType<Breadcrumb>
     {

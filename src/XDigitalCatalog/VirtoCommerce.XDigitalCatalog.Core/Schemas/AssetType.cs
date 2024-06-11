@@ -1,7 +1,7 @@
 using GraphQL.Types;
 using VirtoCommerce.CatalogModule.Core.Model;
 
-namespace VirtoCommerce.XDigitalCatalog.Core.Types
+namespace VirtoCommerce.XDigitalCatalog.Core.Schemas
 {
     public class AssetType : ObjectGraphType<Asset>
     {

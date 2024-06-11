@@ -1,7 +1,7 @@
 using GraphQL.Types;
 using VirtoCommerce.CoreModule.Core.Outlines;
 
-namespace VirtoCommerce.XDigitalCatalog.Core.Types
+namespace VirtoCommerce.XDigitalCatalog.Core.Schemas
 {
     public class OutlineType : ObjectGraphType<Outline>
     {
