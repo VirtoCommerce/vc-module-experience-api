@@ -29,6 +29,7 @@
     <ProjectReference Include="..\VirtoCommerce.ExperienceApiModule.Data\VirtoCommerce.ExperienceApiModule.Data.csproj" />
     <ProjectReference Include="..\XDigitalCatalog\VirtoCommerce.XDigitalCatalog.Core\VirtoCommerce.XDigitalCatalog.Core.csproj" />
     <ProjectReference Include="..\XDigitalCatalog\VirtoCommerce.XDigitalCatalog.Data\VirtoCommerce.XDigitalCatalog.Data.csproj" />
-    <ProjectReference Include="..\XPurchase\VirtoCommerce.XPurchase\VirtoCommerce.XPurchase.csproj" />
+    <ProjectReference Include="..\XPurchase\VirtoCommerce.XPurchase.Core\VirtoCommerce.XPurchase.Core.csproj" />
+    <ProjectReference Include="..\XPurchase\VirtoCommerce.XPurchase.Data\VirtoCommerce.XPurchase.Data.csproj" />
   </ItemGroup>
 </Project>

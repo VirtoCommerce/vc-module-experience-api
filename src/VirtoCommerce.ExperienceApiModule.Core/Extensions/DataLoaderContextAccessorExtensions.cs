@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using GraphQL.DataLoader;
 using VirtoCommerce.CustomerModule.Core.Services;
+using VirtoCommerce.ExperienceApiModule.Core.Models;
 
 namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
 {

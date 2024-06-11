@@ -1,4 +1,6 @@
 
+using VirtoCommerce.ExperienceApiModule.Core.Models;
+
 namespace VirtoCommerce.ExperienceApiModule.Core.Schemas;
 
 public class RatingType: ExtendableGraphType<ExpRating>

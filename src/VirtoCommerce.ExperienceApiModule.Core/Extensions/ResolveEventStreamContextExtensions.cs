@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using GraphQL.Server.Transports.Subscriptions.Abstractions;
 using GraphQL.Subscription;
+using VirtoCommerce.ExperienceApiModule.Core.Models;
 
 namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
 {

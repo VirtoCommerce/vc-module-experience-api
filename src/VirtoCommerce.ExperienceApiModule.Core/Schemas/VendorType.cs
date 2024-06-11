@@ -1,4 +1,5 @@
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
+using VirtoCommerce.ExperienceApiModule.Core.Models;
 
 namespace VirtoCommerce.ExperienceApiModule.Core.Schemas
 {

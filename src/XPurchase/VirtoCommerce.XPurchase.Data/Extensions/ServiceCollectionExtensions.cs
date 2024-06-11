@@ -22,11 +22,12 @@ namespace VirtoCommerce.XPurchase.Data.Extensions
     {
         public static IServiceCollection AddXPurchase(this IServiceCollection services, IGraphQLBuilder graphQlbuilder)
         {
-            var assemblyMarker = typeof(XPurchaseCoreAnchor);
-            graphQlbuilder.AddGraphTypes(assemblyMarker);
-            services.AddMediatR(assemblyMarker);
-            services.AddAutoMapper(assemblyMarker);
-            services.AddSchemaBuilders(assemblyMarker);
+            var assemblyMarkerCore = typeof(XPurchaseCoreAnchor);
+            var assemblyMarkerData = typeof(XPurchaseDataAnchor);
+            graphQlbuilder.AddGraphTypes(assemblyMarkerCore);
+            services.AddMediatR(assemblyMarkerCore, assemblyMarkerData);
+            services.AddAutoMapper(assemblyMarkerCore, assemblyMarkerData);
+            services.AddSchemaBuilders(assemblyMarkerData);
 
             services.AddSingleton<IAuthorizationHandler, CanAccessCartAuthorizationHandler>();
             services.AddTransient<ICartAggregateRepository, CartAggregateRepository>();
