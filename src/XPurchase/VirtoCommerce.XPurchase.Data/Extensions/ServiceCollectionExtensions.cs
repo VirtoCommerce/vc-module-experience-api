@@ -10,6 +10,7 @@ using VirtoCommerce.TaxModule.Core.Model;
 using VirtoCommerce.XDigitalCatalog.Core.Models;
 using VirtoCommerce.XPurchase.Core;
 using VirtoCommerce.XPurchase.Core.Authorization;
+using VirtoCommerce.XPurchase.Core.Models;
 using VirtoCommerce.XPurchase.Core.Services;
 using VirtoCommerce.XPurchase.Core.Validators;
 using VirtoCommerce.XPurchase.Data.Middlewares;
@@ -41,13 +42,20 @@ namespace VirtoCommerce.XPurchase.Data.Extensions
             {
                 builder.AddMiddleware(typeof(LoadCartToEvalContextMiddleware));
             });
+
             services.AddPipeline<TaxEvaluationContext>(builder =>
             {
                 builder.AddMiddleware(typeof(LoadCartToEvalContextMiddleware));
             });
+
             services.AddPipeline<PriceEvaluationContext>(builder =>
             {
                 builder.AddMiddleware(typeof(LoadCartToEvalContextMiddleware));
+            });
+
+            services.AddPipeline<PromotionEvaluationContextCartMap>(builder =>
+            {
+                builder.AddMiddleware(typeof(MapPromoEvalContextMiddleware));
             });
 
             return services;

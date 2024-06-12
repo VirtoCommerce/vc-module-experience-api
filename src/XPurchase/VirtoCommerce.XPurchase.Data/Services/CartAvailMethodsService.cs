@@ -77,6 +77,9 @@ namespace VirtoCommerce.XPurchase.Data.Services
 
             //Evaluate promotions cart and apply rewards for available shipping methods
             var evalContext = _mapper.Map<PromotionEvaluationContext>(cartAggr);
+
+            // todo:
+
             var promoEvalResult = await cartAggr.EvaluatePromotionsAsync(evalContext);
             foreach (var shippingRate in availableShippingRates)
             {
@@ -122,6 +125,9 @@ namespace VirtoCommerce.XPurchase.Data.Services
             }
 
             var evalContext = _mapper.Map<PromotionEvaluationContext>(cartAggr);
+
+            // todo: 
+
             var promoResult = await cartAggr.EvaluatePromotionsAsync(evalContext);
 
             foreach (var paymentMethod in result.Results)

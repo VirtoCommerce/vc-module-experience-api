@@ -2,7 +2,6 @@ using System;
 using AutoMapper;
 using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.CartModule.Core.Model.Search;
-using VirtoCommerce.OrdersModule.Core.Model;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.SearchModule.Core.Services;
 
@@ -112,14 +111,6 @@ namespace VirtoCommerce.XPurchase.Data.Services
         }
 
         public CartSearchCriteriaBuilder WithResponseGroup(CartResponseGroup responseGroup)
-        {
-            _searchCriteria.ResponseGroup = responseGroup.ToString();
-
-            return this;
-        }
-
-        [Obsolete("Use WithResponseGroup")]
-        public CartSearchCriteriaBuilder AddResponseGroup(CustomerOrderResponseGroup responseGroup)
         {
             _searchCriteria.ResponseGroup = responseGroup.ToString();
 

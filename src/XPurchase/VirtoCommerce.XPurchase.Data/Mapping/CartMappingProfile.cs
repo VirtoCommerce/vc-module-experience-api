@@ -240,7 +240,7 @@ namespace VirtoCommerce.XPurchase.Data.Mapping
                 }
 
                 promoEvalcontext.IsEveryone = true;
-                promoEvalcontext.IsFirstTimeBuyer = cartAggr.IsFirstBuyer;
+                //promoEvalcontext.IsFirstTimeBuyer = cartAggr.IsFirstBuyer;
 
                 return promoEvalcontext;
             });

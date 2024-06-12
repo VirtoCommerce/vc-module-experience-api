@@ -4,10 +4,12 @@ using AutoMapper;
 using PipelineNet.Middleware;
 using VirtoCommerce.CartModule.Core.Model.Search;
 using VirtoCommerce.CoreModule.Core.Common;
+using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
 using VirtoCommerce.MarketingModule.Core.Model.Promotions;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.PricingModule.Core.Model;
 using VirtoCommerce.TaxModule.Core.Model;
+using VirtoCommerce.XPurchase.Core.Models;
 using VirtoCommerce.XPurchase.Core.Services;
 
 namespace VirtoCommerce.XPurchase.Data.Middlewares
@@ -16,11 +18,13 @@ namespace VirtoCommerce.XPurchase.Data.Middlewares
     {
         private readonly IMapper _mapper;
         private readonly ICartAggregateRepository _cartAggregateRepository;
+        private readonly IGenericPipelineLauncher _pipeline;
 
-        public LoadCartToEvalContextMiddleware(IMapper mapper, ICartAggregateRepository cartAggregateRepository)
+        public LoadCartToEvalContextMiddleware(IMapper mapper, ICartAggregateRepository cartAggregateRepository, IGenericPipelineLauncher pipeline)
         {
             _mapper = mapper;
             _cartAggregateRepository = cartAggregateRepository;
+            _pipeline = pipeline;
         }
 
         public async Task Run(PromotionEvaluationContext parameter, Func<PromotionEvaluationContext, Task> next)
@@ -30,7 +34,12 @@ namespace VirtoCommerce.XPurchase.Data.Middlewares
             var cartAggregate = await _cartAggregateRepository.GetCartAsync(criteria, parameter.Language);
             if (cartAggregate != null)
             {
-                _mapper.Map(cartAggregate, parameter);
+                var evalContextCartMap = new PromotionEvaluationContextCartMap
+                {
+                    CartAggregate = cartAggregate,
+                    PromotionEvaluationContext = parameter
+                };
+                await _pipeline.Execute(evalContextCartMap);
             }
 
             await next(parameter);

@@ -14,10 +14,10 @@ using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.CustomerModule.Core.Model;
 using VirtoCommerce.CustomerModule.Core.Services;
 using VirtoCommerce.ExperienceApiModule.Core.Models;
+using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
 using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.MarketingModule.Core.Model.Promotions;
 using VirtoCommerce.MarketingModule.Core.Services;
-using VirtoCommerce.OrdersModule.Core.Services;
 using VirtoCommerce.PaymentModule.Core.Model;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Domain;
@@ -44,11 +44,9 @@ namespace VirtoCommerce.XPurchase.Core
         private readonly ITaxProviderSearchService _taxProviderSearchService;
         private readonly ICartProductService _cartProductService;
         private readonly IDynamicPropertyUpdaterService _dynamicPropertyUpdaterService;
-        private readonly IMemberOrdersService _memberOrdersService;
         private readonly IMemberService _memberService;
         private readonly IMapper _mapper;
-
-        private bool? _isFirstTimeBuyer;
+        private readonly IGenericPipelineLauncher _pipeline;
 
         public CartAggregate(
             IMarketingPromoEvaluator marketingEvaluator,
@@ -57,8 +55,8 @@ namespace VirtoCommerce.XPurchase.Core
             ICartProductService cartProductService,
             IDynamicPropertyUpdaterService dynamicPropertyUpdaterService,
             IMapper mapper,
-            IMemberOrdersService memberOrdersService,
-            IMemberService memberService)
+            IMemberService memberService,
+            IGenericPipelineLauncher pipeline)
         {
             _cartTotalsCalculator = cartTotalsCalculator;
             _marketingEvaluator = marketingEvaluator;
@@ -66,8 +64,8 @@ namespace VirtoCommerce.XPurchase.Core
             _cartProductService = cartProductService;
             _dynamicPropertyUpdaterService = dynamicPropertyUpdaterService;
             _mapper = mapper;
-            _memberOrdersService = memberOrdersService;
             _memberService = memberService;
+            _pipeline = pipeline;
         }
 
         public Store Store { get; protected set; }
@@ -119,20 +117,6 @@ namespace VirtoCommerce.XPurchase.Core
         public bool IsValid => !ValidationErrors.Any();
         public IList<ValidationFailure> ValidationErrors { get; protected set; } = new List<ValidationFailure>();
         public bool IsValidated { get; private set; }
-
-        public bool IsFirstBuyer
-        {
-            get
-            {
-                if (_isFirstTimeBuyer != null)
-                {
-                    return _isFirstTimeBuyer.Value;
-                }
-
-                _isFirstTimeBuyer = Cart.IsAnonymous || _memberOrdersService.IsFirstTimeBuyer(Cart.CustomerId);
-                return _isFirstTimeBuyer.Value;
-            }
-        }
 
         public IList<ValidationFailure> ValidationWarnings { get; protected set; } = new List<ValidationFailure>();
 
@@ -762,7 +746,14 @@ namespace VirtoCommerce.XPurchase.Core
             var promotionResult = new PromotionResult();
             if (!LineItems.IsNullOrEmpty() && !LineItems.Any(i => i.IsReadOnly))
             {
-                var evalContext = _mapper.Map<PromotionEvaluationContext>(this);
+                var evalContext = AbstractTypeFactory<PromotionEvaluationContext>.TryCreateInstance();
+                var evalContextCartMap = new PromotionEvaluationContextCartMap
+                {
+                    CartAggregate = this,
+                    PromotionEvaluationContext = evalContext
+                };
+                await _pipeline.Execute(evalContextCartMap);
+
                 promotionResult = await EvaluatePromotionsAsync(evalContext);
             }
 
