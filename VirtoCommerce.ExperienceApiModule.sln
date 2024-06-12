@@ -63,9 +63,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtoCommerce.XPurchase.Cor
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtoCommerce.XPurchase.Data", "src\XPurchase\VirtoCommerce.XPurchase.Data\VirtoCommerce.XPurchase.Data.csproj", "{6D9A8D94-81E8-47C7-AC87-657B8195266F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VirtoCommerce.XOrder.Core", "src\XPurchase\VirtoCommerce.XOrder.Core\VirtoCommerce.XOrder.Core.csproj", "{225672A9-8797-436C-B99F-35330561716B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtoCommerce.XOrder.Core", "src\XPurchase\VirtoCommerce.XOrder.Core\VirtoCommerce.XOrder.Core.csproj", "{225672A9-8797-436C-B99F-35330561716B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VirtoCommerce.XOrder.Data", "src\XPurchase\VirtoCommerce.XOrder.Data\VirtoCommerce.XOrder.Data.csproj", "{309F98B2-4BBB-43D4-95FE-E1568DC3C5C6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtoCommerce.XOrder.Data", "src\XPurchase\VirtoCommerce.XOrder.Data\VirtoCommerce.XOrder.Data.csproj", "{309F98B2-4BBB-43D4-95FE-E1568DC3C5C6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VirtoCommerce.XCMS.Core", "src\XCMS\VirtoCommerce.XCMS.Core\VirtoCommerce.XCMS.Core.csproj", "{2B89CE6F-5D8F-40AF-A700-329CC8D9FB45}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VirtoCommerce.XCMS.Data", "src\XCMS\VirtoCommerce.XCMS.Data\VirtoCommerce.XCMS.Data.csproj", "{FDE5540E-2404-4943-8775-881B178B64DE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -169,6 +173,14 @@ Global
 		{309F98B2-4BBB-43D4-95FE-E1568DC3C5C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{309F98B2-4BBB-43D4-95FE-E1568DC3C5C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{309F98B2-4BBB-43D4-95FE-E1568DC3C5C6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2B89CE6F-5D8F-40AF-A700-329CC8D9FB45}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B89CE6F-5D8F-40AF-A700-329CC8D9FB45}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2B89CE6F-5D8F-40AF-A700-329CC8D9FB45}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2B89CE6F-5D8F-40AF-A700-329CC8D9FB45}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FDE5540E-2404-4943-8775-881B178B64DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FDE5540E-2404-4943-8775-881B178B64DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FDE5540E-2404-4943-8775-881B178B64DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FDE5540E-2404-4943-8775-881B178B64DE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -203,6 +215,8 @@ Global
 		{6D9A8D94-81E8-47C7-AC87-657B8195266F} = {C2FC6659-3B97-4513-A22C-CCF81A4E4395}
 		{225672A9-8797-436C-B99F-35330561716B} = {C2FC6659-3B97-4513-A22C-CCF81A4E4395}
 		{309F98B2-4BBB-43D4-95FE-E1568DC3C5C6} = {C2FC6659-3B97-4513-A22C-CCF81A4E4395}
+		{2B89CE6F-5D8F-40AF-A700-329CC8D9FB45} = {BD8B6647-4CEC-4332-AEC4-E66B25A9C8C1}
+		{FDE5540E-2404-4943-8775-881B178B64DE} = {BD8B6647-4CEC-4332-AEC4-E66B25A9C8C1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E56E5C53-D55A-451B-96FA-654D86F96658}

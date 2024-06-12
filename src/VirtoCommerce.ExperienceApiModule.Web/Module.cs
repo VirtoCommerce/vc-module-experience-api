@@ -16,6 +16,7 @@ using VirtoCommerce.ExperienceApiModule.Web.Extensions;
 using VirtoCommerce.Platform.Core.Modularity;
 using VirtoCommerce.Platform.Core.Settings;
 using VirtoCommerce.TaxModule.Core.Model;
+using VirtoCommerce.XCMS.Data.Extensions;
 using VirtoCommerce.XDigitalCatalog.Data.Extensions;
 using VirtoCommerce.XOrder.Data.Extensions;
 using VirtoCommerce.XPurchase.Data.Extensions;
@@ -74,10 +75,8 @@ namespace VirtoCommerce.ExperienceApiModule.Web
             services.AddXCore(graphQlBuilder, Configuration);
             services.AddXCatalog(graphQlBuilder);
             services.AddXPurchase(graphQlBuilder);
-
             services.AddXOrder(graphQlBuilder);
-
-            //services.AddXCMS(graphQlBuilder);
+            services.AddXCMS(graphQlBuilder);
 
             services.AddAutoMapper(ModuleInfo.Assembly);
 
