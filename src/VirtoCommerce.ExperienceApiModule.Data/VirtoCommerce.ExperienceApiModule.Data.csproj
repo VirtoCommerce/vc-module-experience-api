@@ -8,10 +8,6 @@
       <IncludeSymbols>true</IncludeSymbols>
       <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
-  
-  <ItemGroup>
-    <Folder Include="Infrastructure\" />
-  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\VirtoCommerce.ExperienceApiModule.Core\VirtoCommerce.ExperienceApiModule.Core.csproj" />

@@ -33,7 +33,6 @@ namespace VirtoCommerce.XDigitalCatalog.Data.Extensions
                 builder.AddMiddleware(typeof(EvalProductsInventoryMiddleware));
                 builder.AddMiddleware(typeof(EvalProductsVendorMiddleware));
                 builder.AddMiddleware(typeof(EnsurePropertyMetadataLoadedMiddleware));
-                ////builder.AddMiddleware(typeof(EvalProductsWishlistsMiddleware));
             });
 
             services.AddPipeline<SearchCategoryResponse>(builder =>

@@ -5,6 +5,7 @@ using GraphQL.Server;
 using GraphQL.Server.Transports.Subscriptions.Abstractions;
 using GraphQL.Server.Transports.WebSockets;
 using GraphQL.Validation;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using VirtoCommerce.ExperienceApiModule.Core.Subscriptions.Infrastructure;
 
@@ -40,6 +41,16 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
         public static IGraphQLBuilder AddCustomValidationRule(this IGraphQLBuilder builder, Type ruleType)
         {
             builder.Services.AddSingleton(typeof(IValidationRule), ruleType);
+
+            return builder;
+        }
+
+        public static IGraphQLBuilder AddSchema(this IGraphQLBuilder builder, Type coreAssemblyMarker, Type dataAssemblyMarker)
+        {
+            builder.AddGraphTypes(coreAssemblyMarker);
+            builder.Services.AddMediatR(coreAssemblyMarker, dataAssemblyMarker);
+            builder.Services.AddAutoMapper(coreAssemblyMarker, dataAssemblyMarker);
+            builder.Services.AddSchemaBuilders(dataAssemblyMarker);
 
             return builder;
         }

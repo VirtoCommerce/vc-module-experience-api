@@ -1,9 +1,9 @@
-namespace VirtoCommerce.XPurchase.Data
+namespace VirtoCommerce.XOrder.Core
 {
     /// <summary>
     /// Anchor class for easy DI GraphQL schemas
     /// </summary>
-    public class XPurchaseDataAnchor
+    public class XOrderCoreAnchor
     {
     }
 }

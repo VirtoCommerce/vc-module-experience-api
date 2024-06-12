@@ -1,6 +1,5 @@
 using System;
 using GraphQL.Server;
-using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
@@ -22,12 +21,7 @@ namespace VirtoCommerce.XPurchase.Data.Extensions
     {
         public static IServiceCollection AddXPurchase(this IServiceCollection services, IGraphQLBuilder graphQlbuilder)
         {
-            var assemblyMarkerCore = typeof(XPurchaseCoreAnchor);
-            var assemblyMarkerData = typeof(XPurchaseDataAnchor);
-            graphQlbuilder.AddGraphTypes(assemblyMarkerCore);
-            services.AddMediatR(assemblyMarkerCore, assemblyMarkerData);
-            services.AddAutoMapper(assemblyMarkerCore, assemblyMarkerData);
-            services.AddSchemaBuilders(assemblyMarkerData);
+            graphQlbuilder.AddSchema(typeof(XCartCoreAssemblyMarker), typeof(XCartDataAssemblyMarker));
 
             services.AddSingleton<IAuthorizationHandler, CanAccessCartAuthorizationHandler>();
             services.AddTransient<ICartAggregateRepository, CartAggregateRepository>();
