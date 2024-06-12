@@ -1,5 +1,4 @@
 using GraphQL.Server;
-using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Pipelines;
@@ -15,12 +14,7 @@ namespace VirtoCommerce.XDigitalCatalog.Data.Extensions
     {
         public static IServiceCollection AddXCatalog(this IServiceCollection services, IGraphQLBuilder graphQlBuilder)
         {
-            var assemblyMarkerData = typeof(XDigitalCatalogDataAnchor);
-            var assemblyMarkerCore = typeof(XDigitalCatalogCoreAnchor);
-            graphQlBuilder.AddGraphTypes(assemblyMarkerCore);
-            services.AddMediatR(assemblyMarkerCore, assemblyMarkerData);
-            services.AddAutoMapper(assemblyMarkerCore, assemblyMarkerData);
-            services.AddSchemaBuilders(assemblyMarkerData);
+            graphQlBuilder.AddSchema(typeof(XCatalogCoreAssemblyMarker), typeof(XCatalogDataAssemblyMarker));
 
             // The generic pipeline that is used for on-the-fly additional data evaluation (prices, inventories, discounts and taxes) for resulting products
             services.AddPipeline<SearchProductResponse>(builder =>

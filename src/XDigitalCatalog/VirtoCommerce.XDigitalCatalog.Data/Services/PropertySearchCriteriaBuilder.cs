@@ -4,7 +4,7 @@ using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.SearchModule.Core.Services;
 
-namespace VirtoCommerce.XDigitalCatalog.Data
+namespace VirtoCommerce.XDigitalCatalog.Data.Services
 {
     // TODO: to data project
     public class PropertySearchCriteriaBuilder

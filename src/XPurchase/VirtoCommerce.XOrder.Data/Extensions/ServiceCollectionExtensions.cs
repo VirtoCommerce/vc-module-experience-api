@@ -1,6 +1,5 @@
 using System;
 using GraphQL.Server;
-using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
@@ -15,12 +14,7 @@ namespace VirtoCommerce.XOrder.Data.Extensions
     {
         public static IServiceCollection AddXOrder(this IServiceCollection services, IGraphQLBuilder graphQlbuilder)
         {
-            var assemblyMarkerCore = typeof(XOrderCoreAnchor);
-            var assemblyMarkerData = typeof(XOrderDataAnchor);
-            graphQlbuilder.AddGraphTypes(assemblyMarkerCore);
-            services.AddMediatR(assemblyMarkerCore, assemblyMarkerData);
-            services.AddAutoMapper(assemblyMarkerCore, assemblyMarkerData);
-            services.AddSchemaBuilders(assemblyMarkerData);
+            graphQlbuilder.AddSchema(typeof(XOrderCoreAssemblyMarker), typeof(XOrderDataAssemblyMarker));
 
             services.AddTransient<ICustomerOrderAggregateRepository, CustomerOrderAggregateRepository>();
             services.AddSingleton<IAuthorizationHandler, CanAccessOrderAuthorizationHandler>();

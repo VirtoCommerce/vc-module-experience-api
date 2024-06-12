@@ -1,7 +1,5 @@
 using GraphQL.Introspection;
-using GraphQL.Server;
 using GraphQL.Types;
-using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using VirtoCommerce.ExperienceApiModule.Core;
@@ -38,12 +36,7 @@ namespace VirtoCommerce.ExperienceApiModule.Data.Extensions
 
         public static IServiceCollection AddXCore(this IServiceCollection services, IGraphQLBuilder graphQlbuilder, IConfiguration configuration)
         {
-            var assemblyMarkerCore = typeof(XCoreAnchor);
-            var assemblyMarkerData = typeof(XCoreDataAnchor);
-            graphQlbuilder.AddGraphTypes(assemblyMarkerCore);
-            services.AddMediatR(assemblyMarkerCore, assemblyMarkerData);
-            services.AddAutoMapper(assemblyMarkerCore, assemblyMarkerData);
-            services.AddSchemaBuilders(assemblyMarkerData);
+            graphQlbuilder.AddSchema(typeof(XCoreAssemblyMarker), typeof(XDataAssemblyMarker));
 
             //Register custom GraphQL dependencies
             services.AddPermissionAuthorization();

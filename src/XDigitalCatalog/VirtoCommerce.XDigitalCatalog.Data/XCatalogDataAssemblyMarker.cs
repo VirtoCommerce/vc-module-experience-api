@@ -1,6 +1,6 @@
 namespace VirtoCommerce.XDigitalCatalog.Data
 {
-    public class XDigitalCatalogDataAnchor
+    public class XCatalogDataAssemblyMarker
     {
     }
 }

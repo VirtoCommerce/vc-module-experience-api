@@ -1,6 +1,6 @@
 namespace VirtoCommerce.ExperienceApiModule.Data
 {
-    public class XCoreDataAnchor
+    public class XDataAssemblyMarker
     {
     }
 }
