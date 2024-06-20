@@ -28,7 +28,7 @@ public class GetPageQueryHandler : IQueryHandler<GetPageQuery, GetPageResponse>
             Take = request.Take,
             Skip = request.Skip,
         };
-        var result = await _searchContentService.SearchContentAsync(criteria);
+        var result = await _searchContentService.SearchAsync(criteria);
         var pages = result.Results.Select(x => new PageItem
         {
             Id = x.Id,
