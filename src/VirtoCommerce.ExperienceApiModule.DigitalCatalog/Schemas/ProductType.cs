@@ -347,7 +347,13 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
 
             var query = context.GetCatalogQuery<LoadProductsQuery>();
             query.ObjectIds = context.Source.IndexedVariationIds;
-            query.IncludeFields = context.SubFields.Values.GetAllNodesPaths(context).ToArray();
+            query.IncludeFields = context.SubFields.Values.GetAllNodesPaths(context).ToList();
+
+            // Include "isActive" field to filter out inactive variations
+            if (!query.IncludeFields.Contains("isActive"))
+            {
+                query.IncludeFields.Add("isActive");
+            }
 
             var response = await mediator.Send(query);
 
