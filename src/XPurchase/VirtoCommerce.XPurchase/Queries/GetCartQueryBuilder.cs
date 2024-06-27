@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using GraphQL;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -6,6 +6,7 @@ using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.ExperienceApiModule.Core.BaseQueries;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Services;
+using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.XPurchase.Authorization;
 using VirtoCommerce.XPurchase.Commands;
 using VirtoCommerce.XPurchase.Schemas;
@@ -52,7 +53,16 @@ namespace VirtoCommerce.XPurchase.Queries
             {
                 await Authorize(context, request.UserId, cartAuthorizationRequirement);
 
-                var createCartCommand = new CreateCartCommand(request.StoreId, request.CartType, request.CartName, request.UserId, request.CurrencyCode, request.CultureName);
+                var createCartCommand = AbstractTypeFactory<CreateCartCommand>.TryCreateInstance();
+
+                createCartCommand.StoreId = request.StoreId;
+                createCartCommand.CartType = request.CartType;
+                createCartCommand.CartName = request.CartName;
+                createCartCommand.UserId = request.UserId;
+                createCartCommand.OrganizationId = request.OrganizationId;
+                createCartCommand.CurrencyCode = request.CurrencyCode;
+                createCartCommand.CultureName = request.CultureName;
+
                 response = await _mediator.Send(createCartCommand);
             }
             else

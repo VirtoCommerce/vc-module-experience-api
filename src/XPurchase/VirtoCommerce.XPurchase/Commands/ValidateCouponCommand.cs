@@ -2,7 +2,7 @@ using MediatR;
 
 namespace VirtoCommerce.XPurchase.Commands
 {
-    public class ValidateCouponCommand : IRequest<bool>
+    public class ValidateCouponCommand : ICartCommand, IRequest<bool>
     {
         public ValidateCouponCommand()
         {
@@ -23,8 +23,10 @@ namespace VirtoCommerce.XPurchase.Commands
         public string CartType { get; set; }
         public string CartName { get; set; }
         public string UserId { get; set; }
+        public string OrganizationId { get; set; }
         public string CurrencyCode { get; set; }
         public string CultureName { get; set; }
+
         public string Coupon { get; set; }
     }
 }

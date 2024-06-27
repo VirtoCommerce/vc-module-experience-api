@@ -85,7 +85,7 @@ namespace VirtoCommerce.XPurchase
             return InnerGetCartAggregateFromCartAsync(cart, language ?? Language.InvariantLanguage.CultureName);
         }
 
-        public async Task<CartAggregate> GetCartAsync(string cartName, string storeId, string userId, string language, string currencyCode, string type = null, string responseGroup = null)
+        public async Task<CartAggregate> GetCartAsync(string cartName, string storeId, string userId, string organizationId, string language, string currencyCode, string type = null, string responseGroup = null)
         {
             if (CartAggregateBuilder.IsBuilding(out var cartAggregate))
             {
@@ -97,6 +97,7 @@ namespace VirtoCommerce.XPurchase
                 StoreId = storeId,
                 // IMPORTANT! Need to specify customerId, otherwise any user cart could be returned while we expect anonymous in this case.
                 CustomerId = userId ?? AnonymousUser.UserName,
+                OrganizationId = organizationId,
                 Name = cartName,
                 Currency = currencyCode,
                 Type = type,
@@ -196,9 +197,6 @@ namespace VirtoCommerce.XPurchase
             using (CartAggregateBuilder.Build(aggregate))
             {
                 aggregate.GrabCart(cart, store, member, currency);
-
-                // Update Cart's Organization Id and Name from member.
-                await aggregate.UpdateOrganization(cart, member);
 
                 //Load cart products explicitly if no validation is requested
                 aggregate.ProductsIncludeFields = productsIncludeFields;

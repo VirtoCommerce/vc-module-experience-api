@@ -7,6 +7,8 @@ namespace VirtoCommerce.XPurchase.Commands
     {
         public string CurrentUserId { get; set; }
 
+        public string CurrentOrganizationId { get; set; }
+
         public Contact CurrentContact { get; set; }
 
         public ShoppingCart Cart { get; set; }

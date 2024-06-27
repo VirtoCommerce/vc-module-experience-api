@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using VirtoCommerce.CartModule.Core.Model;
 using VirtoCommerce.CartModule.Core.Services;
 using VirtoCommerce.CustomerModule.Core.Model;
 using VirtoCommerce.CustomerModule.Core.Services;
@@ -38,9 +37,7 @@ public class CloneWishlistCommandHandler : CartCommandHandler<CloneWishlistComma
 
         if (request.Scope?.EqualsInvariant(XPurchaseConstants.OrganizationScope) == true)
         {
-            var organizationId = contact?.Organizations?.FirstOrDefault();
-
-            cloneCartAggregate.Cart.OrganizationId = organizationId;
+            cloneCartAggregate.Cart.OrganizationId = request.OrganizationId;
         }
 
         var cart = request.WishlistUserContext.Cart

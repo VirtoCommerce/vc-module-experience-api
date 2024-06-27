@@ -73,7 +73,6 @@ namespace VirtoCommerce.XPurchase
 
         public CartSearchCriteriaBuilder WithOrganizationId(string organizationId)
         {
-            _searchCriteria.CustomerOrOrganization = true;
             _searchCriteria.OrganizationId = organizationId ?? _searchCriteria.OrganizationId;
             return this;
         }
@@ -84,16 +83,20 @@ namespace VirtoCommerce.XPurchase
             return this;
         }
 
+        // TODO: Add scope to search criteria
         public CartSearchCriteriaBuilder WithScope(string scope)
         {
-            if (string.IsNullOrEmpty(scope))
+            _searchCriteria.CustomerOrOrganization = true;
+
+            if (scope.EqualsIgnoreCase(XPurchaseConstants.OrganizationScope))
             {
-                return this;
+                _searchCriteria.CustomerId = null;
+            }
+            else if (scope.EqualsIgnoreCase(XPurchaseConstants.PrivateScope))
+            {
+                _searchCriteria.OrganizationId = null;
             }
 
-            _searchCriteria.CustomerOrOrganization = false;
-            _searchCriteria.CustomerId = scope.EqualsInvariant(XPurchaseConstants.OrganizationScope) ? null : _searchCriteria.CustomerId;
-            _searchCriteria.NoOrganization = scope.EqualsInvariant(XPurchaseConstants.PrivateScope);
             return this;
         }
 

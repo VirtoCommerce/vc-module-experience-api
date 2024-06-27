@@ -12,7 +12,7 @@ namespace VirtoCommerce.XPurchase
 
         Task SaveAsync(CartAggregate cartAggregate);
 
-        Task<CartAggregate> GetCartAsync(string cartName, string storeId, string userId, string cultureName, string currencyCode, string type = null, string responseGroup = null);
+        Task<CartAggregate> GetCartAsync(string cartName, string storeId, string userId, string organizationId, string cultureName, string currencyCode, string type = null, string responseGroup = null);
 
         Task<CartAggregate> GetCartAsync(ShoppingCartSearchCriteria criteria, string cultureName);
 

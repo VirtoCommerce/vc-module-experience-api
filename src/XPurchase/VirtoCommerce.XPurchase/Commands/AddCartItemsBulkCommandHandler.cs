@@ -53,6 +53,7 @@ namespace VirtoCommerce.XPurchase.Commands
                 CartType = request.CartType,
                 CartName = request.CartName,
                 UserId = request.UserId,
+                OrganizationId = request.OrganizationId,
                 CurrencyCode = request.CurrencyCode,
                 CultureName = request.CultureName,
                 CartItems = cartItemsToAdd.ToArray(),
