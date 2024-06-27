@@ -1,22 +1,18 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using VirtoCommerce.CustomerModule.Core.Model;
 using VirtoCommerce.CustomerModule.Core.Services;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Security;
 using VirtoCommerce.Platform.Core.Settings;
-using VirtoCommerce.Platform.Security;
-using VirtoCommerce.Platform.Security.Model;
-using VirtoCommerce.Platform.Security.Services;
+using VirtoCommerce.Platform.Security.OpenIddict;
 using VirtoCommerce.StoreModule.Core.Model;
 using VirtoCommerce.StoreModule.Core.Services;
 using StoreSettings = VirtoCommerce.StoreModule.Core.ModuleConstants.Settings;
 
-namespace VirtoCommerce.ExperienceApiModule.Core.Services.Security
+namespace VirtoCommerce.ExperienceApiModule.Core.OpenIddict
 {
-    public class ContactSignInValidator : IUserSignInValidator
+    public class ContactSignInValidator : ITokenRequestValidator
     {
         public virtual int Priority { get; set; } = 100;
 
@@ -29,59 +25,59 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Services.Security
             _memberService = memberService;
         }
 
-        public virtual async Task<IList<TokenLoginResponse>> ValidateUserAsync(SignInValidatorContext context)
+        public virtual async Task<IList<TokenResponse>> ValidateAsync(TokenRequestContext context)
         {
-            var result = new List<TokenLoginResponse>();
-
-            // skip all check if member is admin
-            if (context.User.IsAdministrator)
+            // Skip all checks if sign in result is not available
+            if (context.SignInResult is null)
             {
-                return result;
+                return [];
             }
 
-            // skip all check if member is not contact
+            // Skip all checks if user is admin
+            if (context.User.IsAdministrator)
+            {
+                return [];
+            }
+
+            // Skip all checks if member is not contact
             var contact = await GetContactAsync(context.User);
             if (contact == null)
             {
-                return result;
+                return [];
             }
 
-            var store = await _storeService.GetNoCloneAsync(context.StoreId);
+            var store = await GetStore(context);
             if (store == null)
             {
-                var error = GetError(context.DetailedErrors, ContactSecurityErrorDescriber.UserCannotLoginInStore());
-                result.Add(error);
-                return result;
+                return [GetError(context.DetailedErrors, ContactSecurityErrorDescriber.UserCannotLoginInStore())];
             }
 
-            if (!context.IsSucceeded &&
-                context.IsLockedOut &&
+            if (!context.SignInResult.Succeeded &&
+                context.SignInResult.IsLockedOut &&
                 contact.Status == "Locked" &&
                 !context.User.EmailConfirmed &&
                 EmailVerificationRequired(store))
             {
-                var error = GetError(context.DetailedErrors, ContactSecurityErrorDescriber.EmailVerificationIsRequired());
-                result.Add(error);
+                return [GetError(context.DetailedErrors, ContactSecurityErrorDescriber.EmailVerificationIsRequired())];
             }
 
-            if (context.IsSucceeded)
+            if (context.SignInResult.Succeeded)
             {
-                //Allow to login to store or users not assigned to store
-                var canLoginToStore = !context.User.StoreId.IsNullOrEmpty();
+                var userStoreId = context.User.StoreId;
 
-                if (canLoginToStore)
-                {
-                    canLoginToStore = store.TrustedGroups.Concat(new[] { store.Id }).Contains(context.User.StoreId);
-                }
+                // Allow to sign in to the related stores
+                var canLoginToStore =
+                    !string.IsNullOrEmpty(userStoreId) && (
+                        store.Id == userStoreId ||
+                        store.TrustedGroups.Contains(userStoreId));
 
                 if (!canLoginToStore)
                 {
-                    var error = GetError(context.DetailedErrors, ContactSecurityErrorDescriber.UserCannotLoginInStore());
-                    result.Add(error);
+                    return [GetError(context.DetailedErrors, ContactSecurityErrorDescriber.UserCannotLoginInStore())];
                 }
             }
 
-            return result;
+            return [];
         }
 
         private async Task<Contact> GetContactAsync(ApplicationUser user)
@@ -89,7 +85,16 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Services.Security
             return await _memberService.GetByIdAsync(user.MemberId) as Contact;
         }
 
-        private static TokenLoginResponse GetError(bool detailedErrors, TokenLoginResponse response)
+        private Task<Store> GetStore(TokenRequestContext context)
+        {
+            var storeId = context.Request.GetParameter(Parameters.StoreId)?.Value?.ToString();
+
+            return string.IsNullOrEmpty(storeId)
+                ? null
+                : _storeService.GetNoCloneAsync(storeId);
+        }
+
+        private static TokenResponse GetError(bool detailedErrors, TokenResponse response)
         {
             return detailedErrors ? response : SecurityErrorDescriber.LoginFailed();
         }
