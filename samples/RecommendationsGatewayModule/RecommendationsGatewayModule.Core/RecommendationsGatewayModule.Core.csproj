@@ -1,10 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Description>Experiene API functionality</Description>
     <TargetFramework>net8.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <Description>Experiene API functionality</Description>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <noWarn>1591</noWarn>
-    <IsPackable>True</IsPackable>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\src\VirtoCommerce.ExperienceApiModule.DigitalCatalog\VirtoCommerce.XDigitalCatalog.csproj" />
