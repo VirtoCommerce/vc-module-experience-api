@@ -14,6 +14,7 @@ namespace VirtoCommerce.XPurchase.Queries
         public string CartType { get; set; }
         public string CartName { get; set; }
         public string UserId { get; set; }
+        public string OrganizationId { get; set; }
         public string CurrencyCode { get; set; }
         public string CultureName { get; set; }
 
@@ -35,6 +36,7 @@ namespace VirtoCommerce.XPurchase.Queries
             CartType = context.GetArgument<string>(nameof(CartType));
             CartName = context.GetArgument<string>(nameof(CartName));
             UserId = context.GetArgument<string>(nameof(UserId));
+            OrganizationId = context.GetCurrentOrganizationId();
             CurrencyCode = context.GetArgument<string>(nameof(CurrencyCode));
             CultureName = context.GetArgument<string>(nameof(CultureName));
 

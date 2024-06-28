@@ -12,10 +12,10 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure.Authorization;
 using VirtoCommerce.ExperienceApiModule.Core.Infrastructure.Internal;
+using VirtoCommerce.ExperienceApiModule.Core.OpenIddict;
 using VirtoCommerce.ExperienceApiModule.Core.Services;
-using VirtoCommerce.ExperienceApiModule.Core.Services.Security;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.Platform.Security.Services;
+using VirtoCommerce.Platform.Security.OpenIddict;
 
 namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
 {
@@ -120,7 +120,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
             services.AddTransient<IDynamicPropertyUpdaterService, DynamicPropertyUpdaterService>();
             services.AddTransient<IUserManagerCore, UserManagerCore>();
 
-            services.AddTransient<IUserSignInValidator, ContactSignInValidator>();
+            services.AddTransient<ITokenRequestValidator, ContactSignInValidator>();
 
             return services;
         }

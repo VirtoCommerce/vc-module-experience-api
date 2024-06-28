@@ -1,11 +1,14 @@
+using System;
+
 namespace VirtoCommerce.XPurchase.Commands
 {
     public class CreateCartCommand : CartCommand
     {
         public CreateCartCommand()
-            : base()
         {
         }
+
+        [Obsolete("Use context.GetCartCommand<>() or object initializer", DiagnosticId = "VC0008", UrlFormat = "https://docs.virtocommerce.org/products/products-virto3-versions/")]
         public CreateCartCommand(string storeId, string type, string cartName, string userId, string currencyCode, string cultureName)
             : base(storeId, type, cartName, userId, currencyCode, cultureName)
         {

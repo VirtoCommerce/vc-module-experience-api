@@ -790,6 +790,8 @@ namespace VirtoCommerce.XPurchase
         {
             EnsureCartExists();
 
+            await UpdateOrganizationName();
+
             var promotionEvalResult = await EvaluatePromotionsAsync();
             await this.ApplyRewardsAsync(promotionEvalResult.Rewards);
 
@@ -815,17 +817,22 @@ namespace VirtoCommerce.XPurchase
             return Task.FromResult(this);
         }
 
-        public virtual async Task<CartAggregate> UpdateOrganization(ShoppingCart cart, Member member)
+        [Obsolete($"Use {nameof(UpdateOrganizationName)}", DiagnosticId = "VC0008", UrlFormat = "https://docs.virtocommerce.org/products/products-virto3-versions/")]
+        public virtual Task<CartAggregate> UpdateOrganization(ShoppingCart cart, Member member)
         {
-            if (member is Contact contact && cart.Type != XPurchaseConstants.ListTypeName)
-            {
-                cart.OrganizationId = contact.Organizations?.FirstOrDefault();
+            return UpdateOrganizationName();
+        }
 
-                if (!string.IsNullOrEmpty(cart.OrganizationId))
-                {
-                    var org = await _memberService.GetByIdAsync(cart.OrganizationId);
-                    cart.OrganizationName = org.Name;
-                }
+        public virtual async Task<CartAggregate> UpdateOrganizationName()
+        {
+            if (string.IsNullOrEmpty(Cart.OrganizationId))
+            {
+                Cart.OrganizationName = null;
+            }
+            else if (string.IsNullOrEmpty(Cart.OrganizationName))
+            {
+                var organization = await _memberService.GetByIdAsync(Cart.OrganizationId);
+                Cart.OrganizationName = organization.Name;
             }
 
             return this;

@@ -102,14 +102,14 @@ namespace VirtoCommerce.XPurchase.Authorization
             {
                 if (context.Cart.OrganizationId != null)
                 {
-                    result = context.Cart.OrganizationId == context.CurrentContact?.Organizations?.FirstOrDefault();
+                    result = context.Cart.OrganizationId == context.CurrentOrganizationId;
                 }
                 else
                 {
                     result = context.Cart.CustomerId == context.CurrentUserId;
                 }
             }
-            
+
             if (result && !string.IsNullOrEmpty(context.UserId))
             {
                 result = context.UserId == context.CurrentUserId;

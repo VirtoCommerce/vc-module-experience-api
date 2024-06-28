@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using PipelineNet.Middleware;
 using VirtoCommerce.CartModule.Core.Services;
-using VirtoCommerce.CustomerModule.Core.Model;
 using VirtoCommerce.CustomerModule.Core.Services;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.XDigitalCatalog.Queries;
@@ -40,10 +39,7 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
             if (responseGroup.HasFlag(ExpProductResponseGroup.LoadWishlists) &&
                 productIds.Any())
             {
-                var contact = await _memberResolver.ResolveMemberByIdAsync(query.UserId) as Contact;
-                var organizationId = contact?.Organizations?.FirstOrDefault();
-
-                var wishlistsByProducts = await _wishlistService.FindWishlistsByProductsAsync(query.UserId, organizationId, query.StoreId, productIds);
+                var wishlistsByProducts = await _wishlistService.FindWishlistsByProductsAsync(query.UserId, query.OrganizationId, query.StoreId, productIds);
 
                 if (wishlistsByProducts.Any())
                 {
