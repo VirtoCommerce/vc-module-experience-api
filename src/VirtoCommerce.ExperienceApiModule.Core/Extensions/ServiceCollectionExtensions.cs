@@ -122,9 +122,6 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
 
             services.AddTransient<ITokenRequestValidator, ContactSignInValidator>();
 
-            services.AddSingleton<ITokenRequestValidator, OrganizationIdRequestValidator>();
-            services.AddSingleton<ITokenClaimProvider, OrganizationIdClaimProvider>();
-
             return services;
         }
 

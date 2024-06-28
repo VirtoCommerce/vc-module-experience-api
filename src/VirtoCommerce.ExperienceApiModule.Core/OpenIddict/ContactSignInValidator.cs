@@ -49,7 +49,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.OpenIddict
             var store = await GetStore(context);
             if (store == null)
             {
-                return [GetError(context.DetailedErrors, ContactSecurityErrorDescriber.UserCannotLoginInStore())];
+                return [GetError(context.DetailedErrors, ErrorDescriber.UserCannotLoginInStore())];
             }
 
             if (!context.SignInResult.Succeeded &&
@@ -58,7 +58,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.OpenIddict
                 !context.User.EmailConfirmed &&
                 EmailVerificationRequired(store))
             {
-                return [GetError(context.DetailedErrors, ContactSecurityErrorDescriber.EmailVerificationIsRequired())];
+                return [GetError(context.DetailedErrors, ErrorDescriber.EmailVerificationIsRequired())];
             }
 
             if (context.SignInResult.Succeeded)
@@ -73,7 +73,7 @@ namespace VirtoCommerce.ExperienceApiModule.Core.OpenIddict
 
                 if (!canLoginToStore)
                 {
-                    return [GetError(context.DetailedErrors, ContactSecurityErrorDescriber.UserCannotLoginInStore())];
+                    return [GetError(context.DetailedErrors, ErrorDescriber.UserCannotLoginInStore())];
                 }
             }
 
