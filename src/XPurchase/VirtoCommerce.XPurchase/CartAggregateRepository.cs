@@ -85,6 +85,14 @@ namespace VirtoCommerce.XPurchase
             return InnerGetCartAggregateFromCartAsync(cart, language ?? Language.InvariantLanguage.CultureName);
         }
 
+        public Task<CartAggregate> GetCartAsync(ICartRequest cartRequest, string responseGroup = null)
+        {
+#pragma warning disable VC0008 // Type or member is obsolete
+            return GetCartAsync(cartRequest.CartName, cartRequest.StoreId, cartRequest.UserId, cartRequest.OrganizationId, cartRequest.CultureName, cartRequest.CurrencyCode, cartRequest.CartType, responseGroup);
+#pragma warning restore VC0008 // Type or member is obsolete
+        }
+
+        [Obsolete("Use GetCartAsync(ICartRequest cartRequest, string responseGroup)", DiagnosticId = "VC0008", UrlFormat = "https://docs.virtocommerce.org/products/products-virto3-versions/")]
         public async Task<CartAggregate> GetCartAsync(string cartName, string storeId, string userId, string organizationId, string language, string currencyCode, string type = null, string responseGroup = null)
         {
             if (CartAggregateBuilder.IsBuilding(out var cartAggregate))

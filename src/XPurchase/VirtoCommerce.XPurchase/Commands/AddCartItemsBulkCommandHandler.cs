@@ -46,18 +46,10 @@ namespace VirtoCommerce.XPurchase.Commands
             }
 
             // send Add to Cart command
-            var command = new AddCartItemsCommand
-            {
-                CartId = request.CartId,
-                StoreId = request.StoreId,
-                CartType = request.CartType,
-                CartName = request.CartName,
-                UserId = request.UserId,
-                OrganizationId = request.OrganizationId,
-                CurrencyCode = request.CurrencyCode,
-                CultureName = request.CultureName,
-                CartItems = cartItemsToAdd.ToArray(),
-            };
+            var command = AbstractTypeFactory<AddCartItemsCommand>.TryCreateInstance();
+            command.CopyFrom(request);
+            command.CartId = request.CartId;
+            command.CartItems = cartItemsToAdd.ToArray();
 
             var cartAggregate = await _mediator.Send(command, cancellationToken);
 

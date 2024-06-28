@@ -1,6 +1,6 @@
-namespace VirtoCommerce.XPurchase.Commands;
+namespace VirtoCommerce.XPurchase;
 
-public interface ICartCommand
+public interface ICartRequest
 {
     string StoreId { get; set; }
     string CartType { get; set; }

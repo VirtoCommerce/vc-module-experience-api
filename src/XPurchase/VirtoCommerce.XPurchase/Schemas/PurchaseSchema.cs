@@ -784,7 +784,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                                                   {
                                                       var command = context.GetCartCommand<ValidateCouponCommand>();
 
-                                                      await CheckAuthByCartParamsAsync(context, command.StoreId, command.CartType, command.CartName, command.UserId, command.OrganizationId, command.CurrencyCode, command.CultureName);
+                                                      await CheckAuthByCartParamsAsync(context, command);
 
                                                       return await _mediator.Send(command);
                                                   })
@@ -812,7 +812,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                     query.CartId = context.GetArgumentOrValue<string>("cartId");
                     query.Coupon = context.GetArgumentOrValue<string>("coupon");
 
-                    await CheckAuthByCartParamsAsync(context, query.StoreId, query.CartType, query.CartName, query.UserId, query.OrganizationId, query.CurrencyCode, query.CultureName);
+                    await CheckAuthByCartParamsAsync(context, query);
 
                     return await _mediator.Send(query);
                 })
@@ -1090,7 +1090,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                                                  .Argument(GraphTypeExtenstionHelper.GetActualComplexType<NonNullGraphType<InputAddBulkItemsType>>(), _commandName)
                                                  .ResolveSynchronizedAsync(CartPrefix, "userId", _distributedLockService, async context =>
                                                  {
-                                                     var command = context.GetArgument<AddCartItemsBulkCommand>(_commandName);
+                                                     var command = context.GetCartCommand<AddCartItemsBulkCommand>();
 
                                                      if (!string.IsNullOrEmpty(command.CartId))
                                                      {
@@ -1098,7 +1098,7 @@ namespace VirtoCommerce.XPurchase.Schemas
                                                      }
                                                      else
                                                      {
-                                                         await CheckAuthByCartParamsAsync(context, command.StoreId, command.CartType, command.CartName, command.UserId, command.OrganizationId, command.CurrencyCode, command.CultureName);
+                                                         await CheckAuthByCartParamsAsync(context, command);
                                                      }
 
                                                      var result = await _mediator.Send(command);
@@ -1571,29 +1571,29 @@ namespace VirtoCommerce.XPurchase.Schemas
             }
             else
             {
-                await CheckAuthByCartParamsAsync(context, cartCommand.StoreId, cartCommand.CartType, cartCommand.CartName, cartCommand.UserId, cartCommand.OrganizationId, cartCommand.CurrencyCode, cartCommand.CultureName);
+                await CheckAuthByCartParamsAsync(context, cartCommand);
             }
         }
 
-        private async Task CheckAuthByCartParamsAsync(IResolveFieldContext context, string storeId, string cartType, string cartName, string userId, string organizationId, string currencyCode, string cultureName)
+        private async Task CheckAuthByCartParamsAsync(IResolveFieldContext context, ICartRequest request)
         {
             var criteria = new ShoppingCartSearchCriteria
             {
-                StoreId = storeId,
-                CustomerId = userId ?? AnonymousUser.UserName,
-                OrganizationId = organizationId,
-                Name = cartName,
-                Currency = currencyCode,
-                Type = cartType,
-                LanguageCode = cultureName,
+                StoreId = request.StoreId,
+                CustomerId = request.UserId ?? AnonymousUser.UserName,
+                OrganizationId = request.OrganizationId,
+                Name = request.CartName,
+                Currency = request.CurrencyCode,
+                Type = request.CartType,
+                LanguageCode = request.CultureName,
             };
 
             var cartSearchResult = await _shoppingCartSearchService.SearchAsync(criteria);
-            var cart = cartSearchResult.Results.FirstOrDefault(x => (cartType != null) || x.Type == null);
+            var cart = cartSearchResult.Results.FirstOrDefault(x => request.CartType != null || x.Type == null);
 
             if (cart == null)
             {
-                await AuthorizeAsync(context, userId);
+                await AuthorizeAsync(context, request.UserId);
             }
             else
             {
@@ -1681,7 +1681,6 @@ namespace VirtoCommerce.XPurchase.Schemas
         private async Task<WishlistUserContext> InitializeWishlistUserContext(IResolveFieldContext context, string listId = null, ShoppingCart cart = null, string userId = null, string scope = null)
         {
             var currentUserId = context.GetCurrentUserId();
-            var currentOrganizationId = context.GetCurrentOrganizationId();
 
             if (cart is null && !string.IsNullOrEmpty(listId))
             {
@@ -1691,7 +1690,7 @@ namespace VirtoCommerce.XPurchase.Schemas
             var wishlistUserContext = new WishlistUserContext
             {
                 CurrentUserId = currentUserId,
-                CurrentOrganizationId = currentOrganizationId,
+                CurrentOrganizationId = context.GetCurrentOrganizationId(),
                 CurrentContact = await _memberResolver.ResolveMemberByIdAsync(currentUserId) as Contact,
                 Cart = cart,
                 UserId = userId,

@@ -54,14 +54,7 @@ namespace VirtoCommerce.XPurchase.Queries
                 await Authorize(context, request.UserId, cartAuthorizationRequirement);
 
                 var createCartCommand = AbstractTypeFactory<CreateCartCommand>.TryCreateInstance();
-
-                createCartCommand.StoreId = request.StoreId;
-                createCartCommand.CartType = request.CartType;
-                createCartCommand.CartName = request.CartName;
-                createCartCommand.UserId = request.UserId;
-                createCartCommand.OrganizationId = request.OrganizationId;
-                createCartCommand.CurrencyCode = request.CurrencyCode;
-                createCartCommand.CultureName = request.CultureName;
+                createCartCommand.CopyFrom(request);
 
                 response = await _mediator.Send(createCartCommand);
             }

@@ -3,7 +3,7 @@ using VirtoCommerce.ExperienceApiModule.Core.Infrastructure;
 
 namespace VirtoCommerce.XPurchase.Commands
 {
-    public abstract class CartCommand : ICartCommand, ICommand<CartAggregate>
+    public abstract class CartCommand : CartCommandBase, ICommand<CartAggregate>
     {
         protected CartCommand()
         {
@@ -21,13 +21,5 @@ namespace VirtoCommerce.XPurchase.Commands
         }
 
         public string CartId { get; set; }
-
-        public string StoreId { get; set; }
-        public string CartType { get; set; }
-        public string CartName { get; set; } = "default";
-        public string UserId { get; set; }
-        public string OrganizationId { get; set; }
-        public string CurrencyCode { get; set; }
-        public string CultureName { get; set; }
     }
 }

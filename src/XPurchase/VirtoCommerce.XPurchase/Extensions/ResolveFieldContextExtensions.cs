@@ -1,9 +1,9 @@
+using System;
 using GraphQL;
 using VirtoCommerce.CoreModule.Core.Currency;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 using VirtoCommerce.ExperienceApiModule.Core.Helpers;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.XPurchase.Commands;
 using VirtoCommerce.XPurchase.Queries;
 using VirtoCommerce.XPurchase.Schemas;
 
@@ -29,7 +29,7 @@ namespace VirtoCommerce.XPurchase.Extensions
         }
 
         public static T GetCartCommand<T>(this IResolveFieldContext context)
-            where T : ICartCommand
+            where T : ICartRequest
         {
             var cartCommand = (T)context.GetArgument(GenericTypeHelper.GetActualType<T>(), PurchaseSchema._commandName);
 
@@ -42,7 +42,7 @@ namespace VirtoCommerce.XPurchase.Extensions
         }
 
         public static T GetCartQuery<T>(this IResolveFieldContext context)
-            where T : ICartQuery
+            where T : ICartRequest
         {
             var result = AbstractTypeFactory<T>.TryCreateInstance();
             result.StoreId = context.GetArgumentOrValue<string>("storeId");
@@ -56,6 +56,7 @@ namespace VirtoCommerce.XPurchase.Extensions
             return result;
         }
 
+        [Obsolete("Not being called", DiagnosticId = "VC0008", UrlFormat = "https://docs.virtocommerce.org/products/products-virto3-versions/")]
         public static void SetSearchCartQuery(this IResolveFieldContext context, ICartQuery query)
         {
             context.UserContext["storeId"] = query.StoreId;
