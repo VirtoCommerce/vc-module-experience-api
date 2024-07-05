@@ -1,19 +1,15 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
-using VirtoCommerce.CustomerModule.Core.Model;
-using VirtoCommerce.CustomerModule.Core.Services;
 using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.XPurchase.Commands
 {
-    public class ChangeWishlistCommandHandler : CartCommandHandler<ChangeWishlistCommand>
+    public class ChangeWishlistCommandHandler : ScopedWishlistCommandHandlerBase<ChangeWishlistCommand>
     {
-        private readonly IMemberResolver _memberResolver;
-
-        public ChangeWishlistCommandHandler(ICartAggregateRepository cartAggrRepository, IMemberResolver memberResolver)
-            : base(cartAggrRepository)
+        public ChangeWishlistCommandHandler(ICartAggregateRepository cartAggregateRepository)
+            : base(cartAggregateRepository)
         {
-            _memberResolver = memberResolver;
         }
 
         public override async Task<CartAggregate> Handle(ChangeWishlistCommand request, CancellationToken cancellationToken)
@@ -32,25 +28,31 @@ namespace VirtoCommerce.XPurchase.Commands
                 cartAggregate.Cart.Description = request.Description;
             }
 
-            await ChangeScope(request, cartAggregate);
+            await UpdateScopeAsync(cartAggregate, request);
 
             return await SaveCartAsync(cartAggregate);
         }
 
-        protected virtual async Task ChangeScope(ChangeWishlistCommand request, CartAggregate cartAggregate)
+
+        [Obsolete("Use UpdateScopeAsync()", DiagnosticId = "VC0009", UrlFormat = "https://docs.virtocommerce.org/products/products-virto3-versions/")]
+        protected virtual Task ChangeScope(ChangeWishlistCommand request, CartAggregate cartAggregate)
         {
-            if (request.Scope?.EqualsInvariant(XPurchaseConstants.OrganizationScope) == true)
+            if (request.Scope?.EqualsIgnoreCase(XPurchaseConstants.OrganizationScope) == true)
             {
-                cartAggregate.Cart.OrganizationId = request.WishlistUserContext.CurrentOrganizationId;
+                if (!string.IsNullOrEmpty(request.WishlistUserContext.CurrentOrganizationId))
+                {
+                    cartAggregate.Cart.OrganizationId = request.WishlistUserContext.CurrentOrganizationId;
+                }
             }
-            else if (request.Scope?.EqualsInvariant(XPurchaseConstants.PrivateScope) == true)
+            else if (request.Scope?.EqualsIgnoreCase(XPurchaseConstants.PrivateScope) == true)
             {
                 cartAggregate.Cart.OrganizationId = null;
-                cartAggregate.Cart.CustomerId = request.WishlistUserContext.CurrentUserId;
 
-                var contact = request.WishlistUserContext.CurrentContact ?? await _memberResolver.ResolveMemberByIdAsync(request.UserId) as Contact;
-                cartAggregate.Cart.CustomerName = contact?.Name;
+                cartAggregate.Cart.CustomerId = request.WishlistUserContext.CurrentUserId;
+                cartAggregate.Cart.CustomerName = request.WishlistUserContext.CurrentContact.Name;
             }
+
+            return Task.CompletedTask;
         }
     }
 }
