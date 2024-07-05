@@ -47,6 +47,7 @@ namespace VirtoCommerce.XPurchase.Queries
                                      .WithType(request.CartType)
                                      .WithLanguage(request.CultureName)
                                      .WithCustomerId(request.UserId)
+                                     .WithOrganizationId(request.OrganizationId)
                                      .WithPaging(request.Skip, request.Take)
                                      .WithSorting(request.Sort)
                                      .Build();

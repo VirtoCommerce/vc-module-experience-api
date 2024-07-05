@@ -3,13 +3,13 @@
   <id>VirtoCommerce.ExperienceApi</id>
   <version>3.837.0</version>
   <version-tag />
-  <platformVersion>3.819.0</platformVersion>
+  <platformVersion>3.841.0</platformVersion>
   <dependencies>
     <dependency id="VirtoCommerce.Cart" version="3.803.0" />
     <dependency id="VirtoCommerce.Catalog" version="3.807.0" />
     <dependency id="VirtoCommerce.Content" version="3.815.0" />
     <dependency id="VirtoCommerce.Core" version="3.807.0" />
-    <dependency id="VirtoCommerce.Customer" version="3.800.0" />
+    <dependency id="VirtoCommerce.Customer" version="3.811.0" />
     <dependency id="VirtoCommerce.Inventory" version="3.800.0" />
     <dependency id="VirtoCommerce.Marketing" version="3.800.0" />
     <dependency id="VirtoCommerce.Orders" version="3.803.0" />
@@ -26,7 +26,7 @@
     <author>Eugeny Tatarincev</author>
     <author>Yan Brovkin</author>
     <author>Fillip Kuksov</author>
-    <author>Egidijus MaÅ¾eika</author>
+    <author>Egidijus Mažeika</author>
     <author>Andrei Kostyrin</author>
     <author>Dmitri Pushnitsa</author>
     <author>Alexandr Andreev</author>

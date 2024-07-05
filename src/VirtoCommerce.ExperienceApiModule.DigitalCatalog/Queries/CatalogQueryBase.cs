@@ -15,6 +15,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
         public string CultureName { get; set; }
         public string CurrencyCode { get; set; }
 
+        public string OrganizationId { get; set; }
         public Store Store { get; set; }
         public IList<string> IncludeFields { get; set; } = Array.Empty<string>();
 
@@ -30,6 +31,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
         {
             StoreId = context.GetArgument<string>(nameof(StoreId));
             UserId = context.GetArgument<string>(nameof(UserId)) ?? context.GetCurrentUserId();
+            OrganizationId = context.GetCurrentOrganizationId();
             CultureName = context.GetArgument<string>(nameof(CultureName));
             CurrencyCode = context.GetArgument<string>(nameof(CurrencyCode));
         }
