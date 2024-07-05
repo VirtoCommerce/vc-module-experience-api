@@ -1351,9 +1351,9 @@ namespace VirtoCommerce.XPurchase.Schemas
                                                     var command = (CloneWishlistCommand)context.GetArgument(commandType, _commandName);
 
                                                     await AuthorizeByListIdAsync(context, command, command.Scope);
-                                                    var result = await _mediator.Send(command);
-                                                    context.SetExpandedObjectGraph(result);
-                                                    return result;
+                                                    var cartAggregate = await _mediator.Send(command);
+                                                    context.SetExpandedObjectGraph(cartAggregate);
+                                                    return cartAggregate;
                                                 })
                                                 .FieldType;
 
@@ -1476,9 +1476,9 @@ namespace VirtoCommerce.XPurchase.Schemas
                                      {
                                          var command = context.GetArgument<AddWishlistItemsCommand>(_commandName);
                                          await AuthorizeByListIdAsync(context, command);
-                                         var result = await _mediator.Send(command);
-                                         context.SetExpandedObjectGraph(result.Cart);
-                                         return result;
+                                         var cartAggregate = await _mediator.Send(command);
+                                         context.SetExpandedObjectGraph(cartAggregate.Cart);
+                                         return cartAggregate;
                                      })
                                      .FieldType;
 
