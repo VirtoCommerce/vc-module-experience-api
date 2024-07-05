@@ -20,9 +20,9 @@ namespace VirtoCommerce.XPurchase
 
         Task<CartAggregate> GetCartAsync(ShoppingCartSearchCriteria criteria, string cultureName);
 
-        Task<CartAggregate> GetCartByIdAsync(string cartId, string language = null);
+        Task<CartAggregate> GetCartByIdAsync(string cartId, string cultureName = null);
 
-        Task<CartAggregate> GetCartByIdAsync(string cartId, IList<string> productsIncludeFields, string language = null);
+        Task<CartAggregate> GetCartByIdAsync(string cartId, IList<string> productsIncludeFields, string cultureName = null);
 
         Task<CartAggregate> GetCartForShoppingCartAsync(ShoppingCart cart, string cultureName = null);
 

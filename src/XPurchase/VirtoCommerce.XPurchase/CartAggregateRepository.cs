@@ -55,12 +55,12 @@ namespace VirtoCommerce.XPurchase
             await _shoppingCartService.SaveChangesAsync(new List<ShoppingCart> { cartAggregate.Cart });
         }
 
-        public async Task<CartAggregate> GetCartByIdAsync(string cartId, string language = null)
+        public async Task<CartAggregate> GetCartByIdAsync(string cartId, string cultureName = null)
         {
-            return await GetCartByIdAsync(cartId, null, language);
+            return await GetCartByIdAsync(cartId, null, cultureName);
         }
 
-        public async Task<CartAggregate> GetCartByIdAsync(string cartId, IList<string> productsIncludeFields, string language = null)
+        public async Task<CartAggregate> GetCartByIdAsync(string cartId, IList<string> productsIncludeFields, string cultureName = null)
         {
             if (CartAggregateBuilder.IsBuilding(out var cartAggregate))
             {
@@ -70,7 +70,7 @@ namespace VirtoCommerce.XPurchase
             var cart = await _shoppingCartService.GetByIdAsync(cartId);
             if (cart != null)
             {
-                return await InnerGetCartAggregateFromCartAsync(cart, language ?? Language.InvariantLanguage.CultureName, productsIncludeFields);
+                return await InnerGetCartAggregateFromCartAsync(cart, cultureName ?? Language.InvariantLanguage.CultureName, productsIncludeFields);
             }
             return null;
         }
@@ -93,7 +93,7 @@ namespace VirtoCommerce.XPurchase
         }
 
         [Obsolete("Use GetCartAsync(ICartRequest cartRequest, string responseGroup)", DiagnosticId = "VC0008", UrlFormat = "https://docs.virtocommerce.org/products/products-virto3-versions/")]
-        public async Task<CartAggregate> GetCartAsync(string cartName, string storeId, string userId, string organizationId, string language, string currencyCode, string type = null, string responseGroup = null)
+        public async Task<CartAggregate> GetCartAsync(string cartName, string storeId, string userId, string organizationId, string cultureName, string currencyCode, string type = null, string responseGroup = null)
         {
             if (CartAggregateBuilder.IsBuilding(out var cartAggregate))
             {
@@ -118,7 +118,7 @@ namespace VirtoCommerce.XPurchase
             var cart = cartSearchResult.Results.FirstOrDefault(x => (type != null) || x.Type == null);
             if (cart != null)
             {
-                return await InnerGetCartAggregateFromCartAsync(cart.Clone() as ShoppingCart, language);
+                return await InnerGetCartAggregateFromCartAsync(cart.Clone() as ShoppingCart, cultureName);
             }
 
             return null;

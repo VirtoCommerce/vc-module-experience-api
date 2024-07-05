@@ -83,7 +83,9 @@ namespace VirtoCommerce.XPurchase
             return this;
         }
 
-        // TODO: Add scope to search criteria
+        /// <summary>
+        /// Scope should be used only for wishlists
+        /// </summary>
         public CartSearchCriteriaBuilder WithScope(string scope)
         {
             _searchCriteria.CustomerOrOrganization = true;
