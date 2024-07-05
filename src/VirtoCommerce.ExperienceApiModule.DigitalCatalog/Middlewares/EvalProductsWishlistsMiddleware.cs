@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using PipelineNet.Middleware;
 using VirtoCommerce.CartModule.Core.Services;
-using VirtoCommerce.CustomerModule.Core.Services;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.XDigitalCatalog.Queries;
 
@@ -12,12 +11,10 @@ namespace VirtoCommerce.XDigitalCatalog.Middlewares
     public class EvalProductsWishlistsMiddleware : IAsyncMiddleware<SearchProductResponse>
     {
         private readonly IWishlistService _wishlistService;
-        private readonly IMemberResolver _memberResolver;
 
-        public EvalProductsWishlistsMiddleware(IWishlistService wishlistService, IMemberResolver memberResolver)
+        public EvalProductsWishlistsMiddleware(IWishlistService wishlistService)
         {
             _wishlistService = wishlistService;
-            _memberResolver = memberResolver;
         }
 
         public async Task Run(SearchProductResponse parameter, Func<SearchProductResponse, Task> next)
