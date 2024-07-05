@@ -16,7 +16,7 @@ namespace VirtoCommerce.XPurchase.Queries
 
         public Task<CartAggregate> Handle(GetWishlistQuery request, CancellationToken cancellationToken)
         {
-            return _cartAggrRepository.GetCartByIdAsync(request.ListId, request.IncludeFields.ItemsToProductIncludeField(), language: request.CultureName);
+            return _cartAggrRepository.GetCartByIdAsync(request.ListId, request.IncludeFields.ItemsToProductIncludeField(), request.CultureName);
         }
     }
 }

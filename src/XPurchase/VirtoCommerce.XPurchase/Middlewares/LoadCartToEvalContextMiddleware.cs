@@ -69,6 +69,7 @@ namespace VirtoCommerce.XPurchase.Middlewares
             cartSearchCriteria.Name = "default";
             cartSearchCriteria.StoreId = context.StoreId;
             cartSearchCriteria.CustomerId = context.CustomerId;
+            cartSearchCriteria.OrganizationId = context.OrganizaitonId;
             cartSearchCriteria.Currency = context.Currency;
 
             return cartSearchCriteria;
@@ -81,6 +82,7 @@ namespace VirtoCommerce.XPurchase.Middlewares
             cartSearchCriteria.Name = "default";
             cartSearchCriteria.StoreId = context.StoreId;
             cartSearchCriteria.CustomerId = context.CustomerId;
+            cartSearchCriteria.OrganizationId = context.OrganizationId;
             cartSearchCriteria.Currency = context.Currency;
 
             return cartSearchCriteria;
@@ -93,6 +95,7 @@ namespace VirtoCommerce.XPurchase.Middlewares
             cartSearchCriteria.Name = "default";
             cartSearchCriteria.StoreId = context.StoreId;
             cartSearchCriteria.CustomerId = context.CustomerId;
+            cartSearchCriteria.OrganizationId = context.OrganizationId;
             cartSearchCriteria.Currency = context.Currency;
 
             return cartSearchCriteria;
