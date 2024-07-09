@@ -6,6 +6,7 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
     {
         string StoreId { get; set; }
         string UserId { get; set; }
+        string OrganizationId { get; set; }
         string CultureName { get; set; }
         string CurrencyCode { get; set; }
     }

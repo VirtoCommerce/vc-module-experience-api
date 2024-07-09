@@ -12,6 +12,7 @@ namespace VirtoCommerce.XDigitalCatalog.Extensions
             var result = AbstractTypeFactory<T>.TryCreateInstance();
             result.StoreId = context.GetArgumentOrValue<string>("storeId");
             result.UserId = context.GetArgumentOrValue<string>("userId") ?? context.GetCurrentUserId();
+            result.OrganizationId = context.GetCurrentOrganizationId();
             result.CurrencyCode = context.GetArgumentOrValue<string>("currencyCode");
             result.CultureName = context.GetArgumentOrValue<string>("cultureName");
 
