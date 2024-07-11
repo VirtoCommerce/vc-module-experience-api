@@ -303,7 +303,7 @@ namespace VirtoCommerce.XDigitalCatalog.Schemas
                     };
                 });
 
-            ExtendableField<NonNullGraphType<ListGraphType<NonNullGraphType<OutlineType>>>>("outlines", "Outlines", resolve: context => context.Source.IndexedProduct.Outlines ?? Array.Empty<Outline>());//.RootAlias("__object.outlines");
+            ExtendableField<NonNullGraphType<ListGraphType<NonNullGraphType<OutlineType>>>>("outlines", "Outlines", resolve: context => context.Source.IndexedProduct.Outlines ?? Array.Empty<Outline>());
 
             ExtendableField<NonNullGraphType<ListGraphType<NonNullGraphType<BreadcrumbType>>>>("breadcrumbs", "Breadcrumbs", resolve: context =>
             {
