@@ -2,6 +2,7 @@ namespace VirtoCommerce.XPurchase.Commands;
 
 public abstract class CartCommandBase : ICartRequest
 {
+    public string CartId { get; set; }
     public string StoreId { get; set; }
     public string CartType { get; set; }
     public string CartName { get; set; } = "default";
@@ -12,6 +13,7 @@ public abstract class CartCommandBase : ICartRequest
 
     public virtual void CopyFrom(ICartRequest source)
     {
+        CartId = source.CartId;
         StoreId = source.StoreId;
         CartType = source.CartType;
         CartName = source.CartName;

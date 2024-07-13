@@ -19,7 +19,5 @@ namespace VirtoCommerce.XPurchase.Commands
             CurrencyCode = currencyCode;
             CultureName = cultureName;
         }
-
-        public string CartId { get; set; }
     }
 }

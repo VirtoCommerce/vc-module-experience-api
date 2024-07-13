@@ -2,6 +2,7 @@ namespace VirtoCommerce.XPurchase;
 
 public interface ICartRequest
 {
+    string CartId { get; set; }
     string StoreId { get; set; }
     string CartType { get; set; }
     string CartName { get; set; }

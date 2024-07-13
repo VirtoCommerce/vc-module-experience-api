@@ -10,6 +10,7 @@ namespace VirtoCommerce.XPurchase.Queries
 {
     public class GetCartQuery : Query<CartAggregate>, ICartQuery
     {
+        public string CartId { get; set; }
         public string StoreId { get; set; }
         public string CartType { get; set; }
         public string CartName { get; set; }
@@ -22,6 +23,7 @@ namespace VirtoCommerce.XPurchase.Queries
 
         public override IEnumerable<QueryArgument> GetArguments()
         {
+            yield return Argument<StringGraphType>(nameof(CartId));
             yield return Argument<NonNullGraphType<StringGraphType>>(nameof(StoreId), description: "Store Id");
             yield return Argument<NonNullGraphType<StringGraphType>>(nameof(CurrencyCode), description: "Currency code (\"USD\")");
             yield return Argument<StringGraphType>(nameof(CartType), description: "Cart type");
@@ -32,6 +34,7 @@ namespace VirtoCommerce.XPurchase.Queries
 
         public override void Map(IResolveFieldContext context)
         {
+            CartId = context.GetArgument<string>(nameof(CartId));
             StoreId = context.GetArgument<string>(nameof(StoreId));
             CartType = context.GetArgument<string>(nameof(CartType));
             CartName = context.GetArgument<string>(nameof(CartName));
