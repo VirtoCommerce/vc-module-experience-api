@@ -10,7 +10,6 @@ namespace VirtoCommerce.XPurchase.Queries
 {
     public class SearchCartQuery : SearchQuery<SearchCartResponse>, ICartQuery
     {
-        public string CartId { get; set; }
         public string StoreId { get; set; }
         public string CartType { get; set; }
         public string CartName { get; set; }
@@ -25,7 +24,6 @@ namespace VirtoCommerce.XPurchase.Queries
         public override IEnumerable<QueryArgument> GetArguments()
         {
             yield return Argument<StringGraphType>(nameof(Sort));
-            yield return Argument<StringGraphType>(nameof(CartId));
             yield return Argument<StringGraphType>(nameof(StoreId));
             yield return Argument<StringGraphType>(nameof(UserId));
             yield return Argument<StringGraphType>(nameof(CurrencyCode));
@@ -38,7 +36,6 @@ namespace VirtoCommerce.XPurchase.Queries
         {
             base.Map(context);
 
-            CartId = context.GetArgument<string>(nameof(CartId));
             StoreId = context.GetArgument<string>(nameof(StoreId));
             UserId = context.GetArgument<string>(nameof(UserId));
             OrganizationId = context.GetCurrentOrganizationId();
