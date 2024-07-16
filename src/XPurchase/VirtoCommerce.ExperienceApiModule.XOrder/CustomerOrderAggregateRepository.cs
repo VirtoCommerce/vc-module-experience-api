@@ -41,7 +41,7 @@ namespace VirtoCommerce.ExperienceApiModule.XOrder
             return null;
         }
 
-        public async Task<CustomerOrderAggregate> CreateOrderFromCart(ShoppingCart cart)
+        public virtual async Task<CustomerOrderAggregate> CreateOrderFromCart(ShoppingCart cart)
         {
             var order = await _customerOrderBuilder.PlaceCustomerOrderFromCartAsync(cart);
             var aggregates = await InnerGetCustomerOrderAggregatesFromCustomerOrdersAsync([order], order.LanguageCode);

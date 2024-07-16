@@ -62,12 +62,17 @@ namespace VirtoCommerce.XPurchase
 
         public async Task<CartAggregate> GetCartByIdAsync(string cartId, IList<string> productsIncludeFields, string cultureName = null)
         {
+            return await GetCartByIdAsync(cartId, null, productsIncludeFields, cultureName);
+        }
+
+        public async Task<CartAggregate> GetCartByIdAsync(string cartId, string responseGroup, IList<string> productsIncludeFields, string cultureName = null)
+        {
             if (CartAggregateBuilder.IsBuilding(out var cartAggregate))
             {
                 return cartAggregate;
             }
 
-            var cart = await _shoppingCartService.GetByIdAsync(cartId);
+            var cart = await _shoppingCartService.GetByIdAsync(cartId, responseGroup);
             if (cart != null)
             {
                 return await InnerGetCartAggregateFromCartAsync(cart, cultureName ?? Language.InvariantLanguage.CultureName, productsIncludeFields);

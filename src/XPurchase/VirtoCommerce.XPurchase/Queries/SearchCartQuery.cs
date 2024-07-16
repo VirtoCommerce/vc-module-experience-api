@@ -6,7 +6,6 @@ using GraphQL.Types;
 using VirtoCommerce.ExperienceApiModule.Core.BaseQueries;
 using VirtoCommerce.ExperienceApiModule.Core.Extensions;
 
-
 namespace VirtoCommerce.XPurchase.Queries
 {
     public class SearchCartQuery : SearchQuery<SearchCartResponse>, ICartQuery
