@@ -33,24 +33,23 @@ namespace VirtoCommerce.XPurchase.Queries
         {
             var searchCriteria = GetSearchCriteria(request);
 
-            searchCriteria.ResponseGroup = EnumUtility.SafeParseFlags(_cartResponseGroupParser.GetResponseGroup(request.IncludeFields), CartResponseGroup.Full).ToString();
-
             return _cartAggregateRepository.SearchCartAsync(searchCriteria);
         }
 
         protected virtual ShoppingCartSearchCriteria GetSearchCriteria(SearchCartQuery request)
         {
             return new CartSearchCriteriaBuilder(_searchPhraseParser, _mapper)
-                                     .ParseFilters(request.Filter)
-                                     .WithCurrency(request.CurrencyCode)
-                                     .WithStore(request.StoreId)
-                                     .WithType(request.CartType)
-                                     .WithLanguage(request.CultureName)
-                                     .WithCustomerId(request.UserId)
-                                     .WithOrganizationId(request.OrganizationId)
-                                     .WithPaging(request.Skip, request.Take)
-                                     .WithSorting(request.Sort)
-                                     .Build();
+                .ParseFilters(request.Filter)
+                .WithCurrency(request.CurrencyCode)
+                .WithStore(request.StoreId)
+                .WithType(request.CartType)
+                .WithLanguage(request.CultureName)
+                .WithCustomerId(request.UserId)
+                .WithOrganizationId(request.OrganizationId)
+                .WithResponseGroup(EnumUtility.SafeParseFlags(_cartResponseGroupParser.GetResponseGroup(request.IncludeFields), CartResponseGroup.Full))
+                .WithPaging(request.Skip, request.Take)
+                .WithSorting(request.Sort)
+                .Build();
         }
     }
 }
