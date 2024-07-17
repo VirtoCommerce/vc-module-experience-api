@@ -582,7 +582,7 @@ namespace VirtoCommerce.XPurchase.Tests.Aggregates
         }
 
         [Fact]
-        public async Task MergeWithCartAsync_CartsHaveShipments_ShipmentsMerged()
+        public async Task MergeWithCartAsync_TargetCartHaveShipments_ShipmentNotMerged()
         {
             // Arrange
             var sourceAggregate = GetValidCartAggregate();
@@ -603,13 +603,37 @@ namespace VirtoCommerce.XPurchase.Tests.Aggregates
             await destinationAggregate.MergeWithCartAsync(sourceAggregate);
 
             // Assert
-            destinationAggregate.Cart.Shipments.Should().HaveCount(2);
-            destinationAggregate.Cart.Shipments.Should().Contain(sourceShipment);
+            destinationAggregate.Cart.Shipments.Should().HaveCount(1);
             destinationAggregate.Cart.Shipments.Should().Contain(destinationShipment);
         }
 
         [Fact]
-        public async Task MergeWithCartAsync_CartsHavePayments_PaymentsMerged()
+        public async Task MergeWithCartAsync_TargetCartDontHaveShipments_ShipmentMerged()
+        {
+            // Arrange
+            var sourceAggregate = GetValidCartAggregate();
+            sourceAggregate.Cart.Items = Enumerable.Empty<LineItem>().ToList();
+            sourceAggregate.Cart.Coupons = Enumerable.Empty<string>().ToList();
+            sourceAggregate.Cart.Payments = Enumerable.Empty<Payment>().ToList();
+
+            var sourceShipment = _fixture.Create<Shipment>();
+
+            sourceAggregate.Cart.Shipments = new List<Shipment> { sourceShipment };
+
+            var destinationAggregate = GetValidCartAggregate();
+
+            destinationAggregate.Cart.Shipments = new List<Shipment>();
+
+            // Act
+            await destinationAggregate.MergeWithCartAsync(sourceAggregate);
+
+            // Assert
+            destinationAggregate.Cart.Shipments.Should().HaveCount(1);
+            destinationAggregate.Cart.Shipments.Should().Contain(sourceShipment);
+        }
+
+        [Fact]
+        public async Task MergeWithCartAsync_TargetCartHavePayments_PaymentNotMerged()
         {
             // Arrange
             var sourceAggregate = GetValidCartAggregate();
@@ -630,9 +654,33 @@ namespace VirtoCommerce.XPurchase.Tests.Aggregates
             await destinationAggregate.MergeWithCartAsync(sourceAggregate);
 
             // Assert
-            destinationAggregate.Cart.Payments.Should().HaveCount(2);
-            destinationAggregate.Cart.Payments.Should().Contain(sourcePayment);
+            destinationAggregate.Cart.Payments.Should().HaveCount(1);
             destinationAggregate.Cart.Payments.Should().Contain(destinationPayments);
+        }
+
+        [Fact]
+        public async Task MergeWithCartAsync_TargetCartDontHavePayments_PaymentMerged()
+        {
+            // Arrange
+            var sourceAggregate = GetValidCartAggregate();
+            sourceAggregate.Cart.Items = Enumerable.Empty<LineItem>().ToList();
+            sourceAggregate.Cart.Coupons = Enumerable.Empty<string>().ToList();
+            sourceAggregate.Cart.Shipments = Enumerable.Empty<Shipment>().ToList();
+
+            var sourcePayment = _fixture.Create<Payment>();
+
+            sourceAggregate.Cart.Payments = new List<Payment> { sourcePayment };
+
+            var destinationAggregate = GetValidCartAggregate();
+
+            destinationAggregate.Cart.Payments = new List<Payment>();
+
+            // Act
+            await destinationAggregate.MergeWithCartAsync(sourceAggregate);
+
+            // Assert
+            destinationAggregate.Cart.Payments.Should().HaveCount(1);
+            destinationAggregate.Cart.Payments.Should().Contain(sourcePayment);
         }
 
         #endregion MergeWithCartAsync

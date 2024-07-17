@@ -600,6 +600,12 @@ namespace VirtoCommerce.XPurchase
 
         protected virtual async Task MergeShipmentsFromCartAsync(CartAggregate otherCart)
         {
+            // Do not copy shipments if there are already shipments in the cart
+            if (Cart.Shipments.Count > 0)
+            {
+                return;
+            }
+
             foreach (var shipment in otherCart.Cart.Shipments.ToList())
             {
                 //Skip validation, do not pass avail methods
@@ -609,6 +615,12 @@ namespace VirtoCommerce.XPurchase
 
         protected virtual async Task MergePaymentsFromCartAsync(CartAggregate otherCart)
         {
+            // Do not copy payments if there are already payments in the cart
+            if (Cart.Payments.Count > 0)
+            {
+                return;
+            }
+
             foreach (var payment in otherCart.Cart.Payments.ToList())
             {
                 //Skip validation, do not pass avail methods
