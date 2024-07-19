@@ -15,7 +15,7 @@ Please refer to the following update path instructions for more detailed guidanc
 
 ## Breaking Changes
 ### 👌 Frontend
-* **GraphQL Schema Compatibility**: All GraphQL schemas remain compatible, so no frontend modifications are required directly due to schema changes.
+* **GraphQL Schema Compatibility**: All GraphQL schemas remain compatible, so no frontend modifications are required directly due to schema changes. *(Note: deprecated mutation `valdateCoupon` was removed. Use `validateCoupon` query instead)*.
 * **API Endpoint Changes**: If your frontend directly calls endpoints provided by VirtoCommerce.ExperienceApi, verify and update the endpoint URLs to match the new module structure if necessary.
 * **Testing**: Thoroughly test frontend interactions to ensure smooth functionality with the new backend modules.
 
