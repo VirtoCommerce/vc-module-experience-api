@@ -1,3 +1,28 @@
+---
+# 🔥 Important Notice: Migration to New XAPI Modules
+We have migrated to a new XAPI architecture to better support the evolving needs of our business API with GraphQL. The previous VirtoCommerce.ExperienceApi module has been replaced with a suite of new, more specialized modules. This change is part of our effort to simplify business API development and streamline our release cycle.
+
+## 🎬 Action Required
+Please transition from the legacy VirtoCommerce.ExperienceApi module to the new modules listed below:
+
+* [VirtoCommerce.Xapi](https://github.com/VirtoCommerce/vc-module-x-api): Core business API module.
+* [VirtoCommerce.XCart](https://github.com/VirtoCommerce/vc-module-x-cart): Handles cart-related functionalities.
+* [VirtoCommerce.XCatalog](https://github.com/VirtoCommerce/vc-module-x-catalog): Manages catalog-related operations.
+* [VirtoCommerce.XCMS](https://github.com/VirtoCommerce/vc-module-x-cms): Content management system integration.
+* [VirtoCommerce.XOrder](https://github.com/VirtoCommerce/vc-module-x-order): Manages order processing.
+
+For more detailed guidance on how to update to the new modules, please refer to [the update path instructions provided in the release notes](https://github.com/VirtoCommerce/vc-module-x-api).
+
+## 👌 Frontend
+* **GraphQL Schema Compatibility**: All GraphQL schemas remain compatible, so no frontend modifications are required directly due to schema changes.
+* **API Endpoint Changes**: If your frontend directly calls endpoints provided by VirtoCommerce.ExperienceApi, verify and update the endpoint URLs to match the new module structure if necessary.
+* **Testing**: Thoroughly test frontend interactions to ensure smooth functionality with the new backend modules.
+
+## 💕 Update and Support
+VirtoCommerce.ExperienceApi is archived and will be supported in Stable 8 and Stable 9 releases. Future developments will focus on the new VirtoCommerce.Xapi and related modules. The latest Edge release has adopted the new modules.
+
+---
+
 # Overview
 
 [![CI status](https://github.com/VirtoCommerce/vc-module-experience-api/workflows/Module%20CI/badge.svg?branch=dev)](https://github.com/VirtoCommerce/vc-module-experience-api/actions?query=workflow%3A"Module+CI") [![Quality gate](https://sonarcloud.io/api/project_badges/measure?project=VirtoCommerce_vc-module-experience-api&metric=alert_status&branch=dev)](https://sonarcloud.io/dashboard?id=VirtoCommerce_vc-module-experience-api) [![Reliability rating](https://sonarcloud.io/api/project_badges/measure?project=VirtoCommerce_vc-module-experience-api&metric=reliability_rating&branch=dev)](https://sonarcloud.io/dashboard?id=VirtoCommerce_vc-module-experience-api) [![Security rating](https://sonarcloud.io/api/project_badges/measure?project=VirtoCommerce_vc-module-experience-api&metric=security_rating&branch=dev)](https://sonarcloud.io/dashboard?id=VirtoCommerce_vc-module-experience-api) [![Sqale rating](https://sonarcloud.io/api/project_badges/measure?project=VirtoCommerce_vc-module-experience-api&metric=sqale_rating&branch=dev)](https://sonarcloud.io/dashboard?id=VirtoCommerce_vc-module-experience-api)
