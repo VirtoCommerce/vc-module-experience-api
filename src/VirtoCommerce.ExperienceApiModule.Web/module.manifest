@@ -48,7 +48,6 @@
   <moduleType>VirtoCommerce.ExperienceApiModule.Web.Module, VirtoCommerce.ExperienceApiModule.Web</moduleType>
   <incompatibilities />
   <groups>
-    <group>commerce</group>
   </groups>
   <useFullTypeNameInSwagger>false</useFullTypeNameInSwagger>
 </module>
