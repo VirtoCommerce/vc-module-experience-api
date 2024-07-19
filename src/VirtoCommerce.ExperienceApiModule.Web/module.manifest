@@ -20,8 +20,8 @@
     <dependency id="VirtoCommerce.Store" version="3.803.0" />
     <dependency id="VirtoCommerce.Tax" version="3.800.0" />
   </dependencies>
-  <title>Commerce Experience API</title>
-  <description>An intermediated layer between clients and enterprise services powered by GraphQL protocol</description>
+  <title>Commerce Experience API - Depricated</title>
+  <description>The module is deprecated. Migrate to new X-API family modules. An intermediated layer between clients and enterprise services powered by GraphQL protocol</description>
   <authors>
     <author>Eugeny Tatarincev</author>
     <author>Yan Brovkin</author>
