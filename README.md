@@ -11,12 +11,42 @@ Please transition from the legacy VirtoCommerce.ExperienceApi module to the new 
 * [VirtoCommerce.XCMS](https://github.com/VirtoCommerce/vc-module-x-cms): Content management system integration.
 * [VirtoCommerce.XOrder](https://github.com/VirtoCommerce/vc-module-x-order): Manages order processing.
 
-For more detailed guidance on how to update to the new modules, please refer to [the update path instructions provided in the release notes](https://github.com/VirtoCommerce/vc-module-x-api).
+Please refer to the following update path instructions for more detailed guidance on updating the new modules.
 
-## 👌 Frontend
+## Breaking Changes
+### 👌 Frontend
 * **GraphQL Schema Compatibility**: All GraphQL schemas remain compatible, so no frontend modifications are required directly due to schema changes.
 * **API Endpoint Changes**: If your frontend directly calls endpoints provided by VirtoCommerce.ExperienceApi, verify and update the endpoint URLs to match the new module structure if necessary.
 * **Testing**: Thoroughly test frontend interactions to ensure smooth functionality with the new backend modules.
+
+### 🔥 Custom Modules
+* **Dependency Changes**: Custom modules that depended on VirtoCommerce.ExperienceApi will need to be updated to depend on the appropriate new modules (VirtoCommerce.Xapi, VirtoCommerce.XCart, VirtoCommerce.XCatalog, VirtoCommerce.XCMS, VirtoCommerce.XOrder).
+* **Uninstall Old Packages**: Ensure to uninstall the NuGet packages from VirtoCommerce.ExperienceApi and replace them with the new packages.
+Code Adjustments: Review and adjust your code to align with the new module structures and namespaces.
+
+## Update Path
+To transition to the new modules, follow these steps:
+
+1. Uninstall VirtoCommerce.ExperienceApi.
+2. Install the new modules:
+  - VirtoCommerce.Xapi
+  - VirtoCommerce.XCart
+  - VirtoCommerce.XCatalog
+  - VirtoCommerce.XCMS
+  - VirtoCommerce.XOrder
+
+3. Update other modules to the new version if required, ensuring they now depend on VirtoCommerce.Xapi:
+  - VirtoCommerce.MarketingExperienceApi
+  - VirtoCommerce.Quote
+  - VirtoCommerce.CustomerReviews
+  - VirtoCommerce.Skyflow
+  - VirtoCommerce.TaskManagement
+  - VirtoCommerce.FileExperienceApi
+  - VirtoCommerce.WhiteLabeling
+
+4. For any custom modules, uninstall the NuGet packages from VirtoCommerce.ExperienceApi and replace them with the new ones.
+5. Models, service interfaces, GraphQL schema types and input types, commands, queries and aggregates are moved to respective Core projects of the new modules (XCatalog.Core. XCart.Core, etc) with namespaces adjusted. Data projects contain service implementations, command and query builders, command and query handlers, and middleware.
+6. Schema: validateCoupon command (was marked as Deprecated) was removed, use validateCoupon query.
 
 ## 💕 Update and Support
 VirtoCommerce.ExperienceApi is archived and will be supported in Stable 8 and Stable 9 releases. Future developments will focus on the new VirtoCommerce.Xapi and related modules. The latest Edge release has adopted the new modules.
