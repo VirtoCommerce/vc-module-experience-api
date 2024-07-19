@@ -1,6 +1,6 @@
 ---
 # 🔥 Important Notice: Migration to New XAPI Modules
-We have migrated to a new XAPI architecture to better support the evolving needs of our business API with GraphQL. The previous VirtoCommerce.ExperienceApi module has been replaced with a suite of new, more specialized modules. This change is part of our effort to simplify business API development and streamline our release cycle.
+We have migrated to a new XAPI architecture to better support the evolving needs of our business API with GraphQL. The VirtoCommerce.ExperienceApi module has been replaced with a suite of new, more specialized modules. This change is part of our effort to simplify business API development and streamline our release cycle.
 
 ## 🎬 Action Required
 Please transition from the legacy VirtoCommerce.ExperienceApi module to the new modules listed below:
