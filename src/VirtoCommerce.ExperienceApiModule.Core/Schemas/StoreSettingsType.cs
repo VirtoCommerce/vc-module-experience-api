@@ -19,6 +19,7 @@ public class StoreSettingsType : ExtendableGraphType<StoreSettings>
         Field(x => x.DefaultSelectedForCheckout).Description("Default \"Selected for checkout\" state for new line items and gifts");
         Field(x => x.EnvironmentName).Description("Environment name");
         Field<PasswordOptionsType>("passwordRequirements", "Password requirements");
+        Field<NonNullGraphType<ListGraphType<StringGraphType>>>("authenticationTypes");
         Field<NonNullGraphType<ListGraphType<NonNullGraphType<ModuleSettingsType>>>>("modules");
     }
 }

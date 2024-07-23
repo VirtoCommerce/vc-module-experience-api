@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity;
 
 namespace VirtoCommerce.ExperienceApiModule.Core.Queries
@@ -27,6 +28,8 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Queries
         public string EnvironmentName { get; set; }
 
         public PasswordOptions PasswordRequirements { get; set; }
+
+        public IList<string> AuthenticationTypes { get; set; }
 
         public ModuleSettings[] Modules { get; set; }
     }
