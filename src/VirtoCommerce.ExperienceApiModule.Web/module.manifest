@@ -3,7 +3,8 @@
   <id>VirtoCommerce.ExperienceApi</id>
   <version>3.842.0</version>
   <version-tag />
-  <platformVersion>3.841.0</platformVersion>
+
+  <platformVersion>3.845.0-alpha.12952-vcst-1431</platformVersion>
   <dependencies>
     <dependency id="VirtoCommerce.Cart" version="3.810.0" />
     <dependency id="VirtoCommerce.Catalog" version="3.807.0" />
@@ -17,9 +18,10 @@
     <dependency id="VirtoCommerce.Pricing" version="3.800.0" />
     <dependency id="VirtoCommerce.Search" version="3.800.0" />
     <dependency id="VirtoCommerce.Shipping" version="3.800.0" />
-    <dependency id="VirtoCommerce.Store" version="3.803.0" />
+    <dependency id="VirtoCommerce.Store" version="3.806.0-alpha.699-vcst-1431" />
     <dependency id="VirtoCommerce.Tax" version="3.800.0" />
   </dependencies>
+
   <title>Commerce Experience API - Deprecated</title>
   <description>The module is Deprecated. Migrate to new X-API family modules. An intermediated layer between clients and enterprise services powered by GraphQL protocol</description>
   <authors>

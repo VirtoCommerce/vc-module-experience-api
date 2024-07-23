@@ -15,6 +15,7 @@ using VirtoCommerce.ExperienceApiModule.Core.Infrastructure.Internal;
 using VirtoCommerce.ExperienceApiModule.Core.OpenIddict;
 using VirtoCommerce.ExperienceApiModule.Core.Services;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.Security.ExternalSignIn;
 using VirtoCommerce.Platform.Security.OpenIddict;
 
 namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
@@ -119,7 +120,8 @@ namespace VirtoCommerce.ExperienceApiModule.Core.Extensions
             services.AddTransient<IDynamicPropertyResolverService, DynamicPropertyResolverService>();
             services.AddTransient<IDynamicPropertyUpdaterService, DynamicPropertyUpdaterService>();
             services.AddTransient<IUserManagerCore, UserManagerCore>();
-
+            services.AddTransient<IExternalSignInValidator, ExternalSignInValidator>();
+            services.AddTransient<IExternalSignInUserBuilder, ExternalSignInUserBuilder>();
             services.AddTransient<ITokenRequestValidator, ContactSignInValidator>();
 
             return services;
