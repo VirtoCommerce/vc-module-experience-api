@@ -74,6 +74,12 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
         public IndexSearchRequestBuilder WithCultureName(string cultureName)
         {
             CultureName = cultureName;
+
+            if (!string.IsNullOrEmpty(CultureName))
+            {
+                SearchRequest.SearchFields.Add($"__content_{cultureName}".ToLowerInvariant());
+            }
+
             return this;
         }
 
@@ -98,24 +104,24 @@ namespace VirtoCommerce.ExperienceApiModule.XDigitalCatalog.Index
             {
                 FieldName = "startdate",
                 Values = [new RangeFilterValue
-                    {
-                        Lower = null,
-                        Upper = certainDate.ToString("O"),
-                        IncludeLower = false,
-                        IncludeUpper = true,
-                    }]
+                {
+                    Lower = null,
+                    Upper = certainDate.ToString("O"),
+                    IncludeLower = false,
+                    IncludeUpper = true,
+                }]
             };
 
             var endDateFilter = new RangeFilter
             {
                 FieldName = "enddate",
                 Values = [new RangeFilterValue
-                    {
-                        Lower = certainDate.ToString("O"),
-                        Upper = null,
-                        IncludeLower = false,
-                        IncludeUpper = true,
-                    }]
+                {
+                    Lower = certainDate.ToString("O"),
+                    Upper = null,
+                    IncludeLower = false,
+                    IncludeUpper = true,
+                }]
             };
 
             AddFiltersToSearchRequest([startDateFilter, endDateFilter]);
