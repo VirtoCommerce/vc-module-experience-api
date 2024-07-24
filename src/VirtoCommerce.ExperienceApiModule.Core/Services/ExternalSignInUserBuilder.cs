@@ -7,31 +7,23 @@ using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Security;
 using VirtoCommerce.Platform.Core.Security.ExternalSignIn;
 
-namespace VirtoCommerce.ExperienceApiModule.Core.Services
+namespace VirtoCommerce.ExperienceApiModule.Core.Services;
+
+public class ExternalSignInUserBuilder(IMemberService memberService) : IExternalSignInUserBuilder
 {
-    public class ExternalSignInUserBuilder : IExternalSignInUserBuilder
+    public async Task BuildNewUser(ApplicationUser user, ExternalLoginInfo externalLoginInfo)
     {
-        private readonly IMemberService _memberService;
-
-        public ExternalSignInUserBuilder(IMemberService memberService)
+        if (user.MemberId is null && user.UserType == UserType.Customer.ToString())
         {
-            _memberService = memberService;
-        }
+            var contact = AbstractTypeFactory<Contact>.TryCreateInstance();
+            contact.Name = externalLoginInfo.Principal.FindFirstValue("name");
+            contact.FirstName = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.GivenName);
+            contact.LastName = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.Surname);
+            contact.Emails = [user.Email];
 
-        public async Task BuildNewUser(ApplicationUser user, ExternalLoginInfo externalLoginInfo)
-        {
-            if (user.MemberId is null && user.UserType == UserType.Customer.ToString())
-            {
-                var contact = AbstractTypeFactory<Contact>.TryCreateInstance();
-                contact.Name = externalLoginInfo.Principal.FindFirstValue("name");
-                contact.FirstName = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.GivenName);
-                contact.LastName = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.Surname);
-                contact.Emails = [user.Email];
+            await memberService.SaveChangesAsync([contact]);
 
-                await _memberService.SaveChangesAsync([contact]);
-
-                user.MemberId = contact.Id;
-            }
+            user.MemberId = contact.Id;
         }
     }
 }
