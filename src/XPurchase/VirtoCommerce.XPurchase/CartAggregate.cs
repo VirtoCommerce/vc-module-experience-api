@@ -844,7 +844,7 @@ namespace VirtoCommerce.XPurchase
             else if (string.IsNullOrEmpty(Cart.OrganizationName))
             {
                 var organization = await _memberService.GetByIdAsync(Cart.OrganizationId);
-                Cart.OrganizationName = organization.Name;
+                Cart.OrganizationName = organization?.Name;
             }
 
             return this;
