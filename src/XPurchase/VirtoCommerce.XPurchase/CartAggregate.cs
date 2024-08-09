@@ -973,30 +973,44 @@ namespace VirtoCommerce.XPurchase
             return tierPrice.Price.Amount > 0;
         }
 
-        protected virtual async Task<CartAggregate> InnerAddLineItemAsync(LineItem lineItem, CartProduct product = null, IList<DynamicPropertyValue> dynamicProperties = null)
+        protected virtual async Task<CartAggregate> InnerAddLineItemAsync(LineItem newLineItem, CartProduct product = null, IList<DynamicPropertyValue> dynamicProperties = null)
         {
-            var existingLineItem = LineItems.FirstOrDefault(li => li.ProductId == lineItem.ProductId);
+            var existingLineItem = FindExistingLineItemBeforeAdd(newLineItem.ProductId, product, dynamicProperties);
+
             if (existingLineItem != null)
             {
-                await InnerChangeItemQuantityAsync(existingLineItem, existingLineItem.Quantity + Math.Max(1, lineItem.Quantity), product);
+                await InnerChangeItemQuantityAsync(existingLineItem, existingLineItem.Quantity + Math.Max(1, newLineItem.Quantity), product);
 
-                existingLineItem.FulfillmentCenterId = lineItem.FulfillmentCenterId;
-                existingLineItem.FulfillmentCenterName = lineItem.FulfillmentCenterName;
+                existingLineItem.FulfillmentCenterId = newLineItem.FulfillmentCenterId;
+                existingLineItem.FulfillmentCenterName = newLineItem.FulfillmentCenterName;
 
-                lineItem = existingLineItem;
+                newLineItem = existingLineItem;
             }
             else
             {
-                lineItem.Id = null;
-                Cart.Items.Add(lineItem);
+                newLineItem.Id = null;
+                Cart.Items.Add(newLineItem);
             }
 
             if (dynamicProperties != null)
             {
-                await UpdateCartItemDynamicProperties(lineItem, dynamicProperties);
+                await UpdateCartItemDynamicProperties(newLineItem, dynamicProperties);
             }
 
             return this;
+        }
+
+        /// <summary>
+        /// Responsible for finding an existing line item before adding a new one.
+        /// If method returns line item, it means that the new line item should be merged with the existing one.
+        /// </summary>
+        /// <param name="newProductId">new product id</param>
+        /// <param name="newProduct">new product object</param>
+        /// <param name="newDynamicProperties">new dynamuc properties that should be added/updated in cart line item</param>
+        /// <returns></returns>
+        protected virtual LineItem FindExistingLineItemBeforeAdd(string newProductId, CartProduct newProduct, IList<DynamicPropertyValue> newDynamicProperties)
+        {
+            return LineItems.FirstOrDefault(x => x.ProductId == newProductId);
         }
 
         protected virtual void EnsureCartExists()
