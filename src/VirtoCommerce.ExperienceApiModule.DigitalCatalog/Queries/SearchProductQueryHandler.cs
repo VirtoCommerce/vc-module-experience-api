@@ -69,12 +69,13 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
                 CatalogId = store.Catalog,
             };
 
+            builder.WithCultureName(criteria.LanguageCode);
+
             //Use predefined  facets for store  if the facet filter expression is not set
             if (responseGroup.HasFlag(ExpProductResponseGroup.LoadFacets))
             {
                 var predefinedAggregations = await _aggregationConverter.GetAggregationRequestsAsync(criteria, new FiltersContainer());
 
-                builder.WithCultureName(criteria.LanguageCode);
                 builder.ParseFacets(_phraseParser, request.Facet, predefinedAggregations)
                    .ApplyMultiSelectFacetSearch();
             }
@@ -175,12 +176,13 @@ namespace VirtoCommerce.XDigitalCatalog.Queries
 
         /// <summary>
         /// By default limit  resulting products, return only visible products and belongs to store catalog,
-        /// but user can override this behaviour by passing "status:hidden" in a filter expression
+        /// but user can override this behavior by passing "status:hidden" and/or "is:variation" in a filter expression
         /// </summary>
         /// <param name="builder">Instance of the request builder</param>
         /// <param name="catalog">Name of the current catalog</param>
         protected virtual void AddDefaultTerms(IndexSearchRequestBuilder builder, string catalog)
         {
+            builder.AddTerms(new[] { "is:product" }, skipIfExists: true);
             builder.AddTerms(new[] { "status:visible" }, skipIfExists: true);
             builder.AddTerms(new[] { $"__outline:{catalog}" });
         }
