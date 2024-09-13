@@ -252,6 +252,7 @@ namespace VirtoCommerce.XPurchase.Mapping
                 taxEvalcontext.Code = cartAggr.Cart.Name;
                 taxEvalcontext.Type = "Cart";
                 taxEvalcontext.CustomerId = cartAggr.Cart.CustomerId;
+                taxEvalcontext.Currency = cartAggr.Cart.Currency;
                 //map customer after PT-5425
 
                 foreach (var lineItem in cartAggr.SelectedLineItems)
