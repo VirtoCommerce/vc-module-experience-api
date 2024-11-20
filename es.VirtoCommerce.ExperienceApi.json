@@ -1,0 +1,16 @@
+{
+  "settings": {
+    "VirtoCommerce.Platform.EnvironmentName": {
+      "title": "Nombre del entorno",
+      "description": ""
+    },
+    "XOrder.CreateAnonymousOrderEnabled": {
+      "title": "Creación de pedidos anónimos (xAPI)",
+      "description": "Prohibir/ permitir la creación de pedidos anónimos. Esta es una configuración a nivel de tienda"
+    },
+    "XPurchase.IsSelectedForCheckout": {
+      "title": "Estado predeterminado \"Seleccionado para el pago\" (xAPI)",
+      "description": "Seleccionar/ no seleccionar por defecto todos los artículos del carrito al realizar el pago. Esta es una configuración a nivel de tienda para nuevos artículos y regalos"
+    }
+  }
+}

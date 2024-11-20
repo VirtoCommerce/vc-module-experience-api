@@ -1,0 +1,16 @@
+{
+  "settings": {
+    "VirtoCommerce.Platform.EnvironmentName": {
+      "title": "Имя окружения",
+      "description": ""
+    },
+    "XOrder.CreateAnonymousOrderEnabled": {
+      "title": "Создание анонимных заказов (xAPI)",
+      "description": "Запретить/ разрешить создание анонимных заказов. Это настройка на уровне магазина"
+    },
+    "XPurchase.IsSelectedForCheckout": {
+      "title": "Состояние по умолчанию \"Выбрано для оформления\" (xAPI)",
+      "description": "По умолчанию выбирать/ не выбирать все товары в корзине для оформления. Это настройка на уровне магазина для новых товаров и подарков"
+    }
+  }
+}

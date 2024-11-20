@@ -1,0 +1,16 @@
+{
+  "settings": {
+    "VirtoCommerce.Platform.EnvironmentName": {
+      "title": "Environment name",
+      "description": ""
+    },
+    "XOrder.CreateAnonymousOrderEnabled": {
+      "title": "Anonymous orders creation (xAPI)",
+      "description": "Prohibit/ allow anonymous order creation. This is a store-level setting"
+    },
+    "XPurchase.IsSelectedForCheckout": {
+      "title": "Default \"Selected for checkout\" state (xAPI)",
+      "description": "Preselect/ leave unselected all items in cart by default at checkout. This is a store-level setting for new items and gifts"
+    }
+  }
+}

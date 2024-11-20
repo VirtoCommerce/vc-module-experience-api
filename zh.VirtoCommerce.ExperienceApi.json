@@ -1,0 +1,16 @@
+{
+  "settings": {
+    "VirtoCommerce.Platform.EnvironmentName": {
+      "title": "环境名称",
+      "description": ""
+    },
+    "XOrder.CreateAnonymousOrderEnabled": {
+      "title": "匿名订单创建 (xAPI)",
+      "description": "禁止/ 允许创建匿名订单。这是一个店铺级别的设置"
+    },
+    "XPurchase.IsSelectedForCheckout": {
+      "title": "默认“选择结账”状态 (xAPI)",
+      "description": "默认预选/ 未预选购物车中的所有商品进行结账。这是一个店铺级别的新商品和礼品设置"
+    }
+  }
+}

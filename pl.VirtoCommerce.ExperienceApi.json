@@ -1,0 +1,16 @@
+{
+  "settings": {
+    "VirtoCommerce.Platform.EnvironmentName": {
+      "title": "Nazwa środowiska",
+      "description": ""
+    },
+    "XOrder.CreateAnonymousOrderEnabled": {
+      "title": "Tworzenie anonimowych zamówień (xAPI)",
+      "description": "Zabronić/ zezwolić na tworzenie anonimowych zamówień. Jest to ustawienie na poziomie sklepu"
+    },
+    "XPurchase.IsSelectedForCheckout": {
+      "title": "Domyślny stan \"Wybrane do kasy\" (xAPI)",
+      "description": "Domyślnie zaznacz/ nie zaznaczaj wszystkich pozycji w koszyku podczas realizacji zamówienia. Jest to ustawienie na poziomie sklepu dla nowych produktów i prezentów"
+    }
+  }
+}
