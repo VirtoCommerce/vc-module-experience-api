@@ -1,0 +1,16 @@
+{
+  "settings": {
+    "VirtoCommerce.Platform.EnvironmentName": {
+      "title": "環境名",
+      "description": ""
+    },
+    "XOrder.CreateAnonymousOrderEnabled": {
+      "title": "匿名注文の作成 (xAPI)",
+      "description": "匿名注文の作成を禁止/ 許可します。これはストアレベルの設定です"
+    },
+    "XPurchase.IsSelectedForCheckout": {
+      "title": "デフォルトの「チェックアウト用に選択済み」状態 (xAPI)",
+      "description": "チェックアウト時にカート内のすべての商品をデフォルトで選択/ 未選択のままにします。これは新しい商品やギフトのためのストアレベルの設定です"
+    }
+  }
+}
