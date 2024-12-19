@@ -1,0 +1,16 @@
+{
+  "settings": {
+    "VirtoCommerce.Platform.EnvironmentName": {
+      "title": "Umgebungsname",
+      "description": ""
+    },
+    "XOrder.CreateAnonymousOrderEnabled": {
+      "title": "Erstellung anonymer Bestellungen (xAPI)",
+      "description": "Verbieten/ Erlauben der Erstellung anonymer Bestellungen. Dies ist eine einstellbare Option auf Geschäftsebene"
+    },
+    "XPurchase.IsSelectedForCheckout": {
+      "title": "Standardzustand \"Zur Kasse ausgewählt\" (xAPI)",
+      "description": "Standardmäßig alle Artikel im Warenkorb zur Kasse vorauswählen/ nicht vorauswählen. Dies ist eine einstellbare Option auf Geschäftsebene für neue Artikel und Geschenke"
+    }
+  }
+}
