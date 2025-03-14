@@ -1,15 +1,15 @@
 ---
-# 🔥 Important Notice: Migration to New XAPI Modules
-We have migrated to a new XAPI architecture to better support the evolving needs of our business API with GraphQL. The VirtoCommerce.ExperienceApi module has been replaced with a suite of new, more specialized modules. This change is part of our effort to simplify business API development and streamline our release cycle.
+# 🔥 Important Notice: Migration to New xAPI Modules
+We have migrated to a new xAPI architecture to better support the evolving needs of our business API with GraphQL. The VirtoCommerce.ExperienceApi module has been replaced with a suite of new, more specialized modules. This change is part of our effort to simplify business API development and streamline our release cycle.
 
 ## 🎬 Action Required
 Please transition from the legacy VirtoCommerce.ExperienceApi module to the new modules listed below:
 
-* [VirtoCommerce.Xapi](https://github.com/VirtoCommerce/vc-module-x-api): Core business API module.
-* [VirtoCommerce.XCart](https://github.com/VirtoCommerce/vc-module-x-cart): Handles cart-related functionalities.
-* [VirtoCommerce.XCatalog](https://github.com/VirtoCommerce/vc-module-x-catalog): Manages catalog-related operations.
-* [VirtoCommerce.XCMS](https://github.com/VirtoCommerce/vc-module-x-cms): Content management system integration.
-* [VirtoCommerce.XOrder](https://github.com/VirtoCommerce/vc-module-x-order): Manages order processing.
+* [VirtoCommerce.xApi](https://github.com/VirtoCommerce/vc-module-x-api): Core business API module.
+* [VirtoCommerce.xCart](https://github.com/VirtoCommerce/vc-module-x-cart): Handles cart-related functionalities.
+* [VirtoCommerce.xCatalog](https://github.com/VirtoCommerce/vc-module-x-catalog): Manages catalog-related operations.
+* [VirtoCommerce.xCMS](https://github.com/VirtoCommerce/vc-module-x-cms): Content management system integration.
+* [VirtoCommerce.xOrder](https://github.com/VirtoCommerce/vc-module-x-order): Manages order processing.
 
 Please refer to the following update path instructions for more detailed guidance on updating the new modules.
 
@@ -75,55 +75,24 @@ The project "Experience API" it is primarily a intermediated layer between clien
 - [X-UserProfile module](https://github.com/VirtoCommerce/vc-module-profile-experience-api) (moved to a separate module)
 - [Recommendations Gateway API](./docs/gateway-api-reference.md) (prototype)
 
-## How to use
-### Playground IDE
-To explore the GraphQL API, you can use an interactive  [graphql-playground](https://github.com/prisma-labs/graphql-playground) environment.
-To open playground console open  `ui/playground` in the platform manager application.
-```
-http://localhost:10645/ui/playground
-```
-### Curl
-```curl
-POST https://{platform-url}/graphql
-```
-It accepts POST requests with following fields in a JSON body:
-- `query` - String - GraphQL query as a string
-- `variables` - Object - Optional - containing JSON object that defines variables for your query
-- `operationName` - String - Optional - the name of the operation, in case you defined several of them in the query
-
-Here is an example of a GraphQL query:
-```curl
-$ curl -X POST http://localhost:10645/graphql \
-  -H "Content-Type:application/json" \
-  -H "Authorization:Bearer ..." \
-  -d '{"operationName":null,"variables":{},"query":"{ product(id: \"019e93d973cd4adab99b6f9cbb4ca97a\") { name }}"}'
-```
-## Getting started
-Read this [article...](docs/getting-started.md)
-
-## How to extend
-Read this [article...](docs/x-api-extensions.md)
-
-## Where to find logs
-Read this [article...](docs/application-insights-integration.md)
-
-## Limitation
-
-The project has integration with Elastic Search 7.x and Azure Search Service providers for indexing search.
-
-Lucene search provider not supported.
 ## Documentation
+* [Experience API Documentation](https://docs.virtocommerce.org/platform/developer-guide/GraphQL-Storefront-API-Reference-xAPI/)
+* [Getting started](https://docs.virtocommerce.org/platform/developer-guide/GraphQL-Storefront-API-Reference-xAPI/getting-started/)
+* [How to use GraphiQL](https://docs.virtocommerce.org/platform/developer-guide/GraphQL-Storefront-API-Reference-xAPI/graphiql/)
+* [How to use Postman](https://docs.virtocommerce.org/platform/developer-guide/GraphQL-Storefront-API-Reference-xAPI/postman/)
+* [How to extend](https://docs.virtocommerce.org/platform/developer-guide/GraphQL-Storefront-API-Reference-xAPI/x-api-extensions/)
+* [Virto Commerce Frontend architecture](https://docs.virtocommerce.org/storefront/developer-guide/architecture/)
+* [View on GitHub](https://github.com/VirtoCommerce/vc-module-experience-api)
 
-[Experience API Module Document](/docs/index.md)
-
-[View on GitHub](https://github.com/VirtoCommerce/vc-module-experience-api)
 
 ## References
-* Deploy: https://virtocommerce.com/docs/latest/developer-guide/deploy-module-from-source-code/
-* Installation:https://www.virtocommerce.com/docs/latest/user-guide/modules/
-* Home: https://virtocommerce.com
-* Community: https://www.virtocommerce.org
-* [Download Latest Release](https://github.com/VirtoCommerce/vc-module-experience-api/releases)
+
+* [Deployment](https://docs.virtocommerce.org/platform/developer-guide/Tutorials-and-How-tos/Tutorials/deploy-module-from-source-code/)
+* [Installation](https://docs.virtocommerce.org/platform/user-guide/modules-installation/)
+* [Home](https://virtocommerce.com)
+* [Community](https://www.virtocommerce.org)
+* [Download latest release](https://github.com/VirtoCommerce/vc-module-experience-api/releases/latest)
+  
 
 ## License
 Copyright (c) Virto Solutions LTD.  All rights reserved.
