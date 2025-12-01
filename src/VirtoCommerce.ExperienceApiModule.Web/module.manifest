@@ -38,7 +38,7 @@
   <owners>
     <owner>Virto Commerce</owner>
   </owners>
-  <projectUrl>https://virtocommerce.com</projectUrl>
+  <projectUrl>https://github.com/VirtoCommerce/vc-module-experience-api</projectUrl>
   <iconUrl>Modules/$(VirtoCommerce.ExperienceApi)/Content/logoVC.png</iconUrl>
   <requireLicenseAcceptance>false</requireLicenseAcceptance>
   <releaseNotes />
